@@ -1,5 +1,5 @@
 {
-  "$id": "https://schema.meshery.io/model.json",
+  "$id": "https://schemas.meshery.io/model.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Model is a construct used for namespacing MeshModel entities.",
   "additionalProperties": false,
@@ -11,15 +11,15 @@
   ],
   "properties": {
     "name": {
-      "$ref": "https://schema.meshery.io/core.json#inputString",
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "The name for the model."
     },
     "displayName": {
-      "$ref": "https://schema.meshery.io/core.json#inputString",
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "The display name for the model."
     },
     "version": {
-      "$ref": "https://schema.meshery.io/core.json#versionString",
+      "$ref": "https://schemas.meshery.io/core.json#versionString",
       "description": "Version of the model."
     },
     "category": {

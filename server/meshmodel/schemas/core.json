@@ -1,5 +1,5 @@
 {
-  "$id": "https://schema.meshery.io/core.json",
+  "$id": "https://schemas.meshery.io/core.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Reusable core schema elements",
   "definitions": {
