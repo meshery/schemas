@@ -40,22 +40,26 @@ Meshery follows schema-driven development. As a project, Meshery has different t
 
 ### External
 
-MeshModel Schemas
-- Component Schema
-  - UI Schema
+MeshModel
+- model.schema
+  - component.schema
+    - connection-ui-schema.js
+    - credential-ui-schema.js
+  - policy.schema
+  - relationship.schema
 
 REST API
- - 
+ - swagger.yaml
 
 GraphQL API
 - GraphQL Schema
 
-Adapter Protobuf
+Adapters
 - meshes.proto
   
 ### Internal
 - Object Schema
-  - UI Schema
+  - ui-schema.js
 
  
 <p style="clear:both;">&nbsp;</p>
