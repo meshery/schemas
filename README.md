@@ -33,9 +33,6 @@ alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 </p>
 
 <h5><p align="center"><i>If you’re using Meshery or if you like the project, please <a href="https://github.com/meshery/meshery/stargazers">★</a> this repository to show your support! 🤩</i></p></h5>
-<p align="center" >
-MESHERY IS A CLOUD NATIVE COMPUTING FOUNDATION PROJECT
-</p>
 
 # Meshery Schemas
 
@@ -47,9 +44,19 @@ MeshModel Schemas
 - Component Schema
   - UI Schema
 
+REST API
+ - 
+
+GraphQL API
+- GraphQL Schema
+
+Adapter Protobuf
+- meshes.proto
+  
 ### Internal
 - Object Schema
   - UI Schema
+
  
 <p style="clear:both;">&nbsp;</p>
 
@@ -95,3 +102,7 @@ Please do! We're a warm and welcoming community of open source contributors. Ple
 ### License
 
 This repository and site are available as open-source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
+
+<p align="center" >
+MESHERY IS A CLOUD NATIVE COMPUTING FOUNDATION PROJECT
+</p>
