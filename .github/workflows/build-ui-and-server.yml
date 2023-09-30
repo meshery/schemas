@@ -1,0 +1,292 @@
+name: Meshery UI and Server
+on:
+  pull_request:
+    branches:
+      - "master"
+    paths-ignore:
+      - "docs/**"
+      - "mesheryctl/**"
+      - "*.md"
+      - "*.github/**"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Log level"
+        required: true
+        default: "warning"
+
+jobs:
+  build-backend:
+    name: Backend build
+    if: github.repository == 'meshery/meshery'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Setup Go
+        uses: actions/setup-go@master
+        with:
+          go-version: "1.21"
+      - name: Build Meshery Server
+        env:
+          PROVIDER_BASE_URLS: http://localhost:9876
+          PORT: 9081
+          ADAPTER_URLS: "localhost:10000 localhost:10001 localhost:10002 localhost:10003 localhost:10004 localhost:10009 localhost:10007"
+        run: |
+          make build-server
+  ui-build:
+    name: UI build
+    if: github.repository == 'meshery/meshery'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Cache node modules
+        id: node-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/cache
+            ~/.cache
+            /home/runner/.cache
+            !~/cache/exclude
+            **/node_modules
+            /home/runner/.cache/Cypress
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Install dependencies
+        if: steps.node-cache.outputs.cache-hit != 'true'
+        run: |
+          cd ui
+          npm i
+          cd ..
+          cd provider-ui
+          npm i
+      # - name: Cache meshery-ui
+      #   id: meshery-ui-cache
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       /home/runner/work/meshery/meshery/ui/out
+      #     key: ${{ runner.os }}-meshery-ui-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+      - name: build meshery-ui
+        # if: steps.meshery-ui-cache.outputs.cache-hit != 'true'
+        run: |
+          make ui-meshery-build
+      - name: build provider-ui
+        run: |
+          make ui-provider-build
+      - name: Upload meshery-ui artifacts
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          name: meshery-ui
+          path: /home/runner/work/meshery/meshery/ui/out
+      - name: Upload provider-ui artifacts
+        uses: actions/upload-artifact@v3.0.0
+        with:
+          name: provider-ui
+          path: /home/runner/work/meshery/meshery/provider-ui/out
+  tests-ui-e2e:
+    needs: [build-backend, ui-build]
+    name: UI end-to-end tests
+    if: github.repository == 'meshery/meshery'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Check out meshery-istio code
+        uses: actions/checkout@v3
+        with:
+          repository: layer5io/meshery-istio
+          path: ./meshery-istio
+      - name: Check out meshery-consul code
+        uses: actions/checkout@v3
+        with:
+          repository: layer5io/meshery-consul
+          path: ./meshery-consul
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.8.0
+        with:
+          cluster_name: "kind-cluster"
+      - name: Setup Go
+        uses: actions/setup-go@master
+        with:
+          go-version: "1.21"
+      - name: Run meshery-istio
+        run: |
+          mkdir -p /home/runner/.meshery/bin
+          cd ./meshery-istio
+          go run main.go &
+          sleep 60
+      - name: Run meshery-consul
+        run: |
+          mkdir -p /home/runner/.meshery/bin
+          cd ./meshery-consul
+          go run main.go &
+          sleep 60
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Restore node modules cache
+        id: node-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/cache
+            ~/.cache
+            /home/runner/.cache
+            !~/cache/exclude
+            **/node_modules
+            /home/runner/.cache/Cypress
+            ~/.npm
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Download meshery-ui artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: meshery-ui
+          path: /home/runner/work/meshery/meshery/ui/out
+      - name: Download provider-ui artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: provider-ui
+          path: /home/runner/work/meshery/meshery/provider-ui/out
+      - name: Run Meshery UI and Server
+        env:
+          PROVIDER_BASE_URLS: http://localhost:9876
+          PORT: 9081
+          ADAPTER_URLS: "localhost:10000 localhost:10001 localhost:10002 localhost:10003 localhost:10004 localhost:10009 localhost:10007"
+        run: |
+          make server &
+          sleep 60
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: ui
+          wait-on: http://localhost:9081
+          spec: cypress/e2e/e2e/**/*
+          browser: chrome
+          record: true
+          tag: node-18
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-ss
+          path: ./ui/cypress/screenshots
+      - name: Upload Videos
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-ss
+          path: ./ui/cypress/videos
+      - name: Upload coverage to Codecov (ui)
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./ui/coverage/coverage-summary.json
+          directory: ./ui/coverage/lcov-report
+          flags: e2etests
+  docker-build-test:
+    name: Docker build
+    if: github.repository == 'meshery/meshery'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Docker edge build & tag
+        if: startsWith(github.ref, 'refs/tags/') != true && success()
+        env:
+          RELEASE_CHANNEL: "edge"
+        run: |
+          DOCKER_BUILDKIT=1 docker build -f install/docker/Dockerfile --no-cache -t meshery:edge-latest --build-arg TOKEN=test --build-arg GIT_COMMITSHA=${GITHUB_SHA::8} --build-arg RELEASE_CHANNEL=${RELEASE_CHANNEL} .
+          docker tag meshery:edge-latest meshery:edge-${GITHUB_SHA::8}
+      - name: Docker edge push
+        if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/') && success()
+        run: |
+          docker push ${{ secrets.IMAGE_NAME }}:edge-latest
+          docker push ${{ secrets.IMAGE_NAME }}:edge-${GITHUB_REF/refs\/tags\//}
+          docker push ${{ secrets.IMAGE_NAME }}:edge-${GITHUB_SHA::8}
+      - name: Docker Hub Description
+        if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/') && success()
+        uses: peter-evans/dockerhub-description@v2.0.0
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKERHUB_REPOSITORY: ${{ secrets.IMAGE_NAME }}
+
+  # validate the swagger docs
+  swaggerci:
+    if: github.repository == 'meshery/meshery'
+    name: swagger-docs
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check if handlers were modified
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            modified:
+              - added|modified: "handlers/**"
+      - name: Setup go-swagger
+        if: steps.changes.outputs.modified == 'true'
+        uses: minchao/setup-go-swagger@v1
+        with:
+          version: v0.26.1
+      - name: swagger-spec
+        if: steps.changes.outputs.modified == 'true'
+        run: swagger generate spec -o ./server/helpers/swagger.yaml --scan-models
+      - name: swagger-docs
+        if: steps.changes.outputs.modified == 'true'
+        run: swagger generate spec -o ./docs/_data/swagger.yml --scan-models && swagger flatten ./docs/_data/swagger.yml -o ./docs/_data/swagger.yml --with-expand --format=yaml
+
+  # validate graphQL schema
+  garphql_validate:
+    name: Validate GraphQL schema
+    if: github.repository == 'meshery/meshery'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Check if schema was modified
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            modified:
+              - added|modified: 'server/internal/graphql/schema/schema.graphql'
+      - name: Set up Ruby
+        if: steps.filter.outputs.modified == 'true'
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+      - name: graphql-docs
+        if: steps.filter.outputs.modified == 'true'
+        run: |
+          cd docs
+          bundle install
+          bundle exec rake graphql:compile_docs
+

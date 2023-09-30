@@ -1,0 +1,27 @@
+area/docs:
+  - "docs/**/*"
+area/ci:
+  - ".github/**/*"
+component/ui:
+  - "ui/**/*"
+  - "provider-ui/**/*"
+component/server:
+  - "server/**/*"
+component/mesheryctl:
+  - "mesheryctl/**/*"
+component/extensions:
+  - "install/docker-extension/**/*"
+  - "ui/components/ExtensionSandbox.js"
+  - "ui/remote-component.config.js"
+area/lifecycle:
+  - "install/*"
+kubernetes:
+  - "install/deployment_yamls/*"  
+framework/helm:
+  - "install/kubernetes/helm/**/*"
+framework/graphql:
+  - "server/internal/graphql/*"
+component/database:
+  - "server/internal/sql/*"
+playground:
+  - "install/playground/**/*"
