@@ -1,0 +1,86 @@
+schedule:
+  id: 
+    $ref: ../common.yml#/id'
+  cron_expression:
+    type: string
+  user_id:
+    $ref: ../common.yml#/id'
+  created_at:
+    $ref: ../common.yml#/time
+  updated_at:
+    $ref: ../common.yml#/time
+
+/user/schedules:
+  post:
+    tags:
+      - scheduler
+    operationId: UpsertSchedule
+    summary: Upsert Schedule
+    description: It will create a new schedule if not present else it will update the entry matching with the provided id
+    requestBody:
+      description: Body for upserting scheduling
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/schedule'
+    responses:
+      '201':
+        description: upserted given schedule
+        content:
+          application/json:
+            schema:
+              $ref: '#/schedule'
+      '401':
+        $ref: ../responses.yml#/401'
+      '500':
+        $ref: ../responses.yml#/500
+
+/user/schedules/{id}:
+  get:
+    tags:
+      - scheduler
+    operationId: GetSchedule
+    summary: Get Schedule by Id
+    description: Get schedule by Id
+    parameters:
+      - $ref: ../parameters.yml#/id
+    responses:
+      '200':
+        description: Schedule associated with Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/schedule'
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '404':
+        $ref: ../responses.yml#/404
+      '500':
+        $ref: ../responses.yml#/500
+
+  delete:
+    tags:
+      - scheduler
+    operationId: DeleteSchedule
+    summary: Delete Schedule by ID
+    description: Delete schedule by Id
+    parameters:
+      - $ref: ../parameters.yml#/id
+    responses:
+      '200':
+        description: Deleted schedule
+        content:
+          application/json:
+            schema:
+              $ref: '#/schedule'
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '404':
+        $ref: ../responses.yml#/404
+      '500':
+        $ref: ../responses.yml#/500

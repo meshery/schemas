@@ -1,0 +1,232 @@
+components:
+  schemas:
+    catalogRequest:
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        content_id:
+          $ref: ../common.yml#/id
+        content_name:
+          $ref: ../common.yml#/text
+        content_type:
+          enum: [pattern, filter]
+          description: Catalog type (pattern / filter)
+        first_name:
+          $ref: ../common.yml#/text
+          description: First Name
+        last_name:
+          $ref: ../common.yml#/text
+          description: Last Name
+        email:
+          $ref: ../common.yml#/email
+        status:
+          enum: [pending, approved, denied]
+          description: Catalog request status (pending / approved / denied)
+        created_at:
+          $ref: ../common.yml#/time
+        updated_at:
+          $ref: ../common.yml#/time
+    catalogRequestsPage:
+      allOf:
+      - $ref: ../common.yml#/resultsPage
+      - type: object
+        properties:
+          signup_data:
+            type: array
+            items:
+              $ref: '#/components/schemas/catalogRequest'
+
+  requestBodies:
+    mesheryCatalogRequestBody:
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        catalog_type:
+          enum: [pattern, filter]
+          description: Catalog type (pattern / filter)
+        catalog_data:
+          $ref: ../common.yml#/map_object
+  
+# any special parameters for this tag
+  parameters:
+    catalogContentType:
+      in: path
+      required: true
+      name: type
+      description: Catalog content type
+      schema:
+        type: string
+        enum: ["pattern", "filter"]
+    requestFilter:
+      name: filter
+      in: query
+      description: Filter for catalog requests
+      schema:
+        properties:
+          id:
+            $ref: ./common.yml#/id
+          status:
+            type: array
+            items:
+              type: string
+
+# any special response for this tag
+  responses:
+  
+  paths:
+    /api/catalog/requests/approve:
+      post:
+        tags:
+          - catalog
+        operationId: ApproveCatalogRequest
+        summary: Approve Catalog Request
+        description: Approve Catalog Request
+        requestBody:
+          description: Body for publishing catalog
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/requestBodies/mesheryCatalogRequestBody'
+        responses:
+          '201':
+            $ref: ../responses.yml#/201
+          '401':
+            $ref: ../responses.yml#/401
+          '409':
+            $ref: ../responses.yml#/409
+          '500':
+            $ref: ../responses.yml#/500
+    /api/catalog/requests/deny:
+      post:
+        tags:
+          - catalog
+        operationId: DenyCatalogRequest
+        summary: Deny Catalog Request
+        description: Deny Catalog Request
+        requestBody:
+          description: Body for publishing catalog
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/requestBodies/mesheryCatalogRequestBody'
+        responses:
+          '201':
+            $ref: ../responses.yml#/201
+          '401':
+            $ref: ../responses.yml#/401
+          '409':
+            $ref: ../responses.yml#/409
+          '500':
+            $ref: ../responses.yml#/500
+    /api/catalog/requests:
+      get:
+        tags:
+          - catalog
+        operationId: GetCatalogRequest
+        summary: Catalog Request
+        description: Get all catalog requests (approved, denied or pending) in a paginated manner
+        parameters:
+          - $ref: ../parameters.yml#/page
+          - $ref: ../parameters.yml#/pageSize
+          - $ref: ../parameters.yml#/search
+          - $ref: ../parameters.yml#/order
+          - $ref: '#/components/parameters/requestFilter'
+        responses:
+          '200':
+            description: Catalog requests
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/catalogRequestsPage'
+          '401':
+            $ref: ../responses.yml#/401
+          '500':
+            $ref: ../responses.yml#/500
+    /api/catalog/content/{type}:
+      get:
+        tags:
+          - catalog
+        operationId: GetCatalogContent
+        summary: Get Catalog Content
+        description: Get catalog content by type
+        parameters:
+          - $ref: '#/components/parameters/catalogContentType'
+          - $ref: ../parameters.yml#/page
+          - $ref: ../parameters.yml#/pagesize
+          - $ref: ../parameters.yml#/search
+          - $ref: ../parameters.yml#/order
+        responses:
+          '200':
+            description: catalog content
+            content:
+              application/json:
+                schema:
+                  oneOf:
+                    - type: object
+                      properties:
+                        page:
+                          type: integer
+                        page_size:
+                          type: integer
+                        total_count:
+                          type: integer
+                        patterns:
+                          type: array
+                          items:
+                            $ref: ./patterns.yml#/components/schemas/mesheryPattern
+                    - type: object
+                      properties:
+                        page:
+                          type: integer
+                        page_size:
+                          type: integer
+                        total_count:
+                          type: integer
+                        filters:
+                          type: array
+                          items:
+                            $ref: ./filters.yml#/components/schemas/mesheryFilter
+          '500':
+            $ref: ../responses.yml#/500
+        security: []
+      post:
+        tags:
+          - catalog
+        operationId: PublishCatalogContent
+        summary: Publish Catalog Content
+        description: Sets the visibility of catalog content to published and sets CatalogData (if called by ADMIN or CURATOR), otherwise it pushes the request to CatalogRequests Table
+        parameters:
+          - $ref: '#/components/parameters/catalogContentType'
+        requestBody:
+          $ref: '#/components/requestBodies/mesheryCatalogRequestBody'
+        responses:
+          '200':
+            $ref: ../responses.yml#/200
+          '401':
+            $ref: ../responses.yml#/401
+          '409':
+            $ref: ../responses.yml#/409
+          '500':
+            $ref: ../responses.yml#/500
+      delete:
+        tags:
+          - catalog
+        operationId: UnPublishCatalogContent
+        summary: Unpublish Catalog Content
+        description: Sets the visibility of catalog content to private and removes the content from website (if called by ADMIN or CURATOR), otherwise rejects the request
+        parameters:
+          - $ref: '#/components/parameters/catalogContentType'
+        requestBody:
+          $ref: '#/components/requestBodies/mesheryCatalogRequestBody'
+        responses:
+          '200':
+            $ref: ../responses.yml#/200
+          '401':
+            $ref: ../responses.yml#/401
+          '409':
+            $ref: ../responses.yml#/409
+          '500':
+            $ref: ../responses.yml#/500
+    

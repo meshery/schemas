@@ -1,0 +1,316 @@
+components:
+  schemas:
+    mesheryInstance:
+      properties:
+        id:
+          $ref: ../common.yml#/id
+          description: Connection id
+        name:
+          $ref: ../common.yml#/text
+          description: Connection name
+        server_id:
+          $ref: ../common.yml#/text
+          description: Connected server id
+        server_version:
+          $ref: ../common.yml#/text
+          description: Running server version
+        server_location:
+          $ref: ../common.yml#/endpoint
+        server_build_sha:
+          $ref: ../common.yml#/text
+          description: Server build SHA
+        created_at:
+          $ref: ../common.yml#/time
+        updated_at:
+          $ref: ../common.yml#/time
+        deleted_at:
+          $ref: ../common.yml#/time
+        status:
+          $ref: ../common.yml#/text
+          description: Status
+    connection:
+      properties:
+        id:
+          $ref: ../common.yml#/id
+          description: ID
+        name:
+          $ref: ../common.yml#/text
+          description: Connection Name
+        credential_id:
+          $ref: ../common.yml#/id'
+          description: Credential ID
+        type:
+          $ref: ../common.yml#/text
+          description: Connection Type
+        sub_type:
+          $ref: ../common.yml#/text
+          description: Connection Subtype
+        kind:
+          $ref: ../common.yml#/text'
+          description: Connection Kind
+        metadata:
+          $ref: ../common.yml#/map_object'
+        status:
+          $ref: ../common.yml#/text
+          description: Connection Status
+        user_id:
+          $ref: ../common.yml#/id
+        created_at:
+          $ref: ../common.yml#/time
+        updated_at:
+          $ref: ../common.yml#/time
+        deleted_at:
+          $ref: ../common.yml#/time
+    connectionPage:
+      allOf:
+        - $ref: ../common.yml#/resultsPage
+        - type: object
+          properties:
+            connections:
+              type: array
+              items:
+                $ref: '#/components/schemas/connection'
+    connectionStatusInfo:
+      properties:
+        status:
+          $ref: ../common.yml#/text
+          description: Connection status
+        count:
+          type: integer
+          description: Number of connections having the status
+    connectionsStatusPage:
+      properties:
+        connections_status:
+          type: array
+          items:
+            $ref: '#/components/schemas/connectionStatusInfo'
+    k8sContext:
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        name:
+          $ref: ../common.yml#/text
+        auth:
+          $ref: ../common.yml#/map_object
+        cluster:
+          $ref: ../common.yml#/map_object
+        server:
+          type: string
+        owner:
+          $ref: ../common.yml#/id
+        created_by:
+          $ref: ../common.yml#/id
+        meshery_instance_id:
+          $ref: ../common.yml#/id
+        kubernetes_server_id:
+          $ref: ../common.yml#/id
+        deployment_type:
+          type: string
+        updated_at:
+          $ref: ../common.yml#/time
+        created_at:
+          $ref: ../common.yml#/time
+    k8sContextPersistResponse:
+      properties:
+        k8sContext:
+          $ref: '#/components/schemas/k8sContext'
+        inserted:
+          type: boolean
+
+  requestBodies:
+    connectionPayload:
+      properties:
+        kind:
+          $ref: ../common.yml#/text
+          description: Kind
+        type:
+          $ref: ../common.yml#/text
+          description: Connection type
+        sub_type:
+          $ref: ../common.yml#/text
+          description: Connection subtype
+        credential_secret:
+          $ref: ../common.yml#/map_object
+        metadata:
+          $ref: ../common.yml#/map_object
+    
+# any special parameters for this tag
+  parameters:
+    connectionKind:
+      name: connectionKind
+      in: path
+      description: 'Connection kind (eg: Meshery)'
+      required: true
+      schema:
+        $ref: ../common.yml#/text
+    connectionId:
+      name: connectionId
+      in: path
+      description: Connection ID
+      schema:
+        $ref: ../common.yml#/id
+      required: true
+    serverId:
+      name: mesheryServerID
+      in: path
+      description: Meshery server ID
+      schema:
+        $ref: ../common.yml#/id
+      required: true
+# any special response for this tag
+  responses:
+  
+  paths:
+    /api/integrations/connections:
+      post:
+        tags:
+          - integrations
+        operationId: RegisterConnection
+        summary: Register Connection
+        description: Register with Meshery Cloud
+        requestBody:
+          $ref: '#/components/requestBodies/connectionPayload'
+        responses:
+          '401':
+            $ref: ../responses.yml#/401
+          '500':
+            $ref: ../responses.yml#/500
+      get:
+        tags:
+          - integrations
+        operationId: GetConnections
+        summary: Get connections
+        description: Get connections
+        parameters:
+          - $ref: ../parameters.yml#/page
+          - $ref: ../parameters.yml#/pageSize
+          - $ref: ../parameters.yml#/search
+          - $ref: ../parameters.yml#/order
+        responses:
+          '200':
+            description: Paginated list of connections
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/connectionPage'
+          '500':
+            $ref: ../responses.yml#/500
+    /api/integrations/connections/{connectionId}:
+      put:
+        tags:
+          - integrations
+        operationId: EditConnectionByID
+        summary: Edit Connection by ID
+        description: Edit registered connection using the connection ID
+        parameters:
+          - $ref: '#/components/parameters/connectionId'
+        requestBody:
+          $ref: '#/components/requestBodies/connectionPayload'
+        responses:
+          '200':
+            description: Edited connection
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/connection'
+          '500':
+            $ref: ../responses.yml#/500
+    /api/integrations/connections/status:
+      get:
+        tags:
+          - integrations
+        operationId: GetConnectionStatus
+        summary: Get status of all connections
+        description: Get summary about the status of all connections
+        responses:
+          '200':
+            description: Status of connections
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/connectionsStatusPage'
+          '500':
+            $ref: ../responses.yml#/500
+    /api/integrations/connections/{connectionKind}:
+      get:
+        tags:
+          - integrations
+        operationId: GetConnectionsByKind
+        summary: Get connections by kind
+        description: Get connections by kind
+        parameters:
+          - $ref: '#/components/parameters/connectionKind'
+          - $ref: ../parameters.yml#/page
+          - $ref: ../parameters.yml#/pageSize
+          - $ref: ../parameters.yml#/search
+          - $ref: ../parameters.yml#/order
+        responses:
+          '200':
+            description: Connections by kind
+            content:
+              application/json:
+                schema:
+                  type: object
+          '500':
+            $ref: ../responses.yml#/500
+        security: []
+      delete:
+        tags:
+          - integrations
+        operationId: DeleteConnection
+        summary: Delete connection
+        description: Delete registered connection
+        parameters:
+          - $ref: '#/components/parameters/connectionKind'
+        responses:
+          '200':
+            description: Deleted connection
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/connection'
+          '401':
+            $ref: ../responses.yml#/401
+          '500':
+            $ref: ../responses.yml#/500
+    /api/integrations/connections/{connectionKind}/{connectionId}:
+      get:
+        tags:
+          - integrations
+        operationId: GetConnectionsByKindAndConnectionID
+        summary: Get connections by kind and connectionID.
+        description: Get connections by kind (kind is required because this API returns the results in non std format of a connection)
+        parameters:
+          - $ref: '#/components/parameters/connectionKind'
+          - $ref: '#/components/parameters/connectionId'
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/pagesize'
+          - $ref: '#/components/parameters/search'
+          - $ref: '#/components/parameters/order'
+        responses:
+          '200':
+            description: Connections by kind
+            content:
+              application/json:
+                schema:
+                  type: object
+                  oneOf:
+                    - $ref: '#/components/schemas/k8sContextPersistResponse'
+          '500':
+            $ref: ../responses.yml#/500
+    /api/integrations/connections/meshery/{mesheryServerID}:
+      delete:
+        tags:
+          - integrations
+        operationId: DeleteMesheryConnection
+        summary: Delete Meshery connection
+        description: Deletes a given meshery connection. This is generally used for deleting connections from Meshery Server UI where UI is not aware of connection IDs.
+        parameters:
+          - $ref: '#/components/parameters/serverId'
+        responses:
+          '200':
+            $ref: ../responses.yml#/200
+          '401':
+            $ref: ../responses.yml#/401
+          '500':
+            $ref: ../responses.yml#/500

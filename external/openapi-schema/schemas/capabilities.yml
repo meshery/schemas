@@ -1,0 +1,191 @@
+components:
+  schemas:
+    capability:
+      properties:
+        provider_type:
+          $ref: ../common.yml#/provider
+          description: Provider type
+        package_version:
+          $ref: ../common.yml#/text
+          description: Package version
+        package_url:
+          $ref: ../common.yml#/text
+          description: Package url
+        provider_name:
+          $ref: ../common.yml#/text
+          description: Provider name
+        provider_description:
+          type: array
+          items:
+            $ref: ../common.yml#/text
+        extensions:
+          $ref: '#/components/schemas/capabilityExtension'
+        capabilities:
+          $ref: '#/components/schemas/capabilityGeneralCapability'
+        restrictedAccess:
+          $ref: '#/components/schemas/restrictedAccess'
+    capabilityNavigatorExtension:
+      properties:
+        title:
+          $ref: ../common.yml#/text
+          description: Title
+        on_click_callback:
+          type: integer
+        href:
+          properties:
+            uri:
+              type: string
+              format: uri
+            external:
+              type: boolean
+        component:
+          $ref: ../common.yml#/text
+          description: Component
+        icon:
+          $ref: ../common.yml#/text
+          description: Icon link
+        link:
+          $ref: ../common.yml#/text
+          description: link
+          format: uri
+        show:
+          type: boolean
+          description: Controls whether to show the extension or not
+        type:
+          $ref: ../common.yml#/text
+          description: Extension type
+        allowedTo:
+          type: object
+    capabilityUserPrefExtension:
+      properties:
+        component:
+          $ref: ../common.yml#/text
+          description: Component
+        type:
+          $ref: ../common.yml#/text
+          description: Extension type 
+    capabilityGraphQLExtension:
+      properties:
+        component:
+          $ref: ../common.yml#/text
+          description: Component
+        path:
+          $ref: ../common.yml#/text
+          description: Path 
+        type:
+          $ref: ../common.yml#/text
+          description: Extension type 
+    capabilitiesAccountExtension:
+      properties:
+        title:
+          $ref: ../common.yml#/text
+          description: Title
+        on_click_callback:
+          type: integer
+        href:
+          properties:
+            uri:
+              type: string
+              format: uri
+            external:
+              type: boolean
+        component:
+          $ref: ../common.yml#/text
+          description: Component
+        link:
+          $ref: ../common.yml#/text
+          description: link
+          format: uri
+        show:
+          type: boolean
+          description: Controls whether to show the extension or not
+        type:
+          $ref: ../common.yml#/text
+          description: Extension type
+    restrictedAccess:
+      properties:
+        isMesheryUIRestricted:
+          type: boolean
+        allowedComponents:
+          properties:
+            navigator:
+              type: object
+            header: 
+              type: object
+    capabilityGeneralCapability:
+      properties:
+        feature:
+          $ref: ../common.yml#/text
+          description: Feature name
+        endpoint:
+          $ref: ../common.yml#/endpoint
+    capabilityExtension:
+      properties:
+        navigator:
+          type: array
+          items:
+            $ref: '#/components/schemas/capabilityNavigatorExtension'
+        user_prefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/capabilityUserPrefExtension'
+        graphql:
+          type: array
+          items:
+            $ref: '#/components/schemas/capabilityGraphQLExtension'
+        account:
+          type: array
+          items:
+            $ref: '#/components/schemas/capabilitiesAccountExtension'
+
+  requestBodies:
+
+# any special parameters for this tag
+  parameters:
+# any special response for this tag
+  responses:
+
+  paths:
+    /capabilities:
+      get:
+        deprecated: true
+        tags:
+          - capabilities
+        operationId: GetCapabilitie
+        summary: Capabilities
+        description: Get available capabilities for logged in user
+        parameters:
+          - $ref: ../parameters.yml#/os
+          - $ref: ../parameters.yml#/playground
+        responses:
+          '200':
+            description: capabilities
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/capability'
+          '500':
+            $ref: ../responses.yml#/500
+        security: []
+          
+    /{meshery-version}/capabilities:
+      get:
+        tags:
+          - capabilities
+        operationId: GetCapabilities
+        summary: Capabilities By server version
+        description: Get available capabilities for logged in user
+        parameters:
+          - $ref: ../parameters.yml#/mesheryVersion
+          - $ref: ../parameters.yml#/os
+          - $ref: ../parameters.yml#/playground
+        responses:
+          '200':
+            description: capabilities
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/capability'
+          '500':
+            $ref: ../responses.yml#/500
+        security: []

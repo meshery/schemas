@@ -1,0 +1,107 @@
+components:
+  schemas:
+    meshmodelModel:
+      properties:
+        id: 
+          $ref: ../common.yml#/id
+        name: 
+          $ref: ../common.yml#/text
+        version:
+          $ref: ../common.yml#/text
+        display_name:
+          $ref: ../common.yml#/text
+        category_id:
+          $ref: ../common.yml#/id 
+        metadata:
+          $ref:  ../common.yml#/map_object
+        created_at:
+          $ref: ../common.yml#/created_at
+        updated_at:
+          $ref: ../common.yml#/updated_at
+        deleted_at:
+          $ref: ../common.yml#/deleted_at
+    meshmodelCategory:
+      properties:
+        id: 
+          $ref: ../common.yml#/id
+        name: 
+          $ref: ../common.yml#/text
+        metadata:
+          $ref:  ../common.yml#/map_object
+        created_at:
+          $ref: ../common.yml#/created_at
+        updated_at:
+          $ref: ../common.yml#/updated_at
+        deleted_at:
+          $ref: ../common.yml#/deleted_at
+    meshmodelCategoriesPage:
+       allOf:
+        - $ref: ../common.yml#/resultsPage
+        - type: object
+          properties:
+            categories:
+              type: array
+              items:
+                $ref: '#/components/schemas/meshmodelCategory'
+    meshmodelModelsPage:
+       allOf:
+        - $ref: ../common.yml#/resultsPage
+        - type: object
+          properties:
+            models:
+              type: array
+              items:
+                $ref: '#/components/schemas/meshmodelModel'
+
+  requestBodies:
+  
+# any special parameters for this tag
+  parameters:
+# any special response for this tag
+  responses:
+
+  paths:
+    /api/integrations/meshmodels/models:
+      get:
+        tags:
+          - integrations
+        operationId: GetMeshModelModels
+        summary: Get MeshModel models
+        description: Get MeshModel models
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/pagesize'
+          - $ref: '#/components/parameters/search'
+          - $ref: '#/components/parameters/order'
+        responses:
+          '200':
+            description: MeshModel Model
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/meshmodelModelsPage'
+          '500':
+            $ref: ../responses.yml#/500
+        security: []
+    /api/integrations/meshmodels/categories:
+      get:
+        tags:
+          - integrations
+        operationId: GetMeshModelCategories
+        summary: Get MeshModel categories
+        description: Get MeshModel categories
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/pagesize'
+          - $ref: '#/components/parameters/search'
+          - $ref: '#/components/parameters/order'
+        responses:
+          '200':
+            description: MeshModel Categories
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/meshmodelCategoriesPage'
+          '500':
+            $ref: ../responses.yml#/500
+        security: []

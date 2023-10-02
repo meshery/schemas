@@ -1,0 +1,128 @@
+subscription:
+  properties:
+    ID:
+      $ref: ../common.yml#/id
+    org_ID:
+      $ref: ../common.yml#/id
+    plan_ID:
+      $ref: ../common.yml#/id
+    subscription_status:
+      $ref: '#/subscriptionStatus'
+    start_date:
+      $ref: ../common.yml#/time
+    end_date:
+      $ref: ../common.yml#/time
+    created_at:
+      $ref: ../common.yml#/time
+    updated_at:
+      $ref: ../common.yml#/time
+    deleted_at:
+      $ref: ../common.yml#/time
+
+subscriptionStatus:
+  type: string
+  enum: [active, closed, overdue, expired]
+  description: Status of the subscription
+
+subscriptionsPage:
+  allOf: 
+  - $ref: ../common.yml#/resultsPage
+  - type: object
+    properties:
+      results:
+        type: array
+        items:
+          $ref: '#/subscription'
+
+/api/entitlement/subscriptions/{organizationId}:
+  get:
+    tags:
+      - subscription
+    description: Returns all subscriptions of a user
+    operationId: getSubscriptions
+    summary: Read subscriptions
+    parameters:
+      - $ref: ../parameters.yml#/organizationId
+      - $ref: ../parameters.yml#/page
+      - $ref: ../parameters.yml#/pageSize
+      - $ref: ../parameters.yml#/order
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/subscriptionsPage'
+        description: Get subscription response
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+
+/api/entitlement/subscriptions/{subscriptionId}:
+  get:
+    tags:
+      - subscription
+    description: Returns the subscription
+    operationId: getSubscriptionByID
+    summary: Read a subscription
+    parameters:
+      - $ref: ../parameters.yml#/subscriptionId
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              $ref: '#/subscription'
+        description: Get subscription's response
+      '400':
+        $ref: ../responses.yml#/401
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+  delete:
+    tags:
+      - subscription
+    description: Deletes the subscription
+    operationId: deleteSubscriptionByID
+    summary: Delete a subscription
+    parameters:
+      - $ref: ../parameters.yml#subscriptionId
+    responses:
+      '204':
+        description: Status no content
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+/api/entitlement/subscriptions:
+  post:
+    tags:
+      - subscription
+    description: Upserts a subscription
+    operationId: upsertSubscription
+    summary: Upsert subscription
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/subscription'
+      description: Subscription to be created
+      required: true
+    responses:
+      '201':
+        content:
+          application/json:
+            schema:
+              $ref: '#/subscription'
+        description: Subscription creation response
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500

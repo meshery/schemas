@@ -1,0 +1,98 @@
+smiResult:
+  properties:
+    id: 
+      $ref: ../common.yml#/id
+    user_id:  
+      $ref: ../common.yml#/id
+    mesh_name: 
+      $ref: ../common.yml#/text
+    mesh_version:
+      $ref: ../common.yml#/text
+    cases_passed:
+      $ref: ../common.yml#/text
+    passing_percentage:
+      $ref: ../common.yml#/text
+    status:
+      $ref: ../common.yml#/text
+    more_details:
+      $ref: ../common.yml#/detail
+    test_start_time:
+      $ref:  ../common.yml#/time
+
+smiResultPage:
+  allOf:
+  - $ref: ../common.yml#/resultsPage
+  - type: object
+    properties:
+      results:
+        type: array
+        items:
+          $ref: '#/smiResult'
+
+/api/smi/results/{id}:
+  get:
+    tags:
+      - service mesh interface
+    operationId: GetSmiResult
+    summary: Get SMI Result by Id
+    description: Get SMI Results by Id
+    parameters:
+      - $ref: ../parameters.yml#/id
+    responses:
+      '200':
+        description: SMI result associated with id
+        content:
+          application/json:
+            schema:
+              $ref: '#/smiResult'
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '404':
+        $ref: ../responses.yml#/404
+      '500':
+        $ref: ../responses.yml#/500
+
+/api/smi/results/total:
+  get:
+    tags:
+      - service mesh interface
+    operationId: RetrieveTotalSmiTestRuns
+    summary: SMI tests run
+    description: Get Total SMI test runs
+    responses:
+      '200':
+        description: SMI tests run
+        content:
+          application/json:
+            schema:
+              properties:
+                total_runs:
+                  type: integer
+      '500':
+        $ref: ../responses.yml#/500
+    security: []
+
+/api/smi/results/public:
+  get:
+    tags:
+      - service mesh interface
+    operationId: GetPublicResults
+    summary: SMI Public tests
+    description: Get SMI Public tests
+    parameters:
+      - $ref: ../parameters.yml#/search
+      - $ref: ../parameters.yml#/order
+    responses:
+      '200':
+        description: Public SMI results
+        content:
+          application/json:
+            schema:
+              $ref: '#/smiResultPage'
+      '404':
+        $ref: ../responses.yml#/404'
+      '500':
+        $ref: ../responses.yml#/500
+    security: []

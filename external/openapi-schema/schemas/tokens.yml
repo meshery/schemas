@@ -1,0 +1,22 @@
+userToken:
+  properties:
+    id:
+      $ref: ../common.yml#/id'
+    user_id:
+      $ref: ../common.yml#/id'
+    provider:
+      $ref: ../common.yml#/provider'
+    access_token:
+      type: string
+    refresh_token:
+      type: string
+    name: 
+      $ref: ../common.yml#/text'
+    purpose:
+      type: string
+    is_oauth:
+      type: boolean
+    created_at:
+      $ref: ../common.yml#/time'
+    updated_at:
+      $ref: ../common.yml#/time'

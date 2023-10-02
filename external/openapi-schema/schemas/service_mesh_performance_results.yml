@@ -1,0 +1,110 @@
+performanceResult:
+  description: Body for upserting performance result
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: ./service_mesh_performance.yml#/performanceResult
+
+/api/performance/result/total:
+  get:
+    tags:
+      - service mesh performance results
+    operationId: RetrieveTotalPerformanceTestRuns
+    summary: Performace tests run
+    description: Get total performace tests run
+    responses:
+      '200':
+        description: performance tests run
+        content:
+          application/json:
+            schema:
+              properties:
+                total_runs:
+                  type: integer
+      '500':
+        $ref: ../responses.yml#/500
+    security: []
+
+/api/performance/result/metrics:
+  put:
+    tags:
+      - service mesh performance results
+    operationId: UpdateResultsWithMetrics
+    summary: Update SMP results
+    description: Update SMP results with metrics
+    requestBody:
+      $ref: '#/performanceResult'
+    responses:
+      '200':
+        $ref: ../responses.yml#/200
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+
+/result:
+  post:
+    tags:
+      - service mesh performance results
+    operationId: StoreResults
+    summary: Store SMP results
+    description: Store SMP results
+    requestBody:
+      $ref: '#/performanceResult'
+    responses:
+      '201':
+        $ref: ../responses.yml#/201
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+
+/results:
+  get:
+    tags:
+      - service mesh performance results
+    operationId: GetResults
+    summary: Get SMP results
+    description: Get SMP results
+    parameters:
+      - $ref: ../parameters.yml#/page
+      - $ref: ../parameters.yml#/pageSize
+      - $ref: ../parameters.yml#/search
+      - $ref: ../parameters.yml#/order
+    responses:
+      '200':
+        description: SMP results
+        content:
+          application/json:
+            schema:
+              $ref: ./service_mesh_performance.yml#/mesheryResultPage
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+  
+/result/{id}:
+  get:
+    tags:
+      - service mesh performance results
+    operationId: GetResult
+    summary: Get SMP result by Id
+    description: Get SMP results associated with id
+    parameters:
+      - $ref: ../parameters.yml#/id
+    responses:
+      '200':
+        description: SMP result associated with Id
+        content:
+          application/json:
+            schema:
+              $ref: ./service_mesh_performance.yml#/performanceResult
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500

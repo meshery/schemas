@@ -1,0 +1,48 @@
+'200':
+  description: ok
+  content:
+    text/plain:
+      schema:
+        type: string
+
+'201':
+  description: created
+  content:
+    text/plain:
+      schema:
+        type: string
+
+'400':
+  description: Invalid request body or request param
+  content:
+    text/plain:
+      schema:
+        type: string
+
+'401':
+  description: Expired JWT token used or insufficient privilege
+  content:
+    text/plain:
+      schema:
+        type: string
+
+'404':
+  description: Result not found
+  content:
+    text/plain:
+      schema:
+        type: string
+
+'409':  
+  description: Publish request already exists
+  content:
+    text/plain:
+      schema:
+        type: string
+
+'500':  
+  description: Internal server error
+  content:
+    text/plain:
+      schema:
+        type: string

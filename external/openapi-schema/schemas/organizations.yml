@@ -1,0 +1,156 @@
+organizationsPage:
+  properties:
+    page: 
+      type: integer
+    page_size:
+      type: integer
+    total_count: 
+      type: integer
+    organizations:
+      type: array
+      items:
+          $ref: '#/organization'
+
+organization:
+  properties:
+    ID:
+      $ref: ../common.yml#/id
+    name:
+      $ref: ../common.yml#/text
+    country:
+      $ref: ../common.yml#/text
+    region:
+      $ref: ../common.yml#/text
+    created_at:
+      $ref: ../common.yml#/time
+    updated_at:
+      $ref: ../common.yml#/time
+    deleted_at:
+      $ref: ../common.yml#/time
+  required:
+    - name
+
+organizationPayload:
+  properties:
+    name:
+      $ref: ../common.yml#/text
+    country:
+      $ref: ../common.yml#/text
+    region:
+      $ref: ../common.yml#/text
+
+/api/identity/organizations:
+  get:
+    tags:
+      - organization
+    description: Returns all organizations to which the user belongs
+    operationId: getOrgs
+    summary: Read organizations
+    parameters:
+      - $ref: ../parameters.yml#/page
+      - $ref: ../parameters.yml#/pageSize
+      - $ref: ../parameters.yml#/search
+      - $ref: ../parameters.yml#/order
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/organizationsPage'
+              type: array
+        description: Get organization's response
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+  post:
+    tags:
+      - organization
+    description: Creates a new organization
+    operationId: createOrg
+    summary: Create an organization
+    requestBody:
+      description: Body for upserting organization
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/organizationPayload'
+    responses:
+      '201':
+        content:
+          application/json:
+            schema:
+              $ref: '#/organization'
+        description: organization creation response
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+
+/api/identity/organizations/{organizationId}:
+  get:
+    tags:
+      - organization
+    description: Returns the organization
+    operationId: getOrg
+    summary: Read an organization
+    parameters:
+      - $ref: ../parameters.yml#/organizationId
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              $ref: '#/organization'
+        description: Get organization's response
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+  delete:
+    tags:
+      - organization
+    description: Deletes the organization
+    operationId: deleteOrg
+    summary: Delete an organization
+    parameters:
+      - $ref: ../parameters.yml#/organizationId
+    responses:
+      '204':
+        description: Status no content
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '404':
+        $ref: ../responses.yml#/404
+      '500':
+        $ref: ../responses.yml#/500
+  put:
+    tags:
+      - organization
+    description: Updates the organization
+    operationId: handleUpdateOrg
+    summary: Update an organization
+    parameters:
+      - $ref: ../parameters.yml#/organizationId
+    requestBody:
+      description: Body for upserting organization
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/organizationPayload'
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              $ref: '#/organization'
+        description: organization updated
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500

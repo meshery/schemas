@@ -1,0 +1,21 @@
+components:
+  schemas:
+  requestBodies:
+  
+# any special parameters for this tag
+  parameters:
+# any special response for this tag
+  responses:
+
+  paths:
+    /collaboration:
+      get:
+        tags:
+          - collaboration
+        operationId: CollaborationHandler
+        summary: Collaboration
+        description: Collaboration
+        responses:
+          '101':
+            description: initate cross server collaboration
+

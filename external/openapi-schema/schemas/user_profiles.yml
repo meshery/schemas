@@ -1,0 +1,68 @@
+accountOverview:
+  properties:
+    k8s_count:
+      type: integer
+    app_count:
+      type: integer
+    pattern_count:
+      type: integer
+
+/user/profile:
+  get:
+    tags:
+      - user profile
+    operationId: GetUser
+    summary: Get User details
+    description: Get user details for logged in user
+    responses:
+      '200':
+        description: user details
+        content:
+          application/json:
+            schema:
+              $ref: ../common.yml#/user
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+
+/user/profile/update:
+  post:
+    tags:
+      - user profile
+    operationId: UpdateProfile
+    summary: Update Profile
+    description: Update user profile data (also updates kratos identity)
+    requestBody:
+      description: Body for upserting user
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../common.yml#/user
+    responses:
+      '201':
+        $ref: ../responses.yml#/201
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+
+/user/profile/details:
+  get:
+    tags:
+      - user profile
+    operationId: GetProfileOverview
+    summary: Profile Overview
+    description: Get Profile overview for logged in user
+    responses:
+      '200':
+        description: user account overview
+        content:
+          application/json:
+            schema:
+              $ref: '#/accountOverview'
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500

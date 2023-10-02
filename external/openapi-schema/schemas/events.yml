@@ -1,0 +1,331 @@
+components:
+  schemas:
+  
+  requestBodies:
+  
+  
+# any special parameters for this tag
+  parameters:
+# 
+eventTrackerGrouped:
+  properties:
+    count:
+      type: integer 
+    event_type:
+      $ref: ../common.yml#/text
+    dt:
+      $ref: ../common.yml#/time
+    week:
+      $ref: ../common.yml#/text
+    month:
+      $ref: ../common.yml#/text
+    year:
+      $ref: ../common.yml#/text
+
+eventTrackerGroupedArray:
+  type: array
+  items: 
+    $ref: '#/eventTrackerGrouped'
+
+event:
+  description: Defines model for event_trackers
+  properties:
+    id:
+      description: | 
+        UUID of the event.
+      $ref: ../common.yml#/id
+    user_id:
+      $ref: ../common.yml#/user_uuid
+      description: |
+        UUID of the user that initiated the event. In most cases this would be present, but not always.
+    system_id:
+      description: |
+        The system from which the request is sourced. In the case of Meshery Server, 
+        the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
+      $ref: ../common.yml#/system_id
+    operation_id: 
+      description: |
+        Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.  
+      $ref: ../common.yml#/operation_id
+    category:
+      description: |
+        Resource name on which the operation is invoked.
+      type: string
+      example: pattern
+      x-oapi-codegen-extra-tags:
+        db: category
+    action:
+      description: |
+        Action taken on the resource.
+      type: string
+      example: deployed
+      x-oapi-codegen-extra-tags:
+        db: action
+    status:
+      description: |
+       Status for the event. 
+      type: string
+      enum: [
+        "read",
+        "unread",
+      ]
+      x-oapi-codegen-extra-tags:
+        db: status
+    acted_upon:
+      type: string
+      format: uuid
+      description: |
+        UUID of the entity on which the event was performed.
+      example: 110020-123230-434231-000213
+      x-go-type: uuid.UUID
+      x-oapi-codegen-extra-tags:
+        db: acted_upon
+    description:
+      description: |
+        A summary/receipt of event that occured.
+      type: string
+      example: “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
+      x-oapi-codegen-extra-tags:
+        db: description
+    severity:
+      description: |
+        A set of seven standard event levels.
+      type: string
+      enum: [
+        emergency,
+        critical,
+        alert,
+        error,
+        warning,
+        debug,
+        informational,
+        success
+      ]
+      example: info
+      x-oapi-codegen-extra-tags:
+        db: severity
+    metadata: 
+      description: |
+        Contains meaningful information, specific to the type of event.
+        Structure of metadata can be different for different events.
+      type: object
+      x-go-type: "[]byte"
+      x-oapi-codegen-extra-tags:
+        db: metadata
+    created_at:
+      $ref: ../common.yml#/created_at
+    updated_at:
+      $ref: ../common.yml#/updated_at
+    deleted_at:
+      $ref: ../common.yml#/deleted_at
+    required: [
+      "id",
+      "system_id",
+      "operation_id",
+      "category",
+      "action",
+      "status",
+      "acted_upon",
+      "description",
+      "severity",
+      "metadata",
+      "created_at",
+      "updated_at"
+    ]
+
+# event:
+#   properties:
+#     user_id:
+#       $ref: ../common.yml#/user_id
+#     provider:
+#       $ref: ../common.yml#/provider
+#     email:
+#       $ref: ../common.yml#/email
+#     first_name:
+#       $ref: ../common.yml#/text
+#       description: First Name
+#     last_name:
+#       $ref: ../common.yml#/text
+#       description: Last Name
+#     event_type:
+#       $ref: ../common.yml#/text
+#     created_at:
+#       $ref: ../common.yml#/time
+      
+eventResult:
+  properties:
+    event:
+      $ref: '#/event'
+    events_count:
+      type: integer
+
+eventsPage:
+  allOf:
+  - $ref: ../common.yml#/recordsPage
+  - type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/eventResult'
+  
+eventSummary:
+  properties:
+    user_id:
+      $ref: ../common.yml#/user_id
+    provider:
+      $ref: ../common.yml#/provider
+    email:
+      $ref: ../common.yml#/email
+    first_name:
+      $ref: ../common.yml#/text
+      description: First Name
+    last_name:
+      $ref: ../common.yml#/text
+      description: Last Name
+    activity_count:
+      type: integer
+    login_count:
+      type: integer
+    signup_count:
+      type: integer
+    perf_results_count:
+      type: integer
+    smi_results_count:
+      type: integer
+    meshery_apps_count:
+      type: integer
+    meshery_patterns_count:
+      type: integer
+    meshery_filters_count:
+      type: integer
+    last_login_time:
+      $ref: ../common.yml#/time
+
+eventSummaryPage:
+  allOf:
+  - $ref: ../common.yml#/recordsPage
+  - type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/eventSummary'
+
+/api/events/date:
+  get:
+    tags:
+      - events
+    operationId: RetrieveResultsByDate
+    summary: Events by Date
+    description: Get Events by date
+    parameters:
+      - $ref: ../parameters.yml#/cumulative
+    responses:
+      '200':
+        description: Events by date
+        content:
+          application/json:
+            schema:
+              $ref: '#/eventTrackerGroupedArray'
+      '401':
+        $ref: ../common.yml#/401
+      '404':
+        $ref: ../common.yml#/404
+      '500':
+        $ref: ../common.yml#/500
+/api/events/week:
+  get:
+    tags:
+      - events
+    operationId: RetrieveResultsByWeek
+    summary: Events by Week
+    description: Get Events by week
+    parameters:
+      - $ref: ../parameters.yml#/cumulative
+    responses:
+      '200':
+        description: Events by week
+        content:
+          application/json:
+            schema:
+              $ref: '#/eventTrackerGroupedArray'
+      '401':
+        $ref: ../common.yml#/401
+      '404':
+        $ref: ../common.yml#/404
+      '500':
+        $ref: ../common.yml#/500
+/api/events/month:
+  get:
+    tags:
+      - events
+    operationId: RetrieveResultsByMonth
+    summary: Events by Month
+    description: Get Events by month
+    parameters:
+      - $ref: ../parameters.yml#/cumulative
+    responses:
+      '200':
+        description: Events by month
+        content:
+          application/json:
+            schema:
+              $ref: '#/eventTrackerGroupedArray'
+      '401':
+        $ref: ../common.yml#/401
+      '404':
+        $ref: ../common.yml#/404
+      '500':
+        $ref: ../common.yml#/500
+/api/events/list:
+  get:
+    tags:
+      - events
+    operationId: GetEvents
+    summary: All Events
+    description: Get All events
+    parameters:
+      - $ref: ../parameters.yml#/page
+      - $ref: ../parameters.yml#/pageSize
+      - $ref: ../parameters.yml#/search
+      - $ref: ../parameters.yml#/order
+      - $ref: ../parameters.yml#/eventsFilter
+    responses:
+      '200':
+        description: Events list
+        content:
+          application/json:
+            schema:
+              $ref: '#/eventsPage'
+      '401':
+        $ref: ../common.yml#/401
+      '404':
+        $ref: ../common.yml#/404
+      '500':
+        $ref: ../common.yml#/500
+/api/events/summary:
+  get:
+    tags:
+      - events
+    operationId: GetEventSummaryByUser
+    summary: Events Summary
+    description: Get Events summary for a user
+    parameters:
+      - $ref: ../parameters.yml#/page
+      - $ref: ../parameters.yml#/pageSize
+      - $ref: ../parameters.yml#/search
+      - $ref: ../parameters.yml#/order
+    responses:
+      '200':
+        description: Events Summary
+        content:
+          application/json:
+            schema:
+              $ref: '#/eventSummaryPage'
+      '401':
+        $ref: ../common.yml#/401
+      '404':
+        $ref: ../common.yml#/404
+      '500':
+        $ref: ../common.yml#/500

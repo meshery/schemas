@@ -1,0 +1,167 @@
+id:
+  type: string
+  format: uuid
+  description: Unique identifier
+
+username:
+  type: string
+
+provider:
+  type: string
+  description: One of (meshery-cloud, github, google)
+
+time:
+  type: string
+  format: date-time
+
+email:
+  type: string
+  format: "email"
+  description: email
+
+text:
+  type: string
+
+avatar_url:
+  type: string
+  description: Link for profile picture
+
+map_object:
+  type: object
+  additionalProperties:
+    type: string
+
+status:
+  type: string #oneOf: ["active", "pending", "inactive"]?
+
+bio:
+  type: string
+
+accepted_terms_at:
+  type: string
+
+emails:
+  type: array
+  items:
+    $ref: "#/email"
+
+user_ids:
+  type: array
+  items:
+    $ref: "#/id"
+
+price:
+  type: integer
+  format: int32
+
+endpoint:
+  $ref: "#/text"
+  description: endpoint
+  format": "uri"
+  pattern: "^https?://"
+
+roleNames:
+  type: array
+  items: 
+    type: string
+
+recordsPage:
+  discriminator:
+    propertyName: recordType
+  properties:
+    page: 
+      type: integer
+    page_size:
+      type: integer
+    records_total: 
+      type: integer
+    recordType:
+      type: string
+
+resultsPage:
+  discriminator:
+    propertyName: resultType
+    # mapping:
+    #   performanceProfilePage: '#/components/performanceProfilePage'
+    #   mesheryResultPage: '#/components/mesheryResultPage'
+    #   schedulePage: '#/components/schedulePage'
+  properties:
+    page: 
+      type: integer
+    page_size:
+      type: integer
+    total_count: 
+      type: integer
+    resultType:
+      type: string
+
+empty:
+  description: Body for empty request
+  type: object
+  properties: {}
+
+email_preference:
+  type: object
+  properties:
+    welcome_email:
+      type: boolean
+    notify_role_change:
+      type: boolean
+
+user_uuid: 
+  type: string
+  format: uuid
+  x-go-type: uuid.UUID
+  x-go-type-import: 
+    path: github.com/gofrs/uuid
+  x-oapi-codegen-extra-tags:
+    db: user_id  
+  x-go-name: UserID
+
+system_id: 
+  type: string
+  format: uuid
+  x-go-type: uuid.UUID
+  x-go-type-import: 
+    path: github.com/gofrs/uuid
+  x-oapi-codegen-extra-tags:
+    db: system_id  
+  x-go-name: SystemID
+
+operation_id: 
+  type: string
+  format: uuid
+  x-go-type: uuid.UUID
+  x-go-type-import: 
+    path: github.com/gofrs/uuid
+  x-oapi-codegen-extra-tags:
+    db: operation_id  
+  x-go-name: OperationID
+
+user_id:
+  type: string
+  description: user's email or username
+
+created_at:
+  description: Timestamp when the resource was created.
+  x-go-type: time.Time
+  type: string
+  format: date-time
+  x-oapi-codegen-extra-tags:
+    db: created_at
+
+updated_at:
+  description: Timestamp when the resource was updated.
+  x-go-type: time.Time
+  type: string
+  format: date-time
+  x-oapi-codegen-extra-tags:
+    db: updated_at
+
+deleted_at:
+  description: Timestamp when the resource was deleted.
+  x-go-type: time.Time
+  type: string
+  format: date-time
+  x-oapi-codegen-extra-tags:
+    db: deleted_at

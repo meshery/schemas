@@ -1,0 +1,19 @@
+/system/version:
+  get:
+    tags:
+      - server info
+    operationId: GitVersionHandler
+    summary: Version Info
+    description: Meshery Git version and CommitSHA
+    responses:
+      '200':
+        description: Meshery Cloud Version
+        content:
+          application/json:
+            schema:
+              properties:
+                version:
+                  type: string
+                commitSHA:
+                  type: string
+    security: []

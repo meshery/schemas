@@ -1,0 +1,133 @@
+planName:
+  type: string
+  enum: [personal, team, enterprise]
+  description: A list of subscription plans offered for customers
+
+planCadence:
+  type: string
+  enum: [annually, monthly, none]
+
+plan:
+  properties:
+    ID:
+      $ref: ../common.yml#/id
+    name:
+      $ref: ../common.yml#/planName
+    cadence:
+      $ref: ../common.yml#/planCadence
+    price:
+      type: integer
+      format: int32
+      $ref: ../common.yml#/price
+    created_at:
+      $ref: ../common.yml#/time
+    updated_at:
+      $ref: ../common.yml#/time
+    deleted_at:
+      $ref: ../common.yml#/time
+  required:
+    - name
+    - price
+    - id
+ 
+planRequestBody:
+  properties:
+    name:
+      $ref: '#/planName'
+    cadence:
+      $ref: '#/planCadence'
+    price:
+      type: integer
+      format: int32
+
+/api/entitlement/plans:
+  post:
+    tags:
+      - plans
+    description: Creates a new plan
+    operationId: CreatePlan
+    summary: Create a plan
+    requestBody:
+      description: Body for upserting plan of kind Meshery with Meshery Cloud
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/planRequestBody'
+    responses:
+      '201':
+        content:
+          application/json:
+            schema:
+              $ref: '#/plan'
+        description: Plan creation response
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+/api/entitlement/plans/{organizationID}:
+  get:
+    tags:
+      - plans
+    description: Returns all plans for given organization
+    operationId: GetPlans
+    summary: Get all plans
+    parameters:
+      - $ref: ../parameters.yml#/organizationId
+      - $ref: ../parameters.yml#/page
+      - $ref: ../parameters.yml#/pageSize
+      - $ref: ../parameters.yml#/search
+      - $ref: ../parameters.yml#/order
+      - $ref: ../parameters.yml#/filter
+    responses:
+      '200':
+        description: Get all plans with pagination
+        content:
+          application/json:
+            schema:
+              $ref: '#/planPage'
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
+/api/entitlement/plans/{planID}:
+  delete:
+    tags:
+      - plans
+    description: Deletes the plan with the given ID
+    operationId: DeletePlan
+    summary: Delete a plan
+    parameters:
+      - $ref: ../parameters.yml#/planId
+    responses:
+      '204':
+        description: Status no content
+      '400':
+        $ref: ../responses.yml#/400
+      '401':
+        $ref: ../responses.yml#/401
+      '404':
+        $ref: ../responses.yml#/404
+      '500':
+        $ref: ../responses.yml#/500
+  put:
+    tags:
+      - plans
+    description: Updates the plan with the given ID
+    operationId: UpdatePlan
+    summary: Update a plan
+    parameters:
+      - $ref: ../parameters.yml#/id
+    responses:
+      '200':
+        content:
+          application/json:
+            schema:
+              $ref: '#/plan'
+        description: subscription updated
+      '401':
+        $ref: ../responses.yml#/401
+      '500':
+        $ref: ../responses.yml#/500
