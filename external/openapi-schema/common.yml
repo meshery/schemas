@@ -2,9 +2,18 @@ id:
   type: string
   format: uuid
   description: Unique identifier
+  x-go-type: uuid.UUID
+  x-go-type-import: 
+    path: github.com/gofrs/uuid
+  x-oapi-codegen-extra-tags:
+    db: id
+  x-go-name: ID
 
 username:
   type: string
+  x-oapi-codegen-extra-tags:
+    db: username
+  x-go-name: ID
 
 provider:
   type: string
@@ -18,6 +27,9 @@ email:
   type: string
   format: "email"
   description: email
+  x-oapi-codegen-extra-tags:
+    db: email
+  x-go-name: email
 
 text:
   type: string
@@ -25,6 +37,9 @@ text:
 avatar_url:
   type: string
   description: Link for profile picture
+  x-oapi-codegen-extra-tags:
+    db: avatar_url
+  x-go-name: avatar_url
 
 map_object:
   type: object
