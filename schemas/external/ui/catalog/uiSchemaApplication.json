@@ -1,6 +1,0 @@
-{
-  "applicationType": {
-    "ui:widget": "radio"
-  },
-  "ui:order" : ["name", "applicationType", "file", "url"]
-}
