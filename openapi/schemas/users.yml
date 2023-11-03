@@ -1,0 +1,678 @@
+openapi: 3.0.0
+info:   
+  title: Meshery Cloud
+  description: Documentation for meshery Cloud REST APIs
+  contact:
+    email: support@layer5.io
+  version: v0.6.394
+servers:
+  - url: https://meshery.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-meshery.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+tags:
+  - name: users
+    description: APIs for users
+security: 
+  -  jwt: []
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+  schemas:      
+    bulkDelete:
+      type: object
+      properties:
+        user_ids:
+          $ref: ../common.yml#/id
+        user_emails:
+          $ref: ../common.yml#/emails
+      required: [
+        user_ids,
+        user_emails
+      ]
+    user:
+      type: object
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        user_id:
+          $ref: ../common.yml#/user_id
+        provider:
+          $ref: ../common.yml#/provider
+        email:
+          $ref: ../common.yml#/email
+        first_name:
+          $ref: ../common.yml#/text
+          description: First Name
+        last_name:
+          $ref: ../common.yml#/text
+          description: Last Name
+        avatar_url:
+          $ref: ../common.yml#/avatar_url
+        status:
+          $ref: ../common.yml#/status
+        bio:
+          $ref: ../common.yml#/bio
+        preferences:
+          $ref: ../common.yml#/map_object
+        accepted_terms_at:
+          $ref: ../common.yml#/accepted_terms_at
+        first_login_time:  
+          $ref: ../common.yml#/time
+        last_login_time:
+          $ref: ../common.yml#/time
+      required: [
+        id,
+        user_id,
+        provider,
+        email,
+        first_name,
+        last_name,
+        status,
+        created_at,
+        updated_at,
+        last_login_time,
+        deleted_at,
+      ]       
+    recentUsers:
+      type: object
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        first_name:
+          $ref: ../common.yml#/text
+          description: First Name
+        last_name:
+          $ref: ../common.yml#/text
+          description: Last Name
+        avatar_url:
+          $ref: ../common.yml#/avatar_url
+    rolesPage:
+      allOf:
+      - $ref: ../common.yml#/recordsPage
+      - type: string
+        # properties:
+         
+    key:
+      properties:
+        ID:
+          $ref: ../common.yml#/id
+        subcategory:
+          $ref: ../common.yml#/text
+        function:
+          $ref: ../common.yml#/text
+        created_at:
+          $ref: ../common.yml#/time
+        updated_at:
+          $ref: ../common.yml#/time
+        deleted_at:
+          $ref: ../common.yml#/nullTime
+        category:
+          $ref: ../common.yml#/text
+        description:
+          $ref: ../common.yml#/text
+        owner:
+          $ref: ../common.yml#/id
+    userKeys:
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/key'
+        total_count: 
+          type: integer
+    deleteOn:
+      type: string
+      enum: [self, bulk]
+    usersPageForAdmin:
+      allOf:
+        - $ref: ../common.yml#/recordsPage
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/usersWithRolesForAdmin'
+    usersWithRolesForAdmin:
+      type: object
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        user_id:
+          $ref: ../common.yml#/user_id
+        username:
+          $ref: ../common.yml#/username
+        email:
+          $ref: ../common.yml#/email
+        first_name:
+          $ref: ../common.yml#/text
+          description: First Name
+        last_name:
+          $ref: ../common.yml#/text
+          description: Last Name
+        status:
+          $ref: ../common.yml#/status
+        role_names:
+          $ref: ../common.yml#/roleNames
+        created_at:
+          $ref: ../common.yml#/time
+        updated_at:
+          $ref: ../common.yml#/time
+        last_login_time:
+          $ref: ../common.yml#/time
+        deleted_at:
+          $ref: ../common.yml#/time
+        prefs:
+          $ref: ../common.yml#/email_preference
+        avatar_url:
+          $ref: ../common.yml#/avatar_url
+        preferences:
+          $ref: ../common.yml#/map_object
+      required: [
+        id,
+        user_id,
+        username,
+        email,
+        first_name,
+        last_name,
+        status,
+        role_names,
+        created_at,
+        updated_at,
+        last_login_time,
+        deleted_at,
+      ]
+    teamMembers:
+      type: object
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        user_id:
+          $ref: ../common.yml#/user_id
+        username:
+          $ref: ../common.yml#/username
+        email:
+          $ref: ../common.yml#/email
+        first_name:
+          $ref: ../common.yml#/text
+          description: First Name
+        last_name:
+          $ref: ../common.yml#/text
+          description: Last Name
+        status:
+          $ref: ../common.yml#/status
+        role_names:
+          $ref: ../common.yml#/roleNames
+        joined_at:
+          $ref: ../common.yml#/time
+        updated_at:
+          $ref: ../common.yml#/time
+        last_login_time:
+          $ref: ../common.yml#/time
+        deleted_at:
+          $ref: ../common.yml#/time
+        prefs:
+          $ref: ../common.yml#/email_preference
+        avatar_url:
+          $ref: ../common.yml#/avatar_url
+      required: [
+        id,
+        user_id,
+        username,
+        email,
+        first_name,
+        last_name,
+        status,
+        role_names,
+        joined_at,
+        updated_at,
+        last_login_time,
+        deleted_at,
+      ]
+    teamMembersPage:
+      allOf:
+        - $ref: ../common.yml#/recordsPage
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/teamMembers'
+    usersForNonAdmin:
+      type: object
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        user_id:
+          $ref: ../common.yml#/user_id
+        username:
+          $ref: ../common.yml#/username
+        email:
+          $ref: ../common.yml#/email
+        first_name:
+          $ref: ../common.yml#/text
+          description: First Name
+        last_name:
+          $ref: ../common.yml#/text
+          description: Last Name
+        prefs:
+          $ref: ../common.yml#/email_preference
+        avatar_url:
+          $ref: ../common.yml#/avatar_url
+        preferences:
+          $ref: ../common.yml#/map_object
+      required: [
+        id,
+        user_id,
+        username,
+        email,
+        first_name,
+        last_name,
+      ]
+    usersPageForNonAdmin:
+      allOf:
+        - $ref: ../common.yml#/recordsPage
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/usersForNonAdmin'
+    recentActivityPage:
+      properties:
+        recent_activity:
+          type: array
+          items:
+            $ref: ./events.yml#/components/schemas/event
+    accountOverview:
+      properties:
+        k8s_count:
+          type: integer
+        app_count:
+          type: integer
+        pattern_count:
+          type: integer
+    badge:
+      type: object
+      properties:
+        id: 
+          $ref: '../common.yml#/id'
+        name:
+          $ref: '../common.yml#/text'
+        description:
+          $ref: '../common.yml#/text'
+        label:
+          $ref: '../common.yml#/text'
+        svg_location:
+          $ref: '../common.yml#/text'
+        created_at:
+          $ref: '../common.yml#/time'
+        updated_at:
+          $ref: '../common.yml#/time'
+        deleted_at:
+          $ref: '../common.yml#/nullTime'
+    badges:
+      properties:
+        badges:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/badge'
+        total_count: 
+          type: integer
+
+  requestBodies:
+    userInvite:
+      description: Body for user invite request
+      required: true
+      content:
+        application/json:
+          schema:
+            properties:
+              first_name:
+                $ref: ../common.yml#/text
+                description: First Name
+              last_name:
+                $ref: ../common.yml#/text
+                description: Last Name
+              email:
+                $ref: ../common.yml#/email
+            required: [
+              first_name,
+              last_name,
+              email
+            ]
+    deleteUsers:
+      description: Body for delete of user accounts
+      required: true
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/bulkDelete'
+              - $ref: ../common.yml#/empty
+    user:
+      description: Body for upserting user
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+
+# any special parameters for this tag
+  parameters:
+    deleteOn:
+      in: path
+      required: true
+      name: delete_on
+      description: Defines on whom the delete operation is to be performed
+      schema:
+        $ref: '#/components/schemas/deleteOn'
+  
+paths:
+  /api/identity/users/invite:
+    post:
+      tags:
+        - users
+      operationId: HandleUserInvite
+      summary: User Invite
+      description: Send invitation request to users
+      requestBody:
+        $ref: '#/components/requestBodies/userInvite'
+      responses:
+        '200':
+          $ref: ../responses.yml#/200
+          description: Invitation sent
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/identity/users/preferences:
+    put:
+      tags:
+        - users
+      operationId: UpdateUserPreference
+      summary: User Preference
+      description: Upsert user preferences
+      requestBody:
+        description: Body for upserting user preferences
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../common.yml#/map_object            
+      responses:
+        '201':
+          $ref: ../responses.yml#/201
+          description: Preferences updated
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/identity/users/keys:
+    get:
+      tags:
+        - users
+      operationId: GetUserKeys
+      summary: Get User Keys
+      description: Get all keys based on roles assigned to user
+      responses:
+        '200':
+          description: Returns user keys based on roles assigned to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userKeys'
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/user/{user_id}:
+    get:
+      tags:
+        - users
+      operationId: GetUserById
+      summary: Get User by ID
+      description: Get specific user by user id
+      parameters:
+        - $ref: ../parameters.yml#/userId
+      responses:
+        '200':
+          description: Returns user with given user_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/identity/users/{delete_on}:
+    post:
+      tags:
+        - users
+      operationId: DeleteUsers
+      summary: Delete users
+      description: Delete users based on delete_for parameter
+      parameters:
+        - $ref: '#/components/parameters/deleteOn'
+      requestBody:
+        $ref: '#/components/requestBodies/deleteUsers'
+      responses:
+        '201':
+          $ref: ../responses.yml#/201
+        '400':
+          $ref: ../responses.yml#/400
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/system/delete/user/{user_id}:
+    get:
+      tags:
+        - users
+      operationId: DeleteUserAccountById
+      summary: Delete account by ID
+      description: Delete account by ID
+      parameters:
+        - $ref: ../parameters.yml#/userId
+      responses:
+        '201':
+          $ref: ../responses.yml#/201
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/identity/users:
+    get:
+      tags:
+        - users
+      operationId: GetRoleHolders
+      summary: Get All users
+      description: Get All users
+      parameters:
+        - $ref: ../parameters.yml#/page
+        - $ref: ../parameters.yml#/page_size
+        - $ref: ../parameters.yml#/search
+        - $ref: ../parameters.yml#/order
+        - $ref: ../parameters.yml#/filter
+      responses:
+        '200':
+          description: Get all user with pagination
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/usersPageForAdmin'
+                - $ref: '#/components/schemas/teamMembersPage'
+        '400':
+          $ref: ../responses.yml#/400
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/users:
+    get:
+      tags:
+        - users
+      operationId: GetUsers
+      summary: Get All users
+      description: Get All users
+      parameters:
+        - $ref: ../parameters.yml#/page
+        - $ref: ../parameters.yml#/page_size
+        - $ref: ../parameters.yml#/search
+        - $ref: ../parameters.yml#/order
+        - $ref: ../parameters.yml#/filter
+      responses:
+        '200':
+          description: Get all user with pagination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/usersPageForNonAdmin'
+        '400':
+          $ref: ../responses.yml#/400
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500   
+  /api/identity/users/profile/{id}:
+    get:
+      tags:
+        - users
+      operationId: GetUserProfileById
+      summary: Get user profile by Id
+      description: Get user profile of given user Id
+      parameters:
+        - $ref: ../parameters.yml#/id
+      responses:
+        '200':
+          description: Returns user with given id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '400':
+          $ref: ../responses.yml#/400
+        '500':
+          $ref: ../responses.yml#/500
+  /api/identity/users/profile:
+    get:
+      tags:
+        - users
+      operationId: GetUser
+      summary: Get User details
+      description: Get user details for logged in user
+      responses:
+        '200':
+          description: user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+    put:
+      tags:
+        - users
+      operationId: UpdateProfile
+      summary: Update Profile
+      description: Update user profile data (also updates kratos identity)
+      requestBody:
+        $ref: '#/components/requestBodies/user'
+      responses:
+        '201':
+          $ref: ../responses.yml#/201
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/identity/users/profile/details:
+    get:
+      tags:
+        - users
+      operationId: GetProfileOverview
+      summary: Profile Overview
+      description: Get Profile overview for logged in user
+      responses:
+        '200':
+          description: user account overview
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountOverview'
+        '401':
+          $ref:  ../responses.yml#/401
+        '500':
+          $ref:  ../responses.yml#/500
+  /api/identity/users/{user_id}/profile/activity:
+    get:
+      tags:
+        - users
+      operationId: GetUserActivity
+      summary: User Activity
+      description: Get last 10 user activities
+      parameters:
+        - name: user_id
+          in: path
+          description: UUID of User
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: user activity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/recentActivityPage'
+        '500':
+          $ref:  ../responses.yml#/500
+      security: []
+  /api/identity/users/online:
+    get:
+      tags:
+        - users
+      operationId: GetRecentlyOnlineUsers
+      summary: Online users
+      description: Get info of active / online users in last 24 hours
+      responses:
+        '200':
+          description: active users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/recentUsers'
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+  /api/identity/badges:
+    get:
+      tags:
+        - users
+      operationId: GetAvailableBadges
+      summary: Gets available badges
+      description: Gets available badges
+      responses:
+        '200':
+          description: Badges
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/badges'
+        '400':
+          $ref: ../responses.yml#/400
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
