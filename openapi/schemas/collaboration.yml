@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: Meshery Cloud
+  description: Documentation for meshery Cloud REST APIs
+  contact:
+    email: support@layer5.io
+  version: v0.6.394
+servers:
+  - url: https://meshery.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-meshery.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+tags:
+  - name: collaboration
+    description: APIs for collaboration  
+paths:
+  /collaboration:
+    get:
+      tags:
+        - collaboration
+      operationId: CollaborationHandler
+      summary: Collaboration
+      description: Collaboration
+      security: []
+      responses:
+        '101':
+          description: initate cross server collaboration
+

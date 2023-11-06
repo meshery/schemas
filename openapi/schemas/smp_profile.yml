@@ -1,0 +1,341 @@
+openapi: 3.0.0
+info:
+  title: Meshery Cloud
+  description: Documentation for meshery Cloud REST APIs
+  contact:
+    email: support@layer5.io
+  version: v0.6.394
+servers:
+  - url: https://meshery.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-meshery.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+tags:
+  - name: smp_profile
+    description: APIs for Service Mesh Performace profile
+security: 
+  -  jwt: []
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT 
+  schemas: 
+    performanceProfile:
+      properties:
+        id: 
+          $ref: '../common.yml#/id'
+        name:
+          $ref: '../common.yml#/text'
+        user_id:  
+          $ref: '../common.yml#/id'
+        schedule:
+          $ref: '../common.yml#/id'
+        load_generators:
+          type: string
+        endpoints:
+          type: string
+        service_mesh:
+          type: string
+        concurrent_request:
+          type: integer
+        qps:
+          type: integer
+        duration:
+          type: string
+        last_run:
+          $ref: '../common.yml#/time' 
+        total_results:
+          type: integer  
+        request_headers:
+          type: string
+        request_cookies:
+          type: string
+        request_body:
+          type: string
+        created_at:
+          $ref: '../common.yml#/time'
+        updated_at:
+          $ref: '../common.yml#/time'
+
+    performanceProfilePage:
+      allOf:
+        - $ref: ../common.yml#/resultsPage
+        - type: object
+          properties:
+            profiles:
+              type: array
+              items:
+                $ref: '#/components/schemas/performanceProfile'
+
+    performanceResult:
+      properties:
+        id: 
+          $ref: '../common.yml#/id'
+        name:
+          $ref: '../common.yml#/text'
+        test_start_time:
+          $ref: '../common.yml#/time'
+        mesh:
+          type: string
+        runner_results:
+          $ref: '../common.yml#/map_object'
+        deleted:
+          type: boolean
+        server_metrics:
+          $ref: '../common.yml#/map_object'
+        server_board_config:
+          $ref: '../common.yml#/map_object'
+        performance_profile:
+          $ref: '../common.yml#/id'
+        created_at: 
+          $ref: '../common.yml#/time'
+        updated_at:
+          $ref: '../common.yml#/time'
+
+    mesheryResultPage:
+      allOf: 
+        - $ref: ../common.yml#/resultsPage
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/performanceResult'
+
+  parameters: 
+    resultId:
+      name: result_id
+      in: path
+      description: Result id
+      schema:
+        $ref: ../common.yml#/id
+      required: true
+paths:
+  /api/performance/smp/profiles:
+    get:
+      tags:
+        - service mesh performance
+      operationId: SMPDashboardPerfProfiles
+      summary: Performance Profiles
+      description: Get Performance Profiles for SMP Dashboard
+      parameters:
+        - $ref: ../parameters.yml#/page
+        - $ref: ../parameters.yml#/page_size
+        - $ref: ../parameters.yml#/search
+        - $ref: ../parameters.yml#/order
+      responses:
+        '200':
+          description: Get Performance Profiles with pagination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/performanceProfilePage'
+        '500':
+          $ref: ../responses.yml#/500
+      security: []
+
+  /api/performance/smp/profiles/{id}/results:
+    get:
+      tags:
+        - service mesh performance
+      operationId: SMPDashboardTestResults
+      summary: Performance Profiles Results by ID
+      description: Get Performance Profiles results by ID for SMP Dashboard
+      parameters:
+        - $ref: ../parameters.yml#/id
+        - $ref: ../parameters.yml#/page
+        - $ref: ../parameters.yml#/page_size
+        - $ref: ../parameters.yml#/search
+        - $ref: ../parameters.yml#/order
+
+      responses:
+        '200':
+          description: Get Performance Profiles Results with pagination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mesheryResultPage'
+        '500':
+          $ref: ../responses.yml#/500
+        '502':
+          description: Invalid path parameter "id"
+          content:
+            text/plain:
+              schema:
+                type: string
+      security: []
+
+  /api/performance/profiles:
+    post:
+      tags:
+        - service mesh performance
+      operationId: UpsertPerformanceProfile
+      summary: Upsert Performance Profiles
+      description: Update performance profiles or create a new performance profile if no id is provided
+      requestBody:
+        description: Body for upserting performance profile
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/performanceProfile'
+      responses:
+        '201':
+          description: updated performance profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/performanceProfile'
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500
+
+    get:
+      tags:
+        - service mesh performance
+      operationId: GetPerformanceProfiles
+      summary: Get Performance Profiles
+      description: Get performance profiles
+      parameters:    
+        - $ref: ../parameters.yml#/page
+        - $ref: ../parameters.yml#/page_size
+        - $ref: ../parameters.yml#/search
+        - $ref: ../parameters.yml#/order
+      responses:
+        '200':
+          description: Performance Profiles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/performanceProfilePage'
+        '401':
+          $ref: '../responses.yml#/401'
+        '500':
+          $ref: ../responses.yml#/500
+
+  /api/performance/profiles/{id}:
+    get:
+      tags:
+        - service mesh performance
+      operationId: GetPerformanceProfile
+      summary: Performance Profile by Id
+      description: Get Performance Profile by ID
+      parameters:
+        - $ref: ../parameters.yml#/id
+      responses:
+        '200':
+          description: Performance Profile for provided performance profile id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/performanceProfile'
+        '400':
+          $ref: '../responses.yml#/400'
+        '401':
+          $ref: '../responses.yml#/401'
+        '500':
+          $ref: ../responses.yml#/500
+    delete:
+      tags:
+        - service mesh performance
+      operationId: DeletePerformanceProfile
+      summary: Delete Performance Profiles
+      description: Delete performance profiles by ID
+      parameters:
+        - $ref: ../parameters.yml#/id
+      responses:
+        '200':
+          description: Deleted Performance Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/performanceProfile'
+        '401':
+          $ref: '../responses.yml#/401'
+        '404':
+          $ref: '../responses.yml#/404'
+        '500':
+          $ref: ../responses.yml#/500
+
+  /api/performance/profiles/{id}/results:
+    get:
+      tags:
+        - service mesh performance
+      operationId: GetPerformanceProfileResults
+      summary: Performance Profiles result
+      description: Get paginated Performance Profiles result
+      parameters:
+        - $ref: ../parameters.yml#/id
+        - $ref: ../parameters.yml#/page
+        - $ref: ../parameters.yml#/page_size
+        - $ref: ../parameters.yml#/search
+        - $ref: ../parameters.yml#/order
+      responses:
+        '200':
+          description: Performance Profile results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mesheryResultPage'
+        '401':
+          $ref: '../responses.yml#/401'
+        '500':
+          $ref: '../responses.yml#/500'
+
+    post:
+      tags:
+        - service mesh performance
+      operationId: AddPerformanceProfileResult
+      summary: Add performance profiles result
+      description: Add performance profile result in given performance profile id
+      parameters:
+        - $ref: ../parameters.yml#/id
+      requestBody:
+        description: Body for adding perfor mance profile result
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/performanceResult'
+      responses:
+        '201':
+          description: Performance Profile results
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+        '401':
+          $ref: '../responses.yml#/401'
+        '500':
+          $ref: '../responses.yml#/500'
+
+  /api/performance/profiles/{id}/results/{resultID}:
+    get:
+      tags:
+        - service mesh performance
+      operationId: GetPerformanceProfileResult
+      summary: Performance Profiles result
+      description: Get the performance test result associated with the given profile id and with the given test id
+      parameters:
+        - $ref: ../parameters.yml#/id
+        - $ref: ../parameters.yml#/resultID
+      responses:
+        '200':
+          description: Performance Profile results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/performanceResult'
+        '400':
+          $ref: '../responses.yml#/400'
+        '401':
+          $ref: '../responses.yml#/401'
+        '500':
+          $ref: '../responses.yml#/500'

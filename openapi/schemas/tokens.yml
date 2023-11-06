@@ -1,0 +1,151 @@
+openapi: 3.0.0
+info:
+  title: Meshery Cloud
+  description: Documentation for meshery Cloud REST APIs
+  contact:
+    email: support@layer5.io
+  version: v0.6.394
+servers:
+  - url: https://meshery.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-meshery.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+tags:
+  - name: tokens  
+    description: APIs for tokens
+security: 
+  -  jwt: []
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+  
+  schemas: 
+    tokenPage:
+      allOf:
+      - $ref: ../common.yml#/resultsPage
+      - type: object
+        properties:
+          tokens:
+            type: array
+            items:
+              $ref: '#/components/schemas/userToken'
+
+    userToken:
+      properties:
+        id:
+          $ref: ../common.yml#/id
+        user_id:
+          $ref: ../common.yml#/id
+        provider:
+          $ref: ../common.yml#/provider
+        access_token:
+          $ref: ../common.yml#/text
+        refresh_token:
+          $ref: ../common.yml#/text
+        name: 
+          $ref: ../common.yml#/text
+        purpose:
+          $ref: ../common.yml#/text
+        is_oauth:
+          type: boolean
+        created_at:
+          $ref: ../common.yml#/time
+        updated_at:
+          $ref: ../common.yml#/time
+paths:
+  /system/user/tokens:
+      get:
+        tags:
+          - user tokens
+        operationId: GetUserTokens
+        summary: Get Tokens
+        description: Get tokens associated with logged in user
+        parameters:
+          - $ref: ../parameters.yml#/isOAuth
+          - $ref: ../parameters.yml#/page
+          - $ref: ../parameters.yml#/page_size
+          - $ref: ../parameters.yml#/search
+          - $ref: ../parameters.yml#/order
+        responses:
+          '200':
+            description: user tokens
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/tokenPage'
+          '401':
+            $ref: ../responses.yml#/401
+          '500':
+            $ref: ../responses.yml#/500
+      post:
+        tags:
+          - user tokens
+        operationId: GenerateToken
+        summary: Generate token for logged in user
+        description: Generates infinite token (i.e. tokens that do not expire) for the logged in user.
+        parameters:
+          - $ref: ../parameters.yml#/name
+          - $ref: ../parameters.yml#/purpose
+        responses:
+          '200':
+            description: generated token
+            content:
+              text/plain:
+                schema:
+                  type: string
+          '400':
+            $ref: ../responses.yml#/400
+          '401':
+            $ref: ../responses.yml#/401
+          '500':
+            $ref: ../responses.yml#/500
+      delete:
+        tags:
+          - user tokens
+        operationId: DeleteUserTokens
+        summary: Delete token
+        description: Delete token for logged in user
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: ../common.yml#/map_object
+        responses:
+          '200':
+            $ref: ../responses.yml#/200
+          '400':
+            $ref: ../responses.yml#/400
+          '401':
+            $ref: ../responses.yml#/401
+          '500':
+            $ref: ../responses.yml#/500
+
+  /system/token:
+    get:
+      tags:
+        - user tokens
+      operationId: IssueIndefiniteLifetimeToken
+      summary: Infinite token
+      description: Get Infinite Token
+      parameters:
+        - $ref: ../parameters.yml#/userId
+        - $ref: ../parameters.yml#/provider
+      responses:
+        '200':
+          description: generated token
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+            $ref: ../responses.yml#/400
+        '401':
+          $ref: ../responses.yml#/401
+        '500':
+          $ref: ../responses.yml#/500

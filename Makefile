@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include install/Makefile.core.mk
-include install/Makefile.show-help.mk
-
 
 ## Lint check Meshery Server.
 golangci: error dep-check
@@ -51,6 +48,21 @@ swagger-docs-build:
 redocly-docs-build:
 	npx @redocly/cli build-docs ./docs/_data/swagger.yml --config='redocly.yaml' -t custom.hbs
 
+## Validate Meshery Cloud's APIs against OpenAPI spec
+api-validate:
+	redocly bundle models/openapi-schema/schema.yml --output models/openapi-schema/bundled-schema.yml
+	openapi-generator validate -i models/openapi-schema/bundled-schema.yml
+	rm ./models/openapi-schema/bundled-schema.yml
+
+schemas-join:
+	chmod +x scripts/merge-openapi-specs.sh
+	scripts/merge-openapi-specs.sh
+	
+## Build Remote Provider API docs
+docs-build:
+	redocly bundle --output openapi/bundled-schema.yml
+	redocly build-docs openapi/bundled-schema.yml --output=openapi/index.html
+	rm openapi/bundled-schema.yml
 #-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------
@@ -71,3 +83,9 @@ ifeq (,$(findstring $(GOVERSION), $(INSTALLED_GO_VERSION)))
 #	 Required golang version is: 'go$(GOVERSION).x'. \
 #	 Ensure go '$(GOVERSION).x' is installed and available in your 'PATH'.)
 endif
+
+# redocly join openapi/schemas/applications.yml openapi/schemas/capabilities.yml openapi/schemas/catalog.yml openapi/schemas/collaboration.yml openapi/schemas/connections.yml openapi/schemas/credentials.yml openapi/schemas/events.yml  openapi/schemas/meshmodels.yml openapi/schemas/smp_profile.yml openapi/schemas/tokens.yml openapi/schemas/user_onboarding.yml openapi/schemas/users.yml
+
+
+
+# redocly join openapi-schema/schemas/applications.yml openapi-schema/schemas/connections.yml yml openapi-schema/schemas/user_onboarding.yml openapi-schema/schemas/users.yml
