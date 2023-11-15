@@ -6,6 +6,7 @@ id:
     path: github.com/gofrs/uuid
   x-oapi-codegen-extra-tags:
     db: id
+    json: id
   x-go-name: ID
 
 username:
@@ -121,7 +122,41 @@ user_uuid:
     path: github.com/gofrs/uuid
   x-oapi-codegen-extra-tags:
     db: user_id  
+    json: user_id
   x-go-name: UserID
+
+credential_uuid: 
+  type: string
+  format: uuid
+  x-go-type: uuid.UUID
+  x-go-type-import: 
+    path: github.com/gofrs/uuid
+  x-oapi-codegen-extra-tags:
+    db: credential_id
+    json: credential_id
+  x-go-name: CredentialID
+
+meshery_instance_uuid: 
+  type: string
+  format: uuid
+  x-go-type: uuid.UUID
+  x-go-type-import: 
+    path: github.com/gofrs/uuid
+  x-oapi-codegen-extra-tags:
+    db: meshery_instance_id
+    json: meshery_instance_id
+  x-go-name: MesheryInstanceID
+
+kubernetes_server_uuid: 
+  type: string
+  format: uuid
+  x-go-type: uuid.UUID
+  x-go-type-import: 
+    path: github.com/gofrs/uuid
+  x-oapi-codegen-extra-tags:
+    db: kubernetes_server_id
+    json: kubernetes_server_id
+  x-go-name: KubernetesServerID
 
 system_id: 
   type: string
