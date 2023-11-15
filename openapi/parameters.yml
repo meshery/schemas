@@ -54,7 +54,7 @@ serverId:
   in: path
   description: Meshery server ID
   schema:
-    $ref: ./common.yml#//id
+    $ref: ./common.yml#/id
   required: true
 
 instanceId:
@@ -62,7 +62,7 @@ instanceId:
   in: path
   description: Meshery instance ID
   schema:
-    $ref: ./common.yml#//id
+    $ref: ./common.yml#/id
   required: true
 
 contextId:
@@ -70,7 +70,7 @@ contextId:
   in: path
   description: Meshery context ID
   schema:
-    $ref: ./common.yml#//id
+    $ref: ./common.yml#/id
   required: true
 
 isOAuth:

@@ -57,7 +57,7 @@ components:
           $ref: ../common.yml#/text
           description: Connection Name
         credential_id:
-          $ref: ../common.yml#/id
+          $ref: ../common.yml#/credential_uuid
           description: Credential ID
         type:
           $ref: ../common.yml#/text
@@ -71,10 +71,21 @@ components:
         metadata:
           $ref: ../common.yml#/map_object
         status:
-          $ref: ../common.yml#/text
           description: Connection Status
+          type: string
+          enum: [
+            "discovered",
+            "registered",
+            "connected",
+            "ignored",
+            "maintenance",
+            "disconnected",
+            "deleted",
+            "not found"
+          ]
         user_id:
-          $ref: ../common.yml#/id
+          $ref: ../common.yml#/user_uuid
+          x-go-name: UserID
         created_at:
           $ref: ../common.yml#/time
         updated_at:
@@ -105,39 +116,10 @@ components:
           items:
             $ref: '#/components/schemas/connectionStatusInfo'
 
-    # Ideally inside connection Definiton in kubernetes model.
-    # Default connection state to be captured in connection definition.
-    # Capture transitions in 
-    k8sContext:
-      properties:
-        id:
-          $ref: ../common.yml#/id
-        name:
-          $ref: ../common.yml#/text
-        auth:
-          $ref: ../common.yml#/map_object
-        cluster:
-          $ref: ../common.yml#/map_object
-        server:
-          type: string
-        owner:
-          $ref: ../common.yml#/id
-        created_by:
-          $ref: ../common.yml#/id
-        meshery_instance_id:
-          $ref: ../common.yml#/id
-        kubernetes_server_id:
-          $ref: ../common.yml#/id
-        deployment_type:
-          type: string
-        updated_at:
-          $ref: ../common.yml#/time
-        created_at:
-          $ref: ../common.yml#/time
     k8sContextPersistResponse:
       properties:
         k8sContext:
-          $ref: '#/components/schemas/k8sContext'
+          $ref: './k8sContext.yml#/k8sContext'
         inserted:
           type: boolean
 

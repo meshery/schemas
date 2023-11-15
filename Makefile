@@ -50,9 +50,7 @@ redocly-docs-build:
 
 ## Validate Meshery Cloud's APIs against OpenAPI spec
 api-validate:
-	redocly bundle models/openapi-schema/schema.yml --output models/openapi-schema/bundled-schema.yml
-	openapi-generator validate -i models/openapi-schema/bundled-schema.yml
-	rm ./models/openapi-schema/bundled-schema.yml
+	openapi-generator validate -i openapi/openapi.yml
 
 schemas-join:
 	chmod +x scripts/merge-openapi-specs.sh
