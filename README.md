@@ -51,9 +51,6 @@ MeshModel
 REST API
  - swagger.yaml
 
-GraphQL API
-- GraphQL Schema
-
 Adapters
 - meshes.proto
   
