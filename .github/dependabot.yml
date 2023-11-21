@@ -30,23 +30,6 @@ updates:
   labels:
   - kind/chore
   - pr/dependencies
-  ignore:
-  - dependency-name: "@material-ui/core"
-    versions:
-    - "> 4.9.13"
-    - "< 5"
-  - dependency-name: next
-    versions:
-    - "> 10.0.1"
-    - "< 10.1"
-  - dependency-name: next-redux-wrapper
-    versions:
-    - ">= 6.a"
-    - "< 7"
-  - dependency-name: react-select
-    versions:
-    - ">= 3.1.a"
-    - "< 3.2"
 - package-ecosystem: npm
   directory: "/provider-ui"
   schedule:
