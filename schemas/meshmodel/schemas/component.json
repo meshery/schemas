@@ -31,6 +31,10 @@
           "type": "string",
           "description": "Description of the component."
         },
+        "capabilities": {
+          "type": "object",
+          "description": "JSON-formatted. Capabilities come in different. Actions that can be taken upon the component or actions that the component can take."
+        },
         "name": {
           "$ref": "https://schemas.meshery.io/core.json#inputString",
           "description": "Name of the component."
