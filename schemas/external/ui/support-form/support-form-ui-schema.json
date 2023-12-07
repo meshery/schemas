@@ -1,0 +1,11 @@
+{
+    "subject": {
+      "ui:placeholder": "Brief summary or title for your support request"
+    },
+    "description": {
+      "ui:placeholder": "Detailed description of your support request"
+    },
+    "scope": {
+      "ui:widget": "radio"
+    }
+  }
