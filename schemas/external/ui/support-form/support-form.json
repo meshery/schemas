@@ -5,12 +5,14 @@
         "subject": {
             "type": "string",
             "title": "Subject",
-            "minLength": 1
+            "minLength": 1,
+            "x-rjsf-grid-area": "12"
         },
         "description": {
             "type": "string",
             "title": "Description",
-            "minLength": 10
+            "minLength": 10,
+            "x-rjsf-grid-area": "12"
         },
         "scope": {
             "type": "string",
