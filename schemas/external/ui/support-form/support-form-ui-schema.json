@@ -1,6 +1,6 @@
 {
     "subject": {
-        "ui:placeholder": "Brief summary or title for your support request"
+        "ui:placeholder": "Summary or title for your support request"
     },
     "description": {
         "ui:placeholder": "Detailed description of your support request"
