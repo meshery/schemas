@@ -38,31 +38,35 @@
       "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
     },
     "selectors": {
-      "type": "object",
-      "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
-      "additionalProperties": false,
-      "properties": {
-        "deny": {
-          "type": "object",
-          "description": "Optional selectors used to define relationships which should not be created / is restricted.",
-          "properties": {
-            "from": {
-              "$ref": "https://schemas.meshery.io/selectors.json#from"
-            },
-            "to": {
-              "$ref": "https://schemas.meshery.io/selectors.json#to"
+      "type": "array",
+      "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
+      "items": {
+        "type": "object",
+        "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
+        "additionalProperties": false,
+        "properties": {
+          "deny": {
+            "type": "object",
+            "description": "Optional selectors used to define relationships which should not be created / is restricted.",
+            "properties": {
+              "from": {
+                "$ref": "https://schemas.meshery.io/selectors.json#from"
+              },
+              "to": {
+                "$ref": "https://schemas.meshery.io/selectors.json#to"
+              }
             }
-          }
-        },
-        "allow": {
-          "type": "object",
-          "description": "Selectors used to define relationships which are allowed",
-          "properties": {
-            "from": {
-              "$ref": "https://schemas.meshery.io/selectors.json#from"
-            },
-            "to": {
-              "$ref": "https://schemas.meshery.io/selectors.json#to"
+          },
+          "allow": {
+            "type": "object",
+            "description": "Selectors used to define relationships which are allowed",
+            "properties": {
+              "from": {
+                "$ref": "https://schemas.meshery.io/selectors.json#from"
+              },
+              "to": {
+                "$ref": "https://schemas.meshery.io/selectors.json#to"
+              }
             }
           }
         }
