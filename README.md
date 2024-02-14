@@ -40,7 +40,7 @@ Meshery follows schema-driven development. As a project, Meshery has different t
 
 ### External
 
-MeshModel
+Models
 - model.schema
   - component.schema
     - connection-ui-schema.js
