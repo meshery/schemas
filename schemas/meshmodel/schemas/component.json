@@ -8,6 +8,7 @@
     "schema",
     "model"
   ],
+  "status": "Status of component, e.g. Registered, Ignored, Enabled ...",
   "additionalProperties": false,
   "type": "object",
   "properties": {

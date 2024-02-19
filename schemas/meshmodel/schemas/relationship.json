@@ -8,6 +8,7 @@
     "subType",
     "model"
   ],
+  "status": "Status of relationship, e.g. Registered, Ignored, Enabled ...",
   "additionalProperties": false,
   "type": "object",
   "properties": {
