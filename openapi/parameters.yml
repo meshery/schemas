@@ -227,3 +227,10 @@ resultID:
   schema:
     type: string
   required: true
+
+status:
+  name: status
+  in: path
+  description: Get models based on status, e.g 'ignored', 'registered'
+  schema:
+    type: string
