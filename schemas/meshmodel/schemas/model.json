@@ -4,6 +4,7 @@
   "description": "Model is a construct used for namespacing MeshModel entities.",
   "additionalProperties": false,
   "type": "object",
+  "status": "Status of model, e.g. Registered, Ignored, Enabled ...",
   "required": [
     "name",
     "version",

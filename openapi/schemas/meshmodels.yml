@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Meshery Cloud
-  description: Documentation for meshery Cloud REST APIs
+  description: Documentation for Meshery Cloud REST APIs
   contact:
     email: support@layer5.io
   version: v0.6.394
@@ -33,6 +33,8 @@ components:
         version:
           $ref: ../common.yml#/text
         display_name:
+          $ref: ../common.yml#/text
+        status:
           $ref: ../common.yml#/text
         category_id:
           $ref: ../common.yml#/id 
@@ -84,16 +86,17 @@ paths:
         - meshery_models
         
       operationId: GetMeshModelModels
-      summary: Get MeshModel models
-      description: Get MeshModel models
+      summary: Get all models
+      description: Get models by name
       parameters:
         - $ref: ../parameters.yml#/page
         - $ref: ../parameters.yml#/page_size
         - $ref: ../parameters.yml#/search
         - $ref: ../parameters.yml#/order
+        - $ref: ../parameters.yml#/status
       responses:
         '200':
-          description: MeshModel Model
+          description: Models
           content:
             application/json:
               schema:
@@ -106,8 +109,8 @@ paths:
       tags:
         - meshery_models
       operationId: GetMeshModelCategories
-      summary: Get MeshModel categories
-      description: Get MeshModel categories
+      summary: Get all categories
+      description: Get models by technology category
       parameters:
         - $ref: ../parameters.yml#/page
         - $ref: ../parameters.yml#/page_size
@@ -115,7 +118,7 @@ paths:
         - $ref: ../parameters.yml#/order
       responses:
         '200':
-          description: MeshModel Categories
+          description: Categories
           content:
             application/json:
               schema:
