@@ -1,3 +1,0 @@
-{
-    "ui:order" : ["name", "uploadType", "config", "file", "url"]
-}
