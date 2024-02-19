@@ -34,6 +34,8 @@ components:
           $ref: ../common.yml#/text
         display_name:
           $ref: ../common.yml#/text
+        status:
+          $ref: ../common.yml#/text
         category_id:
           $ref: ../common.yml#/id 
         metadata:
@@ -91,6 +93,7 @@ paths:
         - $ref: ../parameters.yml#/page_size
         - $ref: ../parameters.yml#/search
         - $ref: ../parameters.yml#/order
+        - $ref: ../parameters.yml#/status
       responses:
         '200':
           description: MeshModel Model
