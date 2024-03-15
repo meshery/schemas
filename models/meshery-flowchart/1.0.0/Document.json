@@ -1,6 +1,6 @@
 {
     "kind": "Document",
-    "apiVersion": "core.meshery.io/v1beta1",
+    "apiVersion": "core.meshery.io/v1alpha2",
     "displayName": "Document",
     "format": "JSON",
     "hostname": "",
