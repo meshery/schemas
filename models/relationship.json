@@ -33,6 +33,10 @@
       "$ref": "https://schemas.meshery.io/model.json",
       "description": "Model of the Relationship."
     },
+    "type": {
+      "type": "string",
+      "description": "Used for classification of Relationships. Groups the relationships having similar behaviour."
+    },
     "subType": {
       "type": "string",
       "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
