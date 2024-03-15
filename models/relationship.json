@@ -35,7 +35,7 @@
     },
     "type": {
       "type": "string",
-      "description": "Used for classification of Relationships. Groups the relationships having similar behaviour."
+      "description": "Classification of relationships. Used to group relationships similar in nature."
     },
     "subType": {
       "type": "string",
