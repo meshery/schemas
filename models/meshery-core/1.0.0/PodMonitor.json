@@ -1,7 +1,7 @@
 {
     "id": "00000000-0000-0000-0000-000000000000",
     "kind": "PodMonitor",
-    "apiVersion": "core.meshery.io/v1alpha1",
+    "apiVersion": "core.meshery.io/v1alpha2",
     "displayName": "PodMonitor",
     "format": "JSON",
     "hostID": "00000000-0000-0000-0000-000000000000",

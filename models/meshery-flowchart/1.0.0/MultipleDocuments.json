@@ -1,6 +1,6 @@
 {
     "kind": "MultipleDocuments",
-    "apiVersion": "core.meshery.io/v1alpha1",
+    "apiVersion": "core.meshery.io/v1alpha2",
     "displayName": "Multiple Documents",
     "format": "JSON",
     "hostname": "",
