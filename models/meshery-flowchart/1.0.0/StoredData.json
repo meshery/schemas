@@ -1,6 +1,6 @@
 {
     "kind": "StoredData",
-    "apiVersion": "core.meshery.io/v1alpha1",
+    "apiVersion": "core.meshery.io/v1beta1",
     "displayName": "Stored Data",
     "format": "JSON",
     "hostname": "",
