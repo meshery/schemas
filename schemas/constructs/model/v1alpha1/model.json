@@ -4,7 +4,6 @@
   "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
   "additionalProperties": false,
   "type": "object",
-  "status": "Status of model, e.g. Registered, Ignored, Enabled ...",
   "required": [
     "name",
     "version",
@@ -18,6 +17,10 @@
     "displayName": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "The display name for the model."
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of model, e.g. Registered, Ignored, Enabled ..."
     },
     "version": {
       "$ref": "https://schemas.meshery.io/core.json#versionString",
