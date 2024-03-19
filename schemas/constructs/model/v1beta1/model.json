@@ -66,7 +66,7 @@
         },
         "published": {
           "type": "boolean",
-          "description": "Controls whether the model should be registered inside the registry."
+          "description": "Controls whether the model should be registered inside the registry. When set to false, it takes precedence over published property for its entities (Components/Relationships/Policies)."
         }
       },
       "additionalProperties": true
