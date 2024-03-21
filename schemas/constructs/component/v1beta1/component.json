@@ -44,32 +44,39 @@
 				},
 				"capabilities": {
 					"type": "object",
-					"description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
+					"description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpreted by Meshery for full lifecycle management."
 				},
 				"genealogy": {
-					"type": "string"
+					"type": "string",
+					"description": "Relationships define the nature of interaction between interconnected components in Meshery. Genealogy represents the various forms of relationships among and between components, like hierarchical (child, parent, grandparent, great-grandparent), interconnected, and dependent, affinal (), collateral (sibling, nieces and nephews, cousin, aunts and uncles), Removed Relationships: relationships among and between components no matter the genealogy of the relationship such as parent, siblings, binding. Relationships have selectors, selector sets, metadata, and optional parameters."
 				},
 				"isAnnotation": {
 					"type": "boolean",
-					"description": "Identifies whether the component should be treated as deployable entity or just for logical representation."
+					"description": "Identifies whether the component should be treated as a deployable entity or just for logical representation."
 				},
 				"shape": {
-					"type": "string"
+					"type": "string",
+					"description": "Shape information for graphical representation."
 				},
 				"primaryColor": {
-					"type": "string"
+					"type": "string",
+					"description": "Primary color for graphical representation."
 				},
 				"secondaryColor": {
-					"type": "string"
+					"type": "string",
+					"description": "Secondary color for graphical representation."
 				},
 				"svgWhite": {
-					"type": "string"
+					"type": "string",
+					"description": "SVG representation in white color."
 				},
 				"svgColor": {
-					"type": "string"
+					"type": "string",
+					"description": "SVG representation in colored form."
 				},
 				"svgComplete": {
-					"type": "string"
+					"type": "string",
+					"description": "Complete SVG representation."
 				},
 				"published": {
 					"type": "boolean",
@@ -80,7 +87,7 @@
 		},
 		"entity": {
 			"type": "object",
-			"description": "",
+			"description": "Entity information related to the component.",
 			"properties": {
 				"apiVersion": {
 					"type": "string",
@@ -88,7 +95,7 @@
 				},
 				"kind": {
 					"type": "string",
-					"description": "Kind of the object to manage. Example: Pod is an k8s object of Kind 'Pod'"
+					"description": "Kind of the object to manage. Example: Pod is a Kubernetes object of Kind 'Pod'"
 				},
 				"type": {
 					"description": "Type of the underlying infrastructure the component belongs to. Example: Kubernetes, Terraform."
@@ -119,6 +126,6 @@
 		"schemaVersion",
 		"definitionVersion",
 		"model",
-		"entiy"
+		"entity"
 	]
 }
