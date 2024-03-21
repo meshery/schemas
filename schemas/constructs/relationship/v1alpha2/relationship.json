@@ -11,9 +11,13 @@
   "additionalProperties": false,
   "type": "object",
   "properties": {
-    "apiVersion": {
+    "schemaVersion": {
       "type": "string",
-      "description": "API Version of the Relationship."
+      "description": "Specifies the version of the schema used for the definition."
+    },
+    "definitionVersion": {
+      "type": "string",
+      "description": "Specifies the version of the definition."
     },
     "kind": {
       "type": "string",
