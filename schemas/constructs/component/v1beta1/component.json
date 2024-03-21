@@ -1,116 +1,115 @@
 {
-	"$id": "https://schemas.meshery.io/component.json",
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"description": "Components are the atomic units for designing infrastructure. Learn more at https://docs.meshery.io/concepts/components",
-	"additionalProperties": false,
-	"type": "object",
-	"properties": {
-	  "schemaVersion": {
-		"type": "string",
-		"description": "Specifies the version of the schema used for the definition."
-	  },
-	  "definitionVersion": {
-		"type": "string",
-		"description": "Specifies the version of the definition."
-	  },
-	  "displayName": {
-		"$ref": "https://schemas.meshery.io/core.json#inputString",
-		"description": "Name of the component in human-readible format."
-	  },
-	  "format": {
-		"type": "string",
-		"enum": ["JSON", "CUE"],
-		"default": "JSON",
-		"description": "Format specifies the format used in the `entity.schema` field. JSON is the default."
-	  },
-	  "model": {
-		"$ref": "https://schemas.meshery.io/v1alpha1/model.json#",
-		"description": "Name of the model to which the component belongs. Learn more at https://docs.meshery.io/concepts/models"
-	  },
-	  "metadata": {
-		"type": "object",
-		"description": "Metadata contains additional information associated with the component.",
-		"required": ["name", "version"],
-		"properties": {
-		  "description": {
-			"type": "string",
-			"description": "A written representation of the purpose and characteristics of the component."
-		  },
-		  "capabilities": {
-			"type": "object",
-			"description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
-		  },
-		  "genealogy": {
-			"type": "string",
-			"description": "Relationships define the nature of interaction between interconnected components in Meshery. Genealogy represents the various forms of relationships among and between components."
-		  },
-		  "isAnnotation": {
-			"type": "boolean",
-			"description": "Identifies whether the component should be treated as deployable entity or just for logical representation."
-		  },
-		  "shape": {
-			"type": "string",
-			"description": "Shape of the component used for UI representation."
-		  },
-		  "primaryColor": {
-			"type": "string",
-			"description": "Primary color of the component used for UI representation."
-		  },
-		  "secondaryColor": {
-			"type": "string",
-			"description": "Secondary color of the component used for UI representation."
-		  },
-		  "svgWhite": {
-			"type": "string",
-			"description": "White SVG of the component used for UI representation on dark background."
-		  },
-		  "svgColor": {
-			"type": "string",
-			"description": "Colored SVG of the component used for UI representation on light background."
-		  },
-		  "svgComplete": {
-			"type": "string",
-			"description": "Complete SVG of the component used for UI representation, often inclusive of background."
-		  },
-		  "published": {
-			"type": "boolean",
-			"description": "Controls whether the component should be registered in Meshery Registry."
-		  }
-		},
-		"additionalProperties": true
-	  },
-	  "entity": {
-		"type": "object",
-		"description": "Component and it's properties.",
-		"properties": {
-		  "version": {
-			"type": "string",
-			"description": "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod."
-		  },
-		  "kind": {
-			"type": "string",
-			"description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
-		  },
-		  "type": {
-			"description": "Primary classifer used in categorization of the component."
-		  },
-		  "subType": {
-			"type": "string",
-			"description": "Seconday classifer used in categorization of the component."
-		  },
-		  "modelVersion": {
-			"$ref": "https://schemas.meshery.io/core.json#versionString",
-			"description": "Version of the model to which the component belongs."
-		  },
-		  "schema": {
-			"type": "string",
-			"description": "JSON schema of the object as defined by the registrant."
-		  }
-		},
-		"required": ["apiVersion", "kind", "type", "modelVersion", "schema"]
-	  }
-	},
-	"required": ["schemaVersion", "definitionVersion", "model", "entity"]
-  }
-  
-  
+  "$id": "https://schemas.meshery.io/component.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Components are the atomic units for designing infrastructure. Learn more at https://docs.meshery.io/concepts/components",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "description": "Specifies the version of the schema used for the definition."
+    },
+    "definitionVersion": {
+      "type": "string",
+      "description": "Specifies the version of the definition."
+    },
+    "displayName": {
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "description": "Name of the component in human-readible format."
+    },
+    "description": {
+      "type": "string",
+      "description": "A written representation of the purpose and characteristics of the component."
+    },
+    "format": {
+      "type": "string",
+      "enum": ["JSON", "CUE"],
+      "default": "JSON",
+      "description": "Format specifies the format used in the `entity.schema` field. JSON is the default."
+    },
+    "model": {
+      "$ref": "https://schemas.meshery.io/v1alpha1/model.json#",
+      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata contains additional information associated with the component.",
+      "required": ["name", "version"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Various properties and characteristics of the component."
+        },
+        "capabilities": {
+          "type": "object",
+          "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
+        },
+        "genealogy": {
+          "type": "string",
+          "description": "Genealogy represents the various representational states of the component."
+        },
+        "isAnnotation": {
+          "type": "boolean",
+          "description": "Identifies whether the component should be treated as deployable entity or just for logical representation."
+        },
+        "shape": {
+          "type": "string",
+          "description": "Shape of the component used for UI representation.",
+          "enum": ["ellipse","triangle","round-triangle","rectangle","round-rectangle","bottom-round-rectangle","cut-rectangle","barrel","rhomboid","diamond","round-diamond","pentagon","round-pentagon","hexagon","round-hexagon","concave-hexagon","heptagon","round-heptagon","octagon","round-octagon","star","tag","round-tag","vee"]
+        },
+        "primaryColor": {
+          "type": "string",
+          "description": "Primary color of the component used for UI representation."
+        },
+        "secondaryColor": {
+          "type": "string",
+          "description": "Secondary color of the component used for UI representation."
+        },
+        "svgWhite": {
+          "type": "string",
+          "description": "White SVG of the component used for UI representation on dark background."
+        },
+        "svgColor": {
+          "type": "string",
+          "description": "Colored SVG of the component used for UI representation on light background."
+        },
+        "svgComplete": {
+          "type": "string",
+          "description": "Complete SVG of the component used for UI representation, often inclusive of background."
+        },
+        "published": {
+          "type": "boolean",
+          "description": "Controls whether the component should be registered in Meshery Registry."
+        }
+      },
+      "additionalProperties": true
+    },
+    "entity": {
+      "type": "object",
+      "description": "Component and it's properties.",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod."
+        },
+        "kind": {
+          "type": "string",
+          "description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
+        },
+        "type": {
+          "description": "Primary classifer used in categorization of the component."
+        },
+        "subType": {
+          "type": "string",
+          "description": "Seconday classifer used in categorization of the component."
+        },
+        "schema": {
+          "type": "string",
+          "description": "JSON schema of the object as defined by the registrant."
+        }
+      },
+      "required": ["apiVersion", "kind", "type", "modelVersion", "schema"]
+    }
+  },
+  "required": ["schemaVersion", "definitionVersion", "model", "entity"]
+}
