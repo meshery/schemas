@@ -5,6 +5,14 @@
   "additionalProperties": false,
   "type": "object",
   "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "description": "Specifies the version of the schema used for the definition."
+    },
+    "definitionVersion": {
+      "type": "string",
+      "description": "Specifies the version of the definition."
+    },
     "name": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "The name for the model."
