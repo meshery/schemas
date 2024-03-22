@@ -9,7 +9,7 @@
     },
     "versionString":{
       "type": "string",
-      "pattern": "^\\d+(\\.\\d+){0,2}(-(alpha|beta))?$"
+      "pattern": "^\\d+(\\.\\d+){0,2}(-(alpha|beta|rc))?$"
     }
   }
 }

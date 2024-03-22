@@ -46,7 +46,7 @@
       }
     },
     "model": {
-      "$ref": "https://schemas.meshery.io/model.json#",
+      "$ref": "https://schemas.meshery.io/v1alpha1/model.json#",
       "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
     },
     "displayName": {

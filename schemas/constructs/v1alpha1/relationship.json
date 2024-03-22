@@ -33,10 +33,6 @@
       "$ref": "https://schemas.meshery.io/model.json",
       "description": "Model of the Relationship."
     },
-    "type": {
-      "type": "string",
-      "description": "Classification of relationships. Used to group relationships similar in nature."
-    },
     "subType": {
       "type": "string",
       "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
@@ -54,10 +50,10 @@
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
             "properties": {
               "from": {
-                "$ref": "https://schemas.meshery.io/selectors.json#from"
+                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#from"
               },
               "to": {
-                "$ref": "https://schemas.meshery.io/selectors.json#to"
+                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#to"
               }
             }
           },
@@ -66,10 +62,10 @@
             "description": "Selectors used to define relationships which are allowed",
             "properties": {
               "from": {
-                "$ref": "https://schemas.meshery.io/selectors.json#from"
+                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#from"
               },
               "to": {
-                "$ref": "https://schemas.meshery.io/selectors.json#to"
+                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#to"
               }
             }
           }

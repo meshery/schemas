@@ -1,0 +1,32 @@
+{
+    "$id": "https://schemas.meshery.io/core.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "Reusable core schema elements",
+    "definitions": {
+      "inputString": {
+        "type": "string",
+        "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+      },
+      "versionString": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 100,
+        "description": "API version of the object",
+        "pattern": "^v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+        "examples": [
+          "v1",
+          "v1alpha1",
+          "v2beta3",
+          "v1.custom-suffix"
+        ]
+      },
+      "semverString": {
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 100,
+        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+        "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+      }
+    }
+  }
+  
