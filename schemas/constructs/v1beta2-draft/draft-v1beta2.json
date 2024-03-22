@@ -28,7 +28,7 @@
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
     "model": {
-      "$ref": "https://schemas.meshery.io/v1alpha1/model.json#",
+      "$ref": "https://schemas.meshery.io/v1beta1/model.json#",
       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
     },
     "metadata": {

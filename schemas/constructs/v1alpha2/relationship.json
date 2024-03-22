@@ -14,24 +14,47 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "type": "string",
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
       "description": "Specifies the version of the schema used for the definition."
     },
     "version": {
-      "type": "ref",
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#semverString",
       "description": "Specifies the version of the definition."
     },
     "kind": {
       "type": "string",
-      "description": "Kind of the Relationship."
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "description": "Kind of the Relationship.",
+      "enum": [
+        "hierarchical",
+        "edge",
+        "sibling"
+      ]
     },
     "type": {
       "type": "string",
-      "description": "Classification of relationships. Used to group relationships similar in nature."
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "description": "Classification of relationships. Used to group relationships similar in nature.",
+      "enum": [
+        "binding",
+        "firewall",
+        "dependency",
+        "permission",
+        "inventory",
+        "parent",
+        "grandparent",
+        "grandchild",
+        "matchlabels"
+      ]
     },
     "subType": {
       "type": "string",
-      "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship.",
+      "enum": [
+        "mount",
+        "permission"
+      ]
     },
     "metadata": {
       "type": "object",
@@ -39,6 +62,7 @@
       "properties": {
         "description": {
           "type": "string",
+          "$ref": "https://schemas.meshery.io/core.json#inputString",
           "description": "Description of the Relationship."
         }
       }
@@ -72,7 +96,7 @@
           },
           "allow": {
             "type": "object",
-            "description": "Selectors used to define relationships which are allowed",
+            "description": "Selectors used to define relationships which are allowed.",
             "required": ["to", "from"],
             "properties": {
               "from": {

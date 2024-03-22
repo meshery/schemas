@@ -6,12 +6,14 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "type": "string",
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
       "description": "Specifies the version of the schema to which the component definition conforms."
     },
     "version": {
-      "type": "string",
-      "description": "Specifies the version of the component definition."
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#semverString",
+      "description": "Version of the component definition.",
+      "minLength": 1,
+      "maxLength": 50
     },
     "displayName": {
       "$ref": "https://schemas.meshery.io/v1alpha2/core.json#inputString",

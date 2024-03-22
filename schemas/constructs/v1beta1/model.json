@@ -6,16 +6,14 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "type": "string",
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
       "description": "Specifies the version of the schema used for the definition.",
       "minLength": 1,
       "maxLength": 50
     },
     "version": {
-      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
-      "description": "Version of the model definition. Uses semantic versioning",
-      "minLength": 1,
-      "maxLength": 50
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#semverString",
+      "description": "Version of the model definition."
     },
     "name": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
