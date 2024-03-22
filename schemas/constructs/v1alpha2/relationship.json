@@ -22,7 +22,6 @@
       "description": "Specifies the version of the definition."
     },
     "kind": {
-      "type": "string",
       "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "Kind of the Relationship.",
       "enum": [
@@ -32,7 +31,6 @@
       ]
     },
     "type": {
-      "type": "string",
       "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "Classification of relationships. Used to group relationships similar in nature.",
       "enum": [
@@ -46,7 +44,6 @@
       ]
     },
     "subType": {
-      "type": "string",
       "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship.",
       "enum": [
@@ -55,12 +52,15 @@
         "firewall"
       ]
     },
+    "evaluationQuery": {
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "description": "Determines the policy rule to be used for the evaluation of the relationship."
+    },
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
       "properties": {
         "description": {
-          "type": "string",
           "$ref": "https://schemas.meshery.io/core.json#inputString",
           "description": "Description of the Relationship."
         }
@@ -78,12 +78,17 @@
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
-        "required": ["alllow"],
+        "required": [
+          "alllow"
+        ],
         "properties": {
           "deny": {
             "type": "object",
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
-            "required": ["to", "from"],
+            "required": [
+              "to",
+              "from"
+            ],
             "properties": {
               "from": {
                 "$ref": "https://schemas.meshery.io/v1alpha2/selectors.json#from"
@@ -96,7 +101,10 @@
           "allow": {
             "type": "object",
             "description": "Selectors used to define relationships which are allowed.",
-            "required": ["to", "from"],
+            "required": [
+              "to",
+              "from"
+            ],
             "properties": {
               "from": {
                 "$ref": "https://schemas.meshery.io/v1alpha2/selectors.json#from"
