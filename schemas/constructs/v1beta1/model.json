@@ -7,23 +7,33 @@
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "description": "Specifies the version of the schema used for the definition."
+      "description": "Specifies the version of the schema used for the definition.",
+      "minLength": 1,
+      "maxLength": 50
     },
     "version": {
-      "$ref": "https://schemas.meshery.io/v1alpha1/core.json#versionString",
-      "description": "Version of the model definition. Uses semantic versioning"
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
+      "description": "Version of the model definition. Uses semantic versioning",
+      "minLength": 1,
+      "maxLength": 50
     },
     "name": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
-      "description": "The unique name for the model within the scope of a registrant."
+      "description": "The unique name for the model within the scope of a registrant.",
+      "minLength": 1,
+      "maxLength": 100
     },
     "displayName": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
-      "description": "Human-readable name for the model."
+      "description": "Human-readable name for the model.",
+      "minLength": 1,
+      "maxLength": 100
     },
     "description": {
       "type": "string",
-      "description": "Description of the model."
+      "description": "Description of the model.",
+      "minLength": 1,
+      "maxLength": 1000
     },
     "status": {
       "type": "string",
@@ -32,23 +42,26 @@
     },
     "registrant": {
       "type": "string",
-      "description": "Kind of the connection responsible for sourcing and registering entities related to this model."
+      "description": "Kind of the connection responsible for sourcing and registering entities related to this model.",
+      "minLength": 1,
+      "maxLength": 100
     },
     "category": {
       "type": "string",
-      "description": "Category of the model."
+      "description": "Category of the model.",
+      "minLength": 1,
+      "maxLength": 100
     },
     "subCategory": {
       "type": "string",
-      "description": "Sub-category of the model."
+      "description": "Sub-category of the model.",
+      "minLength": 1,
+      "maxLength": 100
     },
     "metadata": {
       "type": "object",
       "description": "Metadata containing additional information associated with the model.",
-      "required": [
-        "name",
-        "version"
-      ],
+      "required": ["name", "version"],
       "properties": {
         "isAnnotation": {
           "type": "boolean",
@@ -56,23 +69,30 @@
         },
         "primaryColor": {
           "type": "string",
-          "description": "Primary color associated with the model."
+          "description": "Primary color associated with the model.",
+          "minLength": 1,
+          "maxLength": 50
         },
         "secondaryColor": {
           "type": "string",
-          "description": "Secondary color associated with the model."
+          "description": "Secondary color associated with the model.",
+          "minLength": 1,
+          "maxLength": 50
         },
         "svgWhite": {
           "type": "string",
-          "description": "SVG representation of the model in white color."
+          "description": "SVG representation of the model in white color.",
+          "minLength": 1
         },
         "svgColor": {
           "type": "string",
-          "description": "SVG representation of the model in colored format."
+          "description": "SVG representation of the model in colored format.",
+          "minLength": 1
         },
         "svgComplete": {
           "type": "string",
-          "description": "SVG representation of the complete model."
+          "description": "SVG representation of the complete model.",
+          "minLength": 1
         }
       },
       "additionalProperties": true
@@ -83,8 +103,10 @@
       "required": ["version"],
       "properties": {
         "version": {
-          "$ref": "https://schemas.meshery.io/v1alpha1/core.json#versionString",
-          "description": "Version of the model as defined by the registrant."
+          "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
+          "description": "Version of the model as defined by the registrant.",
+          "minLength": 1,
+          "maxLength": 100
         }
       }
     }

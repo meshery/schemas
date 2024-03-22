@@ -15,7 +15,7 @@
           "type": "string"
         },
         "version": {
-          "$ref": "https://schemas.meshery.io/core.json#versionString"
+          "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString"
         },
         "match": {
           "type": "object",
@@ -77,7 +77,7 @@
           "type": "string"
         },
         "version": {
-          "$ref": "https://schemas.meshery.io/core.json#versionString"
+          "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString"
         },
         "match": {
           "type": "object",

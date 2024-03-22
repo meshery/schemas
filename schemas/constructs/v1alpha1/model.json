@@ -11,11 +11,11 @@
   ],
   "properties": {
     "name": {
-      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "$ref": "https://schemas.meshery.io/v1alpha1/core.json#inputString",
       "description": "The name for the model."
     },
     "displayName": {
-      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "$ref": "https://schemas.meshery.io/v1alpha1/core.json#inputString",
       "description": "The display name for the model."
     },
     "status": {
@@ -23,7 +23,7 @@
       "description": "Status of model, e.g. Registered, Ignored, Enabled ..."
     },
     "version": {
-      "$ref": "https://schemas.meshery.io/core.json#versionString",
+      "$ref": "https://schemas.meshery.io/v1alpha1/core.json#versionString",
       "description": "Version of the model."
     },
     "category": {

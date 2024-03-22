@@ -14,7 +14,7 @@
       "description": "Specifies the version of the component definition."
     },
     "displayName": {
-      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#inputString",
       "description": "Name of the component in human-readible format."
     },
     "description": {
