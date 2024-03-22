@@ -11,15 +11,15 @@
     },
     "version": {
       "$ref": "https://schemas.meshery.io/v1alpha1/core.json#versionString",
-      "description": "Version of the model definition. Uses semantic version."
+      "description": "Version of the model definition. Uses semantic versioning"
     },
     "name": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
-      "description": "The name for the model. Must be unique within scope of a registrant."
+      "description": "The unique name for the model within the scope of a registrant."
     },
     "displayName": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
-      "description": "Name for the model in human-readible format."
+      "description": "Human-readable name for the model."
     },
     "description": {
       "type": "string",
@@ -27,14 +27,12 @@
     },
     "status": {
       "type": "string",
-      "description": "Status of model.",
-      "$comment": "duplicate // this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status \n maintenance // unavailable for a period of time\nenabled //\ndisabled //\n
-      ignored //\n available //\n publish //",
-      "enum": ["ignored", "available", "enabled", "disabled", "duplicate"]
+      "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+      "enum": ["ignored", "enabled", "duplicate"]
     },
     "registrant": {
       "type": "string",
-      "description": "Kind of the Connection responsible for the sourcing and registration of entities. Example ArtifactHub, GitHub, Meshery-Istio adapter..."
+      "description": "Kind of the connection responsible for sourcing and registering entities related to this model."
     },
     "category": {
       "type": "string",
@@ -46,7 +44,7 @@
     },
     "metadata": {
       "type": "object",
-      "description": "Metadata contains additional information associated with the model.",
+      "description": "Metadata containing additional information associated with the model.",
       "required": [
         "name",
         "version"
@@ -54,44 +52,42 @@
       "properties": {
         "isAnnotation": {
           "type": "boolean",
-          "description": "Identifies whether the model and all its entities should be treated as deployable entity or be treated as logical representation."
+          "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations."
         },
         "primaryColor": {
-          "type": "string"
+          "type": "string",
+          "description": "Primary color associated with the model."
         },
         "secondaryColor": {
-          "type": "string"
+          "type": "string",
+          "description": "Secondary color associated with the model."
         },
         "svgWhite": {
-          "type": "string"
+          "type": "string",
+          "description": "SVG representation of the model in white color."
         },
         "svgColor": {
-          "type": "string"
+          "type": "string",
+          "description": "SVG representation of the model in colored format."
         },
         "svgComplete": {
-          "type": "string"
+          "type": "string",
+          "description": "SVG representation of the complete model."
         }
       },
       "additionalProperties": true
     },
     "model": {
       "type": "object",
-      "description": "Metadata contains additional information associated with the model.",
-      "required": [
-        "kind",
-        "version"
-      ],
+      "description": "Registrant-defined data associated with the model.",
+      "required": ["version"],
       "properties": {
         "version": {
           "$ref": "https://schemas.meshery.io/v1alpha1/core.json#versionString",
           "description": "Version of the model as defined by the registrant."
         }
       }
+    }
   },
-  "required": [
-    "name",
-    "version",
-    "registrant",
-    "category"
-  ]
+  "required": ["name", "version", "registrant", "category"]
 }
