@@ -9,7 +9,14 @@
     },
     "versionString": {
       "type": "string",
-      "pattern": "^\\d+(\\.\\d+){0,2}(-(alpha|beta|rc)(\\.[0-9]+)?)?$"
+      "pattern": "^\\d+(\\.\\d+){0,2}(-(alpha|beta|rc))?$"
+    },
+    "semverString": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 256,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
     }
   }
 }
