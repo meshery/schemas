@@ -39,7 +39,7 @@
       "enum": ["ignored", "enabled", "duplicate"]
     },
     "registrant": {
-      "type": "string",
+      "$ref": "../v1alpha2/connections.yaml#/components/schemas/connection",
       "description": "Kind of the connection responsible for sourcing and registering entities related to this model.",
       "minLength": 1,
       "maxLength": 100
