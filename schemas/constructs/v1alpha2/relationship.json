@@ -37,9 +37,7 @@
       "description": "Classification of relationships. Used to group relationships similar in nature.",
       "enum": [
         "binding",
-        "firewall",
         "dependency",
-        "permission",
         "inventory",
         "parent",
         "grandparent",
@@ -53,7 +51,8 @@
       "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship.",
       "enum": [
         "mount",
-        "permission"
+        "permission",
+        "firewall"
       ]
     },
     "metadata": {
