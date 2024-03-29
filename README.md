@@ -53,11 +53,6 @@ REST API
 
 Adapters
 - meshes.proto
-  
-### Internal
-- Object Schema
-  - ui-schema.js
-
  
 <p style="clear:both;">&nbsp;</p>
 
