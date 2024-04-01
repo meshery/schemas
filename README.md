@@ -39,13 +39,22 @@ alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 Meshery follows schema-driven development. As a project, Meshery has different types of schemas. Some schemas are external facing, and some internal to Meshery itself. This repository serves as a central location for storing schemas from which all Meshery components can take reference.
 
 ### External
+
 Definitions
 - model
   - version
-    - model.schema
+    - model.definition
     - components
-      - component-1.schema
-      - component-2.schema
+      - component-1.definition
+      - component-2.definition
+    - policy.definition
+    - relationship.definition
+
+Schemas
+- constructs
+  - schema.version // Schema version
+    - component.schema
+    - model.schema
     - policy.schema
     - relationship.schema
 
