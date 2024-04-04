@@ -40,7 +40,7 @@ Meshery follows schema-driven development. As a project, Meshery has different t
 
 ### External
 
-Meshery Schemas file structure is defined based on definitions and schemas, checkout [docs.meshery.io](https://docs.meshery.io/concepts/logical) to learn more about definitions and schemas.
+Meshery schemas file structure is defined based on definitions and schemas, checkout [docs.meshery.io](https://docs.meshery.io/concepts/logical) to learn more about definitions and schemas.
 
 Definitions
 - model
