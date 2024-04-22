@@ -37,6 +37,7 @@
       "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
       "properties": {
         // Future: extrapolate `capabilities` properties into first-class properties.
+        // define a proper json schema for capabilities
         "capabilities": {
           "type": "object",
           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
