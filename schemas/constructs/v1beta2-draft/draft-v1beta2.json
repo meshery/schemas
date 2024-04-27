@@ -37,6 +37,7 @@
       "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
       "properties": {
         // Future: extrapolate `capabilities` properties into first-class properties.
+        // define a proper json schema for capabilities
         "capabilities": {
           "type": "object",
           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
@@ -96,12 +97,15 @@
           "description": "Complete SVG of the component used for UI representation, often inclusive of background."
         },
         // This should probably becomes status as it is a mutable attribute of the component.
-        and would be an enum of:
+        // and would be an enum of:
+        "status" :[
+        "ignore",
+        "publish",
+        "duplicate" ,// this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the "duplicate" status.
+        "maintenance"
+         ],// unavailable for a period of time
 
-ignore
-publish
-duplicate // this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the "duplicate" status.
-maintenance // unavailable for a period of time
+        // should be probably removed in favor of status
         "published": {
           "type": "boolean",
           "description": "'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered."
