@@ -40,24 +40,31 @@ Meshery follows schema-driven development. As a project, Meshery has different t
 
 ### External
 
-Models
-- model.schema
-  - component.schema
-    - connection-ui-schema.js
-    - credential-ui-schema.js
-  - policy.schema
-  - relationship.schema
+Meshery schemas file structure is defined based on definitions and schemas, checkout [docs.meshery.io](https://docs.meshery.io/concepts/logical) to learn more about definitions and schemas.
+
+Definitions
+- model
+  - version
+    - model.definition
+    - components
+      - component-1.definition
+      - component-2.definition
+    - policy.definition
+    - relationship.definition
+
+Schemas
+- constructs
+  - schema.version // Schema version
+    - component.schema
+    - model.schema
+    - policy.schema
+    - relationship.schema
 
 REST API
  - swagger.yaml
 
 Adapters
 - meshes.proto
-  
-### Internal
-- Object Schema
-  - ui-schema.js
-
  
 <p style="clear:both;">&nbsp;</p>
 
