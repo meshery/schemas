@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Design Schema",
+  "description": "Schema for design  in v1Beta1",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the design"
+    },
+    "schemaVersion": {
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
+      "description": "Specifies the version of the schema to which the design  conforms."
+    },
+    "version": {
+      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#semverString",
+      "description": "Version of the design",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "components": {
+      "type": "object",
+      "description": "Map of component IDs to their corresponding component declarations",
+      "additionalProperties": {
+        "$ref": "#/definitions/Component"
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "description": "Design-level preferences",
+      "properties": {
+        "Layers": {
+          "type": "array",
+          "description": "List of available layers",
+          "items": {
+            "type": "string",
+            "enum": ["components", "edges", "tagsets", "children", "grandchildren", "badges"]
+          }
+        },
+        "Relationship_configurations": {
+          "type": "object",
+          "description": "Configuration for different relationship types",
+          "patternProperties": {
+            "^(.*)-(.*)-(.*)$": {
+              "type": "object",
+              "properties": {
+                "Enabled": {
+                  "type": "boolean",
+                  "description": "Whether this relationship type is enabled"
+                },
+                "relation-specific-config": {
+                  "type": "object",
+                  "description": "Optional relation-specific configuration (implementation dependent)"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["Layers"]
+    },
+    "Relationships": {
+      "type": "array",
+      "description": "List of relationships between components",
+      "items": {
+        "type": "object",
+        "properties": {
+          "From": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID (UUID) of the source component"
+          },
+          "To": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID (UUID) of the target component"
+          },
+          "Kind": {
+            "type": "string",
+            "description": "Kind of the relationship"
+          },
+          "Type": {
+            "type": "string",
+            "description": "Type of the relationship"
+          },
+          "Subtype": {
+            "type": "string",
+            "description": "Subtype of the relationship (optional)"
+          },
+          "Status": {
+            "type": "string",
+            "enum": ["evaluating", "valid", "invalid"],
+            "description": "Status of the relationship"
+          }
+        },
+        "required": ["From", "To", "Kind", "Type", "Status"]
+      }
+    }
+  },
+  "required": ["Name", "Components", "Preferences", "Relationships"]
+}
