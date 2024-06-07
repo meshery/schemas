@@ -42,9 +42,13 @@
             "description": "Categorization of the type of design or operational flow depicted in this design."
         },
         "snapshotURL": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^(https?|http?|oci)://"
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^(https?|http?|oci)://"
+            },
+            "description": "Contains reference to the dark and light mode snapshots of the catalog."
         }
     },
     "required": [
