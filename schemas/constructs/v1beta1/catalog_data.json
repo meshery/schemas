@@ -48,7 +48,7 @@
                 "format": "uri",
                 "pattern": "^(https?|http?|oci)://"
             },
-            "description": "Contains reference to the dark and light mode snapshots of the catalog."
+            "description": "Contains reference to the dark and light mode snapshots of the design."
         }
     },
     "required": [
