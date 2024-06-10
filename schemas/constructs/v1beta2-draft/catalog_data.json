@@ -1,24 +1,35 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
+    "$comment": "Any given catalog content will expose a version. It is the version # of the content at time of publshing.",
     "properties": {
-        "compatibility": {
-            "$comment": "Based on the entity appropriate schema is selected and used by the system. Examples of different catalog item are Designs, Models, relationships. For designs compatibility only requires model, for Model compatability requires Registrant, version and name" ,
+        "publishedVersion": {
+            "description": "Tracks the specific content version that has been made available in the Catalog.",
+            "$ref": "../v1alpha2/core.json#versionString"
+        },
+        "contentType": {
+            "$comment": "Based on the entity appropriate schema is selected and used by the system. Examples of different catalog item are Designs, Models, relationships. For designs compatibility only requires model, for Model compatability requires Registrant, version and name",
             "oneOf": [
                 {
-                    
-                    "type": "array",
-                    "title": "Model",
-                    "items": {
-                        "enum": [
-                            "kubernetes"
-                        ],
-                        "type": "string"
-                    },
-                    "uniqueItems": true,
-                    "$comment": "Content published into the catalog must reference at least one model, and by implication, contain at least one component.",
-                    "minItems": 1,
-                    "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+                    "$comment": "Catalog cotent schema for Design",
+                    "type": "object",
+                    "properties": {
+                        "model": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../v1beta1/model.json"
+                            },
+                            "uniqueItems": true,
+                            "$comment": "Content published into the catalog must reference at least one model, and by implication, contain at least one component.",
+                            "minItems": 1,
+                            "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+                        }
+                    }
+                },
+                {
+                    "$comment": "Catalog cotent schema for Model",
+                    "type": "object",
+                    "$ref": "../v1beta1/model.json"
                 }
             ]
         },
