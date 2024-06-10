@@ -4,7 +4,7 @@
     "properties": {
         "compatibility": {
             "type": "array",
-            "title": "Technology",
+            "title": "Model",
             "items": {
                 "enum": [
                     "kubernetes"
@@ -12,8 +12,9 @@
                 "type": "string"
             },
             "uniqueItems": true,
+            "$comment": "Content published into the catalog must reference at least one model, and by implication, contain at least one component.",
             "minItems": 1,
-            "description": "A list of technologies included in or implicated by this design; a list of relevant technology tags."
+            "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
         },
         "pattern_caveats": {
             "type": "string",
