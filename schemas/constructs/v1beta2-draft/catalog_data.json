@@ -56,6 +56,16 @@
                 "pattern": "^(https?|http?|oci)://"
             },
             "description": "Contains reference to the dark and light mode snapshots of the design."
+        },
+        "tags": {
+            "type": "string",
+            "description": "Custom tags to categorise catalog items"
+        },
+        "category": {
+            "type": "string"
+        },
+        "subCategory": {
+            "type": "string"
         }
     },
     "required": [
