@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "publishedVersion": {
+            "description": "Tracks the specific content version that has been made available in the Catalog.",
+            "$ref": "../v1alpha2/core.json#versionString" 
+        },
+        "compatibility": {
+            "type": "array",
+            "title": "Model",
+            "items": {
+                "enum": [
+                    "kubernetes"
+                ],
+                "type": "string"
+            },
+            "uniqueItems": true,
+            "$comment": "Content published into the catalog must reference at least one model, and by implication, contain at least one component.",
+            "minItems": 1,
+            "description": "One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential."
+        },
+        "pattern_caveats": {
+            "type": "string",
+            "title": "Caveats and Considerations",
+            "description": "Specific stipulations to consider and known behaviors to be aware of when using this design."
+        },
+        "pattern_info": {
+            "type": "string",
+            "title": "Description",
+            "description": "Purpose of the design along with its intended and unintended uses."
+        },
+        "type": {
+            "type": "string",
+            "title": "Type",
+            "enum": [
+                "Deployment",
+                "Observability",
+                "Resiliency",
+                "Scaling",
+                "Security",
+                "Traffic-management",
+                "Troubleshooting",
+                "Workloads"
+            ],
+            "default": "Deployment",
+            "description": "Categorization of the type of design or operational flow depicted in this design."
+        },
+        "snapshotURL": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^(https?|http?|oci)://"
+            },
+            "description": "Contains reference to the dark and light mode snapshots of the design."
+        }
+    },
+    "required": [
+        "compatibility",
+        "pattern_caveats",
+        "pattern_info",
+        "type"
+    ]
+}
