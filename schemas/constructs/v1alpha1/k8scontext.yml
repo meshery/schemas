@@ -2,22 +2,22 @@ k8sContext:
   type: object
   properties:
     id:
-      $ref: ../common.yml#/id
+      $ref: ./common/core.yml#/id
     name:
-      $ref: ../common.yml#/text
+      $ref: ./common/core.yml#/text
     auth:
-      $ref: ../common.yml#/map_object
+      $ref: ./common/core.yml#/map_object
     cluster:
-      $ref: ../common.yml#/map_object
+      $ref: ./common/core.yml#/map_object
     server:
       type: string
     meshery_instance_id:
-      $ref: ../common.yml#/meshery_instance_uuid
+      $ref: ./common/core.yml#/meshery_instance_uuid
     kubernetes_server_id:
-      $ref: ../common.yml#/kubernetes_server_uuid
+      $ref: ./common/core.yml#/kubernetes_server_uuid
     deployment_type:
       type: string
     updated_at:
-      $ref: ../common.yml#/time
+      $ref: ./common/core.yml#/time
     created_at:
-      $ref: ../common.yml#/time
+      $ref: ./common/core.yml#/time

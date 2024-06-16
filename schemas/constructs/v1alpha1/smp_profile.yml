@@ -27,13 +27,13 @@ components:
     performanceProfile:
       properties:
         id: 
-          $ref: '../common.yml#/id'
+          $ref: './common/core.yml#/id'
         name:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
         user_id:  
-          $ref: '../common.yml#/id'
+          $ref: './common/core.yml#/id'
         schedule:
-          $ref: '../common.yml#/id'
+          $ref: './common/core.yml#/id'
         load_generators:
           type: string
         endpoints:
@@ -47,7 +47,7 @@ components:
         duration:
           type: string
         last_run:
-          $ref: '../common.yml#/time' 
+          $ref: './common/core.yml#/time' 
         total_results:
           type: integer  
         request_headers:
@@ -57,13 +57,13 @@ components:
         request_body:
           type: string
         created_at:
-          $ref: '../common.yml#/time'
+          $ref: './common/core.yml#/time'
         updated_at:
-          $ref: '../common.yml#/time'
+          $ref: './common/core.yml#/time'
 
     performanceProfilePage:
       allOf:
-        - $ref: ../common.yml#/resultsPage
+        - $ref: ./common/core.yml#/resultsPage
         - type: object
           properties:
             profiles:
@@ -74,31 +74,31 @@ components:
     performanceResult:
       properties:
         id: 
-          $ref: '../common.yml#/id'
+          $ref: './common/core.yml#/id'
         name:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
         test_start_time:
-          $ref: '../common.yml#/time'
+          $ref: './common/core.yml#/time'
         mesh:
           type: string
         runner_results:
-          $ref: '../common.yml#/map_object'
+          $ref: './common/core.yml#/map_object'
         deleted:
           type: boolean
         server_metrics:
-          $ref: '../common.yml#/map_object'
+          $ref: './common/core.yml#/map_object'
         server_board_config:
-          $ref: '../common.yml#/map_object'
+          $ref: './common/core.yml#/map_object'
         performance_profile:
-          $ref: '../common.yml#/id'
+          $ref: './common/core.yml#/id'
         created_at: 
-          $ref: '../common.yml#/time'
+          $ref: './common/core.yml#/time'
         updated_at:
-          $ref: '../common.yml#/time'
+          $ref: './common/core.yml#/time'
 
     mesheryResultPage:
       allOf: 
-        - $ref: ../common.yml#/resultsPage
+        - $ref: ./common/core.yml#/resultsPage
         - type: object
           properties:
             results:
@@ -112,7 +112,7 @@ components:
       in: path
       description: Result id
       schema:
-        $ref: ../common.yml#/id
+        $ref: ./common/core.yml#/id
       required: true
 paths:
   /api/performance/smp/profiles:
@@ -123,10 +123,10 @@ paths:
       summary: Performance Profiles
       description: Get Performance Profiles for SMP Dashboard
       parameters:
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/page
+        - $ref: ./common/parameters.yml#/page_size
+        - $ref: ./common/parameters.yml#/search
+        - $ref: ./common/parameters.yml#/order
       responses:
         '200':
           description: Get Performance Profiles with pagination
@@ -135,7 +135,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/performanceProfilePage'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
       security: []
 
   /api/performance/smp/profiles/{id}/results:
@@ -146,11 +146,11 @@ paths:
       summary: Performance Profiles Results by ID
       description: Get Performance Profiles results by ID for SMP Dashboard
       parameters:
-        - $ref: ../parameters.yml#/id
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/page
+        - $ref: ./common/parameters.yml#/page_size
+        - $ref: ./common/parameters.yml#/search
+        - $ref: ./common/parameters.yml#/order
 
       responses:
         '200':
@@ -160,7 +160,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/mesheryResultPage'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
         '502':
           description: Invalid path parameter "id"
           content:
@@ -191,9 +191,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/performanceProfile'
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
 
     get:
       tags:
@@ -202,10 +202,10 @@ paths:
       summary: Get Performance Profiles
       description: Get performance profiles
       parameters:    
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/page
+        - $ref: ./common/parameters.yml#/page_size
+        - $ref: ./common/parameters.yml#/search
+        - $ref: ./common/parameters.yml#/order
       responses:
         '200':
           description: Performance Profiles
@@ -214,9 +214,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/performanceProfilePage'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
 
   /api/performance/profiles/{id}:
     get:
@@ -226,7 +226,7 @@ paths:
       summary: Performance Profile by Id
       description: Get Performance Profile by ID
       parameters:
-        - $ref: ../parameters.yml#/id
+        - $ref: ./common/parameters.yml#/id
       responses:
         '200':
           description: Performance Profile for provided performance profile id
@@ -235,11 +235,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/performanceProfile'
         '400':
-          $ref: '../responses.yml#/400'
+          $ref: './common/responses.yml#/400'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
     delete:
       tags:
         - service mesh performance
@@ -247,7 +247,7 @@ paths:
       summary: Delete Performance Profiles
       description: Delete performance profiles by ID
       parameters:
-        - $ref: ../parameters.yml#/id
+        - $ref: ./common/parameters.yml#/id
       responses:
         '200':
           description: Deleted Performance Profile
@@ -256,11 +256,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/performanceProfile'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '404':
-          $ref: '../responses.yml#/404'
+          $ref: './common/responses.yml#/404'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
 
   /api/performance/profiles/{id}/results:
     get:
@@ -270,11 +270,11 @@ paths:
       summary: Performance Profiles result
       description: Get paginated Performance Profiles result
       parameters:
-        - $ref: ../parameters.yml#/id
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/page
+        - $ref: ./common/parameters.yml#/page_size
+        - $ref: ./common/parameters.yml#/search
+        - $ref: ./common/parameters.yml#/order
       responses:
         '200':
           description: Performance Profile results
@@ -283,9 +283,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/mesheryResultPage'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: '../responses.yml#/500'
+          $ref: './common/responses.yml#/500'
 
     post:
       tags:
@@ -294,7 +294,7 @@ paths:
       summary: Add performance profiles result
       description: Add performance profile result in given performance profile id
       parameters:
-        - $ref: ../parameters.yml#/id
+        - $ref: ./common/parameters.yml#/id
       requestBody:
         description: Body for adding perfor mance profile result
         content:
@@ -312,9 +312,9 @@ paths:
                     type: string
                     format: uuid
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: '../responses.yml#/500'
+          $ref: './common/responses.yml#/500'
 
   /api/performance/profiles/{id}/results/{resultID}:
     get:
@@ -324,8 +324,8 @@ paths:
       summary: Performance Profiles result
       description: Get the performance test result associated with the given profile id and with the given test id
       parameters:
-        - $ref: ../parameters.yml#/id
-        - $ref: ../parameters.yml#/resultID
+        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/resultID
       responses:
         '200':
           description: Performance Profile results
@@ -334,8 +334,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/performanceResult'
         '400':
-          $ref: '../responses.yml#/400'
+          $ref: './common/responses.yml#/400'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: '../responses.yml#/500'
+          $ref: './common/responses.yml#/500'

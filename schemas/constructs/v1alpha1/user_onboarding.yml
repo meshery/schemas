@@ -29,44 +29,44 @@ components:
     signupData:
       properties:
         id:
-          $ref: '../common.yml#/id'
+          $ref: './common/core.yml#/id'
         first_name:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: First Name
         last_name:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: Last Name
         email:
-          $ref: '../common.yml#/email'
+          $ref: './common/core.yml#/email'
         occupation:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: Occupation
         organization:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: Organization
         role:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: Role in organization
         form_type:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: Form Type (MeshMap or Playground)
         status:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: Status (approved / denied)
         task_id:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: ClickUp task id
         task_link:
-          $ref: '../common.yml#/text'
+          $ref: './common/core.yml#/text'
           description: ClickUp task link
         created_at:
-          $ref: '../common.yml#/time'
+          $ref: './common/core.yml#/time'
         updated_at:
-          $ref: '../common.yml#/time'
+          $ref: './common/core.yml#/time'
 
     signupRequestsPage:
       allOf:
-      - $ref: '../common.yml#/resultsPage'
+      - $ref: './common/core.yml#/resultsPage'
       - type: object
         properties:
           signup_data:
@@ -94,11 +94,11 @@ paths:
           $ref: '#/components/requestBodies/signupData'
         responses:
           '200':
-            $ref: '../responses.yml#/200'
+            $ref: './common/responses.yml#/200'
           '401':
-            $ref: '../responses.yml#/401'
+            $ref: './common/responses.yml#/401'
           '500':
-            $ref: '../responses.yml#/500'
+            $ref: './common/responses.yml#/500'
       get:
         tags:
           - user onboarding
@@ -106,11 +106,11 @@ paths:
         summary: Get all Signup requests
         description: Get all Signup requests
         parameters:
-          - $ref: '../parameters.yml#/page'
-          - $ref: '../parameters.yml#/page_size'
-          - $ref: '../parameters.yml#/search'
-          - $ref: '../parameters.yml#/order'
-          - $ref: '../parameters.yml#/requestFilter'
+          - $ref: './common/parameters.yml#/page'
+          - $ref: './common/parameters.yml#/page_size'
+          - $ref: './common/parameters.yml#/search'
+          - $ref: './common/parameters.yml#/order'
+          - $ref: './common/parameters.yml#/requestFilter'
         responses:
           '200':
             description: Signup request
@@ -119,9 +119,9 @@ paths:
                 schema:
                   $ref: '#/components/schemas/signupRequestsPage'
           '401':
-            $ref: '../responses.yml#/401'
+            $ref: './common/responses.yml#/401'
           '500':
-            $ref: '../responses.yml#/500'
+            $ref: './common/responses.yml#/500'
   /api/identity/users/request/approve:
     post:
       tags:
@@ -134,7 +134,7 @@ paths:
           in: query
           description: Signup request id
           schema:
-            $ref: ../common.yml#/id
+            $ref: ./common/core.yml#/id
         - name: first_name
           in: query
           description: First Name
@@ -149,7 +149,7 @@ paths:
           in: query
           description: Email
           schema:
-            $ref: ../common.yml#/email
+            $ref: ./common/core.yml#/email
         - name: organization
           in: query
           description: Organization
@@ -182,13 +182,13 @@ paths:
             type: string
       responses:
         '200':
-          $ref: '../responses.yml#/200'
+          $ref: './common/responses.yml#/200'
         '400':
-          $ref: '../responses.yml#/400'
+          $ref: './common/responses.yml#/400'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: '../responses.yml#/500'
+          $ref: './common/responses.yml#/500'
   /api/identity/users/request/deny:
     post:
       tags:
@@ -201,7 +201,7 @@ paths:
           in: query
           description: Signup request id
           schema:
-            $ref: ../common.yml#/id
+            $ref: ./common/core.yml#/id
         - name: first_name
           in: query
           description: First Name
@@ -216,7 +216,7 @@ paths:
           in: query
           description: Email
           schema:
-            $ref: ../common.yml#/email
+            $ref: ./common/core.yml#/email
         - name: organization
           in: query
           description: Organization
@@ -249,13 +249,13 @@ paths:
             type: string
       responses:
         '200':
-          $ref: '../responses.yml#/200'
+          $ref: './common/responses.yml#/200'
         '400':
-          $ref: '../responses.yml#/400'
+          $ref: './common/responses.yml#/400'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: '../responses.yml#/500'
+          $ref: './common/responses.yml#/500'
   /api/identity/users/request/approve/{id}:
     get:
       tags:
@@ -264,18 +264,18 @@ paths:
       summary: Approve signup request by ID
       description: Approve signup request associated with ID
       parameters:
-        - $ref: '../parameters.yml#/id'
+        - $ref: './common/parameters.yml#/id'
       responses:
         '302':
           description: 'Redirect: SERVER_BASE_URL/profile/roles'
         '303':
           description: 'Redirect: SERVER_BASE_URL/?source=<base64 encoded source url>'
         '400':
-          $ref: '../responses.yml#/400'
+          $ref: './common/responses.yml#/400'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: '../responses.yml#/500'
+          $ref: './common/responses.yml#/500'
   /api/identity/users/request/deny/{id}:
     get:
       tags:
@@ -284,18 +284,18 @@ paths:
       summary: Deny signup request by ID
       description: Deny signup request associated with ID
       parameters:
-        - $ref: '../parameters.yml#/id'
+        - $ref: './common/parameters.yml#/id'
       responses:
         '302':
           description: 'Redirect: SERVER_BASE_URL/profile/roles'
         '303':
           description: 'Redirect: SERVER_BASE_URL/?source=<base64 encoded source url>'
         '400':
-          $ref: '../responses.yml#/400'
+          $ref: './common/responses.yml#/400'
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'
         '500':
-          $ref: '../responses.yml#/500'
+          $ref: './common/responses.yml#/500'
   /api/identity/users/request/notification:
     get:
       tags:
@@ -313,4 +313,4 @@ paths:
         '204':
           description: Status no content
         '401':
-          $ref: '../responses.yml#/401'
+          $ref: './common/responses.yml#/401'

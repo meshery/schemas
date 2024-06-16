@@ -23,54 +23,55 @@ components:
     mesheryInstance:
       properties:
         id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/id
           description: Connection id
         name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Connection name
         server_id:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Connected server id
         server_version:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Running server version
         server_location:
-          $ref: ../common.yml#/endpoint
+          $ref: ./common/core.yml#/endpoint
         server_build_sha:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Server build SHA
         created_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/time
         updated_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/time
         deleted_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/time
         status:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Status
     connection:
       properties:
         id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/id
           description: ID
         name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Connection Name
         credential_id:
-          $ref: ../common.yml#/credential_uuid
+          $ref: ./common/core.yml#/id
           description: Credential ID
         type:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Connection Type
         sub_type:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Connection Subtype
         kind:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Connection Kind
         metadata:
-          $ref: ../common.yml#/map_object
+          $ref: ./common/core.yml#/map_object
         status:
+          $ref: ./common/core.yml#/text
           description: Connection Status
           type: string
           enum: [
@@ -84,17 +85,17 @@ components:
             "not found"
           ]
         user_id:
-          $ref: ../common.yml#/user_uuid
+          $ref: ./common/core.yml#/id
           x-go-name: UserID
         created_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/time
         updated_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/time
         deleted_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/time
     connectionPage:
       allOf:
-        - $ref: ../common.yml#/resultsPage
+        - $ref: ./common/core.yml#/resultsPage
         - type: object
           properties:
             connections:
@@ -104,7 +105,7 @@ components:
     connectionStatusInfo:
       properties:
         status:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
           description: Connection status
         count:
           type: integer
@@ -116,10 +117,39 @@ components:
           items:
             $ref: '#/components/schemas/connectionStatusInfo'
 
+    # Ideally inside connection Definiton in kubernetes model.
+    # Default connection state to be captured in connection definition.
+    # Capture transitions in 
+    k8sContext:
+      properties:
+        id:
+          $ref: ./common/core.yml#/id
+        name:
+          $ref: ./common/core.yml#/text
+        auth:
+          $ref: ./common/core.yml#/map_object
+        cluster:
+          $ref: ./common/core.yml#/map_object
+        server:
+          type: string
+        owner:
+          $ref: ./common/core.yml#/id
+        created_by:
+          $ref: ./common/core.yml#/id
+        meshery_instance_id:
+          $ref: ./common/core.yml#/id
+        kubernetes_server_id:
+          $ref: ./common/core.yml#/id
+        deployment_type:
+          type: string
+        updated_at:
+          $ref: ./common/core.yml#/time
+        created_at:
+          $ref: ./common/core.yml#/time
     k8sContextPersistResponse:
       properties:
         k8sContext:
-          $ref: './k8sContext.yml#/k8sContext'
+          $ref: '#/components/schemas/k8sContext'
         inserted:
           type: boolean
 
@@ -131,18 +161,18 @@ components:
             type: object
             properties:
               kind:
-                $ref: ../common.yml#/text
+                $ref: ./common/core.yml#/text
                 description: Kind
               type:
-                $ref: ../common.yml#/text
+                $ref: ./common/core.yml#/text
                 description: Connection type
               sub_type:
-                $ref: ../common.yml#/text
+                $ref: ./common/core.yml#/text
                 description: Connection subtype
               credential_secret:
-                $ref: ../common.yml#/map_object
+                $ref: ./common/core.yml#/map_object
               metadata:
-                $ref: ../common.yml#/map_object
+                $ref: ./common/core.yml#/map_object
   securitySchemes:
     jwt:
       type: http
@@ -156,20 +186,20 @@ components:
       description: 'Connection kind (eg: Meshery)'
       required: true
       schema:
-        $ref: ../common.yml#/text
+        $ref: ./common/core.yml#/text
     connectionId:
       name: connectionId
       in: path
       description: Connection ID
       schema:
-        $ref: ../common.yml#/id
+        $ref: ./common/core.yml#/id
       required: true
     serverId:
       name: mesheryServerID
       in: path
       description: Meshery server ID
       schema:
-        $ref: ../common.yml#/id
+        $ref: ./common/core.yml#/id
       required: true
 # any special response for this tag  
 paths:
@@ -190,9 +220,9 @@ paths:
                 schema:
                   $ref: '#/components/schemas/connection'
           '401':
-            $ref: ../responses.yml#/401
+            $ref: ./common/responses.yml#/401
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
       get:
         tags:
           - integrations
@@ -200,10 +230,10 @@ paths:
         summary: Get connections
         description: Get connections
         parameters:
-          - $ref: ../parameters.yml#/page
-          - $ref: ../parameters.yml#/page_size
-          - $ref: ../parameters.yml#/search
-          - $ref: ../parameters.yml#/order
+          - $ref: ./common/parameters.yml#/page
+          - $ref: ./common/parameters.yml#/page_size
+          - $ref: ./common/parameters.yml#/search
+          - $ref: ./common/parameters.yml#/order
         responses:
           '200':
             description: Paginated list of connections
@@ -212,7 +242,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/connectionPage'
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
     /api/integrations/connections/{connectionId}:
       put:
         tags:
@@ -232,7 +262,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/connection'
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
     /api/integrations/connections/status:
       get:
         tags:
@@ -248,7 +278,7 @@ paths:
                 schema:
                   $ref: '#/components/schemas/connectionsStatusPage'
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
     /api/integrations/connections/{connectionKind}:
       get:
         tags:
@@ -258,10 +288,10 @@ paths:
         description: Get connections by kind
         parameters:
           - $ref: '#/components/parameters/connectionKind'
-          - $ref: ../parameters.yml#/page
-          - $ref: ../parameters.yml#/page_size
-          - $ref: ../parameters.yml#/search
-          - $ref: ../parameters.yml#/order
+          - $ref: ./common/parameters.yml#/page
+          - $ref: ./common/parameters.yml#/page_size
+          - $ref: ./common/parameters.yml#/search
+          - $ref: ./common/parameters.yml#/order
         responses:
           '200':
             description: Connections by kind
@@ -270,7 +300,7 @@ paths:
                 schema:
                   type: object
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
         security: []
       delete:
         tags:
@@ -288,9 +318,9 @@ paths:
                 schema:
                   $ref: '#/components/schemas/connection'
           '401':
-            $ref: ../responses.yml#/401
+            $ref: ./common/responses.yml#/401
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
     /api/integrations/connections/{connectionKind}/{connectionId}:
       get:
         tags:
@@ -301,10 +331,10 @@ paths:
         parameters:
           - $ref: '#/components/parameters/connectionKind'
           - $ref: '#/components/parameters/connectionId'
-          - $ref: '../parameters.yml#/page'
-          - $ref: ../parameters.yml#/page_size
-          - $ref: '../parameters.yml#/search'
-          - $ref: '../parameters.yml#/order'
+          - $ref: './common/parameters.yml#/page'
+          - $ref: ./common/parameters.yml#/page_size
+          - $ref: './common/parameters.yml#/search'
+          - $ref: './common/parameters.yml#/order'
         responses:
           '200':
             description: Connections by kind
@@ -315,7 +345,7 @@ paths:
                   oneOf:
                     - $ref: '#/components/schemas/k8sContextPersistResponse'
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
     /api/integrations/connections/meshery/{mesheryServerID}:
       delete:
         tags:
@@ -327,8 +357,8 @@ paths:
           - $ref: '#/components/parameters/serverId'
         responses:
           '200':
-            $ref: ../responses.yml#/200
+            $ref: ./common/responses.yml#/200
           '401':
-            $ref: ../responses.yml#/401
+            $ref: ./common/responses.yml#/401
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500

@@ -27,42 +27,42 @@ components:
     meshmodelModel:
       properties:
         id: 
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/id
         name: 
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
         version:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
         display_name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
         status:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
         category_id:
-          $ref: ../common.yml#/id 
+          $ref: ./common/core.yml#/id 
         metadata:
-          $ref:  ../common.yml#/map_object
+          $ref:  ./common/core.yml#/map_object
         created_at:
-          $ref: ../common.yml#/created_at
+          $ref: ./common/core.yml#/created_at
         updated_at:
-          $ref: ../common.yml#/updated_at
+          $ref: ./common/core.yml#/updated_at
         deleted_at:
-          $ref: ../common.yml#/deleted_at
+          $ref: ./common/core.yml#/deleted_at
     meshmodelCategory:
       properties:
         id: 
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/id
         name: 
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/text
         metadata:
-          $ref:  ../common.yml#/map_object
+          $ref:  ./common/core.yml#/map_object
         created_at:
-          $ref: ../common.yml#/created_at
+          $ref: ./common/core.yml#/created_at
         updated_at:
-          $ref: ../common.yml#/updated_at
+          $ref: ./common/core.yml#/updated_at
         deleted_at:
-          $ref: ../common.yml#/deleted_at
+          $ref: ./common/core.yml#/deleted_at
     meshmodelCategoriesPage:
        allOf:
-        - $ref: ../common.yml#/resultsPage
+        - $ref: ./common/core.yml#/resultsPage
         - type: object
           properties:
             categories:
@@ -71,7 +71,7 @@ components:
                 $ref: '#/components/schemas/meshmodelCategory'
     meshmodelModelsPage:
        allOf:
-        - $ref: ../common.yml#/resultsPage
+        - $ref: ./common/core.yml#/resultsPage
         - type: object
           properties:
             models:
@@ -89,11 +89,11 @@ paths:
       summary: Get all models
       description: Get models by name
       parameters:
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
-        - $ref: ../parameters.yml#/status
+        - $ref: ./common/parameters.yml#/page
+        - $ref: ./common/parameters.yml#/page_size
+        - $ref: ./common/parameters.yml#/search
+        - $ref: ./common/parameters.yml#/order
+        - $ref: ./common/parameters.yml#/status
       responses:
         '200':
           description: Models
@@ -102,7 +102,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/meshmodelModelsPage'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
       security: []
   /api/integrations/meshmodels/categories:
     get:
@@ -112,10 +112,10 @@ paths:
       summary: Get all categories
       description: Get models by technology category
       parameters:
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/page
+        - $ref: ./common/parameters.yml#/page_size
+        - $ref: ./common/parameters.yml#/search
+        - $ref: ./common/parameters.yml#/order
       responses:
         '200':
           description: Categories
@@ -124,5 +124,5 @@ paths:
               schema:
                 $ref: '#/components/schemas/meshmodelCategoriesPage'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
       security: []
