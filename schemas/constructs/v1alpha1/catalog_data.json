@@ -4,7 +4,17 @@
     "properties": {
         "publishedVersion": {
             "description": "Tracks the specific content version that has been made available in the Catalog.",
-            "$ref": "https://raw.githubusercontent.com/meshery/schemas/master/schemas/constructs/v1alpha2/core.json#versionString" 
+            "$ref": "./core.json#versionString"
+        },
+        "class": {
+            "description": "Published content belongs to one of the specified class denoting its support level.",
+            "type": "string",
+            "enum": [
+                "official",
+                "verified",
+                "project",
+                "community"
+            ]
         },
         "compatibility": {
             "type": "array",
