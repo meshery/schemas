@@ -123,7 +123,7 @@ components:
           data:
             type: array
             items:
-              $ref: roles.yml#/role
+              $ref: ./roles.yml#/components/schemas/role
     key:
       properties:
         ID:
@@ -314,7 +314,7 @@ components:
         recent_activity:
           type: array
           items:
-            $ref: ./events.yml#/event
+            $ref: ./events.yml#/components/schemas/event
     accountOverview:
       properties:
         k8s_count:

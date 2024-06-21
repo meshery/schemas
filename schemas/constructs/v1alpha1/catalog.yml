@@ -74,7 +74,7 @@ components:
                 enum: [pattern, filter]
                 description: Catalog type (pattern / filter)
               catalog_data:
-                $ref: ./common/core.yml#/map_object
+                $ref: ./catalog_data.json
   
 # any special parameters for this tag
   parameters:

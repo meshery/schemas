@@ -17,38 +17,12 @@
 golangci: error dep-check
 	golangci-lint run
 
-
-## Analyze error codes
-error: dep-check
-	go run github.com/layer5io/meshkit/cmd/errorutil -d . analyze -i ./server/helpers -o ./server/helpers --skip-dirs mesheryctl
-
-## Runs meshkit error utility to update error codes for meshery server only.
-server-error-util:
-	go run github.com/layer5io/meshkit/cmd/errorutil -d . --skip-dirs mesheryctl update -i ./server/helpers/ -o ./server/helpers
-
 #-----------------------------------------------------------------------------
-# Meshery APIs
+# OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: swagger-build swagger swagger-docs-build graphql-docs-build graphql-build
-## Build Meshery REST API specifications
-swagger-build:
-	swagger generate spec -o ./server/helpers/swagger.yaml --scan-models
+.PHONY: redocly-docs-build api-validate schemas-join docs-build
 
-## Generate and serve Meshery REST API specifications
-swagger: swagger-build
-	swagger serve ./server/helpers/swagger.yaml
-
-## Build Meshery REST API documentation
-swagger-docs-build:
-	swagger generate spec -o ./docs/_data/swagger.yml --scan-models; \
-	swagger flatten ./docs/_data/swagger.yml -o ./docs/_data/swagger.yml --with-expand --format=yaml
-
-
-## Building Meshery docs with redocly
-redocly-docs-build:
-	npx @redocly/cli build-docs ./docs/_data/swagger.yml --config='redocly.yaml' -t custom.hbs
-
-## Validate Meshery Cloud's APIs against OpenAPI spec
+## Validate Remote provider APIs against OpenAPI spec
 api-validate:
 	openapi-generator validate -i openapi/openapi.yml
 
@@ -56,7 +30,7 @@ schemas-join:
 	chmod +x scripts/merge-openapi-specs.sh
 	scripts/merge-openapi-specs.sh
 	
-## Build Remote Provider API docs
+## Building docs with redocly
 docs-build:
 	redocly bundle --output openapi/bundled-schema.yml
 	redocly build-docs openapi/bundled-schema.yml --output=openapi/index.html
