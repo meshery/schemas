@@ -10,7 +10,7 @@ process_spec() {
 }
 
 
-schemas_dir="./openapi/schemas"
+schemas_dir="./schemas/constructs/v1alpha1"
 for s in $schemas_dir/*; do
   if [[ -f $s ]]; then
     process_spec $s
