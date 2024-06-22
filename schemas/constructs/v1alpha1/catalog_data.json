@@ -4,7 +4,7 @@
     "properties": {
         "publishedVersion": {
             "description": "Tracks the specific content version that has been made available in the Catalog.",
-            "$ref": "./core.json#/definitions/versionString"
+            "type": "string"
         },
         "class": {
             "description": "Published content belongs to one of the specified class denoting its support level.",

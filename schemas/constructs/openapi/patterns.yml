@@ -64,7 +64,7 @@ components:
         user_id:
           $ref: ./common/core.yml#/id
         pattern_file:
-          $ref: ./common/core.yml#/text
+          $ref: ../v1alpha2/design.json
           description: Pattern file
         name:
           $ref: ./common/core.yml#/text
@@ -74,7 +74,7 @@ components:
         visibility:
           $ref: ./common/core.yml#/text
         catalog_data:
-          $ref: ./common/core.yml#/map_object
+          $ref: ../v1alpha1/catalog_data.json
         created_at:
           $ref: ./common/core.yml#/time
         updated_at:

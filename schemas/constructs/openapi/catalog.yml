@@ -50,6 +50,8 @@ components:
           $ref: ./common/core.yml#/time
         updated_at:
           $ref: ./common/core.yml#/time
+        catalog_data:
+                $ref: '../v1alpha1/catalog_data.json'
     catalogRequestsPage:
       allOf:
       - $ref: ./common/core.yml#/resultsPage
@@ -74,7 +76,7 @@ components:
                 enum: [pattern, filter]
                 description: Catalog type (pattern / filter)
               catalog_data:
-                $ref: ./catalog_data.json
+                 $ref: '../v1alpha1/catalog_data.json'
   
 # any special parameters for this tag
   parameters:

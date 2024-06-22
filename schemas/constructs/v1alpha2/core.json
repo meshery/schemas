@@ -12,7 +12,7 @@
         "minLength": 2,
         "maxLength": 100,
         "description": "API version of the object",
-        "pattern": "^v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+        "pattern": "([a-z.])*(?!^\/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
         "examples": [
           "v1",
           "v1alpha1",
