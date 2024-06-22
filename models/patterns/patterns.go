@@ -80,15 +80,16 @@ type Service struct {
 type PatternFile struct {
 	// Name Name of the design
 	Name string `json:"name"`
-
+	
+	// Version Version of the design
+	Version string `json:"version,omitempty"`
+	
 	// SchemaVersion Specifies the version of the schema to which the design  conforms.
 	SchemaVersion string `json:"schemaVersion,omitempty"`
 
 	// Services Map of component IDs/names to their corresponding component declarations
 	Services map[string]*Service `json:"services"`
 
-	// Version Version of the design
-	Version string `json:"version,omitempty"`
 }
 
 // MesheryPattern defines model for mesheryPattern.
