@@ -4,7 +4,7 @@
 package patterns
 
 import (
-	common "github.com/layer5io/schemas/models/core"
+	common "github.com/meshery/schemas/models/core"
 )
 
 // Defines values for MesheryPatternCatalogDataClass.
