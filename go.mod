@@ -8,5 +8,3 @@ require (
 )
 
 require github.com/google/uuid v1.5.0 // indirect
-
-replace github.com/meshery/schemas => ./
