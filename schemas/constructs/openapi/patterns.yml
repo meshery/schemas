@@ -27,30 +27,30 @@ components:
     mesheryPatternResource:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Name
         namepace:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Namespace
         type:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Type
         oam_type:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: OAM type
         deleted:
           type: boolean
         created_at:
-          $ref: ./common/core.yml#/time      
+          $ref: ./common/core.yml#/components/schemas/time      
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
     mesheryPatternResourcePage:
       allOf:
-      - $ref: ./common/core.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           resources:
@@ -60,28 +60,28 @@ components:
     mesheryPattern:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         pattern_file:
           $ref: ../v1alpha2/design.json
           description: Pattern file
         name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Pattern Name
         location:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         visibility:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         catalog_data:
           $ref: ../v1alpha1/catalog_data.json
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
     mesheryPatternPage:
       allOf:
-      - $ref: ./common/core.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           patterns:
@@ -91,10 +91,10 @@ components:
     deletePatternModel:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         name:
           description: Pattern name  
-          $ref: ./common/core.yml#/text    
+          $ref: ./common/core.yml#/components/schemas/text    
 
   requestBodies:
     mesheryPatternResource:
@@ -113,9 +113,9 @@ components:
             type: object
             properties:
               url:
-                $ref: ./common/core.yml#/endpoint
+                $ref: ./common/core.yml#/components/schemas/endpoint
               path:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
               save:
                 type: boolean
               pattern_data:
@@ -141,9 +141,9 @@ components:
           schema:
             properties:
               emails:
-                $ref: ./common/core.yml#/emails
+                $ref: ./common/core.yml#/components/schemas/emails
               id:
-                $ref: ./common/core.yml#/id
+                $ref: ./common/core.yml#/components/schemas/id
               content_type:
                 type: string
               share:

@@ -27,34 +27,34 @@ components:
     catalogRequest:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         content_id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         content_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         content_type:
           enum: [pattern, filter]
           description: Catalog type (pattern / filter)
         first_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: First Name
         last_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Last Name
         email:
-          $ref: ./common/core.yml#/email
+          $ref: ./common/core.yml#/components/schemas/email
         status:
           enum: [pending, approved, denied]
           description: Catalog request status (pending / approved / denied)
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         catalog_data:
                 $ref: '../v1alpha1/catalog_data.json'
     catalogRequestsPage:
       allOf:
-      - $ref: ./common/core.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           signup_data:
@@ -71,7 +71,7 @@ components:
           schema:
             properties:
               id:
-                $ref: ./common/core.yml#/id
+                $ref: ./common/core.yml#/components/schemas/id
               catalog_type:
                 enum: [pattern, filter]
                 description: Catalog type (pattern / filter)
@@ -95,7 +95,7 @@ components:
       schema:
         properties:
           id:
-            $ref: ./common/core.yml#/id
+            $ref: ./common/core.yml#/components/schemas/id
           status:
             type: array
             items:
@@ -146,10 +146,10 @@ paths:
       summary: Catalog Request
       description: Get all catalog requests (approved, denied or pending) in a paginated manner
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
         - $ref: '#/components/parameters/requestFilter'
       responses:
         '200':
@@ -171,10 +171,10 @@ paths:
       description: Get catalog content by type
       parameters:
         - $ref: '#/components/parameters/catalogContentType'
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
       responses:
         '200':
           description: catalog content

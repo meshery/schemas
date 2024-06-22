@@ -27,30 +27,30 @@ components:
     mesheryFilter:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
           description: Connection id
         user_id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         filter_file:
           type: string
           format: byte
           description: Filter file
         name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Filter Name
         location:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         visibility:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         catalog_data:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
     mesheryFilterPage:
       allOf:
-      - $ref: ./common/core.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           filters:
@@ -67,9 +67,9 @@ components:
             type: object
             properties:
               url:
-                $ref: ./common/core.yml#/endpoint
+                $ref: ./common/core.yml#/components/schemas/endpoint
               path:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
               save:
                 type: boolean
               filter_data:
@@ -109,10 +109,10 @@ paths:
       summary: Get Filters
       description: Get paginated filters
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
       responses:
         '200':
           description: Filters
@@ -132,7 +132,7 @@ paths:
       summary: Filter file
       description: Get the filter associated with the given filter id without any metadata
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Filter file
@@ -156,7 +156,7 @@ paths:
       summary: Get filter by ID
       description: Get filter by ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Filter associated with ID
@@ -179,7 +179,7 @@ paths:
       summary: Delete filter by ID
       description: Delete filter associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Deleted filter
@@ -203,7 +203,7 @@ paths:
       summary: Clone filter
       description: Clone filter associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       requestBody:
         description: Body for cloning design
         required: true

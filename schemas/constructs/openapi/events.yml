@@ -35,10 +35,10 @@ components:
         id:
           description: | 
             UUID of the event.
-          $ref: "./common/core.yml#/id"
+          $ref: "./common/core.yml#/components/schemas/id"
         
         user_id:
-          $ref: "./common/core.yml#/user_uuid"
+          $ref: "./common/core.yml#/components/schemas/user_uuid"
           description: |
             UUID of the user that initiated the event. In most cases this would be present, but not always.
           
@@ -47,12 +47,12 @@ components:
           description: |
             The system from which the request is sourced. In the case of Meshery Server, 
             the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-          $ref: "./common/core.yml#/system_id"
+          $ref: "./common/core.yml#/components/schemas/system_id"
 
         operation_id: 
           description: |
             Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.  
-          $ref: "./common/core.yml#/operation_id"
+          $ref: "./common/core.yml#/components/schemas/operation_id"
 
         category:
           description: |
@@ -128,13 +128,13 @@ components:
             db: metadata
 
         created_at:
-          $ref: "./common/core.yml#/created_at"
+          $ref: "./common/core.yml#/components/schemas/created_at"
 
         updated_at:
-          $ref: "./common/core.yml#/updated_at"
+          $ref: "./common/core.yml#/components/schemas/updated_at"
 
         deleted_at:
-          $ref: "./common/core.yml#/deleted_at"
+          $ref: "./common/core.yml#/components/schemas/deleted_at"
       
       required: [
         "id",
@@ -187,15 +187,15 @@ components:
         count:
           type: integer
         event_type:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
         dt:
-          $ref: './common/core.yml#/time'
+          $ref: './common/core.yml#/components/schemas/time'
         week:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
         month:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
         year:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
 
     eventTrackerGroupedArray:
         type: array
@@ -214,7 +214,7 @@ components:
 
     eventsPage:
       allOf:
-      - $ref: './common/core.yml#/recordsPage'
+      - $ref: './common/core.yml#/components/schemas/recordsPage'
       - type: object
         properties:
           data:
@@ -275,7 +275,7 @@ components:
 
     eventSummaryPage:
       allOf:
-      - $ref: ./common/core.yml#/recordsPage
+      - $ref: ./common/core.yml#/components/schemas/recordsPage
       - type: object
         properties:
           data:
@@ -301,7 +301,7 @@ paths:
       summary: Get Events Aggregate
       description: Get Events Aggreate Count
       parameters:
-        - $ref: './common/parameters.yml#/cumulative'
+        - $ref: './common/parameters.yml#/components/schemas/cumulative'
       responses:
         '200':
           description: Events Aggregate Count
@@ -324,7 +324,7 @@ paths:
       summary: Events by Date
       description: Get Events by date
       parameters:
-        - $ref: ./common/parameters.yml#/cumulative
+        - $ref: ./common/parameters.yml#/components/schemas/cumulative
       responses:
         '200':
           description: Events by date
@@ -346,7 +346,7 @@ paths:
       summary: Events by Week
       description: Get Events by week
       parameters:
-        - $ref: ./common/parameters.yml#/cumulative
+        - $ref: ./common/parameters.yml#/components/schemas/cumulative
       responses:
         '200':
           description: Events by week
@@ -368,7 +368,7 @@ paths:
       summary: Events by Month
       description: Get Events by month
       parameters:
-        - $ref: ./common/parameters.yml#/cumulative
+        - $ref: ./common/parameters.yml#/components/schemas/cumulative
       responses:
         '200':
           description: Events by month
@@ -390,11 +390,11 @@ paths:
       summary: All Events
       description: Get All events
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
-        - $ref: ./common/parameters.yml#/eventsFilter
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/schemas/eventsFilter
       responses:
         '200':
           description: Events list
@@ -416,10 +416,10 @@ paths:
       summary: Events Summary
       description: Get Events summary for a user
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
       responses:
         '200':
           description: Events Summary

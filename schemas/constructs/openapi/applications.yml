@@ -27,19 +27,19 @@ components:
     mesheryApplication:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         application_file:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Application file
         name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Pattern Name
         location:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         visibility:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         source_type:
           enum: [k8s_manifest, docker_compose, helm_chart]
           description: Source type (K8s manifest, Helm chart, Docker compose)
@@ -48,14 +48,14 @@ components:
           format: byte
           description: Source content
         catalog_data:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
     mesheryApplicationPage:
       allOf:
-      - $ref: ./common/core.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           applications:
@@ -72,15 +72,15 @@ components:
             type: object
             properties:
               url:
-                $ref: ./common/core.yml#/endpoint
+                $ref: ./common/core.yml#/components/schemas/endpoint
               path:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
               save:
                 type: boolean
               application_data:
                 $ref: '#/components/schemas/mesheryApplication'
               source_type:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
 
 paths:
   /api/content/applications:
@@ -114,10 +114,10 @@ paths:
       summary: Get Applications
       description: Get paginated applications
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
       responses:
         '200':
           description: Applications
@@ -137,7 +137,7 @@ paths:
       summary: Upsert application source content
       description: Upserts only application source content
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       requestBody:
         description: Body for upserting meshery application source content
         required: true
@@ -162,7 +162,7 @@ paths:
       summary: Get application source content
       description: Get application source content
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: application source content associated with ID
@@ -184,7 +184,7 @@ paths:
       summary: Get application by ID
       description: Get application by ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: application associated with ID
@@ -207,7 +207,7 @@ paths:
       summary: Delete application by ID
       description: Delete application associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Deleted application

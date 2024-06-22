@@ -28,13 +28,13 @@ components:
       type: object
       properties:
         first_name:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
           description: First Name
         last_name:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
           description: Last Name
         email:
-          $ref: './common/core.yml#/email'
+          $ref: './common/core.yml#/components/schemas/email'
       required: [
         first_name,
         last_name,
@@ -44,9 +44,9 @@ components:
       type: object
       properties:
         user_ids:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_emails:
-          $ref: ./common/core.yml#/emails
+          $ref: ./common/core.yml#/components/schemas/emails
       required: [
         user_ids,
         user_emails
@@ -62,33 +62,33 @@ components:
       type: object
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ./common/core.yml#/user_id
+          $ref: ./common/core.yml#/components/schemas/user_id
         provider:
-          $ref: ./common/core.yml#/provider
+          $ref: ./common/core.yml#/components/schemas/provider
         email:
-          $ref: ./common/core.yml#/email
+          $ref: ./common/core.yml#/components/schemas/email
         first_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: First Name
         last_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Last Name
         avatar_url:
-          $ref: ./common/core.yml#/avatar_url
+          $ref: ./common/core.yml#/components/schemas/avatar_url
         status:
-          $ref: ./common/core.yml#/status
+          $ref: ./common/core.yml#/components/schemas/status
         bio:
-          $ref: ./common/core.yml#/bio
+          $ref: ./common/core.yml#/components/schemas/bio
         preferences:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         accepted_terms_at:
-          $ref: ./common/core.yml#/accepted_terms_at
+          $ref: ./common/core.yml#/components/schemas/accepted_terms_at
         first_login_time:  
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         last_login_time:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
       required: [
         id,
         user_id,
@@ -106,18 +106,18 @@ components:
       type: object
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         first_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: First Name
         last_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Last Name
         avatar_url:
-          $ref: ./common/core.yml#/avatar_url
+          $ref: ./common/core.yml#/components/schemas/avatar_url
     rolesPage:
       allOf:
-      - $ref: ./common/core.yml#/recordsPage
+      - $ref: ./common/core.yml#/components/schemas/recordsPage
       - type: object
         properties:
           data:
@@ -127,23 +127,23 @@ components:
     key:
       properties:
         ID:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         subcategory:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         function:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         deleted_at:
-          $ref: ./common/core.yml#/nullTime
+          $ref: ./common/core.yml#/components/schemas/nullTime
         category:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         description:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         owner:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
     userKeys:
       properties:
         keys:
@@ -157,7 +157,7 @@ components:
       enum: [self, bulk]
     usersPageForAdmin:
       allOf:
-        - $ref: ./common/core.yml#/recordsPage
+        - $ref: ./common/core.yml#/components/schemas/recordsPage
         - type: object
           properties:
             data:
@@ -168,37 +168,37 @@ components:
       type: object
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ./common/core.yml#/user_id
+          $ref: ./common/core.yml#/components/schemas/user_id
         username:
-          $ref: ./common/core.yml#/username
+          $ref: ./common/core.yml#/components/schemas/username
         email:
-          $ref: ./common/core.yml#/email
+          $ref: ./common/core.yml#/components/schemas/email
         first_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: First Name
         last_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Last Name
         status:
-          $ref: ./common/core.yml#/status
+          $ref: ./common/core.yml#/components/schemas/status
         role_names:
-          $ref: ./common/core.yml#/roleNames
+          $ref: ./common/core.yml#/components/schemas/roleNames
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         last_login_time:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         deleted_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         prefs:
-          $ref: ./common/core.yml#/email_preference
+          $ref: ./common/core.yml#/components/schemas/email_preference
         avatar_url:
-          $ref: ./common/core.yml#/avatar_url
+          $ref: ./common/core.yml#/components/schemas/avatar_url
         preferences:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
       required: [
         id,
         user_id,
@@ -217,35 +217,35 @@ components:
       type: object
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ./common/core.yml#/user_id
+          $ref: ./common/core.yml#/components/schemas/user_id
         username:
-          $ref: ./common/core.yml#/username
+          $ref: ./common/core.yml#/components/schemas/username
         email:
-          $ref: ./common/core.yml#/email
+          $ref: ./common/core.yml#/components/schemas/email
         first_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: First Name
         last_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Last Name
         status:
-          $ref: ./common/core.yml#/status
+          $ref: ./common/core.yml#/components/schemas/status
         role_names:
-          $ref: ./common/core.yml#/roleNames
+          $ref: ./common/core.yml#/components/schemas/roleNames
         joined_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         last_login_time:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         deleted_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         prefs:
-          $ref: ./common/core.yml#/email_preference
+          $ref: ./common/core.yml#/components/schemas/email_preference
         avatar_url:
-          $ref: ./common/core.yml#/avatar_url
+          $ref: ./common/core.yml#/components/schemas/avatar_url
       required: [
         id,
         user_id,
@@ -262,7 +262,7 @@ components:
       ]
     teamMembersPage:
       allOf:
-        - $ref: ./common/core.yml#/recordsPage
+        - $ref: ./common/core.yml#/components/schemas/recordsPage
         - type: object
           properties:
             data:
@@ -273,25 +273,25 @@ components:
       type: object
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ./common/core.yml#/user_id
+          $ref: ./common/core.yml#/components/schemas/user_id
         username:
-          $ref: ./common/core.yml#/username
+          $ref: ./common/core.yml#/components/schemas/username
         email:
-          $ref: ./common/core.yml#/email
+          $ref: ./common/core.yml#/components/schemas/email
         first_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: First Name
         last_name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Last Name
         prefs:
-          $ref: ./common/core.yml#/email_preference
+          $ref: ./common/core.yml#/components/schemas/email_preference
         avatar_url:
-          $ref: ./common/core.yml#/avatar_url
+          $ref: ./common/core.yml#/components/schemas/avatar_url
         preferences:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
       required: [
         id,
         user_id,
@@ -302,7 +302,7 @@ components:
       ]
     usersPageForNonAdmin:
       allOf:
-        - $ref: ./common/core.yml#/recordsPage
+        - $ref: ./common/core.yml#/components/schemas/recordsPage
         - type: object
           properties:
             data:
@@ -327,21 +327,21 @@ components:
       type: object
       properties:
         id: 
-          $ref: './common/core.yml#/id'
+          $ref: './common/core.yml#/components/schemas/id'
         name:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
         description:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
         label:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
         svg_location:
-          $ref: './common/core.yml#/text'
+          $ref: './common/core.yml#/components/schemas/text'
         created_at:
-          $ref: './common/core.yml#/time'
+          $ref: './common/core.yml#/components/schemas/time'
         updated_at:
-          $ref: './common/core.yml#/time'
+          $ref: './common/core.yml#/components/schemas/time'
         deleted_at:
-          $ref: './common/core.yml#/nullTime'
+          $ref: './common/core.yml#/components/schemas/nullTime'
     badges:
       properties:
         badges:
@@ -360,13 +360,13 @@ components:
           schema:
             properties:
               first_name:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
                 description: First Name
               last_name:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
                 description: Last Name
               email:
-                $ref: ./common/core.yml#/email
+                $ref: ./common/core.yml#/components/schemas/email
             required: [
               first_name,
               last_name,
@@ -380,7 +380,7 @@ components:
           schema:
             oneOf:
               - $ref: '#/components/schemas/bulkDelete'
-              - $ref: ./common/core.yml#/empty
+              - $ref: ./common/core.yml#/components/schemas/empty
     user:
       description: Body for upserting user
       required: true
@@ -430,7 +430,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ./common/core.yml#/map_object            
+              $ref: ./common/core.yml#/components/schemas/map_object            
       responses:
         '201':
           $ref: ./common/responses.yml#/201
@@ -465,7 +465,7 @@ paths:
       summary: Get User by ID
       description: Get specific user by user id
       parameters:
-        - $ref: ./common/parameters.yml#/userId
+        - $ref: ./common/parameters.yml#/components/schemas/userId
       responses:
         '200':
           description: Returns user with given user_id
@@ -505,7 +505,7 @@ paths:
       summary: Delete account by ID
       description: Delete account by ID
       parameters:
-        - $ref: ./common/parameters.yml#/userId
+        - $ref: ./common/parameters.yml#/components/schemas/userId
       responses:
         '201':
           $ref: ./common/responses.yml#/201
@@ -521,11 +521,11 @@ paths:
       summary: Get All users
       description: Get All users
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
-        - $ref: ./common/parameters.yml#/filter
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/schemas/filter
       responses:
         '200':
           description: Get all user with pagination
@@ -549,11 +549,11 @@ paths:
       summary: Get All users
       description: Get All users
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
-        - $ref: ./common/parameters.yml#/filter
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/schemas/filter
       responses:
         '200':
           description: Get all user with pagination
@@ -575,7 +575,7 @@ paths:
       summary: Get user profile by Id
       description: Get user profile of given user Id
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Returns user with given id

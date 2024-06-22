@@ -23,53 +23,53 @@ components:
     mesheryInstance:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
           description: Connection id
         name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Connection name
         server_id:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Connected server id
         server_version:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Running server version
         server_location:
-          $ref: ./common/core.yml#/endpoint
+          $ref: ./common/core.yml#/components/schemas/endpoint
         server_build_sha:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Server build SHA
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         deleted_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         status:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Status
     connection:
       properties:
         id:
-          $ref: ./common/core.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
           description: ID
         name:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Connection Name
         credential_id:
-          $ref: ./common/core.yml#/credential_uuid
+          $ref: ./common/core.yml#/components/schemas/credential_uuid
           description: Credential ID
         type:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Connection Type
         sub_type:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Connection Subtype
         kind:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Connection Kind
         metadata:
-          $ref: ./common/core.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         status:
           description: Connection Status
           type: string
@@ -84,17 +84,17 @@ components:
             "not found"
           ]
         user_id:
-          $ref: ./common/core.yml#/user_uuid
+          $ref: ./common/core.yml#/components/schemas/user_uuid
           x-go-name: UserID
         created_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         deleted_at:
-          $ref: ./common/core.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
     connectionPage:
       allOf:
-        - $ref: ./common/core.yml#/resultsPage
+        - $ref: ./common/core.yml#/components/schemas/resultsPage
         - type: object
           properties:
             connections:
@@ -104,7 +104,7 @@ components:
     connectionStatusInfo:
       properties:
         status:
-          $ref: ./common/core.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Connection status
         count:
           type: integer
@@ -131,18 +131,18 @@ components:
             type: object
             properties:
               kind:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
                 description: Kind
               type:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
                 description: Connection type
               sub_type:
-                $ref: ./common/core.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
                 description: Connection subtype
               credential_secret:
-                $ref: ./common/core.yml#/map_object
+                $ref: ./common/core.yml#/components/schemas/map_object
               metadata:
-                $ref: ./common/core.yml#/map_object
+                $ref: ./common/core.yml#/components/schemas/map_object
   securitySchemes:
     jwt:
       type: http
@@ -156,20 +156,20 @@ components:
       description: 'Connection kind (eg: Meshery)'
       required: true
       schema:
-        $ref: ./common/core.yml#/text
+        $ref: ./common/core.yml#/components/schemas/text
     connectionId:
       name: connectionId
       in: path
       description: Connection ID
       schema:
-        $ref: ./common/core.yml#/id
+        $ref: ./common/core.yml#/components/schemas/id
       required: true
     serverId:
       name: mesheryServerID
       in: path
       description: Meshery server ID
       schema:
-        $ref: ./common/core.yml#/id
+        $ref: ./common/core.yml#/components/schemas/id
       required: true
 # any special response for this tag  
 paths:
@@ -200,10 +200,10 @@ paths:
         summary: Get connections
         description: Get connections
         parameters:
-          - $ref: ./common/parameters.yml#/page
-          - $ref: ./common/parameters.yml#/page_size
-          - $ref: ./common/parameters.yml#/search
-          - $ref: ./common/parameters.yml#/order
+          - $ref: ./common/parameters.yml#/components/schemas/page
+          - $ref: ./common/parameters.yml#/components/schemas/page_size
+          - $ref: ./common/parameters.yml#/components/schemas/search
+          - $ref: ./common/parameters.yml#/components/schemas/order
         responses:
           '200':
             description: Paginated list of connections
@@ -258,10 +258,10 @@ paths:
         description: Get connections by kind
         parameters:
           - $ref: '#/components/parameters/connectionKind'
-          - $ref: ./common/parameters.yml#/page
-          - $ref: ./common/parameters.yml#/page_size
-          - $ref: ./common/parameters.yml#/search
-          - $ref: ./common/parameters.yml#/order
+          - $ref: ./common/parameters.yml#/components/schemas/page
+          - $ref: ./common/parameters.yml#/components/schemas/page_size
+          - $ref: ./common/parameters.yml#/components/schemas/search
+          - $ref: ./common/parameters.yml#/components/schemas/order
         responses:
           '200':
             description: Connections by kind
@@ -301,10 +301,10 @@ paths:
         parameters:
           - $ref: '#/components/parameters/connectionKind'
           - $ref: '#/components/parameters/connectionId'
-          - $ref: './common/parameters.yml#/page'
-          - $ref: ./common/parameters.yml#/page_size
-          - $ref: './common/parameters.yml#/search'
-          - $ref: './common/parameters.yml#/order'
+          - $ref: './common/parameters.yml#/components/schemas/page'
+          - $ref: ./common/parameters.yml#/components/schemas/page_size
+          - $ref: './common/parameters.yml#/components/schemas/search'
+          - $ref: './common/parameters.yml#/components/schemas/order'
         responses:
           '200':
             description: Connections by kind
