@@ -1,6 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/deepmap/oapi-codegen/HEAD/configuration-schema.json
 package: patterns
-output: models/patterns.go
+
+# Update the "output" and "include-tags" based on the resource for which code generation needs to be invoked.
+output: models/patterns/patterns.go 
 generate:
   models: true
 import-mapping:
@@ -8,7 +10,6 @@ import-mapping:
   "./common/core.yml": "github.com/meshery/schemas/common"
 
 output-options:
-  # to make sure that all types are generated
   skip-prune: true
   include-tags: 
   - patterns
