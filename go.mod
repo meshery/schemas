@@ -1,4 +1,4 @@
-module github.com/meshery/schemas
+module github.com/layer5io/schemas
 
 go 1.21.10
 
