@@ -1,0 +1,23 @@
+k8sContext:
+  type: object
+  properties:
+    id:
+      $ref: ./common/core.yml#/components/schemas/id
+    name:
+      $ref: ./common/core.yml#/components/schemas/text
+    auth:
+      $ref: ./common/core.yml#/components/schemas/map_object
+    cluster:
+      $ref: ./common/core.yml#/components/schemas/map_object
+    server:
+      type: string
+    meshery_instance_id:
+      $ref: ./common/core.yml#/components/schemas/meshery_instance_uuid
+    kubernetes_server_id:
+      $ref: ./common/core.yml#/components/schemas/kubernetes_server_uuid
+    deployment_type:
+      type: string
+    updated_at:
+      $ref: ./common/core.yml#/components/schemas/time
+    created_at:
+      $ref: ./common/core.yml#/components/schemas/time

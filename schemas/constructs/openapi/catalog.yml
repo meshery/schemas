@@ -27,32 +27,34 @@ components:
     catalogRequest:
       properties:
         id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         content_id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         content_name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         content_type:
           enum: [pattern, filter]
           description: Catalog type (pattern / filter)
         first_name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: First Name
         last_name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Last Name
         email:
-          $ref: ../common.yml#/email
+          $ref: ./common/core.yml#/components/schemas/email
         status:
           enum: [pending, approved, denied]
           description: Catalog request status (pending / approved / denied)
         created_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
+        catalog_data:
+                $ref: '../v1alpha1/catalog_data.json'
     catalogRequestsPage:
       allOf:
-      - $ref: ../common.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           signup_data:
@@ -69,12 +71,12 @@ components:
           schema:
             properties:
               id:
-                $ref: ../common.yml#/id
+                $ref: ./common/core.yml#/components/schemas/id
               catalog_type:
                 enum: [pattern, filter]
                 description: Catalog type (pattern / filter)
               catalog_data:
-                $ref: ../common.yml#/map_object
+                 $ref: '../v1alpha1/catalog_data.json'
   
 # any special parameters for this tag
   parameters:
@@ -93,7 +95,7 @@ components:
       schema:
         properties:
           id:
-            $ref: ../common.yml#/id
+            $ref: ./common/core.yml#/components/schemas/id
           status:
             type: array
             items:
@@ -111,13 +113,13 @@ paths:
           $ref: '#/components/requestBodies/mesheryCatalogRequest'
       responses:
         '201':
-          $ref: ../responses.yml#/201
+          $ref: ./common/responses.yml#/201
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '409':
-          $ref: ../responses.yml#/409
+          $ref: ./common/responses.yml#/409
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
   /api/catalog/requests/deny:
     post:
       tags:
@@ -129,13 +131,13 @@ paths:
         $ref: '#/components/requestBodies/mesheryCatalogRequest'
       responses:
         '201':
-          $ref: ../responses.yml#/201
+          $ref: ./common/responses.yml#/201
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '409':
-          $ref: ../responses.yml#/409
+          $ref: ./common/responses.yml#/409
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
   /api/catalog/requests:
     get:
       tags:
@@ -144,10 +146,10 @@ paths:
       summary: Catalog Request
       description: Get all catalog requests (approved, denied or pending) in a paginated manner
       parameters:
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
         - $ref: '#/components/parameters/requestFilter'
       responses:
         '200':
@@ -157,9 +159,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/catalogRequestsPage'
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
   /api/catalog/content/{type}:
     get:
       tags:
@@ -169,10 +171,10 @@ paths:
       description: Get catalog content by type
       parameters:
         - $ref: '#/components/parameters/catalogContentType'
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
       responses:
         '200':
           description: catalog content
@@ -205,7 +207,7 @@ paths:
                         items:
                           $ref: ./filters.yml#/components/schemas/mesheryFilter
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
     post:
       tags:
         - catalog
@@ -218,13 +220,13 @@ paths:
         $ref: '#/components/requestBodies/mesheryCatalogRequest'
       responses:
         '200':
-          $ref: ../responses.yml#/200
+          $ref: ./common/responses.yml#/200
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '409':
-          $ref: ../responses.yml#/409
+          $ref: ./common/responses.yml#/409
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
     delete:
       tags:
         - catalog
@@ -237,11 +239,11 @@ paths:
         $ref: '#/components/requestBodies/mesheryCatalogRequest'
       responses:
         '200':
-          $ref: ../responses.yml#/200
+          $ref: ./common/responses.yml#/200
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '409':
-          $ref: ../responses.yml#/409
+          $ref: ./common/responses.yml#/409
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
   

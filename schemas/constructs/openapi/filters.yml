@@ -27,30 +27,30 @@ components:
     mesheryFilter:
       properties:
         id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
           description: Connection id
         user_id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         filter_file:
           type: string
           format: byte
           description: Filter file
         name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Filter Name
         location:
-          $ref: ../common.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         visibility:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         catalog_data:
-          $ref: ../common.yml#/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         created_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
     mesheryFilterPage:
       allOf:
-      - $ref: ../common.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           filters:
@@ -67,9 +67,9 @@ components:
             type: object
             properties:
               url:
-                $ref: ../common.yml#/endpoint
+                $ref: ./common/core.yml#/components/schemas/endpoint
               path:
-                $ref: ../common.yml#/text
+                $ref: ./common/core.yml#/components/schemas/text
               save:
                 type: boolean
               filter_data:
@@ -97,11 +97,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/mesheryFilter'
         '400':
-          $ref: ../responses.yml#/400
+          $ref: ./common/responses.yml#/400
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
     get:
       tags:
         - filters
@@ -109,10 +109,10 @@ paths:
       summary: Get Filters
       description: Get paginated filters
       parameters:
-        - $ref: ../parameters.yml#/page
-        - $ref: ../parameters.yml#/page_size
-        - $ref: ../parameters.yml#/search
-        - $ref: ../parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
       responses:
         '200':
           description: Filters
@@ -121,9 +121,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/mesheryFilterPage'
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
   /api/content/filters/file/{id}:
     get:
       tags:
@@ -132,7 +132,7 @@ paths:
       summary: Filter file
       description: Get the filter associated with the given filter id without any metadata
       parameters:
-        - $ref: ../parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Filter file
@@ -141,13 +141,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/mesheryFilter/properties/filter_file'
         '400':
-          $ref: ../responses.yml#/400
+          $ref: ./common/responses.yml#/400
         '404':
-          $ref: ../responses.yml#/404
+          $ref: ./common/responses.yml#/404
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
   /api/content/filters/{id}:
     get:
       tags:
@@ -156,7 +156,7 @@ paths:
       summary: Get filter by ID
       description: Get filter by ID
       parameters:
-        - $ref: ../parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Filter associated with ID
@@ -165,13 +165,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/mesheryFilter'
         '400':
-          $ref: ../responses.yml#/400
+          $ref: ./common/responses.yml#/400
         '404':
-          $ref: ../responses.yml#/404
+          $ref: ./common/responses.yml#/404
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
     delete:
       tags:
         - filters
@@ -179,7 +179,7 @@ paths:
       summary: Delete filter by ID
       description: Delete filter associated with ID
       parameters:
-        - $ref: ../parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
         '200':
           description: Deleted filter
@@ -188,13 +188,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/mesheryFilter'
         '400':
-          $ref: ../responses.yml#/400
+          $ref: ./common/responses.yml#/400
         '404':
-          $ref: ../responses.yml#/404
+          $ref: ./common/responses.yml#/404
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
   /api/content/filters/clone/{id}:
     post:
       tags:
@@ -203,7 +203,7 @@ paths:
       summary: Clone filter
       description: Clone filter associated with ID
       parameters:
-        - $ref: ../parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       requestBody:
         description: Body for cloning design
         required: true
@@ -217,10 +217,10 @@ paths:
                 - name
       responses:
         '400':
-          $ref: ../responses.yml#/400
+          $ref: ./common/responses.yml#/400
         '404':
-          $ref: ../responses.yml#/404
+          $ref: ./common/responses.yml#/404
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500

@@ -27,7 +27,7 @@ components:
   schemas: 
     tokenPage:
       allOf:
-      - $ref: ../common.yml#/resultsPage
+      - $ref: ./common/core.yml#/components/schemas/resultsPage
       - type: object
         properties:
           tokens:
@@ -38,25 +38,25 @@ components:
     userToken:
       properties:
         id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         user_id:
-          $ref: ../common.yml#/id
+          $ref: ./common/core.yml#/components/schemas/id
         provider:
-          $ref: ../common.yml#/provider
+          $ref: ./common/core.yml#/components/schemas/provider
         access_token:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         refresh_token:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         name: 
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         purpose:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
         is_oauth:
           type: boolean
         created_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
-          $ref: ../common.yml#/time
+          $ref: ./common/core.yml#/components/schemas/time
 paths:
   /system/user/tokens:
       get:
@@ -66,11 +66,11 @@ paths:
         summary: Get Tokens
         description: Get tokens associated with logged in user
         parameters:
-          - $ref: ../parameters.yml#/isOAuth
-          - $ref: ../parameters.yml#/page
-          - $ref: ../parameters.yml#/page_size
-          - $ref: ../parameters.yml#/search
-          - $ref: ../parameters.yml#/order
+          - $ref: ./common/parameters.yml#/components/schemas/isOAuth
+          - $ref: ./common/parameters.yml#/components/schemas/page
+          - $ref: ./common/parameters.yml#/components/schemas/page_size
+          - $ref: ./common/parameters.yml#/components/schemas/search
+          - $ref: ./common/parameters.yml#/components/schemas/order
         responses:
           '200':
             description: user tokens
@@ -79,9 +79,9 @@ paths:
                 schema:
                   $ref: '#/components/schemas/tokenPage'
           '401':
-            $ref: ../responses.yml#/401
+            $ref: ./common/responses.yml#/401
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
       post:
         tags:
           - user tokens
@@ -89,8 +89,8 @@ paths:
         summary: Generate token for logged in user
         description: Generates infinite token (i.e. tokens that do not expire) for the logged in user.
         parameters:
-          - $ref: ../parameters.yml#/name
-          - $ref: ../parameters.yml#/purpose
+          - $ref: ./common/parameters.yml#/components/schemas/name
+          - $ref: ./common/parameters.yml#/components/schemas/purpose
         responses:
           '200':
             description: generated token
@@ -99,11 +99,11 @@ paths:
                 schema:
                   type: string
           '400':
-            $ref: ../responses.yml#/400
+            $ref: ./common/responses.yml#/400
           '401':
-            $ref: ../responses.yml#/401
+            $ref: ./common/responses.yml#/401
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
       delete:
         tags:
           - user tokens
@@ -115,16 +115,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: ../common.yml#/map_object
+                $ref: ./common/core.yml#/components/schemas/map_object
         responses:
           '200':
-            $ref: ../responses.yml#/200
+            $ref: ./common/responses.yml#/200
           '400':
-            $ref: ../responses.yml#/400
+            $ref: ./common/responses.yml#/400
           '401':
-            $ref: ../responses.yml#/401
+            $ref: ./common/responses.yml#/401
           '500':
-            $ref: ../responses.yml#/500
+            $ref: ./common/responses.yml#/500
 
   /system/token:
     get:
@@ -134,8 +134,8 @@ paths:
       summary: Infinite token
       description: Get Infinite Token
       parameters:
-        - $ref: ../parameters.yml#/userId
-        - $ref: ../parameters.yml#/provider
+        - $ref: ./common/parameters.yml#/components/schemas/userId
+        - $ref: ./common/parameters.yml#/components/schemas/provider
       responses:
         '200':
           description: generated token
@@ -144,8 +144,8 @@ paths:
               schema:
                 type: string
         '400':
-            $ref: ../responses.yml#/400
+            $ref: ./common/responses.yml#/400
         '401':
-          $ref: ../responses.yml#/401
+          $ref: ./common/responses.yml#/401
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500

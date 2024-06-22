@@ -20,21 +20,21 @@ components:
     capability:
       properties:
         provider_type:
-          $ref: ../common.yml#/provider
+          $ref: ./common/core.yml#/components/schemas/provider
           description: Provider type
         package_version:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Package version
         package_url:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Package url
         provider_name:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Provider name
         provider_description:
           type: array
           items:
-            $ref: ../common.yml#/text
+            $ref: ./common/core.yml#/components/schemas/text
         extensions:
           $ref: '#/components/schemas/capabilityExtension'
         capabilities:
@@ -44,7 +44,7 @@ components:
     capabilityNavigatorExtension:
       properties:
         title:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Title
         on_click_callback:
           type: integer
@@ -56,46 +56,46 @@ components:
             external:
               type: boolean
         component:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Component
         icon:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Icon link
         link:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: link
           format: uri
         show:
           type: boolean
           description: Controls whether to show the extension or not
         type:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Extension type
         allowedTo:
           type: object
     capabilityUserPrefExtension:
       properties:
         component:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Component
         type:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Extension type 
     capabilityGraphQLExtension:
       properties:
         component:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Component
         path:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Path 
         type:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Extension type 
     capabilitiesAccountExtension:
       properties:
         title:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Title
         on_click_callback:
           type: integer
@@ -107,17 +107,17 @@ components:
             external:
               type: boolean
         component:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Component
         link:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: link
           format: uri
         show:
           type: boolean
           description: Controls whether to show the extension or not
         type:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Extension type
     restrictedAccess:
       properties:
@@ -132,10 +132,10 @@ components:
     capabilityGeneralCapability:
       properties:
         feature:
-          $ref: ../common.yml#/text
+          $ref: ./common/core.yml#/components/schemas/text
           description: Feature name
         endpoint:
-          $ref: ../common.yml#/endpoint
+          $ref: ./common/core.yml#/components/schemas/endpoint
     capabilityExtension:
       properties:
         navigator:
@@ -165,8 +165,8 @@ paths:
       summary: Capabilities
       description: Get available capabilities for logged in user
       parameters:
-        - $ref: ../parameters.yml#/os
-        - $ref: ../parameters.yml#/playground
+        - $ref: ./common/parameters.yml#/components/schemas/os
+        - $ref: ./common/parameters.yml#/components/schemas/playground
       responses:
         '200':
           description: capabilities
@@ -175,7 +175,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/capability'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
       security: []
         
   /{meshery-version}/capabilities:
@@ -186,9 +186,9 @@ paths:
       summary: Capabilities By server version
       description: Get available capabilities for logged in user
       parameters:
-        - $ref: ../parameters.yml#/mesheryVersion
-        - $ref: ../parameters.yml#/os
-        - $ref: ../parameters.yml#/playground
+        - $ref: ./common/parameters.yml#/components/schemas/mesheryVersion
+        - $ref: ./common/parameters.yml#/components/schemas/os
+        - $ref: ./common/parameters.yml#/components/schemas/playground
       responses:
         '200':
           description: capabilities
@@ -197,5 +197,5 @@ paths:
               schema:
                 $ref: '#/components/schemas/capability'
         '500':
-          $ref: ../responses.yml#/500
+          $ref: ./common/responses.yml#/500
       security: []
