@@ -33,25 +33,11 @@
     },
     "type": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
-      "description": "Classification of relationships. Used to group relationships similar in nature.",
-      "enum": [
-        "binding",
-        "dependency",
-        "inventory",
-        "parent",
-        "grandparent",
-        "grandchild",
-        "matchlabels"
-      ]
+      "description": "Classification of relationships. Used to group relationships similar in nature."
     },
     "subType": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
-      "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship.",
-      "enum": [
-        "mount",
-        "permission",
-        "firewall"
-      ]
+      "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
     },
     "evaluationQuery": {
       "$ref": "https://schemas.meshery.io/core.json#inputString",
