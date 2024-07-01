@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 temp_bundle_dir="./openapi/schemas/temp_schema_bundle"
 echo $folderName
 
