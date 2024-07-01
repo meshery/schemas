@@ -23,3 +23,15 @@ jobs:
         run: |
          chmod +x ./scripts/merge-openapi-specs.sh
          ./scripts/merge-openapi-specs.sh
+          
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update schema
+          commit_options: '--signoff'
+          file_pattern: '*.yml *.yaml'
+          branch: master
+          commit_user_name: l5io
+          commit_user_email: ci@layer5.io
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          skip_fetch: false
+        
