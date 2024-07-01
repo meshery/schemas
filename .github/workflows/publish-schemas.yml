@@ -9,19 +9,19 @@ on:
 jobs:
   resolve-and-update-schema:
     runs-on: ubuntu-22.04
-      steps:
-        - name: Checkout
-          uses: actions/checkout@master
-          with:
-            ref: 'master'
-        - name: Debug statements
-          run: |
-           pwd;
-           ls;
-           
-        - name: Run Script
-          working-directory: scripts
-          shell: bash
-          run: |
-           chmod +x ./merge-openapi-specs.sh
-           ./merge-openapi-specs.sh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          ref: 'master'
+      - name: Debug statements
+        run: |
+         pwd;
+         ls;
+         
+      - name: Run Script
+        working-directory: scripts
+        shell: bash
+        run: |
+         chmod +x ./merge-openapi-specs.sh
+         ./merge-openapi-specs.sh
