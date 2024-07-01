@@ -15,11 +15,9 @@ jobs:
         uses: actions/checkout@master
         with:
           ref: 'master'
-      - name: Debug statements
-        run: |
-         pwd;
-         ls;
-         
+      - name: Install Redocly
+        uses: actions/setup-node@v4
+      - run: npm i -g @redocly/cli@latest
       - name: Run Script
         shell: bash
         run: |

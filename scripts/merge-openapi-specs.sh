@@ -1,6 +1,7 @@
 #!/bin/sh
 temp_bundle_dir="./openapi/schemas/temp_schema_bundle"
-mkdir $temp_dir_name
+echo $folderName
+
 rm "./schemas/openapi.yml"
 process_spec() {
   echo "processing $1 ..."
