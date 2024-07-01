@@ -12,8 +12,8 @@ servers:
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL (controlled via PORT environment variable)
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 tags:
   - name: patterns
     description: APIs for patterns
@@ -45,18 +45,18 @@ components:
         deleted:
           type: boolean
         created_at:
-          $ref: ./common/core.yml#/components/schemas/time      
+          $ref: ./common/core.yml#/components/schemas/time
         updated_at:
           $ref: ./common/core.yml#/components/schemas/time
     mesheryPatternResourcePage:
       allOf:
-      - $ref: ./common/core.yml#/components/schemas/resultsPage
-      - type: object
-        properties:
-          resources:
-            type: array
-            items:
-              $ref: '#/components/schemas/mesheryPatternResource'
+        - $ref: ./common/core.yml#/components/schemas/resultsPage
+        - type: object
+          properties:
+            resources:
+              type: array
+              items:
+                $ref: "#/components/schemas/mesheryPatternResource"
     mesheryPattern:
       properties:
         id:
@@ -81,20 +81,20 @@ components:
           $ref: ./common/core.yml#/components/schemas/time
     mesheryPatternPage:
       allOf:
-      - $ref: ./common/core.yml#/components/schemas/resultsPage
-      - type: object
-        properties:
-          patterns:
-            type: array
-            items:
-              $ref: '#/components/schemas/mesheryPattern'
+        - $ref: ./common/core.yml#/components/schemas/resultsPage
+        - type: object
+          properties:
+            patterns:
+              type: array
+              items:
+                $ref: "#/components/schemas/mesheryPattern"
     deletePatternModel:
       properties:
         id:
           $ref: ./common/core.yml#/components/schemas/id
         name:
-          description: Pattern name  
-          $ref: ./common/core.yml#/components/schemas/text    
+          description: Pattern name
+          $ref: ./common/core.yml#/components/schemas/text
 
   requestBodies:
     mesheryPatternResource:
@@ -119,7 +119,7 @@ components:
               save:
                 type: boolean
               pattern_data:
-                $ref: '#/components/schemas/mesheryPattern' 
+                $ref: "#/components/schemas/mesheryPattern"
     mesheryPatternDeleteRequestBody:
       description: Body for deleting meshery pattern
       required: true
@@ -131,8 +131,8 @@ components:
               patterns:
                 type: array
                 items:
-                  $ref: '#/components/schemas/deletePatternModel'
-    
+                  $ref: "#/components/schemas/deletePatternModel"
+
     designShare:
       description: Body for sharing design
       required: true
@@ -148,15 +148,10 @@ components:
                 type: string
               share:
                 type: boolean
-            required: [
-              emails,
-              id,
-              content_type,
-              share
-            ]
+            required: [emails, id, content_type, share]
 
 paths:
-  #designs            
+  #designs
   /api/content/patterns/resource:
     post:
       tags:
@@ -165,18 +160,17 @@ paths:
       summary: Upsert Pattern resource
       description: It will insert the pattern resource if not present else it will update the matching entry
       requestBody:
-       
-              $ref: '#/components/requestBodies/mesheryPatternResource'
+        $ref: "#/components/requestBodies/mesheryPatternResource"
       responses:
-        '200':
+        "200":
           description: Meshery pattern resource
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPatternResource'
-        '401':
+                $ref: "#/components/schemas/mesheryPatternResource"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     get:
       tags:
@@ -185,25 +179,25 @@ paths:
       summary: Get Pattern resources
       description: Get paginated pattern resources
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
-        - $ref: ./common/parameters.yml#/namespace
-        - $ref: ./common/parameters.yml#/type
-        - $ref: ./common/parameters.yml#/oamType
-        - $ref: ./common/parameters.yml#/name
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/schemas/namespace
+        - $ref: ./common/parameters.yml#/components/schemas/type
+        - $ref: ./common/parameters.yml#/components/schemas/oamType
+        - $ref: ./common/parameters.yml#/components/schemas/name
           description: Name
       responses:
-        '200':
+        "200":
           description: Meshery pattern resources
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPatternResourcePage'
-        '401':  
+                $ref: "#/components/schemas/mesheryPatternResourcePage"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/patterns/resource/{id}:
     get:
@@ -213,21 +207,21 @@ paths:
       summary: Pattern Resource by ID
       description: Get Pattern Resource By ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
-        '200':
+        "200":
           description: Meshery pattern resource associated with id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPatternResource'
-        '400':
+                $ref: "#/components/schemas/mesheryPatternResource"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     delete:
       tags:
@@ -236,21 +230,21 @@ paths:
       summary: Delete pattern resource
       description: Delete pattern resource associated with id
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
-        '200':
+        "200":
           description: Deleted meshery pattern resource associated with id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPatternResource'
-        '400':
+                $ref: "#/components/schemas/mesheryPatternResource"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/patterns:
     post:
@@ -260,22 +254,22 @@ paths:
       summary: Upsert Pattern
       description: It will insert the pattern if not present else it will update the matching entry
       requestBody:
-        $ref: '#/components/requestBodies/mesheryPatternRequestBody'
+        $ref: "#/components/requestBodies/mesheryPatternRequestBody"
       responses:
-        '200':
+        "200":
           description: Upserted pattern
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/mesheryPattern'
-        '400':
-            $ref: ./common/responses.yml#/400
-        '401':
+                  $ref: "#/components/schemas/mesheryPattern"
+        "400":
+          $ref: ./common/responses.yml#/400
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
-            $ref: ./common/responses.yml#/500
+        "500":
+          $ref: ./common/responses.yml#/500
     get:
       tags:
         - patterns
@@ -283,20 +277,20 @@ paths:
       summary: Get Patterns
       description: Get paginated patterns
       parameters:
-        - $ref: ./common/parameters.yml#/page
-        - $ref: ./common/parameters.yml#/page_size
-        - $ref: ./common/parameters.yml#/search
-        - $ref: ./common/parameters.yml#/order
+        - $ref: ./common/parameters.yml#/components/schemas/page
+        - $ref: ./common/parameters.yml#/components/schemas/page_size
+        - $ref: ./common/parameters.yml#/components/schemas/search
+        - $ref: ./common/parameters.yml#/components/schemas/order
       responses:
-        '200':
+        "200":
           description: Patterns
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPatternPage'
-        '401':
+                $ref: "#/components/schemas/mesheryPatternPage"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     delete:
       tags:
@@ -305,19 +299,19 @@ paths:
       summary: Delete patterns
       description: Delete patterns with the provided ids
       requestBody:
-        $ref: '#/components/requestBodies/mesheryPatternDeleteRequestBody'
+        $ref: "#/components/requestBodies/mesheryPatternDeleteRequestBody"
       responses:
-        '200':
+        "200":
           description: Deleted pattern
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPattern'
-        '400':
+                $ref: "#/components/schemas/mesheryPattern"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/patterns/{id}:
     get:
@@ -327,21 +321,21 @@ paths:
       summary: Get pattern by ID
       description: Get pattern by ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
-        '200':
+        "200":
           description: Pattern associated with ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPattern'
-        '400':
+                $ref: "#/components/schemas/mesheryPattern"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     delete:
       tags:
@@ -350,21 +344,21 @@ paths:
       summary: Delete pattern by ID
       description: Delete pattern associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       responses:
-        '200':
+        "200":
           description: Deleted pattern
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryPattern'
-        '400':
+                $ref: "#/components/schemas/mesheryPattern"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/patterns/clone/{id}:
     post:
@@ -374,7 +368,7 @@ paths:
       summary: Clone pattern
       description: Clone pattern associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/id
+        - $ref: ./common/parameters.yml#/components/schemas/id
       requestBody:
         description: Body for cloning design
         required: true
@@ -387,13 +381,13 @@ paths:
               required:
                 - name
       responses:
-        '200':
+        "200":
           $ref: ./common/responses.yml#/200
-        '400':
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/design/share:
     post:
@@ -403,17 +397,17 @@ paths:
       summary: Design Share
       description: Share design with others
       requestBody:
-        $ref: '#/components/requestBodies/designShare'
+        $ref: "#/components/requestBodies/designShare"
       responses:
-        '200':
+        "200":
           $ref: ./common/responses.yml#/200
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '403':
+        "403":
           description: Only owner have access to changing sharing mode
           content:
             text/plain:
               schema:
                 type: string
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
