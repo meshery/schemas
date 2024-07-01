@@ -38,6 +38,17 @@ alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 
 Meshery follows schema-driven development. As a project, Meshery has different types of schemas. Some schemas are external facing, and some internal to Meshery itself. This repository serves as a central location for storing schemas from which all Meshery components can take reference.
 
+
+<!-- The schema.go emabeds the openapi schema which gets packaged & released  used for purpose like validation
+
+We can refer the unresolved schemas, but
+1. It increases the size of the pkg as it will then embed multiple dirs.
+2. Resolution of refs at run time is ineffective. And because every request will be valiated, it is better to pre-process the schema.
+-->
+
+<!-- For code generation (schema to golang structs), unresolved schemas should be used, and proper import mappings needs to be provided.
+(In some cases, first level resolution of schemas might be required.)
+ -->
 ### External
 
 Meshery schemas file structure is defined based on definitions and schemas, checkout [docs.meshery.io](https://docs.meshery.io/concepts/logical) to learn more about definitions and schemas.

@@ -232,7 +232,7 @@ components:
 
     status:
       name: status
-      in: path
+      in: query
       description: Get models based on status, e.g 'ignored', 'registered'
       schema:
         type: string

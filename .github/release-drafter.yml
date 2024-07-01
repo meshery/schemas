@@ -5,16 +5,9 @@ categories:
     labels:
       - 'kind/feature'
       - 'kind/enhancement'
-  - title: '⌨️ Meshery CLI'
-    labels:
-      - 'component/mesheryctl'
-  - title: '🖥 Meshery UI'
-    labels:
-      - 'component/ui'
-  - title: '🔋 Patterns, Filters, Applications'
+  - title: '🔋 Patterns, Filters'
     labels:
       - 'component/patterns'
-      - 'component/applications'
       - 'component/filters'      
   - title: '🐛 Bug Fixes'
     labels:
@@ -47,13 +40,3 @@ autolabeler:
   - label: 'area/ci'    
     branch:
       - '/.github/'
-  - label: 'component/ui'
-    branch:
-      - '/ui/'
-      - '/provider-ui/'
-  - label: 'component/mesheryctl'
-    branch:
-      - '/mesheryctl/'
-  - label: 'area/lifecycle'
-    branch:
-      - '/install/'

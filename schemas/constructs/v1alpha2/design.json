@@ -1,5 +1,4 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Design Schema",
     "description": "Schema for design  in v1Beta1",
     "type": "object",
@@ -9,12 +8,10 @@
             "description": "Name of the design"
         },
         "schemaVersion": {
-            "$comment": "Not mandating the schemaVersion in v1alpha2 of design schema as it will lead to exisitng designs be incompatible. We will be migrating to v1beta1 and ensuring the compatibility with exisiting design in v1beta1",
             "type": "string",
             "description": "Specifies the version of the schema to which the design  conforms."
         },
         "version": {
-            "$comment": "Not mandating the version in v1alpha2 of design schema as it will lead to exisitng designs be incompatible. We will be migrating to v1beta1 and ensuring the compatibility with exisiting design in v1beta1",
             "type": "string",
             "description": "Version of the design",
             "minLength": 1,
