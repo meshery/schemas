@@ -1,0 +1,9 @@
+openapi: 3.0.0
+components:
+  schemas:
+    models:
+      $ref: ../v1beta1/model.json
+    components:
+      $ref: ../v1beta1/component.json
+    relationships:
+      $ref: ../v1alpha2/relationship.json

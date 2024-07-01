@@ -13,11 +13,11 @@
           "type": "string"
         },
         "model": {
-          "$ref": "https://schemas.meshery.io/v1beta1/model.json#",
+          "$ref": "../v1beta1/model.json",
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {
-          "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString"
+          "$ref": "./core.json#/definitions/semverString"
         },
         "match": {
           "type": "object",
@@ -76,11 +76,11 @@
           "type": "string"
         },
         "model": {
-          "$ref": "https://schemas.meshery.io/v1beta1/model.json#",
+          "$ref": "../v1beta1/model.json",
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {
-          "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString"
+          "$ref": "./core.json#/definitions/semverString"
         },
         "match": {
           "type": "object",

@@ -6,17 +6,17 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
+      "$ref": "../v1alpha2/core.json#/definitions/versionString",
       "description": "Specifies the version of the schema to which the component definition conforms."
     },
     "version": {
-      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#semverString",
+      "$ref": "../v1alpha2/core.json#/definitions/semverString",
       "description": "Version of the component definition.",
       "minLength": 1,
       "maxLength": 50
     },
     "displayName": {
-      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#inputString",
+      "$ref": "../v1alpha2/core.json#/definitions/inputString",
       "description": "Name of the component in human-readible format."
     },
     "description": {
@@ -30,7 +30,7 @@
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
     "model": {
-      "$ref": "https://schemas.meshery.io/v1alpha1/model.json#",
+      "$ref": "./model.json",
       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
     },
     "metadata": {

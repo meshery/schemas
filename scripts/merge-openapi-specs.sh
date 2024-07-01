@@ -5,7 +5,7 @@ echo $folderName
 process_spec() {
   echo "processing $1 ..."
   name=$(basename $1)
-  redocly bundle $1 -o "$temp_bundle_dir/$name"
+redocly bundle  --dereferenced $1 -o "$temp_bundle_dir/$name"
   echo "\n"
 }
 

@@ -6,23 +6,23 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
+      "$ref": "../v1alpha2/core.json#/definitions/versionString",
       "description": "Specifies the version of the schema used for the definition.",
       "minLength": 1,
       "maxLength": 50
     },
     "version": {
-      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#semverString",
+      "$ref": "../v1alpha2/core.json#/definitions/semverString",
       "description": "Version of the model definition."
     },
     "name": {
-      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "$ref": "../v1alpha2/core.json#/definitions/inputString",
       "description": "The unique name for the model within the scope of a registrant.",
       "minLength": 1,
       "maxLength": 100
     },
     "displayName": {
-      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "$ref": "../v1alpha2/core.json#/definitions/inputString",
       "description": "Human-readable name for the model.",
       "minLength": 1,
       "maxLength": 100
@@ -36,13 +36,14 @@
     "status": {
       "type": "string",
       "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-      "enum": ["ignored", "enabled", "duplicate"]
+      "enum": [
+        "ignored",
+        "enabled",
+        "duplicate"
+      ]
     },
     "registrant": {
-      "$ref": "../v1alpha2/connections.yaml#/components/schemas/connection",
-      "description": "Kind of the connection responsible for sourcing and registering entities related to this model.",
-      "minLength": 1,
-      "maxLength": 100
+      "type": "object"
     },
     "category": {
       "type": "string",
@@ -59,7 +60,10 @@
     "metadata": {
       "type": "object",
       "description": "Metadata containing additional information associated with the model.",
-      "required": ["name", "version"],
+      "required": [
+        "name",
+        "version"
+      ],
       "properties": {
         "isAnnotation": {
           "type": "boolean",
@@ -98,10 +102,12 @@
     "model": {
       "type": "object",
       "description": "Registrant-defined data associated with the model.",
-      "required": ["version"],
+      "required": [
+        "version"
+      ],
       "properties": {
         "version": {
-          "$ref": "https://schemas.meshery.io/v1alpha2/core.json#versionString",
+          "$ref": "../v1alpha2/core.json#/definitions/versionString",
           "description": "Version of the model as defined by the registrant.",
           "minLength": 1,
           "maxLength": 100
@@ -109,5 +115,10 @@
       }
     }
   },
-  "required": ["name", "version", "registrant", "category"]
+  "required": [
+    "name",
+    "version",
+    "registrant",
+    "category"
+  ]
 }
