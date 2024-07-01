@@ -23,7 +23,8 @@ jobs:
         run: |
          chmod +x ./scripts/merge-openapi-specs.sh
          ./scripts/merge-openapi-specs.sh
-          
+      - name: Delete Generated Files
+        run: rm ./openapi/schemas/temp_schema_bundle
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update schema
