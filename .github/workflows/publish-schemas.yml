@@ -25,8 +25,8 @@ jobs:
          ./scripts/merge-openapi-specs.sh
       - name: Delete Generated Files
         run: |
-         if[[ -f ./openapi/schemas/temp_schema_bundle ]]
-          rm ./openapi/schemas/temp_schema_bundle
+         if [[ -d ./openapi/schemas/temp_schema_bundle ]]; then
+          rmdir -r ./openapi/schemas/temp_schema_bundle
          fi
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
