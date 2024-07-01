@@ -21,8 +21,7 @@ jobs:
          ls;
          
       - name: Run Script
-        working-directory: scripts
         shell: bash
         run: |
-         chmod +x ./merge-openapi-specs.sh
-         ./merge-openapi-specs.sh
+         chmod +x ./scripts/merge-openapi-specs.sh
+         ./scripts/merge-openapi-specs.sh
