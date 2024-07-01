@@ -2404,7 +2404,7 @@ components:
             Tracks the specific content version that has been made available in
             the Catalog.
           type: string
-        class:
+        content_class:
           description: >-
             Published content is classifed by its support level. Content classes
             help you understand the origin and expected support level for each
@@ -2427,7 +2427,6 @@ components:
           enum:
             - official
             - verified
-            - project
             - community
         compatibility:
           type: array
@@ -2451,6 +2450,7 @@ components:
         pattern_info:
           type: string
           title: Description
+          minLength: 1
           description: Purpose of the design along with its intended and unintended uses.
         type:
           type: string
