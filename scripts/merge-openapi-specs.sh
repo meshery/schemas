@@ -2,7 +2,6 @@
 temp_bundle_dir="./openapi/schemas/temp_schema_bundle"
 echo $folderName
 
-rm "./schemas/openapi.yml"
 process_spec() {
   echo "processing $1 ..."
   name=$(basename $1)
