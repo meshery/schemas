@@ -32,7 +32,6 @@ jobs:
         with:
           commit_message: Update schema
           commit_options: '--signoff'
-          file_pattern: './schemas/*.yml ./schemas/*.yaml'
           branch: master
           commit_user_name: l5io
           commit_user_email: ci@layer5.io
