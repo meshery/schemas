@@ -24,7 +24,7 @@ golangci: error dep-check
 
 ## Validate Remote provider APIs against OpenAPI spec
 api-validate:
-	openapi-generator validate -i openapi/openapi.yml
+	openapi-generator validate -i schemas/openapi.yml
 
 schemas-join:
 	chmod +x scripts/merge-openapi-specs.sh
