@@ -29,12 +29,23 @@ api-validate:
 schemas-join:
 	chmod +x scripts/merge-openapi-specs.sh
 	scripts/merge-openapi-specs.sh
-	
+
 ## Building docs with redocly
 docs-build:
 	redocly bundle --output openapi/bundled-schema.yml
 	redocly build-docs openapi/bundled-schema.yml --output=openapi/index.html
 	rm openapi/bundled-schema.yml
+
+## Generate typescript library
+generate-ts:
+	npm run generate:types
+
+build-ts: generate-ts
+	npm run build
+
+publish-ts: build-ts
+	npm publish
+
 #-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------
