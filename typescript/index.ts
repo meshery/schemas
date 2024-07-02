@@ -1,29 +1,30 @@
 // This file is not automatically generated. It is created manually to export the constructs in the generated modules
 
+// v1alpha1
 import {
-  CatalogData,
+  CatalogData as CatalogDataT,
   CaveatsAndConsiderations,
 } from "./constructs/v1alpha1/catalog_data";
 
+// v1alpha2
 import { DesignSchema } from "./constructs/v1alpha2/design";
 import { HttpsSchemasMesheryIoRelationshipJson } from "./constructs/v1alpha2/relationship";
 
+// v1beta1
 import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/component";
 import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model";
 
-interface V1alpha1 {
-  CatalogData: CatalogData;
-  CatalogCaveatsAndConsiderations: CaveatsAndConsiderations;
+export namespace v1alpha1 {
+  export type CatalogData = CatalogDataT;
+  export type CatalogCaveatsAndConsiderations = CaveatsAndConsiderations;
 }
 
-interface V1alpha2 {
-  Design: DesignSchema;
-  Relationship: HttpsSchemasMesheryIoRelationshipJson;
+export namespace v1alpha2 {
+  export type Design = DesignSchema;
+  export type Relationship = HttpsSchemasMesheryIoRelationshipJson;
 }
 
-interface V1beta1 {
-  Component: HttpsSchemasMesheryIoComponentJson;
-  Model: HttpsSchemasMesheryIoModelJson;
+export namespace v1beta1 {
+  export type Component = HttpsSchemasMesheryIoComponentJson;
+  export type Model = HttpsSchemasMesheryIoModelJson;
 }
-
-export { V1alpha1, V1alpha2, V1beta1 };
