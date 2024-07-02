@@ -20,7 +20,8 @@
       "maxLength": 50
     },
     "components": {
-      "description": "Map of component IDs to their corresponding component declarations",
+      "description": "Map of component instances to their corresponding component declarations",
+
       "additionalProperties": {
         "type": "string",
         "format": "uuid"
