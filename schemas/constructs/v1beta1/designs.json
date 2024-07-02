@@ -36,11 +36,11 @@
         "name": {
           "$ref": "../v1alpha2/core.json#/definitions/inputString"
         },
-        "model": {
-          "$ref": "./component.json#/properties/model"
-        },
         "metadata": {
           "$ref": "./component.json#/properties/metadata"
+        },
+        "model": {
+          "$ref": "./component.json#/properties/model"
         },
         "component": {
           "type": "object",
@@ -110,15 +110,15 @@
             "description": "ID (UUID) of the target component"
           },
           "kind": {
-            "type": "string",
+            "$ref": "../v1alpha2/relationship.json#/properties/kind",
             "description": "Kind of the relationship"
           },
           "type": {
-            "type": "string",
+            "$ref": "../v1alpha2/relationship.json#/properties/type",
             "description": "Type of the relationship"
           },
           "subType": {
-            "type": "string",
+            "$ref": "../v1alpha2/relationship.json#/properties/subType",
             "description": "Subtype of the relationship (optional)"
           },
           "status": {
