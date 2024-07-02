@@ -53,7 +53,8 @@
               "$ref": "./component.json#/properties/component/properties/kind"
             },
             "configuration": {
-              "$comment": "The configuration of the component. The configuration is based on the schema defined inside the component definition.",
+              "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition.",
+
               "additionalProperties": {
                 "type": "string"
               },
