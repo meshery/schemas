@@ -10,7 +10,8 @@
     },
     "schemaVersion": {
       "$ref": "../v1alpha2/core.json#/definitions/versionString",
-      "description": "Specifies the version of the schema to which the design  conforms."
+      "description": "Specifies the version of the schema to which the design conforms."
+
     },
     "version": {
       "$ref": "../v1alpha2/core.json#/definitions/semverString",
