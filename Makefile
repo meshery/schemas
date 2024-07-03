@@ -44,7 +44,7 @@ build-ts: generate-ts
 	npm run build
 
 publish-ts: build-ts
-	npm publish
+	npm run publish-ts-lib
 
 #-----------------------------------------------------------------------------
 # Dependencies
