@@ -1,4 +1,5 @@
 // This file is not automatically generated. It is created manually to export the constructs in the generated modules
+// The generated modules are created in the dist folder and are named based on the constructs in the schema
 
 // v1alpha1
 import {
