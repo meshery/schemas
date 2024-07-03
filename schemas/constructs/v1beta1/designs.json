@@ -11,7 +11,6 @@
     "schemaVersion": {
       "$ref": "../v1alpha2/core.json#/definitions/versionString",
       "description": "Specifies the version of the schema to which the design conforms."
-
     },
     "version": {
       "$ref": "../v1alpha2/core.json#/definitions/semverString",
@@ -21,7 +20,6 @@
     },
     "components": {
       "description": "Map of component instances to their corresponding component declarations",
-
       "additionalProperties": {
         "type": "string",
         "format": "uuid"
@@ -55,7 +53,6 @@
             },
             "configuration": {
               "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition.",
-
               "additionalProperties": {
                 "type": "string"
               },
@@ -100,6 +97,12 @@
       "items": {
         "type": "object",
         "properties": {
+          "schemaVersion": {
+            "$ref": "../v1alpha2/relationship.json#/properties/schemaVersion"
+          },
+          "version": {
+            "$ref": "../v1alpha2/relationship.json#/properties/version"
+          },
           "from": {
             "type": "string",
             "format": "uuid",
