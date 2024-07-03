@@ -20,8 +20,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "json-schema-to-typescript": "^14.1.0",
     "tsup": "^6.5.0",
-    "typescript": "^4.9.5",
-    "json-schema-to-typescript": "^14.1.0"
+    "typescript": "^4.9.5"
   }
 }
