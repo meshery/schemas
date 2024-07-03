@@ -21,7 +21,7 @@ const build = () => {
 const publish = () => {
   // publish to npm
   const execSync = require("child_process").execSync;
-  execSync("npm publish --verbos", { stdio: [0, 1, 2] });
+  execSync("npm publish --verbose", { stdio: [0, 1, 2] });
   console.log("published to npm");
 };
 
