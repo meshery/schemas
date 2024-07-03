@@ -9,7 +9,12 @@
         },
         "schemaVersion": {
             "type": "string",
-            "description": "Specifies the version of the schema to which the design  conforms."
+            "description": "Specifies the version of the schema to which the design  conforms.",
+            "x-oapi-codegen-extra-tags": 
+                {
+                    "yaml": "schemaVersion"
+                }
+            
         },
         "version": {
             "type": "string",
@@ -33,7 +38,12 @@
                         "type": "string"
                     },
                     "apiVersion": {
-                        "type": "string"
+                        "type": "string",
+                        "x-oapi-codegen-extra-tags": 
+                            {
+                                "yaml": "apiVersion"
+                            }
+                        
                     },
                     "namespace": {
                         "type": "string"
@@ -45,7 +55,12 @@
                         "type": "string"
                     },
                     "isAnnotation": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "x-oapi-codegen-extra-tags": 
+                            {
+                                "yaml": "isAnnotation"
+                            }
+                        
                     },
                     "labels": {
                         "additionalProperties": {
@@ -63,7 +78,12 @@
                         "items": {
                             "type": "string"
                         },
-                        "type": "array"
+                        "type": "array",
+                        "x-oapi-codegen-extra-tags": 
+                            {
+                                "yaml": "dependsOn"
+                            }
+                        
                     },
                     "settings": {
                         "type": "object"
