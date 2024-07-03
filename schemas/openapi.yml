@@ -1681,6 +1681,8 @@ paths:
                                   description: >-
                                     Specifies the version of the schema to which
                                     the design  conforms.
+                                  x-oapi-codegen-extra-tags:
+                                    yaml: schemaVersion
                                 version:
                                   type: string
                                   description: Version of the design
@@ -1702,6 +1704,8 @@ paths:
                                         type: string
                                       apiVersion:
                                         type: string
+                                        x-oapi-codegen-extra-tags:
+                                          yaml: apiVersion
                                       namespace:
                                         type: string
                                       version:
@@ -1710,6 +1714,8 @@ paths:
                                         type: string
                                       isAnnotation:
                                         type: boolean
+                                        x-oapi-codegen-extra-tags:
+                                          yaml: isAnnotation
                                       labels:
                                         additionalProperties:
                                           type: string
@@ -1722,6 +1728,8 @@ paths:
                                         items:
                                           type: string
                                         type: array
+                                        x-oapi-codegen-extra-tags:
+                                          yaml: dependsOn
                                       settings:
                                         type: object
                                       traits:
@@ -5416,6 +5424,8 @@ paths:
                           description: >-
                             Specifies the version of the schema to which the
                             design  conforms.
+                          x-oapi-codegen-extra-tags:
+                            yaml: schemaVersion
                         version:
                           type: string
                           description: Version of the design
@@ -5437,6 +5447,8 @@ paths:
                                 type: string
                               apiVersion:
                                 type: string
+                                x-oapi-codegen-extra-tags:
+                                  yaml: apiVersion
                               namespace:
                                 type: string
                               version:
@@ -5445,6 +5457,8 @@ paths:
                                 type: string
                               isAnnotation:
                                 type: boolean
+                                x-oapi-codegen-extra-tags:
+                                  yaml: isAnnotation
                               labels:
                                 additionalProperties:
                                   type: string
@@ -5457,6 +5471,8 @@ paths:
                                 items:
                                   type: string
                                 type: array
+                                x-oapi-codegen-extra-tags:
+                                  yaml: dependsOn
                               settings:
                                 type: object
                               traits:
@@ -5622,6 +5638,8 @@ paths:
                           description: >-
                             Specifies the version of the schema to which the
                             design  conforms.
+                          x-oapi-codegen-extra-tags:
+                            yaml: schemaVersion
                         version:
                           type: string
                           description: Version of the design
@@ -5643,6 +5661,8 @@ paths:
                                 type: string
                               apiVersion:
                                 type: string
+                                x-oapi-codegen-extra-tags:
+                                  yaml: apiVersion
                               namespace:
                                 type: string
                               version:
@@ -5651,6 +5671,8 @@ paths:
                                 type: string
                               isAnnotation:
                                 type: boolean
+                                x-oapi-codegen-extra-tags:
+                                  yaml: isAnnotation
                               labels:
                                 additionalProperties:
                                   type: string
@@ -5663,6 +5685,8 @@ paths:
                                 items:
                                   type: string
                                 type: array
+                                x-oapi-codegen-extra-tags:
+                                  yaml: dependsOn
                               settings:
                                 type: object
                               traits:
@@ -5895,6 +5919,8 @@ paths:
                                   description: >-
                                     Specifies the version of the schema to which
                                     the design  conforms.
+                                  x-oapi-codegen-extra-tags:
+                                    yaml: schemaVersion
                                 version:
                                   type: string
                                   description: Version of the design
@@ -5916,6 +5942,8 @@ paths:
                                         type: string
                                       apiVersion:
                                         type: string
+                                        x-oapi-codegen-extra-tags:
+                                          yaml: apiVersion
                                       namespace:
                                         type: string
                                       version:
@@ -5924,6 +5952,8 @@ paths:
                                         type: string
                                       isAnnotation:
                                         type: boolean
+                                        x-oapi-codegen-extra-tags:
+                                          yaml: isAnnotation
                                       labels:
                                         additionalProperties:
                                           type: string
@@ -5936,6 +5966,8 @@ paths:
                                         items:
                                           type: string
                                         type: array
+                                        x-oapi-codegen-extra-tags:
+                                          yaml: dependsOn
                                       settings:
                                         type: object
                                       traits:
@@ -6152,6 +6184,8 @@ paths:
                         description: >-
                           Specifies the version of the schema to which the
                           design  conforms.
+                        x-oapi-codegen-extra-tags:
+                          yaml: schemaVersion
                       version:
                         type: string
                         description: Version of the design
@@ -6173,6 +6207,8 @@ paths:
                               type: string
                             apiVersion:
                               type: string
+                              x-oapi-codegen-extra-tags:
+                                yaml: apiVersion
                             namespace:
                               type: string
                             version:
@@ -6181,6 +6217,8 @@ paths:
                               type: string
                             isAnnotation:
                               type: boolean
+                              x-oapi-codegen-extra-tags:
+                                yaml: isAnnotation
                             labels:
                               additionalProperties:
                                 type: string
@@ -6193,6 +6231,8 @@ paths:
                               items:
                                 type: string
                               type: array
+                              x-oapi-codegen-extra-tags:
+                                yaml: dependsOn
                             settings:
                               type: object
                             traits:
@@ -6389,6 +6429,8 @@ paths:
                         description: >-
                           Specifies the version of the schema to which the
                           design  conforms.
+                        x-oapi-codegen-extra-tags:
+                          yaml: schemaVersion
                       version:
                         type: string
                         description: Version of the design
@@ -6410,6 +6452,8 @@ paths:
                               type: string
                             apiVersion:
                               type: string
+                              x-oapi-codegen-extra-tags:
+                                yaml: apiVersion
                             namespace:
                               type: string
                             version:
@@ -6418,6 +6462,8 @@ paths:
                               type: string
                             isAnnotation:
                               type: boolean
+                              x-oapi-codegen-extra-tags:
+                                yaml: isAnnotation
                             labels:
                               additionalProperties:
                                 type: string
@@ -6430,6 +6476,8 @@ paths:
                               items:
                                 type: string
                               type: array
+                              x-oapi-codegen-extra-tags:
+                                yaml: dependsOn
                             settings:
                               type: object
                             traits:
@@ -6631,6 +6679,8 @@ paths:
                         description: >-
                           Specifies the version of the schema to which the
                           design  conforms.
+                        x-oapi-codegen-extra-tags:
+                          yaml: schemaVersion
                       version:
                         type: string
                         description: Version of the design
@@ -6652,6 +6702,8 @@ paths:
                               type: string
                             apiVersion:
                               type: string
+                              x-oapi-codegen-extra-tags:
+                                yaml: apiVersion
                             namespace:
                               type: string
                             version:
@@ -6660,6 +6712,8 @@ paths:
                               type: string
                             isAnnotation:
                               type: boolean
+                              x-oapi-codegen-extra-tags:
+                                yaml: isAnnotation
                             labels:
                               additionalProperties:
                                 type: string
@@ -6672,6 +6726,8 @@ paths:
                               items:
                                 type: string
                               type: array
+                              x-oapi-codegen-extra-tags:
+                                yaml: dependsOn
                             settings:
                               type: object
                             traits:
@@ -11235,6 +11291,8 @@ components:
         schemaVersion:
           type: string
           description: Specifies the version of the schema to which the design  conforms.
+          x-oapi-codegen-extra-tags:
+            yaml: schemaVersion
         version:
           type: string
           description: Version of the design
@@ -11256,6 +11314,8 @@ components:
                 type: string
               apiVersion:
                 type: string
+                x-oapi-codegen-extra-tags:
+                  yaml: apiVersion
               namespace:
                 type: string
               version:
@@ -11264,6 +11324,8 @@ components:
                 type: string
               isAnnotation:
                 type: boolean
+                x-oapi-codegen-extra-tags:
+                  yaml: isAnnotation
               labels:
                 additionalProperties:
                   type: string
@@ -11276,6 +11338,8 @@ components:
                 items:
                   type: string
                 type: array
+                x-oapi-codegen-extra-tags:
+                  yaml: dependsOn
               settings:
                 type: object
               traits:
@@ -11320,6 +11384,8 @@ components:
               description: >-
                 Specifies the version of the schema to which the design 
                 conforms.
+              x-oapi-codegen-extra-tags:
+                yaml: schemaVersion
             version:
               type: string
               description: Version of the design
@@ -11341,6 +11407,8 @@ components:
                     type: string
                   apiVersion:
                     type: string
+                    x-oapi-codegen-extra-tags:
+                      yaml: apiVersion
                   namespace:
                     type: string
                   version:
@@ -11349,6 +11417,8 @@ components:
                     type: string
                   isAnnotation:
                     type: boolean
+                    x-oapi-codegen-extra-tags:
+                      yaml: isAnnotation
                   labels:
                     additionalProperties:
                       type: string
@@ -11361,6 +11431,8 @@ components:
                     items:
                       type: string
                     type: array
+                    x-oapi-codegen-extra-tags:
+                      yaml: dependsOn
                   settings:
                     type: object
                   traits:
@@ -17038,6 +17110,8 @@ components:
                         description: >-
                           Specifies the version of the schema to which the
                           design  conforms.
+                        x-oapi-codegen-extra-tags:
+                          yaml: schemaVersion
                       version:
                         type: string
                         description: Version of the design
@@ -17059,6 +17133,8 @@ components:
                               type: string
                             apiVersion:
                               type: string
+                              x-oapi-codegen-extra-tags:
+                                yaml: apiVersion
                             namespace:
                               type: string
                             version:
@@ -17067,6 +17143,8 @@ components:
                               type: string
                             isAnnotation:
                               type: boolean
+                              x-oapi-codegen-extra-tags:
+                                yaml: isAnnotation
                             labels:
                               additionalProperties:
                                 type: string
@@ -17079,6 +17157,8 @@ components:
                               items:
                                 type: string
                               type: array
+                              x-oapi-codegen-extra-tags:
+                                yaml: dependsOn
                             settings:
                               type: object
                             traits:
@@ -19413,6 +19493,8 @@ components:
                         description: >-
                           Specifies the version of the schema to which the
                           design  conforms.
+                        x-oapi-codegen-extra-tags:
+                          yaml: schemaVersion
                       version:
                         type: string
                         description: Version of the design
@@ -19434,6 +19516,8 @@ components:
                               type: string
                             apiVersion:
                               type: string
+                              x-oapi-codegen-extra-tags:
+                                yaml: apiVersion
                             namespace:
                               type: string
                             version:
@@ -19442,6 +19526,8 @@ components:
                               type: string
                             isAnnotation:
                               type: boolean
+                              x-oapi-codegen-extra-tags:
+                                yaml: isAnnotation
                             labels:
                               additionalProperties:
                                 type: string
@@ -19454,6 +19540,8 @@ components:
                               items:
                                 type: string
                               type: array
+                              x-oapi-codegen-extra-tags:
+                                yaml: dependsOn
                             settings:
                               type: object
                             traits:
