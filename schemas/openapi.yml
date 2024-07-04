@@ -1076,7 +1076,7 @@ paths:
                         Tracks the specific content version that has been made
                         available in the Catalog.
                       type: string
-                    content_class:
+                    class:
                       description: >-
                         Published content is classifed by its support level.
                         Content classes help you understand the origin and
@@ -1226,7 +1226,7 @@ paths:
                         Tracks the specific content version that has been made
                         available in the Catalog.
                       type: string
-                    content_class:
+                    class:
                       description: >-
                         Published content is classifed by its support level.
                         Content classes help you understand the origin and
@@ -1484,7 +1484,7 @@ paths:
                                     Tracks the specific content version that has
                                     been made available in the Catalog.
                                   type: string
-                                content_class:
+                                class:
                                   description: >-
                                     Published content is classifed by its
                                     support level. Content classes help you
@@ -1757,7 +1757,7 @@ paths:
                                     Tracks the specific content version that has
                                     been made available in the Catalog.
                                   type: string
-                                content_class:
+                                class:
                                   description: >-
                                     Published content is classifed by its
                                     support level. Content classes help you
@@ -1979,7 +1979,7 @@ paths:
                         Tracks the specific content version that has been made
                         available in the Catalog.
                       type: string
-                    content_class:
+                    class:
                       description: >-
                         Published content is classifed by its support level.
                         Content classes help you understand the origin and
@@ -2141,7 +2141,7 @@ paths:
                         Tracks the specific content version that has been made
                         available in the Catalog.
                       type: string
-                    content_class:
+                    class:
                       description: >-
                         Published content is classifed by its support level.
                         Content classes help you understand the origin and
@@ -5500,7 +5500,7 @@ paths:
                             Tracks the specific content version that has been
                             made available in the Catalog.
                           type: string
-                        content_class:
+                        class:
                           description: >-
                             Published content is classifed by its support level.
                             Content classes help you understand the origin and
@@ -5714,7 +5714,7 @@ paths:
                             Tracks the specific content version that has been
                             made available in the Catalog.
                           type: string
-                        content_class:
+                        class:
                           description: >-
                             Published content is classifed by its support level.
                             Content classes help you understand the origin and
@@ -5995,7 +5995,7 @@ paths:
                                     Tracks the specific content version that has
                                     been made available in the Catalog.
                                   type: string
-                                content_class:
+                                class:
                                   description: >-
                                     Published content is classifed by its
                                     support level. Content classes help you
@@ -6260,7 +6260,7 @@ paths:
                           Tracks the specific content version that has been made
                           available in the Catalog.
                         type: string
-                      content_class:
+                      class:
                         description: >-
                           Published content is classifed by its support level.
                           Content classes help you understand the origin and
@@ -6505,7 +6505,7 @@ paths:
                           Tracks the specific content version that has been made
                           available in the Catalog.
                         type: string
-                      content_class:
+                      class:
                         description: >-
                           Published content is classifed by its support level.
                           Content classes help you understand the origin and
@@ -6755,7 +6755,7 @@ paths:
                           Tracks the specific content version that has been made
                           available in the Catalog.
                         type: string
-                      content_class:
+                      class:
                         description: >-
                           Published content is classifed by its support level.
                           Content classes help you understand the origin and
@@ -10934,7 +10934,7 @@ components:
                 Tracks the specific content version that has been made available
                 in the Catalog.
               type: string
-            content_class:
+            class:
               description: >-
                 Published content is classifed by its support level. Content
                 classes help you understand the origin and expected support
@@ -11104,7 +11104,7 @@ components:
                           Tracks the specific content version that has been made
                           available in the Catalog.
                         type: string
-                      content_class:
+                      class:
                         description: >-
                           Published content is classifed by its support level.
                           Content classes help you understand the origin and
@@ -11197,7 +11197,7 @@ components:
             Tracks the specific content version that has been made available in
             the Catalog.
           type: string
-        content_class:
+        class:
           description: >-
             Published content is classifed by its support level. Content classes
             help you understand the origin and expected support level for each
@@ -11460,7 +11460,7 @@ components:
                 Tracks the specific content version that has been made available
                 in the Catalog.
               type: string
-            content_class:
+            class:
               description: >-
                 Published content is classifed by its support level. Content
                 classes help you understand the origin and expected support
@@ -17186,7 +17186,7 @@ components:
                           Tracks the specific content version that has been made
                           available in the Catalog.
                         type: string
-                      content_class:
+                      class:
                         description: >-
                           Published content is classifed by its support level.
                           Content classes help you understand the origin and
@@ -19141,7 +19141,7 @@ components:
                       Tracks the specific content version that has been made
                       available in the Catalog.
                     type: string
-                  content_class:
+                  class:
                     description: >-
                       Published content is classifed by its support level.
                       Content classes help you understand the origin and
@@ -19569,7 +19569,7 @@ components:
                           Tracks the specific content version that has been made
                           available in the Catalog.
                         type: string
-                      content_class:
+                      class:
                         description: >-
                           Published content is classifed by its support level.
                           Content classes help you understand the origin and
