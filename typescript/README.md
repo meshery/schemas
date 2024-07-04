@@ -1,4 +1,3 @@
-## Improved Markdown Documentation
 
 **Overview**
 
