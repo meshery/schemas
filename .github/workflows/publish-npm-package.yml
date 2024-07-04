@@ -4,24 +4,42 @@
 name: Publish NPM Package
 
 on:
-  release:
-    types: [created]
   workflow_dispatch:
     inputs:
-      release-version:
+      release_version:
+        description: 'Release Version'
         required: true
+        default: 'prerelease'
+        type: choice
+        options:
+        - 'prerelease'
+        - 'patch'
+        - 'minor'
+        - 'major'
+      release_variant:
+        description: 'Release Version'
+        required: true
+        default: 'no'
+        type: choice
+        options:
+        - 'no'
+        - 'alpha'
+        - 'beta'
 
 jobs:
   publish-gpr:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    permissions: write-all
     steps:
       - name: Checkout
         uses: actions/checkout@master
         with:
           ref: "master"
+
+      - name: Setup Git
+        run: |
+          git config user.name l5io
+          git config user.email ci@layer5.io
 
       - uses: actions/setup-node@v3
         with:
@@ -32,18 +50,36 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run npm release
-        run: npm run publish-ts-lib ${{ github.event.inputs.release-version || github.event.release.tag_name }}
-        if: github.event_name == 'workflow_dispatch' || github.event_name == 'release'
+      - name: Update Release Version
+        env:
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          RELEASE_VARIANT: ${{ inputs.release_variant }}
+        run: |
+          OLD_VERSION=$(node -e "console.log(require('./package.json').version)")
+          if [ $RELEASE_VERSION == "prerelease" ] && [ $RELEASE_VARIANT != "no" ]; then npm version ${RELEASE_VERSION} --preid ${RELEASE_VARIANT}; fi
+          if [ $RELEASE_VERSION == "prerelease" ] && [ $RELEASE_VARIANT == "no" ]; then npm version ${RELEASE_VERSION}; fi
+          if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT != "no" ]; then npm version pre${RELEASE_VERSION} --preid ${RELEASE_VARIANT}; fi
+          if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT == "no" ]; then npm version ${RELEASE_VERSION}; fi
+          git add './'
+          NEW_VERSION=$(node -e "console.log(require('./package.json').version)")
+          echo "Updated Package Version" >> $GITHUB_STEP_SUMMARY
+          echo "info Old Version: ${OLD_VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "info New Version: ${NEW_VERSION}" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Build Package
+        run: |
+          npm run build
+          echo "Build New Package" >> $GITHUB_STEP_SUMMARY
 
+      - name: Publich Package
+        run: npm publish --verbose
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Commit and push version change
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_user_name: l5io
-          commit_user_email: ci@layer5.io
-          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          commit_options: "--signoff"
-          commit_message: "[Release]: Bump version to ${{ github.event.inputs.release-version || github.event.release.tag_name }}"
+        run: |
+          git status
+          git pull --rebase -f
+          git push --verbose
+          echo "Pushed Package changes" >> $GITHUB_STEP_SUMMARY
+
