@@ -17,7 +17,7 @@ on:
         - 'minor'
         - 'major'
       release_variant:
-        description: 'Release Version'
+        description: 'Release Variant'
         required: true
         default: 'no'
         type: choice
