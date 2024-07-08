@@ -2,7 +2,7 @@
   "id": "00000000-0000-0000-0000-000000000000",
   "schemaVersion": "components.meshery.io/v1beta1",
   "version": "v1.0.0",
-  "displayName": "ConcaveHexagon",
+  "displayName": "Section",
   "description": "",
   "format": "JSON",
   "model": {
@@ -36,24 +36,24 @@
     "relationships": null
   },
   "metadata": {
-    "capabilities": "{\"designer\":{\"edit\":{\"config\":false, \"text\":true,\"lock\":true,\"shape\":{\"convert-shape\":true},\"style\":true},\"label\":{\"edit\":true,\"show\":true,\"sync-with-config-property\":\"label\"}}}",
+    "capabilities": "{\"designer\":{\"show-node-group-badge\":false, \"edit\":{\"config\":false, \"text\":false,\"lock\":true,\"shape\":{\"convert-shape\":false},\"style\":true},\"label\":{\"edit\":true,\"show\":true,\"sync-with-config-property\":\"label\"}}}",
     "defaultData": "{\"label\":\"\"}",
-    "genealogy": "",
+    "genealogy": "parent",
     "isAnnotation": true,
     "primaryColor": "#00B39F",
     "secondaryColor": "#00D3A9",
-    "shape": "concave-hexagon",
+    "shape": "rectangle",
     "shapePolygonPoints": "",
     "status": "enabled",
-    "styleOverrides": "{\"height\":\"30px\",\"width\":\"30px\", \"background-image\":\"none\",\"border-width\":1,\"border-style\":\"solid\",\"background-opacity\":0.1,\"data\":{\"label\":\"\"}}",
-    "styles": "{\"height\":\"30px\",\"width\":\"30px\", \"background-image\":\"none\",\"border-width\":1,\"border-style\":\"solid\",\"background-opacity\":0.1}",
+    "styleOverrides": "{\"height\":\"30px\",\"width\":\"30px\", \"background-image\":\"none\",\"border-width\":1,\"border-style\":\"dashed\",\"background-opacity\":0.1,\"data\":{\"label\":\"\"}}",
+    "styles": "{\"height\":\"30px\",\"width\":\"30px\", \"background-image\":\"none\",\"border-width\":1,\"border-style\":\"dashed\",\"background-opacity\":0.1}",
     "subCategory": "",
-    "svgColor": "\u003csvg width=\"41\" height=\"40\" viewBox=\"0 0 41 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"\u003e\n\u003cpath d=\"M34.4009 20L38.5575 37H2.44189L6.62344 20L2.44189 3H38.5575L34.4009 20Z\" fill=\"#00B39F\" fill-opacity=\"0.1\" stroke=\"#00B39F\" stroke-width=\"1\" stroke-miterlimit=\"10\"/\u003e\n\u003c/svg\u003e\n",
+    "svgColor": "\u003csvg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"\u003e\n\u003crect x=\"1.5\" y=\"1\" width=\"38\" height=\"38\" fill=\"#00B39F\" fill-opacity=\"0.1\" stroke=\"#00B39F\" stroke-miterlimit=\"10\"/\u003e\n\u003c/svg\u003e\n",
     "svgComplete": "",
-    "svgWhite": "\u003csvg width=\"41\" height=\"40\" viewBox=\"0 0 41 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"\u003e\n\u003cpath d=\"M34.4009 20L38.5575 37H2.44189L6.62344 20L2.44189 3H38.5575L34.4009 20Z\" fill=\"white\" fill-opacity=\"0.1\" stroke=\"white\" stroke-width=\"1\" stroke-miterlimit=\"10\"/\u003e\n\u003c/svg\u003e\n"
+    "svgWhite": "\u003csvg width=\"40\" height=\"40\" viewBox=\"0 0 40 40\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"\u003e\n\u003crect x=\"1.5\" y=\"1\" width=\"38\" height=\"38\" fill=\"white\" fill-opacity=\"0.1\" stroke=\"white\" stroke-miterlimit=\"10\"/\u003e\n\u003c/svg\u003e\n"
   },
   "component": {
-    "kind": "ConcaveHexagon",
+    "kind": "Section",
     "version": "core.meshery.io/v1alpha1"
   }
 }
