@@ -13445,7 +13445,9 @@ components:
           additionalProperties: true
         model:
           type: object
-          description: Registrant-defined data associated with the model.
+          description: >-
+            Registrant-defined data associated with the model. Properties
+            pertain to the software being managed (e.g. Kubernetes v1.31)
           required:
             - version
           properties:
@@ -13632,7 +13634,9 @@ components:
               additionalProperties: true
             model:
               type: object
-              description: Registrant-defined data associated with the model.
+              description: >-
+                Registrant-defined data associated with the model. Properties
+                pertain to the software being managed (e.g. Kubernetes v1.31)
               required:
                 - version
               properties:
@@ -13957,7 +13961,9 @@ components:
               additionalProperties: true
             model:
               type: object
-              description: Registrant-defined data associated with the model.
+              description: >-
+                Registrant-defined data associated with the model. Properties
+                pertain to the software being managed (e.g. Kubernetes v1.31)
               required:
                 - version
               properties:
@@ -14143,7 +14149,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
@@ -14375,7 +14382,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
@@ -14601,7 +14609,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
@@ -14833,7 +14842,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
@@ -15054,7 +15064,9 @@ components:
           additionalProperties: true
         model:
           type: object
-          description: Registrant-defined data associated with the model.
+          description: >-
+            Registrant-defined data associated with the model. Properties
+            pertain to the software being managed (e.g. Kubernetes v1.31)
           required:
             - version
           properties:
@@ -15241,7 +15253,9 @@ components:
               additionalProperties: true
             model:
               type: object
-              description: Registrant-defined data associated with the model.
+              description: >-
+                Registrant-defined data associated with the model. Properties
+                pertain to the software being managed (e.g. Kubernetes v1.31)
               required:
                 - version
               properties:
@@ -15503,7 +15517,9 @@ components:
                 additionalProperties: true
               model:
                 type: object
-                description: Registrant-defined data associated with the model.
+                description: >-
+                  Registrant-defined data associated with the model. Properties
+                  pertain to the software being managed (e.g. Kubernetes v1.31)
                 required:
                   - version
                 properties:
@@ -15711,7 +15727,9 @@ components:
                 additionalProperties: true
               model:
                 type: object
-                description: Registrant-defined data associated with the model.
+                description: >-
+                  Registrant-defined data associated with the model. Properties
+                  pertain to the software being managed (e.g. Kubernetes v1.31)
                 required:
                   - version
                 properties:
@@ -15972,7 +15990,9 @@ components:
               additionalProperties: true
             model:
               type: object
-              description: Registrant-defined data associated with the model.
+              description: >-
+                Registrant-defined data associated with the model. Properties
+                pertain to the software being managed (e.g. Kubernetes v1.31)
               required:
                 - version
               properties:
@@ -16158,7 +16178,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
@@ -16390,7 +16411,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
@@ -16616,7 +16638,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
@@ -16848,7 +16871,8 @@ components:
                               type: object
                               description: >-
                                 Registrant-defined data associated with the
-                                model.
+                                model. Properties pertain to the software being
+                                managed (e.g. Kubernetes v1.31)
                               required:
                                 - version
                               properties:
