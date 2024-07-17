@@ -14,7 +14,7 @@ services:
         edges: []
         id: d9fb6e7b-aa9f-4493-866e-54691a1cc00d
         label: AnchorNode
-        meshmodel-data:
+        model-data:
           category:
             metadata: null
             name: Orchestration & Management
@@ -33,7 +33,7 @@ services:
           relationships: []
           status: registered
           version: 0.7.1
-        meshmodel-metadata:
+        model-metadata:
           capabilities: '{"designer":{"edit":{"config":false,"lock":true,"shape":{"convert-shape":false},"style":false},"label":{"edit":true,"show":false,"sync-with-config-property":"none"}}}'
           defaultData: '{"label":""}'
           genealogy: ""
@@ -82,7 +82,7 @@ services:
           relationships: []
           status: registered
           version: v1.25.2
-        meshmodel-metadata:
+        model-metadata:
           capabilities: |2-
              {
               "designer": {
@@ -152,7 +152,7 @@ services:
           relationships: []
           status: registered
           version: v1.25.2
-        meshmodel-metadata:
+        model-metadata:
           capabilities: |2-
              {
               "designer": {
@@ -221,7 +221,7 @@ services:
           relationships: []
           status: registered
           version: v1.25.2
-        meshmodel-metadata:
+        model-metadata:
           capabilities: ""
           defaultData: ""
           genealogy: ""
