@@ -36,11 +36,11 @@ components:
           items:
             $ref: ./common/core.yml#/components/schemas/text
         extensions:
-          $ref: '#/components/schemas/capabilityExtension'
+          $ref: "#/components/schemas/capabilityExtension"
         capabilities:
-          $ref: '#/components/schemas/capabilityGeneralCapability'
+          $ref: "#/components/schemas/capabilityGeneralCapability"
         restrictedAccess:
-          $ref: '#/components/schemas/restrictedAccess'
+          $ref: "#/components/schemas/restrictedAccess"
     capabilityNavigatorExtension:
       properties:
         title:
@@ -80,7 +80,7 @@ components:
           description: Component
         type:
           $ref: ./common/core.yml#/components/schemas/text
-          description: Extension type 
+          description: Extension type
     capabilityGraphQLExtension:
       properties:
         component:
@@ -88,10 +88,10 @@ components:
           description: Component
         path:
           $ref: ./common/core.yml#/components/schemas/text
-          description: Path 
+          description: Path
         type:
           $ref: ./common/core.yml#/components/schemas/text
-          description: Extension type 
+          description: Extension type
     capabilitiesAccountExtension:
       properties:
         title:
@@ -127,7 +127,7 @@ components:
           properties:
             navigator:
               type: object
-            header: 
+            header:
               type: object
     capabilityGeneralCapability:
       properties:
@@ -141,19 +141,19 @@ components:
         navigator:
           type: array
           items:
-            $ref: '#/components/schemas/capabilityNavigatorExtension'
+            $ref: "#/components/schemas/capabilityNavigatorExtension"
         user_prefs:
           type: array
           items:
-            $ref: '#/components/schemas/capabilityUserPrefExtension'
+            $ref: "#/components/schemas/capabilityUserPrefExtension"
         graphql:
           type: array
           items:
-            $ref: '#/components/schemas/capabilityGraphQLExtension'
+            $ref: "#/components/schemas/capabilityGraphQLExtension"
         account:
           type: array
           items:
-            $ref: '#/components/schemas/capabilitiesAccountExtension'
+            $ref: "#/components/schemas/capabilitiesAccountExtension"
 
 paths:
   /capabilities:
@@ -165,19 +165,19 @@ paths:
       summary: Capabilities
       description: Get available capabilities for logged in user
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/os
-        - $ref: ./common/parameters.yml#/components/schemas/playground
+        - $ref: ./common/parameters.yml#/components/parameters/os
+        - $ref: ./common/parameters.yml#/components/parameters/playground
       responses:
-        '200':
+        "200":
           description: capabilities
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/capability'
-        '500':
+                $ref: "#/components/schemas/capability"
+        "500":
           $ref: ./common/responses.yml#/500
       security: []
-        
+
   /{meshery-version}/capabilities:
     get:
       tags:
@@ -186,16 +186,16 @@ paths:
       summary: Capabilities By server version
       description: Get available capabilities for logged in user
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/mesheryVersion
-        - $ref: ./common/parameters.yml#/components/schemas/os
-        - $ref: ./common/parameters.yml#/components/schemas/playground
+        - $ref: ./common/parameters.yml#/components/parameters/mesheryVersion
+        - $ref: ./common/parameters.yml#/components/parameters/os
+        - $ref: ./common/parameters.yml#/components/parameters/playground
       responses:
-        '200':
+        "200":
           description: capabilities
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/capability'
-        '500':
+                $ref: "#/components/schemas/capability"
+        "500":
           $ref: ./common/responses.yml#/500
       security: []

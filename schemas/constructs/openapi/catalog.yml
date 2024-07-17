@@ -15,8 +15,8 @@ servers:
 tags:
   - name: catalog
     description: APIs for catalog
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 components:
   securitySchemes:
     jwt:
@@ -51,16 +51,16 @@ components:
         updated_at:
           $ref: ./common/core.yml#/components/schemas/time
         catalog_data:
-                $ref: '../v1alpha1/catalog_data.json'
+          $ref: "../v1alpha1/catalog_data.json"
     catalogRequestsPage:
       allOf:
-      - $ref: ./common/core.yml#/components/schemas/resultsPage
-      - type: object
-        properties:
-          signup_data:
-            type: array
-            items:
-              $ref: '#/components/schemas/catalogRequest'
+        - $ref: ./common/core.yml#/components/schemas/resultsPage
+        - type: object
+          properties:
+            signup_data:
+              type: array
+              items:
+                $ref: "#/components/schemas/catalogRequest"
 
   requestBodies:
     mesheryCatalogRequest:
@@ -76,9 +76,9 @@ components:
                 enum: [pattern, filter]
                 description: Catalog type (pattern / filter)
               catalog_data:
-                 $ref: '../v1alpha1/catalog_data.json'
-  
-# any special parameters for this tag
+                $ref: "../v1alpha1/catalog_data.json"
+
+  # any special parameters for this tag
   parameters:
     catalogContentType:
       in: path
@@ -110,15 +110,15 @@ paths:
       summary: Approve Catalog Request
       description: Approve Catalog Request
       requestBody:
-          $ref: '#/components/requestBodies/mesheryCatalogRequest'
+        $ref: "#/components/requestBodies/mesheryCatalogRequest"
       responses:
-        '201':
+        "201":
           $ref: ./common/responses.yml#/201
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '409':
+        "409":
           $ref: ./common/responses.yml#/409
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/catalog/requests/deny:
     post:
@@ -128,15 +128,15 @@ paths:
       summary: Deny Catalog Request
       description: Deny Catalog Request
       requestBody:
-        $ref: '#/components/requestBodies/mesheryCatalogRequest'
+        $ref: "#/components/requestBodies/mesheryCatalogRequest"
       responses:
-        '201':
+        "201":
           $ref: ./common/responses.yml#/201
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '409':
+        "409":
           $ref: ./common/responses.yml#/409
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/catalog/requests:
     get:
@@ -146,21 +146,21 @@ paths:
       summary: Catalog Request
       description: Get all catalog requests (approved, denied or pending) in a paginated manner
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
-        - $ref: '#/components/parameters/requestFilter'
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+        - $ref: "#/components/parameters/requestFilter"
       responses:
-        '200':
+        "200":
           description: Catalog requests
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/catalogRequestsPage'
-        '401':
+                $ref: "#/components/schemas/catalogRequestsPage"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/catalog/content/{type}:
     get:
@@ -170,13 +170,13 @@ paths:
       summary: Get Catalog Content
       description: Get catalog content by type
       parameters:
-        - $ref: '#/components/parameters/catalogContentType'
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: "#/components/parameters/catalogContentType"
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
       responses:
-        '200':
+        "200":
           description: catalog content
           content:
             application/json:
@@ -206,7 +206,7 @@ paths:
                         type: array
                         items:
                           $ref: ./filters.yml#/components/schemas/mesheryFilter
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     post:
       tags:
@@ -215,17 +215,17 @@ paths:
       summary: Publish Catalog Content
       description: Sets the visibility of catalog content to published and sets CatalogData (if called by ADMIN or CURATOR), otherwise it pushes the request to CatalogRequests Table
       parameters:
-        - $ref: '#/components/parameters/catalogContentType'
+        - $ref: "#/components/parameters/catalogContentType"
       requestBody:
-        $ref: '#/components/requestBodies/mesheryCatalogRequest'
+        $ref: "#/components/requestBodies/mesheryCatalogRequest"
       responses:
-        '200':
+        "200":
           $ref: ./common/responses.yml#/200
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '409':
+        "409":
           $ref: ./common/responses.yml#/409
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     delete:
       tags:
@@ -234,16 +234,15 @@ paths:
       summary: Unpublish Catalog Content
       description: Sets the visibility of catalog content to private and removes the content from website (if called by ADMIN or CURATOR), otherwise rejects the request
       parameters:
-        - $ref: '#/components/parameters/catalogContentType'
+        - $ref: "#/components/parameters/catalogContentType"
       requestBody:
-        $ref: '#/components/requestBodies/mesheryCatalogRequest'
+        $ref: "#/components/requestBodies/mesheryCatalogRequest"
       responses:
-        '200':
+        "200":
           $ref: ./common/responses.yml#/200
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '409':
+        "409":
           $ref: ./common/responses.yml#/409
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
-  

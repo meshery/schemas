@@ -12,11 +12,11 @@ servers:
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL (controlled via PORT environment variable)
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 tags:
-- name: meshery_models
-  description: APIs for Meshery models
+  - name: meshery_models
+    description: APIs for Meshery models
 components:
   securitySchemes:
     jwt:
@@ -26,9 +26,9 @@ components:
   schemas:
     meshmodelModel:
       properties:
-        id: 
+        id:
           $ref: ./common/core.yml#/components/schemas/id
-        name: 
+        name:
           $ref: ./common/core.yml#/components/schemas/text
         version:
           $ref: ./common/core.yml#/components/schemas/text
@@ -37,9 +37,9 @@ components:
         status:
           $ref: ./common/core.yml#/components/schemas/text
         category_id:
-          $ref: ./common/core.yml#/components/schemas/id 
+          $ref: ./common/core.yml#/components/schemas/id
         metadata:
-          $ref:  ./common/core.yml#/components/schemas/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         created_at:
           $ref: ./common/core.yml#/components/schemas/created_at
         updated_at:
@@ -48,12 +48,12 @@ components:
           $ref: ./common/core.yml#/components/schemas/deleted_at
     meshmodelCategory:
       properties:
-        id: 
+        id:
           $ref: ./common/core.yml#/components/schemas/id
-        name: 
+        name:
           $ref: ./common/core.yml#/components/schemas/text
         metadata:
-          $ref:  ./common/core.yml#/components/schemas/map_object
+          $ref: ./common/core.yml#/components/schemas/map_object
         created_at:
           $ref: ./common/core.yml#/components/schemas/created_at
         updated_at:
@@ -61,47 +61,47 @@ components:
         deleted_at:
           $ref: ./common/core.yml#/components/schemas/deleted_at
     meshmodelCategoriesPage:
-       allOf:
+      allOf:
         - $ref: ./common/core.yml#/components/schemas/resultsPage
         - type: object
           properties:
             categories:
               type: array
               items:
-                $ref: '#/components/schemas/meshmodelCategory'
+                $ref: "#/components/schemas/meshmodelCategory"
     meshmodelModelsPage:
-       allOf:
+      allOf:
         - $ref: ./common/core.yml#/components/schemas/resultsPage
         - type: object
           properties:
             models:
               type: array
               items:
-                $ref: '#/components/schemas/meshmodelModel'
+                $ref: "#/components/schemas/meshmodelModel"
 
 paths:
   /api/integrations/meshmodels/models:
     get:
       tags:
         - meshery_models
-        
+
       operationId: GetMeshModelModels
       summary: Get all models
       description: Get models by name
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
-        - $ref: ./common/parameters.yml#/components/schemas/status
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+        - $ref: ./common/parameters.yml#/components/parameters/status
       responses:
-        '200':
+        "200":
           description: Models
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/meshmodelModelsPage'
-        '500':
+                $ref: "#/components/schemas/meshmodelModelsPage"
+        "500":
           $ref: ./common/responses.yml#/500
       security: []
   /api/integrations/meshmodels/categories:
@@ -112,17 +112,17 @@ paths:
       summary: Get all categories
       description: Get models by technology category
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
       responses:
-        '200':
+        "200":
           description: Categories
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/meshmodelCategoriesPage'
-        '500':
+                $ref: "#/components/schemas/meshmodelCategoriesPage"
+        "500":
           $ref: ./common/responses.yml#/500
       security: []

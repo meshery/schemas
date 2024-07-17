@@ -15,8 +15,8 @@ servers:
 tags:
   - name: users
     description: APIs for users
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 components:
   securitySchemes:
     jwt:
@@ -28,18 +28,14 @@ components:
       type: object
       properties:
         first_name:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
           description: First Name
         last_name:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
           description: Last Name
         email:
-          $ref: './common/core.yml#/components/schemas/email'
-      required: [
-        first_name,
-        last_name,
-        email
-      ]        
+          $ref: "./common/core.yml#/components/schemas/email"
+      required: [first_name, last_name, email]
     bulkDelete:
       type: object
       properties:
@@ -47,10 +43,7 @@ components:
           $ref: ./common/core.yml#/components/schemas/id
         user_emails:
           $ref: ./common/core.yml#/components/schemas/emails
-      required: [
-        user_ids,
-        user_emails
-      ]
+      required: [user_ids, user_emails]
     user:
       type: object
       properties:
@@ -78,23 +71,24 @@ components:
           $ref: ./common/core.yml#/components/schemas/map_object
         accepted_terms_at:
           $ref: ./common/core.yml#/components/schemas/accepted_terms_at
-        first_login_time:  
+        first_login_time:
           $ref: ./common/core.yml#/components/schemas/time
         last_login_time:
           $ref: ./common/core.yml#/components/schemas/time
-      required: [
-        id,
-        user_id,
-        provider,
-        email,
-        first_name,
-        last_name,
-        status,
-        created_at,
-        updated_at,
-        last_login_time,
-        deleted_at,
-      ]       
+      required:
+        [
+          id,
+          user_id,
+          provider,
+          email,
+          first_name,
+          last_name,
+          status,
+          created_at,
+          updated_at,
+          last_login_time,
+          deleted_at,
+        ]
     recentUsers:
       type: object
       properties:
@@ -110,13 +104,13 @@ components:
           $ref: ./common/core.yml#/components/schemas/avatar_url
     rolesPage:
       allOf:
-      - $ref: ./common/core.yml#/components/schemas/recordsPage
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: ./roles.yml#/components/schemas/role
+        - $ref: ./common/core.yml#/components/schemas/recordsPage
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: ./roles.yml#/components/schemas/role
     key:
       properties:
         ID:
@@ -142,8 +136,8 @@ components:
         keys:
           type: array
           items:
-            $ref: '#/components/schemas/key'
-        total_count: 
+            $ref: "#/components/schemas/key"
+        total_count:
           type: integer
     deleteOn:
       type: string
@@ -156,7 +150,7 @@ components:
             data:
               type: array
               items:
-                $ref: '#/components/schemas/usersWithRolesForAdmin'
+                $ref: "#/components/schemas/usersWithRolesForAdmin"
     usersWithRolesForAdmin:
       type: object
       properties:
@@ -192,20 +186,21 @@ components:
           $ref: ./common/core.yml#/components/schemas/avatar_url
         preferences:
           $ref: ./common/core.yml#/components/schemas/map_object
-      required: [
-        id,
-        user_id,
-        username,
-        email,
-        first_name,
-        last_name,
-        status,
-        role_names,
-        created_at,
-        updated_at,
-        last_login_time,
-        deleted_at,
-      ]
+      required:
+        [
+          id,
+          user_id,
+          username,
+          email,
+          first_name,
+          last_name,
+          status,
+          role_names,
+          created_at,
+          updated_at,
+          last_login_time,
+          deleted_at,
+        ]
     teamMembers:
       type: object
       properties:
@@ -239,20 +234,21 @@ components:
           $ref: ./common/core.yml#/components/schemas/email_preference
         avatar_url:
           $ref: ./common/core.yml#/components/schemas/avatar_url
-      required: [
-        id,
-        user_id,
-        username,
-        email,
-        first_name,
-        last_name,
-        status,
-        role_names,
-        joined_at,
-        updated_at,
-        last_login_time,
-        deleted_at,
-      ]
+      required:
+        [
+          id,
+          user_id,
+          username,
+          email,
+          first_name,
+          last_name,
+          status,
+          role_names,
+          joined_at,
+          updated_at,
+          last_login_time,
+          deleted_at,
+        ]
     teamMembersPage:
       allOf:
         - $ref: ./common/core.yml#/components/schemas/recordsPage
@@ -261,7 +257,7 @@ components:
             data:
               type: array
               items:
-                $ref: '#/components/schemas/teamMembers'
+                $ref: "#/components/schemas/teamMembers"
     usersForNonAdmin:
       type: object
       properties:
@@ -285,14 +281,7 @@ components:
           $ref: ./common/core.yml#/components/schemas/avatar_url
         preferences:
           $ref: ./common/core.yml#/components/schemas/map_object
-      required: [
-        id,
-        user_id,
-        username,
-        email,
-        first_name,
-        last_name,
-      ]
+      required: [id, user_id, username, email, first_name, last_name]
     usersPageForNonAdmin:
       allOf:
         - $ref: ./common/core.yml#/components/schemas/recordsPage
@@ -301,7 +290,7 @@ components:
             data:
               type: array
               items:
-                $ref: '#/components/schemas/usersForNonAdmin'
+                $ref: "#/components/schemas/usersForNonAdmin"
     recentActivityPage:
       properties:
         recent_activity:
@@ -319,29 +308,29 @@ components:
     badge:
       type: object
       properties:
-        id: 
-          $ref: './common/core.yml#/components/schemas/id'
+        id:
+          $ref: "./common/core.yml#/components/schemas/id"
         name:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
         description:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
         label:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
         svg_location:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
         created_at:
-          $ref: './common/core.yml#/components/schemas/time'
+          $ref: "./common/core.yml#/components/schemas/time"
         updated_at:
-          $ref: './common/core.yml#/components/schemas/time'
+          $ref: "./common/core.yml#/components/schemas/time"
         deleted_at:
-          $ref: './common/core.yml#/components/schemas/nullTime'
+          $ref: "./common/core.yml#/components/schemas/nullTime"
     badges:
       properties:
         badges:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/badge'
-        total_count: 
+            $ref: "#/components/schemas/badge"
+        total_count:
           type: integer
 
   requestBodies:
@@ -360,11 +349,7 @@ components:
                 description: Last Name
               email:
                 $ref: ./common/core.yml#/components/schemas/email
-            required: [
-              first_name,
-              last_name,
-              email
-            ]
+            required: [first_name, last_name, email]
     deleteUsers:
       description: Body for delete of user accounts
       required: true
@@ -372,7 +357,7 @@ components:
         application/json:
           schema:
             oneOf:
-              - $ref: '#/components/schemas/bulkDelete'
+              - $ref: "#/components/schemas/bulkDelete"
               - $ref: ./common/core.yml#/components/schemas/empty
     user:
       description: Body for upserting user
@@ -380,9 +365,9 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/user'
+            $ref: "#/components/schemas/user"
 
-# any special parameters for this tag
+  # any special parameters for this tag
   parameters:
     deleteOn:
       in: path
@@ -390,8 +375,8 @@ components:
       name: delete_on
       description: Defines on whom the delete operation is to be performed
       schema:
-        $ref: '#/components/schemas/deleteOn'
-  
+        $ref: "#/components/schemas/deleteOn"
+
 paths:
   /api/identity/users/invite:
     post:
@@ -401,14 +386,14 @@ paths:
       summary: User Invite
       description: Send invitation request to users
       requestBody:
-        $ref: '#/components/requestBodies/userInvite'
+        $ref: "#/components/requestBodies/userInvite"
       responses:
-        '200':
+        "200":
           $ref: ./common/responses.yml#/200
           description: Invitation sent
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/identity/users/preferences:
     put:
@@ -423,14 +408,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: ./common/core.yml#/components/schemas/map_object            
+              $ref: ./common/core.yml#/components/schemas/map_object
       responses:
-        '201':
+        "201":
           $ref: ./common/responses.yml#/201
           description: Preferences updated
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/identity/users/keys:
     get:
@@ -440,15 +425,15 @@ paths:
       summary: Get User Keys
       description: Get all keys based on roles assigned to user
       responses:
-        '200':
+        "200":
           description: Returns user keys based on roles assigned to user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/userKeys'
-        '401':
+                $ref: "#/components/schemas/userKeys"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/user/{user_id}:
     get:
@@ -458,17 +443,17 @@ paths:
       summary: Get User by ID
       description: Get specific user by user id
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/userId
+        - $ref: ./common/parameters.yml#/components/parameters/userId
       responses:
-        '200':
+        "200":
           description: Returns user with given user_id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
-        '401':
+                $ref: "#/components/schemas/user"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/identity/users/{delete_on}:
     post:
@@ -478,17 +463,17 @@ paths:
       summary: Delete users
       description: Delete users based on delete_for parameter
       parameters:
-        - $ref: '#/components/parameters/deleteOn'
+        - $ref: "#/components/parameters/deleteOn"
       requestBody:
-        $ref: '#/components/requestBodies/deleteUsers'
+        $ref: "#/components/requestBodies/deleteUsers"
       responses:
-        '201':
+        "201":
           $ref: ./common/responses.yml#/201
-        '400':
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/system/delete/user/{user_id}:
     get:
@@ -498,13 +483,13 @@ paths:
       summary: Delete account by ID
       description: Delete account by ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/userId
+        - $ref: ./common/parameters.yml#/components/parameters/userId
       responses:
-        '201':
+        "201":
           $ref: ./common/responses.yml#/201
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/identity/users:
     get:
@@ -514,25 +499,25 @@ paths:
       summary: Get All users
       description: Get All users
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
-        - $ref: ./common/parameters.yml#/components/schemas/filter
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+        - $ref: ./common/parameters.yml#/components/parameters/filter
       responses:
-        '200':
+        "200":
           description: Get all user with pagination
           content:
             application/json:
               schema:
                 anyOf:
-                - $ref: '#/components/schemas/usersPageForAdmin'
-                - $ref: '#/components/schemas/teamMembersPage'
-        '400':
+                  - $ref: "#/components/schemas/usersPageForAdmin"
+                  - $ref: "#/components/schemas/teamMembersPage"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/users:
     get:
@@ -542,24 +527,24 @@ paths:
       summary: Get All users
       description: Get All users
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
-        - $ref: ./common/parameters.yml#/components/schemas/filter
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+        - $ref: ./common/parameters.yml#/components/parameters/filter
       responses:
-        '200':
+        "200":
           description: Get all user with pagination
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/usersPageForNonAdmin'
-        '400':
+                $ref: "#/components/schemas/usersPageForNonAdmin"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
-          $ref: ./common/responses.yml#/500   
+        "500":
+          $ref: ./common/responses.yml#/500
   /api/identity/users/profile/{id}:
     get:
       tags:
@@ -568,17 +553,17 @@ paths:
       summary: Get user profile by Id
       description: Get user profile of given user Id
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
-        '200':
+        "200":
           description: Returns user with given id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
-        '400':
+                $ref: "#/components/schemas/user"
+        "400":
           $ref: ./common/responses.yml#/400
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/identity/users/profile:
     get:
@@ -588,15 +573,15 @@ paths:
       summary: Get User details
       description: Get user details for logged in user
       responses:
-        '200':
+        "200":
           description: user details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
-        '401':
+                $ref: "#/components/schemas/user"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     put:
       tags:
@@ -605,13 +590,13 @@ paths:
       summary: Update Profile
       description: Update user profile data (also updates kratos identity)
       requestBody:
-        $ref: '#/components/requestBodies/user'
+        $ref: "#/components/requestBodies/user"
       responses:
-        '201':
+        "201":
           $ref: ./common/responses.yml#/201
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/identity/users/profile/details:
     get:
@@ -621,16 +606,16 @@ paths:
       summary: Profile Overview
       description: Get Profile overview for logged in user
       responses:
-        '200':
+        "200":
           description: user account overview
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/accountOverview'
-        '401':
-          $ref:  ./common/responses.yml#/401
-        '500':
-          $ref:  ./common/responses.yml#/500
+                $ref: "#/components/schemas/accountOverview"
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
   /api/identity/users/{user_id}/profile/activity:
     get:
       tags:
@@ -646,14 +631,14 @@ paths:
             type: string
           required: true
       responses:
-        '200':
+        "200":
           description: user activity
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/recentActivityPage'
-        '500':
-          $ref:  ./common/responses.yml#/500
+                $ref: "#/components/schemas/recentActivityPage"
+        "500":
+          $ref: ./common/responses.yml#/500
       security: []
   /api/identity/users/online:
     get:
@@ -663,17 +648,17 @@ paths:
       summary: Online users
       description: Get info of active / online users in last 24 hours
       responses:
-        '200':
+        "200":
           description: active users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/recentUsers'
-        '401':
+                  $ref: "#/components/schemas/recentUsers"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/identity/badges:
     get:
@@ -683,15 +668,15 @@ paths:
       summary: Gets available badges
       description: Gets available badges
       responses:
-        '200':
+        "200":
           description: Badges
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/badges'
-        '400':
+                $ref: "#/components/schemas/badges"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500

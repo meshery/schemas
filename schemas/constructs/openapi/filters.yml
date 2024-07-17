@@ -15,8 +15,8 @@ servers:
 tags:
   - name: filters
     description: APIs for filters
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 components:
   securitySchemes:
     jwt:
@@ -50,13 +50,13 @@ components:
           $ref: ./common/core.yml#/components/schemas/time
     mesheryFilterPage:
       allOf:
-      - $ref: ./common/core.yml#/components/schemas/resultsPage
-      - type: object
-        properties:
-          filters:
-            type: array
-            items:
-              $ref: '#/components/schemas/mesheryFilter'
+        - $ref: ./common/core.yml#/components/schemas/resultsPage
+        - type: object
+          properties:
+            filters:
+              type: array
+              items:
+                $ref: "#/components/schemas/mesheryFilter"
 
   requestBodies:
     mesheryFilterRequestBody:
@@ -73,8 +73,7 @@ components:
               save:
                 type: boolean
               filter_data:
-                $ref: '#/components/schemas/mesheryFilter'
-
+                $ref: "#/components/schemas/mesheryFilter"
 
 paths:
   #filters
@@ -86,21 +85,21 @@ paths:
       summary: Upsert Filter
       description: It will insert the filter if not present else it will update the matching entry
       requestBody:
-        $ref: '#/components/requestBodies/mesheryFilterRequestBody'
+        $ref: "#/components/requestBodies/mesheryFilterRequestBody"
       responses:
-        '200':
+        "200":
           description: Upserted filter
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/mesheryFilter'
-        '400':
+                  $ref: "#/components/schemas/mesheryFilter"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     get:
       tags:
@@ -109,20 +108,20 @@ paths:
       summary: Get Filters
       description: Get paginated filters
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
       responses:
-        '200':
+        "200":
           description: Filters
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryFilterPage'
-        '401':
+                $ref: "#/components/schemas/mesheryFilterPage"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/filters/file/{id}:
     get:
@@ -132,21 +131,21 @@ paths:
       summary: Filter file
       description: Get the filter associated with the given filter id without any metadata
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
-        '200':
+        "200":
           description: Filter file
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryFilter/properties/filter_file'
-        '400':
+                $ref: "#/components/schemas/mesheryFilter/properties/filter_file"
+        "400":
           $ref: ./common/responses.yml#/400
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/filters/{id}:
     get:
@@ -156,22 +155,22 @@ paths:
       summary: Get filter by ID
       description: Get filter by ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
-        '200':
+        "200":
           description: Filter associated with ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryFilter'
-        '400':
+                $ref: "#/components/schemas/mesheryFilter"
+        "400":
           $ref: ./common/responses.yml#/400
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
-            $ref: ./common/responses.yml#/500
+        "500":
+          $ref: ./common/responses.yml#/500
     delete:
       tags:
         - filters
@@ -179,21 +178,21 @@ paths:
       summary: Delete filter by ID
       description: Delete filter associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
-        '200':
+        "200":
           description: Deleted filter
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryFilter'
-        '400':
+                $ref: "#/components/schemas/mesheryFilter"
+        "400":
           $ref: ./common/responses.yml#/400
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/filters/clone/{id}:
     post:
@@ -203,7 +202,7 @@ paths:
       summary: Clone filter
       description: Clone filter associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       requestBody:
         description: Body for cloning design
         required: true
@@ -216,11 +215,11 @@ paths:
               required:
                 - name
       responses:
-        '400':
+        "400":
           $ref: ./common/responses.yml#/400
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500

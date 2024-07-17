@@ -179,14 +179,14 @@ paths:
       summary: Get Pattern resources
       description: Get paginated pattern resources
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
-        - $ref: ./common/parameters.yml#/components/schemas/namespace
-        - $ref: ./common/parameters.yml#/components/schemas/type
-        - $ref: ./common/parameters.yml#/components/schemas/oamType
-        - $ref: ./common/parameters.yml#/components/schemas/name
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+        - $ref: ./common/parameters.yml#/components/parameters/namespace
+        - $ref: ./common/parameters.yml#/components/parameters/type
+        - $ref: ./common/parameters.yml#/components/parameters/oamType
+        - $ref: ./common/parameters.yml#/components/parameters/name
           description: Name
       responses:
         "200":
@@ -207,7 +207,7 @@ paths:
       summary: Pattern Resource by ID
       description: Get Pattern Resource By ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
         "200":
           description: Meshery pattern resource associated with id
@@ -230,7 +230,7 @@ paths:
       summary: Delete pattern resource
       description: Delete pattern resource associated with id
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
         "200":
           description: Deleted meshery pattern resource associated with id
@@ -277,10 +277,10 @@ paths:
       summary: Get Patterns
       description: Get paginated patterns
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
       responses:
         "200":
           description: Patterns
@@ -321,7 +321,7 @@ paths:
       summary: Get pattern by ID
       description: Get pattern by ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
         "200":
           description: Pattern associated with ID
@@ -344,7 +344,7 @@ paths:
       summary: Delete pattern by ID
       description: Delete pattern associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
         "200":
           description: Deleted pattern
@@ -368,7 +368,7 @@ paths:
       summary: Clone pattern
       description: Clone pattern associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       requestBody:
         description: Body for cloning design
         required: true
