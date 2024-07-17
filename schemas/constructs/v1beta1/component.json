@@ -5,6 +5,9 @@
   "additionalProperties": false,
   "type": "object",
   "properties": {
+    "id": {
+      "$ref": "../core.json#/definitions/uuid"
+    },
     "schemaVersion": {
       "$ref": "../v1alpha2/core.json#/definitions/versionString",
       "description": "Specifies the version of the schema to which the component definition conforms."
@@ -81,6 +84,13 @@
         }
       },
       "additionalProperties": true
+    },
+    "configuration": {
+      "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object"
     },
     "component": {
       "type": "object",
