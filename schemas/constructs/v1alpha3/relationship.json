@@ -9,7 +9,6 @@
     "type",
     "subType",
     "model",
-    "evaluationQuery"
   ],
   "additionalProperties": false,
   "type": "object",
@@ -37,11 +36,11 @@
     },
     "subType": {
       "$ref": "../core.json#/definitions/inputString",
-      "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
+      "description": "Used for further classification of Relationships. The combination of Kind, Type and SubType together uniquely identify a Relationship."
     },
     "evaluationQuery": {
       "$ref": "../core.json#/definitions/inputString",
-      "description": "Determines the policy rule to be used for the evaluation of the relationship."
+      "description": "Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs."
     },
     "metadata": {
       "type": "object",

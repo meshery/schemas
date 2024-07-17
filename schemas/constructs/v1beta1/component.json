@@ -6,6 +6,7 @@
   "type": "object",
   "properties": {
     "id": {
+      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design)."
       "$ref": "../core.json#/definitions/uuid"
     },
     "schemaVersion": {
