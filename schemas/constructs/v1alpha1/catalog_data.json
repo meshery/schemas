@@ -12,6 +12,11 @@
         "official",
         "verified",
         "community"
+      ],
+      "enumDescriptions": [
+        "Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable.",
+        "Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility.",
+        "Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability."
       ]
     },
     "compatibility": {
