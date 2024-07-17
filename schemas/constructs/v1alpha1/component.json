@@ -36,11 +36,11 @@
           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions made define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
         },
         "name": {
-          "$ref": "https://schemas.meshery.io/core.json#inputString",
+          "$ref": "../core.json#inputString",
           "description": "Name of the component."
         },
         "version": {
-          "$ref": "https://schemas.meshery.io/core.json#versionString",
+          "$ref": "../core.json#versionString",
           "description": "Version of the component."
         }
       }
@@ -50,7 +50,7 @@
       "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
     },
     "displayName": {
-      "$ref": "https://schemas.meshery.io/core.json#inputString",
+      "$ref": "../core.json#inputString",
       "description": "Display name of the component."
     },
     "format": {
