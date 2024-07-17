@@ -64,7 +64,7 @@ components:
         user_id:
           $ref: ./common/core.yml#/components/schemas/id
         pattern_file:
-          $ref: ../v1alpha2/design.json
+          $ref: ../v1beta1/designs.json
           description: Pattern file
         name:
           $ref: ./common/core.yml#/components/schemas/text
