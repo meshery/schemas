@@ -15,20 +15,20 @@
           },
           "model": {
             "$ref": "../v1beta1/model.json",
-            "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
+            "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models"
           },
-          "declarationID": {
-            "$ref": "../core.json#/declarationID"
+          "id": {
+            "$ref": "../core.json#/uuid"
           },
           "match": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "declarationID": {
-                "$ref": "../core.json#/declarationID"
+              "id": {
+                "$ref": "../core.json#/uuid"
               },
               "self": {
-                "description": "Defines paths which should be matched with 'kind'.",
+                "description": "Defines paths which should be matched with the 'kind' property.",
                 "type": "array",
                 "items": {
                   "type": "string"
@@ -81,17 +81,19 @@
           },
           "model": {
             "$ref": "../v1beta1/model.json",
-            "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
+            "description": "Model of the implicated component. Learn more at https://docs.meshery.io/concepts/models"
           },
-          "declarationID": {
-            "$ref": "../core.json#/declarationID"
+          "id": {
+            "$ref": "../core.json#/uuid",
+            "description": "Identifier of the implicated component. Learn more at https://docs.meshery.io/concepts/relationships"
           },
           "match": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "declarationID": {
-                "$ref": "../core.json#/declarationID"
+              "id": {
+                "$ref": "../core.json#/uuid",
+                "description": "Identifier of the implicated component. Learn more at https://docs.meshery.io/concepts/relationships"
               },
               "self": {
                 "description": "Defines paths which should be matched with 'kind'.",
@@ -121,7 +123,7 @@
               },
               "mutatedRef": {
                 "type": "string",
-                "description": "JSON ref to value that should be patched."
+                "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
               }
             }
           }
