@@ -18,14 +18,14 @@
             "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
           },
           "declarationID": {
-            "$ref": "../core.json#/definitions/declarationID"
+            "$ref": "../core.json#/declarationID"
           },
           "match": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "declarationID": {
-                "$ref": "../core.json#/definitions/declarationID"
+                "$ref": "../core.json#/declarationID"
               },
               "self": {
                 "description": "Defines paths which should be matched with 'kind'.",
@@ -84,14 +84,14 @@
             "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
           },
           "declarationID": {
-            "$ref": "../core.json#/definitions/declarationID"
+            "$ref": "../core.json#/declarationID"
           },
           "match": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "declarationID": {
-                "$ref": "../core.json#/definitions/declarationID"
+                "$ref": "../core.json#/declarationID"
               },
               "self": {
                 "description": "Defines paths which should be matched with 'kind'.",
