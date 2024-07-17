@@ -27,13 +27,10 @@
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
       "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
     },
-    "declarationID": {
-      "$ref": "#/definitions/uuid",
-      "description": "Uniquely identifies the component/relationship declaration in the deisgn file."
-    },
     "uuid": {
       "type": "string",
-      "format": "uuid"
+      "format": "uuid",
+      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas."
     }
   }
 }
