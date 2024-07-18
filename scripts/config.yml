@@ -2,14 +2,13 @@
 package: patterns
 
 # Update the "output" and "include-tags" based on the resource for which code generation needs to be invoked.
-output: models/v1alpha2/patterns.go 
 generate:
   models: true
 import-mapping:
   "#/components/schemas/catalog_data": "github.com/layer5io/meshkit/models/catalog/v1alpha1"
-  "./core.yml": "github.com/meshery/schemas/models/v1alpha2"
-  "./common/core.yml": "github.com/meshery/schemas/models/v1alpha2"
-  "./common/parameters.yml": "github.com/meshery/schemas/models/parameters"
+  "./core.yml": ""
+  "./common/core.yml": "github.com/meshery/schemas/models/core"
+  "./common/parameters.yml": "github.com/meshery/schemas/models/core"
 
 output-options:
   skip-prune: true
