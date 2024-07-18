@@ -30,7 +30,7 @@
       }
     },
     "model": {
-      "$ref": "https://schemas.meshery.io/model.json",
+      "$ref": "./model.json",
       "description": "Model of the Relationship."
     },
     "subType": {
@@ -50,10 +50,10 @@
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
             "properties": {
               "from": {
-                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#from"
+                "$ref": "./selectors.json#/from"
               },
               "to": {
-                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#to"
+                "$ref": "./selectors.json#/to"
               }
             }
           },
@@ -62,10 +62,10 @@
             "description": "Selectors used to define relationships which are allowed",
             "properties": {
               "from": {
-                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#from"
+                "$ref": "./selectors.json#/from"
               },
               "to": {
-                "$ref": "https://schemas.meshery.io/v1alpha1/selectors.json#to"
+                "$ref": "./selectors.json#/to"
               }
             }
           }

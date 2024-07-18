@@ -6,23 +6,23 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "$ref": "../v1alpha2/core.json#/definitions/versionString",
+      "$ref": "../core.json#/definitions/versionString",
       "description": "Specifies the version of the schema used for the definition.",
       "minLength": 1,
       "maxLength": 50
     },
     "version": {
-      "$ref": "../v1alpha2/core.json#/definitions/semverString",
+      "$ref": "../core.json#/definitions/semverString",
       "description": "Version of the model definition."
     },
     "name": {
-      "$ref": "../v1alpha2/core.json#/definitions/inputString",
+      "$ref": "../core.json#/definitions/inputString",
       "description": "The unique name for the model within the scope of a registrant.",
       "minLength": 1,
       "maxLength": 100
     },
     "displayName": {
-      "$ref": "../v1alpha2/core.json#/definitions/inputString",
+      "$ref": "../core.json#/definitions/inputString",
       "description": "Human-readable name for the model.",
       "minLength": 1,
       "maxLength": 100
@@ -107,7 +107,7 @@
       ],
       "properties": {
         "version": {
-          "$ref": "../v1alpha2/core.json#/definitions/versionString",
+          "$ref": "../core.json#/definitions/versionString",
           "description": "Version of the model as defined by the registrant.",
           "minLength": 1,
           "maxLength": 100

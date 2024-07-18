@@ -24,6 +24,14 @@ components:
       scheme: Bearer
       bearerFormat: JWT
   schemas:
+    
+    model:
+      $ref: ../v1beta1/model.json
+    component:
+      $ref: ../v1beta1/component.json
+    relationship:
+      $ref: ../v1alpha2/relationship.json
+
     meshmodelModel:
       properties:
         id:
