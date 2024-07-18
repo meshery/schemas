@@ -78,7 +78,7 @@ components:
           updated_at,
           last_login_time,
           deleted_at,
-      ]
+        ]
 paths:
   /system/roles:
     get:
@@ -180,7 +180,7 @@ paths:
       summary: Delete Role
       description: Edit roles of user in bulk
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
           required: true
       responses:
         "201":
