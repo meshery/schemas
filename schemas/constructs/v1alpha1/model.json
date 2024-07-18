@@ -12,11 +12,11 @@
   ],
   "properties": {
     "name": {
-      "$ref": "../core.json#inputString",
+      "$ref": "../core.json#/definitions/inputString",
       "description": "The name for the model."
     },
     "displayName": {
-      "$ref": "../core.json#inputString",
+      "$ref": "../core.json#/definitions/inputString",
       "description": "The display name for the model."
     },
     "status": {
@@ -24,7 +24,7 @@
       "description": "Status of model, e.g. Registered, Ignored, Enabled ..."
     },
     "version": {
-      "$ref": "../core.json#versionString",
+      "$ref": "../core.json#/definitions/versionString",
       "description": "Version of the model."
     },
     "category": {

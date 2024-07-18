@@ -1,5 +1,5 @@
 {
-  "$id": "https://schemas.meshery.io/component.json",
+  "$id": "../component./definitions/json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Components are the atomic units for designing infrastructure. Learn more at https://docs.meshery.io/concepts/components",
   "required": [
@@ -36,21 +36,21 @@
           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions made define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
         },
         "name": {
-          "$ref": "../core.json#inputString",
+          "$ref": "../core.json#/definitions/inputString",
           "description": "Name of the component."
         },
         "version": {
-          "$ref": "../core.json#versionString",
+          "$ref": "../core.json#/definitions/versionString",
           "description": "Version of the component."
         }
       }
     },
     "model": {
-      "$ref": "https://schemas.meshery.io/v1alpha1/model.json#",
+      "$ref": "./model.json#",
       "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
     },
     "displayName": {
-      "$ref": "../core.json#inputString",
+      "$ref": "../core.json#/definitions/inputString",
       "description": "Display name of the component."
     },
     "format": {

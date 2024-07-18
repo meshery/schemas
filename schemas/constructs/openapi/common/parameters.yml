@@ -1,5 +1,5 @@
 components:
-  schemas:
+  parameters:
     userId:
       name: user_id
       in: path
@@ -204,7 +204,7 @@ components:
       in: path
       description: Meshery Server Connection ID
       schema:
-        $ref: ./common/core.yml#/components/schemas/id
+        $ref: ./core.yml#/components/schemas/id
 
     organizationId:
       name: organizationId
