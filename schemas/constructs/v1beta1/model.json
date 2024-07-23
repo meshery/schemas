@@ -6,32 +6,64 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "$ref": "../core.json#/definitions/versionString",
       "description": "Specifies the version of the schema used for the definition.",
       "minLength": 1,
-      "maxLength": 50
+      "maxLength": 50,
+      "type": "string",
+      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+      "example": [
+        "v1",
+        "v1alpha1",
+        "v2beta3",
+        "v1.custom-suffix"
+      ],
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "schemaVersion",
+        "json": "schemaVersion"
+      }
     },
     "version": {
-      "$ref": "../core.json#/definitions/semverString",
-      "description": "Version of the model definition."
+      "description": "Version of the model definition.",
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 100,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "version",
+        "json": "version"
+      }
     },
     "name": {
-      "$ref": "../core.json#/definitions/inputString",
       "description": "The unique name for the model within the scope of a registrant.",
       "minLength": 1,
-      "maxLength": 100
+      "maxLength": 100,
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "name",
+        "json": "name"
+      }
     },
     "displayName": {
-      "$ref": "../core.json#/definitions/inputString",
       "description": "Human-readable name for the model.",
       "minLength": 1,
-      "maxLength": 100
+      "maxLength": 100,
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "displayName",
+        "json": "displayName"
+      }
     },
     "description": {
       "type": "string",
       "description": "Description of the model.",
       "minLength": 1,
-      "maxLength": 1000
+      "maxLength": 1000,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "description",
+        "json": "description"
+      }
     },
     "status": {
       "type": "string",
@@ -40,22 +72,38 @@
         "ignored",
         "enabled",
         "duplicate"
-      ]
+      ],
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "status",
+        "json": "status"
+      }
     },
     "registrant": {
-      "type": "object"
+      "type": "object",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "registrant",
+        "json": "registrant"
+      }
     },
     "category": {
       "type": "string",
       "description": "Category of the model.",
       "minLength": 1,
-      "maxLength": 100
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "category",
+        "json": "category"
+      }
     },
     "subCategory": {
       "type": "string",
       "description": "Sub-category of the model.",
       "minLength": 1,
-      "maxLength": 100
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "subCategory",
+        "json": "subCategory"
+      }
     },
     "metadata": {
       "type": "object",
@@ -67,34 +115,58 @@
       "properties": {
         "isAnnotation": {
           "type": "boolean",
-          "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations."
+          "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations.",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "isAnnotation",
+            "json": "isAnnotation"
+          }
         },
         "primaryColor": {
           "type": "string",
           "description": "Primary color associated with the model.",
           "minLength": 1,
-          "maxLength": 50
+          "maxLength": 50,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "primaryColor",
+            "json": "primaryColor"
+          }
         },
         "secondaryColor": {
           "type": "string",
           "description": "Secondary color associated with the model.",
           "minLength": 1,
-          "maxLength": 50
+          "maxLength": 50,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "secondaryColor",
+            "json": "secondaryColor"
+          }
         },
         "svgWhite": {
           "type": "string",
           "description": "SVG representation of the model in white color.",
-          "minLength": 1
+          "minLength": 1,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "svgWhite",
+            "json": "svgWhite"
+          }
         },
         "svgColor": {
           "type": "string",
           "description": "SVG representation of the model in colored format.",
-          "minLength": 1
+          "minLength": 1,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "svgColor",
+            "json": "svgColor"
+          }
         },
         "svgComplete": {
           "type": "string",
           "description": "SVG representation of the complete model.",
-          "minLength": 1
+          "minLength": 1,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "svgComplete",
+            "json": "svgComplete"
+          }
         }
       },
       "additionalProperties": true
@@ -107,10 +179,21 @@
       ],
       "properties": {
         "version": {
-          "$ref": "../core.json#/definitions/versionString",
           "description": "Version of the model as defined by the registrant.",
           "minLength": 1,
-          "maxLength": 100
+          "maxLength": 100,
+          "type": "string",
+          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+          "example": [
+            "v1",
+            "v1alpha1",
+            "v2beta3",
+            "v1.custom-suffix"
+          ],
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "version",
+            "json": "version"
+          }
         }
       }
     }
