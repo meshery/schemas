@@ -59,7 +59,7 @@ const (
 )
 
 // Component Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
-type Component struct {
+type ComponentDefinition struct {
 	// Component Component and it's properties.
 	Component struct {
 		// Kind The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.
