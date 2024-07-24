@@ -10,69 +10,69 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// Defines values for RelationshipKind.
+// Defines values for RelationshipDefinitionKind.
 const (
-	Edge         RelationshipKind = "Edge"
-	Hierarchical RelationshipKind = "Hierarchical"
-	Sibling      RelationshipKind = "Sibling"
+	Edge         RelationshipDefinitionKind = "Edge"
+	Hierarchical RelationshipDefinitionKind = "Hierarchical"
+	Sibling      RelationshipDefinitionKind = "Sibling"
 )
 
-// Defines values for RelationshipModelStatus.
+// Defines values for RelationshipDefinitionModelStatus.
 const (
-	RelationshipModelStatusDuplicate RelationshipModelStatus = "duplicate"
-	RelationshipModelStatusEnabled   RelationshipModelStatus = "enabled"
-	RelationshipModelStatusIgnored   RelationshipModelStatus = "ignored"
+	RelationshipDefinitionModelStatusDuplicate RelationshipDefinitionModelStatus = "duplicate"
+	RelationshipDefinitionModelStatusEnabled   RelationshipDefinitionModelStatus = "enabled"
+	RelationshipDefinitionModelStatusIgnored   RelationshipDefinitionModelStatus = "ignored"
 )
 
-// Defines values for RelationshipSelectorsAllowFromModelStatus.
+// Defines values for RelationshipDefinitionSelectorsAllowFromModelStatus.
 const (
-	RelationshipSelectorsAllowFromModelStatusDuplicate RelationshipSelectorsAllowFromModelStatus = "duplicate"
-	RelationshipSelectorsAllowFromModelStatusEnabled   RelationshipSelectorsAllowFromModelStatus = "enabled"
-	RelationshipSelectorsAllowFromModelStatusIgnored   RelationshipSelectorsAllowFromModelStatus = "ignored"
+	RelationshipDefinitionSelectorsAllowFromModelStatusDuplicate RelationshipDefinitionSelectorsAllowFromModelStatus = "duplicate"
+	RelationshipDefinitionSelectorsAllowFromModelStatusEnabled   RelationshipDefinitionSelectorsAllowFromModelStatus = "enabled"
+	RelationshipDefinitionSelectorsAllowFromModelStatusIgnored   RelationshipDefinitionSelectorsAllowFromModelStatus = "ignored"
 )
 
-// Defines values for RelationshipSelectorsAllowFromPatchPatchStrategy.
+// Defines values for RelationshipDefinitionSelectorsAllowFromPatchPatchStrategy.
 const (
-	RelationshipSelectorsAllowFromPatchPatchStrategyReplace RelationshipSelectorsAllowFromPatchPatchStrategy = "replace"
+	RelationshipDefinitionSelectorsAllowFromPatchPatchStrategyReplace RelationshipDefinitionSelectorsAllowFromPatchPatchStrategy = "replace"
 )
 
-// Defines values for RelationshipSelectorsAllowToModelStatus.
+// Defines values for RelationshipDefinitionSelectorsAllowToModelStatus.
 const (
-	RelationshipSelectorsAllowToModelStatusDuplicate RelationshipSelectorsAllowToModelStatus = "duplicate"
-	RelationshipSelectorsAllowToModelStatusEnabled   RelationshipSelectorsAllowToModelStatus = "enabled"
-	RelationshipSelectorsAllowToModelStatusIgnored   RelationshipSelectorsAllowToModelStatus = "ignored"
+	RelationshipDefinitionSelectorsAllowToModelStatusDuplicate RelationshipDefinitionSelectorsAllowToModelStatus = "duplicate"
+	RelationshipDefinitionSelectorsAllowToModelStatusEnabled   RelationshipDefinitionSelectorsAllowToModelStatus = "enabled"
+	RelationshipDefinitionSelectorsAllowToModelStatusIgnored   RelationshipDefinitionSelectorsAllowToModelStatus = "ignored"
 )
 
-// Defines values for RelationshipSelectorsAllowToPatchPatchStrategy.
+// Defines values for RelationshipDefinitionSelectorsAllowToPatchPatchStrategy.
 const (
-	RelationshipSelectorsAllowToPatchPatchStrategyReplace RelationshipSelectorsAllowToPatchPatchStrategy = "replace"
+	RelationshipDefinitionSelectorsAllowToPatchPatchStrategyReplace RelationshipDefinitionSelectorsAllowToPatchPatchStrategy = "replace"
 )
 
-// Defines values for RelationshipSelectorsDenyFromModelStatus.
+// Defines values for RelationshipDefinitionSelectorsDenyFromModelStatus.
 const (
-	RelationshipSelectorsDenyFromModelStatusDuplicate RelationshipSelectorsDenyFromModelStatus = "duplicate"
-	RelationshipSelectorsDenyFromModelStatusEnabled   RelationshipSelectorsDenyFromModelStatus = "enabled"
-	RelationshipSelectorsDenyFromModelStatusIgnored   RelationshipSelectorsDenyFromModelStatus = "ignored"
+	RelationshipDefinitionSelectorsDenyFromModelStatusDuplicate RelationshipDefinitionSelectorsDenyFromModelStatus = "duplicate"
+	RelationshipDefinitionSelectorsDenyFromModelStatusEnabled   RelationshipDefinitionSelectorsDenyFromModelStatus = "enabled"
+	RelationshipDefinitionSelectorsDenyFromModelStatusIgnored   RelationshipDefinitionSelectorsDenyFromModelStatus = "ignored"
 )
 
-// Defines values for RelationshipSelectorsDenyFromPatchPatchStrategy.
+// Defines values for RelationshipDefinitionSelectorsDenyFromPatchPatchStrategy.
 const (
-	RelationshipSelectorsDenyFromPatchPatchStrategyReplace RelationshipSelectorsDenyFromPatchPatchStrategy = "replace"
+	RelationshipDefinitionSelectorsDenyFromPatchPatchStrategyReplace RelationshipDefinitionSelectorsDenyFromPatchPatchStrategy = "replace"
 )
 
-// Defines values for RelationshipSelectorsDenyToModelStatus.
+// Defines values for RelationshipDefinitionSelectorsDenyToModelStatus.
 const (
-	Duplicate RelationshipSelectorsDenyToModelStatus = "duplicate"
-	Enabled   RelationshipSelectorsDenyToModelStatus = "enabled"
-	Ignored   RelationshipSelectorsDenyToModelStatus = "ignored"
+	Duplicate RelationshipDefinitionSelectorsDenyToModelStatus = "duplicate"
+	Enabled   RelationshipDefinitionSelectorsDenyToModelStatus = "enabled"
+	Ignored   RelationshipDefinitionSelectorsDenyToModelStatus = "ignored"
 )
 
-// Defines values for RelationshipSelectorsDenyToPatchPatchStrategy.
+// Defines values for RelationshipDefinitionSelectorsDenyToPatchPatchStrategy.
 const (
-	RelationshipSelectorsDenyToPatchPatchStrategyReplace RelationshipSelectorsDenyToPatchPatchStrategy = "replace"
+	RelationshipDefinitionSelectorsDenyToPatchPatchStrategyReplace RelationshipDefinitionSelectorsDenyToPatchPatchStrategy = "replace"
 )
 
-type Model struct {
+type ModelDefinition struct {
 	// Category Category of the model.
 	Category string `json:"category" yaml:"category"`
 
@@ -83,7 +83,7 @@ type Model struct {
 	DisplayName *string `json:"displayName" yaml:"displayName"`
 
 	// Metadata Metadata containing additional information associated with the model.
-	Metadata *Model_Metadata `json:"metadata,omitempty"`
+	Metadata *RelationshipDefinition_Model_Metadata `json:"metadata,omitempty"`
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
 	Model *struct {
@@ -103,7 +103,7 @@ type Model struct {
 	// - maintenance: model is unavailable for a period of time.
 	// - enabled: model is available for use for all users of this Meshery Server.
 	// - ignored: model is unavailable for use for all users of this Meshery Server.
-	Status *ModelStatus `json:"status" yaml:"status"`
+	Status *RelationshipDefinitionModelStatus `json:"status" yaml:"status"`
 
 	// SubCategory Sub-category of the model.
 	SubCategory *string `json:"subCategory" yaml:"subCategory"`
@@ -112,43 +112,13 @@ type Model struct {
 	Version string `json:"version" yaml:"version"`
 }
 
-// ModelStatus Status of model, including:
-// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-// - maintenance: model is unavailable for a period of time.
-// - enabled: model is available for use for all users of this Meshery Server.
-// - ignored: model is unavailable for use for all users of this Meshery Server.
-type ModelStatus string
-
-// Model_Metadata Metadata containing additional information associated with the model.
-type Model_Metadata struct {
-	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
-	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
-
-	// PrimaryColor Primary color associated with the model.
-	PrimaryColor *string `json:"primaryColor" yaml:"primaryColor"`
-
-	// SecondaryColor Secondary color associated with the model.
-	SecondaryColor *string `json:"secondaryColor" yaml:"secondaryColor"`
-
-	// SvgColor SVG representation of the model in colored format.
-	SvgColor *string `json:"svgColor" yaml:"svgColor"`
-
-	// SvgComplete SVG representation of the complete model.
-	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
-
-	// SvgWhite SVG representation of the model in white color.
-	SvgWhite             *string                `json:"svgWhite" yaml:"svgWhite"`
-	AdditionalProperties map[string]interface{} `json:"-"`
-}
-
-
-// Relationship Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
-type Relationship struct {
+// RelationshipDefinition Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
+type RelationshipDefinition struct {
 	// EvaluationQuery Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
 	EvaluationQuery *string `json:"evaluationQuery" yaml:"evaluationQuery"`
 
 	// Kind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
-	Kind RelationshipKind `json:"kind" yaml:"kind"`
+	Kind RelationshipDefinitionKind `json:"kind" yaml:"kind"`
 
 	// Metadata Metadata contains additional information associated with the Relationship.
 	Metadata *struct {
@@ -157,7 +127,7 @@ type Relationship struct {
 	} `json:"metadata,omitempty"`
 
 	// Model Name of the model in which this relationship is packaged.
-	Model Model `json:"model,omitempty" yaml:"model"`
+	Model ModelDefinition `json:"model"`
 
 	// SchemaVersion Specifies the version of the schema used for the relationship definition.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
@@ -182,11 +152,11 @@ type Relationship struct {
 				} `json:"match,omitempty"`
 
 				// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
-				Model *Model `json:"model,omitempty" yaml:"model"`
+				Model *ModelDefinition `json:"model,omitempty"`
 				Patch *struct {
 					// MutatorRef JSON ref to value from where patch should be applied.
-					MutatorRef    *[][]string                                       `json:"mutatorRef,omitempty"`
-					PatchStrategy *RelationshipSelectorsAllowFromPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
+					MutatorRef    *[][]string                                                 `json:"mutatorRef,omitempty"`
+					PatchStrategy *RelationshipDefinitionSelectorsAllowFromPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
 				} `json:"patch,omitempty"`
 			} `json:"from"`
 			To []struct {
@@ -205,11 +175,11 @@ type Relationship struct {
 				} `json:"match,omitempty"`
 
 				// Model Model of the implicated component. Learn more at https://docs.meshery.io/concepts/models
-				Model *Model `json:"model,omitempty" yaml:"model"`
+				Model *ModelDefinition `json:"model,omitempty"`
 				Patch *struct {
 					// MutatedRef JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched.
-					MutatedRef    *string                                         `json:"mutatedRef" yaml:"mutatedRef"`
-					PatchStrategy *RelationshipSelectorsAllowToPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
+					MutatedRef    *string                                                   `json:"mutatedRef" yaml:"mutatedRef"`
+					PatchStrategy *RelationshipDefinitionSelectorsAllowToPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
 				} `json:"patch,omitempty"`
 			} `json:"to"`
 		} `json:"allow"`
@@ -232,11 +202,11 @@ type Relationship struct {
 				} `json:"match,omitempty"`
 
 				// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
-				Model *Model `json:"model,omitempty" yaml:"model"`
+				Model *ModelDefinition `json:"model,omitempty"`
 				Patch *struct {
 					// MutatorRef JSON ref to value from where patch should be applied.
-					MutatorRef    *[][]string                                      `json:"mutatorRef,omitempty"`
-					PatchStrategy *RelationshipSelectorsDenyFromPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
+					MutatorRef    *[][]string                                                `json:"mutatorRef,omitempty"`
+					PatchStrategy *RelationshipDefinitionSelectorsDenyFromPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
 				} `json:"patch,omitempty"`
 			} `json:"from"`
 			To []struct {
@@ -255,11 +225,11 @@ type Relationship struct {
 				} `json:"match,omitempty"`
 
 				// Model Model of the implicated component. Learn more at https://docs.meshery.io/concepts/models
-				Model *Model `json:"model,omitempty" yaml:"model"`
+				Model *ModelDefinition `json:"model,omitempty"`
 				Patch *struct {
 					// MutatedRef JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched.
-					MutatedRef    *string                                        `json:"mutatedRef" yaml:"mutatedRef"`
-					PatchStrategy *RelationshipSelectorsDenyToPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
+					MutatedRef    *string                                                  `json:"mutatedRef" yaml:"mutatedRef"`
+					PatchStrategy *RelationshipDefinitionSelectorsDenyToPatchPatchStrategy `json:"patchStrategy" yaml:"patchStrategy"`
 				} `json:"patch,omitempty"`
 			} `json:"to"`
 		} `json:"deny,omitempty"`
@@ -275,11 +245,11 @@ type Relationship struct {
 	Version string `json:"version" yaml:"version"`
 }
 
-// RelationshipKind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
-type RelationshipKind string
+// RelationshipDefinitionKind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
+type RelationshipDefinitionKind string
 
-// Relationship_Model_Metadata Metadata containing additional information associated with the model.
-type Relationship_Model_Metadata struct {
+// RelationshipDefinition_Model_Metadata Metadata containing additional information associated with the model.
+type RelationshipDefinition_Model_Metadata struct {
 	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
 	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
 
@@ -300,74 +270,72 @@ type Relationship_Model_Metadata struct {
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
-// RelationshipModelStatus Status of model, including:
+// RelationshipDefinitionModelStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 // - maintenance: model is unavailable for a period of time.
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
-type RelationshipModelStatus string
+type RelationshipDefinitionModelStatus string
 
-// RelationshipSelectorsAllowFromModelStatus Status of model, including:
+// RelationshipDefinitionSelectorsAllowFromModelStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 // - maintenance: model is unavailable for a period of time.
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
-type RelationshipSelectorsAllowFromModelStatus string
+type RelationshipDefinitionSelectorsAllowFromModelStatus string
 
-// RelationshipSelectorsAllowFromPatchPatchStrategy defines model for Relationship.Selectors.Allow.From.Patch.PatchStrategy.
-type RelationshipSelectorsAllowFromPatchPatchStrategy string
+// RelationshipDefinitionSelectorsAllowFromPatchPatchStrategy defines model for RelationshipDefinition.Selectors.Allow.From.Patch.PatchStrategy.
+type RelationshipDefinitionSelectorsAllowFromPatchPatchStrategy string
 
-// RelationshipSelectorsAllowToModelStatus Status of model, including:
+// RelationshipDefinitionSelectorsAllowToModelStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 // - maintenance: model is unavailable for a period of time.
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
-type RelationshipSelectorsAllowToModelStatus string
+type RelationshipDefinitionSelectorsAllowToModelStatus string
 
-// RelationshipSelectorsAllowToPatchPatchStrategy defines model for Relationship.Selectors.Allow.To.Patch.PatchStrategy.
-type RelationshipSelectorsAllowToPatchPatchStrategy string
+// RelationshipDefinitionSelectorsAllowToPatchPatchStrategy defines model for RelationshipDefinition.Selectors.Allow.To.Patch.PatchStrategy.
+type RelationshipDefinitionSelectorsAllowToPatchPatchStrategy string
 
-// Relationship_Selectors_Deny_From_Model_Metadata Metadata containing additional information associated with the model.
-
-// RelationshipSelectorsDenyFromModelStatus Status of model, including:
+// RelationshipDefinitionSelectorsDenyFromModelStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 // - maintenance: model is unavailable for a period of time.
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
-type RelationshipSelectorsDenyFromModelStatus string
+type RelationshipDefinitionSelectorsDenyFromModelStatus string
 
-// RelationshipSelectorsDenyFromPatchPatchStrategy defines model for Relationship.Selectors.Deny.From.Patch.PatchStrategy.
-type RelationshipSelectorsDenyFromPatchPatchStrategy string
+// RelationshipDefinitionSelectorsDenyFromPatchPatchStrategy defines model for RelationshipDefinition.Selectors.Deny.From.Patch.PatchStrategy.
+type RelationshipDefinitionSelectorsDenyFromPatchPatchStrategy string
 
-// RelationshipSelectorsDenyToModelStatus Status of model, including:
+// RelationshipDefinitionSelectorsDenyToModelStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 // - maintenance: model is unavailable for a period of time.
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
-type RelationshipSelectorsDenyToModelStatus string
+type RelationshipDefinitionSelectorsDenyToModelStatus string
 
-// RelationshipSelectorsDenyToPatchPatchStrategy defines model for Relationship.Selectors.Deny.To.Patch.PatchStrategy.
-type RelationshipSelectorsDenyToPatchPatchStrategy string
+// RelationshipDefinitionSelectorsDenyToPatchPatchStrategy defines model for RelationshipDefinition.Selectors.Deny.To.Patch.PatchStrategy.
+type RelationshipDefinitionSelectorsDenyToPatchPatchStrategy string
 
-// Getter for additional properties for Relationship_Model_Metadata. Returns the specified
+// Getter for additional properties for RelationshipDefinition_Model_Metadata. Returns the specified
 // element and whether it was found
-func (a Relationship_Model_Metadata) Get(fieldName string) (value interface{}, found bool) {
+func (a RelationshipDefinition_Model_Metadata) Get(fieldName string) (value interface{}, found bool) {
 	if a.AdditionalProperties != nil {
 		value, found = a.AdditionalProperties[fieldName]
 	}
 	return
 }
 
-// Setter for additional properties for Relationship_Model_Metadata
-func (a *Relationship_Model_Metadata) Set(fieldName string, value interface{}) {
+// Setter for additional properties for RelationshipDefinition_Model_Metadata
+func (a *RelationshipDefinition_Model_Metadata) Set(fieldName string, value interface{}) {
 	if a.AdditionalProperties == nil {
 		a.AdditionalProperties = make(map[string]interface{})
 	}
 	a.AdditionalProperties[fieldName] = value
 }
 
-// Override default JSON handling for Relationship_Model_Metadata to handle AdditionalProperties
-func (a *Relationship_Model_Metadata) UnmarshalJSON(b []byte) error {
+// Override default JSON handling for RelationshipDefinition_Model_Metadata to handle AdditionalProperties
+func (a *RelationshipDefinition_Model_Metadata) UnmarshalJSON(b []byte) error {
 	object := make(map[string]json.RawMessage)
 	err := json.Unmarshal(b, &object)
 	if err != nil {
@@ -436,151 +404,8 @@ func (a *Relationship_Model_Metadata) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Override default JSON handling for Relationship_Model_Metadata to handle AdditionalProperties
-func (a Relationship_Model_Metadata) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.IsAnnotation != nil {
-		object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
-		}
-	}
-
-	if a.PrimaryColor != nil {
-		object["primaryColor"], err = json.Marshal(a.PrimaryColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'primaryColor': %w", err)
-		}
-	}
-
-	if a.SecondaryColor != nil {
-		object["secondaryColor"], err = json.Marshal(a.SecondaryColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'secondaryColor': %w", err)
-		}
-	}
-
-	if a.SvgColor != nil {
-		object["svgColor"], err = json.Marshal(a.SvgColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
-		}
-	}
-
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
-	}
-
-	if a.SvgWhite != nil {
-		object["svgWhite"], err = json.Marshal(a.SvgWhite)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgWhite': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for Model_Metadata. Returns the specified
-// element and whether it was found
-func (a Model_Metadata) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for Model_Metadata
-func (a *Model_Metadata) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for Model_Metadata to handle AdditionalProperties
-func (a *Model_Metadata) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["isAnnotation"]; found {
-		err = json.Unmarshal(raw, &a.IsAnnotation)
-		if err != nil {
-			return fmt.Errorf("error reading 'isAnnotation': %w", err)
-		}
-		delete(object, "isAnnotation")
-	}
-
-	if raw, found := object["primaryColor"]; found {
-		err = json.Unmarshal(raw, &a.PrimaryColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'primaryColor': %w", err)
-		}
-		delete(object, "primaryColor")
-	}
-
-	if raw, found := object["secondaryColor"]; found {
-		err = json.Unmarshal(raw, &a.SecondaryColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'secondaryColor': %w", err)
-		}
-		delete(object, "secondaryColor")
-	}
-
-	if raw, found := object["svgColor"]; found {
-		err = json.Unmarshal(raw, &a.SvgColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgColor': %w", err)
-		}
-		delete(object, "svgColor")
-	}
-
-	if raw, found := object["svgComplete"]; found {
-		err = json.Unmarshal(raw, &a.SvgComplete)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgComplete': %w", err)
-		}
-		delete(object, "svgComplete")
-	}
-
-	if raw, found := object["svgWhite"]; found {
-		err = json.Unmarshal(raw, &a.SvgWhite)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgWhite': %w", err)
-		}
-		delete(object, "svgWhite")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for Model_Metadata to handle AdditionalProperties
-func (a Model_Metadata) MarshalJSON() ([]byte, error) {
+// Override default JSON handling for RelationshipDefinition_Model_Metadata to handle AdditionalProperties
+func (a RelationshipDefinition_Model_Metadata) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 

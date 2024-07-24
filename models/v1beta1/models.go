@@ -10,67 +10,69 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// Defines values for ComponentFormat.
+// Defines values for ComponentDefinitionFormat.
 const (
-	CUE  ComponentFormat = "CUE"
-	JSON ComponentFormat = "JSON"
+	CUE  ComponentDefinitionFormat = "CUE"
+	JSON ComponentDefinitionFormat = "JSON"
 )
 
-// Defines values for ComponentMetadataShape.
+// Defines values for ComponentDefinitionMetadataShape.
 const (
-	Barrel               ComponentMetadataShape = "barrel"
-	BottomRoundRectangle ComponentMetadataShape = "bottom-round-rectangle"
-	ConcaveHexagon       ComponentMetadataShape = "concave-hexagon"
-	CutRectangle         ComponentMetadataShape = "cut-rectangle"
-	Diamond              ComponentMetadataShape = "diamond"
-	Ellipse              ComponentMetadataShape = "ellipse"
-	Heptagon             ComponentMetadataShape = "heptagon"
-	Hexagon              ComponentMetadataShape = "hexagon"
-	Octagon              ComponentMetadataShape = "octagon"
-	Pentagon             ComponentMetadataShape = "pentagon"
-	Rectangle            ComponentMetadataShape = "rectangle"
-	Rhomboid             ComponentMetadataShape = "rhomboid"
-	RoundDiamond         ComponentMetadataShape = "round-diamond"
-	RoundHeptagon        ComponentMetadataShape = "round-heptagon"
-	RoundHexagon         ComponentMetadataShape = "round-hexagon"
-	RoundOctagon         ComponentMetadataShape = "round-octagon"
-	RoundPentagon        ComponentMetadataShape = "round-pentagon"
-	RoundRectangle       ComponentMetadataShape = "round-rectangle"
-	RoundTag             ComponentMetadataShape = "round-tag"
-	RoundTriangle        ComponentMetadataShape = "round-triangle"
-	Star                 ComponentMetadataShape = "star"
-	Tag                  ComponentMetadataShape = "tag"
-	Triangle             ComponentMetadataShape = "triangle"
-	Vee                  ComponentMetadataShape = "vee"
+	Barrel               ComponentDefinitionMetadataShape = "barrel"
+	BottomRoundRectangle ComponentDefinitionMetadataShape = "bottom-round-rectangle"
+	ConcaveHexagon       ComponentDefinitionMetadataShape = "concave-hexagon"
+	CutRectangle         ComponentDefinitionMetadataShape = "cut-rectangle"
+	Diamond              ComponentDefinitionMetadataShape = "diamond"
+	Ellipse              ComponentDefinitionMetadataShape = "ellipse"
+	Heptagon             ComponentDefinitionMetadataShape = "heptagon"
+	Hexagon              ComponentDefinitionMetadataShape = "hexagon"
+	Octagon              ComponentDefinitionMetadataShape = "octagon"
+	Pentagon             ComponentDefinitionMetadataShape = "pentagon"
+	Rectangle            ComponentDefinitionMetadataShape = "rectangle"
+	Rhomboid             ComponentDefinitionMetadataShape = "rhomboid"
+	RoundDiamond         ComponentDefinitionMetadataShape = "round-diamond"
+	RoundHeptagon        ComponentDefinitionMetadataShape = "round-heptagon"
+	RoundHexagon         ComponentDefinitionMetadataShape = "round-hexagon"
+	RoundOctagon         ComponentDefinitionMetadataShape = "round-octagon"
+	RoundPentagon        ComponentDefinitionMetadataShape = "round-pentagon"
+	RoundRectangle       ComponentDefinitionMetadataShape = "round-rectangle"
+	RoundTag             ComponentDefinitionMetadataShape = "round-tag"
+	RoundTriangle        ComponentDefinitionMetadataShape = "round-triangle"
+	Star                 ComponentDefinitionMetadataShape = "star"
+	Tag                  ComponentDefinitionMetadataShape = "tag"
+	Triangle             ComponentDefinitionMetadataShape = "triangle"
+	Vee                  ComponentDefinitionMetadataShape = "vee"
 )
 
-// Defines values for ComponentModelStatus.
+// Defines values for ComponentDefinitionModelStatus.
 const (
-	ComponentModelStatusDuplicate ComponentModelStatus = "duplicate"
-	ComponentModelStatusEnabled   ComponentModelStatus = "enabled"
-	ComponentModelStatusIgnored   ComponentModelStatus = "ignored"
+	ComponentDefinitionModelStatusDuplicate ComponentDefinitionModelStatus = "duplicate"
+	ComponentDefinitionModelStatusEnabled   ComponentDefinitionModelStatus = "enabled"
+	ComponentDefinitionModelStatusIgnored   ComponentDefinitionModelStatus = "ignored"
 )
 
-// Defines values for ModelStatus.
+// Defines values for ModelDefinitionStatus.
 const (
-	ModelStatusDuplicate ModelStatus = "duplicate"
-	ModelStatusEnabled   ModelStatus = "enabled"
-	ModelStatusIgnored   ModelStatus = "ignored"
+	ModelDefinitionStatusDuplicate ModelDefinitionStatus = "duplicate"
+	ModelDefinitionStatusEnabled   ModelDefinitionStatus = "enabled"
+	ModelDefinitionStatusIgnored   ModelDefinitionStatus = "ignored"
 )
 
-// Component Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
+type Component struct {
+	// Kind The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.
+	Kind string `json:"kind" yaml:"kind"`
+
+	// Schema JSON schema of the object as defined by the registrant.
+	Schema string `json:"schema" yaml:"schema"`
+
+	// Version Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.
+	Version string `json:"version" yaml:"version"`
+}
+
+// ComponentDefinition Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
 type ComponentDefinition struct {
 	// Component Component and it's properties.
-	Component struct {
-		// Kind The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.
-		Kind string `json:"kind" yaml:"kind"`
-
-		// Schema JSON schema of the object as defined by the registrant.
-		Schema string `json:"schema" yaml:"schema"`
-
-		// Version Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.
-		Version string `json:"version" yaml:"version"`
-	} `json:"component"`
+	Component     `json:"component" yaml:"component"`
 	Configuration *map[string]interface{} `json:"configuration" yaml:"configuration"`
 
 	// Description A written representation of the purpose and characteristics of the component.
@@ -80,16 +82,16 @@ type ComponentDefinition struct {
 	DisplayName *string `json:"displayName" yaml:"displayName"`
 
 	// Format Format specifies the format used in the `component.schema` field. JSON is the default.
-	Format *ComponentFormat `json:"format" yaml:"format"`
+	Format *ComponentDefinitionFormat `json:"format" yaml:"format"`
 
 	// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
 	Id *openapi_types.UUID `json:"id" yaml:"id"`
 
 	// Metadata Metadata contains additional information associated with the component.
-	Metadata *Component_Metadata `json:"metadata,omitempty" yaml:"metadata"`
+	Metadata *ComponentDefinition_Metadata `json:"metadata,omitempty"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	Model Model `json:"model" yaml:"model"`
+	Model ModelDefinition `json:"model"`
 
 	// SchemaVersion Specifies the version of the schema to which the component definition conforms.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
@@ -98,14 +100,14 @@ type ComponentDefinition struct {
 	Version string `json:"version" yaml:"version"`
 }
 
-// ComponentFormat Format specifies the format used in the `component.schema` field. JSON is the default.
-type ComponentFormat string
+// ComponentDefinitionFormat Format specifies the format used in the `component.schema` field. JSON is the default.
+type ComponentDefinitionFormat string
 
-// ComponentMetadataShape Shape of the component used for UI representation.
-type ComponentMetadataShape string
+// ComponentDefinitionMetadataShape Shape of the component used for UI representation.
+type ComponentDefinitionMetadataShape string
 
-// Component_Metadata Metadata contains additional information associated with the component.
-type Component_Metadata struct {
+// ComponentDefinition_Metadata Metadata contains additional information associated with the component.
+type ComponentDefinition_Metadata struct {
 	// Capabilities Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
 	Capabilities *map[string]interface{} `json:"capabilities" yaml:"capabilities"`
 
@@ -125,7 +127,7 @@ type Component_Metadata struct {
 	SecondaryColor *string `json:"secondaryColor" yaml:"secondaryColor"`
 
 	// Shape Shape of the component used for UI representation.
-	Shape ComponentMetadataShape `json:"shape" yaml:"shape"`
+	Shape ComponentDefinitionMetadataShape `json:"shape" yaml:"shape"`
 
 	// SvgColor Colored SVG of the component used for UI representation on light background.
 	SvgColor string `json:"svgColor" yaml:"svgColor"`
@@ -138,15 +140,20 @@ type Component_Metadata struct {
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
-// ComponentModelStatus Status of model, including:
+// ComponentDefinitionModelStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 // - maintenance: model is unavailable for a period of time.
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
-type ComponentModelStatus string
+type ComponentDefinitionModelStatus string
 
-// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
 type Model struct {
+	// Version Version of the model as defined by the registrant.
+	Version string `json:"version" yaml:"version"`
+}
+
+// ModelDefinition Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
+type ModelDefinition struct {
 	// Category Category of the model.
 	Category string `json:"category" yaml:"category"`
 
@@ -157,13 +164,10 @@ type Model struct {
 	DisplayName *string `json:"displayName" yaml:"displayName"`
 
 	// Metadata Metadata containing additional information associated with the model.
-	Metadata *Model_Metadata `json:"metadata,omitempty"`
+	Metadata *ModelDefinition_Metadata `json:"metadata,omitempty"`
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
-	Model *struct {
-		// Version Version of the model as defined by the registrant.
-		Version string `json:"version" yaml:"version"`
-	} `json:"model,omitempty"`
+	Model *Model `json:"model,omitempty" yaml:"model"`
 
 	// Name The unique name for the model within the scope of a registrant.
 	Name       string                 `json:"name" yaml:"name"`
@@ -177,7 +181,7 @@ type Model struct {
 	// - maintenance: model is unavailable for a period of time.
 	// - enabled: model is available for use for all users of this Meshery Server.
 	// - ignored: model is unavailable for use for all users of this Meshery Server.
-	Status *ModelStatus `json:"status" yaml:"status"`
+	Status *ModelDefinitionStatus `json:"status" yaml:"status"`
 
 	// SubCategory Sub-category of the model.
 	SubCategory *string `json:"subCategory" yaml:"subCategory"`
@@ -186,8 +190,8 @@ type Model struct {
 	Version string `json:"version" yaml:"version"`
 }
 
-// Model_Metadata Metadata containing additional information associated with the model.
-type Model_Metadata struct {
+// ModelDefinition_Metadata Metadata containing additional information associated with the model.
+type ModelDefinition_Metadata struct {
 	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
 	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
 
@@ -208,32 +212,32 @@ type Model_Metadata struct {
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
-// ModelStatus Status of model, including:
+// ModelDefinitionStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 // - maintenance: model is unavailable for a period of time.
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
-type ModelStatus string
+type ModelDefinitionStatus string
 
-// Getter for additional properties for Component_Metadata. Returns the specified
+// Getter for additional properties for ComponentDefinition_Metadata. Returns the specified
 // element and whether it was found
-func (a Component_Metadata) Get(fieldName string) (value interface{}, found bool) {
+func (a ComponentDefinition_Metadata) Get(fieldName string) (value interface{}, found bool) {
 	if a.AdditionalProperties != nil {
 		value, found = a.AdditionalProperties[fieldName]
 	}
 	return
 }
 
-// Setter for additional properties for Component_Metadata
-func (a *Component_Metadata) Set(fieldName string, value interface{}) {
+// Setter for additional properties for ComponentDefinition_Metadata
+func (a *ComponentDefinition_Metadata) Set(fieldName string, value interface{}) {
 	if a.AdditionalProperties == nil {
 		a.AdditionalProperties = make(map[string]interface{})
 	}
 	a.AdditionalProperties[fieldName] = value
 }
 
-// Override default JSON handling for Component_Metadata to handle AdditionalProperties
-func (a *Component_Metadata) UnmarshalJSON(b []byte) error {
+// Override default JSON handling for ComponentDefinition_Metadata to handle AdditionalProperties
+func (a *ComponentDefinition_Metadata) UnmarshalJSON(b []byte) error {
 	object := make(map[string]json.RawMessage)
 	err := json.Unmarshal(b, &object)
 	if err != nil {
@@ -334,8 +338,8 @@ func (a *Component_Metadata) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Override default JSON handling for Component_Metadata to handle AdditionalProperties
-func (a Component_Metadata) MarshalJSON() ([]byte, error) {
+// Override default JSON handling for ComponentDefinition_Metadata to handle AdditionalProperties
+func (a ComponentDefinition_Metadata) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
@@ -410,25 +414,25 @@ func (a Component_Metadata) MarshalJSON() ([]byte, error) {
 	return json.Marshal(object)
 }
 
-// Getter for additional properties for Model_Metadata. Returns the specified
+// Getter for additional properties for ModelDefinition_Metadata. Returns the specified
 // element and whether it was found
-func (a Model_Metadata) Get(fieldName string) (value interface{}, found bool) {
+func (a ModelDefinition_Metadata) Get(fieldName string) (value interface{}, found bool) {
 	if a.AdditionalProperties != nil {
 		value, found = a.AdditionalProperties[fieldName]
 	}
 	return
 }
 
-// Setter for additional properties for Model_Metadata
-func (a *Model_Metadata) Set(fieldName string, value interface{}) {
+// Setter for additional properties for ModelDefinition_Metadata
+func (a *ModelDefinition_Metadata) Set(fieldName string, value interface{}) {
 	if a.AdditionalProperties == nil {
 		a.AdditionalProperties = make(map[string]interface{})
 	}
 	a.AdditionalProperties[fieldName] = value
 }
 
-// Override default JSON handling for Model_Metadata to handle AdditionalProperties
-func (a *Model_Metadata) UnmarshalJSON(b []byte) error {
+// Override default JSON handling for ModelDefinition_Metadata to handle AdditionalProperties
+func (a *ModelDefinition_Metadata) UnmarshalJSON(b []byte) error {
 	object := make(map[string]json.RawMessage)
 	err := json.Unmarshal(b, &object)
 	if err != nil {
@@ -497,8 +501,8 @@ func (a *Model_Metadata) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Override default JSON handling for Model_Metadata to handle AdditionalProperties
-func (a Model_Metadata) MarshalJSON() ([]byte, error) {
+// Override default JSON handling for ModelDefinition_Metadata to handle AdditionalProperties
+func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
