@@ -3446,7 +3446,7 @@ paths:
     get:
       tags:
         - meshery_models
-      operationId: GetModels
+      operationId: GetMeshModelModels
       summary: Get all models
       description: Get models by name
       parameters:
@@ -3578,7 +3578,7 @@ paths:
     get:
       tags:
         - meshery_models
-      operationId: GetModelCategories
+      operationId: GetMeshModelCategories
       summary: Get all categories
       description: Get models by technology category
       parameters:
