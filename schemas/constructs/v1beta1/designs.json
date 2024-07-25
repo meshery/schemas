@@ -19,7 +19,8 @@
       "maxLength": 50
     },
     "components": {
-      "description": "List of component declarations",
+      "description": "A list of one or more component declarations.",
+
       "type": "array",
       "items": {
         "$ref": "./component.json"
