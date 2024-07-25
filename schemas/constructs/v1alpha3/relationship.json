@@ -1,0 +1,107 @@
+{
+  "$id": "https://schemas.meshery.io/relationship.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
+  "required": [
+    "schemaVersion",
+    "version",
+    "model",
+    "kind",
+    "type",
+    "subType"
+  ],
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "$ref": "../core.json#/versionString",
+      "description": "Specifies the version of the schema used for the relationship definition."
+    },
+    "version": {
+      "$ref": "../core.json#/semverString",
+      "description": "Specifies the version of the relationship definition."
+    },
+    "model": {
+      "$ref": "../v1beta1/model.json",
+      "description": "Name of the model in which this relationship is packaged."
+    },
+    "kind": {
+      "$ref": "../core.json#/inputString",
+      "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
+      "enum": [
+        "Hierarchical",
+        "Edge",
+        "Sibling"
+      ]
+    },
+    "type": {
+      "$ref": "../core.json#/inputString",
+      "description": "Classification of relationships. Used to group relationships similar in nature."
+    },
+    "subType": {
+      "$ref": "../core.json#/inputString",
+      "description": "Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship."
+    },
+    "evaluationQuery": {
+      "$ref": "../core.json#/inputString",
+      "description": "Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata contains additional information associated with the Relationship.",
+      "properties": {
+        "description": {
+          "$ref": "../core.json#/inputString",
+          "description": "Characteristization of the meaning of the relationship and its relevance to both Meshery and entities under management."
+        }
+      }
+    },
+    "selectors": {
+      "type": "array",
+      "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
+      "$comment": "Sets of selectors are interpreted as a logical OR. Properties within a selector are interpreted as a logical OR, while  the `allow` and `deny` properties are interpreted a logical AND.",
+      "items": {
+        "type": "object",
+        "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
+        "additionalProperties": false,
+        "required": [
+          "allow"
+        ],
+        "properties": {
+          "deny": {
+            "type": "object",
+            "description": "Optional selectors used to define relationships which should not be created / is restricted.",
+            "required": [
+              "to",
+              "from"
+            ],
+            "properties": {
+              "from": {
+                "$ref": "./selectors.json#/definitions/from"
+              },
+              "to": {
+                "$ref": "./selectors.json#/definitions/to"
+              }
+            }
+          },
+          "allow": {
+            "type": "object",
+            "description": "Selectors used to define relationships which are allowed.",
+            "required": [
+              "to",
+              "from"
+            ],
+            "properties": {
+              "from": {
+                "$ref": "./selectors.json#/definitions/from"
+              },
+              "to": {
+                "$ref": "./selectors.json#/definitions/to"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
