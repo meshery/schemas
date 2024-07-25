@@ -67,7 +67,7 @@ jobs:
           npm run build
           echo "Build New Package" >> $GITHUB_STEP_SUMMARY
 
-      - name: Publich Package
+      - name: Publish Package
         run: npm publish --verbose
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
