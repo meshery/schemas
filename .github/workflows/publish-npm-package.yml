@@ -7,24 +7,24 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Release Version'
+        description: "Release Version"
         required: true
-        default: 'prerelease'
+        default: "prerelease"
         type: choice
         options:
-        - 'prerelease'
-        - 'patch'
-        - 'minor'
-        - 'major'
+          - "prerelease"
+          - "patch"
+          - "minor"
+          - "major"
       release_variant:
-        description: 'Release Variant'
+        description: "Type of release"
         required: true
-        default: 'no'
+        default: "stable"
         type: choice
         options:
-        - 'no'
-        - 'alpha'
-        - 'beta'
+          - "stable"
+          - "alpha"
+          - "beta"
 
 jobs:
   publish-gpr:
@@ -35,7 +35,6 @@ jobs:
         uses: actions/checkout@master
         with:
           ref: "master"
-
 
       - uses: actions/setup-node@v3
         with:
@@ -52,16 +51,16 @@ jobs:
           RELEASE_VARIANT: ${{ inputs.release_variant }}
         run: |
           OLD_VERSION=$(node -e "console.log(require('./package.json').version)")
-          if [ $RELEASE_VERSION == "prerelease" ] && [ $RELEASE_VARIANT != "no" ]; then npm version ${RELEASE_VERSION} --preid ${RELEASE_VARIANT}; fi
-          if [ $RELEASE_VERSION == "prerelease" ] && [ $RELEASE_VARIANT == "no" ]; then npm version ${RELEASE_VERSION}; fi
-          if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT != "no" ]; then npm version pre${RELEASE_VERSION} --preid ${RELEASE_VARIANT}; fi
-          if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT == "no" ]; then npm version ${RELEASE_VERSION}; fi
+          if [ $RELEASE_VERSION == "prerelease" ] && [ $RELEASE_VARIANT != "stable" ]; then npm version ${RELEASE_VERSION} --preid ${RELEASE_VARIANT}; fi
+          if [ $RELEASE_VERSION == "prerelease" ] && [ $RELEASE_VARIANT == "stable" ]; then npm version ${RELEASE_VERSION}; fi
+          if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT != "stable" ]; then npm version pre${RELEASE_VERSION} --preid ${RELEASE_VARIANT}; fi
+          if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT == "stable" ]; then npm version ${RELEASE_VERSION}; fi
           git add './'
           NEW_VERSION=$(node -e "console.log(require('./package.json').version)")
           echo "Updated Package Version" >> $GITHUB_STEP_SUMMARY
           echo "info Old Version: ${OLD_VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "info New Version: ${NEW_VERSION}" >> $GITHUB_STEP_SUMMARY
-          
+
       - name: Build Package
         run: |
           npm run build
