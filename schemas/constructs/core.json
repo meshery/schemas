@@ -30,7 +30,11 @@
     "uuid": {
       "type": "string",
       "format": "uuid",
-      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas."
+      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+      "x-go-type": "uuid.UUID",
+      "x-go-type-import": {
+        "path": "github.com/gofrs/uuid"
+      }
     }
   }
 }
