@@ -15,6 +15,7 @@ import-mapping:
 
 output: models/v1beta1/patterns.go 
 output-options:
+  # name-normalizer: ToCamelCaseWithInitialisms
   skip-prune: true
   include-tags: 
   - patterns
