@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for RelationshipDefinitionKind.
@@ -114,7 +114,7 @@ type ModelDefinition struct {
 
 type MatchDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	Id *openapi_types.UUID `json:"id" yaml:"id"`
+	Id *uuid.UUID `json:"id" yaml:"id"`
 
 	// Kind Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.
 	Kind *[]string `json:"kind,omitempty"`
@@ -131,9 +131,9 @@ type PatchDefinition struct {
 
 type RelationshipConfiguration struct {
 	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	Id    *openapi_types.UUID `json:"id" yaml:"id"`
-	Kind  *string             `json:"kind" yaml:"kind"`
-	Match *MatchDefinition    `json:"match,omitempty" yaml:"match"`
+	Id    *uuid.UUID       `json:"id" yaml:"id"`
+	Kind  *string          `json:"kind" yaml:"kind"`
+	Match *MatchDefinition `json:"match,omitempty" yaml:"match"`
 
 	// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
 	Model ModelDefinition  `json:"model,omitempty" yaml:"model"`
