@@ -18,14 +18,14 @@
             "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models"
           },
           "id": {
-            "$ref": "../core.json#/uuid"
+            "$ref": "../core.json#/definitions/uuid"
           },
           "match": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "id": {
-                "$ref": "../core.json#/uuid"
+                "$ref": "../core.json#/definitions/uuid"
               },
               "self": {
                 "description": "Defines paths which should be matched with the 'kind' property.",
@@ -84,7 +84,7 @@
             "description": "Model of the implicated component. Learn more at https://docs.meshery.io/concepts/models"
           },
           "id": {
-            "$ref": "../core.json#/uuid",
+            "$ref": "../core.json#/definitions/uuid",
             "description": "Identifier of the implicated component. Learn more at https://docs.meshery.io/concepts/relationships"
           },
           "match": {
@@ -92,7 +92,7 @@
             "additionalProperties": false,
             "properties": {
               "id": {
-                "$ref": "../core.json#/uuid",
+                "$ref": "../core.json#/definitions/uuid",
                 "description": "Identifier of the implicated component. Learn more at https://docs.meshery.io/concepts/relationships"
               },
               "self": {
