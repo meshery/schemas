@@ -6,9 +6,9 @@ var path = require("path")
 async function resolveRef(schema) {
     const path = schema;
     try {
-    let result = await parser.dereference(schema);
-    return result;
-    } catch(e) {
+        let result = await parser.dereference(schema);
+        return result;
+    } catch (e) {
         console.error(e);
         console.log("schema path : ", path)
     }
@@ -20,7 +20,7 @@ const isDir = fileName => {
 
 function walk(fullPath) {
     if (isDir(fullPath)) {
-        fs.readdirSync(fullPath).map(async entry => {
+        fs.readdirSync(fullPath).map( entry => {
             let abosolutePath = path.join(fullPath, entry)
 
             console.log(`Processing ${abosolutePath}...`)
@@ -42,12 +42,13 @@ async function processFile(path) {
     let resolvedSchema = await resolveRef(path);
     if (!!resolvedSchema && resolvedSchema["properties"]) {
         resolvedSchema["properties"] = addAdditionalTagsToSchema(resolvedSchema["properties"]);
-    }
-    try {
-        fs.writeFileSync(path, JSON.stringify(resolvedSchema, null, "  "))
-    } catch (err) {
-        console.error(err);
-        console.log("error writing the resolved schema to file: ", resolvedSchema)
+
+        try {
+            fs.writeFileSync(path, JSON.stringify(resolvedSchema, null, "  "))
+        } catch (err) {
+            console.error(err);
+            console.log("error writing the resolved schema to file: ", resolvedSchema)
+        }
     }
 }
 
@@ -89,4 +90,4 @@ function walkObject(object) {
     return object;
 }
 
-walk("./schemas/constructs/v1alpha2")
+walk("./schemas/constructs/v1beta1")

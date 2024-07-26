@@ -1,9 +1,9 @@
 openapi: 3.0.0
 components:
   schemas:
-    models:
+    model_definition:
       $ref: ../v1beta1/model.json
-    components:
+    component_definition:
       $ref: ../v1beta1/component.json
-    relationships:
-      $ref: ../v1alpha2/relationship.json
+    relationship_definition:
+      $ref: ../v1alpha3/relationship.json

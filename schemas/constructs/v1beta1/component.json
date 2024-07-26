@@ -6,8 +6,8 @@
   "type": "object",
   "properties": {
     "id": {
-      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design)."
-      "$ref": "../core.json#/uuid"
+      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+      "$ref": "../core.json#/definitions/uuid"
     },
     "schemaVersion": {
       "$ref": "../core.json#/definitions/versionString",
@@ -121,9 +121,6 @@
     },
     "configuration": {
       "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
-      "additionalProperties": {
-        "type": "string"
-      },
       "type": "object"
     },
     "component": {
