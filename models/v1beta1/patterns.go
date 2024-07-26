@@ -40,6 +40,8 @@ type DeletePatternModel struct {
 }
 
 type PatternFile struct {
+	Id externalRef1.Id  `json:"id,omitempty" yaml:"id,omitempty"`
+
 	// Components List of component declarations
 	Components []ComponentDefinition `json:"components" yaml:"components"`
 

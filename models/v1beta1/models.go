@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/gofrs/uuid"
 )
 
 // Defines values for ComponentDefinitionFormat.
@@ -73,19 +73,19 @@ type Component struct {
 type ComponentDefinition struct {
 	// Component Component and it's properties.
 	Component     `json:"component" yaml:"component"`
-	Configuration *map[string]interface{} `json:"configuration" yaml:"configuration"`
+	Configuration map[string]interface{} `json:"configuration" yaml:"configuration"`
 
 	// Description A written representation of the purpose and characteristics of the component.
-	Description *string `json:"description" yaml:"description"`
+	Description string `json:"description" yaml:"description"`
 
 	// DisplayName Name of the component in human-readible format.
-	DisplayName *string `json:"displayName" yaml:"displayName"`
+	DisplayName string `json:"displayName" yaml:"displayName"`
 
 	// Format Format specifies the format used in the `component.schema` field. JSON is the default.
-	Format *ComponentDefinitionFormat `json:"format" yaml:"format"`
+	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
 
 	// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-	Id *openapi_types.UUID `json:"id" yaml:"id"`
+	Id *uuid.UUID `json:"id" yaml:"id"`
 
 	// Metadata Metadata contains additional information associated with the component.
 	Metadata *ComponentDefinition_Metadata `json:"metadata,omitempty"`
