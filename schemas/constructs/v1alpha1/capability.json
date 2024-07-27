@@ -45,7 +45,7 @@
         },
         {
           "const": "interaction",
-          "description": "For capabilities related to interaction with  like edit , delete , ui interactions etc"
+          "description": "For capabilities related to interaction with  like edit , styling , ui interactions etc"
         },
         {
           "const": "integration",
