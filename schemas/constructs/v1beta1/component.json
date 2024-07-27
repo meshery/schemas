@@ -280,9 +280,6 @@
     },
     "configuration": {
       "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
-      "additionalProperties": {
-        "type": "string"
-      },
       "type": "object"
     },
     "component": {

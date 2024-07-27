@@ -73,19 +73,19 @@ type DeletePatternModel struct {
 }
 
 type Service struct {
-	Annotations  map[string]string      `json:"annotations,omitempty"`
-	ApiVersion   string                 `json:"apiVersion,omitempty" yaml:"apiVersion"`
+	Annotations  map[string]string      `json:"annotations,omitempty" inside configuration`
+	ApiVersion   string                 `json:"apiVersion,omitempty *" yaml:"apiVersion"`
 	DependsOn    []string               `json:"dependsOn,omitempty" yaml:"dependsOn"`
-	Id           *uuid.UUID             `json:"id,omitempty"`
-	IsAnnotation *bool                  `json:"isAnnotation,omitempty" yaml:"isAnnotation"`
-	Labels       map[string]string      `json:"labels,omitempty"`
-	Model        string                 `json:"model,omitempty"`
-	Name         string                 `json:"name,omitempty"`
-	Namespace    string                 `json:"namespace,omitempty"`
-	Settings     map[string]interface{} `json:"settings,omitempty"`
+	Id           *uuid.UUID             `json:"id,omitempty" *`
+	IsAnnotation *bool                  `json:"isAnnotation,omitempty" yaml:"isAnnotation" comp metadata`
+	Labels       map[string]string      `json:"labels,omitempty" inside configuration`
+	Model        string                 `json:"model,omitempty" *`
+	Name         string                 `json:"name,omitempty"*`
+	Namespace    string                 `json:"namespace,omitempty" inside configuration`
+	Settings     map[string]interface{} `json:"settings,omitempty"*`
 	Traits       map[string]interface{} `json:"traits,omitempty"`
-	Type         string                 `json:"type,omitempty"`
-	Version      string                 `json:"version,omitempty"`
+	Type         string                 `json:"type,omitempty" *`
+	Version      string                 `json:"version,omitempty"*`
 }
 
 // Design Schema for design  in v1Beta1
