@@ -132,6 +132,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
     | "workflow"
     | "persistence"
     | "communication"
+    | "action"
   ) &
     string;
   /**

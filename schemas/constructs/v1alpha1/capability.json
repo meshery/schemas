@@ -43,34 +43,7 @@
           "const": "lifecycle",
           "description": "For capabilities related to lifecycle mamangement of entities like deploy, undeploy ,start, stop, restart, etc"
         },
-        {
-          "const": "interaction",
-          "description": "For capabilities related to interaction with  like edit , styling , ui interactions etc"
-        },
-        {
-          "const": "integration",
-          "description": "For capabilities related to integration  like  relationships,etc"
-        },
-        {
-          "const": "security",
-          "description": "For capabilities related to security like policies , rbac, etc"
-        },
-        {
-          "const": "performance",
-          "description": "For capabilities related to performance  like load testing, performance testing, etc"
-        },
-        {
-          "const": "workflow",
-          "description": "For capabilities related to workflow like CI/CD, GitOps, etc"
-        },
-        {
-          "const": "persistence",
-          "description": "For capabilities related to persistence like database, storage, etc"
-        },
-        {
-          "const": "communication",
-          "description": "For capabilities related to communication with the entities like logstreaming , messaging, etc"
-        },
+
         {
           "const": "action",
           "description": "Catch all for capabilities related to actions on entities like delete,run, execute, etc"

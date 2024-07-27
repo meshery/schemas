@@ -6,6 +6,9 @@ import {
   CatalogData as CatalogDataT,
   CaveatsAndConsiderations,
 } from "./constructs/v1alpha1/catalog_data";
+import {
+HttpsSchemasMesheryIoCapabilityJson
+} from "./constructs/v1alpha1/capability"
 
 // v1alpha2
 import { DesignSchema } from "./constructs/v1alpha2/design";
@@ -34,6 +37,7 @@ export type Core = CoreJson;
 export namespace v1alpha1 {
   export type CatalogData = CatalogDataT;
   export type CatalogCaveatsAndConsiderations = CaveatsAndConsiderations;
+  export type Capability = HttpsSchemasMesheryIoCapabilityJson;
 }
 
 export namespace v1alpha2 {
