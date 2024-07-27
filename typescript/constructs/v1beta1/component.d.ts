@@ -6,7 +6,7 @@
  */
 
 /**
- * State of the component in which the capability is applicable.
+ * State of the entity in which the capability is applicable.
  */
 export type InputString = ("declaration" | "instance")[];
 
@@ -247,7 +247,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
     [k: string]: unknown;
   };
   configuration?: {
-    [k: string]: string;
+    [k: string]: unknown;
   };
   /**
    * Component and it's properties.
@@ -316,6 +316,10 @@ export interface HttpsSchemasMesheryIoModelJson {
    */
   metadata?: {
     /**
+     * Capabilities associated with the model
+     */
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+    /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
     isAnnotation?: boolean;
@@ -353,7 +357,7 @@ export interface HttpsSchemasMesheryIoModelJson {
   };
 }
 /**
- * Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
+ * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
 export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
@@ -378,7 +382,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   kind: (
     | "configuration"
     | "visualization"
-    | "management"
+    | "lifecycle"
     | "interaction"
     | "integration"
     | "security"

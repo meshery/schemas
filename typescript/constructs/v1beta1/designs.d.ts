@@ -6,7 +6,7 @@
  */
 
 /**
- * State of the component in which the capability is applicable.
+ * State of the entity in which the capability is applicable.
  */
 export type InputString = ("declaration" | "instance")[];
 export type From = {
@@ -73,6 +73,10 @@ export type To = {
  */
 export interface DesignSchema {
   /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  /**
    * Name of the design; a descriptive, but concise title for the design document.
    */
   name: string;
@@ -109,7 +113,7 @@ export interface DesignSchema {
  */
 export interface HttpsSchemasMesheryIoComponentJson {
   /**
-   * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   id?: string;
   /**
@@ -341,7 +345,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
     [k: string]: unknown;
   };
   configuration?: {
-    [k: string]: string;
+    [k: string]: unknown;
   };
   /**
    * Component and it's properties.
@@ -410,6 +414,10 @@ export interface HttpsSchemasMesheryIoModelJson {
    */
   metadata?: {
     /**
+     * Capabilities associated with the model
+     */
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+    /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
     isAnnotation?: boolean;
@@ -447,7 +455,7 @@ export interface HttpsSchemasMesheryIoModelJson {
   };
 }
 /**
- * Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
+ * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
 export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
@@ -472,7 +480,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   kind: (
     | "configuration"
     | "visualization"
-    | "management"
+    | "lifecycle"
     | "interaction"
     | "integration"
     | "security"
@@ -543,6 +551,10 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
      * Characteristization of the meaning of the relationship and its relevance to both Meshery and entities under management.
      */
     description?: string;
+    /**
+     * Capabilities associated with the relationship.
+     */
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
     [k: string]: unknown;
   };
   /**
@@ -614,6 +626,10 @@ export interface HttpsSchemasMesheryIoModelJson1 {
    * Metadata containing additional information associated with the model.
    */
   metadata?: {
+    /**
+     * Capabilities associated with the model
+     */
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
@@ -699,6 +715,10 @@ export interface HttpsSchemasMesheryIoModelJson2 {
    */
   metadata?: {
     /**
+     * Capabilities associated with the model
+     */
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+    /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
     isAnnotation?: boolean;
@@ -782,6 +802,10 @@ export interface HttpsSchemasMesheryIoModelJson3 {
    * Metadata containing additional information associated with the model.
    */
   metadata?: {
+    /**
+     * Capabilities associated with the model
+     */
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */

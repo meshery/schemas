@@ -70,6 +70,10 @@
         {
           "const": "communication",
           "description": "For capabilities related to communication with the entities like logstreaming , messaging, etc"
+        },
+        {
+          "const": "action",
+          "description": "Catch all for capabilities related to actions on entities like delete,run, execute, etc"
         }
       ]
     },
