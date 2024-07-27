@@ -29,10 +29,7 @@
     },
     "format": {
       "type": "string",
-      "enum": [
-        "JSON",
-        "CUE"
-      ],
+      "enum": ["JSON", "CUE"],
       "default": "JSON",
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
@@ -43,16 +40,228 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the component.",
-      "required": [
-        "shape",
-        "primaryColor",
-        "svgColor",
-        "svgWhite"
-      ],
+      "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
       "properties": {
         "capabilities": {
+          "type": "array",
+          "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+          "items": {
+            "$ref": "../v1alpha1/capability.json"
+          }
+        },
+        "style": {
           "type": "object",
-          "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
+          "description": "Contains properties related to visual representation of the component.",
+
+          "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
+          "properties": {
+            "style": {
+              "type": "object",
+              "description": "Specify the styles",
+              "properties": {
+                "primaryColor": {
+                  "type": "string",
+                  "description": "Primary color of the component used for UI representation."
+                },
+                "secondaryColor": {
+                  "type": "string",
+                  "description": "Secondary color of the component used for UI representation."
+                },
+                "svgWhite": {
+                  "type": "string",
+                  "description": "White SVG of the component used for UI representation on dark background."
+                },
+                "svgColor": {
+                  "type": "string",
+                  "description": "Colored SVG of the component used for UI representation on light background."
+                },
+                "svgComplete": {
+                  "type": "string",
+                  "description": "Complete SVG of the component used for UI representation, often inclusive of background."
+                },
+
+                "width": {
+                  "type": "number",
+                  "description": "The width of the node\u2019s body or the width of an edge\u2019s line."
+                },
+                "height": {
+                  "type": "number",
+                  "description": "The height of the node\u2019s body"
+                },
+                "shape": {
+                  "type": "string",
+                  "description": "The shape of the node\u2019s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+                  "enum": [
+                    "ellipse",
+                    "triangle",
+                    "round-triangle",
+                    "rectangle",
+                    "round-rectangle",
+                    "bottom-round-rectangle",
+                    "cut-rectangle",
+                    "barrel",
+                    "rhomboid",
+                    "diamond",
+                    "round-diamond",
+                    "pentagon",
+                    "round-pentagon",
+                    "hexagon",
+                    "round-hexagon",
+                    "concave-hexagon",
+                    "heptagon",
+                    "round-heptagon",
+                    "octagon",
+                    "round-octagon",
+                    "star",
+                    "tag",
+                    "round-tag",
+                    "vee",
+                    "polygon"
+                  ]
+                },
+                "background-color": {
+                  "type": "string",
+                  "description": "The colour of the node\u2019s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                },
+                "background-blacken": {
+                  "type": "number",
+                  "description": "Blackens the node\u2019s body for values from 0 to 1; whitens the node\u2019s body for values from 0 to -1.",
+                  "maximum": 1,
+                  "minimum": -1
+                },
+                "background-opacity": {
+                  "type": "number",
+                  "description": "The opacity level of the node\u2019s background colour",
+                  "maximum": 1,
+                  "minimum": 0
+                },
+                "border-width": {
+                  "type": "number",
+                  "description": "The size of the node\u2019s border.",
+                  "minimum": 0
+                },
+                "border-style": {
+                  "type": "string",
+                  "description": "The style of the node\u2019s border",
+                  "enum": ["solid", "dotted", "dashed", "double"]
+                },
+                "border-color": {
+                  "type": "string",
+                  "description": "The colour of the node\u2019s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                },
+                "border-opacity": {
+                  "type": "number",
+                  "description": "The opacity of the node\u2019s border",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "padding": {
+                  "type": "number",
+                  "description": "The amount of padding around all sides of the node.",
+                  "minimum": 0
+                },
+
+                "opacity": {
+                  "type": "number",
+                  "description": "The opacity of the element. See https://js.cytoscape.org/#style/visibility",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "z-index": {
+                  "type": "integer",
+                  "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index."
+                },
+                "label": {
+                  "type": "string",
+                  "description": "The text to display for an element\u2019s label. Can give a path, e.g. data(id) will label with the elements id"
+                },
+
+                "color": {
+                  "type": "string",
+                  "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                },
+                "text-opacity": {
+                  "type": "number",
+                  "description": "The opacity of the label text, including its outline.",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "font-family": {
+                  "type": "string",
+                  "description": "A comma-separated list of font names to use on the label text."
+                },
+                "font-size": {
+                  "type": "string",
+                  "description": "The size of the label text."
+                },
+                "font-style": {
+                  "type": "string",
+                  "description": "A CSS font style to be applied to the label text."
+                },
+                "font-weight": {
+                  "type": "string",
+                  "description": "A CSS font weight to be applied to the label text."
+                },
+                "text-transform": {
+                  "type": "string",
+                  "description": "A transformation to apply to the label text",
+                  "enum": ["none", "uppercase", "lowercase"]
+                },
+                "text-halign": {
+                  "type": "string",
+                  "description": "The horizontal alignment of a node\u2019s label",
+                  "enum": ["left", "center", "right"]
+                },
+                "text-valign": {
+                  "type": "string",
+                  "description": "The vertical alignment of a node\u2019s label",
+                  "enum": ["top", "center", "bottom"]
+                },
+                "ghost": {
+                  "type": "string",
+                  "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
+                  "default": "no",
+                  "enum": ["yes", "no"]
+                },
+                "active-bg-color": {
+                  "type": "string",
+                  "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                },
+                "active-bg-opacity": {
+                  "type": "string",
+                  "description": " The opacity of the active background indicator. Selector needs to be *core*."
+                },
+                "active-bg-size": {
+                  "type": "string",
+                  "description": " The opacity of the active background indicator. Selector needs to be *core*."
+                },
+                "selection-box-color": {
+                  "type": "string",
+                  "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                },
+                "selection-box-border-width": {
+                  "type": "number",
+                  "description": "The size of the border on the selection box. Selector needs to be *core*"
+                },
+                "selection-box-opacity": {
+                  "type": "number",
+                  "description": "The opacity of the selection box.  Selector needs to be *core*",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "outside-texture-bg-color": {
+                  "type": "string",
+                  "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                },
+                "outside-texture-bg-opacity": {
+                  "type": "number",
+                  "description": "The opacity of the area outside the viewport texture. Selector needs to be *core*",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
         },
         "genealogy": {
           "type": "string",
@@ -61,56 +270,6 @@
         "isAnnotation": {
           "type": "boolean",
           "description": "Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation."
-        },
-        "shape": {
-          "type": "string",
-          "description": "Shape of the component used for UI representation.",
-          "enum": [
-            "ellipse",
-            "triangle",
-            "round-triangle",
-            "rectangle",
-            "round-rectangle",
-            "bottom-round-rectangle",
-            "cut-rectangle",
-            "barrel",
-            "rhomboid",
-            "diamond",
-            "round-diamond",
-            "pentagon",
-            "round-pentagon",
-            "hexagon",
-            "round-hexagon",
-            "concave-hexagon",
-            "heptagon",
-            "round-heptagon",
-            "octagon",
-            "round-octagon",
-            "star",
-            "tag",
-            "round-tag",
-            "vee"
-          ]
-        },
-        "primaryColor": {
-          "type": "string",
-          "description": "Primary color of the component used for UI representation."
-        },
-        "secondaryColor": {
-          "type": "string",
-          "description": "Secondary color of the component used for UI representation."
-        },
-        "svgWhite": {
-          "type": "string",
-          "description": "White SVG of the component used for UI representation on dark background."
-        },
-        "svgColor": {
-          "type": "string",
-          "description": "Colored SVG of the component used for UI representation on light background."
-        },
-        "svgComplete": {
-          "type": "string",
-          "description": "Complete SVG of the component used for UI representation, often inclusive of background."
         },
         "published": {
           "type": "boolean",
@@ -138,22 +297,15 @@
           "type": "string",
           "description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
         },
+
         "schema": {
           "type": "string",
           "description": "JSON schema of the object as defined by the registrant."
         }
       },
-      "required": [
-        "version",
-        "kind",
-        "schema"
-      ]
+      "required": ["version", "kind", "schema"]
     }
   },
-  "required": [
-    "schemaVersion",
-    "version",
-    "model",
-    "component"
-  ]
+  "required": ["schemaVersion", "version", "model", "component"]
 }
+
