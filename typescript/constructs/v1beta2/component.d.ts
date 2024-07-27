@@ -6,11 +6,6 @@
  */
 
 /**
- * State of the component in which the capability is applicable.
- */
-export type InputString = ("declaration" | "instance")[];
-
-/**
  * Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
  */
 export interface HttpsSchemasMesheryIoComponentJson {
@@ -46,7 +41,63 @@ export interface HttpsSchemasMesheryIoComponentJson {
     /**
      * Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
      */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+    capabilities?: {
+      designer?: {
+        capabilities?: {
+          config?: boolean;
+          label?: boolean;
+          policy?: boolean;
+          relationships?: boolean;
+          "json-schema"?: boolean;
+          permissions?: boolean;
+          workflow?: boolean;
+          gitops?: boolean;
+          history?: boolean;
+          [k: string]: unknown;
+        };
+        state?: {
+          fsm?: {
+            [k: string]: unknown;
+          };
+          [k: string]: unknown;
+        };
+        "pass-events-to"?: "parent";
+        supportsCompoundDragAndDrop?: boolean;
+        edit?: {
+          config?: boolean;
+          style?: boolean;
+          text?: boolean;
+          copy?: boolean;
+          delete?: boolean;
+          duplicate?: boolean;
+          "reset-styles"?: boolean;
+          resolve?: boolean;
+          lock?: boolean;
+          shape?: {
+            "convert-shape"?: boolean;
+            [k: string]: unknown;
+          };
+          [k: string]: unknown;
+        };
+        label?: {
+          edit?: boolean;
+          "sync-with-config-property"?: string;
+          show?: boolean;
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      };
+      visualizer?: {
+        actions?: {
+          "perf-test"?: boolean;
+          terminal?: boolean;
+          "log-streamer"?: boolean;
+          [k: string]: unknown;
+        };
+        [k: string]: unknown;
+      };
+      [k: string]: unknown;
+    };
     /**
      * Contains properties related to visual representation of the component.
      */
@@ -349,66 +400,6 @@ export interface HttpsSchemasMesheryIoModelJson {
      * Version of the model as defined by the registrant.
      */
     version: string;
-    [k: string]: unknown;
-  };
-}
-/**
- * Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
- */
-export interface HttpsSchemasMesheryIoCapabilityJson {
-  /**
-   * Specifies the version of the schema to which the capability definition conforms.
-   */
-  schemaVersion: string;
-  /**
-   * Version of the capability definition.
-   */
-  version: string;
-  /**
-   * Name of the capability in human-readible format.
-   */
-  displayName: string;
-  /**
-   * A written representation of the purpose and characteristics of the capability.
-   */
-  description?: string;
-  /**
-   * Kind of the capability
-   */
-  kind: (
-    | "configuration"
-    | "visualization"
-    | "management"
-    | "interaction"
-    | "integration"
-    | "security"
-    | "performance"
-    | "workflow"
-    | "persistence"
-    | "communication"
-  ) &
-    string;
-  /**
-   * Classification of capabilities. Used to group capabilities similar in nature.
-   */
-  type: string;
-  /**
-   * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
-   */
-  subType?: string;
-  /**
-   * Key that backs the capability.
-   */
-  key?: string;
-  state: InputString;
-  /**
-   * Status of the capability
-   */
-  status: "enabled" | "disabled";
-  /**
-   * Metadata contains additional information associated with the capability.
-   */
-  metadata?: {
     [k: string]: unknown;
   };
 }
