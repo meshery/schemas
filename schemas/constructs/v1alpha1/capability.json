@@ -32,21 +32,17 @@
       "description": "Kind of the capability",
       "anyOf": [
         {
-          "const": "configuration",
-          "description": "For capabilities related to entities configuration  like config, labels , annotations,etc"
+          "const": "action",
+          "description": "For capabilities related to executing actions on entities"
         },
         {
-          "const": "visualization",
-          "description": "For capabilities related to visualization of entities like labels , styles"
-        },
-        {
-          "const": "lifecycle",
-          "description": "For capabilities related to lifecycle mamangement of entities like deploy, undeploy ,start, stop, restart, etc"
+          "const": "mutate",
+          "description": "For capabilities related to mutating an entity"
         },
 
         {
-          "const": "action",
-          "description": "Catch all for capabilities related to actions on entities like delete,run, execute, etc"
+          "const": "interaction",
+          "description": "Catch all for capabilities related to interaction with entities"
         }
       ]
     },
