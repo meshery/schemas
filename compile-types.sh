@@ -64,7 +64,7 @@ traverse_directory() {
 # Start traversing from the provided input directory
 traverse_directory "$INPUT_DIR"
 
-# Generate OpenApi types from single openapi.yaml file 
+# Generate OpenApi types from single openapi.yaml file
 OPENAPI_FILE="$INPUT_DIR/openapi.yml"
 if [ -f "$OPENAPI_FILE" ]; then
     npx openapi-typescript "$OPENAPI_FILE" --output "$OUTPUT_DIR/openapi.d.ts"
