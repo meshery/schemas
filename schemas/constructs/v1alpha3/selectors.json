@@ -4,7 +4,8 @@
   "description": "Reusable relationships selectors schema elements",
   "$comment": "Sets of selectors are interpreted as a locical OR, while sets of allow/deny are interpreted a logical AND.",
   "definitions": {
-    "from": {
+    "selector": {
+      "description": "Describes the component which are invloved in the relationship, along with set of actions to perform.",
       "type": "array",
       "items": {
         "type": "object",
@@ -45,90 +46,103 @@
           },
           "patch": {
             "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "patchStrategy": {
-                "type": "string",
-                "enum": [
-                  "replace"
-                ]
+            "allOf": [
+              {
+                "properties": {
+                  "patchStrategy": {
+                    "type": "string",
+                    "enum": [
+                      "replace"
+                    ]
+                  }
+                }
               },
-              "mutatorRef": {
-                "type": "array",
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+              {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "mutatorRef": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                        },
+                        "description": "JSON ref to value from where patch should be applied."
+                      }
+                    }
                   },
-                  "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
-                },
-                "description": "JSON ref to value from where patch should be applied."
+                  {
+                    "properties": {
+                      "mutatedRef": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                        }
+                      }
+                    }
+                  }
+                ]
               }
-            }
-          }
+            ]
+          },
+          "additionalProperties": false,
+          "properties": {}
         },
         "description": "Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning."
       }
     },
-    "to": {
+    "selectors": {
       "type": "array",
+      "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
+      "$comment": "Sets of selectors are interpreted as a logical OR. Properties within a selector are interpreted as a logical OR, while  the `allow` and `deny` properties are interpreted a logical AND.",
       "items": {
         "type": "object",
+        "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
+        "required": [
+          "allow"
+        ],
         "properties": {
-          "kind": {
-            "type": "string"
-          },
-          "model": {
-            "$ref": "../v1beta1/model.json",
-            "description": "Model of the implicated component. Learn more at https://docs.meshery.io/concepts/models"
-          },
-          "id": {
-            "$ref": "../core.json#/definitions/uuid",
-            "description": "Identifier of the implicated component. Learn more at https://docs.meshery.io/concepts/relationships"
-          },
-          "match": {
+          "deny": {
+            "description": "Optional selectors used to define relationships which should not be created / is restricted.",
             "type": "object",
-            "additionalProperties": false,
+            "required": [
+              "to",
+              "from"
+            ],
             "properties": {
-              "id": {
-                "$ref": "../core.json#/definitions/uuid",
-                "description": "Identifier of the implicated component. Learn more at https://docs.meshery.io/concepts/relationships"
+              "from": {
+                "$ref": "#/definitions/selector"
               },
-              "self": {
-                "description": "Defines paths which should be matched with 'kind'.",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "kind": {
-                "description": "Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "to": {
+                "$ref": "#/definitions/selector"
               }
             }
           },
-          "patch": {
+          "allow": {
+            "description": "Selectors used to define relationships which are allowed.",
             "type": "object",
-            "additionalProperties": false,
+            "required": [
+              "to",
+              "from"
+            ],
             "properties": {
-              "patchStrategy": {
-                "type": "string",
-                "enum": [
-                  "replace"
-                ]
+              "from": {
+                "$ref": "#/definitions/selector"
               },
-              "mutatedRef": {
-                "type": "string",
-                "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+              "to": {
+                "$ref": "#/definitions/selector"
               }
             }
           }
-        },
-        "description": "Optional fields that are a part of the `to` selector. Absence of a field has an implied * meaning."
+        }
       }
     }
   }
