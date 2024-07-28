@@ -41,7 +41,7 @@
       "properties": {
         "description": {
           "$ref": "../core.json#/definitions/inputString",
-          "description": "Characteristization of the meaning of the relationship and its relevance to both Meshery and entities under management."
+          "description": "Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management."
         },
         "capabilities": {
           "type": "array",

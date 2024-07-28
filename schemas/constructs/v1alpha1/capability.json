@@ -29,20 +29,20 @@
 
     "kind": {
       "$ref": "../core.json#/definitions/inputString",
-      "description": "Kind of the capability",
+      "description": "Top-level categorization of the capability",
       "anyOf": [
         {
           "const": "action",
-          "description": "For capabilities related to executing actions on entities"
+          "description": "For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component."
         },
         {
           "const": "mutate",
-          "description": "For capabilities related to mutating an entity"
+          "description": "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
         },
 
         {
           "const": "interaction",
-          "description": "Catch all for capabilities related to interaction with entities"
+          "description": "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
         }
       ]
     },
@@ -80,7 +80,7 @@
 
     "metadata": {
       "type": "object",
-      "description": "Metadata contains additional information associated with the capability.",
+      "description": "Metadata contains additional information associated with the capability. Extension point.",
       "additionalProperties": true
     }
   }
