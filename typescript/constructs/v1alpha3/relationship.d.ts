@@ -9,6 +9,96 @@
  * State of the entity in which the capability is applicable.
  */
 export type InputString = ("declaration" | "instance")[];
+/**
+ * Visualisation styles for a relationship
+ */
+export type RelationshipStyles = Styles & {
+  /**
+   * The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .
+   */
+  "edge-animation"?: string;
+  /**
+   * The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+   */
+  "curve-style"?: "straight" | "haystack" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
+  /**
+   * The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "line-color"?: string;
+  /**
+   * The style of the edge’s line.
+   */
+  "line-style"?: "solid" | "dotted" | "dashed";
+  /**
+   * The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+   */
+  "line-cap"?: "butt" | "round" | "square";
+  /**
+   * The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+   */
+  "line-opacity"?: number;
+  /**
+   * The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "target-arrow-color"?: string;
+  /**
+   * The shape of the edge’s source arrow
+   */
+  "target-arrow-shape"?:
+    | "triangle"
+    | "triangle-tee"
+    | "circle-triangle"
+    | "triangle-cross"
+    | "triangle-backcurve"
+    | "vee"
+    | "tee"
+    | "square"
+    | "circle"
+    | "diamond"
+    | "chevron"
+    | "none";
+  /**
+   * The fill state of the edge’s source arrow
+   */
+  "target-arrow-fill"?: "filled" | "hollow";
+  /**
+   * The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "mid-target-arrow-color"?: string;
+  /**
+   * The shape of the edge’s source arrow
+   */
+  "mid-target-arrow-shape"?:
+    | "triangle"
+    | "triangle-tee"
+    | "circle-triangle"
+    | "triangle-cross"
+    | "triangle-backcurve"
+    | "vee"
+    | "tee"
+    | "square"
+    | "circle"
+    | "diamond"
+    | "chevron"
+    | "none";
+  /**
+   * The fill state of the edge’s source arrow
+   */
+  "mid-target-arrow-fill"?: "filled" | "hollow";
+  /**
+   * Scaling for the arrow size.
+   */
+  "arrow-scale"?: number;
+  /**
+   * The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id
+   */
+  "source-label"?: string;
+  /**
+   * The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id
+   */
+  "target-label"?: string;
+  [k: string]: unknown;
+};
 export type From = {
   kind?: string;
   model?: HttpsSchemasMesheryIoModelJson1;
@@ -98,17 +188,18 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
    */
   evaluationQuery?: string;
   /**
+   * Capabilities associated with the relationship.
+   */
+  capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+  /**
    * Metadata contains additional information associated with the Relationship.
    */
   metadata?: {
     /**
-     * Characteristization of the meaning of the relationship and its relevance to both Meshery and entities under management.
+     * Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.
      */
     description?: string;
-    /**
-     * Capabilities associated with the relationship.
-     */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+    styles?: RelationshipStyles;
     [k: string]: unknown;
   };
   /**
@@ -242,7 +333,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    */
   description?: string;
   /**
-   * Kind of the capability
+   * Top-level categorization of the capability
    */
   kind: ("action" | "mutate" | "interaction") & string;
   /**
@@ -263,11 +354,76 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    */
   status: "enabled" | "disabled";
   /**
-   * Metadata contains additional information associated with the capability.
+   * Metadata contains additional information associated with the capability. Extension point.
    */
   metadata?: {
     [k: string]: unknown;
   };
+}
+/**
+ * Common styles for all entities
+ */
+export interface Styles {
+  /**
+   * Primary color of the component used for UI representation.
+   */
+  primaryColor: string;
+  /**
+   * Secondary color of the entity used for UI representation.
+   */
+  secondaryColor?: string;
+  /**
+   * White SVG of the entity used for UI representation on dark background.
+   */
+  svgWhite: string;
+  /**
+   * Colored SVG of the entity used for UI representation on light background.
+   */
+  svgColor: string;
+  /**
+   * Complete SVG of the entity used for UI representation, often inclusive of background.
+   */
+  svgComplete?: string;
+  /**
+   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  color?: string;
+  /**
+   * The opacity of the label text, including its outline.
+   */
+  "text-opacity"?: number;
+  /**
+   * A comma-separated list of font names to use on the label text.
+   */
+  "font-family"?: string;
+  /**
+   * The size of the label text.
+   */
+  "font-size"?: string;
+  /**
+   * A CSS font style to be applied to the label text.
+   */
+  "font-style"?: string;
+  /**
+   * A CSS font weight to be applied to the label text.
+   */
+  "font-weight"?: string;
+  /**
+   * A transformation to apply to the label text
+   */
+  "text-transform"?: "none" | "uppercase" | "lowercase";
+  /**
+   * The opacity of the element. See https://js.cytoscape.org/#style/visibility
+   */
+  opacity?: number;
+  /**
+   * An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
+   */
+  "z-index"?: number;
+  /**
+   * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
+   */
+  label?: string;
 }
 /**
  * Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models

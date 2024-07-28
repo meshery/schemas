@@ -119,7 +119,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    */
   description?: string;
   /**
-   * Kind of the capability
+   * Top-level categorization of the capability
    */
   kind: ("action" | "mutate" | "interaction") & string;
   /**
@@ -140,7 +140,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    */
   status: "enabled" | "disabled";
   /**
-   * Metadata contains additional information associated with the capability.
+   * Metadata contains additional information associated with the capability. Extension point.
    */
   metadata?: {
     [k: string]: unknown;
