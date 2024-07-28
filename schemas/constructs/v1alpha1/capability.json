@@ -14,9 +14,7 @@
     },
     "version": {
       "$ref": "../core.json#/definitions/semverString",
-      "description": "Version of the capability definition.",
-      "minLength": 1,
-      "maxLength": 50
+      "description": "Version of the capability definition."
     },
     "displayName": {
       "$ref": "../core.json#/definitions/inputString",
