@@ -232,7 +232,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * Kind of the capability
    */
-  kind: ("configuration" | "visualization" | "lifecycle" | "action") & string;
+  kind: ("action" | "mutate" | "interaction") & string;
   /**
    * Classification of capabilities. Used to group capabilities similar in nature.
    */
