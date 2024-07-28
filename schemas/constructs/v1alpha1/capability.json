@@ -30,6 +30,7 @@
     "kind": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "Top-level categorization of the capability",
+      "additionalProperties": false,
       "anyOf": [
         {
           "const": "action",
@@ -62,7 +63,7 @@
       "description": "Key that backs the capability."
     },
 
-    "state": {
+    "entityState": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "State of the entity in which the capability is applicable.",
       "type": "array",
@@ -75,6 +76,7 @@
     "status": {
       "type": "string",
       "description": "Status of the capability",
+      "default": "enabled",
       "enum": ["enabled", "disabled"]
     },
 

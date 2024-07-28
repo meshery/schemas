@@ -134,7 +134,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    * Key that backs the capability.
    */
   key?: string;
-  state: InputString;
+  entityState?: InputString;
   /**
    * Status of the capability
    */
