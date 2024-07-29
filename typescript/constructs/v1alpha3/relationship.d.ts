@@ -9,12 +9,16 @@ export type From = {
   kind?: string;
   model?: HttpsSchemasMesheryIoModelJson1;
   /**
-   * A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
-  version?: string;
+  id?: string;
   match?: {
     /**
-     * Defines paths which should be matched with 'kind'.
+     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+     */
+    id?: string;
+    /**
+     * Defines paths which should be matched with the 'kind' property.
      */
     self?: string[];
     /**
@@ -34,10 +38,14 @@ export type To = {
   kind?: string;
   model?: HttpsSchemasMesheryIoModelJson2;
   /**
-   * A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
-  version?: string;
+  id?: string;
   match?: {
+    /**
+     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+     */
+    id?: string;
     /**
      * Defines paths which should be matched with 'kind'.
      */
@@ -50,7 +58,7 @@ export type To = {
   patch?: {
     patchStrategy?: "replace";
     /**
-     * JSON ref to value that should be patched.
+     * JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched.
      */
     mutatedRef?: string;
   };
@@ -61,40 +69,40 @@ export type To = {
  */
 export interface HttpsSchemasMesheryIoRelationshipJson {
   /**
-   * Specifies the version of the schema used for the definition.
+   * Specifies the version of the schema used for the relationship definition.
    */
   schemaVersion: string;
   /**
-   * Specifies the version of the definition.
+   * Specifies the version of the relationship definition.
    */
   version: string;
+  model: HttpsSchemasMesheryIoModelJson;
   /**
-   * Kind of the Relationship.
+   * Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
    */
-  kind: "hierarchical" | "edge" | "sibling";
+  kind: "Hierarchical" | "Edge" | "Sibling";
   /**
    * Classification of relationships. Used to group relationships similar in nature.
    */
   type: string;
   /**
-   * Used for further classification of Relationships. Type and SubType together identifies a Relationship.
+   * Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship.
    */
   subType: string;
   /**
-   * Determines the policy rule to be used for the evaluation of the relationship.
+   * Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
    */
-  evaluationQuery: string;
+  evaluationQuery?: string;
   /**
    * Metadata contains additional information associated with the Relationship.
    */
   metadata?: {
     /**
-     * Description of the Relationship.
+     * Characteristization of the meaning of the relationship and its relevance to both Meshery and entities under management.
      */
     description?: string;
     [k: string]: unknown;
   };
-  model: HttpsSchemasMesheryIoModelJson;
   /**
    * Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.
    */
@@ -110,7 +118,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
     /**
      * Selectors used to define relationships which are allowed.
      */
-    allow?: {
+    allow: {
       from: From;
       to: To;
       [k: string]: unknown;
@@ -118,7 +126,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
   }[];
 }
 /**
- * Model of the Relationship.
+ * Name of the model in which this relationship is packaged.
  */
 export interface HttpsSchemasMesheryIoModelJson {
   /**
@@ -202,7 +210,7 @@ export interface HttpsSchemasMesheryIoModelJson {
   };
 }
 /**
- * Model of the component. Learn more at https://docs.meshery.io/concepts/models
+ * Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
  */
 export interface HttpsSchemasMesheryIoModelJson1 {
   /**
@@ -286,7 +294,7 @@ export interface HttpsSchemasMesheryIoModelJson1 {
   };
 }
 /**
- * Model of the component. Learn more at https://docs.meshery.io/concepts/models
+ * Model of the implicated component. Learn more at https://docs.meshery.io/concepts/models
  */
 export interface HttpsSchemasMesheryIoModelJson2 {
   /**

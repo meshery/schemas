@@ -10,6 +10,10 @@
  */
 export interface HttpsSchemasMesheryIoComponentJson {
   /**
+   * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+   */
+  id?: string;
+  /**
    * Specifies the version of the schema to which the component definition conforms.
    */
   schemaVersion: string;
@@ -101,6 +105,9 @@ export interface HttpsSchemasMesheryIoComponentJson {
      */
     published?: boolean;
     [k: string]: unknown;
+  };
+  configuration?: {
+    [k: string]: string;
   };
   /**
    * Component and it's properties.
@@ -195,7 +202,7 @@ export interface HttpsSchemasMesheryIoModelJson {
     [k: string]: unknown;
   };
   /**
-   * Registrant-defined data associated with the model.
+   * Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
    */
   model?: {
     /**
