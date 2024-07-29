@@ -562,7 +562,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * Top-level categorization of the capability
    */
-  kind: ("action" | "mutate" | "interaction") & string;
+  kind: ("action" | "mutate" | "view" | "interaction") & string;
   /**
    * Classification of capabilities. Used to group capabilities similar in nature.
    */
