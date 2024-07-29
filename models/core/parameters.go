@@ -52,7 +52,7 @@ type OamType = string
 type Order = string
 
 // OrganizationId defines model for organizationId.
-type OrganizationId = string
+type OrgId = string
 
 // Os defines model for os.
 type Os = string
