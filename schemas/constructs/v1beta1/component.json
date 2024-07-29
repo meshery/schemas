@@ -5,18 +5,22 @@
   "additionalProperties": false,
   "type": "object",
   "properties": {
+    "id": {
+      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+      "$ref": "../core.json#/definitions/uuid"
+    },
     "schemaVersion": {
-      "$ref": "../v1alpha2/core.json#/definitions/versionString",
+      "$ref": "../core.json#/definitions/versionString",
       "description": "Specifies the version of the schema to which the component definition conforms."
     },
     "version": {
-      "$ref": "../v1alpha2/core.json#/definitions/semverString",
+      "$ref": "../core.json#/definitions/semverString",
       "description": "Version of the component definition.",
       "minLength": 1,
       "maxLength": 50
     },
     "displayName": {
-      "$ref": "../v1alpha2/core.json#/definitions/inputString",
+      "$ref": "../core.json#/definitions/inputString",
       "description": "Name of the component in human-readible format."
     },
     "description": {
@@ -25,7 +29,10 @@
     },
     "format": {
       "type": "string",
-      "enum": ["JSON", "CUE"],
+      "enum": [
+        "JSON",
+        "CUE"
+      ],
       "default": "JSON",
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
@@ -36,7 +43,12 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the component.",
-      "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
+      "required": [
+        "shape",
+        "primaryColor",
+        "svgColor",
+        "svgWhite"
+      ],
       "properties": {
         "capabilities": {
           "type": "object",
@@ -53,7 +65,32 @@
         "shape": {
           "type": "string",
           "description": "Shape of the component used for UI representation.",
-          "enum": ["ellipse","triangle","round-triangle","rectangle","round-rectangle","bottom-round-rectangle","cut-rectangle","barrel","rhomboid","diamond","round-diamond","pentagon","round-pentagon","hexagon","round-hexagon","concave-hexagon","heptagon","round-heptagon","octagon","round-octagon","star","tag","round-tag","vee"]
+          "enum": [
+            "ellipse",
+            "triangle",
+            "round-triangle",
+            "rectangle",
+            "round-rectangle",
+            "bottom-round-rectangle",
+            "cut-rectangle",
+            "barrel",
+            "rhomboid",
+            "diamond",
+            "round-diamond",
+            "pentagon",
+            "round-pentagon",
+            "hexagon",
+            "round-hexagon",
+            "concave-hexagon",
+            "heptagon",
+            "round-heptagon",
+            "octagon",
+            "round-octagon",
+            "star",
+            "tag",
+            "round-tag",
+            "vee"
+          ]
         },
         "primaryColor": {
           "type": "string",
@@ -82,6 +119,10 @@
       },
       "additionalProperties": true
     },
+    "configuration": {
+      "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
+      "type": "object"
+    },
     "component": {
       "type": "object",
       "description": "Component and it's properties.",
@@ -99,8 +140,17 @@
           "description": "JSON schema of the object as defined by the registrant."
         }
       },
-      "required": ["version", "kind", "schema"]
+      "required": [
+        "version",
+        "kind",
+        "schema"
+      ]
     }
   },
-  "required": ["schemaVersion", "version", "model", "component"]
+  "required": [
+    "schemaVersion",
+    "version",
+    "model",
+    "component"
+  ]
 }

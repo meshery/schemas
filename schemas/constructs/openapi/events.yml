@@ -15,8 +15,8 @@ servers:
 tags:
   - name: events
     description: APIs for events
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 components:
   securitySchemes:
     jwt:
@@ -33,15 +33,14 @@ components:
       description: Defines model for event_trackers
       properties:
         id:
-          description: | 
+          description: |
             UUID of the event.
           $ref: "./common/core.yml#/components/schemas/id"
-        
+
         user_id:
           $ref: "./common/core.yml#/components/schemas/user_uuid"
           description: |
             UUID of the user that initiated the event. In most cases this would be present, but not always.
-          
 
         system_id:
           description: |
@@ -49,9 +48,9 @@ components:
             the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
           $ref: "./common/core.yml#/components/schemas/system_id"
 
-        operation_id: 
+        operation_id:
           description: |
-            Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.  
+            Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.
           $ref: "./common/core.yml#/components/schemas/operation_id"
 
         category:
@@ -61,7 +60,7 @@ components:
           example: pattern
           x-oapi-codegen-extra-tags:
             db: category
-        
+
         action:
           description: |
             Action taken on the resource.
@@ -72,12 +71,9 @@ components:
 
         status:
           description: |
-           Status for the event. 
+            Status for the event.
           type: string
-          enum: [
-            "read",
-            "unread",
-          ]
+          enum: ["read", "unread"]
           x-oapi-codegen-extra-tags:
             db: status
 
@@ -99,26 +95,26 @@ components:
           x-oapi-codegen-extra-tags:
             db: description
 
-
         severity:
           description: |
             A set of seven standard event levels.
           type: string
-          enum: [
-            emergency,
-            critical,
-            alert,
-            error,
-            warning,
-            debug,
-            informational,
-            success
-          ]
+          enum:
+            [
+              emergency,
+              critical,
+              alert,
+              error,
+              warning,
+              debug,
+              informational,
+              success,
+            ]
           example: info
           x-oapi-codegen-extra-tags:
             db: severity
 
-        metadata: 
+        metadata:
           description: |
             Contains meaningful information, specific to the type of event.
             Structure of metadata can be different for different events.
@@ -135,21 +131,22 @@ components:
 
         deleted_at:
           $ref: "./common/core.yml#/components/schemas/deleted_at"
-      
-      required: [
-        "id",
-        "system_id",
-        "operation_id",
-        "category",
-        "action",
-        "status",
-        "acted_upon",
-        "description",
-        "severity",
-        "metadata",
-        "created_at",
-        "updated_at"
-      ]
+
+      required:
+        [
+          "id",
+          "system_id",
+          "operation_id",
+          "category",
+          "action",
+          "status",
+          "acted_upon",
+          "description",
+          "severity",
+          "metadata",
+          "created_at",
+          "updated_at",
+        ]
 
     events_filter:
       type: object
@@ -176,36 +173,37 @@ components:
           type: integer
         sort_on:
           type: string
-          description: 'Field on which records are sorted'
-        order: 
+          description: "Field on which records are sorted"
+        order:
           type: string
-          description: 'order of sort asc/desc, default is asc'
-      required: [ provider, category, action, severity, limit, offset, sort_on, order ]
-    
+          description: "order of sort asc/desc, default is asc"
+      required:
+        [provider, category, action, severity, limit, offset, sort_on, order]
+
     eventTrackerGrouped:
       properties:
         count:
           type: integer
         event_type:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
         dt:
-          $ref: './common/core.yml#/components/schemas/time'
+          $ref: "./common/core.yml#/components/schemas/time"
         week:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
         month:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
         year:
-          $ref: './common/core.yml#/components/schemas/text'
+          $ref: "./common/core.yml#/components/schemas/text"
 
     eventTrackerGroupedArray:
-        type: array
-        items:
-          $ref: '#/components/schemas/eventTrackerGrouped'
+      type: array
+      items:
+        $ref: "#/components/schemas/eventTrackerGrouped"
 
     eventResult:
       properties:
         event:
-          $ref: '#/components/schemas/event'
+          $ref: "#/components/schemas/event"
         events_count:
           type: integer
           x-oapi-codegen-extra-tags:
@@ -214,13 +212,13 @@ components:
 
     eventsPage:
       allOf:
-      - $ref: './common/core.yml#/components/schemas/recordsPage'
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/eventResult'
+        - $ref: "./common/core.yml#/components/schemas/recordsPage"
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/eventResult"
 
     eventSummary:
       properties:
@@ -257,32 +255,34 @@ components:
           type: string
           format: data-time
           x-go-type: time.Time
-      required: [ user_id,
-        provider,
-        email,
-        first_name,
-        last_name,
-        activity_count,
-        login_count,
-        signup_count,
-        perf_results_count,
-        smi_results_count,
-        meshery_apps_count,
-        meshery_patterns_count,
-        meshery_filters_count,
-        last_login_time
-      ]
+      required:
+        [
+          user_id,
+          provider,
+          email,
+          first_name,
+          last_name,
+          activity_count,
+          login_count,
+          signup_count,
+          perf_results_count,
+          smi_results_count,
+          meshery_apps_count,
+          meshery_patterns_count,
+          meshery_filters_count,
+          last_login_time,
+        ]
 
     eventSummaryPage:
       allOf:
-      - $ref: ./common/core.yml#/components/schemas/recordsPage
-      - type: object
-        properties:
-          data:
-            type: array
-            items:
-              $ref: '#/components/schemas/eventSummary'
-              
+        - $ref: ./common/core.yml#/components/schemas/recordsPage
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/eventSummary"
+
     eventsAggregate:
       properties:
         audit:
@@ -301,19 +301,19 @@ paths:
       summary: Get Events Aggregate
       description: Get Events Aggreate Count
       parameters:
-        - $ref: './common/parameters.yml#/components/schemas/cumulative'
+        - $ref: "./common/parameters.yml#/components/parameters/cumulative"
       responses:
-        '200':
+        "200":
           description: Events Aggregate Count
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/eventsAggregate'
-        '401':
+                $ref: "#/components/schemas/eventsAggregate"
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
 
   /api/events/date:
@@ -324,19 +324,19 @@ paths:
       summary: Events by Date
       description: Get Events by date
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/cumulative
+        - $ref: ./common/parameters.yml#/components/parameters/cumulative
       responses:
-        '200':
+        "200":
           description: Events by date
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/eventTrackerGroupedArray'
-        '401':
+                $ref: "#/components/schemas/eventTrackerGroupedArray"
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/events/week:
     get:
@@ -346,19 +346,19 @@ paths:
       summary: Events by Week
       description: Get Events by week
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/cumulative
+        - $ref: ./common/parameters.yml#/components/parameters/cumulative
       responses:
-        '200':
+        "200":
           description: Events by week
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/eventTrackerGroupedArray'
-        '401':
+                $ref: "#/components/schemas/eventTrackerGroupedArray"
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/events/month:
     get:
@@ -368,19 +368,19 @@ paths:
       summary: Events by Month
       description: Get Events by month
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/cumulative
+        - $ref: ./common/parameters.yml#/components/parameters/cumulative
       responses:
-        '200':
+        "200":
           description: Events by month
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/eventTrackerGroupedArray'
-        '401':
+                $ref: "#/components/schemas/eventTrackerGroupedArray"
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/events/list:
     get:
@@ -390,23 +390,23 @@ paths:
       summary: All Events
       description: Get All events
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
-        - $ref: ./common/parameters.yml#/components/schemas/eventsFilter
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+        - $ref: ./common/parameters.yml#/components/parameters/eventsFilter
       responses:
-        '200':
+        "200":
           description: Events list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/eventsPage'
-        '401':
+                $ref: "#/components/schemas/eventsPage"
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/events/summary:
     get:
@@ -416,20 +416,20 @@ paths:
       summary: Events Summary
       description: Get Events summary for a user
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
       responses:
-        '200':
+        "200":
           description: Events Summary
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/eventSummaryPage'
-        '401':
+                $ref: "#/components/schemas/eventSummaryPage"
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500

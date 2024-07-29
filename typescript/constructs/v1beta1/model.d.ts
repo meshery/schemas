@@ -79,7 +79,7 @@ export interface HttpsSchemasMesheryIoModelJson {
     [k: string]: unknown;
   };
   /**
-   * Registrant-defined data associated with the model.
+   * Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
    */
   model?: {
     /**

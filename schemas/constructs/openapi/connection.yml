@@ -12,11 +12,11 @@ servers:
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL (controlled via PORT environment variable)
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 tags:
-- name: integrations
-  description: APIs for integrations
+  - name: integrations
+    description: APIs for integrations
 
 components:
   schemas:
@@ -74,16 +74,17 @@ components:
           $ref: ./common/core.yml#/components/schemas/text
           description: Connection Status
           type: string
-          enum: [
-            "discovered",
-            "registered",
-            "connected",
-            "ignored",
-            "maintenance",
-            "disconnected",
-            "deleted",
-            "not found"
-          ]
+          enum:
+            [
+              "discovered",
+              "registered",
+              "connected",
+              "ignored",
+              "maintenance",
+              "disconnected",
+              "deleted",
+              "not found",
+            ]
         user_id:
           $ref: ./common/core.yml#/components/schemas/id
           x-go-name: UserID
@@ -101,7 +102,7 @@ components:
             connections:
               type: array
               items:
-                $ref: '#/components/schemas/connection'
+                $ref: "#/components/schemas/connection"
     connectionStatusInfo:
       properties:
         status:
@@ -115,11 +116,11 @@ components:
         connections_status:
           type: array
           items:
-            $ref: '#/components/schemas/connectionStatusInfo'
+            $ref: "#/components/schemas/connectionStatusInfo"
 
     # Ideally inside connection Definiton in kubernetes model.
     # Default connection state to be captured in connection definition.
-    # Capture transitions in 
+    # Capture transitions in
     k8sContext:
       properties:
         id:
@@ -149,7 +150,7 @@ components:
     k8sContextPersistResponse:
       properties:
         k8sContext:
-          $ref: '#/components/schemas/k8sContext'
+          $ref: "#/components/schemas/k8sContext"
         inserted:
           type: boolean
 
@@ -178,12 +179,12 @@ components:
       type: http
       scheme: Bearer
       bearerFormat: JWT
-# any special parameters for this tag
+  # any special parameters for this tag
   parameters:
     connectionKind:
       name: connectionKind
       in: path
-      description: 'Connection kind (eg: Meshery)'
+      description: "Connection kind (eg: Meshery)"
       required: true
       schema:
         $ref: ./common/core.yml#/components/schemas/text
@@ -201,174 +202,174 @@ components:
       schema:
         $ref: ./common/core.yml#/components/schemas/id
       required: true
-# any special response for this tag  
+# any special response for this tag
 paths:
-    /api/integrations/connections:
-      post:
-        tags:
-          - integrations
-        operationId: RegisterConnection
-        summary: Register Connection
-        description: Register with Meshery Cloud
-        requestBody:
-          $ref: '#/components/requestBodies/connectionPayload'
-        responses:
-          '200':
-            description: Inserted connection
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/connection'
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
-      get:
-        tags:
-          - integrations
-        operationId: GetConnections
-        summary: Get connections
-        description: Get connections
-        parameters:
-          - $ref: ./common/parameters.yml#/components/schemas/page
-          - $ref: ./common/parameters.yml#/components/schemas/page_size
-          - $ref: ./common/parameters.yml#/components/schemas/search
-          - $ref: ./common/parameters.yml#/components/schemas/order
-        responses:
-          '200':
-            description: Paginated list of connections
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/connectionPage'
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
-    /api/integrations/connections/{connectionId}:
-      put:
-        tags:
-          - integrations
-        operationId: EditConnectionByID
-        summary: Edit Connection by ID
-        description: Edit registered connection using the connection ID
-        parameters:
-          - $ref: '#/components/parameters/connectionId'
-        requestBody:
-          $ref: '#/components/requestBodies/connectionPayload'
-        responses:
-          '200':
-            description: Edited connection
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/connection'
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
-    /api/integrations/connections/status:
-      get:
-        tags:
-          - integrations
-        operationId: GetConnectionStatus
-        summary: Get status of all connections
-        description: Get summary about the status of all connections
-        responses:
-          '200':
-            description: Status of connections
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/connectionsStatusPage'
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
-    /api/integrations/connections/{connectionKind}:
-      get:
-        tags:
-          - integrations
-        operationId: GetConnectionsByKind
-        summary: Get connections by kind
-        description: Get connections by kind
-        parameters:
-          - $ref: '#/components/parameters/connectionKind'
-          - $ref: ./common/parameters.yml#/components/schemas/page
-          - $ref: ./common/parameters.yml#/components/schemas/page_size
-          - $ref: ./common/parameters.yml#/components/schemas/search
-          - $ref: ./common/parameters.yml#/components/schemas/order
-        responses:
-          '200':
-            description: Connections by kind
-            content:
-              application/json:
-                schema:
-                  type: object
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
-        security: []
-      delete:
-        tags:
-          - integrations
-        operationId: DeleteConnection
-        summary: Delete connection
-        description: Delete registered connection
-        parameters:
-          - $ref: '#/components/parameters/connectionKind'
-        responses:
-          '200':
-            description: Deleted connection
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/connection'
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
-    /api/integrations/connections/{connectionKind}/{connectionId}:
-      get:
-        tags:
-          - integrations
-        operationId: GetConnectionsByKindAndConnectionID
-        summary: Get connections by kind and connectionID.
-        description: Get connections by kind (kind is required because this API returns the results in non std format of a connection)
-        parameters:
-          - $ref: '#/components/parameters/connectionKind'
-          - $ref: '#/components/parameters/connectionId'
-          - $ref: './common/parameters.yml#/components/schemas/page'
-          - $ref: ./common/parameters.yml#/components/schemas/page_size
-          - $ref: './common/parameters.yml#/components/schemas/search'
-          - $ref: './common/parameters.yml#/components/schemas/order'
-        responses:
-          '200':
-            description: Connections by kind
-            content:
-              application/json:
-                schema:
-                  type: object
-                  oneOf:
-                    - $ref: '#/components/schemas/k8sContextPersistResponse'
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
-    /api/integrations/connections/meshery/{mesheryServerID}:
-      delete:
-        tags:
-          - integrations
-        operationId: DeleteMesheryConnection
-        summary: Delete Meshery connection
-        description: Deletes a given meshery connection. This is generally used for deleting connections from Meshery Server UI where UI is not aware of connection IDs.
-        parameters:
-          - $ref: '#/components/parameters/serverId'
-        responses:
-          '200':
-            $ref: ./common/responses.yml#/200
-          '401':
-            $ref: ./common/responses.yml#/401
-          '500':
-            $ref: ./common/responses.yml#/500
+  /api/integrations/connections:
+    post:
+      tags:
+        - integrations
+      operationId: RegisterConnection
+      summary: Register Connection
+      description: Register with Meshery Cloud
+      requestBody:
+        $ref: "#/components/requestBodies/connectionPayload"
+      responses:
+        "200":
+          description: Inserted connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/connection"
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
+    get:
+      tags:
+        - integrations
+      operationId: GetConnections
+      summary: Get connections
+      description: Get connections
+      parameters:
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+      responses:
+        "200":
+          description: Paginated list of connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/connectionPage"
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
+  /api/integrations/connections/{connectionId}:
+    put:
+      tags:
+        - integrations
+      operationId: EditConnectionByID
+      summary: Edit Connection by ID
+      description: Edit registered connection using the connection ID
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        $ref: "#/components/requestBodies/connectionPayload"
+      responses:
+        "200":
+          description: Edited connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/connection"
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
+  /api/integrations/connections/status:
+    get:
+      tags:
+        - integrations
+      operationId: GetConnectionStatus
+      summary: Get status of all connections
+      description: Get summary about the status of all connections
+      responses:
+        "200":
+          description: Status of connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/connectionsStatusPage"
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
+  /api/integrations/connections/{connectionKind}:
+    get:
+      tags:
+        - integrations
+      operationId: GetConnectionsByKind
+      summary: Get connections by kind
+      description: Get connections by kind
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+      responses:
+        "200":
+          description: Connections by kind
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
+      security: []
+    delete:
+      tags:
+        - integrations
+      operationId: DeleteConnection
+      summary: Delete connection
+      description: Delete registered connection
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+      responses:
+        "200":
+          description: Deleted connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/connection"
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
+  /api/integrations/connections/{connectionKind}/{connectionId}:
+    get:
+      tags:
+        - integrations
+      operationId: GetConnectionsByKindAndConnectionID
+      summary: Get connections by kind and connectionID.
+      description: Get connections by kind (kind is required because this API returns the results in non std format of a connection)
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - $ref: "#/components/parameters/connectionId"
+        - $ref: "./common/parameters.yml#/components/parameters/page"
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: "./common/parameters.yml#/components/parameters/search"
+        - $ref: "./common/parameters.yml#/components/parameters/order"
+      responses:
+        "200":
+          description: Connections by kind
+          content:
+            application/json:
+              schema:
+                type: object
+                oneOf:
+                  - $ref: "#/components/schemas/k8sContextPersistResponse"
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500
+  /api/integrations/connections/meshery/{mesheryServerID}:
+    delete:
+      tags:
+        - integrations
+      operationId: DeleteMesheryConnection
+      summary: Delete Meshery connection
+      description: Deletes a given meshery connection. This is generally used for deleting connections from Meshery Server UI where UI is not aware of connection IDs.
+      parameters:
+        - $ref: "#/components/parameters/serverId"
+      responses:
+        "200":
+          $ref: ./common/responses.yml#/200
+        "401":
+          $ref: ./common/responses.yml#/401
+        "500":
+          $ref: ./common/responses.yml#/500

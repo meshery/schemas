@@ -46,6 +46,12 @@ build-ts: generate-ts
 publish-ts: build-ts
 	npm run publish-ts-lib
 
+
+resolve-ref: setup
+	node scripts/ref-resolver.js 
+
+setup:
+	npm install
 #-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------
