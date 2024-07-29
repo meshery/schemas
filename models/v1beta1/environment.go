@@ -4,6 +4,7 @@
 package v1beta1
 
 import (
+	"github.com/gofrs/uuid"
 	externalRef2 "github.com/meshery/schemas/models/core"
 )
 
@@ -19,6 +20,18 @@ type Environment struct {
 	OrganizationId externalRef2.OrganizationId `db:"org_id" json:"org_id"`
 	Owner          externalRef2.Text           `json:"owner,omitempty"`
 	UpdatedAt      externalRef2.Time           `json:"updated_at,omitempty"`
+}
+
+// EnvironmentConnectionMapping defines model for environmentConnectionMapping.
+type EnvironmentConnectionMapping struct {
+	ID           externalRef2.EnvironmentId `db:"id" json:"id"`
+	ConnectionId uuid.UUID                  `db:"connection_id" json:"connection_id"`
+	CreatedAt    externalRef2.Time          `json:"created_at,omitempty"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt     externalRef2.NullTime `json:"deleted_at,omitempty"`
+	EnvironmentId uuid.UUID             `db:"environment_id" json:"environment_id"`
+	UpdatedAt     externalRef2.Time     `json:"updated_at,omitempty"`
 }
 
 // EnvironmentPage defines model for environmentPage.
