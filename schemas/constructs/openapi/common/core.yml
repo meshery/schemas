@@ -35,6 +35,10 @@ components:
     text:
       type: string
       x-go-type-skip-optional-pointer: true
+
+    number: 
+      type: integer
+      x-go-type-skip-optional-pointer: true
       
     avatar_url:
       type: string
@@ -160,7 +164,31 @@ components:
         json: user_id
       x-go-name: UserID
       x-go-type-skip-optional-pointer: true
-      
+
+    organization_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: org_id
+        json: org_id
+      x-go-type-name: OrganizationId
+      x-go-type-skip-optional-pointer: true
+
+    environment_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: id
+        json: id
+      x-go-type-name: EnvironmentId
+      x-go-type-skip-optional-pointer: true
+
     credential_uuid: 
       type: string
       format: uuid
