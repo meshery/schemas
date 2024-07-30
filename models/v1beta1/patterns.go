@@ -43,7 +43,7 @@ type PatternFile struct {
 	Id externalRef1.Id  `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Components List of component declarations
-	Components []ComponentDefinition `json:"components" yaml:"components"`
+	Components []*ComponentDefinition `json:"components" yaml:"components"`
 
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
@@ -55,7 +55,7 @@ type PatternFile struct {
 	} `json:"preferences,omitempty"`
 
 	// Relationships List of relationships between components
-	Relationships []v1alpha3.RelationshipDefinition `json:"relationships" yaml:"relationships"`
+	Relationships []*v1alpha3.RelationshipDefinition `json:"relationships" yaml:"relationships"`
 
 	// SchemaVersion Specifies the version of the schema to which the design conforms.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`

@@ -20,7 +20,7 @@ func (p *PatternFile) ConvertTo(pattern models.Hub) error {
 	}
 
 	patternFile.Name = p.Name
-	patternFile.PatternID = p.Id
+	patternFile.PatternID = p.Id.String()
 	patternFile.Version = p.Version
 
 	for _, component := range p.Components {
@@ -28,18 +28,18 @@ func (p *PatternFile) ConvertTo(pattern models.Hub) error {
 
 		service.ApiVersion = component.Component.Version
 		service.Type = component.Kind
-		service.Id = component.Id
+		service.Id = &component.Id
 		service.IsAnnotation = component.Metadata.IsAnnotation
 		service.Model = component.Model.Name
 		service.Version = component.Version
 		service.Name = component.DisplayName
 
-		err := p.convertToSettings(&service, &component)
+		err := p.convertToSettings(&service, component)
 		if err != nil {
 			return err
 		}
 
-		err = p.convertToTraits(&service, &component)
+		err = p.convertToTraits(&service, component)
 		if err != nil {
 			return err
 		}
@@ -58,7 +58,7 @@ func (p *PatternFile) ConvertFrom(pattern models.Hub) error {
 		return err
 	}
 
-	p.Id = patternFile.PatternID
+	p.Id = uuid.FromStringOrNil(patternFile.PatternID)
 	p.Name = patternFile.Name
 	p.SchemaVersion = "design.meshery.io/v1beta1"
 	p.Version = patternFile.Version
@@ -93,7 +93,7 @@ func (p *PatternFile) ConvertFrom(pattern models.Hub) error {
 			return err
 		}
 
-		p.Components = append(p.Components, component)
+		p.Components = append(p.Components, &component)
 	}
 	return nil
 
@@ -115,7 +115,7 @@ func (p *PatternFile) convertFromTraits(component *ComponentDefinition, service 
 	if err != nil {
 		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type %s, to uuid.", compNodeID, component.DisplayName, component.Kind)
 	}
-	component.Id = &compNodeUUID
+	component.Id = compNodeUUID
 
 	// Handle model: traits.meshmap.meshmodel-data
 

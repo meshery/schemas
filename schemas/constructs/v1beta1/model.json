@@ -70,17 +70,36 @@
       }
     },
     "registrant": {
-      "type": "object",
       "x-oapi-codegen-extra-tags": {
         "yaml": "registrant",
         "json": "registrant"
-      }
+      },
+      "$ref": "./connection.json"
     },
     "category": {
-      "type": "string",
+      "type": "object",
       "description": "Category of the model.",
-      "minLength": 1,
-      "maxLength": 100,
+      "properties": {
+        "id": {
+          "$ref": "../core.json#/definitions/uuid"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "name",
+            "json": "name"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "metadata",
+            "json": "metadata"
+          }
+        }
+      },
       "x-oapi-codegen-extra-tags": {
         "yaml": "category",
         "json": "category"

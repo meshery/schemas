@@ -1,0 +1,107 @@
+{
+  "$id": "https://schemas.meshery.io/component.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../core.json#/definitions/uuid",
+      "description": "ID"
+    },
+    "name": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "name",
+        "yaml": "name"
+      },
+      "type": "string",
+      "description": "Connection Name"
+    },
+    "credential_id": {
+      "x-go-name": "CredentialId",
+      "x-oapi-codegen-extra-tags": {
+        "db": "credential_id",
+        "yaml": "credential_id"
+      },
+      "$ref": "../core.json#/definitions/uuid",
+      "description": "Credential ID"
+    },
+    "type": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "type",
+        "yaml": "type"
+      },
+      "type": "string",
+      "description": "Connection Type"
+    },
+    "sub_type": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "sub_type",
+        "yaml": "sub_type"
+      },
+      "type": "string",
+      "description": "Connection Subtype"
+    },
+    "kind": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "kind",
+        "yaml": "kind"
+      },
+      "type": "string",
+      "description": "Connection Kind"
+    },
+    "metadata": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "metadata",
+        "yaml": "metadata"
+      },
+      "type": "object"
+    },
+    "status": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "status",
+        "yaml": "status"
+      },
+      "description": "Connection Status",
+      "type": "string",
+      "enum": [
+        "discovered",
+        "registered",
+        "connected",
+        "ignored",
+        "maintenance",
+        "disconnected",
+        "deleted",
+        "not found"
+      ]
+    },
+    "user_id": {
+      "x-go-name": "UserID",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "user_id",
+        "json": "user_id"
+      },
+      "$ref": "../core.json#/definitions/uuid"
+    },
+    "created_at": {
+      "$ref": "../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "created_at",
+        "json": "created_at"
+      }
+    },
+    "updated_at": {
+      "$ref": "../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "updated_at",
+        "json": "updated_at"
+      }
+    },
+    "deleted_at": {
+      "$ref": "../core.json#/definitions/time","x-oapi-codegen-extra-tags": {
+        "yaml": "deleted_at",
+        "json": "deleted_at"
+      }
+    }
+  }
+}

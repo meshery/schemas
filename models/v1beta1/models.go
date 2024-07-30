@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/v1alpha3"
 )
 
 // Defines values for ComponentDefinitionFormat.
@@ -85,13 +86,15 @@ type ComponentDefinition struct {
 	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
 
 	// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-	Id *uuid.UUID `json:"id" yaml:"id"`
+	Id uuid.UUID `json:"id" yaml:"id"`
 
 	// Metadata Metadata contains additional information associated with the component.
-	Metadata *ComponentDefinition_Metadata `json:"metadata,omitempty"`
+	Metadata ComponentDefinition_Metadata `json:"metadata,omitempty"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 	Model ModelDefinition `json:"model"`
+
+	ModelId uuid.UUID `json:"-" gorm:"index:idx_component_definition_dbs_model_id,column:model_id"`
 
 	// SchemaVersion Specifies the version of the schema to which the component definition conforms.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
@@ -112,16 +115,16 @@ type ComponentDefinition_Metadata struct {
 	Capabilities *map[string]interface{} `json:"capabilities" yaml:"capabilities"`
 
 	// Genealogy Genealogy represents the various representational states of the component.
-	Genealogy *string `json:"genealogy" yaml:"genealogy"`
+	Genealogy string `json:"genealogy" yaml:"genealogy"`
 
 	// IsAnnotation Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.
-	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
+	IsAnnotation bool `json:"isAnnotation" yaml:"isAnnotation"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
 	PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
 
 	// Published 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
-	Published *bool `json:"published" yaml:"published"`
+	Published bool `json:"published" yaml:"published"`
 
 	// SecondaryColor Secondary color of the component used for UI representation.
 	SecondaryColor *string `json:"secondaryColor" yaml:"secondaryColor"`
@@ -133,7 +136,7 @@ type ComponentDefinition_Metadata struct {
 	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete Complete SVG of the component used for UI representation, often inclusive of background.
-	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite White SVG of the component used for UI representation on dark background.
 	SvgWhite             string                 `json:"svgWhite" yaml:"svgWhite"`
@@ -154,46 +157,55 @@ type Model struct {
 
 // ModelDefinition Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
 type ModelDefinition struct {
+	Id uuid.UUID `json:"id" yaml:"id"`
 	// Category Category of the model.
-	Category string `json:"category" yaml:"category"`
+	Category CategoryDefinition `json:"category" yaml:"category"`
+
+	CategoryId uuid.UUID `json:"-" gorm:"categoryID"`
 
 	// Description Description of the model.
-	Description *string `json:"description" yaml:"description"`
+	Description string `json:"description" yaml:"description"`
 
 	// DisplayName Human-readable name for the model.
-	DisplayName *string `json:"displayName" yaml:"displayName"`
+	DisplayName string `json:"displayName" yaml:"displayName"`
 
 	// Metadata Metadata containing additional information associated with the model.
-	Metadata *ModelDefinition_Metadata `json:"metadata,omitempty"`
+	Metadata ModelDefinition_Metadata `json:"metadata,omitempty"`
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
-	Model *Model `json:"model,omitempty" yaml:"model"`
+	Model Model `json:"model,omitempty" yaml:"model"`
 
 	// Name The unique name for the model within the scope of a registrant.
-	Name       string                 `json:"name" yaml:"name"`
-	Registrant map[string]interface{} `json:"registrant" yaml:"registrant"`
+	Name string `json:"name" yaml:"name"`
+
+	Registrant Connection `json:"registrant" yaml:"registrant"`
+
+	RegistrantId uuid.UUID `json:"hostID" gorm:"column:host_id"`
 
 	// SchemaVersion Specifies the version of the schema used for the definition.
-	SchemaVersion *string `json:"schemaVersion" yaml:"schemaVersion"`
+	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Status Status of model, including:
 	// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
 	// - maintenance: model is unavailable for a period of time.
 	// - enabled: model is available for use for all users of this Meshery Server.
 	// - ignored: model is unavailable for use for all users of this Meshery Server.
-	Status *ModelDefinitionStatus `json:"status" yaml:"status"`
+	Status ModelDefinitionStatus `json:"status" yaml:"status"`
 
 	// SubCategory Sub-category of the model.
-	SubCategory *string `json:"subCategory" yaml:"subCategory"`
+	SubCategory string `json:"subCategory" yaml:"subCategory"`
 
 	// Version Version of the model definition.
 	Version string `json:"version" yaml:"version"`
+
+	Components    []ComponentDefinition             `json:"components" gorm:"-"`
+	Relationships []v1alpha3.RelationshipDefinition `json:"relationships" gorm:"-"`
 }
 
 // ModelDefinition_Metadata Metadata containing additional information associated with the model.
 type ModelDefinition_Metadata struct {
 	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
-	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
+	IsAnnotation bool `json:"isAnnotation" yaml:"isAnnotation"`
 
 	// PrimaryColor Primary color associated with the model.
 	PrimaryColor *string `json:"primaryColor" yaml:"primaryColor"`
@@ -202,13 +214,13 @@ type ModelDefinition_Metadata struct {
 	SecondaryColor *string `json:"secondaryColor" yaml:"secondaryColor"`
 
 	// SvgColor SVG representation of the model in colored format.
-	SvgColor *string `json:"svgColor" yaml:"svgColor"`
+	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete SVG representation of the complete model.
-	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite SVG representation of the model in white color.
-	SvgWhite             *string                `json:"svgWhite" yaml:"svgWhite"`
+	SvgWhite             string                 `json:"svgWhite" yaml:"svgWhite"`
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
@@ -350,18 +362,14 @@ func (a ComponentDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	if a.Genealogy != nil {
-		object["genealogy"], err = json.Marshal(a.Genealogy)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'genealogy': %w", err)
-		}
+	object["genealogy"], err = json.Marshal(a.Genealogy)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'genealogy': %w", err)
 	}
 
-	if a.IsAnnotation != nil {
-		object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
-		}
+	object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
 	}
 
 	object["primaryColor"], err = json.Marshal(a.PrimaryColor)
@@ -369,11 +377,9 @@ func (a ComponentDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'primaryColor': %w", err)
 	}
 
-	if a.Published != nil {
-		object["published"], err = json.Marshal(a.Published)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'published': %w", err)
-		}
+	object["published"], err = json.Marshal(a.Published)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'published': %w", err)
 	}
 
 	if a.SecondaryColor != nil {
@@ -393,11 +399,9 @@ func (a ComponentDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
+	object["svgComplete"], err = json.Marshal(a.SvgComplete)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
 	}
 
 	object["svgWhite"], err = json.Marshal(a.SvgWhite)
@@ -506,11 +510,9 @@ func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
-	if a.IsAnnotation != nil {
-		object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
-		}
+	object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
 	}
 
 	if a.PrimaryColor != nil {
@@ -527,25 +529,19 @@ func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	if a.SvgColor != nil {
-		object["svgColor"], err = json.Marshal(a.SvgColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
-		}
+	object["svgColor"], err = json.Marshal(a.SvgColor)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
+	object["svgComplete"], err = json.Marshal(a.SvgComplete)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
 	}
-
-	if a.SvgWhite != nil {
-		object["svgWhite"], err = json.Marshal(a.SvgWhite)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgWhite': %w", err)
-		}
+	
+	object["svgWhite"], err = json.Marshal(a.SvgWhite)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgWhite': %w", err)
 	}
 
 	for fieldName, field := range a.AdditionalProperties {
