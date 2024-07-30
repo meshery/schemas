@@ -4,10 +4,8 @@
 package v1alpha3
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/v1beta1/model"
 )
 
 // Defines values for RelationshipDefinitionKind.
@@ -15,13 +13,6 @@ const (
 	Edge         RelationshipDefinitionKind = "Edge"
 	Hierarchical RelationshipDefinitionKind = "Hierarchical"
 	Sibling      RelationshipDefinitionKind = "Sibling"
-)
-
-// Defines values for RelationshipDefinitionModelStatus.
-const (
-	RelationshipDefinitionModelStatusDuplicate RelationshipDefinitionModelStatus = "duplicate"
-	RelationshipDefinitionModelStatusEnabled   RelationshipDefinitionModelStatus = "enabled"
-	RelationshipDefinitionModelStatusIgnored   RelationshipDefinitionModelStatus = "ignored"
 )
 
 // Defines values for RelationshipDefinitionSelectorsAllowFromModelStatus.
@@ -72,46 +63,6 @@ const (
 	RelationshipDefinitionSelectorsDenyToPatchPatchStrategyReplace RelationshipDefinitionSelectorsDenyToPatchPatchStrategy = "replace"
 )
 
-type ModelDefinition struct {
-	// Category Category of the model.
-	Category string `json:"category" yaml:"category"`
-
-	// Description Description of the model.
-	Description *string `json:"description" yaml:"description"`
-
-	// DisplayName Human-readable name for the model.
-	DisplayName *string `json:"displayName" yaml:"displayName"`
-
-	// Metadata Metadata containing additional information associated with the model.
-	Metadata *RelationshipDefinition_Model_Metadata `json:"metadata,omitempty"`
-
-	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
-	Model *struct {
-		// Version Version of the model as defined by the registrant.
-		Version string `json:"version" yaml:"version"`
-	} `json:"model,omitempty"`
-
-	// Name The unique name for the model within the scope of a registrant.
-	Name       string                 `json:"name" yaml:"name"`
-	Registrant map[string]interface{} `json:"registrant" yaml:"registrant"`
-
-	// SchemaVersion Specifies the version of the schema used for the definition.
-	SchemaVersion *string `json:"schemaVersion" yaml:"schemaVersion"`
-
-	// Status Status of model, including:
-	// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-	// - maintenance: model is unavailable for a period of time.
-	// - enabled: model is available for use for all users of this Meshery Server.
-	// - ignored: model is unavailable for use for all users of this Meshery Server.
-	Status *RelationshipDefinitionModelStatus `json:"status" yaml:"status"`
-
-	// SubCategory Sub-category of the model.
-	SubCategory *string `json:"subCategory" yaml:"subCategory"`
-
-	// Version Version of the model definition.
-	Version string `json:"version" yaml:"version"`
-}
-
 type MatchDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
 	Id *uuid.UUID `json:"id" yaml:"id"`
@@ -136,8 +87,8 @@ type RelationshipConfiguration struct {
 	Match *MatchDefinition `json:"match,omitempty" yaml:"match"`
 
 	// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
-	Model ModelDefinition  `json:"model,omitempty" yaml:"model"`
-	Patch *PatchDefinition `json:"patch,omitempty" yaml:"patch"`
+	Model model.ModelDefinition `json:"model,omitempty" yaml:"model"`
+	Patch *PatchDefinition       `json:"patch,omitempty" yaml:"patch"`
 }
 
 type Configuration struct {
@@ -168,7 +119,7 @@ type RelationshipDefinition struct {
 	} `json:"metadata,omitempty"`
 
 	// Model Name of the model in which this relationship is packaged.
-	Model ModelDefinition `json:"model"`
+	Model model.ModelDefinition `json:"model"`
 
 	// SchemaVersion Specifies the version of the schema used for the relationship definition.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
@@ -188,35 +139,6 @@ type RelationshipDefinition struct {
 
 // RelationshipDefinitionKind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
 type RelationshipDefinitionKind string
-
-// RelationshipDefinition_Model_Metadata Metadata containing additional information associated with the model.
-type RelationshipDefinition_Model_Metadata struct {
-	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
-	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
-
-	// PrimaryColor Primary color associated with the model.
-	PrimaryColor *string `json:"primaryColor" yaml:"primaryColor"`
-
-	// SecondaryColor Secondary color associated with the model.
-	SecondaryColor *string `json:"secondaryColor" yaml:"secondaryColor"`
-
-	// SvgColor SVG representation of the model in colored format.
-	SvgColor *string `json:"svgColor" yaml:"svgColor"`
-
-	// SvgComplete SVG representation of the complete model.
-	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
-
-	// SvgWhite SVG representation of the model in white color.
-	SvgWhite             *string                `json:"svgWhite" yaml:"svgWhite"`
-	AdditionalProperties map[string]interface{} `json:"-"`
-}
-
-// RelationshipDefinitionModelStatus Status of model, including:
-// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-// - maintenance: model is unavailable for a period of time.
-// - enabled: model is available for use for all users of this Meshery Server.
-// - ignored: model is unavailable for use for all users of this Meshery Server.
-type RelationshipDefinitionModelStatus string
 
 // RelationshipDefinitionSelectorsAllowFromModelStatus Status of model, including:
 // - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -257,146 +179,3 @@ type RelationshipDefinitionSelectorsDenyToModelStatus string
 
 // RelationshipDefinitionSelectorsDenyToPatchPatchStrategy defines model for RelationshipDefinition.Selectors.Deny.To.Patch.PatchStrategy.
 type RelationshipDefinitionSelectorsDenyToPatchPatchStrategy string
-
-// Getter for additional properties for RelationshipDefinition_Model_Metadata. Returns the specified
-// element and whether it was found
-func (a RelationshipDefinition_Model_Metadata) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for RelationshipDefinition_Model_Metadata
-func (a *RelationshipDefinition_Model_Metadata) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for RelationshipDefinition_Model_Metadata to handle AdditionalProperties
-func (a *RelationshipDefinition_Model_Metadata) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["isAnnotation"]; found {
-		err = json.Unmarshal(raw, &a.IsAnnotation)
-		if err != nil {
-			return fmt.Errorf("error reading 'isAnnotation': %w", err)
-		}
-		delete(object, "isAnnotation")
-	}
-
-	if raw, found := object["primaryColor"]; found {
-		err = json.Unmarshal(raw, &a.PrimaryColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'primaryColor': %w", err)
-		}
-		delete(object, "primaryColor")
-	}
-
-	if raw, found := object["secondaryColor"]; found {
-		err = json.Unmarshal(raw, &a.SecondaryColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'secondaryColor': %w", err)
-		}
-		delete(object, "secondaryColor")
-	}
-
-	if raw, found := object["svgColor"]; found {
-		err = json.Unmarshal(raw, &a.SvgColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgColor': %w", err)
-		}
-		delete(object, "svgColor")
-	}
-
-	if raw, found := object["svgComplete"]; found {
-		err = json.Unmarshal(raw, &a.SvgComplete)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgComplete': %w", err)
-		}
-		delete(object, "svgComplete")
-	}
-
-	if raw, found := object["svgWhite"]; found {
-		err = json.Unmarshal(raw, &a.SvgWhite)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgWhite': %w", err)
-		}
-		delete(object, "svgWhite")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for RelationshipDefinition_Model_Metadata to handle AdditionalProperties
-func (a RelationshipDefinition_Model_Metadata) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.IsAnnotation != nil {
-		object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
-		}
-	}
-
-	if a.PrimaryColor != nil {
-		object["primaryColor"], err = json.Marshal(a.PrimaryColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'primaryColor': %w", err)
-		}
-	}
-
-	if a.SecondaryColor != nil {
-		object["secondaryColor"], err = json.Marshal(a.SecondaryColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'secondaryColor': %w", err)
-		}
-	}
-
-	if a.SvgColor != nil {
-		object["svgColor"], err = json.Marshal(a.SvgColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
-		}
-	}
-
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
-	}
-
-	if a.SvgWhite != nil {
-		object["svgWhite"], err = json.Marshal(a.SvgWhite)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgWhite': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}

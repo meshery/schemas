@@ -1,19 +1,20 @@
-package v1beta1
+package pattern
 
 import (
 	"fmt"
 
 	"github.com/gofrs/uuid"
 	"github.com/layer5io/meshkit/utils"
-	models "github.com/meshery/schemas/models/conversion"
+	"github.com/meshery/schemas/models/conversion"
 	"github.com/meshery/schemas/models/v1alpha2"
+	_model "github.com/meshery/schemas/models/v1beta1/model"
 	"github.com/pkg/errors"
 )
 
 // The pattern file indicated by "p", is converted to the version pointed by "pattern", the version of the patternFile which implements the Hub interface indicates the version the conversion will happen.
 // Only one version of the resource (patternfile in this case) should implement the Hub interface.
 // "pattern" parameter acts as the destination and "p" the source.
-func (p *PatternFile) ConvertTo(pattern models.Hub) error {
+func (p *PatternFile) ConvertTo(pattern conversion.Hub) error {
 	patternFile, err := utils.Cast[*v1alpha2.PatternFile](pattern)
 	if err != nil {
 		return err
@@ -27,7 +28,7 @@ func (p *PatternFile) ConvertTo(pattern models.Hub) error {
 		service := v1alpha2.Service{}
 
 		service.ApiVersion = component.Component.Version
-		service.Type = component.Kind
+		service.Type = component.Component.Kind
 		service.Id = &component.Id
 		service.IsAnnotation = component.Metadata.IsAnnotation
 		service.Model = component.Model.Name
@@ -43,7 +44,7 @@ func (p *PatternFile) ConvertTo(pattern models.Hub) error {
 		if err != nil {
 			return err
 		}
-		
+
 		patternFile.Services[service.Id.String()] = &service
 	}
 
@@ -52,7 +53,7 @@ func (p *PatternFile) ConvertTo(pattern models.Hub) error {
 
 // The pattern file indicated by "pattern" is converted to the version to which *PatternFile belongs or simply the package version of the .go file.
 // "pattern" parameter acts as the source and the "p" the destination.
-func (p *PatternFile) ConvertFrom(pattern models.Hub) error {
+func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 	patternFile, err := utils.Cast[*v1alpha2.PatternFile](pattern)
 	if err != nil {
 		return err
@@ -71,15 +72,15 @@ func (p *PatternFile) ConvertFrom(pattern models.Hub) error {
 		if compDefVersion == "" {
 			compDefVersion = "v1.0.0"
 		}
-		component := ComponentDefinition{
+		component := _model.ComponentDefinition{
 			Version:     compDefVersion,
 			DisplayName: service.Name,
-			Component: Component{
+			Component: _model.Component{
 				Kind:    service.Type,
 				Version: service.ApiVersion,
 			},
 			Configuration: service.Settings,
-			Model: ModelDefinition{
+			Model: _model.ModelDefinition{
 				Name: service.Model,
 			},
 		}
@@ -99,7 +100,7 @@ func (p *PatternFile) ConvertFrom(pattern models.Hub) error {
 
 }
 
-func (p *PatternFile) convertFromTraits(component *ComponentDefinition, service *v1alpha2.Service) error {
+func (p *PatternFile) convertFromTraits(component *_model.ComponentDefinition, service *v1alpha2.Service) error {
 	extensionsMetadata, err := utils.Cast[map[string]interface{}](service.Traits["meshmap"])
 	if err != nil {
 		return errors.Wrapf(err, "failed to extract meshmap traits for the design file")
@@ -108,30 +109,30 @@ func (p *PatternFile) convertFromTraits(component *ComponentDefinition, service 
 	// Handle node id: traits.meshmap.id
 	compNodeID, err := utils.Cast[string](extensionsMetadata["id"])
 	if err != nil {
-		return errors.Wrapf(err, "failed to extract node id for the component \"%s\" of type %s", component.DisplayName, component.Kind)
+		return errors.Wrapf(err, "failed to extract node id for the component \"%s\" of type %s", component.DisplayName, component.Component.Kind)
 	}
 
 	compNodeUUID, err := uuid.FromString(compNodeID)
 	if err != nil {
-		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type %s, to uuid.", compNodeID, component.DisplayName, component.Kind)
+		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type %s, to uuid.", compNodeID, component.DisplayName, component.Component.Kind)
 	}
 	component.Id = compNodeUUID
 
 	// Handle model: traits.meshmap.meshmodel-data
 
-	model, err := utils.MarshalAndUnmarshal[interface{}, ModelDefinition](extensionsMetadata["meshmodel-data"])
+	model, err := utils.MarshalAndUnmarshal[interface{}, _model.ModelDefinition](extensionsMetadata["meshmodel-data"])
 	if err != nil {
 		return errors.Wrapf(err, "unable to extract model data for \"%s\" from the design file", component.DisplayName)
 	}
 	component.Model = model
 
 	// Handle component metadata: traits.meshmap.meshmodel-metadata
-	_compMetadata, err := utils.MarshalAndUnmarshal[interface{}, ComponentDefinition_Metadata](extensionsMetadata["meshmodel-metadata"])
+	_compMetadata, err := utils.MarshalAndUnmarshal[interface{}, _model.ComponentDefinition_Metadata](extensionsMetadata["meshmodel-metadata"])
 	if err != nil {
 		return errors.Wrapf(err, "unable to extract component metadata for \"%s\" from the design file", component.DisplayName)
 	}
 
-	component.Metadata = &_compMetadata
+	component.Metadata = _compMetadata
 
 	// Handle position properties: traits.meshmap.position
 	component.Metadata.AdditionalProperties["position"] = extensionsMetadata["position"]
@@ -167,7 +168,7 @@ func (p *PatternFile) convertFromTraits(component *ComponentDefinition, service 
 	return nil
 }
 
-func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *ComponentDefinition) error {
+func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *_model.ComponentDefinition) error {
 	extensionsMetadata := make(map[string]interface{}, 0)
 	extensionsMetadata["meshmap"] = map[string]interface{}{
 		"id":                 component.Id,
@@ -190,7 +191,7 @@ func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *Comp
 	return nil
 }
 
-func (p *PatternFile) convertFromSettings(component *ComponentDefinition, service *v1alpha2.Service) error {
+func (p *PatternFile) convertFromSettings(component *_model.ComponentDefinition, service *v1alpha2.Service) error {
 	if component.Configuration == nil {
 		component.Configuration = make(map[string]interface{}, 0)
 	}
@@ -224,7 +225,7 @@ func (p *PatternFile) convertFromSettings(component *ComponentDefinition, servic
 	return nil
 }
 
-func (p *PatternFile) convertToSettings(service *v1alpha2.Service, component *ComponentDefinition) error {
+func (p *PatternFile) convertToSettings(service *v1alpha2.Service, component *_model.ComponentDefinition) error {
 	configurationMetadata := component.Configuration["metadata"]
 
 	_configurationMetadata, err := utils.Cast[map[string]interface{}](configurationMetadata)
