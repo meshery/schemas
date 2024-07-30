@@ -92,7 +92,7 @@
         },
         "opacity": {
           "type": "number",
-          "description": "The opacity of the element. See https://js.cytoscape.org/#style/visibility",
+          "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
           "minimum": 0,
           "maximum": 1
         },
@@ -138,9 +138,9 @@
       ]
     },
 
-    "relationshipStyles": {
+    "edgeStyles": {
       "type": "object",
-      "description": "Visualisation styles for a relationship",
+      "description": "Visualization styles for a relationship",
       "allOf": [
         {
           "$ref": "#/definitions/styles"
@@ -252,7 +252,7 @@
 
     "componentStyles": {
       "type": "object",
-      "description": "Visualisation styles for a component",
+      "description": "Visualization styles for a component",
       "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
       "allOf": [
         {
@@ -430,6 +430,19 @@
           "maximum": 1
         }
       }
+    },
+
+    "relationshipStyles": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/edgeStyles"
+        },
+        {
+          "additionalProperties": true,
+          "$comment": "Extension point for additional styles",
+          "$ref": "#/definitions/styles"
+        }
+      ]
     }
   }
 }

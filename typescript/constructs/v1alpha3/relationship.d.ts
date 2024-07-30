@@ -10,9 +10,9 @@
  */
 export type InputString = ("declaration" | "instance")[];
 /**
- * Visualisation styles for a relationship
+ * Visualization styles for a relationship
  */
-export type RelationshipStyles = Styles & {
+export type EdgeStyles = Styles & {
   /**
    * The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .
    */
@@ -199,7 +199,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
      * Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.
      */
     description?: string;
-    styles?: RelationshipStyles;
+    styles?: EdgeStyles | Styles1;
     [k: string]: unknown;
   };
   /**
@@ -364,6 +364,71 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
  * Common styles for all entities
  */
 export interface Styles {
+  /**
+   * Primary color of the component used for UI representation.
+   */
+  primaryColor: string;
+  /**
+   * Secondary color of the entity used for UI representation.
+   */
+  secondaryColor?: string;
+  /**
+   * White SVG of the entity used for UI representation on dark background.
+   */
+  svgWhite: string;
+  /**
+   * Colored SVG of the entity used for UI representation on light background.
+   */
+  svgColor: string;
+  /**
+   * Complete SVG of the entity used for UI representation, often inclusive of background.
+   */
+  svgComplete?: string;
+  /**
+   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  color?: string;
+  /**
+   * The opacity of the label text, including its outline.
+   */
+  "text-opacity"?: number;
+  /**
+   * A comma-separated list of font names to use on the label text.
+   */
+  "font-family"?: string;
+  /**
+   * The size of the label text.
+   */
+  "font-size"?: string;
+  /**
+   * A CSS font style to be applied to the label text.
+   */
+  "font-style"?: string;
+  /**
+   * A CSS font weight to be applied to the label text.
+   */
+  "font-weight"?: string;
+  /**
+   * A transformation to apply to the label text
+   */
+  "text-transform"?: "none" | "uppercase" | "lowercase";
+  /**
+   * The opacity of the element. See https://js.cytoscape.org/#style/visibility
+   */
+  opacity?: number;
+  /**
+   * An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
+   */
+  "z-index"?: number;
+  /**
+   * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
+   */
+  label?: string;
+}
+/**
+ * Common styles for all entities
+ */
+export interface Styles1 {
   /**
    * Primary color of the component used for UI representation.
    */

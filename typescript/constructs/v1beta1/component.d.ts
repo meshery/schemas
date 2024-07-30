@@ -10,7 +10,7 @@
  */
 export type InputString = ("declaration" | "instance")[];
 /**
- * Visualisation styles for a component
+ * Visualization styles for a component
  */
 export type ComponentStyles = Styles & {
   /**
@@ -220,6 +220,14 @@ export interface HttpsSchemasMesheryIoComponentJson {
    * Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
    */
   capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+  /**
+   * Status of component, including:
+   * - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+   * - maintenance: model is unavailable for a period of time.
+   * - enabled: model is available for use for all users of this Meshery Server.
+   * - ignored: model is unavailable for use for all users of this Meshery Server.
+   */
+  status?: "ignored" | "enabled" | "duplicate";
   /**
    * Metadata contains additional information associated with the component.
    */
