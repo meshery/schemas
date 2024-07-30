@@ -177,7 +177,7 @@ components:
       x-go-type-name: OrganizationId
       x-go-type-skip-optional-pointer: true
 
-    environment_id:
+    general_id:
       type: string
       format: uuid
       x-go-type: uuid.UUID
@@ -186,7 +186,31 @@ components:
       x-oapi-codegen-extra-tags:
         db: id
         json: id
+      x-go-type-name: GeneralId
+      x-go-type-skip-optional-pointer: true
+
+    environment_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: environment_id
+        json: environment_id
       x-go-type-name: EnvironmentId
+      x-go-type-skip-optional-pointer: true
+
+    workspace_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: workspace_id
+        json: workspace_id
+      x-go-type-name: WorkspaceId
       x-go-type-skip-optional-pointer: true
 
     credential_uuid: 
