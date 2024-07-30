@@ -6,6 +6,11 @@
  */
 
 /**
+ * State of the entity in which the capability is applicable.
+ */
+export type InputString = ("declaration" | "instance")[];
+
+/**
  * Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
  */
 export interface HttpsSchemasMesheryIoModelJson {
@@ -53,6 +58,10 @@ export interface HttpsSchemasMesheryIoModelJson {
    */
   metadata?: {
     /**
+     * Capabilities associated with the model
+     */
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+    /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
     isAnnotation?: boolean;
@@ -86,6 +95,54 @@ export interface HttpsSchemasMesheryIoModelJson {
      * Version of the model as defined by the registrant.
      */
     version: string;
+    [k: string]: unknown;
+  };
+}
+/**
+ * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
+ */
+export interface HttpsSchemasMesheryIoCapabilityJson {
+  /**
+   * Specifies the version of the schema to which the capability definition conforms.
+   */
+  schemaVersion: string;
+  /**
+   * Version of the capability definition.
+   */
+  version: string;
+  /**
+   * Name of the capability in human-readible format.
+   */
+  displayName: string;
+  /**
+   * A written representation of the purpose and characteristics of the capability.
+   */
+  description?: string;
+  /**
+   * Top-level categorization of the capability
+   */
+  kind: ("action" | "mutate" | "view" | "interaction") & string;
+  /**
+   * Classification of capabilities. Used to group capabilities similar in nature.
+   */
+  type: string;
+  /**
+   * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
+   */
+  subType?: string;
+  /**
+   * Key that backs the capability.
+   */
+  key?: string;
+  entityState?: InputString;
+  /**
+   * Status of the capability
+   */
+  status: "enabled" | "disabled";
+  /**
+   * Metadata contains additional information associated with the capability. Extension point.
+   */
+  metadata?: {
     [k: string]: unknown;
   };
 }

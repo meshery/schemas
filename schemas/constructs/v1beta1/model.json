@@ -11,12 +11,7 @@
       "maxLength": 50,
       "type": "string",
       "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-      "example": [
-        "v1",
-        "v1alpha1",
-        "v2beta3",
-        "v1.custom-suffix"
-      ],
+      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
@@ -68,11 +63,7 @@
     "status": {
       "type": "string",
       "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-      "enum": [
-        "ignored",
-        "enabled",
-        "duplicate"
-      ],
+      "enum": ["ignored", "enabled", "duplicate"],
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
         "json": "status"
@@ -108,11 +99,15 @@
     "metadata": {
       "type": "object",
       "description": "Metadata containing additional information associated with the model.",
-      "required": [
-        "name",
-        "version"
-      ],
+      "required": ["name", "version"],
       "properties": {
+        "capabilities": {
+          "type": "array",
+          "description": "Capabilities associated with the model",
+          "items": {
+            "$ref": "../v1alpha1/capability.json"
+          }
+        },
         "isAnnotation": {
           "type": "boolean",
           "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations.",
@@ -174,9 +169,7 @@
     "model": {
       "type": "object",
       "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-      "required": [
-        "version"
-      ],
+      "required": ["version"],
       "properties": {
         "version": {
           "description": "Version of the model as defined by the registrant.",
@@ -184,12 +177,7 @@
           "maxLength": 100,
           "type": "string",
           "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-          "example": [
-            "v1",
-            "v1alpha1",
-            "v2beta3",
-            "v1.custom-suffix"
-          ],
+          "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
           "x-oapi-codegen-extra-tags": {
             "yaml": "version",
             "json": "version"
@@ -198,10 +186,6 @@
       }
     }
   },
-  "required": [
-    "name",
-    "version",
-    "registrant",
-    "category"
-  ]
+  "required": ["name", "version", "registrant", "category"]
 }
+

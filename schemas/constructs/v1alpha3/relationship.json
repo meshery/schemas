@@ -2,14 +2,7 @@
   "$id": "https://schemas.meshery.io/relationship.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
-  "required": [
-    "schemaVersion",
-    "version",
-    "model",
-    "kind",
-    "type",
-    "subType"
-  ],
+  "required": ["schemaVersion", "version", "model", "kind", "type", "subType"],
   "additionalProperties": false,
   "type": "object",
   "properties": {
@@ -28,11 +21,7 @@
     "kind": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
-      "enum": [
-        "Hierarchical",
-        "Edge",
-        "Sibling"
-      ]
+      "enum": ["Hierarchical", "Edge", "Sibling"]
     },
     "type": {
       "$ref": "../core.json#/definitions/inputString",
@@ -46,13 +35,23 @@
       "$ref": "../core.json#/definitions/inputString",
       "description": "Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs."
     },
+    "capabilities": {
+      "type": "array",
+      "description": "Capabilities associated with the relationship.",
+      "items": {
+        "$ref": "../v1alpha1/capability.json"
+      }
+    },
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
       "properties": {
         "description": {
           "$ref": "../core.json#/definitions/inputString",
-          "description": "Characteristization of the meaning of the relationship and its relevance to both Meshery and entities under management."
+          "description": "Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management."
+        },
+        "styles": {
+          "$ref": "../core.json#/definitions/relationshipStyles"
         }
       }
     },
@@ -64,17 +63,12 @@
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
-        "required": [
-          "allow"
-        ],
+        "required": ["allow"],
         "properties": {
           "deny": {
             "type": "object",
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "$ref": "./selectors.json#/definitions/from"
@@ -87,10 +81,7 @@
           "allow": {
             "type": "object",
             "description": "Selectors used to define relationships which are allowed.",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "$ref": "./selectors.json#/definitions/from"
@@ -105,3 +96,4 @@
     }
   }
 }
+
