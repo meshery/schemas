@@ -44,7 +44,7 @@ components:
           $ref: './common/core.yml#/components/schemas/nullTime'
     workspacesTeamsMapping:
       properties:
-        id:
+        ID:
           $ref: ./common/core.yml#/components/schemas/general_id
         team_id:
           $ref: './common/core.yml#/components/schemas/team_id'
@@ -58,7 +58,7 @@ components:
           $ref: './common/core.yml#/components/schemas/time'
     workspacesEnvironmentsMapping:
       properties:
-        id:
+        ID:
           $ref: ./common/core.yml#/components/schemas/general_id
         environment_id:
           $ref: './common/core.yml#/components/schemas/environment_id'
@@ -72,7 +72,7 @@ components:
           $ref: './common/core.yml#/components/schemas/time'
     workspacesViewsMapping:
       properties:
-        id:
+        ID:
           $ref: ./common/core.yml#/components/schemas/general_id
         view_id:
           $ref: './common/core.yml#/components/schemas/view_id'
@@ -86,7 +86,7 @@ components:
           $ref: './common/core.yml#/components/schemas/time'
     workspacesDesignsMapping:
       properties:
-        id:
+        ID:
           $ref: ./common/core.yml#/components/schemas/general_id
         design_id:
           $ref: './common/core.yml#/components/schemas/design_id'
@@ -110,7 +110,7 @@ components:
           type: string
           description: Organization ID
           x-go-type-skip-optional-pointer: true
-          x-go-name: OrgId
+          x-go-name: OrganizationID
           x-oapi-codegen-extra-tags:
             json: organization_id
       required:
@@ -127,7 +127,7 @@ components:
           type: string
           description: Organization ID
           x-go-type-skip-optional-pointer: true
-          x-go-name: OrgId
+          x-go-name: OrganizationID
           x-oapi-codegen-extra-tags:
             json: organization_id
       required:

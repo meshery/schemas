@@ -34,8 +34,8 @@ type WorkspacePayload struct {
 	Description externalRef2.Text `json:"description,omitempty"`
 	Name        externalRef2.Text `json:"name"`
 
-	// OrgId Organization ID
-	OrgId string `json:"organization_id"`
+	// OrganizationID Organization ID
+	OrganizationID string `json:"organization_id"`
 }
 
 // WorkspaceUpdatePayload defines model for workspaceUpdatePayload.
@@ -43,35 +43,35 @@ type WorkspaceUpdatePayload struct {
 	Description externalRef2.Text `json:"description,omitempty"`
 	Name        externalRef2.Text `json:"name,omitempty"`
 
-	// OrgId Organization ID
-	OrgId string `json:"organization_id"`
+	// OrganizationID Organization ID
+	OrganizationID string `json:"organization_id"`
 }
 
 // WorkspacesDesignsMapping defines model for workspacesDesignsMapping.
 type WorkspacesDesignsMapping struct {
+	ID          externalRef2.GeneralId   `db:"id" json:"id"`
 	CreatedAt   externalRef2.Time        `json:"created_at,omitempty"`
 	DeletedAt   externalRef2.Time        `json:"deleted_at,omitempty"`
 	DesignId    externalRef2.DesignId    `db:"design_id" json:"design_id"`
-	Id          externalRef2.GeneralId   `db:"id" json:"id"`
 	UpdatedAt   externalRef2.Time        `json:"updated_at,omitempty"`
 	WorkspaceId externalRef2.WorkspaceId `db:"workspace_id" json:"workspace_id"`
 }
 
 // WorkspacesEnvironmentsMapping defines model for workspacesEnvironmentsMapping.
 type WorkspacesEnvironmentsMapping struct {
+	ID            externalRef2.GeneralId     `db:"id" json:"id"`
 	CreatedAt     externalRef2.Time          `json:"created_at,omitempty"`
 	DeletedAt     externalRef2.Time          `json:"deleted_at,omitempty"`
 	EnvironmentId externalRef2.EnvironmentId `db:"environment_id" json:"environment_id"`
-	Id            externalRef2.GeneralId     `db:"id" json:"id"`
 	UpdatedAt     externalRef2.Time          `json:"updated_at,omitempty"`
 	WorkspaceId   externalRef2.WorkspaceId   `db:"workspace_id" json:"workspace_id"`
 }
 
 // WorkspacesTeamsMapping defines model for workspacesTeamsMapping.
 type WorkspacesTeamsMapping struct {
+	ID          externalRef2.GeneralId   `db:"id" json:"id"`
 	CreatedAt   externalRef2.Time        `json:"created_at,omitempty"`
 	DeletedAt   externalRef2.Time        `json:"deleted_at,omitempty"`
-	Id          externalRef2.GeneralId   `db:"id" json:"id"`
 	TeamId      externalRef2.TeamId      `db:"team_id" json:"team_id"`
 	UpdatedAt   externalRef2.Time        `json:"updated_at,omitempty"`
 	WorkspaceId externalRef2.WorkspaceId `db:"workspace_id" json:"workspace_id"`
@@ -79,9 +79,9 @@ type WorkspacesTeamsMapping struct {
 
 // WorkspacesViewsMapping defines model for workspacesViewsMapping.
 type WorkspacesViewsMapping struct {
+	ID          externalRef2.GeneralId   `db:"id" json:"id"`
 	CreatedAt   externalRef2.Time        `json:"created_at,omitempty"`
 	DeletedAt   externalRef2.Time        `json:"deleted_at,omitempty"`
-	Id          externalRef2.GeneralId   `db:"id" json:"id"`
 	UpdatedAt   externalRef2.Time        `json:"updated_at,omitempty"`
 	ViewId      externalRef2.ViewId      `db:"view_id" json:"view_id"`
 	WorkspaceId externalRef2.WorkspaceId `db:"workspace_id" json:"workspace_id"`
