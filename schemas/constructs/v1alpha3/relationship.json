@@ -21,7 +21,7 @@
     "kind": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
-      "enum": ["Hierarchical", "Edge", "Sibling"]
+      "enum": ["hierarchical", "edge", "sibling"]
     },
     "type": {
       "$ref": "../core.json#/definitions/inputString",
