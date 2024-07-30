@@ -29,6 +29,9 @@ type CredentialID = uuid.UUID
 // DeletedAt Timestamp when the resource was deleted.
 type DeletedAt = time.Time
 
+// DesignId defines model for design_id.
+type DesignId = uuid.UUID
+
 // Email email
 type Email = openapi_types.Email
 
@@ -49,6 +52,9 @@ type Endpoint = Text
 
 // EnvironmentId defines model for environment_id.
 type EnvironmentId = uuid.UUID
+
+// GeneralId defines model for general_id.
+type GeneralId = uuid.UUID
 
 // ID defines model for id.
 type ID = uuid.UUID
@@ -105,6 +111,9 @@ type Status = string
 // SystemID defines model for system_id.
 type SystemID = uuid.UUID
 
+// TeamId defines model for team_id.
+type TeamId = uuid.UUID
+
 // Text defines model for text.
 type Text = string
 
@@ -125,3 +134,9 @@ type UserID = uuid.UUID
 
 // Username defines model for username.
 type Username = string
+
+// ViewId defines model for view_id.
+type ViewId = uuid.UUID
+
+// WorkspaceId defines model for workspace_id.
+type WorkspaceId = uuid.UUID

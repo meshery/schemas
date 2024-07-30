@@ -47,9 +47,9 @@ components:
         id:
           $ref: ./common/core.yml#/components/schemas/general_id
         team_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/team_id'
         workspace_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/workspace_id'
         created_at:
           $ref: './common/core.yml#/components/schemas/time'
         updated_at:
@@ -61,9 +61,9 @@ components:
         id:
           $ref: ./common/core.yml#/components/schemas/general_id
         environment_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/environment_id'
         workspace_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/workspace_id'
         created_at:
           $ref: './common/core.yml#/components/schemas/time'
         updated_at:
@@ -75,9 +75,9 @@ components:
         id:
           $ref: ./common/core.yml#/components/schemas/general_id
         view_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/view_id'
         workspace_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/workspace_id'
         created_at:
           $ref: './common/core.yml#/components/schemas/time'
         updated_at:
@@ -89,9 +89,9 @@ components:
         id:
           $ref: ./common/core.yml#/components/schemas/general_id
         design_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/design_id'
         workspace_id:
-          $ref: './common/core.yml#/components/schemas/id'
+          $ref: './common/core.yml#/components/schemas/workspace_id'
         created_at:
           $ref: './common/core.yml#/components/schemas/time'
         updated_at:
@@ -136,13 +136,14 @@ components:
     workspacePage:
       properties:
         page:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         page_size:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         total_count:
-          type: ./common/core.yml#/components/schemas/number
-        environments:
+          $ref: ./common/core.yml#/components/schemas/number
+        workspaces:
           type: array
+          x-go-type-skip-optional-pointer: true
           items:
             $ref: '#/components/schemas/workspace'
   requestBodies:

@@ -213,6 +213,42 @@ components:
       x-go-type-name: WorkspaceId
       x-go-type-skip-optional-pointer: true
 
+    view_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: view_id
+        json: view_id
+      x-go-type-name: ViewId
+      x-go-type-skip-optional-pointer: true
+
+    team_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: team_id
+        json: team_id
+      x-go-type-name: TeamId
+      x-go-type-skip-optional-pointer: true
+
+    design_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: design_id
+        json: design_id
+      x-go-type-name: DesignId
+      x-go-type-skip-optional-pointer: true
+
     credential_uuid: 
       type: string
       format: uuid
