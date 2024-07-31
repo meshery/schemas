@@ -6,7 +6,9 @@
   "type": "object",
 
   "required": ["schemaVersion", "version", "displayName", "kind", "type", "state", "status"],
-
+  "x-oapi-codegen-extra-tags": {
+    "gorm": "type:bytes;serializer:json"
+  },
   "properties": {
     "schemaVersion": {
       "$ref": "../core.json#/definitions/versionString",

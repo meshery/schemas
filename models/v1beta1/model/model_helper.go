@@ -67,7 +67,7 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 	}
 	modelCreationLock.Lock()
 	defer modelCreationLock.Unlock()
-	err = db.First(&model, "id = ? and host_id = ?", modelID, hostID).Error
+	err = db.First(&model, "id = ? and connection_id = ?", modelID, hostID).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return uuid.UUID{}, err
 	}
@@ -111,10 +111,10 @@ func (m ModelDefinition) WriteModelDefinition(modelDefPath string, outputType st
 		return err
 	}
 	if outputType == "json" {
-		err = utils.WriteJSONToFile[ModelDefinition](modelDefPath, m)
+		err = utils.WriteJSONToFile(modelDefPath, m)
 	}
 	if outputType == "yaml" {
-		err = utils.WriteYamlToFile[ModelDefinition](modelDefPath, m)
+		err = utils.WriteYamlToFile(modelDefPath, m)
 	}
 	if err != nil {
 		return err

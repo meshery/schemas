@@ -297,195 +297,198 @@
       "allOf": [
         {
           "$ref": "#/definitions/styles"
-        }
-      ],
-      "properties": {
-        "shape": {
-          "$ref": "#/definitions/shape"
         },
-        "position": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "x",
-            "y"
-          ],
-          "description": "The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.",
+        {
           "properties": {
-            "x": {
-              "type": "number",
-              "description": "The x-coordinate of the node."
+            "shape": {
+              "$ref": "#/definitions/shape"
             },
-            "y": {
+            "position": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "x",
+                "y"
+              ],
+              "description": "The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "description": "The x-coordinate of the node."
+                },
+                "y": {
+                  "type": "number",
+                  "description": "The y-coordinate of the node."
+                }
+              }
+            },
+            "body-text": {
+              "type": "string",
+              "description": "The text to display for an element\u2019s body. Can give a path, e.g. data(id) will label with the elements id"
+            },
+            "body-text-wrap": {
+              "type": "string",
+              "description": "How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'."
+            },
+            "body-text-max-width": {
+              "type": "string",
+              "description": "The maximum width for wrapping text in the node."
+            },
+            "body-text-opacity": {
               "type": "number",
-              "description": "The y-coordinate of the node."
+              "description": "The opacity of the node\u2019s body text, including its outline.",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "body-text-background-color": {
+              "type": "string",
+              "description": "The colour of the node\u2019s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "body-text-font-size": {
+              "type": "string",
+              "description": "The size of the node\u2019s body text."
+            },
+            "body-text-color": {
+              "type": "string",
+              "description": "The colour of the node\u2019s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "body-text-weight": {
+              "type": "string",
+              "description": "A CSS font weight to be applied to the node\u2019s body text."
+            },
+            "body-text-horizontal-align": {
+              "type": "string",
+              "description": "A CSS horizontal alignment to be applied to the node\u2019s body text."
+            },
+            "body-text-decoration": {
+              "type": "string",
+              "description": "A CSS text decoration to be applied to the node\u2019s body text."
+            },
+            "body-text-vertical-align": {
+              "type": "string",
+              "description": "A CSS vertical alignment to be applied to the node\u2019s body text."
+            },
+            "width": {
+              "type": "number",
+              "description": "The width of the node\u2019s body or the width of an edge\u2019s line."
+            },
+            "height": {
+              "type": "number",
+              "description": "The height of the node\u2019s body"
+            },
+            "background-color": {
+              "type": "string",
+              "description": "The colour of the node\u2019s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "background-blacken": {
+              "type": "number",
+              "description": "Blackens the node\u2019s body for values from 0 to 1; whitens the node\u2019s body for values from 0 to -1.",
+              "maximum": 1,
+              "minimum": -1
+            },
+            "background-opacity": {
+              "type": "number",
+              "description": "The opacity level of the node\u2019s background colour",
+              "maximum": 1,
+              "minimum": 0
+            },
+            "border-width": {
+              "type": "number",
+              "description": "The size of the node\u2019s border.",
+              "minimum": 0
+            },
+            "border-style": {
+              "type": "string",
+              "description": "The style of the node\u2019s border",
+              "enum": [
+                "solid",
+                "dotted",
+                "dashed",
+                "double"
+              ]
+            },
+            "border-color": {
+              "type": "string",
+              "description": "The colour of the node\u2019s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "border-opacity": {
+              "type": "number",
+              "description": "The opacity of the node\u2019s border",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "padding": {
+              "type": "number",
+              "description": "The amount of padding around all sides of the node.",
+              "minimum": 0
+            },
+            "text-halign": {
+              "type": "string",
+              "description": "The horizontal alignment of a node\u2019s label",
+              "enum": [
+                "left",
+                "center",
+                "right"
+              ]
+            },
+            "text-valign": {
+              "type": "string",
+              "description": "The vertical alignment of a node\u2019s label",
+              "enum": [
+                "top",
+                "center",
+                "bottom"
+              ]
+            },
+            "ghost": {
+              "type": "string",
+              "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
+              "default": "no",
+              "enum": [
+                "yes",
+                "no"
+              ]
+            },
+            "active-bg-color": {
+              "type": "string",
+              "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "active-bg-opacity": {
+              "type": "string",
+              "description": " The opacity of the active background indicator. Selector needs to be *core*."
+            },
+            "active-bg-size": {
+              "type": "string",
+              "description": " The opacity of the active background indicator. Selector needs to be *core*."
+            },
+            "selection-box-color": {
+              "type": "string",
+              "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "selection-box-border-width": {
+              "type": "number",
+              "description": "The size of the border on the selection box. Selector needs to be *core*"
+            },
+            "selection-box-opacity": {
+              "type": "number",
+              "description": "The opacity of the selection box.  Selector needs to be *core*",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "outside-texture-bg-color": {
+              "type": "string",
+              "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "outside-texture-bg-opacity": {
+              "type": "number",
+              "description": "The opacity of the area outside the viewport texture. Selector needs to be *core*",
+              "minimum": 0,
+              "maximum": 1
             }
           }
-        },
-        "body-text": {
-          "type": "string",
-          "description": "The text to display for an element\u2019s body. Can give a path, e.g. data(id) will label with the elements id"
-        },
-        "body-text-wrap": {
-          "type": "string",
-          "description": "How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'."
-        },
-        "body-text-max-width": {
-          "type": "string",
-          "description": "The maximum width for wrapping text in the node."
-        },
-        "body-text-opacity": {
-          "type": "number",
-          "description": "The opacity of the node\u2019s body text, including its outline.",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "body-text-background-color": {
-          "type": "string",
-          "description": "The colour of the node\u2019s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "body-text-font-size": {
-          "type": "string",
-          "description": "The size of the node\u2019s body text."
-        },
-        "body-text-color": {
-          "type": "string",
-          "description": "The colour of the node\u2019s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "body-text-weight": {
-          "type": "string",
-          "description": "A CSS font weight to be applied to the node\u2019s body text."
-        },
-        "body-text-horizontal-align": {
-          "type": "string",
-          "description": "A CSS horizontal alignment to be applied to the node\u2019s body text."
-        },
-        "body-text-decoration": {
-          "type": "string",
-          "description": "A CSS text decoration to be applied to the node\u2019s body text."
-        },
-        "body-text-vertical-align": {
-          "type": "string",
-          "description": "A CSS vertical alignment to be applied to the node\u2019s body text."
-        },
-        "width": {
-          "type": "number",
-          "description": "The width of the node\u2019s body or the width of an edge\u2019s line."
-        },
-        "height": {
-          "type": "number",
-          "description": "The height of the node\u2019s body"
-        },
-        "background-color": {
-          "type": "string",
-          "description": "The colour of the node\u2019s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "background-blacken": {
-          "type": "number",
-          "description": "Blackens the node\u2019s body for values from 0 to 1; whitens the node\u2019s body for values from 0 to -1.",
-          "maximum": 1,
-          "minimum": -1
-        },
-        "background-opacity": {
-          "type": "number",
-          "description": "The opacity level of the node\u2019s background colour",
-          "maximum": 1,
-          "minimum": 0
-        },
-        "border-width": {
-          "type": "number",
-          "description": "The size of the node\u2019s border.",
-          "minimum": 0
-        },
-        "border-style": {
-          "type": "string",
-          "description": "The style of the node\u2019s border",
-          "enum": [
-            "solid",
-            "dotted",
-            "dashed",
-            "double"
-          ]
-        },
-        "border-color": {
-          "type": "string",
-          "description": "The colour of the node\u2019s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "border-opacity": {
-          "type": "number",
-          "description": "The opacity of the node\u2019s border",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "padding": {
-          "type": "number",
-          "description": "The amount of padding around all sides of the node.",
-          "minimum": 0
-        },
-        "text-halign": {
-          "type": "string",
-          "description": "The horizontal alignment of a node\u2019s label",
-          "enum": [
-            "left",
-            "center",
-            "right"
-          ]
-        },
-        "text-valign": {
-          "type": "string",
-          "description": "The vertical alignment of a node\u2019s label",
-          "enum": [
-            "top",
-            "center",
-            "bottom"
-          ]
-        },
-        "ghost": {
-          "type": "string",
-          "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
-          "default": "no",
-          "enum": [
-            "yes",
-            "no"
-          ]
-        },
-        "active-bg-color": {
-          "type": "string",
-          "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "active-bg-opacity": {
-          "type": "string",
-          "description": " The opacity of the active background indicator. Selector needs to be *core*."
-        },
-        "active-bg-size": {
-          "type": "string",
-          "description": " The opacity of the active background indicator. Selector needs to be *core*."
-        },
-        "selection-box-color": {
-          "type": "string",
-          "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "selection-box-border-width": {
-          "type": "number",
-          "description": "The size of the border on the selection box. Selector needs to be *core*"
-        },
-        "selection-box-opacity": {
-          "type": "number",
-          "description": "The opacity of the selection box.  Selector needs to be *core*",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "outside-texture-bg-color": {
-          "type": "string",
-          "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "outside-texture-bg-opacity": {
-          "type": "number",
-          "description": "The opacity of the area outside the viewport texture. Selector needs to be *core*",
-          "minimum": 0,
-          "maximum": 1
         }
-      }
+      ]
+      
     },
     "relationshipStyles": {
       "anyOf": [

@@ -6,7 +6,7 @@ package pattern
 import (
 	externalRef1 "github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1alpha2"
-	"github.com/meshery/schemas/models/v1beta1/model"
+	"github.com/meshery/schemas/models/v1beta1/component"
 	"github.com/meshery/schemas/models/v1alpha3"
 )
 
@@ -44,7 +44,7 @@ type PatternFile struct {
 	Id externalRef1.Id  `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Components List of component declarations
-	Components []*model.ComponentDefinition `json:"components" yaml:"components"`
+	Components []*component.ComponentDefinition `json:"components" yaml:"components"`
 
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`

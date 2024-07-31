@@ -7,7 +7,8 @@ import (
 	"github.com/layer5io/meshkit/utils"
 	"github.com/meshery/schemas/models/conversion"
 	"github.com/meshery/schemas/models/v1alpha2"
-	_model "github.com/meshery/schemas/models/v1beta1/model"
+	"github.com/meshery/schemas/models/v1beta1/component"
+	"github.com/meshery/schemas/models/v1beta1/model"
 	"github.com/pkg/errors"
 )
 
@@ -72,15 +73,15 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 		if compDefVersion == "" {
 			compDefVersion = "v1.0.0"
 		}
-		component := _model.ComponentDefinition{
+		component := component.ComponentDefinition{
 			Version:     compDefVersion,
 			DisplayName: service.Name,
-			Component: _model.Component{
+			Component: component.Component{
 				Kind:    service.Type,
 				Version: service.ApiVersion,
 			},
 			Configuration: service.Settings,
-			Model: _model.ModelDefinition{
+			Model: model.ModelDefinition{
 				Name: service.Model,
 			},
 		}
@@ -100,7 +101,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 
 }
 
-func (p *PatternFile) convertFromTraits(component *_model.ComponentDefinition, service *v1alpha2.Service) error {
+func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, service *v1alpha2.Service) error {
 	extensionsMetadata, err := utils.Cast[map[string]interface{}](service.Traits["meshmap"])
 	if err != nil {
 		return errors.Wrapf(err, "failed to extract meshmap traits for the design file")
@@ -109,42 +110,42 @@ func (p *PatternFile) convertFromTraits(component *_model.ComponentDefinition, s
 	// Handle node id: traits.meshmap.id
 	compNodeID, err := utils.Cast[string](extensionsMetadata["id"])
 	if err != nil {
-		return errors.Wrapf(err, "failed to extract node id for the component \"%s\" of type %s", component.DisplayName, component.Component.Kind)
+		return errors.Wrapf(err, "failed to extract node id for the component \"%s\" of type %s", cmp.DisplayName, cmp.Component.Kind)
 	}
 
 	compNodeUUID, err := uuid.FromString(compNodeID)
 	if err != nil {
-		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type %s, to uuid.", compNodeID, component.DisplayName, component.Component.Kind)
+		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type %s, to uuid.", compNodeID, cmp.DisplayName, cmp.Component.Kind)
 	}
-	component.Id = compNodeUUID
+	cmp.Id = compNodeUUID
 
 	// Handle model: traits.meshmap.meshmodel-data
 
-	model, err := utils.MarshalAndUnmarshal[interface{}, _model.ModelDefinition](extensionsMetadata["meshmodel-data"])
+	model, err := utils.MarshalAndUnmarshal[interface{}, model.ModelDefinition](extensionsMetadata["meshmodel-data"])
 	if err != nil {
-		return errors.Wrapf(err, "unable to extract model data for \"%s\" from the design file", component.DisplayName)
+		return errors.Wrapf(err, "unable to extract model data for \"%s\" from the design file", cmp.DisplayName)
 	}
-	component.Model = model
+	cmp.Model = model
 
 	// Handle component metadata: traits.meshmap.meshmodel-metadata
-	_compMetadata, err := utils.MarshalAndUnmarshal[interface{}, _model.ComponentDefinition_Metadata](extensionsMetadata["meshmodel-metadata"])
+	_compMetadata, err := utils.MarshalAndUnmarshal[interface{}, component.ComponentDefinition_Metadata](extensionsMetadata["meshmodel-metadata"])
 	if err != nil {
-		return errors.Wrapf(err, "unable to extract component metadata for \"%s\" from the design file", component.DisplayName)
+		return errors.Wrapf(err, "unable to extract component metadata for \"%s\" from the design file", cmp.DisplayName)
 	}
 
-	component.Metadata = _compMetadata
+	cmp.Metadata = _compMetadata
 
 	// Handle position properties: traits.meshmap.position
-	component.Metadata.AdditionalProperties["position"] = extensionsMetadata["position"]
+	cmp.Metadata.AdditionalProperties["position"] = extensionsMetadata["position"]
 
 	// Handle position properties: service.dependsOn/
-	component.Metadata.AdditionalProperties["dependsOn"] = service.DependsOn
+	cmp.Metadata.AdditionalProperties["dependsOn"] = service.DependsOn
 
 	// Handle whiteboardData: service.traits.whiteboardData
-	component.Metadata.AdditionalProperties["whiteboardData"] = extensionsMetadata["whiteboardData"]
+	cmp.Metadata.AdditionalProperties["whiteboardData"] = extensionsMetadata["whiteboardData"]
 
 	// Handle fieldRef data
-	component.Metadata.AdditionalProperties["fieldRefData"] = extensionsMetadata["fieldRefData"]
+	cmp.Metadata.AdditionalProperties["fieldRefData"] = extensionsMetadata["fieldRefData"]
 
 	// Handle parentId for hierarchical relationships
 	// hierarchicalRelationship := v1alpha3.RelationshipDefinition{
@@ -168,7 +169,7 @@ func (p *PatternFile) convertFromTraits(component *_model.ComponentDefinition, s
 	return nil
 }
 
-func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *_model.ComponentDefinition) error {
+func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *component.ComponentDefinition) error {
 	extensionsMetadata := make(map[string]interface{}, 0)
 	extensionsMetadata["meshmap"] = map[string]interface{}{
 		"id":                 component.Id,
@@ -191,7 +192,7 @@ func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *_mod
 	return nil
 }
 
-func (p *PatternFile) convertFromSettings(component *_model.ComponentDefinition, service *v1alpha2.Service) error {
+func (p *PatternFile) convertFromSettings(component *component.ComponentDefinition, service *v1alpha2.Service) error {
 	if component.Configuration == nil {
 		component.Configuration = make(map[string]interface{}, 0)
 	}
@@ -225,7 +226,7 @@ func (p *PatternFile) convertFromSettings(component *_model.ComponentDefinition,
 	return nil
 }
 
-func (p *PatternFile) convertToSettings(service *v1alpha2.Service, component *_model.ComponentDefinition) error {
+func (p *PatternFile) convertToSettings(service *v1alpha2.Service, component *component.ComponentDefinition) error {
 	configurationMetadata := component.Configuration["metadata"]
 
 	_configurationMetadata, err := utils.Cast[map[string]interface{}](configurationMetadata)

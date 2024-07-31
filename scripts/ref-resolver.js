@@ -72,15 +72,19 @@ function walkObject(object) {
                     if (object[key]["items"]["type"] == "object" && !!object[key]["items"]["properties"]) {
                         object[key]["items"]["properties"] = walkObject(object[key]["items"]["properties"])
                     } else {
+
+                        let existingTags = getExistingExtraTags(object[key]["items"]);
+
                         object[key]["items"]["x-oapi-codegen-extra-tags"] = {
-                            ...object[key]["items"]["x-oapi-codegen-extra-tags"],
+                            ...existingTags,
                             "yaml": key,
                             "json": key
                         }
                     }
                 } else {
+                    let existingTags = getExistingExtraTags(object[key]);
                     object[key]["x-oapi-codegen-extra-tags"] = {
-                        ...object[key]["items"]["x-oapi-codegen-extra-tags"],
+                        ...existingTags,
                         "yaml": key,
                         "json": key
                     }
@@ -97,6 +101,12 @@ function walkObject(object) {
     return object;
 }
 
-console.log("SODOSDOSOD ", schemaPath);
+function getExistingExtraTags(object) {
+    let existingTags = {};
+    if (!!object["x-oapi-codegen-extra-tags"]) {
+        existingTags = object["x-oapi-codegen-extra-tags"];
+    }
+    return existingTags;
+}
 
 walk(schemaPath)
