@@ -1,4 +1,4 @@
-package models
+package conversion
 
 type Hub interface {
 	Hub()

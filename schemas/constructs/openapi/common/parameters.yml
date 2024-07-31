@@ -206,7 +206,7 @@ components:
       schema:
         $ref: ./core.yml#/components/schemas/id
 
-    organizationId:
+    orgId:
       name: organizationId
       in: path
       description: Organization Id

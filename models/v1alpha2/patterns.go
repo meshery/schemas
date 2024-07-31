@@ -4,10 +4,9 @@
 package v1alpha2
 
 import (
-
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
-) 
+)
 
 // Defines values for CatalogDataCompatibility.
 const (
@@ -68,24 +67,24 @@ type CatalogDataType string
 
 // DeletePatternModel defines model for deletePatternModel.
 type DeletePatternModel struct {
-	ID   core.ID   `db:"id" json:"id"`
+	ID   core.Id   `db:"id" json:"id"`
 	Name core.Text `json:"name,omitempty"`
 }
 
 type Service struct {
-	Annotations  map[string]string      `json:"annotations,omitempty" inside configuration`
-	ApiVersion   string                 `json:"apiVersion,omitempty *" yaml:"apiVersion"`
+	Annotations  map[string]string      `json:"annotations,omitempty"`
+	ApiVersion   string                 `json:"apiVersion,omitempty" yaml:"apiVersion"`
 	DependsOn    []string               `json:"dependsOn,omitempty" yaml:"dependsOn"`
-	Id           *uuid.UUID             `json:"id,omitempty" *`
-	IsAnnotation *bool                  `json:"isAnnotation,omitempty" yaml:"isAnnotation" comp metadata`
-	Labels       map[string]string      `json:"labels,omitempty" inside configuration`
-	Model        string                 `json:"model,omitempty" *`
-	Name         string                 `json:"name,omitempty"*`
-	Namespace    string                 `json:"namespace,omitempty" inside configuration`
-	Settings     map[string]interface{} `json:"settings,omitempty"*`
+	Id           *uuid.UUID             `json:"id,omitempty"`
+	IsAnnotation bool                   `json:"isAnnotation,omitempty" yaml:"isAnnotation"`
+	Labels       map[string]string      `json:"labels,omitempty"`
+	Model        string                 `json:"model,omitempty"`
+	Name         string                 `json:"name,omitempty"`
+	Namespace    string                 `json:"namespace,omitempty"`
+	Settings     map[string]interface{} `json:"settings,omitempty"`
 	Traits       map[string]interface{} `json:"traits,omitempty"`
-	Type         string                 `json:"type,omitempty" *`
-	Version      string                 `json:"version,omitempty"*`
+	Type         string                 `json:"type,omitempty"`
+	Version      string                 `json:"version,omitempty"`
 }
 
 // Design Schema for design  in v1Beta1
@@ -106,17 +105,17 @@ type PatternFile struct {
 
 // MesheryPattern defines model for mesheryPattern.
 type MesheryPattern struct {
-	CatalogData *CatalogData `json:"catalog_data,omitempty"`
-	CreatedAt   core.Time         `json:"created_at,omitempty"`
-	ID          core.ID           `db:"id" json:"id"`
-	Location    core.MapObject    `json:"location,omitempty"`
-	Name        core.Text         `json:"name,omitempty"`
+	CatalogData *CatalogData   `json:"catalog_data,omitempty"`
+	CreatedAt   core.Time      `json:"created_at,omitempty"`
+	ID          core.Id        `db:"id" json:"id"`
+	Location    core.MapObject `json:"location,omitempty"`
+	Name        core.Text      `json:"name,omitempty"`
 
 	// PatternFile Schema for design  in v1Beta1
 	PatternFile *PatternFile `json:"pattern_file,omitempty"`
-	UpdatedAt   core.Time         `json:"updated_at,omitempty"`
-	UserID      core.ID           `db:"user_id" json:"user_id"`
-	Visibility  core.Text         `json:"visibility,omitempty"`
+	UpdatedAt   core.Time    `json:"updated_at,omitempty"`
+	UserID      core.Id      `db:"user_id" json:"user_id"`
+	Visibility  core.Text    `json:"visibility,omitempty"`
 }
 
 // MesheryPatternPage defines model for mesheryPatternPage.
@@ -130,15 +129,15 @@ type MesheryPatternPage struct {
 
 // MesheryPatternResource defines model for mesheryPatternResource.
 type MesheryPatternResource struct {
-	CreatedAt core.Time  `json:"created_at,omitempty"`
-	Deleted   *bool `json:"deleted,omitempty"`
-	ID        core.ID    `db:"id" json:"id"`
-	Name      core.Text  `json:"name,omitempty"`
-	Namepace  core.Text  `json:"namepace,omitempty"`
-	OamType   core.Text  `json:"oam_type,omitempty"`
-	Type      core.Text  `json:"type,omitempty"`
-	UpdatedAt core.Time  `json:"updated_at,omitempty"`
-	UserID    core.ID    `db:"user_id" json:"user_id"`
+	CreatedAt core.Time `json:"created_at,omitempty"`
+	Deleted   *bool     `json:"deleted,omitempty"`
+	ID        core.Id   `db:"id" json:"id"`
+	Name      core.Text `json:"name,omitempty"`
+	Namepace  core.Text `json:"namepace,omitempty"`
+	OamType   core.Text `json:"oam_type,omitempty"`
+	Type      core.Text `json:"type,omitempty"`
+	UpdatedAt core.Time `json:"updated_at,omitempty"`
+	UserID    core.Id   `db:"user_id" json:"user_id"`
 }
 
 // MesheryPatternResourcePage defines model for mesheryPatternResourcePage.
@@ -179,10 +178,10 @@ type Type = string
 
 // DesignShare defines model for designShare.
 type DesignShare struct {
-	ContentType string `json:"content_type"`
+	ContentType string      `json:"content_type"`
 	Emails      core.Emails `json:"emails"`
-	ID          core.ID     `db:"id" json:"id"`
-	Share       bool   `json:"share"`
+	ID          core.Id     `db:"id" json:"id"`
+	Share       bool        `json:"share"`
 }
 
 // MesheryPatternDeleteRequestBody defines model for mesheryPatternDeleteRequestBody.
@@ -192,18 +191,18 @@ type MesheryPatternDeleteRequestBody struct {
 
 // MesheryPatternRequestBody defines model for mesheryPatternRequestBody.
 type MesheryPatternRequestBody struct {
-	Path        core.Text            `json:"path,omitempty"`
+	Path        core.Text       `json:"path,omitempty"`
 	PatternData *MesheryPattern `json:"pattern_data,omitempty"`
 	Save        *bool           `json:"save,omitempty"`
-	Url         core.Text            `json:"url,omitempty"`
+	Url         core.Text       `json:"url,omitempty"`
 }
 
 // HandleShareJSONBody defines parameters for HandleShare.
 type HandleShareJSONBody struct {
-	ContentType string `json:"content_type"`
+	ContentType string      `json:"content_type"`
 	Emails      core.Emails `json:"emails"`
-	ID          core.ID     `db:"id" json:"id"`
-	Share       bool   `json:"share"`
+	ID          core.Id     `db:"id" json:"id"`
+	Share       bool        `json:"share"`
 }
 
 // DeletePatternsJSONBody defines parameters for DeletePatterns.
@@ -228,10 +227,10 @@ type GetPatternsParams struct {
 
 // UpsertPatternJSONBody defines parameters for UpsertPattern.
 type UpsertPatternJSONBody struct {
-	Path        core.Text            `json:"path,omitempty"`
+	Path        core.Text       `json:"path,omitempty"`
 	PatternData *MesheryPattern `json:"pattern_data,omitempty"`
 	Save        *bool           `json:"save,omitempty"`
-	Url         core.Text            `json:"url,omitempty"`
+	Url         core.Text       `json:"url,omitempty"`
 }
 
 // ClonePatternJSONBody defines parameters for ClonePattern.

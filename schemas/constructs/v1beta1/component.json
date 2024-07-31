@@ -29,31 +29,41 @@
     },
     "format": {
       "type": "string",
-      "enum": [
-        "JSON",
-        "CUE"
-      ],
+      "enum": ["JSON", "CUE"],
       "default": "JSON",
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
     "model": {
       "$ref": "./model.json",
-      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
+      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "foreignKey:ModelId;references:Id"
+      }
+    },
+    "styles": {
+      "$ref": "../core.json#/definitions/componentStyles"
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+      "items": {
+        "$ref": "../v1alpha1/capability.json"
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of component, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+      "default": "enabled",
+      "enum": ["ignored", "enabled", "duplicate"],
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "status",
+        "json": "status"
+      }
     },
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the component.",
-      "required": [
-        "shape",
-        "primaryColor",
-        "svgColor",
-        "svgWhite"
-      ],
       "properties": {
-        "capabilities": {
-          "type": "object",
-          "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management."
-        },
         "genealogy": {
           "type": "string",
           "description": "Genealogy represents the various representational states of the component."
@@ -62,66 +72,23 @@
           "type": "boolean",
           "description": "Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation."
         },
-        "shape": {
-          "type": "string",
-          "description": "Shape of the component used for UI representation.",
-          "enum": [
-            "ellipse",
-            "triangle",
-            "round-triangle",
-            "rectangle",
-            "round-rectangle",
-            "bottom-round-rectangle",
-            "cut-rectangle",
-            "barrel",
-            "rhomboid",
-            "diamond",
-            "round-diamond",
-            "pentagon",
-            "round-pentagon",
-            "hexagon",
-            "round-hexagon",
-            "concave-hexagon",
-            "heptagon",
-            "round-heptagon",
-            "octagon",
-            "round-octagon",
-            "star",
-            "tag",
-            "round-tag",
-            "vee"
-          ]
-        },
-        "primaryColor": {
-          "type": "string",
-          "description": "Primary color of the component used for UI representation."
-        },
-        "secondaryColor": {
-          "type": "string",
-          "description": "Secondary color of the component used for UI representation."
-        },
-        "svgWhite": {
-          "type": "string",
-          "description": "White SVG of the component used for UI representation on dark background."
-        },
-        "svgColor": {
-          "type": "string",
-          "description": "Colored SVG of the component used for UI representation on light background."
-        },
-        "svgComplete": {
-          "type": "string",
-          "description": "Complete SVG of the component used for UI representation, often inclusive of background."
-        },
         "published": {
           "type": "boolean",
           "description": "'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered."
         }
       },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      },
       "additionalProperties": true
     },
     "configuration": {
+      "description": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
+      "type": "object",
       "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
-      "type": "object"
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      }
     },
     "component": {
       "type": "object",
@@ -135,10 +102,14 @@
           "type": "string",
           "description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
         },
+
         "schema": {
           "type": "string",
           "description": "JSON schema of the object as defined by the registrant."
         }
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
       },
       "required": [
         "version",
@@ -147,10 +118,6 @@
       ]
     }
   },
-  "required": [
-    "schemaVersion",
-    "version",
-    "model",
-    "component"
-  ]
+  "required": ["schemaVersion", "version", "model", "component"]
 }
+

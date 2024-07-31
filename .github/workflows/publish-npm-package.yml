@@ -39,6 +39,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Pull changes from remote
+        run: git pull origin master
+
       - name: Commit and push version change
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
