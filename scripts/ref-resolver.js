@@ -2,6 +2,11 @@ var parser = require("@apidevtools/json-schema-ref-parser")
 var fs = require("fs");
 var path = require("path")
 
+const schemaPath = process.env["SCHEMA_PATH"]
+if (!schemaPath) {
+    console.error("proivde a schema directory to resolve the references.")
+    return
+}
 
 async function resolveRef(schema) {
     const path = schema;
@@ -20,7 +25,7 @@ const isDir = fileName => {
 
 function walk(fullPath) {
     if (isDir(fullPath)) {
-        fs.readdirSync(fullPath).map( entry => {
+        fs.readdirSync(fullPath).map(entry => {
             let abosolutePath = path.join(fullPath, entry)
 
             console.log(`Processing ${abosolutePath}...`)
@@ -68,12 +73,14 @@ function walkObject(object) {
                         object[key]["items"]["properties"] = walkObject(object[key]["items"]["properties"])
                     } else {
                         object[key]["items"]["x-oapi-codegen-extra-tags"] = {
+                            ...object[key]["items"]["x-oapi-codegen-extra-tags"],
                             "yaml": key,
                             "json": key
                         }
                     }
                 } else {
                     object[key]["x-oapi-codegen-extra-tags"] = {
+                        ...object[key]["items"]["x-oapi-codegen-extra-tags"],
                         "yaml": key,
                         "json": key
                     }
@@ -90,4 +97,6 @@ function walkObject(object) {
     return object;
 }
 
-walk("./schemas/constructs/v1beta1")
+console.log("SODOSDOSOD ", schemaPath);
+
+walk(schemaPath)
