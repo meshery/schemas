@@ -55,7 +55,7 @@ components:
         updated_at:
           $ref: './common/core.yml#/components/schemas/time'
         deleted_at:
-          $ref: './common/core.yml#/components/schemas/time'
+          $ref: './common/core.yml#/components/schemas/nullTime'
     workspacesEnvironmentsMapping:
       properties:
         ID:
@@ -69,7 +69,7 @@ components:
         updated_at:
           $ref: './common/core.yml#/components/schemas/time'
         deleted_at:
-          $ref: './common/core.yml#/components/schemas/time'
+          $ref: './common/core.yml#/components/schemas/nullTime'
     workspacesViewsMapping:
       properties:
         ID:
@@ -83,7 +83,7 @@ components:
         updated_at:
           $ref: './common/core.yml#/components/schemas/time'
         deleted_at:
-          $ref: './common/core.yml#/components/schemas/time'
+          $ref: './common/core.yml#/components/schemas/nullTime'
     workspacesDesignsMapping:
       properties:
         ID:
@@ -97,7 +97,7 @@ components:
         updated_at:
           $ref: './common/core.yml#/components/schemas/time'
         deleted_at:
-          $ref: './common/core.yml#/components/schemas/time'
+          $ref: './common/core.yml#/components/schemas/nullTime'
     workspaceUpdatePayload:
       properties:
         name:

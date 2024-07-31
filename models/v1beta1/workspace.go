@@ -51,7 +51,7 @@ type WorkspaceUpdatePayload struct {
 type WorkspacesDesignsMapping struct {
 	ID          externalRef2.GeneralId   `db:"id" json:"id"`
 	CreatedAt   externalRef2.Time        `json:"created_at,omitempty"`
-	DeletedAt   externalRef2.Time        `json:"deleted_at,omitempty"`
+	DeletedAt   externalRef2.NullTime        `json:"deleted_at,omitempty"`
 	DesignId    externalRef2.DesignId    `db:"design_id" json:"design_id"`
 	UpdatedAt   externalRef2.Time        `json:"updated_at,omitempty"`
 	WorkspaceId externalRef2.WorkspaceId `db:"workspace_id" json:"workspace_id"`
@@ -61,7 +61,7 @@ type WorkspacesDesignsMapping struct {
 type WorkspacesEnvironmentsMapping struct {
 	ID            externalRef2.GeneralId     `db:"id" json:"id"`
 	CreatedAt     externalRef2.Time          `json:"created_at,omitempty"`
-	DeletedAt     externalRef2.Time          `json:"deleted_at,omitempty"`
+	DeletedAt     externalRef2.NullTime          `json:"deleted_at,omitempty"`
 	EnvironmentId externalRef2.EnvironmentId `db:"environment_id" json:"environment_id"`
 	UpdatedAt     externalRef2.Time          `json:"updated_at,omitempty"`
 	WorkspaceId   externalRef2.WorkspaceId   `db:"workspace_id" json:"workspace_id"`
@@ -71,7 +71,7 @@ type WorkspacesEnvironmentsMapping struct {
 type WorkspacesTeamsMapping struct {
 	ID          externalRef2.GeneralId   `db:"id" json:"id"`
 	CreatedAt   externalRef2.Time        `json:"created_at,omitempty"`
-	DeletedAt   externalRef2.Time        `json:"deleted_at,omitempty"`
+	DeletedAt   externalRef2.NullTime        `json:"deleted_at,omitempty"`
 	TeamId      externalRef2.TeamId      `db:"team_id" json:"team_id"`
 	UpdatedAt   externalRef2.Time        `json:"updated_at,omitempty"`
 	WorkspaceId externalRef2.WorkspaceId `db:"workspace_id" json:"workspace_id"`
@@ -81,7 +81,7 @@ type WorkspacesTeamsMapping struct {
 type WorkspacesViewsMapping struct {
 	ID          externalRef2.GeneralId   `db:"id" json:"id"`
 	CreatedAt   externalRef2.Time        `json:"created_at,omitempty"`
-	DeletedAt   externalRef2.Time        `json:"deleted_at,omitempty"`
+	DeletedAt   externalRef2.NullTime        `json:"deleted_at,omitempty"`
 	UpdatedAt   externalRef2.Time        `json:"updated_at,omitempty"`
 	ViewId      externalRef2.ViewId      `db:"view_id" json:"view_id"`
 	WorkspaceId externalRef2.WorkspaceId `db:"workspace_id" json:"workspace_id"`
