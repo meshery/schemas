@@ -27,7 +27,7 @@ components:
     environment:
       properties:
         ID:
-          $ref: ./common/core.yml#/components/schemas/environment_id
+          $ref: ./common/core.yml#/components/schemas/general_id
         name:
           $ref: ./common/core.yml#/components/schemas/text
         description:
@@ -45,7 +45,7 @@ components:
     environmentConnectionMapping:
       properties:
         ID:
-          $ref: ./common/core.yml#/components/schemas/environment_id
+          $ref: ./common/core.yml#/components/schemas/general_id
         environment_id:
           type: string
           format: uuid
