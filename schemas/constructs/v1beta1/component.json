@@ -35,7 +35,10 @@
     },
     "model": {
       "$ref": "./model.json",
-      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
+      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "foreignKey:ModelId;references:Id"
+      }
     },
     "styles": {
       "$ref": "../core.json#/definitions/componentStyles"
@@ -74,11 +77,18 @@
           "description": "'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered."
         }
       },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      },
       "additionalProperties": true
     },
     "configuration": {
       "description": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
-      "type": "object"
+      "type": "object",
+      "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      }
     },
     "component": {
       "type": "object",
@@ -98,7 +108,14 @@
           "description": "JSON schema of the object as defined by the registrant."
         }
       },
-      "required": ["version", "kind", "schema"]
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      },
+      "required": [
+        "version",
+        "kind",
+        "schema"
+      ]
     }
   },
   "required": ["schemaVersion", "version", "model", "component"]

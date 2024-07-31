@@ -27,9 +27,6 @@ type EventsFilter struct {
 // Filter defines model for filter.
 type Filter = string
 
-// Id defines model for id.
-type Id = string
-
 // InstanceId defines model for instanceId.
 type InstanceId = Id
 

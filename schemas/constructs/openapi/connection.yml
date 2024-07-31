@@ -20,6 +20,8 @@ tags:
 
 components:
   schemas:
+    connection:
+      $ref: ../v1beta1/connection.json
     mesheryInstance:
       properties:
         id:
@@ -48,58 +50,14 @@ components:
         status:
           $ref: ./common/core.yml#/components/schemas/text
           description: Status
-    connection:
-      properties:
-        id:
-          $ref: ./common/core.yml#/components/schemas/id
-          description: ID
-        name:
-          $ref: ./common/core.yml#/components/schemas/text
-          description: Connection Name
-        credential_id:
-          $ref: ./common/core.yml#/components/schemas/id
-          description: Credential ID
-        type:
-          $ref: ./common/core.yml#/components/schemas/text
-          description: Connection Type
-        sub_type:
-          $ref: ./common/core.yml#/components/schemas/text
-          description: Connection Subtype
-        kind:
-          $ref: ./common/core.yml#/components/schemas/text
-          description: Connection Kind
-        metadata:
-          $ref: ./common/core.yml#/components/schemas/map_object
-        status:
-          $ref: ./common/core.yml#/components/schemas/text
-          description: Connection Status
-          type: string
-          enum:
-            [
-              "discovered",
-              "registered",
-              "connected",
-              "ignored",
-              "maintenance",
-              "disconnected",
-              "deleted",
-              "not found",
-            ]
-        user_id:
-          $ref: ./common/core.yml#/components/schemas/id
-          x-go-name: UserID
-        created_at:
-          $ref: ./common/core.yml#/components/schemas/time
-        updated_at:
-          $ref: ./common/core.yml#/components/schemas/time
-        deleted_at:
-          $ref: ./common/core.yml#/components/schemas/time
+    
     connectionPage:
       allOf:
         - $ref: ./common/core.yml#/components/schemas/resultsPage
         - type: object
           properties:
             connections:
+              x-go-type-skip-optional-pointer: true
               type: array
               items:
                 $ref: "#/components/schemas/connection"
@@ -111,9 +69,12 @@ components:
         count:
           type: integer
           description: Number of connections having the status
+          x-go-type-skip-optional-pointer: true
+
     connectionsStatusPage:
       properties:
         connections_status:
+          x-go-type-skip-optional-pointer: true
           type: array
           items:
             $ref: "#/components/schemas/connectionStatusInfo"

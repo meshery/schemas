@@ -6,10 +6,6 @@ components:
       x-go-type: uuid.UUID
       x-go-type-import: 
         path: github.com/gofrs/uuid
-      x-oapi-codegen-extra-tags:
-        db: id
-        json: id
-      x-go-name: ID
       x-go-type-skip-optional-pointer: true
 
     username:
@@ -18,7 +14,7 @@ components:
 
     provider:
       type: string
-      description: One of (meshery-cloud, github, google)
+      description: One of (x-oapi-codegen-extra-tags-cloud, github, google)
       x-go-type-skip-optional-pointer: true
 
     time:
@@ -317,8 +313,11 @@ components:
       x-go-type: time.Time
       type: string
       format: date-time
+      x-go-name: CreatedAt
       x-oapi-codegen-extra-tags:
         db: created_at
+        yaml: created_at
+      
       x-go-type-skip-optional-pointer: true
       
     updated_at:
@@ -326,8 +325,10 @@ components:
       x-go-type: time.Time
       type: string
       format: date-time
+      x-go-name: UpdatedAt
       x-oapi-codegen-extra-tags:
         db: updated_at
+        yaml: updated_at
       x-go-type-skip-optional-pointer: true
       
     deleted_at:
@@ -335,8 +336,10 @@ components:
       x-go-type: time.Time
       type: string
       format: date-time
+      x-go-name: DeletedAt
       x-oapi-codegen-extra-tags:
         db: deleted_at
+        yaml: deleted_at
       x-go-type-skip-optional-pointer: true
       
     nullTime:

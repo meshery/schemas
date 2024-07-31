@@ -2,6 +2,11 @@ var parser = require("@apidevtools/json-schema-ref-parser")
 var fs = require("fs");
 var path = require("path")
 
+const schemaPath = process.env["SCHEMA_PATH"]
+if (!schemaPath) {
+    console.error("proivde a schema directory to resolve the references.")
+    return
+}
 
 async function resolveRef(schema) {
     const path = schema;
@@ -20,7 +25,7 @@ const isDir = fileName => {
 
 function walk(fullPath) {
     if (isDir(fullPath)) {
-        fs.readdirSync(fullPath).map( entry => {
+        fs.readdirSync(fullPath).map(entry => {
             let abosolutePath = path.join(fullPath, entry)
 
             console.log(`Processing ${abosolutePath}...`)
@@ -67,13 +72,19 @@ function walkObject(object) {
                     if (object[key]["items"]["type"] == "object" && !!object[key]["items"]["properties"]) {
                         object[key]["items"]["properties"] = walkObject(object[key]["items"]["properties"])
                     } else {
+
+                        let existingTags = getExistingExtraTags(object[key]["items"]);
+
                         object[key]["items"]["x-oapi-codegen-extra-tags"] = {
+                            ...existingTags,
                             "yaml": key,
                             "json": key
                         }
                     }
                 } else {
+                    let existingTags = getExistingExtraTags(object[key]);
                     object[key]["x-oapi-codegen-extra-tags"] = {
+                        ...existingTags,
                         "yaml": key,
                         "json": key
                     }
@@ -90,4 +101,12 @@ function walkObject(object) {
     return object;
 }
 
-walk("./schemas/constructs/v1beta1")
+function getExistingExtraTags(object) {
+    let existingTags = {};
+    if (!!object["x-oapi-codegen-extra-tags"]) {
+        existingTags = object["x-oapi-codegen-extra-tags"];
+    }
+    return existingTags;
+}
+
+walk(schemaPath)

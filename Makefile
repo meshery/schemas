@@ -48,7 +48,7 @@ publish-ts: build-ts
 
 
 resolve-ref: setup
-	node scripts/ref-resolver.js 
+	SCHEMA_PATH=$(path) node scripts/ref-resolver.js 
 
 setup:
 	npm install

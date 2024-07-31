@@ -5,6 +5,10 @@
   "additionalProperties": false,
   "type": "object",
   "properties": {
+    "id": {
+      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+      "$ref": "../core.json#/definitions/uuid"
+    },
     "schemaVersion": {
       "description": "Specifies the version of the schema used for the definition.",
       "minLength": 1,
@@ -70,20 +74,41 @@
       }
     },
     "registrant": {
-      "type": "object",
       "x-oapi-codegen-extra-tags": {
         "yaml": "registrant",
-        "json": "registrant"
-      }
+        "json": "registrant",
+        "gorm": "foreignKey:RegistrantId;references:Id"
+      },
+      "$ref": "./connection.json"
     },
     "category": {
-      "type": "string",
+      "type": "object",
       "description": "Category of the model.",
-      "minLength": 1,
-      "maxLength": 100,
+      "properties": {
+        "id": {
+          "$ref": "../core.json#/definitions/uuid"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "name",
+            "json": "name"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "metadata",
+            "json": "metadata"
+          }
+        }
+      },
       "x-oapi-codegen-extra-tags": {
         "yaml": "category",
-        "json": "category"
+        "json": "category",
+        "gorm": "foreignKey:CategoryId;references:Id"
       }
     },
     "subCategory": {
@@ -164,6 +189,9 @@
           }
         }
       },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      },
       "additionalProperties": true
     },
     "model": {
@@ -183,6 +211,9 @@
             "json": "version"
           }
         }
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
       }
     }
   },
