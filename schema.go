@@ -2,6 +2,6 @@ package schemas
 
 import "embed"
 
-// Embedding the file system for schema files
+// Embedding schemas
 //go:embed schemas
 var Schemas embed.FS
