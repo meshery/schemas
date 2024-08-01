@@ -1,7 +1,11 @@
 package schemas
 
-import "embed"
+import (
+	"embed"
+	"encoding/json"
+	"fmt"
+)
 
-//go:embed schemas/openapi.yml
-
+// Embedding the file system for schema files
+//go:embed schemas
 var Schemas embed.FS
