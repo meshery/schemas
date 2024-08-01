@@ -1,10 +1,6 @@
 package schemas
 
-import (
-	"embed"
-	"encoding/json"
-	"fmt"
-)
+import "embed"
 
 // Embedding the file system for schema files
 //go:embed schemas
