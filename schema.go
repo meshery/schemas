@@ -2,6 +2,6 @@ package schemas
 
 import "embed"
 
-//go:embed schemas/openapi.yml
-
+// Embedding schemas
+//go:embed schemas
 var Schemas embed.FS
