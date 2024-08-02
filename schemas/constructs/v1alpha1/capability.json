@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "type": "object",
 
-  "required": ["schemaVersion", "version", "displayName", "kind", "type", "state", "status"],
+  "required": ["schemaVersion", "version", "displayName", "kind", "type", "entityState", "status"],
   "x-oapi-codegen-extra-tags": {
     "gorm": "type:bytes;serializer:json"
   },
