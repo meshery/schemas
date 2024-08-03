@@ -54,7 +54,7 @@
                     "$comment": "Array Indexing: When working with arrays, be aware that Kubernetes uses zero-based indexing in JSON patch paths.\nMerge Patch vs. JSON Patch: Merge patches are less flexible than JSON patches and do not support all the same operations.\nStrategic Merge Patch: For some Kubernetes resources, you can also use the strategic type for a strategic merge patch, which understands the structure of Kubernetes objects and can handle complex operations."
                     "type": "string",
                     "enum": [
-                      "replace",
+                     
                       "merge",
                       "strategic",
                       "add",
@@ -110,7 +110,7 @@
     "selectors": {
       "type": "array",
       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
-      "$comment": "Sets of selectors are interpreted as a logical OR. Properties within a selector are interpreted as a logical OR, while  the `allow` and `deny` properties are interpreted a logical AND.",
+      "$comment": "Sets of selectors are interpreted as a logical UNION. Properties within a selector `allow` and `deny` are interpreted as logical AND, while 'from' and 'to' represents a UNION of set of combinatorial pairs.",
       "items": {
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
