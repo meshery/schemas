@@ -160,130 +160,132 @@
       "allOf": [
         {
           "$ref": "#/definitions/styles"
+        },
+        {
+          "properties": {
+            "edge-animation": {
+              "type": "string",
+              "description": "The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc ."
+            },
+            "curve-style": {
+              "type": "string",
+              "description": "The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.",
+              "default": "straight",
+              "enum": [
+                "straight",
+                "haystack",
+                "bezier",
+                "unbundled-bezier",
+                "segments",
+                "taxi"
+              ]
+            },
+            "line-color": {
+              "type": "string",
+              "description": "The colour of the edge\u2019s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "line-style": {
+              "type": "string",
+              "description": "The style of the edge\u2019s line.",
+              "enum": [
+                "solid",
+                "dotted",
+                "dashed"
+              ]
+            },
+            "line-cap": {
+              "type": "string",
+              "description": "The cap style of the edge\u2019s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
+              "enum": [
+                "butt",
+                "round",
+                "square"
+              ],
+              "default": "butt"
+            },
+            "line-opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 1,
+              "description": "The opacity of the edge\u2019s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
+            },
+            "target-arrow-color": {
+              "type": "string",
+              "description": "The colour of the edge\u2019s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "target-arrow-shape": {
+              "type": "string",
+              "description": "The shape of the edge\u2019s source arrow",
+              "enum": [
+                "triangle",
+                "triangle-tee",
+                "circle-triangle",
+                "triangle-cross",
+                "triangle-backcurve",
+                "vee",
+                "tee",
+                "square",
+                "circle",
+                "diamond",
+                "chevron",
+                "none"
+              ]
+            },
+            "target-arrow-fill": {
+              "type": "string",
+              "description": "The fill state of the edge\u2019s source arrow",
+              "enum": [
+                "filled",
+                "hollow"
+              ]
+            },
+            "mid-target-arrow-color": {
+              "type": "string",
+              "description": "The colour of the edge\u2019s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+            },
+            "mid-target-arrow-shape": {
+              "type": "string",
+              "description": "The shape of the edge\u2019s source arrow",
+              "enum": [
+                "triangle",
+                "triangle-tee",
+                "circle-triangle",
+                "triangle-cross",
+                "triangle-backcurve",
+                "vee",
+                "tee",
+                "square",
+                "circle",
+                "diamond",
+                "chevron",
+                "none"
+              ]
+            },
+            "mid-target-arrow-fill": {
+              "type": "string",
+              "description": "The fill state of the edge\u2019s source arrow",
+              "enum": [
+                "filled",
+                "hollow"
+              ]
+            },
+            "arrow-scale": {
+              "type": "number",
+              "description": "Scaling for the arrow size.",
+              "minimum": 0
+            },
+            "source-label": {
+              "type": "string",
+              "description": "The text to display for an edge\u2019s source label. Can give a path, e.g. data(id) will label with the elements id"
+            },
+            "target-label": {
+              "type": "string",
+              "description": "The text to display for an edge\u2019s target label. Can give a path, e.g. data(id) will label with the elements id"
+            }
+          }
         }
-      ],
-      "properties": {
-        "edge-animation": {
-          "type": "string",
-          "description": "The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc ."
-        },
-        "curve-style": {
-          "type": "string",
-          "description": "The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.",
-          "default": "straight",
-          "enum": [
-            "straight",
-            "haystack",
-            "bezier",
-            "unbundled-bezier",
-            "segments",
-            "taxi"
-          ]
-        },
-        "line-color": {
-          "type": "string",
-          "description": "The colour of the edge\u2019s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "line-style": {
-          "type": "string",
-          "description": "The style of the edge\u2019s line.",
-          "enum": [
-            "solid",
-            "dotted",
-            "dashed"
-          ]
-        },
-        "line-cap": {
-          "type": "string",
-          "description": "The cap style of the edge\u2019s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
-          "enum": [
-            "butt",
-            "round",
-            "square"
-          ],
-          "default": "butt"
-        },
-        "line-opacity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1,
-          "description": "The opacity of the edge\u2019s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
-        },
-        "target-arrow-color": {
-          "type": "string",
-          "description": "The colour of the edge\u2019s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "target-arrow-shape": {
-          "type": "string",
-          "description": "The shape of the edge\u2019s source arrow",
-          "enum": [
-            "triangle",
-            "triangle-tee",
-            "circle-triangle",
-            "triangle-cross",
-            "triangle-backcurve",
-            "vee",
-            "tee",
-            "square",
-            "circle",
-            "diamond",
-            "chevron",
-            "none"
-          ]
-        },
-        "target-arrow-fill": {
-          "type": "string",
-          "description": "The fill state of the edge\u2019s source arrow",
-          "enum": [
-            "filled",
-            "hollow"
-          ]
-        },
-        "mid-target-arrow-color": {
-          "type": "string",
-          "description": "The colour of the edge\u2019s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
-        },
-        "mid-target-arrow-shape": {
-          "type": "string",
-          "description": "The shape of the edge\u2019s source arrow",
-          "enum": [
-            "triangle",
-            "triangle-tee",
-            "circle-triangle",
-            "triangle-cross",
-            "triangle-backcurve",
-            "vee",
-            "tee",
-            "square",
-            "circle",
-            "diamond",
-            "chevron",
-            "none"
-          ]
-        },
-        "mid-target-arrow-fill": {
-          "type": "string",
-          "description": "The fill state of the edge\u2019s source arrow",
-          "enum": [
-            "filled",
-            "hollow"
-          ]
-        },
-        "arrow-scale": {
-          "type": "number",
-          "description": "Scaling for the arrow size.",
-          "minimum": 0
-        },
-        "source-label": {
-          "type": "string",
-          "description": "The text to display for an edge\u2019s source label. Can give a path, e.g. data(id) will label with the elements id"
-        },
-        "target-label": {
-          "type": "string",
-          "description": "The text to display for an edge\u2019s target label. Can give a path, e.g. data(id) will label with the elements id"
-        }
-      }
+      ]
     },
     "componentStyles": {
       "type": "object",
@@ -488,7 +490,6 @@
           }
         }
       ]
-      
     },
     "relationshipStyles": {
       "anyOf": [
