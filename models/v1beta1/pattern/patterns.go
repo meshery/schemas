@@ -7,7 +7,7 @@ import (
 	externalRef1 "github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1alpha2"
 	"github.com/meshery/schemas/models/v1beta1/component"
-	"github.com/meshery/schemas/models/v1alpha3"
+	"github.com/meshery/schemas/models/v1alpha3/relationship"
 )
 
 // Defines values for MesheryPatternCatalogDataClass.
@@ -56,7 +56,7 @@ type PatternFile struct {
 	} `json:"preferences,omitempty"`
 
 	// Relationships List of relationships between components
-	Relationships []*v1alpha3.RelationshipDefinition `json:"relationships" yaml:"relationships"`
+	Relationships []*relationship.RelationshipDefinition `json:"relationships" yaml:"relationships"`
 
 	// SchemaVersion Specifies the version of the schema to which the design conforms.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
