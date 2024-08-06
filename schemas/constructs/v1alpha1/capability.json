@@ -69,10 +69,10 @@
     },
 
     "entityState": {
-      "$ref": "../core.json#/definitions/inputString",
       "description": "State of the entity in which the capability is applicable.",
       "type": "array",
       "items": {
+        "$ref": "../core.json#/definitions/inputString",
         "type": "string",
         "enum": ["declaration", "instance"]
       }
