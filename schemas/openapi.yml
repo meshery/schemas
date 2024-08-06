@@ -1436,7 +1436,7 @@ components:
             additionalProperties: false
             patternProperties:
               id:
-                $ref: ../core.json#/definitions/uuid
+                $ref: '#/components/schemas/uuid'
               self:
                 description: >-
                   Defines paths which should be matched with the 'kind'
