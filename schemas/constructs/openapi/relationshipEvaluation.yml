@@ -55,7 +55,7 @@ components:
         - trace
       properties:
         schemaVersion:
-          $ref: ../core.json#/definitions/schemaVersion
+          $ref: ../core.json#/definitions/inputString
           description: Specifies the version of the schema to which the evaluation response conforms.
 
         design:
