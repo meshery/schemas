@@ -24,7 +24,7 @@
           "match": {
             "type": "object",
             "additionalProperties": false,
-            "properties": {
+            "patternProperties": {
               "id": {
                 "$ref": "../core.json#/definitions/uuid"
               },
@@ -35,7 +35,7 @@
                   "type": "string"
                 }
               },
-              "kind": {
+              "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$": {
                 "description": "Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.",
                 "type": "array",
                 "items": {

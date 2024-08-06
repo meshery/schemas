@@ -40,11 +40,17 @@
       "description": "Capabilities associated with the relationship.",
       "items": {
         "$ref": "../v1alpha1/capability.json"
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
       }
     },
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "foreignKey:ModelId;references:Id"
+      },
       "properties": {
         "description": {
           "$ref": "../core.json#/definitions/inputString",
@@ -56,7 +62,10 @@
       }
     },
     "selectors": {
-      "$ref": "./selectors.json#/definitions/selectors"
+      "$ref": "./selectors.json#/definitions/selectors",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      }
     }
   }
 }
