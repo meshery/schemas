@@ -66,6 +66,8 @@ components:
         pattern_file:
           $ref: ../v1beta1/designs.json
           description: Pattern file
+          x-oapi-codegen-extra-tags:
+            gorm: type:bytes;serializer:json
         name:
           $ref: ./common/core.yml#/components/schemas/text
           description: Pattern Name

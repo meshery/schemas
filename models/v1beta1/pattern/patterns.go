@@ -74,7 +74,7 @@ type MesheryPattern struct {
 	Name      externalRef1.Text      `json:"name,omitempty"`
 
 	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-	PatternFile *PatternFile      `json:"pattern_file,omitempty" yaml:"pattern_file"`
+	PatternFile *PatternFile      `json:"pattern_file,omitempty" yaml:"pattern_file" gorm:"type:bytes;serializer:json"`
 	UpdatedAt   externalRef1.Time `json:"updated_at,omitempty"`
 	ID          externalRef1.Id   `db:"id" json:"id"`
 	Visibility  externalRef1.Text `json:"visibility,omitempty"`

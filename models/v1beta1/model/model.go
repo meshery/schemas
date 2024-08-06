@@ -77,7 +77,7 @@ type ModelDefinition struct {
 	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 	Registrant connection.Connection `gorm:"foreignKey:RegistrantId;references:Id" json:"registrant" yaml:"registrant"`
 
-	RegistrantId uuid.UUID `json:"connection_id" gorm:"column:connection_id"`
+	RegistrantId uuid.UUID `json:"connection_id" gorm:"column:connection_id" yaml:"connection_id"`
 
 	// SchemaVersion Specifies the version of the schema used for the definition.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
@@ -95,11 +95,11 @@ type ModelDefinition struct {
 	// Version Version of the model definition.
 	Version string `json:"version" yaml:"version"`
 
-	Components interface{} `json:"components" gorm:"-"`
+	Components interface{} `json:"components" gorm:"-" yaml:"components"`
 
 	// To prevent cyclic error, the type is changed to interface, it doesn't affect registration
 	// Edited on purpose
-	Relationships interface{} `json:"relationships" gorm:"-"`
+	Relationships interface{} `json:"relationships" gorm:"-" yaml:"relationships"`
 }
 
 // ModelDefinitionMetadataCapabilitiesEntityState defines model for ModelDefinition.Metadata.Capabilities.EntityState.
