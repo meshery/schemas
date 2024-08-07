@@ -4,6 +4,9 @@
   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
   "additionalProperties": false,
   "type": "object",
+  "required": [
+    "kind", "type", "status"
+  ],
   "properties": {
     "id": {
       "$ref": "../core.json#/definitions/uuid",

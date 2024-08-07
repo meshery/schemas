@@ -23,7 +23,7 @@
     },
     "components": {
       "description": "A list of one or more component declarations.",
-
+      "minItems": 0,
       "type": "array",
       "items": {
         "$ref": "./component.json"
@@ -58,7 +58,6 @@
     "name",
     "schemaVersion",
     "version",
-    "components",
-    "relationships"
+    "components"
   ]
 }
