@@ -346,7 +346,7 @@ type ComponentDefinition_Metadata struct {
 
 	// Published 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
 	Published            bool                   `json:"published" yaml:"published"`
-	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
 // ComponentDefinitionModelMetadataCapabilitiesEntityState defines model for ComponentDefinition.Model.Metadata.Capabilities.EntityState.
