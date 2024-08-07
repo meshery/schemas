@@ -35,7 +35,7 @@ type Connection struct {
 
 	// Kind Connection Kind
 	Kind     string                 `json:"kind" yaml:"kind"`
-	Metadata map[string]interface{} `json:"metadata" yaml:"metadata" gorm:"type:bytes;serializer:json"`
+	Metadata map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty" gorm:"type:bytes;serializer:json"`
 
 	// Name Connection Name
 	Name string `json:"name" yaml:"name"`

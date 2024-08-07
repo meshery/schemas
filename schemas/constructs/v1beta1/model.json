@@ -11,11 +11,7 @@
     },
     "schemaVersion": {
       "description": "Specifies the version of the schema used for the definition.",
-      "minLength": 1,
-      "maxLength": 50,
-      "type": "string",
-      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
+      "$ref": "../core.json#/definitions/versionString",
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
@@ -24,9 +20,7 @@
     "version": {
       "description": "Version of the model definition.",
       "type": "string",
-      "minLength": 5,
-      "maxLength": 100,
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "$ref": "../core.json#/definitions/semverString",
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
         "json": "version"
@@ -34,14 +28,7 @@
     },
     "name": {
       "description": "The unique name for the model within the scope of a registrant.",
-      "minLength": 1,
-      "maxLength": 100,
-      "type": "string",
-      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
-      "x-oapi-codegen-extra-tags": {
-        "yaml": "name",
-        "json": "name"
-      }
+      "$ref": "../core.json#/definitions/inputString"
     },
     "displayName": {
       "description": "Human-readable name for the model.",
@@ -201,11 +188,7 @@
       "properties": {
         "version": {
           "description": "Version of the model as defined by the registrant.",
-          "minLength": 1,
-          "maxLength": 100,
-          "type": "string",
-          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-          "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
+          "$ref": "../core.json#/definitions/semverString",
           "x-oapi-codegen-extra-tags": {
             "yaml": "version",
             "json": "version"

@@ -318,7 +318,7 @@ type ComponentDefinition struct {
 	// - maintenance: model is unavailable for a period of time.
 	// - enabled: model is available for use for all users of this Meshery Server.
 	// - ignored: model is unavailable for use for all users of this Meshery Server.
-	Status ComponentDefinitionStatus `json:"status" yaml:"status"`
+	Status *ComponentDefinitionStatus `json:"status" yaml:"status"`
 
 	// Styles Visualization styles for a component
 	Styles *Styles `json:"styles" yaml:"styles" gorm:"type:bytes;serializer:json"`
@@ -346,7 +346,7 @@ type ComponentDefinition_Metadata struct {
 
 	// Published 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
 	Published            bool                   `json:"published" yaml:"published"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // ComponentDefinitionModelMetadataCapabilitiesEntityState defines model for ComponentDefinition.Model.Metadata.Capabilities.EntityState.

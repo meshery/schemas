@@ -54,10 +54,10 @@ type ModelDefinition struct {
 	// Category Category of the model.
 	Category category.CategoryDefinition `json:"category" yaml:"category" gorm:"foreignKey:CategoryId;references:Id"`
 
-	CategoryId uuid.UUID `json:"-" gorm:"categoryID"`
+	CategoryId uuid.UUID `json:"-" yaml:"-" gorm:"categoryID"`
 
 	// Description Description of the model.
-	Description string `json:"description" yaml:"description"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// DisplayName Human-readable name for the model.
 	DisplayName string `json:"displayName" yaml:"displayName"`
@@ -90,7 +90,7 @@ type ModelDefinition struct {
 	Status ModelDefinitionStatus `json:"status" yaml:"status"`
 
 	// SubCategory Sub-category of the model.
-	SubCategory string `json:"subCategory" yaml:"subCategory"`
+	SubCategory string `json:"subCategory,omitempty" yaml:"subCategory,omitempty"`
 
 	// Version Version of the model definition.
 	Version string `json:"version" yaml:"version"`
@@ -126,7 +126,7 @@ type ModelDefinition_Metadata struct {
 	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete SVG representation of the complete model.
-	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
+	SvgComplete *string `json:"svgComplete,omitempty" yaml:"svgComplete,omitempty"`
 
 	// SvgWhite SVG representation of the model in white color.
 	SvgWhite             string                 `json:"svgWhite" yaml:"svgWhite"`
@@ -276,9 +276,11 @@ func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	object["svgComplete"], err = json.Marshal(a.SvgComplete)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
+	if a.SvgComplete != nil {
+		object["svgComplete"], err = json.Marshal(a.SvgComplete)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
+		}
 	}
 
 	object["svgWhite"], err = json.Marshal(a.SvgWhite)

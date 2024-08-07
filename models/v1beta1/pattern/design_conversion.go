@@ -1,12 +1,15 @@
 package pattern
 
 import (
-	"fmt"
+	"crypto/rand"
+	"math/big"
 
 	"github.com/gofrs/uuid"
 	"github.com/layer5io/meshkit/utils"
 	"github.com/meshery/schemas/models/conversion"
 	"github.com/meshery/schemas/models/v1alpha2"
+	"github.com/meshery/schemas/models/v1alpha3/relationship"
+	"github.com/meshery/schemas/models/v1beta1"
 	"github.com/meshery/schemas/models/v1beta1/component"
 	"github.com/meshery/schemas/models/v1beta1/model"
 	"github.com/pkg/errors"
@@ -62,7 +65,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 
 	p.Id = uuid.FromStringOrNil(patternFile.PatternID)
 	p.Name = patternFile.Name
-	p.SchemaVersion = "design.meshery.io/v1beta1"
+	p.SchemaVersion = v1beta1.DesignSchemaVersion
 	p.Version = patternFile.Version
 
 	services := patternFile.Services
@@ -74,15 +77,16 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 			compDefVersion = "v1.0.0"
 		}
 		component := component.ComponentDefinition{
-			Version:     compDefVersion,
-			DisplayName: service.Name,
+			SchemaVersion: v1beta1.ComponentSchemaVersion,
+			Version:       compDefVersion,
+			DisplayName:   service.Name,
 			Component: component.Component{
 				Kind:    service.Type,
 				Version: service.ApiVersion,
 			},
-			Configuration: service.Settings,
 			Model: model.ModelDefinition{
-				Name: service.Model,
+				SchemaVersion: v1beta1.ModelSchemaVersion,
+				Name:          service.Model,
 			},
 		}
 		err := p.convertFromSettings(&component, service)
@@ -97,6 +101,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 
 		p.Components = append(p.Components, &component)
 	}
+	p.Relationships = make([]*relationship.RelationshipDefinition, 0)
 	return nil
 
 }
@@ -110,33 +115,40 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 	// Handle node id: traits.meshmap.id
 	compNodeID, err := utils.Cast[string](extensionsMetadata["id"])
 	if err != nil {
-		return errors.Wrapf(err, "failed to extract node id for the component \"%s\" of type %s", cmp.DisplayName, cmp.Component.Kind)
+		return errors.Wrapf(err, "failed to extract node id for the component \"%s\" of type \"%s\"", cmp.DisplayName, cmp.Component.Kind)
 	}
 
 	compNodeUUID, err := uuid.FromString(compNodeID)
 	if err != nil {
-		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type %s, to uuid.", compNodeID, cmp.DisplayName, cmp.Component.Kind)
+		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type \"%s\", to uuid.", compNodeID, cmp.DisplayName, cmp.Component.Kind)
 	}
 	cmp.Id = compNodeUUID
-
-	// Handle model: traits.meshmap.meshmodel-data
-
-	model, err := utils.MarshalAndUnmarshal[interface{}, model.ModelDefinition](extensionsMetadata["meshmodel-data"])
-	if err != nil {
-		return errors.Wrapf(err, "unable to extract model data for \"%s\" from the design file", cmp.DisplayName)
-	}
-	cmp.Model = model
 
 	// Handle component metadata: traits.meshmap.meshmodel-metadata
 	_compMetadata, err := utils.MarshalAndUnmarshal[interface{}, component.ComponentDefinition_Metadata](extensionsMetadata["meshmodel-metadata"])
 	if err != nil {
-		return errors.Wrapf(err, "unable to extract component metadata for \"%s\" from the design file", cmp.DisplayName)
+		return errors.Wrapf(err, "unable to extract metadata for the component \"%s\" of type \"%s\" from the design file", cmp.DisplayName, cmp.Component.Kind)
 	}
 
 	cmp.Metadata = _compMetadata
 
 	// Handle position properties: traits.meshmap.position
-	cmp.Metadata.AdditionalProperties["position"] = extensionsMetadata["position"]
+	randX, _ := rand.Int(rand.Reader, big.NewInt(100))
+
+	randY, _ := rand.Int(rand.Reader, big.NewInt(100))
+
+	positionX, _ := big.NewFloat(0).SetInt(randX).Float32()
+	positionY, _ := big.NewFloat(0).SetInt(randY).Float32()
+
+	cmp.Styles = &component.Styles{
+		Position: &struct {
+			X float32 "json:\"x\" yaml:\"x\""
+			Y float32 "json:\"y\" yaml:\"y\""
+		}{
+			X: positionX,
+			Y: positionY,
+		},
+	}
 
 	// Handle position properties: service.dependsOn/
 	cmp.Metadata.AdditionalProperties["dependsOn"] = service.DependsOn
@@ -147,25 +159,6 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 	// Handle fieldRef data
 	cmp.Metadata.AdditionalProperties["fieldRefData"] = extensionsMetadata["fieldRefData"]
 
-	// Handle parentId for hierarchical relationships
-	// hierarchicalRelationship := v1alpha3.RelationshipDefinition{
-	// 	Kind: "Hierarchical",
-	// 	Type: "Parent",
-	// 	SubType: "Inventory",
-	// 	Selectors: []v1alpha3.Selector{
-	// 		{
-	// 			Allow: v1alpha3.Configuration{
-	// 				From: []v1alpha3.RelationshipConfiguration{
-	// 					{
-	// 						Id:
-	// 					}
-	// 				}
-	// 			},
-	// 		},
-	// 	},
-	// }
-
-	// Handle edges
 	return nil
 }
 
@@ -197,32 +190,22 @@ func (p *PatternFile) convertFromSettings(component *component.ComponentDefiniti
 		component.Configuration = make(map[string]interface{}, 0)
 	}
 
-	if component.Configuration["metadata"] == nil {
-		component.Configuration["metadata"] = make(map[string]interface{})
-	}
-
-	metadata := component.Configuration["metadata"]
-
-	_metadata, err := utils.Cast[map[string]interface{}](metadata)
-	if err != nil {
-		fmt.Println("Failed to convert from v1alpha2 to v1beta1", err)
-		return err
-	}
+	metadata := make(map[string]interface{})
 
 	if service.Labels != nil {
-		_metadata["labels"] = service.Labels
+		metadata["labels"] = service.Labels
 	}
 
 	if service.Annotations != nil {
-		_metadata["annotations"] = service.Annotations
+		metadata["annotations"] = service.Annotations
 	}
 
 	if service.Namespace != "" {
-		_metadata["namespace"] = service.Namespace
+		metadata["namespace"] = service.Namespace
 	}
 
 	component.Configuration = service.Settings
-	component.Configuration["metadata"] = _metadata
+	component.Configuration["metadata"] = metadata
 	return nil
 }
 
