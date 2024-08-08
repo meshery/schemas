@@ -4,6 +4,58 @@
   "description": "Reusable relationships selectors schema elements",
   "$comment": "Sets of selectors are interpreted as a logical OR, while sets of allow/deny are interpreted a logical AND.",
   "definitions": {
+    "matchSelector": {
+      "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "allOf": [
+          {
+            "properties": {
+              "kind": {
+                "type": "string"
+              },
+              "id": {
+                "$ref": "../core.json#/definitions/uuid"
+              }
+            }
+          },
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "mutatorRef": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+                    },
+                    "description": "JSON ref to value from where patch should be applied."
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "mutatedRef": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
     "selector": {
       "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
       "type": "array",
@@ -24,23 +76,12 @@
           "match": {
             "type": "object",
             "additionalProperties": false,
-            "patternProperties": {
-              "id": {
-                "$ref": "../core.json#/definitions/uuid"
+            "properties": {
+              "from": {
+                "$ref": "#/definitions/matchSelector"
               },
-              "self": {
-                "description": "Defines paths which should be matched with the 'kind' property.",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$": {
-                "description": "Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.",
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "to": {
+                "$ref": "#/definitions/matchSelector"
               }
             }
           },
