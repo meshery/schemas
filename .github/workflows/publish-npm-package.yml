@@ -77,4 +77,3 @@ jobs:
           git pull --rebase -f
           git push --verbose
           echo "Pushed Package changes" >> $GITHUB_STEP_SUMMARY
-

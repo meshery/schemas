@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 temp_bundle_dir="./openapi/schemas/temp_schema_bundle"
-echo $folderName
-
+mkdir $temp_dir_name
+rm "./schemas/openapi.yml"
 process_spec() {
   echo "processing $1 ..."
   name=$(basename $1)
-redocly bundle  --dereferenced $1 -o "$temp_bundle_dir/$name"
+  redocly bundle $1 -o "$temp_bundle_dir/$name"
   echo "\n"
 }
 

@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Meshery Relationship Evaluation API
+  version: 1.0.0
+  description: API for evaluating relationships in Meshery designs
+
+paths:
+  /evaluate:
+    post:
+      summary: Evaluate relationships in a design
+      description: Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationRequest"
+      responses:
+        "200":
+          description: Successful evaluation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluationResponse"
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    EvaluationRequest:
+      type: object
+      required:
+        - design
+      properties:
+        design:
+          $ref: ../v1beta1/designs.json
+        options:
+          type: object
+          properties:
+            returnDiffOnly:
+              type: boolean
+              description: If true, only return the diff of changes instead of the complete updated design
+            enableTrace:
+              type: boolean
+              description: If true, include detailed trace information in the response
+
+    EvaluationResponse:
+      type: object
+      description: Schema for the response of a relationship evaluation process in Meshery
+      required:
+        - schemaVersion
+        - design
+        - trace
+      properties:
+        schemaVersion:
+          $ref: ../core.json#/definitions/inputString
+          description: Specifies the version of the schema to which the evaluation response conforms.
+
+        design:
+          $ref: ../v1beta1/designs.json
+          description: The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed.
+
+        evaluationHash:
+          type: string
+          description: Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.
+          example: "a1b2c3d4e5f6g7h8i9j0"
+
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 formatted timestamp of when the evaluation was completed.
+
+        trace:
+          type: object
+          description: A detailed trace of the evaluation process, including actions taken and changes made.
+          properties:
+            policyActions:
+              type: array
+              description: List of policy actions applied during the evaluation.
+              items:
+                type: string
+            relationshipsAdded:
+              type: array
+              description: List of new relationships added to the design.
+              items:
+                $ref: ../v1alpha3/relationship.json
+            relationshipsRemoved:
+              type: array
+              description: List of relationships removed from the design.
+              items:
+                $ref: ../v1alpha3/relationship.json
+            componentsAdded:
+              type: array
+              description: List of new components added to the design.
+              items:
+                $ref: ../v1beta1/component.json
+            componentsRemoved:
+              type: array
+              description: List of components removed from the design.
+              items:
+                $ref: ../v1beta1/component.json
+
+          required:
+            - policyActions
+            - relationshipsAdded
+            - relationshipsRemoved
+            - componentsAdded
+            - componentsRemoved

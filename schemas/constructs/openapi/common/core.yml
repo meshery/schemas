@@ -6,10 +6,6 @@ components:
       x-go-type: uuid.UUID
       x-go-type-import: 
         path: github.com/gofrs/uuid
-      x-oapi-codegen-extra-tags:
-        db: id
-        json: id
-      x-go-name: ID
       x-go-type-skip-optional-pointer: true
 
     username:
@@ -18,7 +14,7 @@ components:
 
     provider:
       type: string
-      description: One of (meshery-cloud, github, google)
+      description: One of (x-oapi-codegen-extra-tags-cloud, github, google)
       x-go-type-skip-optional-pointer: true
 
     time:
@@ -34,6 +30,10 @@ components:
 
     text:
       type: string
+      x-go-type-skip-optional-pointer: true
+
+    number: 
+      type: integer
       x-go-type-skip-optional-pointer: true
       
     avatar_url:
@@ -160,7 +160,91 @@ components:
         json: user_id
       x-go-name: UserID
       x-go-type-skip-optional-pointer: true
-      
+
+    organization_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: org_id
+        json: org_id
+      x-go-type-name: OrganizationId
+      x-go-type-skip-optional-pointer: true
+
+    general_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: id
+        json: id
+      x-go-type-name: GeneralId
+      x-go-type-skip-optional-pointer: true
+
+    environment_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: environment_id
+        json: environment_id
+      x-go-type-name: EnvironmentId
+      x-go-type-skip-optional-pointer: true
+
+    workspace_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: workspace_id
+        json: workspace_id
+      x-go-type-name: WorkspaceId
+      x-go-type-skip-optional-pointer: true
+
+    view_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: view_id
+        json: view_id
+      x-go-type-name: ViewId
+      x-go-type-skip-optional-pointer: true
+
+    team_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: team_id
+        json: team_id
+      x-go-type-name: TeamId
+      x-go-type-skip-optional-pointer: true
+
+    design_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-oapi-codegen-extra-tags:
+        db: design_id
+        json: design_id
+      x-go-type-name: DesignId
+      x-go-type-skip-optional-pointer: true
+
     credential_uuid: 
       type: string
       format: uuid
@@ -229,8 +313,11 @@ components:
       x-go-type: time.Time
       type: string
       format: date-time
+      x-go-name: CreatedAt
       x-oapi-codegen-extra-tags:
         db: created_at
+        yaml: created_at
+      
       x-go-type-skip-optional-pointer: true
       
     updated_at:
@@ -238,8 +325,10 @@ components:
       x-go-type: time.Time
       type: string
       format: date-time
+      x-go-name: UpdatedAt
       x-oapi-codegen-extra-tags:
         db: updated_at
+        yaml: updated_at
       x-go-type-skip-optional-pointer: true
       
     deleted_at:
@@ -247,8 +336,10 @@ components:
       x-go-type: time.Time
       type: string
       format: date-time
+      x-go-name: DeletedAt
       x-oapi-codegen-extra-tags:
         db: deleted_at
+        yaml: deleted_at
       x-go-type-skip-optional-pointer: true
       
     nullTime:

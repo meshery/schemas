@@ -1,0 +1,72 @@
+{
+  "$id": "https://schemas.meshery.io/relationship.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
+  "required": ["schemaVersion", "version", "model", "kind", "type", "subType"],
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "$ref": "../core.json#/definitions/versionString",
+      "description": "Specifies the version of the schema used for the relationship definition."
+    },
+    "version": {
+      "$ref": "../core.json#/definitions/semverString",
+      "description": "Specifies the version of the relationship definition."
+    },
+    "model": {
+      "$ref": "../v1beta1/model.json",
+      "description": "Name of the model in which this relationship is packaged."
+    },
+    "kind": {
+      "$ref": "../core.json#/definitions/inputString",
+      "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
+      "enum": ["hierarchical", "edge", "sibling"]
+    },
+    "type": {
+      "$ref": "../core.json#/definitions/inputString",
+      "description": "Classification of relationships. Used to group relationships similar in nature."
+    },
+    "subType": {
+      "$ref": "../core.json#/definitions/inputString",
+      "description": "Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship."
+    },
+    "evaluationQuery": {
+      "$ref": "../core.json#/definitions/inputString",
+      "description": "Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs."
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "Capabilities associated with the relationship.",
+      "items": {
+        "$ref": "../v1alpha1/capability.json"
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata contains additional information associated with the Relationship.",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "foreignKey:ModelId;references:Id"
+      },
+      "properties": {
+        "description": {
+          "$ref": "../core.json#/definitions/inputString",
+          "description": "Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management."
+        },
+        "styles": {
+          "$ref": "../core.json#/definitions/relationshipStyles"
+        }
+      }
+    },
+    "selectors": {
+      "$ref": "./selectors.json#/definitions/selectors",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      }
+    }
+  }
+}
+

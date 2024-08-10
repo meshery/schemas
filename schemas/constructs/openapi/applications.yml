@@ -12,8 +12,8 @@ servers:
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL (controlled via PORT environment variable)
-security: 
-  -  jwt: []
+security:
+  - jwt: []
 tags:
   - name: applications
     description: APIs for applications
@@ -55,16 +55,16 @@ components:
           $ref: ./common/core.yml#/components/schemas/time
     mesheryApplicationPage:
       allOf:
-      - $ref: ./common/core.yml#/components/schemas/resultsPage
-      - type: object
-        properties:
-          applications:
-            type: array
-            items:
-              $ref: '#/components/schemas/mesheryApplication'
+        - $ref: ./common/core.yml#/components/schemas/resultsPage
+        - type: object
+          properties:
+            applications:
+              type: array
+              items:
+                $ref: "#/components/schemas/mesheryApplication"
 
   requestBodies:
-    mesheryApplicationRequestBody: 
+    mesheryApplicationRequestBody:
       required: true
       content:
         application/json:
@@ -78,7 +78,7 @@ components:
               save:
                 type: boolean
               application_data:
-                $ref: '#/components/schemas/mesheryApplication'
+                $ref: "#/components/schemas/mesheryApplication"
               source_type:
                 $ref: ./common/core.yml#/components/schemas/text
 
@@ -91,21 +91,21 @@ paths:
       summary: Upsert Application
       description: It will insert the application if not present else it will update the matching entry
       requestBody:
-        $ref: '#/components/requestBodies/mesheryApplicationRequestBody'
+        $ref: "#/components/requestBodies/mesheryApplicationRequestBody"
       responses:
-        '200':
+        "200":
           description: Upserted application
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/mesheryApplication'
-        '400':
+                  $ref: "#/components/schemas/mesheryApplication"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     get:
       tags:
@@ -114,20 +114,20 @@ paths:
       summary: Get Applications
       description: Get paginated applications
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/page
-        - $ref: ./common/parameters.yml#/components/schemas/page_size
-        - $ref: ./common/parameters.yml#/components/schemas/search
-        - $ref: ./common/parameters.yml#/components/schemas/order
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
       responses:
-        '200':
+        "200":
           description: Applications
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryApplicationPage'
-        '401':
+                $ref: "#/components/schemas/mesheryApplicationPage"
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/applications/upload/{id}:
     post:
@@ -137,23 +137,23 @@ paths:
       summary: Upsert application source content
       description: Upserts only application source content
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       requestBody:
         description: Body for upserting meshery application source content
         required: true
         content:
           text/plain:
             schema:
-              $ref: '#/components/schemas/mesheryApplication/properties/source_content'
+              $ref: "#/components/schemas/mesheryApplication/properties/source_content"
       responses:
-        '200':
+        "200":
           $ref: ./common/responses.yml#/200
-        '400':
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
-          $ref: ./common/responses.yml#/500            
+        "500":
+          $ref: ./common/responses.yml#/500
   /api/content/applications/download/{id}:
     get:
       tags:
@@ -162,19 +162,19 @@ paths:
       summary: Get application source content
       description: Get application source content
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
-        '200':
+        "200":
           description: application source content associated with ID
           content:
             text/plain:
               schema:
-                $ref: '#/components/schemas/mesheryApplication/properties/source_content'
-        '400':
+                $ref: "#/components/schemas/mesheryApplication/properties/source_content"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
   /api/content/applications/{id}:
     get:
@@ -184,21 +184,21 @@ paths:
       summary: Get application by ID
       description: Get application by ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
-        '200':
+        "200":
           description: application associated with ID
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryApplication'
-        '400':
+                $ref: "#/components/schemas/mesheryApplication"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500
     delete:
       tags:
@@ -207,19 +207,19 @@ paths:
       summary: Delete application by ID
       description: Delete application associated with ID
       parameters:
-        - $ref: ./common/parameters.yml#/components/schemas/id
+        - $ref: ./common/parameters.yml#/components/parameters/id
       responses:
-        '200':
+        "200":
           description: Deleted application
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/mesheryApplication'
-        '400':
+                $ref: "#/components/schemas/mesheryApplication"
+        "400":
           $ref: ./common/responses.yml#/400
-        '401':
+        "401":
           $ref: ./common/responses.yml#/401
-        '404':
+        "404":
           $ref: ./common/responses.yml#/404
-        '500':
+        "500":
           $ref: ./common/responses.yml#/500

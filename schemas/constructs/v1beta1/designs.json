@@ -4,76 +4,30 @@
   "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
   "type": "object",
   "properties": {
+    "id": {
+      "$ref": "../core.json#/definitions/uuid"
+    },
     "name": {
       "type": "string",
       "description": "Name of the design; a descriptive, but concise title for the design document."
     },
     "schemaVersion": {
-      "$ref": "../v1alpha2/core.json#/definitions/versionString",
+      "$ref": "../core.json#/definitions/versionString",
       "description": "Specifies the version of the schema to which the design conforms."
     },
     "version": {
-      "$ref": "../v1alpha2/core.json#/definitions/semverString",
+      "$ref": "../core.json#/definitions/semverString",
       "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
       "minLength": 1,
       "maxLength": 50
     },
     "components": {
-      "description": "Map of component instances to their corresponding component declarations",
-      "additionalProperties": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "type": "object",
-      "properties": {
-        "schemaVersion": {
-          "$ref": "./component.json#/properties/schemaVersion"
-        },
-        "version": {
-          "$ref": "./component.json#/properties/version"
-        },
-        "name": {
-          "$ref": "../v1alpha2/core.json#/definitions/inputString"
-        },
-        "metadata": {
-          "$ref": "./component.json#/properties/metadata"
-        },
-        "model": {
-          "$ref": "./component.json#/properties/model"
-        },
-        "component": {
-          "type": "object",
-          "description": "Component and it's configuration.",
-          "properties": {
-            "version": {
-              "$ref": "./component.json#/properties/component/properties/version"
-            },
-            "kind": {
-              "$ref": "./component.json#/properties/component/properties/kind"
-            },
-            "configuration": {
-              "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition.",
-              "additionalProperties": {
-                "type": "string"
-              },
-              "type": "object"
-            }
-          },
-          "required": [
-            "version",
-            "kind",
-            "configuration"
-          ]
-        }
-      },
-      "required": [
-        "schemaVersion",
-        "version",
-        "name",
-        "model",
-        "metadata",
-        "component"
-      ]
+      "description": "A list of one or more component declarations.",
+      "minItems": 0,
+      "type": "array",
+      "items": {
+        "$ref": "./component.json"
+      }
     },
     "preferences": {
       "type": "object",
@@ -92,64 +46,18 @@
       ]
     },
     "relationships": {
-      "type": "array",
       "description": "List of relationships between components",
+      "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "schemaVersion": {
-            "$ref": "../v1alpha2/relationship.json#/properties/schemaVersion"
-          },
-          "version": {
-            "$ref": "../v1alpha2/relationship.json#/properties/version"
-          },
-          "from": {
-            "type": "string",
-            "format": "uuid",
-            "description": "ID (UUID) of the source component"
-          },
-          "to": {
-            "type": "string",
-            "format": "uuid",
-            "description": "ID (UUID) of the target component"
-          },
-          "kind": {
-            "$ref": "../v1alpha2/relationship.json#/properties/kind",
-            "description": "Kind of the relationship"
-          },
-          "type": {
-            "$ref": "../v1alpha2/relationship.json#/properties/type",
-            "description": "Type of the relationship"
-          },
-          "subType": {
-            "$ref": "../v1alpha2/relationship.json#/properties/subType",
-            "description": "Subtype of the relationship (optional)"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "evaluating",
-              "valid",
-              "invalid"
-            ],
-            "description": "Status of the relationship"
-          }
-        },
-        "required": [
-          "from",
-          "to",
-          "kind",
-          "type",
-          "status"
-        ]
+        "$ref": "../v1alpha3/relationship.json"
       }
     }
   },
+  
   "required": [
     "name",
     "schemaVersion",
     "version",
-    "components",
-    "relationships"
+    "components"
   ]
 }

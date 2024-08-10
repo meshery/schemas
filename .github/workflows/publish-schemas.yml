@@ -28,6 +28,10 @@ jobs:
          if [[ -d ./openapi/schemas/temp_schema_bundle ]]; then
           rmdir -r ./openapi/schemas/temp_schema_bundle
          fi
+
+      - name: Pull changes from remote
+        run: git pull origin master
+
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Update schema
@@ -35,4 +39,4 @@ jobs:
           branch: master
           commit_user_name: l5io
           commit_user_email: ci@layer5.io
-          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>        
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>

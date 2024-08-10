@@ -14,7 +14,7 @@
       "description": "Specifies the version of the component definition."
     },
     "displayName": {
-      "$ref": "https://schemas.meshery.io/v1alpha2/core.json#inputString",
+      "$ref": "https://schemas.meshery.io/core.json#inputString",
       "description": "Name of the component in human-readible format."
     },
     "description": {
@@ -23,7 +23,10 @@
     },
     "format": {
       "type": "string",
-      "enum": ["JSON", "CUE"],
+      "enum": [
+        "JSON",
+        "CUE"
+      ],
       "default": "JSON",
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
@@ -34,7 +37,12 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the component.",
-      "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
+      "required": [
+        "shape",
+        "primaryColor",
+        "svgColor",
+        "svgWhite"
+      ],
       "properties": {
         // Future: extrapolate `capabilities` properties into first-class properties.
         // define a proper json schema for capabilities
@@ -48,25 +56,17 @@
         },
         // Proposal:
         // Remove this property, which currently only serves to complicate the coordination between component properties and relationship evaluations.
-
         //Future consideration for being of this property, having this property dictated by the result of relationship evaluation.
-
         // The presence or absence of a relationship doesn't not affect the initial representation of the node group on the canvas. All components are represented as nodes upon initial drop onto the canvas and only convert in their visual representation to a node group post-evaluation.
-
         // type: "edge"
-        
         // from: "kubernetes"
         // kind: "Pod"
-                
         // {
         //   to: "kubernetes"
         //   kind: "self"
-
         //   to: "kubernetes"
         //   kind: "non-self"
-
         // }
-
         "isAnnotation": {
           "type": "boolean",
           "description": "Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation."
@@ -74,7 +74,32 @@
         "shape": {
           "type": "string",
           "description": "Shape of the component used for UI representation.",
-          "enum": ["ellipse","triangle","round-triangle","rectangle","round-rectangle","bottom-round-rectangle","cut-rectangle","barrel","rhomboid","diamond","round-diamond","pentagon","round-pentagon","hexagon","round-hexagon","concave-hexagon","heptagon","round-heptagon","octagon","round-octagon","star","tag","round-tag","vee"]
+          "enum": [
+            "ellipse",
+            "triangle",
+            "round-triangle",
+            "rectangle",
+            "round-rectangle",
+            "bottom-round-rectangle",
+            "cut-rectangle",
+            "barrel",
+            "rhomboid",
+            "diamond",
+            "round-diamond",
+            "pentagon",
+            "round-pentagon",
+            "hexagon",
+            "round-hexagon",
+            "concave-hexagon",
+            "heptagon",
+            "round-heptagon",
+            "octagon",
+            "round-octagon",
+            "star",
+            "tag",
+            "round-tag",
+            "vee"
+          ]
         },
         "primaryColor": {
           "type": "string",
@@ -98,13 +123,12 @@
         },
         // This should probably becomes status as it is a mutable attribute of the component.
         // and would be an enum of:
-        "status" :[
-        "ignore",
-        "publish",
-        "duplicate" ,// this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the "duplicate" status.
-        "maintenance"
-         ],// unavailable for a period of time
-
+        "status": [
+          "ignore",
+          "publish",
+          "duplicate", // this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the "duplicate" status.
+          "maintenance"
+        ], // unavailable for a period of time
         // should be probably removed in favor of status
         "published": {
           "type": "boolean",
@@ -130,8 +154,17 @@
           "description": "JSON schema of the object as defined by the registrant."
         }
       },
-      "required": ["version", "kind", "schema"]
+      "required": [
+        "version",
+        "kind",
+        "schema"
+      ]
     }
   },
-  "required": ["schemaVersion", "version", "model", "component"]
+  "required": [
+    "schemaVersion",
+    "version",
+    "model",
+    "component"
+  ]
 }
