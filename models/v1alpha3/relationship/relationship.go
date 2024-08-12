@@ -143,8 +143,21 @@ type SelectorSet []struct {
 	Deny *Selector `json:"deny,omitempty" yaml:"deny,omitempty"`
 }
 
+// Status of the relationship.
+type RelationshipDefinitionStatus string
+
+// Defines values for RelationshipDefinitionStatus.
+const (
+	Deleted   RelationshipDefinitionStatus = "deleted"
+	Enabled   RelationshipDefinitionStatus = "enabled"
+	Ignored   RelationshipDefinitionStatus = "ignored"
+)
+
 // RelationshipDefinition Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
 type RelationshipDefinition struct {
+	// Id Uniquely identifies the entity
+	Id uuid.UUID `json:"id" yaml:"id"`
+
 	// Capabilities Capabilities associated with the relationship.
 	Capabilities *[]capability.Capability `json:"capabilities,omitempty" yaml:"capabilities" gorm:"type:bytes;serializer:json"`
 
@@ -171,8 +184,11 @@ type RelationshipDefinition struct {
 	// SubType Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship.
 	SubType string `json:"subType" yaml:"subType"`
 
+	// Status of the relationship.
+	Status *RelationshipDefinition `json:"status" yaml:"status"`
+
 	// Type Classification of relationships. Used to group relationships similar in nature.
-	Type string `json:"type" yaml:"type"`
+	RelationshipType string `json:"type" yaml:"type" gorm:"column:type"`
 
 	// Version Specifies the version of the relationship definition.
 	Version string `json:"version" yaml:"version"`

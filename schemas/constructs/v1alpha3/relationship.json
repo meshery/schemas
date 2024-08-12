@@ -2,10 +2,21 @@
   "$id": "https://schemas.meshery.io/relationship.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
-  "required": ["schemaVersion", "version", "model", "kind", "type", "subType"],
+  "required": [
+    "schemaVersion",
+    "version",
+    "model",
+    "kind",
+    "type",
+    "subType"
+  ],
   "additionalProperties": false,
   "type": "object",
   "properties": {
+    "id": {
+      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+      "$ref": "../core.json#/definitions/uuid"
+    },
     "schemaVersion": {
       "$ref": "../core.json#/definitions/versionString",
       "description": "Specifies the version of the schema used for the relationship definition."
@@ -21,15 +32,35 @@
     "kind": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
-      "enum": ["hierarchical", "edge", "sibling"]
+      "enum": [
+        "hierarchical",
+        "edge",
+        "sibling"
+      ]
     },
     "type": {
       "$ref": "../core.json#/definitions/inputString",
-      "description": "Classification of relationships. Used to group relationships similar in nature."
+      "description": "Classification of relationships. Used to group relationships similar in nature.",
+      "x-go-name": "RelationshipType",
+      "gorm": "column:type"
     },
     "subType": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship."
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the relationship.",
+      "default": "enabled",
+      "enum": [
+        "ignored",
+        "enabled",
+        "deleted"
+      ],
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "status",
+        "json": "status"
+      }
     },
     "evaluationQuery": {
       "$ref": "../core.json#/definitions/inputString",
@@ -69,4 +100,3 @@
     }
   }
 }
-
