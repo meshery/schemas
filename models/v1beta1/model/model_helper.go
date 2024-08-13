@@ -79,13 +79,12 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		m.Id = modelID
 		m.CategoryId = id
 		m.RegistrantId = hostID
-		m.Status = ModelDefinitionStatusEnabled
 		err = db.Omit(clause.Associations).Create(&m).Error
 		if err != nil {
 			return uuid.UUID{}, err
 		}
 		// register model inside registries table
-		err = registerModel(db, hostID, modelID)
+		// err = registerModel(db, hostID, modelID)
 		if err != nil {
 			return uuid.UUID{}, err
 		}

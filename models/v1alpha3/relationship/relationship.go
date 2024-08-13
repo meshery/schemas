@@ -116,11 +116,23 @@ type Relationship_Metadata struct {
 	Styles      *RelationshipDefinitionMetadataStyles `json:"styles" yaml:"styles"`
 }
 
+type MatchSelectorItem struct {
+	Id         *uuid.UUID  `json:"id" yaml:"id"`
+	Kind       string      `json:"kind" yaml:"kind"`
+	MutatorRef *[][]string `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
+	MutatedRef *[][]string `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
+}
+
+type MatchSelector struct {
+	From *[]MatchSelectorItem `json:"from" yaml:"from"`
+	To   *[]MatchSelectorItem `json:"to" yaml:"to"`
+}
+
 type SelectorItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	Id    *uuid.UUID             `json:"id" yaml:"id"`
-	Kind  *string                `json:"kind" yaml:"kind"`
-	Match map[string]interface{} `json:"match,omitempty" yaml:"match"`
+	Id    *uuid.UUID    `json:"id" yaml:"id"`
+	Kind  *string       `json:"kind" yaml:"kind"`
+	Match MatchSelector `json:"match,omitempty" yaml:"match,omitempty"`
 
 	// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
 	Model *model.ModelDefinition                  `json:"model,omitempty" yaml:"model"`
@@ -148,9 +160,9 @@ type RelationshipDefinitionStatus string
 
 // Defines values for RelationshipDefinitionStatus.
 const (
-	Deleted   RelationshipDefinitionStatus = "deleted"
-	Enabled   RelationshipDefinitionStatus = "enabled"
-	Ignored   RelationshipDefinitionStatus = "ignored"
+	Deleted RelationshipDefinitionStatus = "deleted"
+	Enabled RelationshipDefinitionStatus = "enabled"
+	Ignored RelationshipDefinitionStatus = "ignored"
 )
 
 // RelationshipDefinition Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
