@@ -111,7 +111,6 @@
     "metadata": {
       "type": "object",
       "description": "Metadata containing additional information associated with the model.",
-      "required": ["name", "version"],
       "properties": {
         "capabilities": {
           "type": "array",
