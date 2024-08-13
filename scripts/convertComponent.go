@@ -100,7 +100,7 @@ type Host struct {
 }
 
 func main() {
-	dirPath := "/home/jougan/OpenSource/meshery/server/meshmodel" // Change this to your directory path
+	dirPath := "server/meshmodel" // Change this to your directory path
 
 	// Create a channel for jobs and a wait group for synchronization
 	jobs := make(chan Job, 100)
@@ -190,7 +190,7 @@ func createModel(filePath string, fileData []byte) {
 		DisplayName:   oldModel.DisplayName,
 		Model:         model.Model(oldModel.Model),
 		Description:   oldModel.Description,
-		Status:        "enabled",
+		Status:        model.ModelDefinitionStatus(oldModel.Status),
 		CategoryId:    oldCategoryID,
 		Category:      cat,
 		SchemaVersion: oldModel.SchemaVersion,
@@ -265,7 +265,7 @@ func processFile(filePath string) {
 		DisplayName:   oldCompDef.Model.DisplayName,
 		Model:         model.Model(oldCompDef.Model.Model),
 		Description:   oldCompDef.Model.Description,
-		Status:        "enabled",
+		Status:        model.ModelDefinitionStatus(oldCompDef.Model.Status),
 		CategoryId:    oldCategoryID,
 		Category:      cat,
 		SchemaVersion: oldCompDef.Model.SchemaVersion,
