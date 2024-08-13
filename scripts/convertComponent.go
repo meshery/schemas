@@ -343,6 +343,7 @@ func createNewRegistrant(oldRegistrantID uuid.UUID, hostname string) connection.
 		Id:     oldRegistrantID,
 		Kind:   hostname,
 		Status: "register",
+		Type:   "registry",
 	}
 
 	switch newRegistrant.Kind {
