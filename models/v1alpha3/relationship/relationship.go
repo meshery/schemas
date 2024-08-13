@@ -185,7 +185,7 @@ type RelationshipDefinition struct {
 	SubType string `json:"subType" yaml:"subType"`
 
 	// Status of the relationship.
-	Status *RelationshipDefinition `json:"status" yaml:"status"`
+	Status *RelationshipDefinitionStatus `json:"status" yaml:"status"`
 
 	// Type Classification of relationships. Used to group relationships similar in nature.
 	RelationshipType string `json:"type" yaml:"type" gorm:"column:type"`
