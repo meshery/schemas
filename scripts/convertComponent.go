@@ -127,6 +127,8 @@ func main() {
 			// Check if the file contains the schemaVersion
 			if containsSchemaVersion(fileData, "components.meshery.io/v1beta1") {
 				jobs <- Job{filePath: path}
+			} else if containsSchemaVersion(fileData, "models.meshery.io/v1beta1") {
+				createModel(path, fileData) // Directly create the model
 			}
 		}
 		return nil
@@ -146,7 +148,71 @@ func worker(jobs <-chan Job, wg *sync.WaitGroup) {
 		processFile(job.filePath)
 	}
 }
+func createModel(filePath string, fileData []byte) {
+	// Unmarshal the old JSON structure into the old Model struct
+	var oldModel Model
+	if err := json.Unmarshal(fileData, &oldModel); err != nil {
+		log.Printf("Failed to unmarshal JSON in file %s: %v", filePath, err)
+		return
+	}
 
+	// Convert the google/uuid.UUID to gofrs/uuid.UUID
+	oldID, err := uuid.FromString(oldModel.ID.String())
+	if err != nil {
+		log.Printf("Failed to convert UUID in file %s: %v", filePath, err)
+		return
+	}
+
+	oldRegistrantID, err := uuid.FromString(oldModel.RegistrantID.String())
+	if err != nil {
+		log.Printf("Failed to convert RegistrantID UUID in file %s: %v", filePath, err)
+		return
+	}
+
+	// Map metadata efficiently
+	newModelMetadata := mapMetadata(oldModel.Metadata)
+
+	// Map the old Model to the new ModelDefinition
+	newRegistrant := createNewRegistrant(oldRegistrantID, oldModel.Registrant.Hostname)
+
+	oldCategoryID, err := uuid.FromString(oldModel.CategoryID.String())
+	if err != nil {
+		log.Printf("Failed to convert UUID in file %s: %v", filePath, err)
+		return
+	}
+	cat := category.CategoryDefinition{
+		Name: oldModel.Category.Name,
+	}
+	// Map the old Model to the new ModelDefinition
+	newModel := model.ModelDefinition{
+		Id:            oldID,
+		Name:          oldModel.Name,
+		DisplayName:   oldModel.DisplayName,
+		Model:         model.Model(oldModel.Model),
+		Description:   oldModel.Description,
+		Status:        "enabled",
+		CategoryId:    oldCategoryID,
+		Category:      cat,
+		SchemaVersion: oldModel.SchemaVersion,
+		SubCategory:   oldModel.SubCategory,
+		Metadata:      &newModelMetadata,
+		Registrant:    newRegistrant,
+		Version:       oldModel.Version,
+	}
+	modifiedData, err := json.MarshalIndent(newModel, "", "  ")
+	if err != nil {
+		log.Printf("Failed to marshal JSON in file %s: %v", filePath, err)
+		return
+	}
+
+	// Write the updated JSON to a new file
+	if err := os.WriteFile(filePath, modifiedData, 0644); err != nil {
+		log.Printf("Failed to write file %s: %v", filePath, err)
+		return
+	}
+
+	fmt.Println("File processed and saved:", filePath)
+}
 func processFile(filePath string) {
 	// Read the JSON file
 	fileData, err := os.ReadFile(filePath)
