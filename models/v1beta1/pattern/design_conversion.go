@@ -150,6 +150,7 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 		},
 	}
 
+	cmp.Metadata.AdditionalProperties = make(map[string]interface{}, 0)
 	// Handle position properties: service.dependsOn/
 	cmp.Metadata.AdditionalProperties["dependsOn"] = service.DependsOn
 
