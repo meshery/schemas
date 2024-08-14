@@ -100,7 +100,7 @@ type Host struct {
 }
 
 func main() {
-	dirPath := "server/meshmodel" // Change this to your directory path
+	dirPath := "../meshery/server/meshmodel" // Change this to your directory path
 
 	// Create a channel for jobs and a wait group for synchronization
 	jobs := make(chan Job, 100)
