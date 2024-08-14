@@ -587,7 +587,7 @@ func getGhostPointer(metadata map[string]interface{}, key string) *component.Com
 }
 
 func getShapePointer(metadata map[string]interface{}, key string) *component.ComponentDefinitionStylesShape {
-	shape := metadata[key].(string)
+	shape, _ := metadata[key].(string)
 	if shape == "" {
 		return nil
 	}
