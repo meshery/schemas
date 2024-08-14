@@ -408,7 +408,7 @@ func createNewRegistrant(oldRegistrantID uuid.UUID, hostname string) connection.
 	newRegistrant := connection.Connection{
 		Id:     oldRegistrantID,
 		Kind:   hostname,
-		Status: "connection.Registered",
+		Status: connection.Discovered,
 		Type:   "registry",
 	}
 
