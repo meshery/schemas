@@ -419,6 +419,8 @@ func createNewRegistrant(oldRegistrantID uuid.UUID, hostname string) connection.
 		newRegistrant.Name = "GitHub"
 	case "kubernetes":
 		newRegistrant.Name = "Kubernetes"
+	case "meshery":
+		newRegistrant.Name = "Meshery"
 	default:
 		newRegistrant.Kind = "Unknown"
 	}

@@ -33,7 +33,7 @@ type Capability struct {
 	Kind string `json:"kind" yaml:"kind"`
 
 	// Metadata Metadata contains additional information associated with the capability. Extension point.
-	Metadata *map[string]interface{} `json:"metadata" yaml:"metadata"`
+	Metadata interface{} `json:"metadata" yaml:"metadata"`
 
 	// SchemaVersion Specifies the version of the schema to which the capability definition conforms.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
