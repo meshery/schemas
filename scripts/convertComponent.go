@@ -587,10 +587,11 @@ func getGhostPointer(metadata map[string]interface{}, key string) *component.Com
 }
 
 func getShapePointer(metadata map[string]interface{}, key string) *component.ComponentDefinitionStylesShape {
-	if value, ok := metadata[key].(component.ComponentDefinitionStylesShape); ok {
-		return &value
+	shape := metadata[key].(string)
+	if shape == "" {
+		return nil
 	}
-	return nil
+	return (*component.ComponentDefinitionStylesShape)(&shape)
 }
 
 func getTextHalignPointer(metadata map[string]interface{}, key string) *component.ComponentDefinitionStylesTextHalign {
