@@ -374,7 +374,7 @@ func createNewRegistrant(oldRegistrantID uuid.UUID, hostname string) connection.
 	case "artifacthub":
 		newRegistrant.Name = "Artifact Hub"
 	case "github":
-		newRegistrant.Name = "GitHub"
+		newRegistrant.Name = "Github"
 	case "kubernetes":
 		newRegistrant.Name = "Kubernetes"
 	case "meshery":
