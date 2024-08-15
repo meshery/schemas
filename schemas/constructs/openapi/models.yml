@@ -1,11 +1,11 @@
 openapi: 3.0.0
 components:
   schemas:
-    model_definition:
-      $ref: ../v1beta1/model.json
-    component_definition:
-      $ref: ../v1beta1/component.json
-    capability:
-      $ref: ../v1alpha1/capability.json
+    # model_definition:
+    #   $ref: ../v1beta1/model.json
+    # component_definition:
+    #   $ref: ../v1beta1/component.json
+    # capability:
+    #   $ref: ../v1alpha1/capability.json
     relationship_definition:
       $ref: ../v1alpha3/relationship.json

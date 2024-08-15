@@ -5,10 +5,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-/**
- * State of the entity in which the capability is applicable.
- */
-export type InputString = ("declaration" | "instance")[];
 export type From = {
   kind?: string;
   model?: HttpsSchemasMesheryIoModelJson1;
@@ -126,6 +122,10 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
  */
 export interface HttpsSchemasMesheryIoModelJson {
   /**
+   * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+   */
+  id?: string;
+  /**
    * Specifies the version of the schema used for the definition.
    */
   schemaVersion?: string;
@@ -153,13 +153,21 @@ export interface HttpsSchemasMesheryIoModelJson {
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
   status?: "ignored" | "enabled" | "duplicate";
-  registrant: {
-    [k: string]: unknown;
-  };
+  registrant: HttpsSchemasMesheryIoComponentJson;
   /**
    * Category of the model.
    */
-  category: string;
+  category: {
+    /**
+     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+     */
+    id?: string;
+    name?: string;
+    metadata?: {
+      [k: string]: unknown;
+    };
+    [k: string]: unknown;
+  };
   /**
    * Sub-category of the model.
    */
@@ -210,6 +218,57 @@ export interface HttpsSchemasMesheryIoModelJson {
   };
 }
 /**
+ * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
+ */
+export interface HttpsSchemasMesheryIoComponentJson {
+  /**
+   * ID
+   */
+  id?: string;
+  /**
+   * Connection Name
+   */
+  name?: string;
+  /**
+   * Credential ID
+   */
+  credential_id?: string;
+  /**
+   * Connection Type
+   */
+  type: string;
+  /**
+   * Connection Subtype
+   */
+  sub_type?: string;
+  /**
+   * Connection Kind
+   */
+  kind: string;
+  metadata?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Connection Status
+   */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
+/**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
 export interface HttpsSchemasMesheryIoCapabilityJson {
@@ -245,7 +304,10 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    * Key that backs the capability.
    */
   key?: string;
-  entityState?: InputString;
+  /**
+   * State of the entity in which the capability is applicable.
+   */
+  entityState: ("declaration" | "instance")[];
   /**
    * Status of the capability
    */
@@ -261,6 +323,10 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
  * Model of the component. Learn more at https://docs.meshery.io/concepts/models
  */
 export interface HttpsSchemasMesheryIoModelJson1 {
+  /**
+   * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+   */
+  id?: string;
   /**
    * Specifies the version of the schema used for the definition.
    */
@@ -289,13 +355,21 @@ export interface HttpsSchemasMesheryIoModelJson1 {
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
   status?: "ignored" | "enabled" | "duplicate";
-  registrant: {
-    [k: string]: unknown;
-  };
+  registrant: HttpsSchemasMesheryIoComponentJson;
   /**
    * Category of the model.
    */
-  category: string;
+  category: {
+    /**
+     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+     */
+    id?: string;
+    name?: string;
+    metadata?: {
+      [k: string]: unknown;
+    };
+    [k: string]: unknown;
+  };
   /**
    * Sub-category of the model.
    */
@@ -350,6 +424,10 @@ export interface HttpsSchemasMesheryIoModelJson1 {
  */
 export interface HttpsSchemasMesheryIoModelJson2 {
   /**
+   * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+   */
+  id?: string;
+  /**
    * Specifies the version of the schema used for the definition.
    */
   schemaVersion?: string;
@@ -377,13 +455,21 @@ export interface HttpsSchemasMesheryIoModelJson2 {
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
   status?: "ignored" | "enabled" | "duplicate";
-  registrant: {
-    [k: string]: unknown;
-  };
+  registrant: HttpsSchemasMesheryIoComponentJson;
   /**
    * Category of the model.
    */
-  category: string;
+  category: {
+    /**
+     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+     */
+    id?: string;
+    name?: string;
+    metadata?: {
+      [k: string]: unknown;
+    };
+    [k: string]: unknown;
+  };
   /**
    * Sub-category of the model.
    */

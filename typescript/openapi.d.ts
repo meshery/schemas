@@ -4,155 +4,6 @@
  */
 
 export interface paths {
-    "/api/content/applications": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Applications
-         * @description Get paginated applications
-         */
-        get: operations["GetApplications"];
-        put?: never;
-        /**
-         * Upsert Application
-         * @description It will insert the application if not present else it will update the matching entry
-         */
-        post: operations["UpsertApplication"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/applications/upload/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Upsert application source content
-         * @description Upserts only application source content
-         */
-        post: operations["UpsertApplicationSourceContent"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/applications/download/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get application source content
-         * @description Get application source content
-         */
-        get: operations["GetApplicationSourceContent"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/applications/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get application by ID
-         * @description Get application by ID
-         */
-        get: operations["GetApplication"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete application by ID
-         * @description Delete application associated with ID
-         */
-        delete: operations["DeleteApplication"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/capabilities": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Capabilities
-         * @deprecated
-         * @description Get available capabilities for logged in user
-         */
-        get: operations["GetCapabilitie"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/{meshery-version}/capabilities": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Capabilities By server version
-         * @description Get available capabilities for logged in user
-         */
-        get: operations["GetCapabilities"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/collaboration": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Collaboration
-         * @description Collaboration
-         */
-        get: operations["CollaborationHandler"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/integrations/connections": {
         parameters: {
             query?: never;
@@ -281,227 +132,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/system/user/credentials": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get user's credentials
-         * @description Get all user's credentials for logged in user
-         */
-        get: operations["GetUserCredentials"];
-        /**
-         * Update credential
-         * @description Update credentials for logged in user
-         */
-        put: operations["UpdateUserCredential"];
-        /**
-         * Create Credential
-         * @description Create new credentials for logged in user
-         */
-        post: operations["SaveUserCredential"];
-        /**
-         * Delete user's credentials
-         * @description Delete user's credentials (tombstoned records) for logged in user
-         */
-        delete: operations["DeleteUserCredential"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Events Aggregate
-         * @description Get Events Aggreate Count
-         */
-        get: operations["GetEventsAggregate"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/date": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Events by Date
-         * @description Get Events by date
-         */
-        get: operations["RetrieveResultsByDate"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/week": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Events by Week
-         * @description Get Events by week
-         */
-        get: operations["RetrieveResultsByWeek"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/month": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Events by Month
-         * @description Get Events by month
-         */
-        get: operations["RetrieveResultsByMonth"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * All Events
-         * @description Get All events
-         */
-        get: operations["GetEvents"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/events/summary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Events Summary
-         * @description Get Events summary for a user
-         */
-        get: operations["GetEventSummaryByUser"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Filters
-         * @description Get paginated filters
-         */
-        get: operations["GetFilters"];
-        put?: never;
-        /**
-         * Upsert Filter
-         * @description It will insert the filter if not present else it will update the matching entry
-         */
-        post: operations["UpsertFilter"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters/file/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Filter file
-         * @description Get the filter associated with the given filter id without any metadata
-         */
-        get: operations["GetFilterFile"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get filter by ID
-         * @description Get filter by ID
-         */
-        get: operations["GetFilter"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete filter by ID
-         * @description Delete filter associated with ID
-         */
-        delete: operations["DeleteFilter"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/content/filters/clone/{id}": {
+    "/evaluate": {
         parameters: {
             query?: never;
             header?: never;
@@ -511,558 +142,47 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Clone filter
-         * @description Clone filter associated with ID
+         * Evaluate relationships in a design
+         * @description Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed.
          */
-        post: operations["CloneFilter"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/system/roles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EvaluationRequest"];
+                };
+            };
+            responses: {
+                /** @description Successful evaluation */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EvaluationResponse"];
+                    };
+                };
+                /** @description Bad request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Internal server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
         };
-        /**
-         * Get All Roles
-         * @description Get All supported roles
-         */
-        get: operations["GetAllRoles"];
-        put?: never;
-        /**
-         * Assign role
-         * @description Assign role to user
-         */
-        post: operations["AddRoleHolder"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/system/roles/edit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Edit Role
-         * @description Edit role of user
-         */
-        post: operations["EditRoleHolder"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/system/roles/edit/bulk": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Bulk Edit Role
-         * @description Edit roles of user in bulk
-         */
-        post: operations["BulkEditRoleHolder"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/system/roles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Role
-         * @description Edit roles of user in bulk
-         */
-        delete: operations["DeleteRole"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/performance/smp/profiles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Performance Profiles
-         * @description Get Performance Profiles for SMP Dashboard
-         */
-        get: operations["SMPDashboardPerfProfiles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/performance/smp/profiles/{id}/results": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Performance Profiles Results by ID
-         * @description Get Performance Profiles results by ID for SMP Dashboard
-         */
-        get: operations["SMPDashboardTestResults"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/performance/profiles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Performance Profiles
-         * @description Get performance profiles
-         */
-        get: operations["GetPerformanceProfiles"];
-        put?: never;
-        /**
-         * Upsert Performance Profiles
-         * @description Update performance profiles or create a new performance profile if no id is provided
-         */
-        post: operations["UpsertPerformanceProfile"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/performance/profiles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Performance Profile by Id
-         * @description Get Performance Profile by ID
-         */
-        get: operations["GetPerformanceProfile"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete Performance Profiles
-         * @description Delete performance profiles by ID
-         */
-        delete: operations["DeletePerformanceProfile"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/performance/profiles/{id}/results": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Performance Profiles result
-         * @description Get paginated Performance Profiles result
-         */
-        get: operations["GetPerformanceProfileResults"];
-        put?: never;
-        /**
-         * Add performance profiles result
-         * @description Add performance profile result in given performance profile id
-         */
-        post: operations["AddPerformanceProfileResult"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/performance/profiles/{id}/results/{resultID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Performance Profiles result
-         * @description Get the performance test result associated with the given profile id and with the given test id
-         */
-        get: operations["GetPerformanceProfileResult"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/system/user/tokens": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Tokens
-         * @description Get tokens associated with logged in user
-         */
-        get: operations["GetUserTokens"];
-        put?: never;
-        /**
-         * Generate token for logged in user
-         * @description Generates infinite token (i.e. tokens that do not expire) for the logged in user.
-         */
-        post: operations["GenerateToken"];
-        /**
-         * Delete token
-         * @description Delete token for logged in user
-         */
-        delete: operations["DeleteUserTokens"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/system/token": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Infinite token
-         * @description Get Infinite Token
-         */
-        get: operations["IssueIndefiniteLifetimeToken"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/invite": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * User Invite
-         * @description Send invitation request to users
-         */
-        post: operations["HandleUserInvite"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/preferences": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * User Preference
-         * @description Upsert user preferences
-         */
-        put: operations["UpdateUserPreference"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/keys": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get User Keys
-         * @description Get all keys based on roles assigned to user
-         */
-        get: operations["GetUserKeys"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/user/{user_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get User by ID
-         * @description Get specific user by user id
-         */
-        get: operations["GetUserById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/{delete_on}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Delete users
-         * @description Delete users based on delete_for parameter
-         */
-        post: operations["DeleteUsers"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/system/delete/user/{user_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Delete account by ID
-         * @description Delete account by ID
-         */
-        get: operations["DeleteUserAccountById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get All users
-         * @description Get All users
-         */
-        get: operations["GetRoleHolders"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get All users
-         * @description Get All users
-         */
-        get: operations["GetUsers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/profile/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get user profile by Id
-         * @description Get user profile of given user Id
-         */
-        get: operations["GetUserProfileById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/profile": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get User details
-         * @description Get user details for logged in user
-         */
-        get: operations["GetUser"];
-        /**
-         * Update Profile
-         * @description Update user profile data (also updates kratos identity)
-         */
-        put: operations["UpdateProfile"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/profile/details": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Profile Overview
-         * @description Get Profile overview for logged in user
-         */
-        get: operations["GetProfileOverview"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/{user_id}/profile/activity": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * User Activity
-         * @description Get last 10 user activities
-         */
-        get: operations["GetUserActivity"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/users/online": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Online users
-         * @description Get info of active / online users in last 24 hours
-         */
-        get: operations["GetRecentlyOnlineUsers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/identity/badges": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Gets available badges
-         * @description Gets available badges
-         */
-        get: operations["GetAvailableBadges"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1073,1684 +193,759 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        mesheryApplication: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            user_id?: string;
-            /** @description Application file */
-            application_file?: string;
-            /** @description Pattern Name */
-            name?: string;
-            location?: {
-                [key: string]: string | undefined;
-            };
-            visibility?: string;
-            /**
-             * @description Source type (K8s manifest, Helm chart, Docker compose)
-             * @enum {unknown}
-             */
-            source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-            /**
-             * Format: byte
-             * @description Source content
-             */
-            source_content?: string;
-            catalog_data?: {
-                [key: string]: string | undefined;
-            };
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        };
-        mesheryApplicationPage: {
-            resultType: "mesheryApplicationPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        }, "resultType"> & {
-            applications?: {
-                /** Format: uuid */
-                id?: string;
-                /** Format: uuid */
-                user_id?: string;
-                /** @description Application file */
-                application_file?: string;
-                /** @description Pattern Name */
-                name?: string;
-                location?: {
-                    [key: string]: string | undefined;
-                };
-                visibility?: string;
-                /**
-                 * @description Source type (K8s manifest, Helm chart, Docker compose)
-                 * @enum {unknown}
-                 */
-                source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-                /**
-                 * Format: byte
-                 * @description Source content
-                 */
-                source_content?: string;
-                catalog_data?: {
-                    [key: string]: string | undefined;
-                };
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-            }[];
-        });
-        resultsPage: {
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        };
-        /** Format: uuid */
-        id: string;
-        text: string;
-        map_object: {
-            [key: string]: string | undefined;
-        };
-        /** Format: date-time */
-        time: string;
-        /**
-         * Format: byte
-         * @description Source content
-         */
-        source_content: string;
-        capability: {
-            /** @description Provider type */
-            provider_type?: string;
-            /** @description Package version */
-            package_version?: string;
-            /** @description Package url */
-            package_url?: string;
-            /** @description Provider name */
-            provider_name?: string;
-            provider_description?: string[];
-            extensions?: {
-                navigator?: {
-                    /** @description Title */
-                    title?: string;
-                    on_click_callback?: number;
-                    href?: {
-                        /** Format: uri */
-                        uri?: string;
-                        external?: boolean;
-                    };
-                    /** @description Component */
-                    component?: string;
-                    /** @description Icon link */
-                    icon?: string;
-                    /**
-                     * Format: uri
-                     * @description link
-                     */
-                    link?: string;
-                    /** @description Controls whether to show the extension or not */
-                    show?: boolean;
-                    /** @description Extension type */
-                    type?: string;
-                    allowedTo?: Record<string, never>;
-                }[];
-                user_prefs?: {
-                    /** @description Component */
-                    component?: string;
-                    /** @description Extension type */
-                    type?: string;
-                }[];
-                graphql?: {
-                    /** @description Component */
-                    component?: string;
-                    /** @description Path */
-                    path?: string;
-                    /** @description Extension type */
-                    type?: string;
-                }[];
-                account?: {
-                    /** @description Title */
-                    title?: string;
-                    on_click_callback?: number;
-                    href?: {
-                        /** Format: uri */
-                        uri?: string;
-                        external?: boolean;
-                    };
-                    /** @description Component */
-                    component?: string;
-                    /**
-                     * Format: uri
-                     * @description link
-                     */
-                    link?: string;
-                    /** @description Controls whether to show the extension or not */
-                    show?: boolean;
-                    /** @description Extension type */
-                    type?: string;
-                }[];
-            };
-            capabilities?: {
-                /** @description Feature name */
-                feature?: string;
-                endpoint?: string;
-            };
-            restrictedAccess?: {
-                isMesheryUIRestricted?: boolean;
-                allowedComponents?: {
-                    navigator?: Record<string, never>;
-                    header?: Record<string, never>;
-                };
-            };
-        };
-        capabilityNavigatorExtension: {
-            /** @description Title */
-            title?: string;
-            on_click_callback?: number;
-            href?: {
-                /** Format: uri */
-                uri?: string;
-                external?: boolean;
-            };
-            /** @description Component */
-            component?: string;
-            /** @description Icon link */
-            icon?: string;
-            /**
-             * Format: uri
-             * @description link
-             */
-            link?: string;
-            /** @description Controls whether to show the extension or not */
-            show?: boolean;
-            /** @description Extension type */
-            type?: string;
-            allowedTo?: Record<string, never>;
-        };
-        capabilityUserPrefExtension: {
-            /** @description Component */
-            component?: string;
-            /** @description Extension type */
-            type?: string;
-        };
-        capabilityGraphQLExtension: {
-            /** @description Component */
-            component?: string;
-            /** @description Path */
-            path?: string;
-            /** @description Extension type */
-            type?: string;
-        };
-        capabilitiesAccountExtension: {
-            /** @description Title */
-            title?: string;
-            on_click_callback?: number;
-            href?: {
-                /** Format: uri */
-                uri?: string;
-                external?: boolean;
-            };
-            /** @description Component */
-            component?: string;
-            /**
-             * Format: uri
-             * @description link
-             */
-            link?: string;
-            /** @description Controls whether to show the extension or not */
-            show?: boolean;
-            /** @description Extension type */
-            type?: string;
-        };
-        restrictedAccess: {
-            isMesheryUIRestricted?: boolean;
-            allowedComponents?: {
-                navigator?: Record<string, never>;
-                header?: Record<string, never>;
-            };
-        };
-        capabilityGeneralCapability: {
-            /** @description Feature name */
-            feature?: string;
-            endpoint?: string;
-        };
-        capabilityExtension: {
-            navigator?: {
-                /** @description Title */
-                title?: string;
-                on_click_callback?: number;
-                href?: {
-                    /** Format: uri */
-                    uri?: string;
-                    external?: boolean;
-                };
-                /** @description Component */
-                component?: string;
-                /** @description Icon link */
-                icon?: string;
-                /**
-                 * Format: uri
-                 * @description link
-                 */
-                link?: string;
-                /** @description Controls whether to show the extension or not */
-                show?: boolean;
-                /** @description Extension type */
-                type?: string;
-                allowedTo?: Record<string, never>;
-            }[];
-            user_prefs?: {
-                /** @description Component */
-                component?: string;
-                /** @description Extension type */
-                type?: string;
-            }[];
-            graphql?: {
-                /** @description Component */
-                component?: string;
-                /** @description Path */
-                path?: string;
-                /** @description Extension type */
-                type?: string;
-            }[];
-            account?: {
-                /** @description Title */
-                title?: string;
-                on_click_callback?: number;
-                href?: {
-                    /** Format: uri */
-                    uri?: string;
-                    external?: boolean;
-                };
-                /** @description Component */
-                component?: string;
-                /**
-                 * Format: uri
-                 * @description link
-                 */
-                link?: string;
-                /** @description Controls whether to show the extension or not */
-                show?: boolean;
-                /** @description Extension type */
-                type?: string;
-            }[];
-        };
-        /** @description One of (meshery-cloud, github, google) */
-        provider: string;
-        mesheryInstance: {
-            /**
-             * Format: uuid
-             * @description Connection id
-             */
-            id?: string;
-            /** @description Connection name */
-            name?: string;
-            /** @description Connected server id */
-            server_id?: string;
-            /** @description Running server version */
-            server_version?: string;
-            server_location?: string;
-            /** @description Server build SHA */
-            server_build_sha?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** Format: date-time */
-            deleted_at?: string;
-            /** @description Status */
-            status?: string;
-        };
+        /** @description Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
         connection: {
-            /**
-             * Format: uuid
-             * @description ID
-             */
-            id?: string;
+            /** @description ID */
+            id?: components["schemas"]["uuid"];
             /** @description Connection Name */
             name?: string;
-            /**
-             * Format: uuid
-             * @description Credential ID
-             */
-            credential_id?: string;
+            /** @description Credential ID */
+            credential_id?: components["schemas"]["uuid"];
             /** @description Connection Type */
             type?: string;
             /** @description Connection Subtype */
             sub_type?: string;
             /** @description Connection Kind */
             kind?: string;
-            metadata?: {
-                [key: string]: string | undefined;
-            };
+            metadata?: Record<string, never>;
             /**
              * @description Connection Status
              * @enum {string}
              */
             status?: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
-            /** Format: uuid */
-            user_id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** Format: date-time */
-            deleted_at?: string;
+            user_id?: components["schemas"]["uuid"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+            deleted_at?: components["schemas"]["time"];
+        };
+        mesheryInstance: {
+            /** @description Connection id */
+            id?: components["schemas"]["id"];
+            /** @description Connection name */
+            name?: components["schemas"]["text"];
+            /** @description Connected server id */
+            server_id?: components["schemas"]["text"];
+            /** @description Running server version */
+            server_version?: components["schemas"]["text"];
+            server_location?: components["schemas"]["text"];
+            /** @description Server build SHA */
+            server_build_sha?: components["schemas"]["text"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+            deleted_at?: components["schemas"]["time"];
+            /** @description Status */
+            status?: components["schemas"]["text"];
         };
         connectionPage: {
             resultType: "connectionPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        }, "resultType"> & {
-            connections?: {
-                /**
-                 * Format: uuid
-                 * @description ID
-                 */
-                id?: string;
-                /** @description Connection Name */
-                name?: string;
-                /**
-                 * Format: uuid
-                 * @description Credential ID
-                 */
-                credential_id?: string;
-                /** @description Connection Type */
-                type?: string;
-                /** @description Connection Subtype */
-                sub_type?: string;
-                /** @description Connection Kind */
-                kind?: string;
-                metadata?: {
-                    [key: string]: string | undefined;
-                };
-                /**
-                 * @description Connection Status
-                 * @enum {string}
-                 */
-                status?: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
-                /** Format: uuid */
-                user_id?: string;
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** Format: date-time */
-                deleted_at?: string;
-            }[];
+        } & (Omit<components["schemas"]["resultsPage"], "resultType"> & {
+            connections?: components["schemas"]["connection"][];
         });
         connectionStatusInfo: {
             /** @description Connection status */
-            status?: string;
+            status?: components["schemas"]["text"];
             /** @description Number of connections having the status */
             count?: number;
         };
         connectionsStatusPage: {
-            connections_status?: {
-                /** @description Connection status */
-                status?: string;
-                /** @description Number of connections having the status */
-                count?: number;
-            }[];
+            connections_status?: components["schemas"]["connectionStatusInfo"][];
         };
         k8sContext: {
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            auth?: {
-                [key: string]: string | undefined;
-            };
-            cluster?: {
-                [key: string]: string | undefined;
-            };
+            id?: components["schemas"]["id"];
+            name?: components["schemas"]["text"];
+            auth?: components["schemas"]["map_object"];
+            cluster?: components["schemas"]["map_object"];
             server?: string;
-            /** Format: uuid */
-            owner?: string;
-            /** Format: uuid */
-            created_by?: string;
-            /** Format: uuid */
-            meshery_instance_id?: string;
-            /** Format: uuid */
-            kubernetes_server_id?: string;
+            owner?: components["schemas"]["id"];
+            created_by?: components["schemas"]["id"];
+            meshery_instance_id?: components["schemas"]["id"];
+            kubernetes_server_id?: components["schemas"]["id"];
             deployment_type?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** Format: date-time */
-            created_at?: string;
+            updated_at?: components["schemas"]["time"];
+            created_at?: components["schemas"]["time"];
         };
         k8sContextPersistResponse: {
-            k8sContext?: {
-                /** Format: uuid */
-                id?: string;
-                name?: string;
-                auth?: {
-                    [key: string]: string | undefined;
-                };
-                cluster?: {
-                    [key: string]: string | undefined;
-                };
-                server?: string;
-                /** Format: uuid */
-                owner?: string;
-                /** Format: uuid */
-                created_by?: string;
-                /** Format: uuid */
-                meshery_instance_id?: string;
-                /** Format: uuid */
-                kubernetes_server_id?: string;
-                deployment_type?: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** Format: date-time */
-                created_at?: string;
-            };
+            k8sContext?: components["schemas"]["k8sContext"];
             inserted?: boolean;
         };
-        credential: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            user_id?: string;
-            name?: string;
-            type?: string;
-            secret?: {
-                [key: string]: string | undefined;
-            };
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was created.
-             */
-            created_at?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was updated.
-             */
-            updated_at?: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the resource was deleted.
-             */
-            deleted_at?: string;
-        };
-        credentialsPage: {
-            resultType: "credentialsPage";
-        } & (Omit<{
+        resultsPage: {
             page?: number;
             page_size?: number;
             total_count?: number;
             resultType?: string;
-        }, "resultType"> & {
-            credential?: {
-                /** Format: uuid */
-                id?: string;
-                /** Format: uuid */
-                user_id?: string;
+        };
+        /**
+         * Format: uuid
+         * @description A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+         */
+        uuid: string;
+        /** Format: date-time */
+        time: string;
+        text: string;
+        map_object: {
+            [key: string]: string;
+        };
+        /** Format: uuid */
+        id: string;
+        model_definition: components["schemas"]["model"];
+        component_definition: components["schemas"]["component"];
+        /** @description Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+        capability: {
+            /** @description Specifies the version of the schema to which the capability definition conforms. */
+            schemaVersion: components["schemas"]["versionString"];
+            /** @description Version of the capability definition. */
+            version: components["schemas"]["semverString"];
+            /** @description Name of the capability in human-readible format. */
+            displayName: components["schemas"]["inputString"];
+            /** @description A written representation of the purpose and characteristics of the capability. */
+            description?: string;
+            /** @description Top-level categorization of the capability */
+            kind: components["schemas"]["inputString"];
+            /** @description Classification of capabilities. Used to group capabilities similar in nature. */
+            type: components["schemas"]["inputString"];
+            /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            subType?: components["schemas"]["inputString"];
+            /** @description Key that backs the capability. */
+            key?: components["schemas"]["inputString"];
+            /** @description State of the entity in which the capability is applicable. */
+            entityState: components["schemas"]["inputString"][];
+            /**
+             * @description Status of the capability
+             * @default enabled
+             * @enum {string}
+             */
+            status: "enabled" | "disabled";
+            /** @description Metadata contains additional information associated with the capability. Extension point. */
+            metadata?: {
+                [key: string]: unknown;
+            };
+        };
+        relationship_definition: components["schemas"]["relationship"];
+        /**
+         * @description API version of the object
+         * @example [
+         *       "v1",
+         *       "v1alpha1",
+         *       "v2beta3",
+         *       "v1.custom-suffix"
+         *     ]
+         */
+        versionString: string;
+        /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+        semverString: string;
+        /** @description A string starting with an alphanumeric character. Spaces and hyphens allowed. */
+        inputString: string;
+        /** @description Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities. */
+        model: {
+            /** @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+            id?: components["schemas"]["uuid"];
+            /**
+             * @description Specifies the version of the schema used for the definition.
+             * @example [
+             *       "v1",
+             *       "v1alpha1",
+             *       "v2beta3",
+             *       "v1.custom-suffix"
+             *     ]
+             */
+            schemaVersion?: string;
+            /** @description Version of the model definition. */
+            version: string;
+            /** @description The unique name for the model within the scope of a registrant. */
+            name: string;
+            /** @description Human-readable name for the model. */
+            displayName?: string;
+            /** @description Description of the model. */
+            description?: string;
+            /**
+             * @description Status of model, including:
+             *     - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+             *     - maintenance: model is unavailable for a period of time.
+             *     - enabled: model is available for use for all users of this Meshery Server.
+             *     - ignored: model is unavailable for use for all users of this Meshery Server.
+             * @enum {string}
+             */
+            status?: "ignored" | "enabled" | "duplicate";
+            registrant: components["schemas"]["connection"];
+            /** @description Category of the model. */
+            category: {
+                id?: components["schemas"]["uuid"];
                 name?: string;
-                type?: string;
-                secret?: {
-                    [key: string]: string | undefined;
-                };
+                metadata?: Record<string, never>;
+            };
+            /** @description Sub-category of the model. */
+            subCategory?: string;
+            /** @description Metadata containing additional information associated with the model. */
+            metadata?: {
+                /** @description Capabilities associated with the model */
+                capabilities?: components["schemas"]["capability"][];
+                /** @description Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
+                isAnnotation?: boolean;
+                /** @description Primary color associated with the model. */
+                primaryColor?: string;
+                /** @description Secondary color associated with the model. */
+                secondaryColor?: string;
+                /** @description SVG representation of the model in white color. */
+                svgWhite?: string;
+                /** @description SVG representation of the model in colored format. */
+                svgColor?: string;
+                /** @description SVG representation of the complete model. */
+                svgComplete?: string;
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
+            model?: {
                 /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
+                 * @description Version of the model as defined by the registrant.
+                 * @example [
+                 *       "v1",
+                 *       "v1alpha1",
+                 *       "v2beta3",
+                 *       "v1.custom-suffix"
+                 *     ]
                  */
-                created_at?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was updated.
-                 */
-                updated_at?: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was deleted.
-                 */
-                deleted_at?: string;
-            }[];
-        });
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was created.
-         */
-        created_at: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was updated.
-         */
-        updated_at: string;
-        /**
-         * Format: date-time
-         * @description Timestamp when the resource was deleted.
-         */
-        deleted_at: string;
-        eventType: string;
-        /** @description Defines model for event_trackers */
-        event: {
+                version: string;
+            };
+        };
+        /** @description Common styles for all entities */
+        styles: {
+            /** @description Primary color of the component used for UI representation. */
+            primaryColor: string;
+            /** @description Secondary color of the entity used for UI representation. */
+            secondaryColor?: string;
+            /** @description White SVG of the entity used for UI representation on dark background. */
+            svgWhite: string;
+            /** @description Colored SVG of the entity used for UI representation on light background. */
+            svgColor: string;
+            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
+            svgComplete?: string;
+            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            color?: string;
+            /** @description The opacity of the label text, including its outline. */
+            "text-opacity"?: number;
+            /** @description A comma-separated list of font names to use on the label text. */
+            "font-family"?: string;
+            /** @description The size of the label text. */
+            "font-size"?: string;
+            /** @description A CSS font style to be applied to the label text. */
+            "font-style"?: string;
+            /** @description A CSS font weight to be applied to the label text. */
+            "font-weight"?: string;
             /**
-             * Format: uuid
-             * @description UUID of the event.
-             *
-             */
-            id: string;
-            /**
-             * Format: uuid
-             * @description UUID of the user that initiated the event. In most cases this would be present, but not always.
-             *
-             */
-            user_id?: string;
-            /**
-             * Format: uuid
-             * @description The system from which the request is sourced. In the case of Meshery Server,
-             *     the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-             *
-             */
-            system_id: string;
-            /**
-             * Format: uuid
-             * @description Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.
-             *
-             */
-            operation_id: string;
-            /**
-             * @description Resource name on which the operation is invoked.
-             *
-             * @example pattern
-             */
-            category: string;
-            /**
-             * @description Action taken on the resource.
-             *
-             * @example deployed
-             */
-            action: string;
-            /**
-             * @description Status for the event.
-             *
+             * @description A transformation to apply to the label text
              * @enum {string}
              */
-            status: "read" | "unread";
+            "text-transform"?: "none" | "uppercase" | "lowercase";
+            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility */
+            opacity?: number;
+            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
+            "z-index"?: number;
+            /** @description The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id */
+            label?: string;
+        };
+        /**
+         * @description The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+         * @enum {string}
+         */
+        shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
+        /** @description Visualization styles for a component */
+        componentStyles: WithRequired<components["schemas"]["styles"], "primaryColor" | "svgColor" | "svgWhite"> & {
+            shape: components["schemas"]["shape"];
+            /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
+            position?: {
+                /** @description The x-coordinate of the node. */
+                x: number;
+                /** @description The y-coordinate of the node. */
+                y: number;
+            };
+            /** @description The text to display for an element’s body. Can give a path, e.g. data(id) will label with the elements id */
+            "body-text"?: string;
+            /** @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
+            "body-text-wrap"?: string;
+            /** @description The maximum width for wrapping text in the node. */
+            "body-text-max-width"?: string;
+            /** @description The opacity of the node’s body text, including its outline. */
+            "body-text-opacity"?: number;
+            /** @description The colour of the node’s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "body-text-background-color"?: string;
+            /** @description The size of the node’s body text. */
+            "body-text-font-size"?: string;
+            /** @description The colour of the node’s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "body-text-color"?: string;
+            /** @description A CSS font weight to be applied to the node’s body text. */
+            "body-text-weight"?: string;
+            /** @description A CSS horizontal alignment to be applied to the node’s body text. */
+            "body-text-horizontal-align"?: string;
+            /** @description A CSS text decoration to be applied to the node’s body text. */
+            "body-text-decoration"?: string;
+            /** @description A CSS vertical alignment to be applied to the node’s body text. */
+            "body-text-vertical-align"?: string;
+            /** @description The width of the node’s body or the width of an edge’s line. */
+            width?: number;
+            /** @description The height of the node’s body */
+            height?: number;
+            /** @description The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "background-color"?: string;
+            /** @description Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1. */
+            "background-blacken"?: number;
+            /** @description The opacity level of the node’s background colour */
+            "background-opacity"?: number;
+            /** @description The size of the node’s border. */
+            "border-width"?: number;
             /**
-             * Format: uuid
-             * @description UUID of the entity on which the event was performed.
-             *
-             * @example 110020-123230-434231-000213
-             */
-            acted_upon: string;
-            /**
-             * @description A summary/receipt of event that occured.
-             *
-             * @example “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
-             */
-            description: string;
-            /**
-             * @description A set of seven standard event levels.
-             *
-             * @example info
+             * @description The style of the node’s border
              * @enum {string}
              */
-            severity: "emergency" | "critical" | "alert" | "error" | "warning" | "debug" | "informational" | "success";
-            /** @description Contains meaningful information, specific to the type of event.
-             *     Structure of metadata can be different for different events.
-             *      */
-            metadata: Record<string, never>;
+            "border-style"?: "solid" | "dotted" | "dashed" | "double";
+            /** @description The colour of the node’s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "border-color"?: string;
+            /** @description The opacity of the node’s border */
+            "border-opacity"?: number;
+            /** @description The amount of padding around all sides of the node. */
+            padding?: number;
             /**
-             * Format: date-time
-             * @description Timestamp when the resource was created.
+             * @description The horizontal alignment of a node’s label
+             * @enum {string}
              */
-            created_at: string;
+            "text-halign"?: "left" | "center" | "right";
             /**
-             * Format: date-time
-             * @description Timestamp when the resource was updated.
+             * @description The vertical alignment of a node’s label
+             * @enum {string}
              */
-            updated_at: string;
+            "text-valign"?: "top" | "center" | "bottom";
             /**
-             * Format: date-time
-             * @description Timestamp when the resource was deleted.
+             * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+             * @default no
+             * @enum {string}
              */
-            deleted_at?: string;
+            ghost: "yes" | "no";
+            /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "active-bg-color"?: string;
+            /** @description  The opacity of the active background indicator. Selector needs to be *core*. */
+            "active-bg-opacity"?: string;
+            /** @description  The opacity of the active background indicator. Selector needs to be *core*. */
+            "active-bg-size"?: string;
+            /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "selection-box-color"?: string;
+            /** @description The size of the border on the selection box. Selector needs to be *core* */
+            "selection-box-border-width"?: number;
+            /** @description The opacity of the selection box.  Selector needs to be *core* */
+            "selection-box-opacity"?: number;
+            /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "outside-texture-bg-color"?: string;
+            /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
+            "outside-texture-bg-opacity"?: number;
         };
-        events_filter: {
-            provider: string[];
-            category: string[];
-            action: string[];
-            severity: string[];
-            limit: number;
-            offset: number;
-            /** @description Field on which records are sorted */
-            sort_on: string;
-            /** @description order of sort asc/desc, default is asc */
-            order: string;
+        /** @description Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components */
+        component: {
+            /** @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+            id?: components["schemas"]["uuid"];
+            /** @description Specifies the version of the schema to which the component definition conforms. */
+            schemaVersion: components["schemas"]["versionString"];
+            /** @description Version of the component definition. */
+            version: components["schemas"]["semverString"];
+            /** @description Name of the component in human-readible format. */
+            displayName?: components["schemas"]["inputString"];
+            /** @description A written representation of the purpose and characteristics of the component. */
+            description?: string;
+            /**
+             * @description Format specifies the format used in the `component.schema` field. JSON is the default.
+             * @default JSON
+             * @enum {string}
+             */
+            format: "JSON" | "CUE";
+            /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+            model: components["schemas"]["model"];
+            styles?: components["schemas"]["componentStyles"];
+            /** @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
+            capabilities?: components["schemas"]["capability"][];
+            /**
+             * @description Status of component, including:
+             *     - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
+             *     - maintenance: model is unavailable for a period of time.
+             *     - enabled: model is available for use for all users of this Meshery Server.
+             *     - ignored: model is unavailable for use for all users of this Meshery Server.
+             * @default enabled
+             * @enum {string}
+             */
+            status: "ignored" | "enabled" | "duplicate";
+            /** @description Metadata contains additional information associated with the component. */
+            metadata?: {
+                /** @description Genealogy represents the various representational states of the component. */
+                genealogy?: string;
+                /** @description Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
+                isAnnotation?: boolean;
+                /** @description 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
+                published?: boolean;
+            } & {
+                [key: string]: unknown;
+            };
+            /** @description The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
+            configuration?: Record<string, never>;
+            /** @description Component and it's properties. */
+            component: {
+                /** @description Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
+                version: string;
+                /** @description The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
+                kind: string;
+                /** @description JSON schema of the object as defined by the registrant. */
+                schema: string;
+            };
         };
-        eventTrackerGrouped: {
-            count?: number;
-            event_type?: string;
-            /** Format: date-time */
-            dt?: string;
-            week?: string;
-            month?: string;
-            year?: string;
+        /** @description Visualization styles for a relationship */
+        edgeStyles: components["schemas"]["styles"] & {
+            /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
+            "edge-animation"?: string;
+            /**
+             * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+             * @default straight
+             * @enum {string}
+             */
+            "curve-style": "straight" | "haystack" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
+            /** @description The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "line-color"?: string;
+            /**
+             * @description The style of the edge’s line.
+             * @enum {string}
+             */
+            "line-style"?: "solid" | "dotted" | "dashed";
+            /**
+             * @description The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+             * @default butt
+             * @enum {string}
+             */
+            "line-cap": "butt" | "round" | "square";
+            /**
+             * @description The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+             * @default 1
+             */
+            "line-opacity": number;
+            /** @description The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "target-arrow-color"?: string;
+            /**
+             * @description The shape of the edge’s source arrow
+             * @enum {string}
+             */
+            "target-arrow-shape"?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+            /**
+             * @description The fill state of the edge’s source arrow
+             * @enum {string}
+             */
+            "target-arrow-fill"?: "filled" | "hollow";
+            /** @description The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
+            "mid-target-arrow-color"?: string;
+            /**
+             * @description The shape of the edge’s source arrow
+             * @enum {string}
+             */
+            "mid-target-arrow-shape"?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
+            /**
+             * @description The fill state of the edge’s source arrow
+             * @enum {string}
+             */
+            "mid-target-arrow-fill"?: "filled" | "hollow";
+            /** @description Scaling for the arrow size. */
+            "arrow-scale"?: number;
+            /** @description The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id */
+            "source-label"?: string;
+            /** @description The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id */
+            "target-label"?: string;
         };
-        eventTrackerGroupedArray: {
-            count?: number;
-            event_type?: string;
-            /** Format: date-time */
-            dt?: string;
-            week?: string;
-            month?: string;
-            year?: string;
+        relationshipStyles: components["schemas"]["edgeStyles"] | components["schemas"]["styles"];
+        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
+        selector: {
+            kind?: string;
+            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            model?: components["schemas"]["model"];
+            id?: components["schemas"]["uuid"];
+            match?: Record<string, never>;
+            patch?: {
+                /**
+                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+                 *
+                 *     add: Inserts a value into an array or adds a member to an object.
+                 *     replace: Replaces a value.
+                 *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+                 *     strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+                 *     remove: Removes a value.
+                 *     copy: Copies a value from one location to another.
+                 *     move: Moves a value from one location to another.
+                 *     test: Tests that a value at the target location is equal to a specified value.
+                 * @default copy
+                 * @enum {string}
+                 */
+                patchStrategy: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+            } & ({
+                /** @description JSON ref to value from where patch should be applied. */
+                mutatorRef?: string[][];
+            } | {
+                mutatedRef?: string[][];
+            });
         }[];
-        eventResult: {
-            /** @description Defines model for event_trackers */
-            event: {
-                /**
-                 * Format: uuid
-                 * @description UUID of the event.
-                 *
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description UUID of the user that initiated the event. In most cases this would be present, but not always.
-                 *
-                 */
-                user_id?: string;
-                /**
-                 * Format: uuid
-                 * @description The system from which the request is sourced. In the case of Meshery Server,
-                 *     the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-                 *
-                 */
-                system_id: string;
-                /**
-                 * Format: uuid
-                 * @description Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.
-                 *
-                 */
-                operation_id: string;
-                /**
-                 * @description Resource name on which the operation is invoked.
-                 *
-                 * @example pattern
-                 */
-                category: string;
-                /**
-                 * @description Action taken on the resource.
-                 *
-                 * @example deployed
-                 */
-                action: string;
-                /**
-                 * @description Status for the event.
-                 *
-                 * @enum {string}
-                 */
-                status: "read" | "unread";
-                /**
-                 * Format: uuid
-                 * @description UUID of the entity on which the event was performed.
-                 *
-                 * @example 110020-123230-434231-000213
-                 */
-                acted_upon: string;
-                /**
-                 * @description A summary/receipt of event that occured.
-                 *
-                 * @example “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
-                 */
-                description: string;
-                /**
-                 * @description A set of seven standard event levels.
-                 *
-                 * @example info
-                 * @enum {string}
-                 */
-                severity: "emergency" | "critical" | "alert" | "error" | "warning" | "debug" | "informational" | "success";
-                /** @description Contains meaningful information, specific to the type of event.
-                 *     Structure of metadata can be different for different events.
-                 *      */
-                metadata: Record<string, never>;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
-                 */
-                created_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was updated.
-                 */
-                updated_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was deleted.
-                 */
-                deleted_at?: string;
+        /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
+        selectors: {
+            /** @description Optional selectors used to define relationships which should not be created / is restricted. */
+            deny?: {
+                from: components["schemas"]["selector"];
+                to: components["schemas"]["selector"];
             };
-            events_count: number;
-        };
-        eventsPage: {
-            recordType: "eventsPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            records_total?: number;
-            recordType?: string;
-        }, "recordType"> & {
-            data?: {
-                /** @description Defines model for event_trackers */
-                event: {
-                    /**
-                     * Format: uuid
-                     * @description UUID of the event.
-                     *
-                     */
-                    id: string;
-                    /**
-                     * Format: uuid
-                     * @description UUID of the user that initiated the event. In most cases this would be present, but not always.
-                     *
-                     */
-                    user_id?: string;
-                    /**
-                     * Format: uuid
-                     * @description The system from which the request is sourced. In the case of Meshery Server,
-                     *     the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-                     *
-                     */
-                    system_id: string;
-                    /**
-                     * Format: uuid
-                     * @description Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.
-                     *
-                     */
-                    operation_id: string;
-                    /**
-                     * @description Resource name on which the operation is invoked.
-                     *
-                     * @example pattern
-                     */
-                    category: string;
-                    /**
-                     * @description Action taken on the resource.
-                     *
-                     * @example deployed
-                     */
-                    action: string;
-                    /**
-                     * @description Status for the event.
-                     *
-                     * @enum {string}
-                     */
-                    status: "read" | "unread";
-                    /**
-                     * Format: uuid
-                     * @description UUID of the entity on which the event was performed.
-                     *
-                     * @example 110020-123230-434231-000213
-                     */
-                    acted_upon: string;
-                    /**
-                     * @description A summary/receipt of event that occured.
-                     *
-                     * @example “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
-                     */
-                    description: string;
-                    /**
-                     * @description A set of seven standard event levels.
-                     *
-                     * @example info
-                     * @enum {string}
-                     */
-                    severity: "emergency" | "critical" | "alert" | "error" | "warning" | "debug" | "informational" | "success";
-                    /** @description Contains meaningful information, specific to the type of event.
-                     *     Structure of metadata can be different for different events.
-                     *      */
-                    metadata: Record<string, never>;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was created.
-                     */
-                    created_at: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was updated.
-                     */
-                    updated_at: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was deleted.
-                     */
-                    deleted_at?: string;
-                };
-                events_count: number;
-            }[];
-        });
-        eventSummary: {
-            /** @description user's email or username */
-            user_id: string;
-            provider: string;
-            email: string;
-            /** @description First Name */
-            first_name: string;
-            /** @description Last Name */
-            last_name: string;
-            activity_count: number;
-            login_count: number;
-            signup_count: number;
-            perf_results_count: number;
-            smi_results_count: number;
-            meshery_apps_count: number;
-            meshery_patterns_count: number;
-            meshery_filters_count: number;
-            /** Format: data-time */
-            last_login_time: string;
-        };
-        eventSummaryPage: {
-            recordType: "eventSummaryPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            records_total?: number;
-            recordType?: string;
-        }, "recordType"> & {
-            data?: {
-                /** @description user's email or username */
-                user_id: string;
-                provider: string;
-                email: string;
-                /** @description First Name */
-                first_name: string;
-                /** @description Last Name */
-                last_name: string;
-                activity_count: number;
-                login_count: number;
-                signup_count: number;
-                perf_results_count: number;
-                smi_results_count: number;
-                meshery_apps_count: number;
-                meshery_patterns_count: number;
-                meshery_filters_count: number;
-                /** Format: data-time */
-                last_login_time: string;
-            }[];
-        });
-        eventsAggregate: {
-            /** @description Number of audit events */
-            audit?: number;
-            /** @description Number of summary events */
-            summary?: number;
-        };
-        recordsPage: {
-            page?: number;
-            page_size?: number;
-            records_total?: number;
-            recordType?: string;
-        };
-        /** Format: uuid */
-        user_uuid: string;
-        /** Format: uuid */
-        system_id: string;
-        /** Format: uuid */
-        operation_id: string;
-        mesheryFilter: {
+            /** @description Selectors used to define relationships which are allowed. */
+            allow: {
+                from: components["schemas"]["selector"];
+                to: components["schemas"]["selector"];
+            };
+        }[];
+        /** @description Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships. */
+        relationship: {
+            /** @description Specifies the version of the schema used for the relationship definition. */
+            schemaVersion: components["schemas"]["versionString"];
+            /** @description Specifies the version of the relationship definition. */
+            version: components["schemas"]["semverString"];
+            /** @description Name of the model in which this relationship is packaged. */
+            model: components["schemas"]["model"];
             /**
-             * Format: uuid
-             * @description Connection id
+             * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
+             * @enum {unknown}
              */
-            id?: string;
-            /** Format: uuid */
-            user_id?: string;
-            /**
-             * Format: byte
-             * @description Filter file
-             */
-            filter_file?: string;
-            /** @description Filter Name */
-            name?: string;
-            location?: {
-                [key: string]: string | undefined;
+            kind: components["schemas"]["inputString"];
+            /** @description Classification of relationships. Used to group relationships similar in nature. */
+            type: components["schemas"]["inputString"];
+            /** @description Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship. */
+            subType: components["schemas"]["inputString"];
+            /** @description Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs. */
+            evaluationQuery?: components["schemas"]["inputString"];
+            /** @description Capabilities associated with the relationship. */
+            capabilities?: components["schemas"]["capability"][];
+            /** @description Metadata contains additional information associated with the Relationship. */
+            metadata?: {
+                /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
+                description?: components["schemas"]["inputString"];
+                styles?: components["schemas"]["relationshipStyles"];
             };
-            visibility?: string;
-            catalog_data?: {
-                [key: string]: string | undefined;
-            };
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
+            selectors?: components["schemas"]["selectors"];
         };
-        mesheryFilterPage: {
-            resultType: "mesheryFilterPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        }, "resultType"> & {
-            filters?: {
-                /**
-                 * Format: uuid
-                 * @description Connection id
-                 */
-                id?: string;
-                /** Format: uuid */
-                user_id?: string;
-                /**
-                 * Format: byte
-                 * @description Filter file
-                 */
-                filter_file?: string;
-                /** @description Filter Name */
-                name?: string;
-                location?: {
-                    [key: string]: string | undefined;
-                };
-                visibility?: string;
-                catalog_data?: {
-                    [key: string]: string | undefined;
-                };
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-            }[];
+        mesheryPatternResource: {
+            id?: components["schemas"]["id"];
+            user_id?: components["schemas"]["id"];
+            /** @description Name */
+            name?: components["schemas"]["text"];
+            /** @description Namespace */
+            namepace?: components["schemas"]["text"];
+            /** @description Type */
+            type?: components["schemas"]["text"];
+            /** @description OAM type */
+            oam_type?: components["schemas"]["text"];
+            deleted?: boolean;
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+        };
+        mesheryPatternResourcePage: {
+            resultType: "mesheryPatternResourcePage";
+        } & (Omit<components["schemas"]["resultsPage"], "resultType"> & {
+            resources?: components["schemas"]["mesheryPatternResource"][];
         });
+        mesheryPattern: {
+            id?: components["schemas"]["id"];
+            user_id?: components["schemas"]["id"];
+            /** @description Pattern file */
+            pattern_file?: components["schemas"]["designs"];
+            /** @description Pattern Name */
+            name?: components["schemas"]["text"];
+            location?: components["schemas"]["map_object"];
+            visibility?: components["schemas"]["text"];
+            catalog_data?: components["schemas"]["catalog_data"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+        };
+        mesheryPatternPage: {
+            resultType: "mesheryPatternPage";
+        } & (Omit<components["schemas"]["resultsPage"], "resultType"> & {
+            patterns?: components["schemas"]["mesheryPattern"][];
+        });
+        deletePatternModel: {
+            id?: components["schemas"]["id"];
+            /** @description Pattern name */
+            name?: components["schemas"]["text"];
+        };
         /**
-         * Format: byte
-         * @description Filter file
+         * Design Schema
+         * @description Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
          */
-        filter_file: string;
-        roleHolderRequest: {
-            role_names: string[];
-            /**
-             * Format: email
-             * @description email
-             */
-            email: string;
-        };
-        role: {
-            /** Format: uuid */
-            id: string;
-            /** @description user's email or username */
-            user_id: string;
-            username: string;
-            /**
-             * Format: email
-             * @description email
-             */
-            email: string;
-            /** @description First Name */
-            first_name: string;
-            /** @description Last Name */
-            last_name: string;
-            status: string;
-            role_names: string[];
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            /** Format: date-time */
-            last_login_time: string;
-            /** Format: date-time */
-            deleted_at: string;
-            prefs?: {
-                welcome_email?: boolean;
-                notify_role_change?: boolean;
+        designs: {
+            id?: components["schemas"]["uuid"];
+            /** @description Name of the design; a descriptive, but concise title for the design document. */
+            name: string;
+            /** @description Specifies the version of the schema to which the design conforms. */
+            schemaVersion: components["schemas"]["versionString"];
+            /** @description Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number. */
+            version: components["schemas"]["semverString"];
+            /** @description A list of one or more component declarations. */
+            components: components["schemas"]["component"][];
+            /** @description Design-level preferences */
+            preferences?: {
+                /** @description List of available layers */
+                layers: string[];
             };
+            /** @description List of relationships between components */
+            relationships: components["schemas"]["relationship"][];
         };
-        roleNames: string[];
+        catalog_data: {
+            /** @description Tracks the specific content version that has been made available in the Catalog. */
+            publishedVersion?: string;
+            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
+            class?: string & ("official" | "verified" | "reference architecture");
+            /**
+             * Model
+             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
+             */
+            compatibility: "kubernetes"[];
+            /**
+             * Caveats and Considerations
+             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
+             */
+            pattern_caveats: string;
+            /**
+             * Description
+             * @description Purpose of the design along with its intended and unintended uses.
+             */
+            pattern_info: string;
+            /**
+             * Type
+             * @description Categorization of the type of design or operational flow depicted in this design.
+             * @default Deployment
+             * @enum {string}
+             */
+            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
+            /** @description Contains reference to the dark and light mode snapshots of the design. */
+            snapshotURL?: string[];
+        };
         /**
          * Format: email
          * @description email
          */
         email: string;
-        /** @description user's email or username */
-        user_id: string;
-        username: string;
-        status: string;
-        email_preference: {
-            welcome_email?: boolean;
-            notify_role_change?: boolean;
-        };
-        performanceProfile: {
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            /** Format: uuid */
-            user_id?: string;
-            /** Format: uuid */
-            schedule?: string;
-            load_generators?: string;
-            endpoints?: string;
-            service_mesh?: string;
-            concurrent_request?: number;
-            qps?: number;
-            duration?: string;
-            /** Format: date-time */
-            last_run?: string;
-            total_results?: number;
-            request_headers?: string;
-            request_cookies?: string;
-            request_body?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        };
-        performanceProfilePage: {
-            resultType: "performanceProfilePage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        }, "resultType"> & {
-            profiles?: {
-                /** Format: uuid */
-                id?: string;
-                name?: string;
-                /** Format: uuid */
-                user_id?: string;
-                /** Format: uuid */
-                schedule?: string;
-                load_generators?: string;
-                endpoints?: string;
-                service_mesh?: string;
-                concurrent_request?: number;
-                qps?: number;
-                duration?: string;
-                /** Format: date-time */
-                last_run?: string;
-                total_results?: number;
-                request_headers?: string;
-                request_cookies?: string;
-                request_body?: string;
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-            }[];
-        });
-        performanceResult: {
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            /** Format: date-time */
-            test_start_time?: string;
-            mesh?: string;
-            runner_results?: {
-                [key: string]: string | undefined;
+        emails: components["schemas"]["email"][];
+        EvaluationRequest: {
+            design: components["schemas"]["designs"];
+            options?: {
+                /** @description If true, only return the diff of changes instead of the complete updated design */
+                returnDiffOnly?: boolean;
+                /** @description If true, include detailed trace information in the response */
+                enableTrace?: boolean;
             };
-            deleted?: boolean;
-            server_metrics?: {
-                [key: string]: string | undefined;
-            };
-            server_board_config?: {
-                [key: string]: string | undefined;
-            };
-            /** Format: uuid */
-            performance_profile?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
         };
-        mesheryResultPage: {
-            resultType: "mesheryResultPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        }, "resultType"> & {
-            results?: {
-                /** Format: uuid */
-                id?: string;
-                name?: string;
-                /** Format: date-time */
-                test_start_time?: string;
-                mesh?: string;
-                runner_results?: {
-                    [key: string]: string | undefined;
-                };
-                deleted?: boolean;
-                server_metrics?: {
-                    [key: string]: string | undefined;
-                };
-                server_board_config?: {
-                    [key: string]: string | undefined;
-                };
-                /** Format: uuid */
-                performance_profile?: string;
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-            }[];
-        });
-        tokenPage: {
-            resultType: "tokenPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        }, "resultType"> & {
-            tokens?: {
-                /** Format: uuid */
-                id?: string;
-                /** Format: uuid */
-                user_id?: string;
-                /** @description One of (meshery-cloud, github, google) */
-                provider?: string;
-                access_token?: string;
-                refresh_token?: string;
-                name?: string;
-                purpose?: string;
-                is_oauth?: boolean;
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-            }[];
-        });
-        userToken: {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            user_id?: string;
-            /** @description One of (meshery-cloud, github, google) */
-            provider?: string;
-            access_token?: string;
-            refresh_token?: string;
-            name?: string;
-            purpose?: string;
-            is_oauth?: boolean;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-        };
-        userInvite: {
-            /** @description First Name */
-            first_name: string;
-            /** @description Last Name */
-            last_name: string;
+        /** @description Schema for the response of a relationship evaluation process in Meshery */
+        EvaluationResponse: {
+            /** @description Specifies the version of the schema to which the evaluation response conforms. */
+            schemaVersion: components["schemas"]["inputString"];
+            /** @description The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed. */
+            design: components["schemas"]["designs"];
             /**
-             * Format: email
-             * @description email
+             * @description Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.
+             * @example a1b2c3d4e5f6g7h8i9j0
              */
-            email: string;
-        };
-        bulkDelete: {
-            /** Format: uuid */
-            user_ids: string;
-            user_emails: string[];
-        };
-        user: {
-            /** Format: uuid */
-            id: string;
-            /** @description user's email or username */
-            user_id: string;
-            /** @description One of (meshery-cloud, github, google) */
-            provider: string;
+            evaluationHash?: string;
             /**
-             * Format: email
-             * @description email
+             * Format: date-time
+             * @description ISO 8601 formatted timestamp of when the evaluation was completed.
              */
-            email: string;
-            /** @description First Name */
-            first_name: string;
-            /** @description Last Name */
-            last_name: string;
-            /** @description Link for profile picture */
-            avatar_url?: string;
-            status: string;
-            bio?: string;
-            preferences?: {
-                [key: string]: string | undefined;
-            };
-            accepted_terms_at?: string;
-            /** Format: date-time */
-            first_login_time?: string;
-            /** Format: date-time */
-            last_login_time: string;
-        };
-        recentUsers: {
-            /** Format: uuid */
-            id?: string;
-            /** @description First Name */
-            first_name?: string;
-            /** @description Last Name */
-            last_name?: string;
-            /** @description Link for profile picture */
-            avatar_url?: string;
-        };
-        rolesPage: {
-            recordType: "rolesPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            records_total?: number;
-            recordType?: string;
-        }, "recordType"> & {
-            data?: {
-                /** Format: uuid */
-                id: string;
-                /** @description user's email or username */
-                user_id: string;
-                username: string;
-                /**
-                 * Format: email
-                 * @description email
-                 */
-                email: string;
-                /** @description First Name */
-                first_name: string;
-                /** @description Last Name */
-                last_name: string;
-                status: string;
-                role_names: string[];
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at: string;
-                /** Format: date-time */
-                last_login_time: string;
-                /** Format: date-time */
-                deleted_at: string;
-                prefs?: {
-                    welcome_email?: boolean;
-                    notify_role_change?: boolean;
-                };
-            }[];
-        });
-        key: {
-            /** Format: uuid */
-            ID?: string;
-            subcategory?: string;
-            function?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** @description SQL null Timestamp to handle null values of time. */
-            deleted_at?: string;
-            category?: string;
-            description?: string;
-            /** Format: uuid */
-            owner?: string;
-        };
-        userKeys: {
-            keys?: {
-                /** Format: uuid */
-                ID?: string;
-                subcategory?: string;
-                function?: string;
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** @description SQL null Timestamp to handle null values of time. */
-                deleted_at?: string;
-                category?: string;
-                description?: string;
-                /** Format: uuid */
-                owner?: string;
-            }[];
-            total_count?: number;
-        };
-        /** @enum {string} */
-        deleteOn: "self" | "bulk";
-        usersPageForAdmin: {
-            recordType: "usersPageForAdmin";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            records_total?: number;
-            recordType?: string;
-        }, "recordType"> & {
-            data?: {
-                /** Format: uuid */
-                id: string;
-                /** @description user's email or username */
-                user_id: string;
-                username: string;
-                /**
-                 * Format: email
-                 * @description email
-                 */
-                email: string;
-                /** @description First Name */
-                first_name: string;
-                /** @description Last Name */
-                last_name: string;
-                status: string;
-                role_names: string[];
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at: string;
-                /** Format: date-time */
-                last_login_time: string;
-                /** Format: date-time */
-                deleted_at: string;
-                prefs?: {
-                    welcome_email?: boolean;
-                    notify_role_change?: boolean;
-                };
-                /** @description Link for profile picture */
-                avatar_url?: string;
-                preferences?: {
-                    [key: string]: string | undefined;
-                };
-            }[];
-        });
-        usersWithRolesForAdmin: {
-            /** Format: uuid */
-            id: string;
-            /** @description user's email or username */
-            user_id: string;
-            username: string;
-            /**
-             * Format: email
-             * @description email
-             */
-            email: string;
-            /** @description First Name */
-            first_name: string;
-            /** @description Last Name */
-            last_name: string;
-            status: string;
-            role_names: string[];
-            /** Format: date-time */
-            created_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            /** Format: date-time */
-            last_login_time: string;
-            /** Format: date-time */
-            deleted_at: string;
-            prefs?: {
-                welcome_email?: boolean;
-                notify_role_change?: boolean;
-            };
-            /** @description Link for profile picture */
-            avatar_url?: string;
-            preferences?: {
-                [key: string]: string | undefined;
+            timestamp?: string;
+            /** @description A detailed trace of the evaluation process, including actions taken and changes made. */
+            trace: {
+                /** @description List of policy actions applied during the evaluation. */
+                policyActions: string[];
+                /** @description List of new relationships added to the design. */
+                relationshipsAdded: components["schemas"]["relationship"][];
+                /** @description List of relationships removed from the design. */
+                relationshipsRemoved: components["schemas"]["relationship"][];
+                /** @description List of new components added to the design. */
+                componentsAdded: components["schemas"]["component"][];
+                /** @description List of components removed from the design. */
+                componentsRemoved: components["schemas"]["component"][];
             };
         };
-        teamMembers: {
-            /** Format: uuid */
-            id: string;
-            /** @description user's email or username */
-            user_id: string;
-            username: string;
-            /**
-             * Format: email
-             * @description email
-             */
-            email: string;
-            /** @description First Name */
-            first_name: string;
-            /** @description Last Name */
-            last_name: string;
-            status: string;
-            role_names: string[];
-            /** Format: date-time */
-            joined_at: string;
-            /** Format: date-time */
-            updated_at: string;
-            /** Format: date-time */
-            last_login_time: string;
-            /** Format: date-time */
-            deleted_at: string;
-            prefs?: {
-                welcome_email?: boolean;
-                notify_role_change?: boolean;
-            };
-            /** @description Link for profile picture */
-            avatar_url?: string;
+        workspace: {
+            ID?: components["schemas"]["general_id"];
+            name?: components["schemas"]["text"];
+            description?: components["schemas"]["text"];
+            organization_id?: components["schemas"]["organization_id"];
+            owner?: components["schemas"]["text"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+            deleted_at?: components["schemas"]["nullTime"];
         };
-        teamMembersPage: {
-            recordType: "teamMembersPage";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            records_total?: number;
-            recordType?: string;
-        }, "recordType"> & {
-            data?: {
-                /** Format: uuid */
-                id: string;
-                /** @description user's email or username */
-                user_id: string;
-                username: string;
-                /**
-                 * Format: email
-                 * @description email
-                 */
-                email: string;
-                /** @description First Name */
-                first_name: string;
-                /** @description Last Name */
-                last_name: string;
-                status: string;
-                role_names: string[];
-                /** Format: date-time */
-                joined_at: string;
-                /** Format: date-time */
-                updated_at: string;
-                /** Format: date-time */
-                last_login_time: string;
-                /** Format: date-time */
-                deleted_at: string;
-                prefs?: {
-                    welcome_email?: boolean;
-                    notify_role_change?: boolean;
-                };
-                /** @description Link for profile picture */
-                avatar_url?: string;
-            }[];
-        });
-        usersForNonAdmin: {
-            /** Format: uuid */
-            id: string;
-            /** @description user's email or username */
-            user_id: string;
-            username: string;
-            /**
-             * Format: email
-             * @description email
-             */
-            email: string;
-            /** @description First Name */
-            first_name: string;
-            /** @description Last Name */
-            last_name: string;
-            prefs?: {
-                welcome_email?: boolean;
-                notify_role_change?: boolean;
-            };
-            /** @description Link for profile picture */
-            avatar_url?: string;
-            preferences?: {
-                [key: string]: string | undefined;
-            };
+        workspacesTeamsMapping: {
+            ID?: components["schemas"]["general_id"];
+            team_id?: components["schemas"]["team_id"];
+            workspace_id?: components["schemas"]["workspace_id"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+            deleted_at?: components["schemas"]["nullTime"];
         };
-        usersPageForNonAdmin: {
-            recordType: "usersPageForNonAdmin";
-        } & (Omit<{
-            page?: number;
-            page_size?: number;
-            records_total?: number;
-            recordType?: string;
-        }, "recordType"> & {
-            data?: {
-                /** Format: uuid */
-                id: string;
-                /** @description user's email or username */
-                user_id: string;
-                username: string;
-                /**
-                 * Format: email
-                 * @description email
-                 */
-                email: string;
-                /** @description First Name */
-                first_name: string;
-                /** @description Last Name */
-                last_name: string;
-                prefs?: {
-                    welcome_email?: boolean;
-                    notify_role_change?: boolean;
-                };
-                /** @description Link for profile picture */
-                avatar_url?: string;
-                preferences?: {
-                    [key: string]: string | undefined;
-                };
-            }[];
-        });
-        recentActivityPage: {
-            recent_activity?: {
-                /**
-                 * Format: uuid
-                 * @description UUID of the event.
-                 *
-                 */
-                id: string;
-                /**
-                 * Format: uuid
-                 * @description UUID of the user that initiated the event. In most cases this would be present, but not always.
-                 *
-                 */
-                user_id?: string;
-                /**
-                 * Format: uuid
-                 * @description The system from which the request is sourced. In the case of Meshery Server,
-                 *     the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-                 *
-                 */
-                system_id: string;
-                /**
-                 * Format: uuid
-                 * @description Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.
-                 *
-                 */
-                operation_id: string;
-                /**
-                 * @description Resource name on which the operation is invoked.
-                 *
-                 * @example pattern
-                 */
-                category: string;
-                /**
-                 * @description Action taken on the resource.
-                 *
-                 * @example deployed
-                 */
-                action: string;
-                /**
-                 * @description Status for the event.
-                 *
-                 * @enum {string}
-                 */
-                status: "read" | "unread";
-                /**
-                 * Format: uuid
-                 * @description UUID of the entity on which the event was performed.
-                 *
-                 * @example 110020-123230-434231-000213
-                 */
-                acted_upon: string;
-                /**
-                 * @description A summary/receipt of event that occured.
-                 *
-                 * @example “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
-                 */
-                description: string;
-                /**
-                 * @description A set of seven standard event levels.
-                 *
-                 * @example info
-                 * @enum {string}
-                 */
-                severity: "emergency" | "critical" | "alert" | "error" | "warning" | "debug" | "informational" | "success";
-                /** @description Contains meaningful information, specific to the type of event.
-                 *     Structure of metadata can be different for different events.
-                 *      */
-                metadata: Record<string, never>;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was created.
-                 */
-                created_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was updated.
-                 */
-                updated_at: string;
-                /**
-                 * Format: date-time
-                 * @description Timestamp when the resource was deleted.
-                 */
-                deleted_at?: string;
-            }[];
+        workspacesEnvironmentsMapping: {
+            ID?: components["schemas"]["general_id"];
+            environment_id?: components["schemas"]["environment_id"];
+            workspace_id?: components["schemas"]["workspace_id"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+            deleted_at?: components["schemas"]["nullTime"];
         };
-        accountOverview: {
-            k8s_count?: number;
-            app_count?: number;
-            pattern_count?: number;
+        workspacesViewsMapping: {
+            ID?: components["schemas"]["general_id"];
+            view_id?: components["schemas"]["view_id"];
+            workspace_id?: components["schemas"]["workspace_id"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+            deleted_at?: components["schemas"]["nullTime"];
         };
-        badge: {
-            /** Format: uuid */
-            id?: string;
-            name?: string;
-            description?: string;
-            label?: string;
-            svg_location?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** @description SQL null Timestamp to handle null values of time. */
-            deleted_at?: string;
+        workspacesDesignsMapping: {
+            ID?: components["schemas"]["general_id"];
+            design_id?: components["schemas"]["design_id"];
+            workspace_id?: components["schemas"]["workspace_id"];
+            created_at?: components["schemas"]["time"];
+            updated_at?: components["schemas"]["time"];
+            deleted_at?: components["schemas"]["nullTime"];
         };
-        badges: {
-            badges?: {
-                [key: string]: {
-                    /** Format: uuid */
-                    id?: string;
-                    name?: string;
-                    description?: string;
-                    label?: string;
-                    svg_location?: string;
-                    /** Format: date-time */
-                    created_at?: string;
-                    /** Format: date-time */
-                    updated_at?: string;
-                    /** @description SQL null Timestamp to handle null values of time. */
-                    deleted_at?: string;
-                } | undefined;
-            };
-            total_count?: number;
+        workspaceUpdatePayload: {
+            /** @description Name of workspace */
+            name?: components["schemas"]["text"];
+            /** @description Environment description */
+            description?: components["schemas"]["text"];
+            /** @description Organization ID */
+            organization_id: string;
         };
+        workspacePayload: {
+            /** @description Name */
+            name: components["schemas"]["text"];
+            /** @description Environment description */
+            description?: components["schemas"]["text"];
+            /** @description Organization ID */
+            organization_id?: string;
+        };
+        workspacePage: {
+            page?: components["schemas"]["number"];
+            page_size?: components["schemas"]["number"];
+            total_count?: components["schemas"]["number"];
+            workspaces?: components["schemas"]["workspace"][];
+        };
+        /** Format: uuid */
+        general_id: string;
+        /** Format: uuid */
+        organization_id: string;
         /** @description SQL null Timestamp to handle null values of time. */
         nullTime: string;
-        /** @description Link for profile picture */
-        avatar_url: string;
-        bio: string;
-        accepted_terms_at: string;
-        emails: string[];
-        /** @description Body for empty request */
-        empty: Record<string, never>;
+        /** Format: uuid */
+        team_id: string;
+        /** Format: uuid */
+        workspace_id: string;
+        /** Format: uuid */
+        environment_id: string;
+        /** Format: uuid */
+        view_id: string;
+        /** Format: uuid */
+        design_id: string;
+        number: number;
     };
     responses: {
         /** @description ok */
@@ -2762,35 +957,8 @@ export interface components {
                 "text/plain": string;
             };
         };
-        /** @description created */
-        201: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Invalid request body or request param */
-        400: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
         /** @description Expired JWT token used or insufficient privilege */
         401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Result not found */
-        404: {
             headers: {
                 [name: string]: unknown;
             };
@@ -2809,6 +977,12 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Connection kind (eg: Meshery) */
+        connectionKind: components["schemas"]["text"];
+        /** @description Connection ID */
+        connectionId: components["schemas"]["id"];
+        /** @description Meshery server ID */
+        serverId: components["schemas"]["id"];
         /** @description Get reponses by page */
         page: string;
         /** @description Get reponses by pageSize */
@@ -2817,233 +991,68 @@ export interface components {
         search: string;
         /** @description Get ordered responses */
         order: string;
-        /** @description Unique identifier */
-        id: string;
-        /** @description user's os */
-        os: string;
-        /** @description Is playground mode */
-        playground: string;
-        /** @description meshery version */
-        mesheryVersion: string;
-        /** @description Connection kind (eg: Meshery) */
-        connectionKind: string;
-        /** @description Connection ID */
-        connectionId: string;
-        /** @description Meshery server ID */
-        serverId: string;
-        /** @description credential Id */
-        credentialId: string;
-        /** @description Cumulative events */
-        cumulative: string;
-        /** @description Filter for retrieving events */
-        eventsFilter: {
-            provider?: string[];
-            event_type?: string[];
-        };
-        /** @description Result id */
-        resultId: string;
-        /** @description Performance Result Id */
-        resultID: string;
-        /** @description To get OAuth tokens as well */
-        isOAuth: string;
-        /** @description Name of the resource */
-        name: string;
-        /** @description Purpose for which token is generated */
-        purpose: string;
-        /** @description User's user_id */
-        userId: string;
-        /** @description Remote provider */
-        provider: string;
-        /** @description Defines on whom the delete operation is to be performed */
-        deleteOn: "self" | "bulk";
-        /** @description Get filtered reponses */
-        filter: string;
     };
     requestBodies: {
-        mesheryApplicationRequestBody: {
-            content: {
-                "application/json": {
-                    url?: string;
-                    path?: string;
-                    save?: boolean;
-                    application_data?: {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** @description Application file */
-                        application_file?: string;
-                        /** @description Pattern Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        /**
-                         * @description Source type (K8s manifest, Helm chart, Docker compose)
-                         * @enum {unknown}
-                         */
-                        source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-                        /**
-                         * Format: byte
-                         * @description Source content
-                         */
-                        source_content?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                    source_type?: string;
-                };
-            };
-        };
         connectionPayload: {
             content: {
                 "application/json": {
                     /** @description Kind */
-                    kind?: string;
+                    kind?: components["schemas"]["text"];
                     /** @description Connection type */
-                    type?: string;
+                    type?: components["schemas"]["text"];
                     /** @description Connection subtype */
-                    sub_type?: string;
-                    credential_secret?: {
-                        [key: string]: string | undefined;
-                    };
-                    metadata?: {
-                        [key: string]: string | undefined;
-                    };
+                    sub_type?: components["schemas"]["text"];
+                    credential_secret?: components["schemas"]["map_object"];
+                    metadata?: components["schemas"]["map_object"];
                 };
             };
         };
-        /** @description Body for user credential */
-        credentialBody: {
+        /** @description Body for upserting meshery pattern resource */
+        mesheryPatternResource: {
             content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id?: string;
-                    /** Format: uuid */
-                    user_id?: string;
-                    name?: string;
-                    type?: string;
-                    secret?: {
-                        [key: string]: string | undefined;
-                    };
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was created.
-                     */
-                    created_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was updated.
-                     */
-                    updated_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was deleted.
-                     */
-                    deleted_at?: string;
-                };
+                "application/json": components["schemas"]["mesheryPatternResource"];
             };
         };
-        mesheryFilterRequestBody: {
+        /** @description Body for upserting meshery pattern */
+        mesheryPatternRequestBody: {
             content: {
                 "application/json": {
-                    url?: string;
-                    path?: string;
+                    url?: components["schemas"]["text"];
+                    path?: components["schemas"]["text"];
                     save?: boolean;
-                    filter_data?: {
-                        /**
-                         * Format: uuid
-                         * @description Connection id
-                         */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /**
-                         * Format: byte
-                         * @description Filter file
-                         */
-                        filter_file?: string;
-                        /** @description Filter Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
+                    pattern_data?: components["schemas"]["mesheryPattern"];
                 };
             };
         };
-        /** @description Body for user invite request */
-        userInvite: {
+        /** @description Body for deleting meshery pattern */
+        mesheryPatternDeleteRequestBody: {
             content: {
                 "application/json": {
-                    /** @description First Name */
-                    first_name: string;
-                    /** @description Last Name */
-                    last_name: string;
-                    /**
-                     * Format: email
-                     * @description email
-                     */
-                    email: string;
+                    patterns?: components["schemas"]["deletePatternModel"][];
                 };
             };
         };
-        /** @description Body for delete of user accounts */
-        deleteUsers: {
+        /** @description Body for sharing design */
+        designShare: {
             content: {
                 "application/json": {
-                    /** Format: uuid */
-                    user_ids: string;
-                    user_emails: string[];
-                } | Record<string, never>;
+                    emails: components["schemas"]["emails"];
+                    id: components["schemas"]["id"];
+                    content_type: string;
+                    share: boolean;
+                };
             };
         };
-        /** @description Body for upserting user */
-        user: {
+        /** @description Body for creating workspace */
+        workspacePayload: {
             content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id: string;
-                    /** @description user's email or username */
-                    user_id: string;
-                    /** @description One of (meshery-cloud, github, google) */
-                    provider: string;
-                    /**
-                     * Format: email
-                     * @description email
-                     */
-                    email: string;
-                    /** @description First Name */
-                    first_name: string;
-                    /** @description Last Name */
-                    last_name: string;
-                    /** @description Link for profile picture */
-                    avatar_url?: string;
-                    status: string;
-                    bio?: string;
-                    preferences?: {
-                        [key: string]: string | undefined;
-                    };
-                    accepted_terms_at?: string;
-                    /** Format: date-time */
-                    first_login_time?: string;
-                    /** Format: date-time */
-                    last_login_time: string;
-                };
+                "application/json": components["schemas"]["workspacePayload"];
+            };
+        };
+        /** @description Body for updating workspace */
+        workspaceUpdatePayload: {
+            content: {
+                "application/json": components["schemas"]["workspaceUpdatePayload"];
             };
         };
     };
@@ -3052,756 +1061,17 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    GetApplications: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Applications */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        applications?: {
-                            /** Format: uuid */
-                            id?: string;
-                            /** Format: uuid */
-                            user_id?: string;
-                            /** @description Application file */
-                            application_file?: string;
-                            /** @description Pattern Name */
-                            name?: string;
-                            location?: {
-                                [key: string]: string | undefined;
-                            };
-                            visibility?: string;
-                            /**
-                             * @description Source type (K8s manifest, Helm chart, Docker compose)
-                             * @enum {unknown}
-                             */
-                            source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-                            /**
-                             * Format: byte
-                             * @description Source content
-                             */
-                            source_content?: string;
-                            catalog_data?: {
-                                [key: string]: string | undefined;
-                            };
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    UpsertApplication: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    url?: string;
-                    path?: string;
-                    save?: boolean;
-                    application_data?: {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** @description Application file */
-                        application_file?: string;
-                        /** @description Pattern Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        /**
-                         * @description Source type (K8s manifest, Helm chart, Docker compose)
-                         * @enum {unknown}
-                         */
-                        source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-                        /**
-                         * Format: byte
-                         * @description Source content
-                         */
-                        source_content?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                    source_type?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Upserted application */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** @description Application file */
-                        application_file?: string;
-                        /** @description Pattern Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        /**
-                         * @description Source type (K8s manifest, Helm chart, Docker compose)
-                         * @enum {unknown}
-                         */
-                        source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-                        /**
-                         * Format: byte
-                         * @description Source content
-                         */
-                        source_content?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    }[];
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    UpsertApplicationSourceContent: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description Body for upserting meshery application source content */
-        requestBody: {
-            content: {
-                "text/plain": string;
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetApplicationSourceContent: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description application source content associated with ID */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetApplication: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description application associated with ID */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** @description Application file */
-                        application_file?: string;
-                        /** @description Pattern Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        /**
-                         * @description Source type (K8s manifest, Helm chart, Docker compose)
-                         * @enum {unknown}
-                         */
-                        source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-                        /**
-                         * Format: byte
-                         * @description Source content
-                         */
-                        source_content?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeleteApplication: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Deleted application */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** @description Application file */
-                        application_file?: string;
-                        /** @description Pattern Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        /**
-                         * @description Source type (K8s manifest, Helm chart, Docker compose)
-                         * @enum {unknown}
-                         */
-                        source_type?: "k8s_manifest" | "docker_compose" | "helm_chart";
-                        /**
-                         * Format: byte
-                         * @description Source content
-                         */
-                        source_content?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetCapabilitie: {
-        parameters: {
-            query?: {
-                /** @description user's os */
-                os?: string;
-                /** @description Is playground mode */
-                playground?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description capabilities */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Provider type */
-                        provider_type?: string;
-                        /** @description Package version */
-                        package_version?: string;
-                        /** @description Package url */
-                        package_url?: string;
-                        /** @description Provider name */
-                        provider_name?: string;
-                        provider_description?: string[];
-                        extensions?: {
-                            navigator?: {
-                                /** @description Title */
-                                title?: string;
-                                on_click_callback?: number;
-                                href?: {
-                                    /** Format: uri */
-                                    uri?: string;
-                                    external?: boolean;
-                                };
-                                /** @description Component */
-                                component?: string;
-                                /** @description Icon link */
-                                icon?: string;
-                                /**
-                                 * Format: uri
-                                 * @description link
-                                 */
-                                link?: string;
-                                /** @description Controls whether to show the extension or not */
-                                show?: boolean;
-                                /** @description Extension type */
-                                type?: string;
-                                allowedTo?: Record<string, never>;
-                            }[];
-                            user_prefs?: {
-                                /** @description Component */
-                                component?: string;
-                                /** @description Extension type */
-                                type?: string;
-                            }[];
-                            graphql?: {
-                                /** @description Component */
-                                component?: string;
-                                /** @description Path */
-                                path?: string;
-                                /** @description Extension type */
-                                type?: string;
-                            }[];
-                            account?: {
-                                /** @description Title */
-                                title?: string;
-                                on_click_callback?: number;
-                                href?: {
-                                    /** Format: uri */
-                                    uri?: string;
-                                    external?: boolean;
-                                };
-                                /** @description Component */
-                                component?: string;
-                                /**
-                                 * Format: uri
-                                 * @description link
-                                 */
-                                link?: string;
-                                /** @description Controls whether to show the extension or not */
-                                show?: boolean;
-                                /** @description Extension type */
-                                type?: string;
-                            }[];
-                        };
-                        capabilities?: {
-                            /** @description Feature name */
-                            feature?: string;
-                            endpoint?: string;
-                        };
-                        restrictedAccess?: {
-                            isMesheryUIRestricted?: boolean;
-                            allowedComponents?: {
-                                navigator?: Record<string, never>;
-                                header?: Record<string, never>;
-                            };
-                        };
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetCapabilities: {
-        parameters: {
-            query?: {
-                /** @description user's os */
-                os?: string;
-                /** @description Is playground mode */
-                playground?: string;
-            };
-            header?: never;
-            path: {
-                /** @description meshery version */
-                "meshery-version": string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description capabilities */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Provider type */
-                        provider_type?: string;
-                        /** @description Package version */
-                        package_version?: string;
-                        /** @description Package url */
-                        package_url?: string;
-                        /** @description Provider name */
-                        provider_name?: string;
-                        provider_description?: string[];
-                        extensions?: {
-                            navigator?: {
-                                /** @description Title */
-                                title?: string;
-                                on_click_callback?: number;
-                                href?: {
-                                    /** Format: uri */
-                                    uri?: string;
-                                    external?: boolean;
-                                };
-                                /** @description Component */
-                                component?: string;
-                                /** @description Icon link */
-                                icon?: string;
-                                /**
-                                 * Format: uri
-                                 * @description link
-                                 */
-                                link?: string;
-                                /** @description Controls whether to show the extension or not */
-                                show?: boolean;
-                                /** @description Extension type */
-                                type?: string;
-                                allowedTo?: Record<string, never>;
-                            }[];
-                            user_prefs?: {
-                                /** @description Component */
-                                component?: string;
-                                /** @description Extension type */
-                                type?: string;
-                            }[];
-                            graphql?: {
-                                /** @description Component */
-                                component?: string;
-                                /** @description Path */
-                                path?: string;
-                                /** @description Extension type */
-                                type?: string;
-                            }[];
-                            account?: {
-                                /** @description Title */
-                                title?: string;
-                                on_click_callback?: number;
-                                href?: {
-                                    /** Format: uri */
-                                    uri?: string;
-                                    external?: boolean;
-                                };
-                                /** @description Component */
-                                component?: string;
-                                /**
-                                 * Format: uri
-                                 * @description link
-                                 */
-                                link?: string;
-                                /** @description Controls whether to show the extension or not */
-                                show?: boolean;
-                                /** @description Extension type */
-                                type?: string;
-                            }[];
-                        };
-                        capabilities?: {
-                            /** @description Feature name */
-                            feature?: string;
-                            endpoint?: string;
-                        };
-                        restrictedAccess?: {
-                            isMesheryUIRestricted?: boolean;
-                            allowedComponents?: {
-                                navigator?: Record<string, never>;
-                                header?: Record<string, never>;
-                            };
-                        };
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    CollaborationHandler: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description initate cross server collaboration */
-            101: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     GetConnections: {
         parameters: {
             query?: {
                 /** @description Get reponses by page */
-                page?: string;
+                page?: components["parameters"]["page"];
                 /** @description Get reponses by pageSize */
-                page_size?: string;
+                page_size?: components["parameters"]["page_size"];
                 /** @description Get responses that match search param value */
-                search?: string;
+                search?: components["parameters"]["search"];
                 /** @description Get ordered responses */
-                order?: string;
+                order?: components["parameters"]["order"];
             };
             header?: never;
             path?: never;
@@ -3815,69 +1085,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        connections?: {
-                            /**
-                             * Format: uuid
-                             * @description ID
-                             */
-                            id?: string;
-                            /** @description Connection Name */
-                            name?: string;
-                            /**
-                             * Format: uuid
-                             * @description Credential ID
-                             */
-                            credential_id?: string;
-                            /** @description Connection Type */
-                            type?: string;
-                            /** @description Connection Subtype */
-                            sub_type?: string;
-                            /** @description Connection Kind */
-                            kind?: string;
-                            metadata?: {
-                                [key: string]: string | undefined;
-                            };
-                            /**
-                             * @description Connection Status
-                             * @enum {string}
-                             */
-                            status?: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
-                            /** Format: uuid */
-                            user_id?: string;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                            /** Format: date-time */
-                            deleted_at?: string;
-                        }[];
-                    };
+                    "application/json": components["schemas"]["connectionPage"];
                 };
             };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
     RegisterConnection: {
@@ -3887,24 +1099,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /** @description Kind */
-                    kind?: string;
-                    /** @description Connection type */
-                    type?: string;
-                    /** @description Connection subtype */
-                    sub_type?: string;
-                    credential_secret?: {
-                        [key: string]: string | undefined;
-                    };
-                    metadata?: {
-                        [key: string]: string | undefined;
-                    };
-                };
-            };
-        };
+        requestBody?: components["requestBodies"]["connectionPayload"];
         responses: {
             /** @description Inserted connection */
             200: {
@@ -3912,62 +1107,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description ID
-                         */
-                        id?: string;
-                        /** @description Connection Name */
-                        name?: string;
-                        /**
-                         * Format: uuid
-                         * @description Credential ID
-                         */
-                        credential_id?: string;
-                        /** @description Connection Type */
-                        type?: string;
-                        /** @description Connection Subtype */
-                        sub_type?: string;
-                        /** @description Connection Kind */
-                        kind?: string;
-                        metadata?: {
-                            [key: string]: string | undefined;
-                        };
-                        /**
-                         * @description Connection Status
-                         * @enum {string}
-                         */
-                        status?: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                        /** Format: date-time */
-                        deleted_at?: string;
-                    };
+                    "application/json": components["schemas"]["connection"];
                 };
             };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
     EditConnectionByID: {
@@ -3976,28 +1120,11 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Connection ID */
-                connectionId: string;
+                connectionId: components["parameters"]["connectionId"];
             };
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /** @description Kind */
-                    kind?: string;
-                    /** @description Connection type */
-                    type?: string;
-                    /** @description Connection subtype */
-                    sub_type?: string;
-                    credential_secret?: {
-                        [key: string]: string | undefined;
-                    };
-                    metadata?: {
-                        [key: string]: string | undefined;
-                    };
-                };
-            };
-        };
+        requestBody?: components["requestBodies"]["connectionPayload"];
         responses: {
             /** @description Edited connection */
             200: {
@@ -4005,62 +1132,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description ID
-                         */
-                        id?: string;
-                        /** @description Connection Name */
-                        name?: string;
-                        /**
-                         * Format: uuid
-                         * @description Credential ID
-                         */
-                        credential_id?: string;
-                        /** @description Connection Type */
-                        type?: string;
-                        /** @description Connection Subtype */
-                        sub_type?: string;
-                        /** @description Connection Kind */
-                        kind?: string;
-                        metadata?: {
-                            [key: string]: string | undefined;
-                        };
-                        /**
-                         * @description Connection Status
-                         * @enum {string}
-                         */
-                        status?: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                        /** Format: date-time */
-                        deleted_at?: string;
-                    };
+                    "application/json": components["schemas"]["connection"];
                 };
             };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
     GetConnectionStatus: {
@@ -4078,52 +1154,29 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        connections_status?: {
-                            /** @description Connection status */
-                            status?: string;
-                            /** @description Number of connections having the status */
-                            count?: number;
-                        }[];
-                    };
+                    "application/json": components["schemas"]["connectionsStatusPage"];
                 };
             };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
     GetConnectionsByKind: {
         parameters: {
             query?: {
                 /** @description Get reponses by page */
-                page?: string;
+                page?: components["parameters"]["page"];
                 /** @description Get reponses by pageSize */
-                page_size?: string;
+                page_size?: components["parameters"]["page_size"];
                 /** @description Get responses that match search param value */
-                search?: string;
+                search?: components["parameters"]["search"];
                 /** @description Get ordered responses */
-                order?: string;
+                order?: components["parameters"]["order"];
             };
             header?: never;
             path: {
                 /** @description Connection kind (eg: Meshery) */
-                connectionKind: string;
+                connectionKind: components["parameters"]["connectionKind"];
             };
             cookie?: never;
         };
@@ -4138,24 +1191,8 @@ export interface operations {
                     "application/json": Record<string, never>;
                 };
             };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
     DeleteConnection: {
@@ -4164,7 +1201,7 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Connection kind (eg: Meshery) */
-                connectionKind: string;
+                connectionKind: components["parameters"]["connectionKind"];
             };
             cookie?: never;
         };
@@ -4176,82 +1213,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description ID
-                         */
-                        id?: string;
-                        /** @description Connection Name */
-                        name?: string;
-                        /**
-                         * Format: uuid
-                         * @description Credential ID
-                         */
-                        credential_id?: string;
-                        /** @description Connection Type */
-                        type?: string;
-                        /** @description Connection Subtype */
-                        sub_type?: string;
-                        /** @description Connection Kind */
-                        kind?: string;
-                        metadata?: {
-                            [key: string]: string | undefined;
-                        };
-                        /**
-                         * @description Connection Status
-                         * @enum {string}
-                         */
-                        status?: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                        /** Format: date-time */
-                        deleted_at?: string;
-                    };
+                    "application/json": components["schemas"]["connection"];
                 };
             };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
     GetConnectionsByKindAndConnectionID: {
         parameters: {
             query?: {
                 /** @description Get reponses by page */
-                page?: string;
+                page?: components["parameters"]["page"];
                 /** @description Get reponses by pageSize */
-                page_size?: string;
+                page_size?: components["parameters"]["page_size"];
                 /** @description Get responses that match search param value */
-                search?: string;
+                search?: components["parameters"]["search"];
                 /** @description Get ordered responses */
-                order?: string;
+                order?: components["parameters"]["order"];
             };
             header?: never;
             path: {
                 /** @description Connection kind (eg: Meshery) */
-                connectionKind: string;
+                connectionKind: components["parameters"]["connectionKind"];
                 /** @description Connection ID */
-                connectionId: string;
+                connectionId: components["parameters"]["connectionId"];
             };
             cookie?: never;
         };
@@ -4263,54 +1249,11 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        k8sContext?: {
-                            /** Format: uuid */
-                            id?: string;
-                            name?: string;
-                            auth?: {
-                                [key: string]: string | undefined;
-                            };
-                            cluster?: {
-                                [key: string]: string | undefined;
-                            };
-                            server?: string;
-                            /** Format: uuid */
-                            owner?: string;
-                            /** Format: uuid */
-                            created_by?: string;
-                            /** Format: uuid */
-                            meshery_instance_id?: string;
-                            /** Format: uuid */
-                            kubernetes_server_id?: string;
-                            deployment_type?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                            /** Format: date-time */
-                            created_at?: string;
-                        };
-                        inserted?: boolean;
-                    };
+                    "application/json": components["schemas"]["k8sContextPersistResponse"];
                 };
             };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
     DeleteMesheryConnection: {
@@ -4319,3504 +1262,18 @@ export interface operations {
             header?: never;
             path: {
                 /** @description Meshery server ID */
-                mesheryServerID: string;
+                mesheryServerID: components["parameters"]["serverId"];
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUserCredentials: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description credentials */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        credential?: {
-                            /** Format: uuid */
-                            id?: string;
-                            /** Format: uuid */
-                            user_id?: string;
-                            name?: string;
-                            type?: string;
-                            secret?: {
-                                [key: string]: string | undefined;
-                            };
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was updated.
-                             */
-                            updated_at?: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was deleted.
-                             */
-                            deleted_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    UpdateUserCredential: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for user credential */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id?: string;
-                    /** Format: uuid */
-                    user_id?: string;
-                    name?: string;
-                    type?: string;
-                    secret?: {
-                        [key: string]: string | undefined;
-                    };
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was created.
-                     */
-                    created_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was updated.
-                     */
-                    updated_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was deleted.
-                     */
-                    deleted_at?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    SaveUserCredential: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for user credential */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id?: string;
-                    /** Format: uuid */
-                    user_id?: string;
-                    name?: string;
-                    type?: string;
-                    secret?: {
-                        [key: string]: string | undefined;
-                    };
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was created.
-                     */
-                    created_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was updated.
-                     */
-                    updated_at?: string;
-                    /**
-                     * Format: date-time
-                     * @description Timestamp when the resource was deleted.
-                     */
-                    deleted_at?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeleteUserCredential: {
-        parameters: {
-            query: {
-                /** @description credential Id */
-                credential_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetEventsAggregate: {
-        parameters: {
-            query?: {
-                /** @description Cumulative events */
-                cumulative?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events Aggregate Count */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** @description Number of audit events */
-                        audit?: number;
-                        /** @description Number of summary events */
-                        summary?: number;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    RetrieveResultsByDate: {
-        parameters: {
-            query?: {
-                /** @description Cumulative events */
-                cumulative?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events by date */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        count?: number;
-                        event_type?: string;
-                        /** Format: date-time */
-                        dt?: string;
-                        week?: string;
-                        month?: string;
-                        year?: string;
-                    }[];
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    RetrieveResultsByWeek: {
-        parameters: {
-            query?: {
-                /** @description Cumulative events */
-                cumulative?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events by week */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        count?: number;
-                        event_type?: string;
-                        /** Format: date-time */
-                        dt?: string;
-                        week?: string;
-                        month?: string;
-                        year?: string;
-                    }[];
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    RetrieveResultsByMonth: {
-        parameters: {
-            query?: {
-                /** @description Cumulative events */
-                cumulative?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events by month */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        count?: number;
-                        event_type?: string;
-                        /** Format: date-time */
-                        dt?: string;
-                        week?: string;
-                        month?: string;
-                        year?: string;
-                    }[];
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetEvents: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Filter for retrieving events */
-                filter?: {
-                    provider?: string[];
-                    event_type?: string[];
-                };
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events list */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        records_total?: number;
-                        recordType?: string;
-                    }, "recordType"> & {
-                        data?: {
-                            /** @description Defines model for event_trackers */
-                            event: {
-                                /**
-                                 * Format: uuid
-                                 * @description UUID of the event.
-                                 *
-                                 */
-                                id: string;
-                                /**
-                                 * Format: uuid
-                                 * @description UUID of the user that initiated the event. In most cases this would be present, but not always.
-                                 *
-                                 */
-                                user_id?: string;
-                                /**
-                                 * Format: uuid
-                                 * @description The system from which the request is sourced. In the case of Meshery Server,
-                                 *     the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-                                 *
-                                 */
-                                system_id: string;
-                                /**
-                                 * Format: uuid
-                                 * @description Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.
-                                 *
-                                 */
-                                operation_id: string;
-                                /**
-                                 * @description Resource name on which the operation is invoked.
-                                 *
-                                 * @example pattern
-                                 */
-                                category: string;
-                                /**
-                                 * @description Action taken on the resource.
-                                 *
-                                 * @example deployed
-                                 */
-                                action: string;
-                                /**
-                                 * @description Status for the event.
-                                 *
-                                 * @enum {string}
-                                 */
-                                status: "read" | "unread";
-                                /**
-                                 * Format: uuid
-                                 * @description UUID of the entity on which the event was performed.
-                                 *
-                                 * @example 110020-123230-434231-000213
-                                 */
-                                acted_upon: string;
-                                /**
-                                 * @description A summary/receipt of event that occured.
-                                 *
-                                 * @example “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
-                                 */
-                                description: string;
-                                /**
-                                 * @description A set of seven standard event levels.
-                                 *
-                                 * @example info
-                                 * @enum {string}
-                                 */
-                                severity: "emergency" | "critical" | "alert" | "error" | "warning" | "debug" | "informational" | "success";
-                                /** @description Contains meaningful information, specific to the type of event.
-                                 *     Structure of metadata can be different for different events.
-                                 *      */
-                                metadata: Record<string, never>;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the resource was created.
-                                 */
-                                created_at: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the resource was updated.
-                                 */
-                                updated_at: string;
-                                /**
-                                 * Format: date-time
-                                 * @description Timestamp when the resource was deleted.
-                                 */
-                                deleted_at?: string;
-                            };
-                            events_count: number;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetEventSummaryByUser: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Events Summary */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        records_total?: number;
-                        recordType?: string;
-                    }, "recordType"> & {
-                        data?: {
-                            /** @description user's email or username */
-                            user_id: string;
-                            provider: string;
-                            email: string;
-                            /** @description First Name */
-                            first_name: string;
-                            /** @description Last Name */
-                            last_name: string;
-                            activity_count: number;
-                            login_count: number;
-                            signup_count: number;
-                            perf_results_count: number;
-                            smi_results_count: number;
-                            meshery_apps_count: number;
-                            meshery_patterns_count: number;
-                            meshery_filters_count: number;
-                            /** Format: data-time */
-                            last_login_time: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetFilters: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Filters */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        filters?: {
-                            /**
-                             * Format: uuid
-                             * @description Connection id
-                             */
-                            id?: string;
-                            /** Format: uuid */
-                            user_id?: string;
-                            /**
-                             * Format: byte
-                             * @description Filter file
-                             */
-                            filter_file?: string;
-                            /** @description Filter Name */
-                            name?: string;
-                            location?: {
-                                [key: string]: string | undefined;
-                            };
-                            visibility?: string;
-                            catalog_data?: {
-                                [key: string]: string | undefined;
-                            };
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    UpsertFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    url?: string;
-                    path?: string;
-                    save?: boolean;
-                    filter_data?: {
-                        /**
-                         * Format: uuid
-                         * @description Connection id
-                         */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /**
-                         * Format: byte
-                         * @description Filter file
-                         */
-                        filter_file?: string;
-                        /** @description Filter Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description Upserted filter */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Connection id
-                         */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /**
-                         * Format: byte
-                         * @description Filter file
-                         */
-                        filter_file?: string;
-                        /** @description Filter Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    }[];
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetFilterFile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Filter file */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Filter associated with ID */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Connection id
-                         */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /**
-                         * Format: byte
-                         * @description Filter file
-                         */
-                        filter_file?: string;
-                        /** @description Filter Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeleteFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Deleted filter */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /**
-                         * Format: uuid
-                         * @description Connection id
-                         */
-                        id?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /**
-                         * Format: byte
-                         * @description Filter file
-                         */
-                        filter_file?: string;
-                        /** @description Filter Name */
-                        name?: string;
-                        location?: {
-                            [key: string]: string | undefined;
-                        };
-                        visibility?: string;
-                        catalog_data?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    CloneFilter: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description Body for cloning design */
-        requestBody: {
-            content: {
-                "application/json": {
-                    name: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetAllRoles: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Get all roles */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string[];
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    AddRoleHolder: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for assigning role to the user */
-        requestBody: {
-            content: {
-                "application/json": {
-                    role_names: string[];
-                    /**
-                     * Format: email
-                     * @description email
-                     */
-                    email: string;
-                };
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    EditRoleHolder: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for editing role of the user */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id: string;
-                    /** @description user's email or username */
-                    user_id: string;
-                    username: string;
-                    /**
-                     * Format: email
-                     * @description email
-                     */
-                    email: string;
-                    /** @description First Name */
-                    first_name: string;
-                    /** @description Last Name */
-                    last_name: string;
-                    status: string;
-                    role_names: string[];
-                    /** Format: date-time */
-                    created_at: string;
-                    /** Format: date-time */
-                    updated_at: string;
-                    /** Format: date-time */
-                    last_login_time: string;
-                    /** Format: date-time */
-                    deleted_at: string;
-                    prefs?: {
-                        welcome_email?: boolean;
-                        notify_role_change?: boolean;
-                    };
-                };
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    BulkEditRoleHolder: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for editing role of the users in bulk */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id: string;
-                    /** @description user's email or username */
-                    user_id: string;
-                    username: string;
-                    /**
-                     * Format: email
-                     * @description email
-                     */
-                    email: string;
-                    /** @description First Name */
-                    first_name: string;
-                    /** @description Last Name */
-                    last_name: string;
-                    status: string;
-                    role_names: string[];
-                    /** Format: date-time */
-                    created_at: string;
-                    /** Format: date-time */
-                    updated_at: string;
-                    /** Format: date-time */
-                    last_login_time: string;
-                    /** Format: date-time */
-                    deleted_at: string;
-                    prefs?: {
-                        welcome_email?: boolean;
-                        notify_role_change?: boolean;
-                    };
-                }[];
-            };
-        };
-        responses: {
-            /** @description created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeleteRole: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Deleted roles */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id: string;
-                        /** @description user's email or username */
-                        user_id: string;
-                        username: string;
-                        /**
-                         * Format: email
-                         * @description email
-                         */
-                        email: string;
-                        /** @description First Name */
-                        first_name: string;
-                        /** @description Last Name */
-                        last_name: string;
-                        status: string;
-                        role_names: string[];
-                        /** Format: date-time */
-                        created_at: string;
-                        /** Format: date-time */
-                        updated_at: string;
-                        /** Format: date-time */
-                        last_login_time: string;
-                        /** Format: date-time */
-                        deleted_at: string;
-                        prefs?: {
-                            welcome_email?: boolean;
-                            notify_role_change?: boolean;
-                        };
-                    }[];
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    SMPDashboardPerfProfiles: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Get Performance Profiles with pagination */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        profiles?: {
-                            /** Format: uuid */
-                            id?: string;
-                            name?: string;
-                            /** Format: uuid */
-                            user_id?: string;
-                            /** Format: uuid */
-                            schedule?: string;
-                            load_generators?: string;
-                            endpoints?: string;
-                            service_mesh?: string;
-                            concurrent_request?: number;
-                            qps?: number;
-                            duration?: string;
-                            /** Format: date-time */
-                            last_run?: string;
-                            total_results?: number;
-                            request_headers?: string;
-                            request_cookies?: string;
-                            request_body?: string;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    SMPDashboardTestResults: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Get Performance Profiles Results with pagination */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        results?: {
-                            /** Format: uuid */
-                            id?: string;
-                            name?: string;
-                            /** Format: date-time */
-                            test_start_time?: string;
-                            mesh?: string;
-                            runner_results?: {
-                                [key: string]: string | undefined;
-                            };
-                            deleted?: boolean;
-                            server_metrics?: {
-                                [key: string]: string | undefined;
-                            };
-                            server_board_config?: {
-                                [key: string]: string | undefined;
-                            };
-                            /** Format: uuid */
-                            performance_profile?: string;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid path parameter "id" */
-            502: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetPerformanceProfiles: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Performance Profiles */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        profiles?: {
-                            /** Format: uuid */
-                            id?: string;
-                            name?: string;
-                            /** Format: uuid */
-                            user_id?: string;
-                            /** Format: uuid */
-                            schedule?: string;
-                            load_generators?: string;
-                            endpoints?: string;
-                            service_mesh?: string;
-                            concurrent_request?: number;
-                            qps?: number;
-                            duration?: string;
-                            /** Format: date-time */
-                            last_run?: string;
-                            total_results?: number;
-                            request_headers?: string;
-                            request_cookies?: string;
-                            request_body?: string;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    UpsertPerformanceProfile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for upserting performance profile */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id?: string;
-                    name?: string;
-                    /** Format: uuid */
-                    user_id?: string;
-                    /** Format: uuid */
-                    schedule?: string;
-                    load_generators?: string;
-                    endpoints?: string;
-                    service_mesh?: string;
-                    concurrent_request?: number;
-                    qps?: number;
-                    duration?: string;
-                    /** Format: date-time */
-                    last_run?: string;
-                    total_results?: number;
-                    request_headers?: string;
-                    request_cookies?: string;
-                    request_body?: string;
-                    /** Format: date-time */
-                    created_at?: string;
-                    /** Format: date-time */
-                    updated_at?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description updated performance profile */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        name?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** Format: uuid */
-                        schedule?: string;
-                        load_generators?: string;
-                        endpoints?: string;
-                        service_mesh?: string;
-                        concurrent_request?: number;
-                        qps?: number;
-                        duration?: string;
-                        /** Format: date-time */
-                        last_run?: string;
-                        total_results?: number;
-                        request_headers?: string;
-                        request_cookies?: string;
-                        request_body?: string;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetPerformanceProfile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Performance Profile for provided performance profile id */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        name?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** Format: uuid */
-                        schedule?: string;
-                        load_generators?: string;
-                        endpoints?: string;
-                        service_mesh?: string;
-                        concurrent_request?: number;
-                        qps?: number;
-                        duration?: string;
-                        /** Format: date-time */
-                        last_run?: string;
-                        total_results?: number;
-                        request_headers?: string;
-                        request_cookies?: string;
-                        request_body?: string;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeletePerformanceProfile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Deleted Performance Profile */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        name?: string;
-                        /** Format: uuid */
-                        user_id?: string;
-                        /** Format: uuid */
-                        schedule?: string;
-                        load_generators?: string;
-                        endpoints?: string;
-                        service_mesh?: string;
-                        concurrent_request?: number;
-                        qps?: number;
-                        duration?: string;
-                        /** Format: date-time */
-                        last_run?: string;
-                        total_results?: number;
-                        request_headers?: string;
-                        request_cookies?: string;
-                        request_body?: string;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Result not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetPerformanceProfileResults: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Performance Profile results */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        results?: {
-                            /** Format: uuid */
-                            id?: string;
-                            name?: string;
-                            /** Format: date-time */
-                            test_start_time?: string;
-                            mesh?: string;
-                            runner_results?: {
-                                [key: string]: string | undefined;
-                            };
-                            deleted?: boolean;
-                            server_metrics?: {
-                                [key: string]: string | undefined;
-                            };
-                            server_board_config?: {
-                                [key: string]: string | undefined;
-                            };
-                            /** Format: uuid */
-                            performance_profile?: string;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    AddPerformanceProfileResult: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        /** @description Body for adding perfor mance profile result */
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id?: string;
-                    name?: string;
-                    /** Format: date-time */
-                    test_start_time?: string;
-                    mesh?: string;
-                    runner_results?: {
-                        [key: string]: string | undefined;
-                    };
-                    deleted?: boolean;
-                    server_metrics?: {
-                        [key: string]: string | undefined;
-                    };
-                    server_board_config?: {
-                        [key: string]: string | undefined;
-                    };
-                    /** Format: uuid */
-                    performance_profile?: string;
-                    /** Format: date-time */
-                    created_at?: string;
-                    /** Format: date-time */
-                    updated_at?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Performance Profile results */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetPerformanceProfileResult: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-                /** @description Performance Result Id */
-                resultID: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Performance Profile results */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        name?: string;
-                        /** Format: date-time */
-                        test_start_time?: string;
-                        mesh?: string;
-                        runner_results?: {
-                            [key: string]: string | undefined;
-                        };
-                        deleted?: boolean;
-                        server_metrics?: {
-                            [key: string]: string | undefined;
-                        };
-                        server_board_config?: {
-                            [key: string]: string | undefined;
-                        };
-                        /** Format: uuid */
-                        performance_profile?: string;
-                        /** Format: date-time */
-                        created_at?: string;
-                        /** Format: date-time */
-                        updated_at?: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUserTokens: {
-        parameters: {
-            query?: {
-                /** @description To get OAuth tokens as well */
-                isOAuth?: string;
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description user tokens */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        total_count?: number;
-                        resultType?: string;
-                    }, "resultType"> & {
-                        tokens?: {
-                            /** Format: uuid */
-                            id?: string;
-                            /** Format: uuid */
-                            user_id?: string;
-                            /** @description One of (meshery-cloud, github, google) */
-                            provider?: string;
-                            access_token?: string;
-                            refresh_token?: string;
-                            name?: string;
-                            purpose?: string;
-                            is_oauth?: boolean;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GenerateToken: {
-        parameters: {
-            query?: {
-                /** @description Name of the resource */
-                name?: string;
-                /** @description Purpose for which token is generated */
-                purpose?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description generated token */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeleteUserTokens: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    [key: string]: string | undefined;
-                };
-            };
-        };
-        responses: {
-            /** @description ok */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    IssueIndefiniteLifetimeToken: {
-        parameters: {
-            query: {
-                /** @description Remote provider */
-                provider: string;
-            };
-            header?: never;
-            path: {
-                /** @description User's user_id */
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description generated token */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    HandleUserInvite: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for user invite request */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** @description First Name */
-                    first_name: string;
-                    /** @description Last Name */
-                    last_name: string;
-                    /**
-                     * Format: email
-                     * @description email
-                     */
-                    email: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Invitation sent */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    UpdateUserPreference: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for upserting user preferences */
-        requestBody: {
-            content: {
-                "application/json": {
-                    [key: string]: string | undefined;
-                };
-            };
-        };
-        responses: {
-            /** @description Preferences updated */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUserKeys: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Returns user keys based on roles assigned to user */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        keys?: {
-                            /** Format: uuid */
-                            ID?: string;
-                            subcategory?: string;
-                            function?: string;
-                            /** Format: date-time */
-                            created_at?: string;
-                            /** Format: date-time */
-                            updated_at?: string;
-                            /** @description SQL null Timestamp to handle null values of time. */
-                            deleted_at?: string;
-                            category?: string;
-                            description?: string;
-                            /** Format: uuid */
-                            owner?: string;
-                        }[];
-                        total_count?: number;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUserById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description User's user_id */
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Returns user with given user_id */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id: string;
-                        /** @description user's email or username */
-                        user_id: string;
-                        /** @description One of (meshery-cloud, github, google) */
-                        provider: string;
-                        /**
-                         * Format: email
-                         * @description email
-                         */
-                        email: string;
-                        /** @description First Name */
-                        first_name: string;
-                        /** @description Last Name */
-                        last_name: string;
-                        /** @description Link for profile picture */
-                        avatar_url?: string;
-                        status: string;
-                        bio?: string;
-                        preferences?: {
-                            [key: string]: string | undefined;
-                        };
-                        accepted_terms_at?: string;
-                        /** Format: date-time */
-                        first_login_time?: string;
-                        /** Format: date-time */
-                        last_login_time: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeleteUsers: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Defines on whom the delete operation is to be performed */
-                delete_on: "self" | "bulk";
-            };
-            cookie?: never;
-        };
-        /** @description Body for delete of user accounts */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    user_ids: string;
-                    user_emails: string[];
-                } | Record<string, never>;
-            };
-        };
-        responses: {
-            /** @description created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    DeleteUserAccountById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description User's user_id */
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetRoleHolders: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get filtered reponses */
-                filter?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Get all user with pagination */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": (Omit<{
-                        page?: number;
-                        page_size?: number;
-                        records_total?: number;
-                        recordType?: string;
-                    }, "recordType"> & {
-                        data?: {
-                            /** Format: uuid */
-                            id: string;
-                            /** @description user's email or username */
-                            user_id: string;
-                            username: string;
-                            /**
-                             * Format: email
-                             * @description email
-                             */
-                            email: string;
-                            /** @description First Name */
-                            first_name: string;
-                            /** @description Last Name */
-                            last_name: string;
-                            status: string;
-                            role_names: string[];
-                            /** Format: date-time */
-                            created_at: string;
-                            /** Format: date-time */
-                            updated_at: string;
-                            /** Format: date-time */
-                            last_login_time: string;
-                            /** Format: date-time */
-                            deleted_at: string;
-                            prefs?: {
-                                welcome_email?: boolean;
-                                notify_role_change?: boolean;
-                            };
-                            /** @description Link for profile picture */
-                            avatar_url?: string;
-                            preferences?: {
-                                [key: string]: string | undefined;
-                            };
-                        }[];
-                    }) | (Omit<{
-                        page?: number;
-                        page_size?: number;
-                        records_total?: number;
-                        recordType?: string;
-                    }, "recordType"> & {
-                        data?: {
-                            /** Format: uuid */
-                            id: string;
-                            /** @description user's email or username */
-                            user_id: string;
-                            username: string;
-                            /**
-                             * Format: email
-                             * @description email
-                             */
-                            email: string;
-                            /** @description First Name */
-                            first_name: string;
-                            /** @description Last Name */
-                            last_name: string;
-                            status: string;
-                            role_names: string[];
-                            /** Format: date-time */
-                            joined_at: string;
-                            /** Format: date-time */
-                            updated_at: string;
-                            /** Format: date-time */
-                            last_login_time: string;
-                            /** Format: date-time */
-                            deleted_at: string;
-                            prefs?: {
-                                welcome_email?: boolean;
-                                notify_role_change?: boolean;
-                            };
-                            /** @description Link for profile picture */
-                            avatar_url?: string;
-                        }[];
-                    });
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUsers: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: string;
-                /** @description Get reponses by pageSize */
-                page_size?: string;
-                /** @description Get responses that match search param value */
-                search?: string;
-                /** @description Get ordered responses */
-                order?: string;
-                /** @description Get filtered reponses */
-                filter?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Get all user with pagination */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Omit<{
-                        page?: number;
-                        page_size?: number;
-                        records_total?: number;
-                        recordType?: string;
-                    }, "recordType"> & {
-                        data?: {
-                            /** Format: uuid */
-                            id: string;
-                            /** @description user's email or username */
-                            user_id: string;
-                            username: string;
-                            /**
-                             * Format: email
-                             * @description email
-                             */
-                            email: string;
-                            /** @description First Name */
-                            first_name: string;
-                            /** @description Last Name */
-                            last_name: string;
-                            prefs?: {
-                                welcome_email?: boolean;
-                                notify_role_change?: boolean;
-                            };
-                            /** @description Link for profile picture */
-                            avatar_url?: string;
-                            preferences?: {
-                                [key: string]: string | undefined;
-                            };
-                        }[];
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUserProfileById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Unique identifier */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Returns user with given id */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id: string;
-                        /** @description user's email or username */
-                        user_id: string;
-                        /** @description One of (meshery-cloud, github, google) */
-                        provider: string;
-                        /**
-                         * Format: email
-                         * @description email
-                         */
-                        email: string;
-                        /** @description First Name */
-                        first_name: string;
-                        /** @description Last Name */
-                        last_name: string;
-                        /** @description Link for profile picture */
-                        avatar_url?: string;
-                        status: string;
-                        bio?: string;
-                        preferences?: {
-                            [key: string]: string | undefined;
-                        };
-                        accepted_terms_at?: string;
-                        /** Format: date-time */
-                        first_login_time?: string;
-                        /** Format: date-time */
-                        last_login_time: string;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description user details */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id: string;
-                        /** @description user's email or username */
-                        user_id: string;
-                        /** @description One of (meshery-cloud, github, google) */
-                        provider: string;
-                        /**
-                         * Format: email
-                         * @description email
-                         */
-                        email: string;
-                        /** @description First Name */
-                        first_name: string;
-                        /** @description Last Name */
-                        last_name: string;
-                        /** @description Link for profile picture */
-                        avatar_url?: string;
-                        status: string;
-                        bio?: string;
-                        preferences?: {
-                            [key: string]: string | undefined;
-                        };
-                        accepted_terms_at?: string;
-                        /** Format: date-time */
-                        first_login_time?: string;
-                        /** Format: date-time */
-                        last_login_time: string;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    UpdateProfile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Body for upserting user */
-        requestBody: {
-            content: {
-                "application/json": {
-                    /** Format: uuid */
-                    id: string;
-                    /** @description user's email or username */
-                    user_id: string;
-                    /** @description One of (meshery-cloud, github, google) */
-                    provider: string;
-                    /**
-                     * Format: email
-                     * @description email
-                     */
-                    email: string;
-                    /** @description First Name */
-                    first_name: string;
-                    /** @description Last Name */
-                    last_name: string;
-                    /** @description Link for profile picture */
-                    avatar_url?: string;
-                    status: string;
-                    bio?: string;
-                    preferences?: {
-                        [key: string]: string | undefined;
-                    };
-                    accepted_terms_at?: string;
-                    /** Format: date-time */
-                    first_login_time?: string;
-                    /** Format: date-time */
-                    last_login_time: string;
-                };
-            };
-        };
-        responses: {
-            /** @description created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetProfileOverview: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description user account overview */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        k8s_count?: number;
-                        app_count?: number;
-                        pattern_count?: number;
-                    };
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetUserActivity: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description UUID of User */
-                user_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description user activity */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        recent_activity?: {
-                            /**
-                             * Format: uuid
-                             * @description UUID of the event.
-                             *
-                             */
-                            id: string;
-                            /**
-                             * Format: uuid
-                             * @description UUID of the user that initiated the event. In most cases this would be present, but not always.
-                             *
-                             */
-                            user_id?: string;
-                            /**
-                             * Format: uuid
-                             * @description The system from which the request is sourced. In the case of Meshery Server,
-                             *     the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-                             *
-                             */
-                            system_id: string;
-                            /**
-                             * Format: uuid
-                             * @description Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID.
-                             *
-                             */
-                            operation_id: string;
-                            /**
-                             * @description Resource name on which the operation is invoked.
-                             *
-                             * @example pattern
-                             */
-                            category: string;
-                            /**
-                             * @description Action taken on the resource.
-                             *
-                             * @example deployed
-                             */
-                            action: string;
-                            /**
-                             * @description Status for the event.
-                             *
-                             * @enum {string}
-                             */
-                            status: "read" | "unread";
-                            /**
-                             * Format: uuid
-                             * @description UUID of the entity on which the event was performed.
-                             *
-                             * @example 110020-123230-434231-000213
-                             */
-                            acted_upon: string;
-                            /**
-                             * @description A summary/receipt of event that occured.
-                             *
-                             * @example “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
-                             */
-                            description: string;
-                            /**
-                             * @description A set of seven standard event levels.
-                             *
-                             * @example info
-                             * @enum {string}
-                             */
-                            severity: "emergency" | "critical" | "alert" | "error" | "warning" | "debug" | "informational" | "success";
-                            /** @description Contains meaningful information, specific to the type of event.
-                             *     Structure of metadata can be different for different events.
-                             *      */
-                            metadata: Record<string, never>;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was created.
-                             */
-                            created_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was updated.
-                             */
-                            updated_at: string;
-                            /**
-                             * Format: date-time
-                             * @description Timestamp when the resource was deleted.
-                             */
-                            deleted_at?: string;
-                        }[];
-                    };
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetRecentlyOnlineUsers: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description active users */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        /** Format: uuid */
-                        id?: string;
-                        /** @description First Name */
-                        first_name?: string;
-                        /** @description Last Name */
-                        last_name?: string;
-                        /** @description Link for profile picture */
-                        avatar_url?: string;
-                    }[];
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    GetAvailableBadges: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Badges */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        badges?: {
-                            [key: string]: {
-                                /** Format: uuid */
-                                id?: string;
-                                name?: string;
-                                description?: string;
-                                label?: string;
-                                svg_location?: string;
-                                /** Format: date-time */
-                                created_at?: string;
-                                /** Format: date-time */
-                                updated_at?: string;
-                                /** @description SQL null Timestamp to handle null values of time. */
-                                deleted_at?: string;
-                            } | undefined;
-                        };
-                        total_count?: number;
-                    };
-                };
-            };
-            /** @description Invalid request body or request param */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Expired JWT token used or insufficient privilege */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
+            200: components["responses"]["200"];
+            401: components["responses"]["401"];
+            500: components["responses"]["500"];
         };
     };
 }
+type WithRequired<T, K extends keyof T> = T & {
+    [P in K]-?: T[P];
+};

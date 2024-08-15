@@ -76,14 +76,31 @@
           "match": {
             "type": "object",
             "additionalProperties": false,
-            "properties": {
-              "from": {
-                "$ref": "#/definitions/matchSelector"
+            "oneOf": [
+              {
+                "properties": {
+                  "refs": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
               },
-              "to": {
-                "$ref": "#/definitions/matchSelector"
+              {
+                "properties": {
+                  "from": {
+                    "$ref": "#/definitions/matchSelector"
+                  },
+                  "to": {
+                    "$ref": "#/definitions/matchSelector"
+                  }
+                }
               }
-            }
+            ]
           },
           "patch": {
             "allOf": [

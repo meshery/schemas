@@ -6,17 +6,13 @@
  */
 
 /**
- * State of the entity in which the capability is applicable.
- */
-export type InputString = ("declaration" | "instance")[];
-/**
  * Visualization styles for a component
  */
 export type ComponentStyles = Styles & {
   /**
    * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
    */
-  shape:
+  shape?:
     | "ellipse"
     | "triangle"
     | "round-triangle"
@@ -276,6 +272,10 @@ export interface HttpsSchemasMesheryIoComponentJson {
  */
 export interface HttpsSchemasMesheryIoModelJson {
   /**
+   * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+   */
+  id?: string;
+  /**
    * Specifies the version of the schema used for the definition.
    */
   schemaVersion?: string;
@@ -303,13 +303,21 @@ export interface HttpsSchemasMesheryIoModelJson {
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
   status?: "ignored" | "enabled" | "duplicate";
-  registrant: {
-    [k: string]: unknown;
-  };
+  registrant: HttpsSchemasMesheryIoComponentJson1;
   /**
    * Category of the model.
    */
-  category: string;
+  category: {
+    /**
+     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+     */
+    id?: string;
+    name?: string;
+    metadata?: {
+      [k: string]: unknown;
+    };
+    [k: string]: unknown;
+  };
   /**
    * Sub-category of the model.
    */
@@ -360,6 +368,57 @@ export interface HttpsSchemasMesheryIoModelJson {
   };
 }
 /**
+ * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
+ */
+export interface HttpsSchemasMesheryIoComponentJson1 {
+  /**
+   * ID
+   */
+  id?: string;
+  /**
+   * Connection Name
+   */
+  name?: string;
+  /**
+   * Credential ID
+   */
+  credential_id?: string;
+  /**
+   * Connection Type
+   */
+  type: string;
+  /**
+   * Connection Subtype
+   */
+  sub_type?: string;
+  /**
+   * Connection Kind
+   */
+  kind: string;
+  metadata?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Connection Status
+   */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
+/**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
 export interface HttpsSchemasMesheryIoCapabilityJson {
@@ -395,7 +454,10 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    * Key that backs the capability.
    */
   key?: string;
-  entityState?: InputString;
+  /**
+   * State of the entity in which the capability is applicable.
+   */
+  entityState: ("declaration" | "instance")[];
   /**
    * Status of the capability
    */
@@ -460,7 +522,7 @@ export interface Styles {
    */
   "text-transform"?: "none" | "uppercase" | "lowercase";
   /**
-   * The opacity of the element. See https://js.cytoscape.org/#style/visibility
+   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
    */
   opacity?: number;
   /**

@@ -124,8 +124,9 @@ type MatchSelectorItem struct {
 }
 
 type MatchSelector struct {
-	From *[]MatchSelectorItem `json:"from" yaml:"from"`
-	To   *[]MatchSelectorItem `json:"to" yaml:"to"`
+	Refs *[][]string          `json:"refs,omitempty" yaml:"refs,omitempty"`
+	From *[]MatchSelectorItem `json:"from,omitempty" yaml:"from,omitempty"`
+	To   *[]MatchSelectorItem `json:"to,omitempty" yaml:"to,omitempty"`
 }
 
 type SelectorItem struct {

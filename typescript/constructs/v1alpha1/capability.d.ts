@@ -6,11 +6,6 @@
  */
 
 /**
- * State of the entity in which the capability is applicable.
- */
-export type InputString = ("declaration" | "instance")[];
-
-/**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
 export interface HttpsSchemasMesheryIoCapabilityJson {
@@ -46,7 +41,10 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    * Key that backs the capability.
    */
   key?: string;
-  entityState?: InputString;
+  /**
+   * State of the entity in which the capability is applicable.
+   */
+  entityState: ("declaration" | "instance")[];
   /**
    * Status of the capability
    */
