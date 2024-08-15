@@ -13,6 +13,7 @@ import (
 	// Use google UUID package for conversion
 
 	"github.com/layer5io/meshkit/models/meshmodel/entity"
+	"github.com/layer5io/meshkit/utils"
 	"github.com/meshery/schemas/models/v1alpha1/capability"
 	"github.com/meshery/schemas/models/v1beta1/category"
 	"github.com/meshery/schemas/models/v1beta1/component"
@@ -364,6 +365,7 @@ func mapMetadata(oldMetadata map[string]interface{}) model.ModelDefinition_Metad
 }
 
 func createNewRegistrant(oldRegistrantID uuid.UUID, hostname string) connection.Connection {
+	hostname = utils.ReplaceSpacesAndConvertToLowercase(hostname)
 	newRegistrant := connection.Connection{
 		Id:     oldRegistrantID,
 		Kind:   hostname,
