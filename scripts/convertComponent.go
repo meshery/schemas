@@ -314,52 +314,8 @@ func containsSchemaVersion(fileData []byte, schemaVersion string) bool {
 }
 
 func createNewCapabilities() []capability.Capability {
-	return []capability.Capability{
-		{
-			SchemaVersion: "capability.meshery.io/v1alpha1",
-			Version:       "0.7.0",
-			DisplayName:   "Performance Test",
-			Description:   "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
-			Kind:          "action",
-			Type:          "operator",
-			SubType:       "perf-test",
-			EntityState:   &[]capability.CapabiliyEntityState{"declaration", "instance"},
-			Status:        "enabled",
-		},
-		{
-			SchemaVersion: "capability.meshery.io/v1alpha1",
-			Version:       "0.7.0",
-			DisplayName:   "Workload Configuration",
-			Description:   "Configure the workload-specific setting of a component",
-			Kind:          "mutate",
-			Type:          "configuration",
-			SubType:       "config",
-			EntityState:   &[]capability.CapabiliyEntityState{"declaration"},
-			Status:        "enabled",
-		},
-		{
-			SchemaVersion: "capability.meshery.io/v1alpha1",
-			Version:       "0.7.0",
-			DisplayName:   "Labels and Annotations Configuration",
-			Description:   "Configure Labels And Annotations for the component",
-			Kind:          "mutate",
-			Type:          "configuration",
-			SubType:       "labels-and-annotations",
-			EntityState:   &[]capability.CapabiliyEntityState{"declaration"},
-			Status:        "enabled",
-		},
-		{
-			SchemaVersion: "capability.meshery.io/v1alpha1",
-			Version:       "0.7.0",
-			DisplayName:   "Relationships",
-			Description:   "View relationships for the component",
-			Kind:          "view",
-			Type:          "configuration",
-			SubType:       "relationship",
-			EntityState:   &[]capability.CapabiliyEntityState{"declaration", "instance"},
-			Status:        "enabled",
-		},
-	}
+	var capabilities []capability.Capability
+	return capabilities
 }
 
 func mapMetadata(oldMetadata map[string]interface{}) model.ModelDefinition_Metadata {
@@ -371,6 +327,9 @@ func mapMetadata(oldMetadata map[string]interface{}) model.ModelDefinition_Metad
 		switch key {
 		case "capabilities":
 			if capabilities, ok := value.([]capability.Capability); ok {
+				newModelMetadata.Capabilities = &capabilities
+			} else {
+				var capabilities []capability.Capability
 				newModelMetadata.Capabilities = &capabilities
 			}
 		case "isAnnotation":
@@ -411,16 +370,15 @@ func createNewRegistrant(oldRegistrantID uuid.UUID, hostname string) connection.
 		Status: connection.Discovered,
 		Type:   "registry",
 	}
-
 	switch newRegistrant.Kind {
 	case "artifacthub":
 		newRegistrant.Name = "Artifact Hub"
 	case "github":
-		newRegistrant.Name = "GitHub"
+		newRegistrant.Name = "Github"
 	case "kubernetes":
 		newRegistrant.Name = "Kubernetes"
 	case "meshery":
-		newRegistrant.Name = "Meshery"
+		newRegistrant.Name = "meshery"
 	default:
 		newRegistrant.Kind = "Unknown"
 	}
@@ -587,6 +545,9 @@ func getGhostPointer(metadata map[string]interface{}, key string) *component.Com
 }
 
 func getShapePointer(metadata map[string]interface{}, key string) *component.ComponentDefinitionStylesShape {
+	if metadata[key] == nil {
+		return nil
+	}
 	shape, _ := metadata[key].(string)
 	if shape == "" {
 		return nil
