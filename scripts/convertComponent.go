@@ -548,7 +548,7 @@ func getShapePointer(metadata map[string]interface{}, key string) *component.Com
 	if metadata[key] == nil {
 		return nil
 	}
-	shape := metadata[key].(string)
+	shape, _ := metadata[key].(string)
 	if shape == "" {
 		return nil
 	}
