@@ -18,6 +18,9 @@ type Trace struct {
 	// ComponentsRemoved List of components removed from the design.
 	ComponentsRemoved []component.ComponentDefinition `json:"componentsRemoved" yaml:"componentsRemoved"`
 
+	// ComponentsUpdated List of components updated in the design.
+	ComponentsUpdated []component.ComponentDefinition `json:"componentsUpdated" yaml:"componentsUpdated"`
+
 	// PolicyActions List of policy actions applied during the evaluation.
 	PolicyActions []string `json:"policyActions" yaml:"policyActions"`
 

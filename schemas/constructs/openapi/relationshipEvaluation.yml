@@ -96,6 +96,11 @@ components:
               description: List of new components added to the design.
               items:
                 $ref: ../v1beta1/component.json
+            componentsUpdated:
+              type: array
+              description: List of components updated in the design.
+              items:
+                $ref: ../v1beta1/component.json
             componentsRemoved:
               type: array
               description: List of components removed from the design.
