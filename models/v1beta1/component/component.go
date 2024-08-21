@@ -344,6 +344,9 @@ type ComponentDefinition_Metadata struct {
 	// IsAnnotation Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.
 	IsAnnotation bool `json:"isAnnotation" yaml:"isAnnotation"`
 
+	// IsNamespaced Identifies whether the component is scoped to namespace or clsuter wide.
+	IsNamespaced bool `json:"isNamespaced" yaml:"isNamespaced"`
+
 	// Published 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
 	Published            bool                   `json:"published" yaml:"published"`
 	AdditionalProperties map[string]interface{} `json:"-"`
@@ -421,6 +424,14 @@ func (a *ComponentDefinition_Metadata) UnmarshalJSON(b []byte) error {
 		delete(object, "isAnnotation")
 	}
 
+	if raw, found := object["isNamespaced"]; found {
+		err = json.Unmarshal(raw, &a.IsNamespaced)
+		if err != nil {
+			return fmt.Errorf("error reading 'isNamespaced': %w", err)
+		}
+		delete(object, "isNamespaced")
+	}
+
 	if raw, found := object["published"]; found {
 		err = json.Unmarshal(raw, &a.Published)
 		if err != nil {
@@ -456,6 +467,11 @@ func (a ComponentDefinition_Metadata) MarshalJSON() ([]byte, error) {
 	object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
+	}
+	
+	object["isNamespaced"], err = json.Marshal(a.IsNamespaced)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'isNamespaced': %w", err)
 	}
 
 	object["published"], err = json.Marshal(a.Published)

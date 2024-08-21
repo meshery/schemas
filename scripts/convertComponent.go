@@ -412,6 +412,12 @@ func createNewComponentDef(oldCompDef ComponentDefinition, newModel model.ModelD
 				}
 				return false
 			}(),
+			IsNamespaced: func() bool {
+				if value, ok := oldCompDef.Metadata["isNamespaced"].(bool); ok {
+					return value
+				}
+				return false
+			}(),
 			AdditionalProperties: func() map[string]interface{} {
 				additionalProps := make(map[string]interface{})
 				for key, value := range oldCompDef.Metadata {
