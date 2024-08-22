@@ -187,10 +187,7 @@ func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *comp
 }
 
 func (p *PatternFile) convertFromSettings(component *component.ComponentDefinition, service *v1alpha2.Service) error {
-	if component.Configuration == nil {
-		component.Configuration = make(map[string]interface{}, 0)
-	}
-
+	
 	metadata := make(map[string]interface{})
 
 	if service.Labels != nil {
@@ -206,6 +203,13 @@ func (p *PatternFile) convertFromSettings(component *component.ComponentDefiniti
 	}
 
 	component.Configuration = service.Settings
+	if component.Configuration == nil {
+		component.Configuration = make(map[string]interface{}, 0)
+	}
+
+	if component.Configuration["metadata"] == nil {
+		component.Configuration["metadata"] = make(map[string]interface{})
+	}
 	component.Configuration["metadata"] = metadata
 	return nil
 }
