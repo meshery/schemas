@@ -126,11 +126,38 @@ type Styles struct {
 	// BackgroundBlacken Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1.
 	BackgroundBlacken *float32 `json:"background-blacken,omitempty" yaml:"background-blacken,omitempty"`
 
+	// BackgroundClip How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+	BackgroundClip *string `json:"background-clip,omitempty" yaml:"background-clip,omitempty"`
+
 	// BackgroundColor The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
 	BackgroundColor *string `json:"background-color,omitempty" yaml:"background-color,omitempty"`
 
+	// BackgroundFit How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+	BackgroundFit *string `json:"background-fit,omitempty" yaml:"background-fit,omitempty"`
+
+	// BackgroundHeightRelativeTo How the background image’s height is determined. Can be 'none', 'inner', or 'outer'.
+	BackgroundHeightRelativeTo *string `json:"background-height-relative-to,omitempty" yaml:"background-height-relative-to,omitempty"`
+
+	// BackgroundImage The URL that points to the image to show in the node.
+	BackgroundImage *string `json:"background-image,omitempty" yaml:"background-image,omitempty"`
+
+	// BackgroundOffsetX The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+	BackgroundOffsetX *string `json:"background-offset-x,omitempty" yaml:"background-offset-x,omitempty"`
+
+	// BackgroundOffsetY The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+	BackgroundOffsetY *string `json:"background-offset-y,omitempty" yaml:"background-offset-y,omitempty"`
+
 	// BackgroundOpacity The opacity level of the node’s background colour
 	BackgroundOpacity *float32 `json:"background-opacity,omitempty" yaml:"background-opacity,omitempty"`
+
+	// BackgroundPositionX The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+	BackgroundPositionX *string `json:"background-position-x,omitempty" yaml:"background-position-x,omitempty"`
+
+	// BackgroundPositionY The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+	BackgroundPositionY *string `json:"background-position-y,omitempty" yaml:"background-position-y,omitempty"`
+
+	// BackgroundWidthRelativeTo How the background image’s width is determined. Can be 'none', 'inner', or 'outer'.
+	BackgroundWidthRelativeTo *string `json:"background-width-relative-to,omitempty" yaml:"background-width-relative-to,omitempty"`
 
 	// BodyText The text to display for an element’s body. Can give a path, e.g. data(id) will label with the elements id
 	BodyText *string `json:"body-text,omitempty" yaml:"body-text,omitempty"`
@@ -468,7 +495,7 @@ func (a ComponentDefinition_Metadata) MarshalJSON() ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
 	}
-	
+
 	object["isNamespaced"], err = json.Marshal(a.IsNamespaced)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling 'isNamespaced': %w", err)
