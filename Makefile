@@ -13,6 +13,12 @@
 # limitations under the License.
 
 
+jekyll=bundle exec jekyll
+
+site:
+	bundle install; $(jekyll) serve --drafts --incremental --livereload 
+
+
 ## Lint check Meshery Server.
 golangci: error dep-check
 	golangci-lint run
