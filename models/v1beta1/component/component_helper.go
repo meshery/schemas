@@ -49,6 +49,9 @@ func (c *ComponentDefinition) Create(db *database.Handler, hostID uuid.UUID) (uu
 	}
 
 	if !utils.IsSchemaEmpty(c.Component.Schema) {
+		if c.Metadata.AdditionalProperties == nil {
+			c.Metadata.AdditionalProperties = make(map[string]interface{})
+		}
 		c.Metadata.AdditionalProperties["hasInvalidSchema"] = true
 	}
 
