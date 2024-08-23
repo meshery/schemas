@@ -1,7 +1,8 @@
 #!/bin/sh
 temp_bundle_dir="./openapi/schemas/temp_schema_bundle"
-mkdir $temp_dir_name
+mkdir $temp_bundle_dir
 rm "./schemas/openapi.yml"
+
 process_spec() {
   echo "processing $1 ..."
   name=$(basename $1)
@@ -9,10 +10,9 @@ process_spec() {
   echo "\n"
 }
 
-
 schemas_dir="./schemas/constructs/openapi"
 for s in $schemas_dir/*; do
-  if [[ -f $s ]]; then
+  if [ -f "$s" ]; then
     process_spec $s
   fi
 done
@@ -20,9 +20,9 @@ done
 schemas_to_join=''
 
 for s in $temp_bundle_dir/*; do
-echo $s
-  if [[ -f $s ]]; then
-    schemas_to_join+="$s "
+  echo $s
+  if [ -f "$s" ]; then
+    schemas_to_join="$schemas_to_join $s"
   fi
 done
 
