@@ -4,6 +4,7 @@ package component
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/gofrs/uuid"
@@ -64,11 +65,14 @@ func (m *ComponentDefinition) UpdateStatus(db *database.Handler, status entity.E
 	return nil
 }
 
-func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string) error {
+func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string) (bool, error) {
 	if c.Component.Kind == "" {
-		return nil
+		return false, nil
 	}
 	componentPath := filepath.Join(componentDirPath, c.Component.Kind+".json")
-	err := utils.WriteJSONToFile[ComponentDefinition](componentPath, c)
-	return err
+	if _, err := os.Stat(componentPath); err != nil {
+		err := utils.WriteJSONToFile[ComponentDefinition](componentPath, c)
+		return false, err
+	}
+	return true, nil
 }
