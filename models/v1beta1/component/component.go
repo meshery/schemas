@@ -267,6 +267,9 @@ type Styles struct {
 	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
 	Shape *ComponentDefinitionStylesShape `json:"shape,omitempty" yaml:"shape,omitempty"`
 
+	// ShapePolygonPoints An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )
+	ShapePolygonPoints *string `json:"shape-polygon-points,omitempty" yaml:"shape-polygon-points,omitempty"`
+
 	// SvgColor Colored SVG of the entity used for UI representation on light background.
 	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
