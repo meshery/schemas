@@ -474,6 +474,10 @@
               "description": "The opacity of the area outside the viewport texture. Selector needs to be *core*",
               "minimum": 0,
               "maximum": 1
+            },
+            "shape-polygon-points": {
+              "type": "string",
+              "description": "The points that describe the shape of the node when shape is polygon. The points are given as a space-separated list of x, y pairs, e.g. '0 0 1 1 2 2'."
             }
           }
         }
