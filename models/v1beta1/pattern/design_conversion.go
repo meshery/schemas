@@ -3,6 +3,8 @@ package pattern
 import (
 	"crypto/rand"
 	"math/big"
+	"reflect"
+	"strings"
 
 	"github.com/gofrs/uuid"
 	"github.com/layer5io/meshkit/utils"
@@ -13,6 +15,7 @@ import (
 	"github.com/meshery/schemas/models/v1beta1/component"
 	"github.com/meshery/schemas/models/v1beta1/model"
 	"github.com/pkg/errors"
+	"gonum.org/v1/gonum/graph/formats/cytoscapejs"
 )
 
 // The pattern file indicated by "p", is converted to the version pointed by "pattern", the version of the patternFile which implements the Hub interface indicates the version the conversion will happen.
@@ -113,24 +116,49 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 	}
 
 	// Handle node id: traits.meshmap.id
-	compNodeID, err := utils.Cast[string](extensionsMetadata["id"])
-	if err != nil {
-		return errors.Wrapf(err, "failed to extract node id for the component \"%s\" of type \"%s\"", cmp.DisplayName, cmp.Component.Kind)
+	compNodeUUID, _ := uuid.NewV4()
+
+	compNodeID, ok := extensionsMetadata["id"].(string)
+	if ok {
+		nodeID, err := uuid.FromString(compNodeID)
+		if err == nil {
+			compNodeUUID = nodeID
+		}
 	}
 
-	compNodeUUID, err := uuid.FromString(compNodeID)
-	if err != nil {
-		return errors.Wrapf(err, "failed to convert node id \"%s\" for the component \"%s\" of type \"%s\", to uuid.", compNodeID, cmp.DisplayName, cmp.Component.Kind)
-	}
+	isNamespaced := false
 	cmp.Id = compNodeUUID
+	_metadata := extensionsMetadata["meshmodel-metadata"]
+	metadata := map[string]interface{}{}
+	if _metadata != nil {
+		metadata, err = utils.Cast[map[string]interface{}](_metadata)
+		if err != nil {
+			return errors.Wrapf(err, "unable to extract metadata for the component \"%s\" of type \"%s\" from the design file", cmp.DisplayName, cmp.Component.Kind)
+		}
 
+		namespaced, ok := metadata["isNamespaced"]
+		if ok {
+			reflectType := reflect.TypeOf(namespaced)
+			if reflectType.Kind() == reflect.String {
+				val, _ := namespaced.(string)
+				if strings.ToLower(val) == "true" {
+					isNamespaced = true
+				}
+			} else if reflectType.Kind() == reflect.Bool {
+				isNamespaced, _ = namespaced.(bool)
+			}
+		}
+	}
+
+	delete(metadata, "isNamespaced")
 	// Handle component metadata: traits.meshmap.meshmodel-metadata
-	_compMetadata, err := utils.MarshalAndUnmarshal[interface{}, component.ComponentDefinition_Metadata](extensionsMetadata["meshmodel-metadata"])
+	_compMetadata, err := utils.MarshalAndUnmarshal[map[string]interface{}, component.ComponentDefinition_Metadata](metadata)
 	if err != nil {
 		return errors.Wrapf(err, "unable to extract metadata for the component \"%s\" of type \"%s\" from the design file", cmp.DisplayName, cmp.Component.Kind)
 	}
 
 	cmp.Metadata = _compMetadata
+	cmp.Metadata.IsNamespaced = isNamespaced
 
 	// Handle position properties: traits.meshmap.position
 	randX, _ := rand.Int(rand.Reader, big.NewInt(100))
@@ -148,6 +176,12 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 			X: positionX,
 			Y: positionY,
 		},
+	}
+
+	pos, ok := extensionsMetadata["position"].(cytoscapejs.Position)
+	if ok {
+		cmp.Styles.Position.X, _ = big.NewFloat(pos.X).Float32()
+		cmp.Styles.Position.Y, _ = big.NewFloat(pos.Y).Float32()
 	}
 
 	cmp.Metadata.AdditionalProperties = make(map[string]interface{}, 0)
