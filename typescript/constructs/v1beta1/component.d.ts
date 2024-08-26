@@ -104,6 +104,10 @@ export type ComponentStyles = Styles & {
    */
   height?: number;
   /**
+   * The URL that points to the image to show in the node.
+   */
+  "background-image"?: string;
+  /**
    * The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
    */
   "background-color"?: string;
@@ -115,6 +119,38 @@ export type ComponentStyles = Styles & {
    * The opacity level of the node’s background colour
    */
   "background-opacity"?: number;
+  /**
+   * The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-position-x"?: string;
+  /**
+   * The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-position-y"?: string;
+  /**
+   * The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-offset-x"?: string;
+  /**
+   * The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-offset-y"?: string;
+  /**
+   * How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+   */
+  "background-fit"?: string;
+  /**
+   * How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+   */
+  "background-clip"?: string;
+  /**
+   * How the background image’s width is determined. Can be 'none', 'inner', or 'outer'.
+   */
+  "background-width-relative-to"?: string;
+  /**
+   * How the background image’s height is determined. Can be 'none', 'inner', or 'outer'.
+   */
+  "background-height-relative-to"?: string;
   /**
    * The size of the node’s border.
    */
@@ -236,6 +272,10 @@ export interface HttpsSchemasMesheryIoComponentJson {
      * Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.
      */
     isAnnotation?: boolean;
+    /**
+     * Identifies whether the component is scoped to namespace or clsuter wide.
+     */
+    isNamespaced?: boolean;
     /**
      * 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
      */
