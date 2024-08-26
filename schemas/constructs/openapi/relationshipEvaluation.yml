@@ -86,6 +86,9 @@ components:
               description: List of new relationships added to the design.
               items:
                 $ref: ../v1alpha3/relationship.json
+            relationshipsUpdated:
+              type: array
+              description: List of relationships updated in the design.
             relationshipsRemoved:
               type: array
               description: List of relationships removed from the design.

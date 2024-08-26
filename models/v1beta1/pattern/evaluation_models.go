@@ -29,6 +29,9 @@ type Trace struct {
 
 	// RelationshipsRemoved List of relationships removed from the design.
 	RelationshipsRemoved []relationship.RelationshipDefinition `json:"relationshipsRemoved" yaml:"relationshipsRemoved"`
+
+	// RelationshipsUpdated List of relationships updated in the design.
+	RelationshipsUpdated []relationship.RelationshipDefinition `json:"relationshipsUpdated" yaml:"relationshipsUpdated"`
 }
 
 // EvaluationResponse Schema for the response of a relationship evaluation process in Meshery
