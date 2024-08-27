@@ -313,14 +313,14 @@
               "description": "The colour of the node\u2019s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
             },
             "body-text-font-size": {
-              "type": "string",
+              "type": "number",
               "description": "The size of the node\u2019s body text."
             },
             "body-text-color": {
               "type": "string",
               "description": "The colour of the node\u2019s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
             },
-            "body-text-weight": {
+            "body-text-font-weight": {
               "type": "string",
               "description": "A CSS font weight to be applied to the node\u2019s body text."
             },
