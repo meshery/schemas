@@ -172,7 +172,7 @@ type Styles struct {
 	BodyTextDecoration *string `json:"body-text-decoration,omitempty" yaml:"body-text-decoration,omitempty"`
 
 	// BodyTextFontSize The size of the node’s body text.
-	BodyTextFontSize *string `json:"body-text-font-size,omitempty" yaml:"body-text-font-size,omitempty"`
+	BodyTextFontSize *float32 `json:"body-text-font-size,omitempty" yaml:"body-text-font-size,omitempty"`
 
 	// BodyTextHorizontalAlign A CSS horizontal alignment to be applied to the node’s body text.
 	BodyTextHorizontalAlign *string `json:"body-text-horizontal-align,omitempty" yaml:"body-text-horizontal-align,omitempty"`
@@ -187,7 +187,7 @@ type Styles struct {
 	BodyTextVerticalAlign *string `json:"body-text-vertical-align,omitempty" yaml:"body-text-vertical-align,omitempty"`
 
 	// BodyTextWeight A CSS font weight to be applied to the node’s body text.
-	BodyTextWeight *string `json:"body-text-weight,omitempty" yaml:"body-text-weight,omitempty"`
+	BodyTextWeight *string `json:"body-text-font-weight,omitempty" yaml:"body-text-font-weight,omitempty"`
 
 	// BodyTextWrap How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
 	BodyTextWrap *string `json:"body-text-wrap,omitempty" yaml:"body-text-wrap,omitempty"`
