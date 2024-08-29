@@ -281,11 +281,13 @@
               "properties": {
                 "x": {
                   "type": "number",
-                  "description": "The x-coordinate of the node."
+                  "description": "The x-coordinate of the node.",
+                   "x-go-type": "float64"
                 },
                 "y": {
                   "type": "number",
-                  "description": "The y-coordinate of the node."
+                  "description": "The y-coordinate of the node.",
+                  "x-go-type": "float64"
                 }
               }
             },

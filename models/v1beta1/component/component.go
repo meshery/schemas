@@ -243,10 +243,10 @@ type Styles struct {
 	// Position The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.
 	Position *struct {
 		// X The x-coordinate of the node.
-		X float32 `json:"x" yaml:"x"`
+		X float64 `json:"x" yaml:"x"`
 
 		// Y The y-coordinate of the node.
-		Y float32 `json:"y" yaml:"y"`
+		Y float64 `json:"y" yaml:"y"`
 	} `json:"position,omitempty" yaml:"position,omitempty"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
