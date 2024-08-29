@@ -458,6 +458,40 @@
                     "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
                     "type": "string",
                     "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                    "oneOf": [
+                      {
+                        "const": "inventory",
+                        "description": "A hierarchical inventory relationship in which the configuration of (parent) component is patched with the configuration of other (child) component. Eg: The configuration of the EnvoyFilter (parent) component is patched with the configuration as received from WASMFilter (child) component."
+                      },
+                      {
+                        "const": "matchLabels",
+                        "description": "Match label relationships offer a dynamic association between one or more components and are a flexible way to group and manage related components in Meshery."
+                      },
+                      {
+                        "const": "permission",
+                        "description": "A relationship that represents a set of security-centric bindings between components."
+                      },
+                      {
+                        "const": "network",
+                        "description": "A relationship that represents a line of communication between two or more components."
+                      },
+                      {
+                        "const": "firewall",
+                        "description": "A relationship that act as a network-based security boundary for ingress and egress traffic."
+                      },
+                      {
+                        "const": "mount",
+                        "description": "A relationship that represents volume mounts between components."
+                      },
+                      {
+                        "const": "alias",
+                        "description": "An alias for a field path in another component."
+                      },
+                      {
+                        "const": "annotation",
+                        "description": "A relationship that provide valuable context for users, controllers, and third-party tools within the Meshery ecosystem."
+                      }
+                    ],
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "subType",
                       "json": "subType"
