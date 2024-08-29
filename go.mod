@@ -7,7 +7,6 @@ require (
 	github.com/layer5io/meshkit v0.7.50
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
-	gonum.org/v1/gonum v0.15.0
 	gorm.io/gorm v1.25.11
 )
 
