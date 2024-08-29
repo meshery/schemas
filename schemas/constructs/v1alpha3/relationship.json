@@ -486,6 +486,10 @@
                       {
                         "const": "alias",
                         "description": "An alias for a field path in another component."
+                      },
+                      {
+                        "const": "annotation",
+                        "description": "A relationship that provide valuable context for users, controllers, and third-party tools within the Meshery ecosystem."
                       }
                     ],
                     "x-oapi-codegen-extra-tags": {
