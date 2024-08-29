@@ -15,8 +15,12 @@ import (
 	"github.com/meshery/schemas/models/v1beta1/component"
 	"github.com/meshery/schemas/models/v1beta1/model"
 	"github.com/pkg/errors"
-	"gonum.org/v1/gonum/graph/formats/cytoscapejs"
 )
+
+type position struct {
+	X float64 `json:"posX" yaml:"posX"`
+	Y float64 `json:"posY" yaml:"posY"`
+}
 
 // The pattern file indicated by "p", is converted to the version pointed by "pattern", the version of the patternFile which implements the Hub interface indicates the version the conversion will happen.
 // Only one version of the resource (patternfile in this case) should implement the Hub interface.
@@ -165,23 +169,23 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 
 	randY, _ := rand.Int(rand.Reader, big.NewInt(100))
 
-	positionX, _ := big.NewFloat(0).SetInt(randX).Float32()
-	positionY, _ := big.NewFloat(0).SetInt(randY).Float32()
+	positionX, _ := big.NewFloat(0).SetInt(randX).Float64()
+	positionY, _ := big.NewFloat(0).SetInt(randY).Float64()
 
 	cmp.Styles = &component.Styles{
 		Position: &struct {
-			X float32 "json:\"x\" yaml:\"x\""
-			Y float32 "json:\"y\" yaml:\"y\""
+			X float64 "json:\"x\" yaml:\"x\""
+			Y float64 "json:\"y\" yaml:\"y\""
 		}{
 			X: positionX,
 			Y: positionY,
 		},
 	}
 
-	pos, ok := extensionsMetadata["position"].(cytoscapejs.Position)
-	if ok {
-		cmp.Styles.Position.X, _ = big.NewFloat(pos.X).Float32()
-		cmp.Styles.Position.Y, _ = big.NewFloat(pos.Y).Float32()
+	pos, err := utils.MarshalAndUnmarshal[interface{}, position](extensionsMetadata["position"])
+	if err == nil {
+		cmp.Styles.Position.X, _ = big.NewFloat(pos.X).Float64()
+		cmp.Styles.Position.Y, _ = big.NewFloat(pos.Y).Float64()
 	}
 
 	cmp.Metadata.AdditionalProperties = make(map[string]interface{}, 0)
@@ -221,7 +225,7 @@ func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *comp
 }
 
 func (p *PatternFile) convertFromSettings(component *component.ComponentDefinition, service *v1alpha2.Service) error {
-	
+
 	metadata := make(map[string]interface{})
 
 	if service.Labels != nil {
