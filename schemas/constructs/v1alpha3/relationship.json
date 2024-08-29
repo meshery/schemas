@@ -465,7 +465,7 @@
                       },
                       {
                         "const": "matchLabels",
-                        "description": "A relationship that represents a set of security-centric bindings between components."
+                        "description": "Match label relationships offer a dynamic association between one or more components and are a flexible way to group and manage related components in Meshery."
                       },
                       {
                         "const": "permission",
