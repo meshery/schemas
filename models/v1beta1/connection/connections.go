@@ -4,94 +4,155 @@
 package connection
 
 import (
+	"database/sql"
 	"time"
 
+	"github.com/gobuffalo/pop/slices"
 	"github.com/gofrs/uuid"
-	externalRef2 "github.com/meshery/schemas/models/core"
+	externalRef1 "github.com/meshery/schemas/models/core"
+	externalRef2 "github.com/meshery/schemas/models/v1beta1"
+)
+
+// Defines values for ConnectionAction.
+const (
+	ConnectionActionDeleted    ConnectionAction = "deleted"
+	ConnectionActionRegistered ConnectionAction = "registered"
+	ConnectionActionUpdated    ConnectionAction = "updated"
+)
+
+// Defines values for ConnectionKind.
+const (
+	Aws        ConnectionKind = "aws"
+	Azure      ConnectionKind = "azure"
+	Github     ConnectionKind = "github"
+	Gke        ConnectionKind = "gke"
+	Grafana    ConnectionKind = "grafana"
+	Kubernetes ConnectionKind = "kubernetes"
+	Meshery    ConnectionKind = "meshery"
+	Prometheus ConnectionKind = "prometheus"
+	Slack      ConnectionKind = "slack"
+)
+
+// Defines values for ConnectionRegistrationProcess.
+const (
+	PostRegistration ConnectionRegistrationProcess = "post_registration"
+	PreRegistration  ConnectionRegistrationProcess = "pre_registration"
+	Registration     ConnectionRegistrationProcess = "registration"
 )
 
 // Defines values for ConnectionStatus.
 const (
-	Connected    ConnectionStatus = "connected"
-	Deleted      ConnectionStatus = "deleted"
-	Disconnected ConnectionStatus = "disconnected"
-	Discovered   ConnectionStatus = "discovered"
-	Ignored      ConnectionStatus = "ignored"
-	Maintenance  ConnectionStatus = "maintenance"
-	NotFound     ConnectionStatus = "not found"
-	Registered   ConnectionStatus = "registered"
+	ConnectionStatusConnected    ConnectionStatus = "connected"
+	ConnectionStatusDeleted      ConnectionStatus = "deleted"
+	ConnectionStatusDisconnected ConnectionStatus = "disconnected"
+	ConnectionStatusDiscovered   ConnectionStatus = "discovered"
+	ConnectionStatusIgnored      ConnectionStatus = "ignored"
+	ConnectionStatusMaintenance  ConnectionStatus = "maintenance"
+	ConnectionStatusNotFound     ConnectionStatus = "not_found"
+	ConnectionStatusRegistered   ConnectionStatus = "registered"
 )
 
-// Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
-type Connection struct {
-	CreatedAt time.Time `json:"created_at" yaml:"created_at"`
+// Defines values for ConnectionSubType.
+const (
+	Chat          ConnectionSubType = "chat"
+	Cloud         ConnectionSubType = "cloud"
+	Git           ConnectionSubType = "git"
+	Identity      ConnectionSubType = "identity"
+	Metrics       ConnectionSubType = "metrics"
+	Orchestration ConnectionSubType = "orchestration"
+)
 
-	// CredentialId Credential ID
-	CredentialId uuid.UUID `json:"credential_id" yaml:"credential_id"`
-	DeletedAt    time.Time  `json:"deleted_at" yaml:"deleted_at"`
+// Defines values for ConnectionType.
+const (
+	Collaboration ConnectionType = "collaboration"
+	Platform      ConnectionType = "platform"
+	Telemetry     ConnectionType = "telemetry"
+)
 
-	// Id ID
-	Id uuid.UUID `json:"id" yaml:"id"`
+// ConnectionAction defines model for ConnectionAction.
+type ConnectionAction string
 
-	// Kind Connection Kind
-	Kind     string                 `json:"kind" yaml:"kind"`
-	Metadata map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty" gorm:"type:bytes;serializer:json"`
+// ConnectionKind defines model for ConnectionKind.
+type ConnectionKind string
 
-	// Name Connection Name
-	Name string `json:"name" yaml:"name"`
-
-	// Status Connection Status
-	Status ConnectionStatus `json:"status" yaml:"status"`
-
-	// SubType Connection Subtype
-	SubType string `json:"sub_type" yaml:"sub_type"`
-
-	// Type Connection Type
-	Type      string   `json:"type" yaml:"type"`
-	UpdatedAt time.Time `json:"updated_at" yaml:"updated_at"`
-
-	// UserID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	UserID uuid.UUID `json:"user_id" yaml:"user_id"`
-}
+// ConnectionRegistrationProcess defines model for ConnectionRegistrationProcess.
+type ConnectionRegistrationProcess string
 
 // ConnectionStatus Connection Status
 type ConnectionStatus string
 
+// ConnectionSubType defines model for ConnectionSubType.
+type ConnectionSubType string
+
+// ConnectionType defines model for ConnectionType.
+type ConnectionType string
+
+// Connection defines model for connection.
+type Connection struct {
+	ID           externalRef1.GeneralId `db:"id" json:"id"`
+	CreatedAt    time.Time              `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
+	CredentialID *uuid.UUID             `db:"credential_id" json:"credential_id"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt    sql.NullTime               `db:"deleted_at" json:"deleted_at"`
+	Environments []externalRef2.Environment `db:"-" json:"environments"`
+
+	// Kind Connection Kind
+	Kind     string     `db:"kind" json:"kind"`
+	Metadata slices.Map `db:"metadata" json:"metadata"`
+
+	// Name Connection Name
+	Name string `db:"name" json:"name"`
+
+	// Status Connection Status
+	Status ConnectionStatus `db:"status" json:"status"`
+
+	// SubType Connection Subtype
+	SubType string `db:"sub_type" json:"sub_type"`
+
+	// Type Connection Type
+	Type      string     `db:"type" json:"type"`
+	UpdatedAt time.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
+	UserID    *uuid.UUID `db:"user_id" json:"user_id"`
+}
+
 // ConnectionPage defines model for connectionPage.
 type ConnectionPage struct {
-	Connections []Connection `json:"connections,omitempty"`
-	Page        int          `json:"page,omitempty"`
-	PageSize    int          `json:"page_size,omitempty"`
-	ResultType  string       `json:"resultType,omitempty"`
-	TotalCount  int          `json:"total_count,omitempty"`
+	Connections []Connection                `json:"connections"`
+	Page        externalRef1.NumberNullable `json:"page"`
+	PageSize    externalRef1.NumberNullable `json:"page_size"`
+	TotalCount  externalRef1.NumberNullable `json:"total_count"`
 }
 
 // ConnectionStatusInfo defines model for connectionStatusInfo.
 type ConnectionStatusInfo struct {
 	// Count Number of connections having the status
 	Count  int               `json:"count,omitempty"`
-	Status externalRef2.Text `json:"status,omitempty"`
+	Status externalRef1.Text `json:"status,omitempty"`
 }
 
 // ConnectionsStatusPage defines model for connectionsStatusPage.
 type ConnectionsStatusPage struct {
 	ConnectionsStatus []ConnectionStatusInfo `json:"connections_status,omitempty"`
+	Page              externalRef1.Number    `json:"page,omitempty"`
+	PageSize          externalRef1.Number    `json:"page_size,omitempty"`
+	TotalCount        externalRef1.Number    `json:"total_count,omitempty"`
 }
 
 // K8sContext defines model for k8sContext.
 type K8sContext struct {
-	Auth               externalRef2.MapObject `json:"auth,omitempty"`
-	Cluster            externalRef2.MapObject `json:"cluster,omitempty"`
-	CreatedAt          externalRef2.Time      `json:"created_at,omitempty"`
-	CreatedBy          externalRef2.Id        `json:"created_by,omitempty"`
-	DeploymentType     *string                `json:"deployment_type,omitempty"`
-	Id                 externalRef2.Id        `json:"id,omitempty"`
-	KubernetesServerId externalRef2.Id        `json:"kubernetes_server_id,omitempty"`
-	MesheryInstanceId  externalRef2.Id        `json:"meshery_instance_id,omitempty"`
-	Name               externalRef2.Text      `json:"name,omitempty"`
-	Owner              externalRef2.Id        `json:"owner,omitempty"`
-	Server             *string                `json:"server,omitempty"`
-	UpdatedAt          externalRef2.Time      `json:"updated_at,omitempty"`
+	Auth               externalRef1.SliceObject `json:"auth,omitempty"`
+	Cluster            externalRef1.SliceObject `json:"cluster,omitempty"`
+	CreatedAt          externalRef1.Time        `json:"created_at,omitempty"`
+	CreatedBy          externalRef1.Id          `json:"created_by,omitempty"`
+	DeploymentType     *string                  `json:"deployment_type,omitempty"`
+	Id                 externalRef1.GeneralId   `db:"id" json:"id"`
+	KubernetesServerId externalRef1.Id          `json:"kubernetes_server_id,omitempty"`
+	MesheryInstanceId  externalRef1.Id          `json:"meshery_instance_id,omitempty"`
+	Name               externalRef1.Text        `json:"name,omitempty"`
+	Owner              externalRef1.Id          `json:"owner,omitempty"`
+	Server             *string                  `json:"server,omitempty"`
+	UpdatedAt          externalRef1.Time        `json:"updated_at,omitempty"`
 }
 
 // K8sContextPersistResponse defines model for k8sContextPersistResponse.
@@ -102,32 +163,46 @@ type K8sContextPersistResponse struct {
 
 // MesheryInstance defines model for mesheryInstance.
 type MesheryInstance struct {
-	CreatedAt      externalRef2.Time     `json:"created_at,omitempty"`
-	DeletedAt      externalRef2.Time     `json:"deleted_at,omitempty"`
-	Id             externalRef2.Id       `json:"id,omitempty"`
-	Name           externalRef2.Text     `json:"name,omitempty"`
-	ServerBuildSha externalRef2.Text     `json:"server_build_sha,omitempty"`
-	ServerId       externalRef2.Text     `json:"server_id,omitempty"`
-	ServerLocation externalRef2.Endpoint `json:"server_location,omitempty"`
-	ServerVersion  externalRef2.Text     `json:"server_version,omitempty"`
-	Status         externalRef2.Text     `json:"status,omitempty"`
-	UpdatedAt      externalRef2.Time     `json:"updated_at,omitempty"`
+	CreatedAt externalRef1.Time `json:"created_at,omitempty"`
+
+	// DeletedAt SQL null Timestamp to handle null values of time.
+	DeletedAt externalRef1.NullTime `json:"deleted_at,omitempty"`
+
+	// ID Connection id
+	ID             string            `json:"id,omitempty"`
+	Name           externalRef1.Text `json:"name,omitempty"`
+	ServerBuildSha externalRef1.Text `json:"server_build_sha,omitempty"`
+
+	// ServerID Connected server id
+	ServerID       string                `json:"server_id,omitempty"`
+	ServerLocation externalRef1.Endpoint `json:"server_location,omitempty"`
+	ServerVersion  externalRef1.Text     `json:"server_version,omitempty"`
+	UpdatedAt      externalRef1.Time     `json:"updated_at,omitempty"`
+}
+
+// MesheryInstancePage defines model for mesheryInstancePage.
+type MesheryInstancePage struct {
+	MesheryInstances []MesheryInstance   `json:"mesheryInstances,omitempty"`
+	Page             externalRef1.Number `json:"page,omitempty"`
+	PageSize         externalRef1.Number `json:"page_size,omitempty"`
+	TotalCount       externalRef1.Number `json:"total_count,omitempty"`
 }
 
 // ConnectionId defines model for connectionId.
-type ConnectionId = externalRef2.Id
-
-// ConnectionKind defines model for connectionKind.
-type ConnectionKind = externalRef2.Text
+type ConnectionId = externalRef1.Id
 
 // ServerId defines model for serverId.
-type ServerId = externalRef2.Id
+type ServerId = externalRef1.Id
 
 // ConnectionPayload defines model for connectionPayload.
 type ConnectionPayload struct {
-	CredentialSecret externalRef2.MapObject `json:"credential_secret,omitempty"`
-	Kind             externalRef2.Text      `json:"kind,omitempty"`
-	Metadata         externalRef2.MapObject `json:"metadata,omitempty"`
-	SubType          externalRef2.Text      `json:"sub_type,omitempty"`
-	Type             externalRef2.Text      `json:"type,omitempty"`
+	ConnectionID     uuid.UUID                `json:"id"`
+	CredentialID     *uuid.UUID               `json:"credential_id,omitempty"`
+	CredentialSecret externalRef1.SliceObject `json:"credential_secret,omitempty"`
+	Kind             externalRef1.Text        `json:"kind,omitempty"`
+	Metadata         externalRef1.SliceObject `json:"metadata,omitempty"`
+	Name             externalRef1.Text        `json:"name,omitempty"`
+	Status           externalRef1.Text        `json:"status,omitempty"`
+	SubType          externalRef1.Text        `json:"sub_type,omitempty"`
+	Type             externalRef1.Text        `json:"type,omitempty"`
 }

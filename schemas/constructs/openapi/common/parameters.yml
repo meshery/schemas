@@ -236,3 +236,11 @@ components:
       description: Get models based on status, e.g 'ignored', 'registered'
       schema:
         type: string
+
+    connectionKind:
+      name: connectionKind
+      in: path
+      description: "Connection kind (eg: Meshery)"
+      required: true
+      schema:
+        type: string

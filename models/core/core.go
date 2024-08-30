@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/gobuffalo/pop/slices"
 	"github.com/gofrs/uuid"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -19,6 +20,9 @@ type AvatarUrl = string
 
 // Bio defines model for bio.
 type Bio = string
+
+// CommonId defines model for common_id.
+type CommonId = uuid.UUID
 
 // CreatedAt Timestamp when the resource was created.
 type CreatedAt = time.Time
@@ -74,6 +78,9 @@ type NullTime = sql.NullTime
 // Number defines model for number.
 type Number = int
 
+// NumberNullable defines model for number_nullable.
+type NumberNullable = int
+
 // OperationID defines model for operation_id.
 type OperationID = uuid.UUID
 
@@ -104,6 +111,9 @@ type ResultsPage struct {
 
 // RoleNames defines model for roleNames.
 type RoleNames = []string
+
+// SliceObject defines model for slice_object.
+type SliceObject = slices.Map
 
 // Status defines model for status.
 type Status = string

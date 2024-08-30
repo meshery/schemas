@@ -35,6 +35,11 @@ components:
     number: 
       type: integer
       x-go-type-skip-optional-pointer: true
+
+    number_nullable: 
+      type: integer
+      nullable: true
+      x-go-type-skip-optional-pointer: true
       
     avatar_url:
       type: string
@@ -46,6 +51,16 @@ components:
       additionalProperties:
         type: string
       x-go-type-skip-optional-pointer: true
+
+    slice_object:
+      type: object
+      additionalProperties:
+        type: string
+      x-go-type-skip-optional-pointer: true
+      format: slices.Map
+      x-go-type: slices.Map
+      x-go-type-import: 
+        path: github.com/gobuffalo/pop/slices
       
     status:
       type: string #oneOf: ["active", "pending", "inactive"]?
@@ -168,8 +183,8 @@ components:
       x-go-type-import: 
         path: github.com/gofrs/uuid
       x-oapi-codegen-extra-tags:
-        db: org_id
-        json: org_id
+        db: organization_id
+        json: organization_id
       x-go-type-name: OrganizationId
       x-go-type-skip-optional-pointer: true
 
@@ -184,6 +199,14 @@ components:
         json: id
       x-go-type-name: GeneralId
       x-go-type-skip-optional-pointer: true
+
+    common_id:
+      type: string
+      format: uuid
+      x-go-type: uuid.UUID
+      x-go-type-import: 
+        path: github.com/gofrs/uuid
+      x-go-type-name: CommonId
 
     environment_id:
       type: string
@@ -317,7 +340,6 @@ components:
       x-oapi-codegen-extra-tags:
         db: created_at
         yaml: created_at
-      
       x-go-type-skip-optional-pointer: true
       
     updated_at:
