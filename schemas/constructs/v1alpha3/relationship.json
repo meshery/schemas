@@ -679,6 +679,8 @@
       "description": "Status of the relationship.",
       "default": "enabled",
       "enum": [
+        "pending",
+        "approved",
         "ignored",
         "enabled",
         "deleted"
