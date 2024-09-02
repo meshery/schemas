@@ -34,16 +34,11 @@
       "description": "Design-level preferences",
       "properties": {
         "layers": {
-          "type": "array",
-          "description": "List of available layers",
-          "items": {
-            "type": "string"
-          }
+          "type": "object",
+          "description": "List of available layers"
         }
       },
-      "required": [
-        "layers"
-      ]
+      "required": ["layers"]
     },
     "relationships": {
       "description": "List of relationships between components",
@@ -53,11 +48,6 @@
       }
     }
   },
-  
-  "required": [
-    "name",
-    "schemaVersion",
-    "version",
-    "components"
-  ]
+
+  "required": ["name", "schemaVersion", "version", "components"]
 }

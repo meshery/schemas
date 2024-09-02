@@ -74,7 +74,7 @@ export type ComponentStyles = Styles & {
   /**
    * The size of the node’s body text.
    */
-  "body-text-font-size"?: string;
+  "body-text-font-size"?: number;
   /**
    * The colour of the node’s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
    */
@@ -82,7 +82,7 @@ export type ComponentStyles = Styles & {
   /**
    * A CSS font weight to be applied to the node’s body text.
    */
-  "body-text-weight"?: string;
+  "body-text-font-weight"?: string;
   /**
    * A CSS horizontal alignment to be applied to the node’s body text.
    */
@@ -215,6 +215,10 @@ export type ComponentStyles = Styles & {
    * The opacity of the area outside the viewport texture. Selector needs to be *core*
    */
   "outside-texture-bg-opacity"?: number;
+  /**
+   * An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )
+   */
+  "shape-polygon-points"?: string;
   [k: string]: unknown;
 };
 
