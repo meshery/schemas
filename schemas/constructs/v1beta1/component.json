@@ -54,7 +54,7 @@
       "type": "string",
       "description": "Status of component, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
       "default": "enabled",
-      "enum": ["ignored", "enabled", "duplicate"],
+      "enum": ["ignored", "enabled", "duplicate", "resolved", "open"],
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
         "json": "status"
@@ -115,13 +115,8 @@
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json"
       },
-      "required": [
-        "version",
-        "kind",
-        "schema"
-      ]
+      "required": ["version", "kind", "schema"]
     }
   },
   "required": ["schemaVersion", "version", "model", "component"]
 }
-
