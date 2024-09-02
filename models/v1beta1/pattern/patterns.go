@@ -52,8 +52,8 @@ type PatternFile struct {
 	// Preferences Design-level preferences
 	Preferences *struct {
 		// Layers List of available layers
-		Layers []string `json:"layers"`
-	} `json:"preferences,omitempty"`
+		Layers map[string]interface{} `json:"layers" yaml:"layers"`
+	} `json:"preferences,omitempty" yaml:"preferences,omitempty"`
 
 	// Relationships List of relationships between components
 	Relationships []*relationship.RelationshipDefinition `json:"relationships" yaml:"relationships"`

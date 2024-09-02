@@ -174,6 +174,9 @@ type Styles struct {
 	// BodyTextFontSize The size of the node’s body text.
 	BodyTextFontSize *float32 `json:"body-text-font-size,omitempty" yaml:"body-text-font-size,omitempty"`
 
+	// BodyTextFontWeight A CSS font weight to be applied to the node’s body text.
+	BodyTextFontWeight *string `json:"body-text-font-weight,omitempty" yaml:"body-text-font-weight,omitempty"`
+
 	// BodyTextHorizontalAlign A CSS horizontal alignment to be applied to the node’s body text.
 	BodyTextHorizontalAlign *string `json:"body-text-horizontal-align,omitempty" yaml:"body-text-horizontal-align,omitempty"`
 
@@ -185,9 +188,6 @@ type Styles struct {
 
 	// BodyTextVerticalAlign A CSS vertical alignment to be applied to the node’s body text.
 	BodyTextVerticalAlign *string `json:"body-text-vertical-align,omitempty" yaml:"body-text-vertical-align,omitempty"`
-
-	// BodyTextWeight A CSS font weight to be applied to the node’s body text.
-	BodyTextWeight *string `json:"body-text-font-weight,omitempty" yaml:"body-text-font-weight,omitempty"`
 
 	// BodyTextWrap How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
 	BodyTextWrap *string `json:"body-text-wrap,omitempty" yaml:"body-text-wrap,omitempty"`
@@ -227,6 +227,15 @@ type Styles struct {
 
 	// Label The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
 	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
+
+	// MenuBackgroundColor The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+	MenuBackgroundColor *string `json:"menu-background-color,omitempty" yaml:"menu-background-color,omitempty"`
+
+	// MenuBackgroundOpacity The opacity of the background of the component menu.
+	MenuBackgroundOpacity *float32 `json:"menu-background-opacity,omitempty" yaml:"menu-background-opacity,omitempty"`
+
+	// MenuForgroundColor The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+	MenuForgroundColor *string `json:"menu-forground-color,omitempty" yaml:"menu-forground-color,omitempty"`
 
 	// Opacity The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
 	Opacity *float32 `json:"opacity,omitempty" yaml:"opacity,omitempty"`
