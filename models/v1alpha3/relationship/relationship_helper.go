@@ -50,7 +50,7 @@ func (r *RelationshipDefinition) UpdateStatus(db *database.Handler, status entit
 	return nil
 }
 
-func (r RelationshipDefinition) WriteComponentDefinition(relDirPath string, fileType string) error {
+func (r RelationshipDefinition) WriteRelationshipDefinition(relDirPath string, fileType string) error {
 	relPath := filepath.Join(relDirPath, string(r.Kind), string(r.Type())+fileType)
 	if fileType == "yaml" {
 		err := utils.WriteYamlToFile[RelationshipDefinition](relPath, r)

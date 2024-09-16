@@ -11,6 +11,7 @@ import (
 	"github.com/layer5io/meshkit/database"
 	"github.com/layer5io/meshkit/models/meshmodel/entity"
 	"github.com/layer5io/meshkit/utils"
+	"github.com/meshery/schemas/models/v1beta1/model"
 	"gorm.io/gorm/clause"
 )
 
@@ -79,4 +80,58 @@ func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, f
 		return false, err
 	}
 	return true, nil
+}
+func ReplaceSVGData(model *model.ModelDefinition, baseDir string) error {
+	// Function to read SVG data from file
+	readSVGData := func(path string) (string, error) {
+		path = baseDir + path // adjust path as needed
+		svgData, err := os.ReadFile(path)
+		if err != nil {
+			return "", err
+		}
+		return string(svgData), nil
+	}
+	// Replace SVG paths with actual data in metadata
+	metadata := model.Metadata
+	if metadata.SvgColor != "" {
+		svgData, err := readSVGData(metadata.SvgColor)
+		if err == nil {
+			metadata.SvgColor = svgData
+		} else {
+			return err
+		}
+	}
+	if metadata.SvgWhite != "" {
+		svgData, err := readSVGData(metadata.SvgWhite)
+		if err == nil {
+			metadata.SvgWhite = svgData
+		} else {
+			return err
+		}
+	}
+	components, ok := model.Components.([]ComponentDefinition)
+	if !ok {
+		return fmt.Errorf("invalid type for Components field")
+	}
+	// Replace SVG paths with actual data in components
+	for i := range components {
+		compStyle := components[i].Styles
+		if compStyle != nil {
+			svgColor, err := readSVGData(compStyle.SvgColor)
+			if err == nil {
+				compStyle.SvgColor = svgColor
+			} else {
+				return err
+			}
+			svgWhite, err := readSVGData(compStyle.SvgWhite)
+			if err == nil {
+				compStyle.SvgWhite = svgWhite
+			} else {
+				return err
+			}
+		}
+		components[i].Styles = compStyle
+	}
+	model.Components = components
+	return nil
 }
