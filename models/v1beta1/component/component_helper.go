@@ -11,7 +11,6 @@ import (
 	"github.com/layer5io/meshkit/database"
 	"github.com/layer5io/meshkit/models/meshmodel/entity"
 	"github.com/layer5io/meshkit/utils"
-	"github.com/meshery/schemas/models/v1beta1/model"
 	"gorm.io/gorm/clause"
 )
 
@@ -70,7 +69,7 @@ func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, f
 	if c.Component.Kind == "" {
 		return false, nil
 	}
-	componentPath := filepath.Join(componentDirPath, c.Component.Kind+fileType)
+	componentPath := filepath.Join(componentDirPath, c.Component.Kind+"."+fileType)
 	if _, err := os.Stat(componentPath); err != nil {
 		if fileType == "yaml" {
 			err := utils.WriteYamlToFile[ComponentDefinition](componentPath, c)
@@ -81,57 +80,23 @@ func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, f
 	}
 	return true, nil
 }
-func ReplaceSVGData(model *model.ModelDefinition, baseDir string) error {
-	// Function to read SVG data from file
-	readSVGData := func(path string) (string, error) {
-		path = baseDir + path // adjust path as needed
-		svgData, err := os.ReadFile(path)
-		if err != nil {
-			return "", err
-		}
-		return string(svgData), nil
-	}
-	// Replace SVG paths with actual data in metadata
-	metadata := model.Metadata
-	if metadata.SvgColor != "" {
-		svgData, err := readSVGData(metadata.SvgColor)
+func (c *ComponentDefinition) ReplaceSVGData(baseDir string) error {
+
+	compStyle := c.Styles
+	if compStyle != nil {
+		svgColor, err := utils.ReadSVGData(baseDir, compStyle.SvgColor)
 		if err == nil {
-			metadata.SvgColor = svgData
+			compStyle.SvgColor = svgColor
+		} else {
+			return err
+		}
+		svgWhite, err := utils.ReadSVGData(baseDir, compStyle.SvgWhite)
+		if err == nil {
+			compStyle.SvgWhite = svgWhite
 		} else {
 			return err
 		}
 	}
-	if metadata.SvgWhite != "" {
-		svgData, err := readSVGData(metadata.SvgWhite)
-		if err == nil {
-			metadata.SvgWhite = svgData
-		} else {
-			return err
-		}
-	}
-	components, ok := model.Components.([]ComponentDefinition)
-	if !ok {
-		return fmt.Errorf("invalid type for Components field")
-	}
-	// Replace SVG paths with actual data in components
-	for i := range components {
-		compStyle := components[i].Styles
-		if compStyle != nil {
-			svgColor, err := readSVGData(compStyle.SvgColor)
-			if err == nil {
-				compStyle.SvgColor = svgColor
-			} else {
-				return err
-			}
-			svgWhite, err := readSVGData(compStyle.SvgWhite)
-			if err == nil {
-				compStyle.SvgWhite = svgWhite
-			} else {
-				return err
-			}
-		}
-		components[i].Styles = compStyle
-	}
-	model.Components = components
+	c.Styles = compStyle
 	return nil
 }

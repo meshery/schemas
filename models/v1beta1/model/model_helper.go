@@ -42,7 +42,7 @@ func (m *ModelDefinition) GenerateID() (uuid.UUID, error) {
 	if err != nil {
 		return uuid.UUID{}, err
 	}
-	
+
 	hash := md5.Sum(byt)
 	return uuid.FromString(hex.EncodeToString(hash[:]))
 }
@@ -136,5 +136,27 @@ func registerModel(db *database.Handler, regID, modelID uuid.UUID) error {
 			return err
 		}
 	}
+	return nil
+}
+func (m *ModelDefinition) ReplaceSVGData(baseDir string) error {
+
+	metadata := m.Metadata
+	if metadata.SvgColor != "" {
+		svgData, err := utils.ReadSVGData(baseDir, metadata.SvgColor)
+		if err == nil {
+			metadata.SvgColor = svgData
+		} else {
+			return err
+		}
+	}
+	if metadata.SvgWhite != "" {
+		svgData, err := utils.ReadSVGData(baseDir, metadata.SvgWhite)
+		if err == nil {
+			metadata.SvgWhite = svgData
+		} else {
+			return err
+		}
+	}
+	m.Metadata = metadata
 	return nil
 }
