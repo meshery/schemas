@@ -65,12 +65,16 @@ func (m *ComponentDefinition) UpdateStatus(db *database.Handler, status entity.E
 	return nil
 }
 
-func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string) (bool, error) {
+func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, fileType string) (bool, error) {
 	if c.Component.Kind == "" {
 		return false, nil
 	}
-	componentPath := filepath.Join(componentDirPath, c.Component.Kind+".json")
+	componentPath := filepath.Join(componentDirPath, c.Component.Kind+fileType)
 	if _, err := os.Stat(componentPath); err != nil {
+		if fileType == "yaml" {
+			err := utils.WriteYamlToFile[ComponentDefinition](componentPath, c)
+			return false, err
+		}
 		err := utils.WriteJSONToFile[ComponentDefinition](componentPath, c)
 		return false, err
 	}
