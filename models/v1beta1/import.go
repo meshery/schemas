@@ -5,16 +5,32 @@ package v1beta1
 
 // ImportBody defines model for ImportBody.
 type ImportBody struct {
-	FileName string `json:"file_name"`
-
-	// ModelFile This represents the binary content of the file as a byte array
-	ModelFile []byte `json:"model_file"`
-	Url       string `json:"url"`
+    FileName string `json:"file_name" yaml:"file_name"`
+    Model    Model  `json:"model" yaml:"model"`
+    
+    // ModelFile represents the binary content of the file as a byte array
+    ModelFile []byte `json:"model_file" yaml:"model_file"`
+    Url       string `json:"url" yaml:"url"`
 }
 
-// ImportRequest defines model for ImportRequest.
 type ImportRequest struct {
-	ImportBody ImportBody `json:"importBody"`
-	Register   bool       `json:"register"`
-	UploadType string     `json:"uploadType"`
+    ImportBody ImportBody `json:"importBody" yaml:"importBody"`
+    Register   bool       `json:"register" yaml:"register"`
+    UploadType string     `json:"uploadType" yaml:"uploadType"`
+}
+
+type Model struct {
+    Category          string `json:"category" yaml:"category"`
+    IsAnnotation      bool   `json:"isAnnotation" yaml:"isAnnotation"`
+    Model             string `json:"model" yaml:"model"`
+    ModelDisplayName  string `json:"modelDisplayName" yaml:"modelDisplayName"`
+    PrimaryColor      string `json:"primaryColor" yaml:"primaryColor"`
+    PublishToRegistry bool   `json:"publishToRegistry" yaml:"publishToRegistry"`
+    Registrant        string `json:"registrant" yaml:"registrant"`
+    SecondaryColor    string `json:"secondaryColor" yaml:"secondaryColor"`
+    Shape             string `json:"shape" yaml:"shape"`
+    SubCategory       string `json:"subCategory" yaml:"subCategory"`
+    SvgColor          string `json:"svgColor" yaml:"svgColor"`
+    SvgComplete       string `json:"svgComplete" yaml:"svgComplete"`
+    SvgWhite          string `json:"svgWhite" yaml:"svgWhite"`
 }
