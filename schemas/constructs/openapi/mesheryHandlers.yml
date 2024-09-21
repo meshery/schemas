@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: Meshmodels API
+  description: API for registering and exporting mesh models
+  version: 1.0.0
+components:
+  schemas:
+    ImportRequest:
+      type: object
+      required:
+        - importBody
+        - uploadType  
+        - register   
+      properties:
+        importBody:
+          $ref: '#/components/schemas/ImportBody'
+        uploadType:
+          type: string
+        register:
+          type: boolean
+          nullable: false  
+
+    ImportBody:   
+      type: object
+      required:
+        - model_file
+        - url
+        - file_name
+        - model 
+      properties:
+        model_file:
+          type: string
+          format: byte  
+          description: "This represents the binary content of the file as a byte array"
+        url:
+          type: string
+        file_name:
+          type: string
+        model: 
+          $ref: '#/components/schemas/Model'
+
+    Model:
+      type: object
+      required:
+        - modelDisplayName
+        - registrant
+        - model
+        - category
+        - subCategory
+        - shape
+        - primaryColor
+        - secondaryColor
+        - svgColor
+        - svgWhite
+        - svgComplete
+        - isAnnotation
+        - publishToRegistry
+      properties:
+        modelDisplayName:
+          type: string
+        registrant:
+          type: string
+        model:
+          type: string
+        category:
+          type: string
+        subCategory:
+          type: string
+        shape:
+          type: string
+        primaryColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        secondaryColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        svgColor:
+          type: string
+        svgWhite:
+          type: string
+        svgComplete:
+          type: string
+        isAnnotation:
+          type: boolean
+        publishToRegistry:
+          type: boolean
+
+paths:
+  /api/meshmodels/register:
+    post:
+      summary: Register mesh models
+      operationId: RegisterMeshmodels
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportRequest'
+      responses:
+        '200':
+          description: Successful registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Invalid request format
+        '500':
+          description: Internal server error
+
+  /api/meshmodels/export:
+    get:
+      summary: Export a mesh model
+      operationId: ExportModel
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: name
+          schema:
+            type: string
+        - in: query
+          name: version
+          schema:
+            type: string
+        - in: query
+          name: output_format
+          schema:
+            type: string
+            enum: [json, yaml, oci]
+            default: oci
+        - in: query
+          name: file_type
+          schema:
+            type: string
+            enum: [oci, tar, gzip]
+            default: oci
+      responses:
+        '200':
+          description: Successful export
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid request format
+        '500':
+          description: Internal server error
+
