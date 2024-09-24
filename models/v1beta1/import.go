@@ -5,20 +5,24 @@ package v1beta1
 
 // ImportBody defines model for ImportBody.
 type ImportBody struct {
-    FileName string `json:"file_name" yaml:"file_name"`
+	ComponentCsv string `json:"component_csv" yaml:"component_csv"`
+	FileName string `json:"file_name" yaml:"file_name"`
     Model    Model  `json:"model" yaml:"model"`
-    
-    // ModelFile represents the binary content of the file as a byte array
+	ModelCsv     string `json:"model_csv" yaml:"model_csv"`
+
+	// ModelFile represents the binary content of the file as a byte array
     ModelFile []byte `json:"model_file" yaml:"model_file"`
     Url       string `json:"url" yaml:"url"`
 }
 
+// ImportRequest defines model for ImportRequest.
 type ImportRequest struct {
     ImportBody ImportBody `json:"importBody" yaml:"importBody"`
     Register   bool       `json:"register" yaml:"register"`
     UploadType string     `json:"uploadType" yaml:"uploadType"`
 }
 
+// Model defines model for Model.
 type Model struct {
     Category          string `json:"category" yaml:"category"`
     IsAnnotation      bool   `json:"isAnnotation" yaml:"isAnnotation"`
