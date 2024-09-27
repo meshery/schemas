@@ -114,6 +114,8 @@ components:
           schema:
             type: object
             properties:
+              name: 
+                $ref: ./common/core.yml#/components/schemas/text
               url:
                 $ref: ./common/core.yml#/components/schemas/endpoint
               path:

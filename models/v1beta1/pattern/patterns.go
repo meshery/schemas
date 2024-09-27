@@ -6,8 +6,8 @@ package pattern
 import (
 	externalRef1 "github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1alpha2"
-	"github.com/meshery/schemas/models/v1beta1/component"
 	"github.com/meshery/schemas/models/v1alpha3/relationship"
+	"github.com/meshery/schemas/models/v1beta1/component"
 )
 
 // Defines values for MesheryPatternCatalogDataClass.
@@ -41,7 +41,7 @@ type DeletePatternModel struct {
 }
 
 type PatternFile struct {
-	Id externalRef1.Id  `json:"id,omitempty" yaml:"id,omitempty"`
+	Id externalRef1.Id `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Components List of component declarations
 	Components []*component.ComponentDefinition `json:"components" yaml:"components"`
@@ -67,11 +67,11 @@ type PatternFile struct {
 
 // MesheryPattern defines model for mesheryPattern.
 type MesheryPattern struct {
-	CatalogData *v1alpha2.CatalogData `json:"catalog_data,omitempty" yaml:"catalog_data"`
-	CreatedAt externalRef1.Time      `json:"created_at,omitempty"`
-	UserID    externalRef1.Id        `db:"user_id" json:"user_id"`
-	Location  externalRef1.MapObject `json:"location,omitempty"`
-	Name      externalRef1.Text      `json:"name,omitempty"`
+	CatalogData *v1alpha2.CatalogData  `json:"catalog_data,omitempty" yaml:"catalog_data"`
+	CreatedAt   externalRef1.Time      `json:"created_at,omitempty"`
+	UserID      externalRef1.Id        `db:"user_id" json:"user_id"`
+	Location    externalRef1.MapObject `json:"location,omitempty"`
+	Name        externalRef1.Text      `json:"name,omitempty"`
 
 	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 	PatternFile *PatternFile      `json:"pattern_file,omitempty" yaml:"pattern_file" gorm:"type:bytes;serializer:json"`
@@ -139,4 +139,5 @@ type MesheryPatternRequestBody struct {
 	PatternData *MesheryPattern       `json:"pattern_data,omitempty"`
 	Save        *bool                 `json:"save,omitempty"`
 	Url         externalRef1.Endpoint `json:"url,omitempty"`
+	Name        string                `json:"name,omitempty"`
 }
