@@ -96,6 +96,12 @@ func (c *ComponentDefinition) ReplaceSVGData(baseDir string) error {
 		} else {
 			return err
 		}
+		svgComplete, err := utils.ReadSVGData(baseDir, compStyle.SvgComplete)
+		if err == nil {
+			compStyle.SvgComplete = svgComplete
+		} else {
+			return err
+		}
 	}
 	c.Styles = compStyle
 	return nil

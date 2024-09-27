@@ -26,6 +26,8 @@ components:
         - model_file
         - url
         - file_name
+        - model_csv
+        - component_csv
         - model 
       properties:
         model_file:
@@ -35,6 +37,10 @@ components:
         url:
           type: string
         file_name:
+          type: string
+        model_csv:
+          type: string
+        component_csv:
           type: string
         model: 
           $ref: '#/components/schemas/Model'
