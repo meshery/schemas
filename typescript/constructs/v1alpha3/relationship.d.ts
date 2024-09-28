@@ -37,7 +37,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
   /**
    * Status of the relationship.
    */
-  status?: "ignored" | "enabled" | "deleted";
+  status?: "pending" | "approved" | "ignored" | "enabled" | "deleted";
   /**
    * Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
    */
@@ -803,7 +803,8 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
    */
-  subType?: string;
+  subType?: ("inventory" | "matchLabels" | "permission" | "network" | "firewall" | "mount" | "alias" | "annotation") &
+    string;
   /**
    * Key that backs the capability.
    */
