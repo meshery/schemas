@@ -47,6 +47,8 @@ const (
 	Duplicate ComponentDefinitionStatus = "duplicate"
 	Enabled   ComponentDefinitionStatus = "enabled"
 	Ignored   ComponentDefinitionStatus = "ignored"
+	Open      ComponentDefinitionStatus = "open"
+	Resolved  ComponentDefinitionStatus = "resolved"
 )
 
 // Defines values for ComponentDefinitionStylesBorderStyle.
@@ -122,6 +124,9 @@ type Styles struct {
 
 	// ActiveBgSize  The opacity of the active background indicator. Selector needs to be *core*.
 	ActiveBgSize *string `json:"active-bg-size,omitempty" yaml:"active-bg-size,omitempty"`
+
+	// Animation The animation to apply to the element. example ripple,bounce,etc
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// BackgroundBlacken Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1.
 	BackgroundBlacken *float32 `json:"background-blacken,omitempty" yaml:"background-blacken,omitempty"`
