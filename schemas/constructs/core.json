@@ -109,7 +109,7 @@
           "description": "The text to display for an element\u2019s label. Can give a path, e.g. data(id) will label with the elements id"
         },
         "animation": {
-          "type": "string",
+          "type": "object",
           "description": "The animation to apply to the element. example ripple,bounce,etc "
         }
       }
