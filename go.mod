@@ -7,7 +7,7 @@ require (
 	github.com/layer5io/meshkit v0.7.78
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
-	gorm.io/gorm v1.25.11
+	gorm.io/gorm v1.25.12
 )
 
 require (
