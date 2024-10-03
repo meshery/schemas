@@ -35,7 +35,16 @@ components:
         organization_id:
           $ref: ./common/core.yml#/components/schemas/organization_id
         owner:
-          $ref: ./common/core.yml#/components/schemas/text
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import: 
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: owner
+        metadata:
+          $ref: ./common/core.yml#/components/schemas/map_object
         created_at:
           $ref: ./common/core.yml#/components/schemas/time
         updated_at:
