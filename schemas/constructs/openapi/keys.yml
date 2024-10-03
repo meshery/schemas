@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: Meshery Cloud
+  description: Documentation for meshery Cloud REST APIs
+  contact:
+    email: support@layer5.io
+  version: v0.6.394
+servers:
+  - url: https://meshery.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-meshery.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+tags:
+  - name: keys
+    description: APIs for keys
+security:
+  - jwt: []
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+
+  schemas:
+    keysPage:
+      properties:
+        page:
+          $ref: ./common/core.yml#/components/schemas/number
+        page_size:
+         $ref: ./common/core.yml#/components/schemas/number
+        total_count:
+          $ref: ./common/core.yml#/components/schemas/number
+        keys:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/key"
+      
+    key:
+      properties:
+        id:
+          $ref: ./common/core.yml#/components/schemas/general_id
+        subcategory:
+          $ref: ./common/core.yml#/components/schemas/text
+        function:
+          $ref: ./common/core.yml#/components/schemas/text
+        category:
+          type: string
+          format: string
+          x-oapi-codegen-extra-tags:
+            db: category
+            json: category
+          x-go-type-skip-optional-pointer: true
+        description:
+          $ref: ./common/core.yml#/components/schemas/text
+        owner:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: owner
+          x-go-type-skip-optional-pointer: true
+        created_at:
+          $ref: ./common/core.yml#/components/schemas/created_at
+        updated_at:
+          $ref: ./common/core.yml#/components/schemas/updated_at
+        deleted_at:
+          type: string
+          format: date-time
+          x-go-type: sql.NullTime
+          x-go-name: DeletedAt
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
+          x-go-type-skip-optional-pointer: true
+paths:
+  /api/auth/keys:
+    get:
+      tags:
+        - keys
+      summary: Get all keys
+      operationId: GetKeys
+      description: Lists the keys available
+      parameters:
+        - $ref: ./common/parameters.yml#/components/parameters/page
+        - $ref: ./common/parameters.yml#/components/parameters/page_size
+        - $ref: ./common/parameters.yml#/components/parameters/search
+        - $ref: ./common/parameters.yml#/components/parameters/order
+      responses:
+      '200':
+        description: Keys
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/keysPage"
+      '401':
+        - $ref: ./common/responses.yml#/401
+      '500':
+        - $ref: ./common/responses.yml#/500
