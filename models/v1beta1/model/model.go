@@ -100,6 +100,14 @@ type ModelDefinition struct {
 	// To prevent cyclic error, the type is changed to interface, it doesn't affect registration
 	// Edited on purpose
 	Relationships interface{} `json:"relationships" gorm:"-" yaml:"relationships"`
+
+	// Total number of components in a model
+	// Edited on purpose
+	ComponentsCount int `json:"components_count" gorm:"-" yaml:"components_count"`
+
+	// Total number of relationships in a model
+	// Edited on purpose
+	RelationshipsCount int `json:"relationships_count" gorm:"-" yaml:"relationships_count"`
 }
 
 // ModelDefinitionMetadataCapabilitiesEntityState defines model for ModelDefinition.Metadata.Capabilities.EntityState.
