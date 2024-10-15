@@ -41,14 +41,16 @@ components:
           properties:
             returnDiffOnly:
               type: boolean
-              description: If true, only return the diff of changes instead of the complete updated design
+              description: If true, exclude the full design in the response. Instead, only include the delta between the design pre-evaluation versus post-evaluation.
+              default: false
             enableTrace:
               type: boolean
-              description: If true, include detailed trace information in the response
+              description: If true, include details of the  analysis trace information in the evaluation response
+              default: false
 
     EvaluationResponse:
       type: object
-      description: Schema for the response of a relationship evaluation process in Meshery
+      description: "A response comprising key-value pairs, where the key corresponds to the query that triggered the evaluation. The value identifies the components and the actions the client should perform on those components. In cases of conflict where policy cannot resolve using tie-breaking strategies, the result for that specific query is empty, though the key (evaluation query) remains in the final response. Importantly, these evaluations are not recursive in nature."
       required:
         - schemaVersion
         - design
