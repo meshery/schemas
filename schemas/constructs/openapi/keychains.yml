@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: Meshery Cloud
+  description: Documentation for meshery Cloud REST APIs
+  contact:
+    email: support@layer5.io
+  version: v0.6.394
+servers:
+  - url: https://meshery.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-meshery.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+tags:
+  - name: keychains
+    description: APIs for keychains
+security:
+  - jwt: []
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+
+  schemas:
+    keychain:
+      properties:
+        ID:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+          x-go-type-skip-optional-pointer: true
+        name:
+          type: string
+          format: string
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: name
+          x-go-type-skip-optional-pointer: true
+        owner:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: owner
+          x-go-type-skip-optional-pointer: true
+        created_at:
+          $ref: ./common/core.yml#/components/schemas/created_at
+        updated_at:
+          $ref: ./common/core.yml#/components/schemas/updated_at
+        deleted_at:
+          type: string
+          format: date-time
+          x-go-type: sql.NullTime
+          x-go-name: DeletedAt
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
+          x-go-type-skip-optional-pointer: true
+        
+    keychainsPage:
+      properties:
+        page:
+          $ref: ./common/core.yml#/components/schemas/number
+        page_size:
+          $ref: ./common/core.yml#/components/schemas/number
+        total_count:
+          $ref: ./common/core.yml#/components/schemas/number
+        keychains:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/keychain"
+    
+    keychainsKeysMapping:
+      properties:
+        id:
+          $ref: ./common/core.yml#/components/schemas/general_id
+        keychain_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: keychain_id
+            json: keychain_id
+          x-go-type-skip-optional-pointer: true
+        key_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: key_id
+            json: key_id
+          x-go-type-skip-optional-pointer: true
+        created_at:
+          $ref: ./common/core.yml#/components/schemas/created_at
+        updated_at:
+          $ref: ./common/core.yml#/components/schemas/updated_at
+        deleted_at:
+          type: string
+          format: date-time
+          x-go-type: sql.NullTime
+          x-go-name: DeletedAt
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
+          x-go-type-skip-optional-pointer: true
+      
+    keychainsKeysMappingPage:
+      properties:
+        page:
+          $ref: ./common/core.yml#/components/schemas/number
+        page_size:
+          $ref: ./common/core.yml#/components/schemas/number
+        total_count:
+          $ref: ./common/core.yml#/components/schemas/number
+        keychains_keys_mappings:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/keychainsKeysMapping"
+    
+    keychainFilter:
+      properties:
+        role_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: role_id
+            json: role_id
+          x-go-type-skip-optional-pointer: true
