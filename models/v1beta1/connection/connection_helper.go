@@ -41,14 +41,29 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 
 	// if not exists then create a new host and return the id
 	if err == gorm.ErrRecordNotFound {
-		h.Id = hID
+		h.ID = hID
 		err = db.Create(&h).Error
 		if err != nil {
 			return uuid.UUID{}, err
 		}
-		return h.Id, nil
+		return h.ID, nil
 	}
 
 	// else return the id of the existing connection
-	return connection.Id, nil
+	return connection.ID, nil
+}
+
+func (h *Connection) EventCategory() string {
+	return "connection"
+}
+
+func (h *MesheryInstance) EventCategory() string {
+	return "connection"
+}
+
+var ValidConnectionsKinds = map[ConnectionKind]bool{
+	Meshery:    true,
+	Kubernetes: true,
+	Prometheus: true,
+	Grafana:    true,
 }
