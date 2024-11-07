@@ -40,7 +40,7 @@
     "styles": {
       "type": "object",
       "description": "Common styles for all entities",
-      "additionalProperties": false,
+      "additionalProperties": true,
       "required": ["primaryColor", "svgColor", "svgWhite"],
       "properties": {
         "primaryColor": {
@@ -107,6 +107,10 @@
         "label": {
           "type": "string",
           "description": "The text to display for an element\u2019s label. Can give a path, e.g. data(id) will label with the elements id"
+        },
+        "animation": {
+          "type": "object",
+          "description": "The animation to apply to the element. example ripple,bounce,etc "
         }
       }
     },
@@ -282,7 +286,7 @@
                 "x": {
                   "type": "number",
                   "description": "The x-coordinate of the node.",
-                   "x-go-type": "float64"
+                  "x-go-type": "float64"
                 },
                 "y": {
                   "type": "number",

@@ -219,6 +219,18 @@ export type ComponentStyles = Styles & {
    * An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )
    */
   "shape-polygon-points"?: string;
+  /**
+   * The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "menu-background-color"?: string;
+  /**
+   * The opacity of the background of the component menu.
+   */
+  "menu-background-opacity"?: number;
+  /**
+   * The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "menu-forground-color"?: string;
   [k: string]: unknown;
 };
 
@@ -255,7 +267,9 @@ export interface DesignSchema {
     /**
      * List of available layers
      */
-    layers: string[];
+    layers: {
+      [k: string]: unknown;
+    };
     [k: string]: unknown;
   };
   /**
@@ -305,7 +319,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
    * - enabled: model is available for use for all users of this Meshery Server.
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
-  status?: "ignored" | "enabled" | "duplicate";
+  status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
   /**
    * Metadata contains additional information associated with the component.
    */
@@ -619,6 +633,11 @@ export interface Styles {
    * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
    */
   label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: string;
+  [k: string]: unknown;
 }
 /**
  * Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
@@ -652,7 +671,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
   /**
    * Status of the relationship.
    */
-  status?: "ignored" | "enabled" | "deleted";
+  status?: "pending" | "approved" | "ignored" | "enabled" | "deleted";
   /**
    * Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
    */
@@ -1418,7 +1437,8 @@ export interface HttpsSchemasMesheryIoCapabilityJson1 {
   /**
    * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
    */
-  subType?: string;
+  subType?: ("inventory" | "matchLabels" | "permission" | "network" | "firewall" | "mount" | "alias" | "annotation") &
+    string;
   /**
    * Key that backs the capability.
    */

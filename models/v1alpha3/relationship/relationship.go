@@ -115,6 +115,7 @@ type Relationship_Metadata struct {
 	Description  *string                               `json:"description" yaml:"description"`
 	Styles       *RelationshipDefinitionMetadataStyles `json:"styles" yaml:"styles"`
 	IsAnnotation *bool                                 `json:"isAnnotation" yaml:"isAnnotation"` 
+  AdditionalProperties map[string]interface{}                  `json:"-"`
 }
 
 type MatchSelectorItem struct {
