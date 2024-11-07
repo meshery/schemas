@@ -869,6 +869,7 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
+      "additionalProperties" : true ,
       "x-oapi-codegen-extra-tags": {
         "gorm": "foreignKey:ModelId;references:Id"
       },
