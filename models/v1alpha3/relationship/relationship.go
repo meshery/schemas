@@ -112,10 +112,10 @@ const (
 
 type Relationship_Metadata struct {
 	// Description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.
-	Description *string                               `json:"description" yaml:"description"`
-	Styles      *RelationshipDefinitionMetadataStyles `json:"styles" yaml:"styles"`
-	AdditionalProperties map[string]interface{}                  `json:"-"`
-
+	Description  *string                               `json:"description" yaml:"description"`
+	Styles       *RelationshipDefinitionMetadataStyles `json:"styles" yaml:"styles"`
+	IsAnnotation *bool                                 `json:"isAnnotation" yaml:"isAnnotation"` 
+  AdditionalProperties map[string]interface{}                  `json:"-"`
 }
 
 type MatchSelectorItem struct {
