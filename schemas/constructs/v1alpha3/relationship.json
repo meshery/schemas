@@ -883,6 +883,15 @@
             "json": "description"
           }
         },
+
+        "isAnnotation": {
+              "type": "boolean",
+              "description": "Indicates whether the relationship should be treated as a logical representation only",
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "isAnnotation",
+                "json": "isAnnotation"
+              }
+            },    
         "styles": {
           "anyOf": [
             {
