@@ -28,6 +28,7 @@ components:
         - file_name
         - model_csv
         - component_csv
+        - relationship_csv
         - model 
       properties:
         model_file:
@@ -41,6 +42,8 @@ components:
         model_csv:
           type: string
         component_csv:
+          type: string
+        relationship_csv:
           type: string
         model: 
           $ref: '#/components/schemas/Model'
