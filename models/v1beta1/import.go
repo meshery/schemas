@@ -12,6 +12,8 @@ type ImportBody struct {
 
 	// ModelFile represents the binary content of the file as a byte array
     ModelFile []byte `json:"model_file" yaml:"model_file"`
+
+    RelationshipCSV string`json:"relationship_csv" yaml:"relationship_csv"`
     Url       string `json:"url" yaml:"url"`
 }
 
