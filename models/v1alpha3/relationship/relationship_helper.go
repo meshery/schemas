@@ -1,6 +1,7 @@
 package relationship
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/layer5io/meshkit/database"
 	"github.com/layer5io/meshkit/models/meshmodel/entity"
 	"github.com/layer5io/meshkit/utils"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -41,9 +43,13 @@ func (r *RelationshipDefinition) Create(db *database.Handler, hostID uuid.UUID) 
 	r.ModelId = mid
 	err = db.Omit(clause.Associations).Create(&r).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			fmt.Printf("Duplicate entry detected for Relationship ID: %s\n", r.Id)
+			return r.Id, nil
+		}
 		return uuid.UUID{}, err
 	}
-	return r.Id, err
+	return r.Id, nil
 }
 
 func (r *RelationshipDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
