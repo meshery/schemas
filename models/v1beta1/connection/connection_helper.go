@@ -6,6 +6,8 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"sync"
 
 	"github.com/gofrs/uuid"
@@ -44,6 +46,10 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 		h.Id = hID
 		err = db.Create(&h).Error
 		if err != nil {
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
+				fmt.Printf("Duplicate entry detected for Connection ID: %s\n", hID)
+				return hID, nil
+			}
 			return uuid.UUID{}, err
 		}
 		return h.Id, nil

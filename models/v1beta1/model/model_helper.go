@@ -6,6 +6,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"path/filepath"
 	"sync"
@@ -81,6 +82,11 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		m.RegistrantId = hostID
 		err = db.Omit(clause.Associations).Create(&m).Error
 		if err != nil {
+			// Use gorm.ErrDuplicatedKey for checking duplicate errors
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
+				fmt.Printf("Duplicate entry detected for model ID: %s\n", modelID)
+				return modelID, nil
+			}
 			return uuid.UUID{}, err
 		}
 		// register model inside registries table

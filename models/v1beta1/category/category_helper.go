@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -68,6 +69,10 @@ func (cat *CategoryDefinition) Create(db *database.Handler, _ uuid.UUID) (uuid.U
 		cat.Id = catID
 		err = db.Create(&cat).Error
 		if err != nil {
+			if errors.Is(err, gorm.ErrDuplicatedKey) {
+				fmt.Printf("Duplicate entry detected for Category ID: %s\n", catID)
+				return catID, nil
+			}
 			return uuid.UUID{}, err
 		}
 		return cat.Id, nil

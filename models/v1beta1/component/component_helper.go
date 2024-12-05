@@ -3,6 +3,7 @@
 package component
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,6 +12,7 @@ import (
 	"github.com/layer5io/meshkit/database"
 	"github.com/layer5io/meshkit/models/meshmodel/entity"
 	"github.com/layer5io/meshkit/utils"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -58,7 +60,14 @@ func (c *ComponentDefinition) Create(db *database.Handler, hostID uuid.UUID) (uu
 
 	c.ModelId = mid
 	err = db.Omit(clause.Associations).Create(&c).Error
-	return c.Id, err
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			fmt.Printf("Duplicate entry detected for Component ID: %s\n", c.Id)
+			return c.Id, nil
+		}
+		return uuid.UUID{}, err
+	}
+	return c.Id, nil
 }
 
 func (m *ComponentDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
