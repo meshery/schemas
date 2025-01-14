@@ -52,6 +52,7 @@
       "title": "Type",
       "enum": [
         "Deployment",
+        "Getting-started",
         "Observability",
         "Resiliency",
         "Scaling",
