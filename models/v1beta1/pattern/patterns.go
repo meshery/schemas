@@ -25,6 +25,7 @@ const (
 // Defines values for MesheryPatternCatalogDataType.
 const (
 	Deployment        MesheryPatternCatalogDataType = "Deployment"
+	GettingStarted   	MesheryPatternCatalogDataType = "Getting-started"
 	Observability     MesheryPatternCatalogDataType = "Observability"
 	Resiliency        MesheryPatternCatalogDataType = "Resiliency"
 	Scaling           MesheryPatternCatalogDataType = "Scaling"

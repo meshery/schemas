@@ -296,6 +296,12 @@ export interface HttpsSchemasMesheryIoComponentJson {
      * 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
      */
     published?: boolean;
+    /**
+     * InstanceDetails contains information about the instance of the component.
+     */
+    instanceDetails?: {
+      [k: string]: unknown;
+    };
     [k: string]: unknown;
   };
   /**
@@ -592,6 +598,8 @@ export interface Styles {
   /**
    * The animation to apply to the element. example ripple,bounce,etc
    */
-  animation?: string;
+  animation?: {
+    [k: string]: unknown;
+  };
   [k: string]: unknown;
 }

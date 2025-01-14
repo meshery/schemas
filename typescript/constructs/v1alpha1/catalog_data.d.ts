@@ -24,6 +24,7 @@ export type Description = string;
  */
 export type Type =
   | "Deployment"
+  | "Getting-started"
   | "Observability"
   | "Resiliency"
   | "Scaling"

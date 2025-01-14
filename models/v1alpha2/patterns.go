@@ -23,6 +23,7 @@ const (
 // Defines values for CatalogDataType.
 const (
 	Deployment        CatalogDataType = "Deployment"
+	GettingStarted    CatalogDataType = "Getting-started"
 	Observability     CatalogDataType = "Observability"
 	Resiliency        CatalogDataType = "Resiliency"
 	Scaling           CatalogDataType = "Scaling"

@@ -54,6 +54,10 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
      * Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.
      */
     description?: string;
+    /**
+     * Indicates whether the relationship should be treated as a logical representation only
+     */
+    isAnnotation?: boolean;
     styles?:
       | ({
           /**
