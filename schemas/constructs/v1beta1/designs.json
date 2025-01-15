@@ -28,7 +28,7 @@
           "description": "Map of resolved aliases present in the design",
           "type": "object",
           "additionalProperties": {
-            "ref": "../core.json#/definitions/ResolvedAlias"
+            "ref": "../core.json#/definitions/semverString"
           }
         }
       }

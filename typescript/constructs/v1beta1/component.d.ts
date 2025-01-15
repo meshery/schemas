@@ -219,6 +219,18 @@ export type ComponentStyles = Styles & {
    * An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )
    */
   "shape-polygon-points"?: string;
+  /**
+   * The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "menu-background-color"?: string;
+  /**
+   * The opacity of the background of the component menu.
+   */
+  "menu-background-opacity"?: number;
+  /**
+   * The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "menu-forground-color"?: string;
   [k: string]: unknown;
 };
 
@@ -263,7 +275,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
    * - enabled: model is available for use for all users of this Meshery Server.
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
-  status?: "ignored" | "enabled" | "duplicate";
+  status?: "ignored" | "enabled" | "duplicate" | "resolved" | "open";
   /**
    * Metadata contains additional information associated with the component.
    */
