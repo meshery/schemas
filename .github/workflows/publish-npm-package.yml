@@ -57,7 +57,7 @@ jobs:
           if [ $RELEASE_VERSION == "prerelease" ] && [ $RELEASE_VARIANT == "stable" ]; then npm version ${RELEASE_VERSION}; fi
           if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT != "stable" ]; then npm version pre${RELEASE_VERSION} --preid ${RELEASE_VARIANT}; fi
           if [ $RELEASE_VERSION != "prerelease" ] && [ $RELEASE_VARIANT == "stable" ]; then npm version ${RELEASE_VERSION}; fi
-          git add './'
+
           NEW_VERSION=$(node -e "console.log(require('./package.json').version)")
           echo "Updated Package Version" >> $GITHUB_STEP_SUMMARY
           echo "info Old Version: ${OLD_VERSION}" >> $GITHUB_STEP_SUMMARY
@@ -75,6 +75,7 @@ jobs:
 
       - name: Commit and push version change
         run: |
+          git add .
           git status
           git pull --rebase -f
           git push --verbose
