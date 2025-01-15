@@ -589,4 +589,9 @@ export interface Styles {
    * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
    */
   label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: string;
+  [k: string]: unknown;
 }

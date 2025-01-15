@@ -869,6 +869,7 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
+      "additionalProperties" : true ,
       "x-oapi-codegen-extra-tags": {
         "gorm": "foreignKey:ModelId;references:Id"
       },
@@ -882,6 +883,15 @@
             "json": "description"
           }
         },
+
+        "isAnnotation": {
+              "type": "boolean",
+              "description": "Indicates whether the relationship should be treated as a logical representation only",
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "isAnnotation",
+                "json": "isAnnotation"
+              }
+            },    
         "styles": {
           "anyOf": [
             {

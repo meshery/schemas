@@ -47,6 +47,8 @@ const (
 	Duplicate ComponentDefinitionStatus = "duplicate"
 	Enabled   ComponentDefinitionStatus = "enabled"
 	Ignored   ComponentDefinitionStatus = "ignored"
+	Open      ComponentDefinitionStatus = "open"
+	Resolved  ComponentDefinitionStatus = "resolved"
 )
 
 // Defines values for ComponentDefinitionStylesBorderStyle.
@@ -122,6 +124,9 @@ type Styles struct {
 
 	// ActiveBgSize  The opacity of the active background indicator. Selector needs to be *core*.
 	ActiveBgSize *string `json:"active-bg-size,omitempty" yaml:"active-bg-size,omitempty"`
+
+	// Animation The animation to apply to the element. example ripple,bounce,etc
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// BackgroundBlacken Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1.
 	BackgroundBlacken *float32 `json:"background-blacken,omitempty" yaml:"background-blacken,omitempty"`
@@ -388,6 +393,7 @@ type ComponentDefinition_Metadata struct {
 
 	// Published 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
 	Published            bool                   `json:"published" yaml:"published"`
+	InstanceDetails      interface{} `json:"instanceDetails" yaml:"instanceDetails"`
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 

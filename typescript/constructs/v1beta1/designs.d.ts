@@ -644,6 +644,11 @@ export interface Styles {
    * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
    */
   label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: string;
+  [k: string]: unknown;
 }
 /**
  * Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
