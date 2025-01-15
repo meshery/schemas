@@ -35,7 +35,7 @@ process_file() {
     cd "$(dirname "$file")"
 
     # Run npx json2ts and capture both stdout and stderr
-    if output=$(npx json2ts --input "$(basename "$file")" --output "$OUTPUT_DIR/$dir/$filename.d.ts" 2>&1); then
+    if output=$(npx json2ts --unreachableDefinitions --input "$(basename "$file")" --output "$OUTPUT_DIR/$dir/$filename.d.ts" 2>&1); then
         echo "Processed: $file"
     else
         echo "Failed to process: $file"
