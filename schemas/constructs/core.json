@@ -282,7 +282,7 @@
                 "x": {
                   "type": "number",
                   "description": "The x-coordinate of the node.",
-                   "x-go-type": "float64"
+                  "x-go-type": "float64"
                 },
                 "y": {
                   "type": "number",
@@ -508,6 +508,59 @@
           "additionalProperties": true,
           "$comment": "Extension point for additional styles",
           "$ref": "#/definitions/styles"
+        }
+      ]
+    },
+
+    "NonResolvedAlias": {
+      "description": "An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents",
+      "type": "object",
+      "properties": {
+        "relationship_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "alias_component_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "immediate_parent_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "immediate_ref_field_path": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "relationship_id",
+        "alias_component_id",
+        "immediate_parent_id",
+        "immediate_ref_field_path"
+      ]
+    },
+
+    "ResolvedAlias": {
+      "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/NonResolvedAlias"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "resolved_parent_id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "resolved_ref_field_path": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["resolved_parent_id", "resolved_ref_field_path"]
         }
       ]
     }
