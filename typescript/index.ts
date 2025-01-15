@@ -26,12 +26,12 @@ import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design
 
 //OpenAPI
 import { components, paths, webhooks } from "./openapi";
-export  * as core from "./constructs/core";
+import type * as core from "./constructs/core";
+
+export {core}
 
 // export namespace core {
 //   export type EntityStyles = Styles;
-//   export type ResolvedAlias = coreConstructs.ResolvedAlias;
-//   export type NonResolvableAlias = coreConstructs.NonResolvedAlias;
 // }
 
 // Contructs
