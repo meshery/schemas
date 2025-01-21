@@ -6,7 +6,8 @@ package category
 import "github.com/gofrs/uuid"
 
 type CategoryDefinition struct {
-	Id       uuid.UUID              `json:"-"`
-	Name     string                 `json:"name" gorm:"name"`
-	Metadata map[string]interface{} `json:"metadata,omitempty"  yaml:"metadata,omitempty" gorm:"type:bytes;serializer:json"`
+	Id            uuid.UUID               `json:"-"`
+	Name          string                  `json:"name" gorm:"name"`
+	SubCategories []SubCategoryDefinition `gorm:"foreignKey:CategoryID"`
+	Metadata      map[string]interface{}  `json:"metadata,omitempty"  yaml:"metadata,omitempty" gorm:"type:bytes;serializer:json"`
 }
