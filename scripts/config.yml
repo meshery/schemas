@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/deepmap/oapi-codegen/HEAD/configuration-schema.json
-package: relationship
+package: organization
 
 # Update the "output" and "include-tags" based on the resource for which code generation needs to be invoked.
 generate:
@@ -13,10 +13,10 @@ import-mapping:
   "../v1beta1/component.json": "github.com/meshery/schemas/models/v1beta1/model"
   "../v1alpha1/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
 
-output: models/v1alpha3/relationship/relationship.go 
+output: models/v1beta1/organization.go 
 output-options:
   # name-normalizer: ToCamelCaseWithInitialisms
   skip-prune: true
   include-tags: 
-  - patterns
+  - organizations
   

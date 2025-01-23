@@ -56,7 +56,7 @@ components:
         deleted_at:
           $ref: ./common/core.yml#/components/schemas/nullTime
         role_names:
-          $ref: '#/components/schemas/roleNames'
+          $ref: ./common/core.yml#/components/schemas/roleNames
     availableOrganization:
       type: object
       properties:
@@ -143,11 +143,11 @@ components:
     organizationsPage:
       properties:
         page:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         page_size:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         total_count:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         organizations:
           type: array
           items:
@@ -199,11 +199,11 @@ components:
     teamsOrganizationsMappingPage:
       properties:
         page:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         page_size:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         total_count:
-          type: ./common/core.yml#/components/schemas/number
+          $ref: ./common/core.yml#/components/schemas/number
         teams_organizations_mapping:
           type: array
           items:
