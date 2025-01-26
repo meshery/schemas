@@ -10,11 +10,15 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/layer5io/meshkit/database"
-	"github.com/layer5io/meshkit/models/meshmodel/entity"
+	"github.com/meshery/schemas/models/v1beta1/category"
 	"gorm.io/gorm"
 )
 
 var subCategoryCreationLock sync.Mutex
+
+func (c SubCategoryDefinition) TableName() string {
+	return "sub_category_dbs"
+}
 
 // GenerateID generates a unique ID for a sub-category based on its name and category ID.
 func (cat *SubCategoryDefinition) GenerateID() (uuid.UUID, error) {
@@ -76,7 +80,7 @@ func (cat *SubCategoryDefinition) Create(db *database.Handler) (uuid.UUID, error
 }
 
 // LinkCategory creates a relationship between a category and its sub-categories.
-func LinkCategory(db *database.Handler, category *CategoryDefinition, subCategories []SubCategoryDefinition) error {
+func LinkCategory(db *database.Handler, category *category.CategoryDefinition, subCategories []Subcategory.) error {
 	if category.Id == uuid.Nil {
 		return fmt.Errorf("category ID is required")
 	}
