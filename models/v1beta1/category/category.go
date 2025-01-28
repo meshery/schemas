@@ -5,7 +5,8 @@ package category
 
 import (
 	"github.com/gofrs/uuid"
-	"github.com/meshery/schemas/models/v1beta1/subCategory"
+	// "github.com/meshery/schemas/models/v1beta1/subCategory"
+	"github.com/octocamocoder47/schemas/models/v1beta1/subCategory"
 )
 
 type CategoryDefinition struct {
