@@ -94,7 +94,7 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 }
 
 func (m *ModelDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
-	err := db.Model(&Model{}).Where("id = ?", m.Id).Update("status", status).Error
+	err := db.Model(&ModelDefinition{}).Where("id = ?", m.Id).Update("status", status).Error
 	if err != nil {
 		return entity.ErrUpdateEntityStatus(err, string(m.Type()), status)
 	}

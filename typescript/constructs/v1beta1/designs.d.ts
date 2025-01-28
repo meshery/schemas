@@ -254,6 +254,17 @@ export interface DesignSchema {
    * Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.
    */
   version: string;
+  metadata?: {
+    /**
+     * Map of resolved aliases present in the design
+     */
+    resolvedAliases?: {
+      [k: string]: {
+        [k: string]: unknown;
+      };
+    };
+    [k: string]: unknown;
+  };
   /**
    * A list of one or more component declarations.
    *

@@ -21,6 +21,18 @@
       "minLength": 1,
       "maxLength": 50
     },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "resolvedAliases": {
+          "description": "Map of resolved aliases present in the design",
+          "type": "object",
+          "additionalProperties": {
+            "ref": "../core.json#/definitions/semverString"
+          }
+        }
+      }
+    },
     "components": {
       "description": "A list of one or more component declarations.",
       "minItems": 0,

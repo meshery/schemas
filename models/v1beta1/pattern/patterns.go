@@ -4,6 +4,7 @@
 package pattern
 
 import (
+	"github.com/gofrs/uuid"
 	externalRef1 "github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1alpha2"
 	"github.com/meshery/schemas/models/v1alpha3/relationship"
@@ -21,6 +22,22 @@ const (
 const (
 	Kubernetes MesheryPatternCatalogDataCompatibility = "kubernetes"
 )
+
+// An alias is an component that acts as an ref/pointer to a field in another component,
+// NonResolvedAlias are not aware of there immediate parents
+type NonResolvedAlias struct {
+	RelationshipId        uuid.UUID `json:"relationship_id"`
+	AliasComponentId      uuid.UUID `json:"alias_component_id"`
+	ImmediateParentId     uuid.UUID `json:"immediate_parent_id"`
+	ImmediateRefFieldPath []string  `json:"immediate_ref_field_path"`
+}
+// An resolved alias is an component that acts as an ref/pointer to a field in another component,
+// resolvedAlias are aware of there immediate parents and completely resolved parents also
+type ResolvedAlias struct {
+	NonResolvedAlias
+	ResolvedParentId     uuid.UUID `json:"resolved_parent_id"`
+	ResolvedRefFieldPath []string  `json:"resolved_ref_field_path"`
+}
 
 // Defines values for MesheryPatternCatalogDataType.
 const (
@@ -40,6 +57,10 @@ type DeletePatternModel struct {
 	Name externalRef1.Text `json:"name,omitempty"`
 }
 
+type PatternFileMetadata struct {
+   ResolvedAliases map[string]ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
+}
+
 type PatternFile struct {
 	Id externalRef1.Id `json:"id,omitempty" yaml:"id,omitempty"`
 
@@ -48,6 +69,8 @@ type PatternFile struct {
 
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
+
+	Metadata *PatternFileMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// Preferences Design-level preferences
 	Preferences *struct {
