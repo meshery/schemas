@@ -20,6 +20,14 @@ func (c SubCategoryDefinition) TableName() string {
 	return "sub_category_dbs"
 }
 
+func (cat SubCategoryDefinition) Type() entity.EntityType {
+	return entity.SubCategory
+}
+
+func (cat SubCategoryDefinition) GetID() uuid.UUID {
+	return cat.Id
+}
+
 // GenerateID generates a unique ID for a sub-category based on its name and category ID.
 func (cat *SubCategoryDefinition) GenerateID() (uuid.UUID, error) {
 	categoryIdentifier := struct {
