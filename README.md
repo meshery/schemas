@@ -38,6 +38,15 @@ alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 
 Meshery follows schema-driven development. As a project, Meshery has different types of schemas. Some schemas are external facing, and some internal to Meshery itself. This repository serves as a central location for storing schemas from which all Meshery components can take reference.
 
+Meshery schemas offer a powerful system designed for:
+
+- **Model-Driven Management:** Meshery uses explicit models for describing infrastructure and applications.
+- **Dynamic Discovery:** The ability to process different kinds of relationships and styles, enables a sophisticated system that can adapt to many configurations.
+- **Lifecycle Management:** The schema properties track status and lifecycle of resources.
+- **Extensibility:** Open-ended metadata and modular schema components enable expansion and customization.
+- **Visual Representation:** The properties for styling of edges and nodes is for creating a user friendly visual representation.
+- **Automated Operations:** The schemas can support validation and automated configuration of infrastructure and applications, and patching.
+
 
 <!-- The schema.go emabeds the openapi schema which gets packaged & released  used for purpose like validation
 
