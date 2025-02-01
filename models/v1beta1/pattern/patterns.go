@@ -64,13 +64,19 @@ type PatternFileMetadata struct {
 type PatternFile struct {
 	Id externalRef1.Id `json:"id,omitempty" yaml:"id,omitempty"`
 
-	// Components List of component declarations
-	Components []*component.ComponentDefinition `json:"components" yaml:"components"`
-
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
 
+	// SchemaVersion Specifies the version of the schema to which the design conforms.
+	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
+
+	// Version Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.
+	Version string `json:"version" yaml:"version"`
+
 	Metadata *PatternFileMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	// Components List of component declarations
+	Components []*component.ComponentDefinition `json:"components" yaml:"components"`
 
 	// Preferences Design-level preferences
 	Preferences *struct {
@@ -80,12 +86,6 @@ type PatternFile struct {
 
 	// Relationships List of relationships between components
 	Relationships []*relationship.RelationshipDefinition `json:"relationships" yaml:"relationships"`
-
-	// SchemaVersion Specifies the version of the schema to which the design conforms.
-	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
-
-	// Version Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.
-	Version string `json:"version" yaml:"version"`
 }
 
 // MesheryPattern defines model for mesheryPattern.
