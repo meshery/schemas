@@ -1,10 +1,11 @@
 module github.com/meshery/schemas
 
 go 1.21
+toolchain go1.23.4
 
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
-	github.com/layer5io/meshkit v0.7.84
+	github.com/layer5io/meshkit v0.8.0
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
 	gorm.io/gorm v1.25.12
