@@ -84,6 +84,13 @@
             "json": "name"
           }
         },
+        "subcategory_ids": {
+          "type": "array",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "subcategory_ids",
+            "json": "subcategory_ids"
+          }
+        },
         "metadata": {
           "type": "object",
           "x-oapi-codegen-extra-tags": {
@@ -103,6 +110,35 @@
       "description": "Sub-category of the model.",
       "minLength": 1,
       "maxLength": 100,
+      "properties": {
+        "id": {
+          "$ref": "../core.json#/definitions/uuid"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "name",
+            "json": "name"
+          }
+        },
+        "category_id": {
+          "x-go-name": "CategoryID",
+          "$ref": "../core.json#/definitions/uuid",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "category_id",
+            "json": "category_id"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "metadata",
+            "json": "metadata"
+          }
+        }
+      },
       "x-oapi-codegen-extra-tags": {
         "yaml": "subCategory",
         "json": "subCategory"

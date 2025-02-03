@@ -12,6 +12,6 @@ import (
 type CategoryDefinition struct {
 	Id            uuid.UUID               				`json:"-"`
 	Name          string                  				`json:"name" gorm:"name"`
-	SubCategories []subCategory.SubCategoryDefinition 	`gorm:"foreignKey:CategoryID"`
+	SubCategories []subCategory.SubCategoryDefinition 	`json:"subcategory_ids" gorm:"foreignKey:subcategory_ids"`
 	Metadata      map[string]interface{}  				`json:"metadata,omitempty"  yaml:"metadata,omitempty" gorm:"type:bytes;serializer:json"`
 }
