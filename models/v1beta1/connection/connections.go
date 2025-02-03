@@ -23,35 +23,39 @@ const (
 )
 
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
+// Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
-	CreatedAt time.Time `json:"created_at" yaml:"created_at"`
+    // Id ID
+    Id uuid.UUID `json:"id" yaml:"id"`
 
-	// CredentialId Credential ID
-	CredentialId uuid.UUID `json:"credential_id" yaml:"credential_id"`
-	DeletedAt    time.Time  `json:"deleted_at" yaml:"deleted_at"`
+    // Name Connection Name
+    Name string `json:"name" yaml:"name"`
 
-	// Id ID
-	Id uuid.UUID `json:"id" yaml:"id"`
+    // CredentialId Credential ID
+    CredentialId uuid.UUID `json:"credential_id" yaml:"credential_id"`
 
-	// Kind Connection Kind
-	Kind     string                 `json:"kind" yaml:"kind"`
-	Metadata map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty" gorm:"type:bytes;serializer:json"`
+    // Type Connection Type
+    Type string `json:"type" yaml:"type"`
 
-	// Name Connection Name
-	Name string `json:"name" yaml:"name"`
+    // SubType Connection Subtype
+    SubType string `json:"sub_type" yaml:"sub_type"`
 
-	// Status Connection Status
-	Status ConnectionStatus `json:"status" yaml:"status"`
+    // Kind Connection Kind
+    Kind string `json:"kind" yaml:"kind"`
 
-	// SubType Connection Subtype
-	SubType string `json:"sub_type" yaml:"sub_type"`
+    Metadata map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty" gorm:"type:bytes;serializer:json"`
 
-	// Type Connection Type
-	Type      string   `json:"type" yaml:"type"`
-	UpdatedAt time.Time `json:"updated_at" yaml:"updated_at"`
+    // Status Connection Status
+    Status ConnectionStatus `json:"status" yaml:"status"`
 
-	// UserID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	UserID uuid.UUID `json:"user_id" yaml:"user_id"`
+    // UserID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+    UserID uuid.UUID `json:"user_id" yaml:"user_id"`
+
+    CreatedAt time.Time `json:"created_at" yaml:"created_at"`
+
+    UpdatedAt time.Time `json:"updated_at" yaml:"updated_at"`
+
+    DeletedAt time.Time `json:"deleted_at" yaml:"deleted_at"`
 }
 
 // ConnectionStatus Connection Status

@@ -325,37 +325,34 @@ type Component struct {
 
 // ComponentDefinition Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
 type ComponentDefinition struct {
-	// Capabilities Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
-	Capabilities *[]capability.Capability `json:"capabilities,omitempty" yaml:"capabilities" gorm:"type:bytes;serializer:json"`
+	// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+	Id uuid.UUID `json:"id" yaml:"id"`
 
-	// Component Component and it's properties.
-	Component Component `gorm:"type:bytes;serializer:json" json:"component" yaml:"component"`
+	// SchemaVersion Specifies the version of the schema to which the component definition conforms.
+	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
 
-	// Configuration The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).
-	Configuration map[string]interface{} `gorm:"type:bytes;serializer:json" json:"configuration" yaml:"configuration"`
-
-	// Description A written representation of the purpose and characteristics of the component.
-	Description string `json:"description" yaml:"description"`
+	// Version Version of the component definition.
+	Version string `json:"version" yaml:"version"`
 
 	// DisplayName Name of the component in human-readible format.
 	DisplayName string `json:"displayName" yaml:"displayName"`
 
+	// Description A written representation of the purpose and characteristics of the component.
+	Description string `json:"description" yaml:"description"`
+
 	// Format Format specifies the format used in the `component.schema` field. JSON is the default.
 	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
-
-	// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-	Id uuid.UUID `json:"id" yaml:"id"`
-
-	// Metadata Metadata contains additional information associated with the component.
-	Metadata ComponentDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 	Model model.ModelDefinition `gorm:"foreignKey:ModelId;references:Id" json:"model" yaml:"model"`
 
 	ModelId uuid.UUID `json:"-" gorm:"index:idx_component_definition_dbs_model_id,column:model_id" yaml:"-"`
 
-	// SchemaVersion Specifies the version of the schema to which the component definition conforms.
-	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
+	// Styles Visualization styles for a component
+	Styles *Styles `json:"styles" yaml:"styles" gorm:"type:bytes;serializer:json"`
+
+	// Capabilities Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
+	Capabilities *[]capability.Capability `json:"capabilities,omitempty" yaml:"capabilities" gorm:"type:bytes;serializer:json"`
 
 	// Status Status of component, including:
 	// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -364,11 +361,14 @@ type ComponentDefinition struct {
 	// - ignored: model is unavailable for use for all users of this Meshery Server.
 	Status *ComponentDefinitionStatus `json:"status" yaml:"status"`
 
-	// Styles Visualization styles for a component
-	Styles *Styles `json:"styles" yaml:"styles" gorm:"type:bytes;serializer:json"`
+	// Metadata Metadata contains additional information associated with the component.
+	Metadata ComponentDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
 
-	// Version Version of the component definition.
-	Version string `json:"version" yaml:"version"`
+	// Configuration The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).
+	Configuration map[string]interface{} `gorm:"type:bytes;serializer:json" json:"configuration" yaml:"configuration"`
+
+	// Component Component and it's properties.
+	Component Component `gorm:"type:bytes;serializer:json" json:"component" yaml:"component"`
 }
 
 // ComponentDefinitionCapabilitiesEntityState defines model for ComponentDefinition.Capabilities.EntityState.

@@ -50,37 +50,25 @@ type Model struct {
 }
 
 // ModelDefinition Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
+// ModelDefinition Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
 type ModelDefinition struct {
-	// Category Category of the model.
-	Category category.CategoryDefinition `json:"category" yaml:"category" gorm:"foreignKey:CategoryId;references:Id"`
-
-	CategoryId uuid.UUID `json:"-" yaml:"-" gorm:"categoryID"`
-
-	// Description Description of the model.
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-
-	// DisplayName Human-readable name for the model.
-	DisplayName string `json:"displayName" yaml:"displayName"`
-
 	// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
 	Id uuid.UUID `json:"id" yaml:"id"`
 
-	// Metadata Metadata containing additional information associated with the model.
-	Metadata *ModelDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
+	// SchemaVersion Specifies the version of the schema used for the definition.
+	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
 
-	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
-	Model Model `gorm:"type:bytes;serializer:json" json:"model,omitempty" yaml:"model"`
+	// Version Version of the model definition.
+	Version string `json:"version" yaml:"version"`
 
 	// Name The unique name for the model within the scope of a registrant.
 	Name string `json:"name" yaml:"name"`
 
-	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
-	Registrant connection.Connection `gorm:"foreignKey:RegistrantId;references:Id" json:"registrant" yaml:"registrant"`
+	// DisplayName Human-readable name for the model.
+	DisplayName string `json:"displayName" yaml:"displayName"`
 
-	RegistrantId uuid.UUID `json:"connection_id" gorm:"column:connection_id" yaml:"connection_id"`
-
-	// SchemaVersion Specifies the version of the schema used for the definition.
-	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
+	// Description Description of the model.
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
 	// Status Status of model, including:
 	// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -89,11 +77,24 @@ type ModelDefinition struct {
 	// - ignored: model is unavailable for use for all users of this Meshery Server.
 	Status ModelDefinitionStatus `json:"status" yaml:"status"`
 
+	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
+	Registrant connection.Connection `gorm:"foreignKey:RegistrantId;references:Id" json:"registrant" yaml:"registrant"`
+
+	RegistrantId uuid.UUID `json:"connection_id" gorm:"column:connection_id" yaml:"connection_id"`
+
+	// Category Category of the model.
+	Category category.CategoryDefinition `json:"category" yaml:"category" gorm:"foreignKey:CategoryId;references:Id"`
+
+	CategoryId uuid.UUID `json:"-" yaml:"-" gorm:"categoryID"`
+
 	// SubCategory Sub-category of the model.
 	SubCategory string `json:"subCategory,omitempty" yaml:"subCategory,omitempty"`
 
-	// Version Version of the model definition.
-	Version string `json:"version" yaml:"version"`
+	// Metadata Metadata containing additional information associated with the model.
+	Metadata *ModelDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
+
+	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
+	Model Model `gorm:"type:bytes;serializer:json" json:"model,omitempty" yaml:"model"`
 
 	Components interface{} `json:"components" gorm:"-" yaml:"components"`
 

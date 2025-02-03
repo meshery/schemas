@@ -4,12 +4,11 @@
   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
   "additionalProperties": false,
   "type": "object",
-  "required": [
-    "kind", "type", "status"
-  ],
+  "required": ["kind", "type", "status"],
   "properties": {
     "id": {
       "$ref": "../core.json#/definitions/uuid",
+      "x-order": 1,
       "description": "ID"
     },
     "name": {
@@ -17,6 +16,7 @@
         "db": "name",
         "yaml": "name"
       },
+      "x-order": 2,
       "type": "string",
       "description": "Connection Name"
     },
@@ -26,6 +26,7 @@
         "db": "credential_id",
         "yaml": "credential_id"
       },
+      "x-order": 3,
       "$ref": "../core.json#/definitions/uuid",
       "description": "Credential ID"
     },
@@ -34,6 +35,7 @@
         "db": "type",
         "yaml": "type"
       },
+      "x-order": 4,
       "type": "string",
       "description": "Connection Type"
     },
@@ -42,6 +44,7 @@
         "db": "sub_type",
         "yaml": "sub_type"
       },
+      "x-order": 5,
       "type": "string",
       "description": "Connection Subtype"
     },
@@ -50,6 +53,7 @@
         "db": "kind",
         "yaml": "kind"
       },
+      "x-order": 6,
       "type": "string",
       "description": "Connection Kind"
     },
@@ -58,6 +62,7 @@
         "db": "metadata",
         "yaml": "metadata"
       },
+      "x-order": 7,
       "type": "object"
     },
     "status": {
@@ -65,6 +70,7 @@
         "db": "status",
         "yaml": "status"
       },
+      "x-order": 8,
       "description": "Connection Status",
       "type": "string",
       "enum": [
@@ -84,6 +90,7 @@
         "yaml": "user_id",
         "json": "user_id"
       },
+      "x-order": 9,
       "$ref": "../core.json#/definitions/uuid"
     },
     "created_at": {
@@ -91,20 +98,24 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "created_at",
         "json": "created_at"
-      }
+      },
+      "x-order": 10
     },
     "updated_at": {
       "$ref": "../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
         "yaml": "updated_at",
         "json": "updated_at"
-      }
+      },
+      "x-order": 11
     },
     "deleted_at": {
-      "$ref": "../core.json#/definitions/time","x-oapi-codegen-extra-tags": {
+      "$ref": "../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
         "yaml": "deleted_at",
         "json": "deleted_at"
-      }
+      },
+      "x-order": 12
     }
   }
 }

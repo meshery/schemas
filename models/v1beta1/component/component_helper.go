@@ -80,6 +80,7 @@ func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, f
 	}
 	return true, nil
 }
+
 func (c *ComponentDefinition) ReplaceSVGData(baseDir string) error {
 
 	compStyle := c.Styles
