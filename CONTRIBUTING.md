@@ -19,7 +19,7 @@ go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 ### Schema Resolution Process
 When you work with the schemas, you'll frequently use this essential command:
 ```
-make resolve-ref path="./schemas/constructs/v1beta1"
+make resolve-ref path="./schemas/constructs/[version]"
 ```
 **Key functions:**
 1.  Resolves `$ref` references between schema files
@@ -96,7 +96,7 @@ openapi: 3.0.0
 components:
   schemas:
     component_definition:
-      $ref: ../v1beta1/component.json
+      $ref: ../[version]/component.json
 ```
 
 ### Workflow
@@ -119,6 +119,34 @@ oapi-codegen -config scripts/config.yml schemas/constructs/openapi/models.yml
 -   Keep import mappings synchronized with schema references
 -   Generated code inherits package name from config
 -   Use tags to filter generated structs
+
+### Handling Schema Changes and Field Ordering
+
+When modifying schema structs or their fields, there are two common scenarios:
+
+#### 1. Adding a New Field or Struct
+
+-   **Revert Logic:** If you add a new field, the entire file may change due to automated code generation. **What to do:**
+    
+    -   Identify the new field or struct you have added.
+        
+    -   Copy this new addition.
+        
+    -   Revert the rest of the file to its original state.
+        
+    -   Re-insert the new field or struct into its appropriate location.
+
+>**Note:** We are working on streamlining this process, any contributions to improve automation are welcome! 🚀
+
+#### 2. Preserving Field Order with x-order Tag
+
+-   **x-order Tag Usage:** If you only add an `x-order` tag, it ensures fields remain in a specific order. **Steps:**
+    
+    -   Run the usual commands to resolve references and generate the code.
+        
+    -   If the field order changes unexpectedly, manually rearrange them.
+        
+    -   Commit the changes, ensuring the `x-order` tag is included to maintain order in future generations.
 
 ## Example
 Let's walk through a practical example, you made some changes in the **component.json**
