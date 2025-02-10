@@ -99,7 +99,13 @@
           "x-order": 5,
           "type": "object",
           "description": "InstanceDetails contains information about the instance of the component."
-        }
+        },
+
+       "configurationUISchema": {
+          "x-order": 6,
+          "type": "string",
+          "description": "Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ ."
+        },
       },
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json"
