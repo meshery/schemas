@@ -10,7 +10,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/layer5io/meshkit/database"
-	"github.com/octocamocoder47/schemas/models/v1beta1/category"
+	"github.com/meshery/schemas/models/v1beta1/category"
 	"gorm.io/gorm"
 )
 
