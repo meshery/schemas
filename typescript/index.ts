@@ -23,29 +23,29 @@ import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./const
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
-import CapabilityV1Alpha1Schema from "./constructs/v1alpha1/CapabilitySchema";
-import CatalogDataV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
-import DesignV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
-import RelationshipV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
-import RelationshipV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
-import SelectorsV1Alpha3Schema from "./constructs/v1alpha3/SelectorsSchema";
-import ComponentV1Beta1Schema from "./constructs/v1beta1/ComponentSchema";
-import ModelV1Beta1Schema from "./constructs/v1beta1/ModelSchema";
-import DesignV1Beta1Schema from "./constructs/v1beta1/DesignsSchema";
-import ConnectionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
+import CapabilityDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CapabilitySchema";
+import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
+import DesignDefinitionV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
+import RelationshipDefinitionV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
+import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
+import SelectorsDefinitionV1Alpha3Schema from "./constructs/v1alpha3/SelectorsSchema";
+import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/ComponentSchema";
+import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/ModelSchema";
+import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/DesignsSchema";
+import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
 
 export {
   core,
-  CapabilityV1Alpha1Schema,
-  CatalogDataV1Alpha1Schema,
-  DesignV1Alpha2Schema,
-  RelationshipV1Alpha2Schema,
-  RelationshipV1Alpha3Schema,
-  SelectorsV1Alpha3Schema,
-  ComponentV1Beta1Schema,
-  ModelV1Beta1Schema,
-  DesignV1Beta1Schema,
-  ConnectionV1Beta1Schema,
+  CapabilityDefinitionV1Alpha1Schema,
+  CatalogDataDefinitionV1Alpha1Schema,
+  DesignDefinitionV1Alpha2Schema,
+  RelationshipDefinitionV1Alpha2Schema,
+  RelationshipDefinitionV1Alpha3Schema,
+  SelectorsDefinitionV1Alpha3Schema,
+  ComponentDefinitionV1Beta1Schema,
+  ModelDefinitionV1Beta1Schema,
+  DesignDefinitionV1Beta1Schema,
+  ConnectionDefinitionV1Beta1Schema,
 };
 
 // Contructs
