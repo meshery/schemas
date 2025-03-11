@@ -17,7 +17,12 @@ const schema = {
       "maxLength": 100,
       "description": "API version of the object",
       "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
+      "example": [
+        "v1",
+        "v1alpha1",
+        "v2beta3",
+        "v1.custom-suffix"
+      ]
     },
     "semverString": {
       "type": "string",
@@ -44,7 +49,11 @@ const schema = {
       "type": "object",
       "description": "Common styles for all entities",
       "additionalProperties": true,
-      "required": ["primaryColor", "svgColor", "svgWhite"],
+      "required": [
+        "primaryColor",
+        "svgColor",
+        "svgWhite"
+      ],
       "properties": {
         "primaryColor": {
           "type": "string",
@@ -95,7 +104,11 @@ const schema = {
         "text-transform": {
           "type": "string",
           "description": "A transformation to apply to the label text",
-          "enum": ["none", "uppercase", "lowercase"]
+          "enum": [
+            "none",
+            "uppercase",
+            "lowercase"
+          ]
         },
         "opacity": {
           "type": "number",
@@ -148,6 +161,91 @@ const schema = {
         "polygon"
       ]
     },
+    "category": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "name",
+        "json": "name"
+      },
+      "description": "The category of the model that determines the main grouping.",
+      "enum": [
+        "Analytics",
+        "App Definition and Development",
+        "Cloud Native Network",
+        "Cloud Native Storage",
+        "Database",
+        "Machine Learning",
+        "Observability and Analysis",
+        "Orchestration & Management",
+        "Platform",
+        "Provisioning",
+        "Runtime",
+        "Security & Compliance",
+        "Serverless",
+        "Tools",
+        "Uncategorized"
+      ]
+    },
+    "subCategory": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "subCategory",
+        "json": "subCategory"
+      },
+      "description": "The sub-category of the model that determines the secondary grouping.",
+      "enum": [
+        "API Gateway",
+        "API Integration",
+        "Application Definition & Image Build",
+        "Automation & Configuration",
+        "Certified Kubernetes - Distribution",
+        "Chaos Engineering",
+        "Cloud Native Storage",
+        "Cloud Provider",
+        "CNI",
+        "Compute",
+        "Container Registry",
+        "Container Runtime",
+        "Container Security",
+        "Container",
+        "Content Delivery Network",
+        "Continuous Integration & Delivery",
+        "Coordination & Service Discovery",
+        "Database",
+        "Flowchart",
+        "Framework",
+        "Installable Platform",
+        "Key Management",
+        "Key Management Service",
+        "Kubernetes",
+        "Logging",
+        "Machine Learning",
+        "Management Governance",
+        "Metrics",
+        "Monitoring",
+        "Networking Content Delivery",
+        "Operating System",
+        "Query",
+        "Remote Procedure Call",
+        "Scheduling & Orchestration",
+        "Secrets Management",
+        "Security Identity & Compliance",
+        "Service Mesh",
+        "Service Proxy",
+        "Source Version Control",
+        "Storage",
+        "Specifications",
+        "Streaming & Messaging",
+        "Tools",
+        "Tracing",
+        "Uncategorized",
+        "Video Conferencing"
+      ]
+    },
     "edgeStyles": {
       "type": "object",
       "description": "Visualization styles for a relationship",
@@ -181,12 +279,20 @@ const schema = {
             "line-style": {
               "type": "string",
               "description": "The style of the edge\u2019s line.",
-              "enum": ["solid", "dotted", "dashed"]
+              "enum": [
+                "solid",
+                "dotted",
+                "dashed"
+              ]
             },
             "line-cap": {
               "type": "string",
               "description": "The cap style of the edge\u2019s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
-              "enum": ["butt", "round", "square"],
+              "enum": [
+                "butt",
+                "round",
+                "square"
+              ],
               "default": "butt"
             },
             "line-opacity": {
@@ -221,7 +327,10 @@ const schema = {
             "target-arrow-fill": {
               "type": "string",
               "description": "The fill state of the edge\u2019s source arrow",
-              "enum": ["filled", "hollow"]
+              "enum": [
+                "filled",
+                "hollow"
+              ]
             },
             "mid-target-arrow-color": {
               "type": "string",
@@ -248,7 +357,10 @@ const schema = {
             "mid-target-arrow-fill": {
               "type": "string",
               "description": "The fill state of the edge\u2019s source arrow",
-              "enum": ["filled", "hollow"]
+              "enum": [
+                "filled",
+                "hollow"
+              ]
             },
             "arrow-scale": {
               "type": "number",
@@ -270,7 +382,12 @@ const schema = {
     "componentStyles": {
       "type": "object",
       "description": "Visualization styles for a component",
-      "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
+      "required": [
+        "shape",
+        "primaryColor",
+        "svgColor",
+        "svgWhite"
+      ],
       "allOf": [
         {
           "$ref": "#/definitions/styles"
@@ -283,7 +400,10 @@ const schema = {
             "position": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["x", "y"],
+              "required": [
+                "x",
+                "y"
+              ],
               "description": "The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.",
               "properties": {
                 "x": {
@@ -298,7 +418,6 @@ const schema = {
                 }
               }
             },
-
             "body-text": {
               "type": "string",
               "description": "The text to display for an element\u2019s body. Can give a path, e.g. data(id) will label with the elements id"
@@ -353,7 +472,6 @@ const schema = {
               "type": "number",
               "description": "The height of the node\u2019s body"
             },
-
             "background-image": {
               "type": "string",
               "description": "The URL that points to the image to show in the node."
@@ -390,7 +508,6 @@ const schema = {
               "type": "string",
               "description": "The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)"
             },
-
             "background-fit": {
               "type": "string",
               "description": "How the background image is fit to the node. Can be 'none', 'contain', or 'cover'."
@@ -415,7 +532,12 @@ const schema = {
             "border-style": {
               "type": "string",
               "description": "The style of the node\u2019s border",
-              "enum": ["solid", "dotted", "dashed", "double"]
+              "enum": [
+                "solid",
+                "dotted",
+                "dashed",
+                "double"
+              ]
             },
             "border-color": {
               "type": "string",
@@ -435,18 +557,29 @@ const schema = {
             "text-halign": {
               "type": "string",
               "description": "The horizontal alignment of a node\u2019s label",
-              "enum": ["left", "center", "right"]
+              "enum": [
+                "left",
+                "center",
+                "right"
+              ]
             },
             "text-valign": {
               "type": "string",
               "description": "The vertical alignment of a node\u2019s label",
-              "enum": ["top", "center", "bottom"]
+              "enum": [
+                "top",
+                "center",
+                "bottom"
+              ]
             },
             "ghost": {
               "type": "string",
               "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
               "default": "no",
-              "enum": ["yes", "no"]
+              "enum": [
+                "yes",
+                "no"
+              ]
             },
             "active-bg-color": {
               "type": "string",
@@ -518,7 +651,6 @@ const schema = {
         }
       ]
     },
-
     "NonResolvedAlias": {
       "description": "An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents",
       "type": "object",
@@ -546,7 +678,6 @@ const schema = {
         "immediate_ref_field_path"
       ]
     },
-
     "ResolvedAlias": {
       "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
       "type": "object",
@@ -567,11 +698,13 @@ const schema = {
               }
             }
           },
-          "required": ["resolved_parent_id", "resolved_ref_field_path"]
+          "required": [
+            "resolved_parent_id",
+            "resolved_ref_field_path"
+          ]
         }
       ]
     },
-
     "IaCFileTypes": {
       "type": "string",
       "description": "The type of the IaC file",

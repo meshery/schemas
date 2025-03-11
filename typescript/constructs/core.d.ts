@@ -71,6 +71,81 @@ export type Shape =
   | "vee"
   | "polygon";
 /**
+ * The category of the model that determines the main grouping.
+ *
+ * This interface was referenced by `CoreJson`'s JSON-Schema
+ * via the `definition` "category".
+ */
+export type Category =
+  | "Analytics"
+  | "App Definition and Development"
+  | "Cloud Native Network"
+  | "Cloud Native Storage"
+  | "Database"
+  | "Machine Learning"
+  | "Observability and Analysis"
+  | "Orchestration & Management"
+  | "Platform"
+  | "Provisioning"
+  | "Runtime"
+  | "Security & Compliance"
+  | "Serverless"
+  | "Tools"
+  | "Uncategorized";
+/**
+ * The sub-category of the model that determines the secondary grouping.
+ *
+ * This interface was referenced by `CoreJson`'s JSON-Schema
+ * via the `definition` "subCategory".
+ */
+export type SubCategory =
+  | "API Gateway"
+  | "API Integration"
+  | "Application Definition & Image Build"
+  | "Automation & Configuration"
+  | "Certified Kubernetes - Distribution"
+  | "Chaos Engineering"
+  | "Cloud Native Storage"
+  | "Cloud Provider"
+  | "CNI"
+  | "Compute"
+  | "Container Registry"
+  | "Container Runtime"
+  | "Container Security"
+  | "Container"
+  | "Content Delivery Network"
+  | "Continuous Integration & Delivery"
+  | "Coordination & Service Discovery"
+  | "Database"
+  | "Flowchart"
+  | "Framework"
+  | "Installable Platform"
+  | "Key Management"
+  | "Key Management Service"
+  | "Kubernetes"
+  | "Logging"
+  | "Machine Learning"
+  | "Management Governance"
+  | "Metrics"
+  | "Monitoring"
+  | "Networking Content Delivery"
+  | "Operating System"
+  | "Query"
+  | "Remote Procedure Call"
+  | "Scheduling & Orchestration"
+  | "Secrets Management"
+  | "Security Identity & Compliance"
+  | "Service Mesh"
+  | "Service Proxy"
+  | "Source Version Control"
+  | "Storage"
+  | "Specifications"
+  | "Streaming & Messaging"
+  | "Tools"
+  | "Tracing"
+  | "Uncategorized"
+  | "Video Conferencing";
+/**
  * Visualization styles for a relationship
  *
  * This interface was referenced by `CoreJson`'s JSON-Schema

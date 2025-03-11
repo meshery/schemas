@@ -33,12 +33,14 @@ const schema = {
       }
     },
     "name": {
+      "type": "string",
       "description": "The unique name for the model within the scope of a registrant.",
       "$ref": "../core.json#/definitions/inputString",
       "x-order": 4
     },
     "displayName": {
       "description": "Human-readable name for the model.",
+      "helperText": "Model display name should be a friendly name for your model.",
       "minLength": 1,
       "maxLength": 100,
       "type": "string",
@@ -63,7 +65,11 @@ const schema = {
     "status": {
       "type": "string",
       "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-      "enum": ["ignored", "enabled", "duplicate"],
+      "enum": [
+        "ignored",
+        "enabled",
+        "duplicate"
+      ],
       "x-order": 7,
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
@@ -81,21 +87,15 @@ const schema = {
     },
     "category": {
       "type": "object",
-      "description": "Category of the model.",
+      "description": "Determines the main grouping of the model.",
       "properties": {
         "id": {
           "$ref": "../core.json#/definitions/uuid",
           "x-order": 1
         },
         "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 100,
-          "x-oapi-codegen-extra-tags": {
-            "yaml": "name",
-            "json": "name"
-          },
-          "x-order": 2
+          "x-order": 2,
+          "$ref": "../core.json#/definitions/category"
         },
         "metadata": {
           "type": "object",
@@ -114,14 +114,7 @@ const schema = {
       }
     },
     "subCategory": {
-      "type": "string",
-      "description": "Sub-category of the model.",
-      "minLength": 1,
-      "maxLength": 100,
-      "x-oapi-codegen-extra-tags": {
-        "yaml": "subCategory",
-        "json": "subCategory"
-      },
+      "$ref": "../core.json#/definitions/subCategory",
       "x-order": 10
     },
     "metadata": {
@@ -196,6 +189,52 @@ const schema = {
             "json": "svgComplete"
           },
           "x-order": 7
+        },
+        "shape": {
+          "x-order": 8,
+          "$ref": "../core.json#/definitions/shape"
+        },
+        "sourceUri": {
+          "type": "string",
+          "description": "URI to the source code or package of the model.",
+          "oneOf": [
+            {
+              "title": "GitHub",
+              "type": "string",
+              "pattern": "^git://github\\.com/[\\w.-]+/[\\w.-]+(/[\\w.-]+/[\\w/-]+)?$",
+              "description": "Git protocol URL for GitHub repository or specific resource path",
+              "examples": [
+                "git://github.com/cert-manager/cert-manager/master/deploy/crds"
+              ],
+              "metadata": {
+                "uiType": "url",
+                "validationHint": "Enter a git protocol URL (e.g., git://github.com/owner/repo)"
+              }
+            },
+            {
+              "title": "Artifact Hub",
+              "type": "string",
+              "pattern": "^https:\\/\\/artifacthub\\.io\\/packages\\/(search\\?ts_query_web=[\\w.-]+|[\\w.-]+\\/[\\w.-]+\\/[\\w.-]+)$",
+              "description": "Artifact Hub package URL or search query URL with model name parameter",
+              "examples": [
+                "https://artifacthub.io/packages/search?ts_query_web={model-name}"
+              ],
+              "metadata": {
+                "uiType": "url",
+                "validationHint": "Enter an Artifact Hub URL (e.g., https://artifacthub.io/packages/search?ts_query_web={meshery-operator})"
+              }
+            }
+          ],
+          "x-order": 9,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "sourceUri",
+            "json": "sourceUri"
+          },
+          "metadata": {
+            "uiType": "url",
+            "urlValidation": true,
+            "validationHint": "Enter either a git:// GitHub URL or an Artifact Hub URL"
+          }
         }
       },
       "x-oapi-codegen-extra-tags": {
@@ -207,7 +246,9 @@ const schema = {
     "model": {
       "type": "object",
       "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-      "required": ["version"],
+      "required": [
+        "version"
+      ],
       "properties": {
         "version": {
           "description": "Version of the model as defined by the registrant.",
@@ -225,7 +266,12 @@ const schema = {
       "x-order": 12
     }
   },
-  "required": ["name", "version", "registrant", "category"]
+  "required": [
+    "name",
+    "version",
+    "registrant",
+    "category"
+  ]
 }
 
 export default schema;
