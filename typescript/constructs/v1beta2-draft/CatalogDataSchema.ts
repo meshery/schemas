@@ -1,4 +1,7 @@
-{
+// Generated from constructs/v1beta2-draft/catalog_data.json
+// This file exports the original JSON schema
+
+const schema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "$comment": "Any given catalog content will expose a version. It is the version # of the content at time of publshing.",
@@ -86,3 +89,5 @@
         "type"
     ]
 }
+
+export default schema;

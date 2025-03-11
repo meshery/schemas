@@ -382,6 +382,13 @@ export type ResolvedAlias = NonResolvedAlias & {
   resolved_ref_field_path: string[];
   [k: string]: unknown;
 };
+/**
+ * The type of the IaC file
+ *
+ * This interface was referenced by `CoreJson`'s JSON-Schema
+ * via the `definition` "IaCFileTypes".
+ */
+export type IaCFileTypes = "meshery-design" | "helm-chart" | "k8s-manifest" | "docker-compose" | "k8s-kustomize";
 
 /**
  * Reusable core schema elements
@@ -456,6 +463,13 @@ export interface Styles {
    * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
    */
   label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
 }
 /**
  * Common styles for all entities
@@ -521,6 +535,13 @@ export interface Styles1 {
    * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
    */
   label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
 }
 /**
  * An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents
