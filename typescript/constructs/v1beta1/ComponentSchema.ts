@@ -1,4 +1,7 @@
-{
+// Generated from constructs/v1beta1/component.json
+// This file exports the original JSON schema
+
+const schema = {
   "$id": "https://schemas.meshery.io/component.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components",
@@ -151,3 +154,5 @@
   },
   "required": ["schemaVersion", "version", "model", "component"]
 }
+
+export default schema;
