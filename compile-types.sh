@@ -22,12 +22,7 @@ ORIGINAL_DIR=$(pwd)
 
 # Function to convert to PascalCase with Schema suffix
 to_pascal_case_schema() {
-  local name="$1"
-  # Replace spaces and hyphens with underscores first
-  name=$(echo "$name" | sed 's/[ -]/_/g')
-  # Convert to PascalCase and add Schema suffix
-  name=$(echo "$name" | awk -F '_' '{for(i=1;i<=NF;i++)printf "%s", toupper(substr($i,1,1)) tolower(substr($i,2))}')
-  echo "${name}Schema"
+  echo "$1" | sed -E 's/[ -]+/_/g; s/(^|_)([a-z])/\U\2/g' | sed 's/_//g' | awk '{print $0 "Schema"}'
 }
 
 # Function to generate schema export file
