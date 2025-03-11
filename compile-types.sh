@@ -20,22 +20,40 @@ mkdir -p "$OUTPUT_DIR"
 # Store the original directory
 ORIGINAL_DIR=$(pwd)
 
-# Function to sanitize names for JavaScript/TypeScript compatibility
-sanitize_name() {
+# Function to convert to PascalCase with Schema suffix
+to_pascal_case_schema() {
   local name="$1"
-  # Replace hyphens with underscores
-  name=$(echo "$name" | sed 's/-/_/g')
-  echo "$name"
+  # Replace spaces and hyphens with underscores first
+  name=$(echo "$name" | sed 's/[ -]/_/g')
+  # Convert to PascalCase and add Schema suffix
+  name=$(echo "$name" | awk -F '_' '{for(i=1;i<=NF;i++)printf "%s", toupper(substr($i,1,1)) tolower(substr($i,2))}')
+  echo "${name}Schema"
 }
 
-# Function to process files - generates both type definitions and schema exports
+# Function to generate schema export file
+generate_schema_export() {
+  local output_file="$1"
+  local relative_path="$2"
+  local input_file="$3"
+
+  {
+    echo "// Generated from $relative_path"
+    echo "// This file exports the original JSON schema"
+    echo ""
+    echo "const schema = $(cat "$input_file")"
+    echo ""
+    echo "export default schema;"
+  } > "$output_file"
+}
+
+# Function to process files
 process_file() {
   local file="$1"
-  local relative_path="${file#$INPUT_DIR/}" # Remove base directory from path
+  local relative_path="${file#$INPUT_DIR/}"
 
   local dir=$(dirname "$relative_path")
   local filename=$(basename "$file" .json)
-  local sanitized_filename=$(sanitize_name "$filename")
+  local sanitized_filename=$(to_pascal_case_schema "$filename")
 
   # Create subdirectory in output folder if it doesn't exist
   mkdir -p "$OUTPUT_DIR/$dir"
@@ -51,15 +69,9 @@ process_file() {
     echo "Error: $output"
   fi
 
-  # Create a Typescript file that exports the schema
-  local schema_ts_file="$OUTPUT_DIR/$dir/$sanitized_filename.schema.ts"
-  echo "// Generated from $relative_path" > "$schema_ts_file"
-  echo "// This file exports the original JSON schema" >> "$schema_ts_file"
-  echo "" >> "$schema_ts_file"
-  echo "const schema = $(cat "$(basename "$file")")" >> "$schema_ts_file"
-  echo "" >> "$schema_ts_file"
-  echo "export default schema;" >> "$schema_ts_file"
-
+  # Generate schema export file
+  local schema_ts_file="$OUTPUT_DIR/$dir/$sanitized_filename.ts"
+  generate_schema_export "$schema_ts_file" "$relative_path" "$(basename "$file")"
   echo "Generated schema exports for: $file"
 
   # Change back to the original directory
@@ -82,5 +94,14 @@ traverse_directory() {
 
 # Start traversing from the provided input directory
 traverse_directory "$INPUT_DIR"
+
+# Generate OpenApi types from single openapi.yaml file
+OPENAPI_FILE="$INPUT_DIR/openapi.yml"
+if [ -f "$OPENAPI_FILE" ]; then
+  npx openapi-typescript "$OPENAPI_FILE" --output "$OUTPUT_DIR/openapi.d.ts"
+  echo "Processed: $OPENAPI_FILE"
+else
+  echo "Error: OpenAPI file '$OPENAPI_FILE' does not exist."
+fi
 
 echo "Processing complete. Output files are in '$OUTPUT_DIR'."
