@@ -5,7 +5,7 @@
     "properties": {
         "publishedVersion": {
             "description": "Tracks the specific content version that has been made available in the Catalog.",
-            "$ref": "../core.json#versionString"
+            "$ref": "../core.json#/definitions/versionString"
         },
         "contentType": {
             "$comment": "Based on the entity appropriate schema is selected and used by the system. Examples of different catalog item are Designs, Models, relationships. For designs compatibility only requires model, for Model compatability requires Registrant, version and name",
