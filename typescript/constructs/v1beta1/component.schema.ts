@@ -1,0 +1,158 @@
+// Generated from constructs/v1beta1/component.json
+// This file exports the original JSON schema
+
+const schema = {
+  "$id": "https://schemas.meshery.io/component.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+      "$ref": "../core.json#/definitions/uuid",
+      "x-order": 1
+    },
+    "schemaVersion": {
+      "$ref": "../core.json#/definitions/versionString",
+      "x-order": 2,
+      "description": "Specifies the version of the schema to which the component definition conforms."
+    },
+    "version": {
+      "$ref": "../core.json#/definitions/semverString",
+      "x-order": 3,
+      "description": "Version of the component definition.",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "displayName": {
+      "$ref": "../core.json#/definitions/inputString",
+      "x-order": 4,
+      "description": "Name of the component in human-readible format."
+    },
+    "description": {
+      "x-order": 5,
+      "type": "string",
+      "description": "A written representation of the purpose and characteristics of the component."
+    },
+    "format": {
+      "x-order": 6,
+      "type": "string",
+      "enum": ["JSON", "CUE"],
+      "default": "JSON",
+      "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
+    },
+    "model": {
+      "$ref": "./model.json",
+      "x-order": 7,
+      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "foreignKey:ModelId;references:Id"
+      }
+    },
+    "styles": {
+      "$ref": "../core.json#/definitions/componentStyles",
+      "x-order": 8
+    },
+    "capabilities": {
+      "x-order": 9,
+      "type": "array",
+      "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+      "items": {
+        "$ref": "../v1alpha1/capability.json"
+      }
+    },
+    "status": {
+      "x-order": 10,
+      "type": "string",
+      "description": "Status of component, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+      "default": "enabled",
+      "enum": ["ignored", "enabled", "duplicate", "resolved", "open"],
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "status",
+        "json": "status"
+      }
+    },
+    "metadata": {
+      "x-order": 11,
+      "type": "object",
+      "description": "Metadata contains additional information associated with the component.",
+      "properties": {
+        "genealogy": {
+          "x-order": 1,
+          "type": "string",
+          "description": "Genealogy represents the various representational states of the component."
+        },
+        "isAnnotation": {
+          "x-order": 2,
+          "type": "boolean",
+          "description": "Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation."
+        },
+        "isNamespaced": {
+          "x-order": 3,
+          "type": "boolean",
+          "description": "Identifies whether the component is scoped to namespace or clsuter wide."
+        },
+        "published": {
+          "x-order": 4,
+          "type": "boolean",
+          "description": "'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered."
+        },
+        "instanceDetails": {
+          "x-order": 5,
+          "type": "object",
+          "description": "InstanceDetails contains information about the instance of the component."
+        },
+
+       "configurationUISchema": {
+          "x-order": 6,
+          "type": "string",
+          "description": "Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ ."
+        }
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      },
+      "additionalProperties": true
+    },
+    "configuration": {
+      "x-order": 12,
+      "description": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
+      "type": "object",
+      "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      }
+    },
+    "component": {
+      "x-order": 13,
+      "type": "object",
+      "description": "Component and it's properties.",
+      "properties": {
+        "version": {
+          "x-order": 1,
+          "type": "string",
+          "description": "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod."
+        },
+        "kind": {
+          "x-order": 2,
+          "type": "string",
+          "description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
+        },
+
+        "schema": {
+          "x-order": 3,
+          "type": "string",
+          "description": "JSON schema of the object as defined by the registrant."
+        }
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      },
+      "required": ["version", "kind", "schema"]
+    }
+  },
+  "required": ["schemaVersion", "version", "model", "component"]
+}
+
+export default schema;
