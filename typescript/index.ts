@@ -23,49 +23,46 @@ import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./const
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
-import capabilitySchema from "./constructs/v1alpha1/capability.schema";
-import catalogDataSchema from "./constructs/v1alpha1/catalog_data.schema";
-import designSchemaV1alpha2 from "./constructs/v1alpha2/design.schema";
-import relationshipSchemaV1alpha2 from "./constructs/v1alpha2/relationship.schema";
-import relationshipSchemaV1alpha3 from "./constructs/v1alpha3/relationship.schema";
-import selectorsSchemaV1alpha3 from "./constructs/v1alpha3/selectors.schema";
-import componentSchemaV1beta1 from "./constructs/v1beta1/component.schema";
-import modelSchemaV1beta1 from "./constructs/v1beta1/model.schema";
-import designSchemaV1beta1 from "./constructs/v1beta1/designs.schema";
-import connectionSchemaV1beta1 from "./constructs/v1beta1/connection.schema";
+import CapabilityV1Alpha1Schema from "./constructs/v1alpha1/CapabilitySchema";
+import CatalogDataV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
+import DesignV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
+import RelationshipV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
+import RelationshipV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
+import SelectorsV1Alpha3Schema from "./constructs/v1alpha3/SelectorsSchema";
+import ComponentV1Beta1Schema from "./constructs/v1beta1/ComponentSchema";
+import ModelV1Beta1Schema from "./constructs/v1beta1/ModelSchema";
+import DesignV1Beta1Schema from "./constructs/v1beta1/DesignsSchema";
+import ConnectionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
 
-export { core };
+export {
+  core,
+  CapabilityV1Alpha1Schema,
+  CatalogDataV1Alpha1Schema,
+  DesignV1Alpha2Schema,
+  RelationshipV1Alpha2Schema,
+  RelationshipV1Alpha3Schema,
+  SelectorsV1Alpha3Schema,
+  ComponentV1Beta1Schema,
+  ModelV1Beta1Schema,
+  DesignV1Beta1Schema,
+  ConnectionV1Beta1Schema,
+};
 
 // Contructs
 export namespace v1alpha1 {
   export type CatalogData = CatalogDataT;
   export type CatalogCaveatsAndConsiderations = CaveatsAndConsiderations;
   export type Capability = HttpsSchemasMesheryIoCapabilityJson;
-
-  export const schemas = {
-    capability: capabilitySchema,
-    catalogData: catalogDataSchema,
-  };
 }
 
 export namespace v1alpha2 {
   export type Design = DesignSchema;
   export type Relationship = HttpsSchemasMesheryIoRelationshipJson;
-
-  export const schemas = {
-    design: designSchemaV1alpha2,
-    relationship: relationshipSchemaV1alpha2,
-  };
 }
 
 export namespace v1alpha3 {
   export type Relationship = V1alpha3Relationship;
   export type Selectors = V1alpha3Selectors;
-
-  export const schemas = {
-    relationship: relationshipSchemaV1alpha3,
-    selectors: selectorsSchemaV1alpha3,
-  };
 }
 
 export namespace v1beta1 {
@@ -73,13 +70,6 @@ export namespace v1beta1 {
   export type Model = HttpsSchemasMesheryIoModelJson;
   export type Design = V1beta1DesignSchema;
   export type Connection = V1beta1Connection;
-
-  export const schemas = {
-    component: componentSchemaV1beta1,
-    model: modelSchemaV1beta1,
-    design: designSchemaV1beta1,
-    connections: connectionSchemaV1beta1,
-  };
 }
 
 // OpenAPI
@@ -88,11 +78,4 @@ export namespace api {
   export type Paths = paths;
   export type Webhooks = webhooks;
 }
-
-export const schemas = {
-  v1alpha1: v1alpha1.schemas,
-  v1alpha2: v1alpha2.schemas,
-  v1alpha3: v1alpha3.schemas,
-  v1beta1: v1beta1.schemas,
-};
 
