@@ -18,47 +18,695 @@ const schema = {
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "$ref": "../core.json#/definitions/versionString",
-      "description": "Specifies the version of the schema used for the definition."
+      "description": "Specifies the version of the schema used for the definition.",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100,
+      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+      "example": [
+        "v1",
+        "v1alpha1",
+        "v2beta3",
+        "v1.custom-suffix"
+      ],
+      "x-order": 1,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "schemaVersion",
+        "json": "schemaVersion"
+      }
     },
     "version": {
-      "$ref": "../core.json#/definitions/semverString",
-      "description": "Specifies the version of the definition."
+      "description": "Specifies the version of the definition.",
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 100,
+      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "x-order": 2,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "version",
+        "json": "version"
+      }
     },
     "kind": {
-      "$ref": "../core.json#/definitions/inputString",
       "description": "Kind of the Relationship.",
       "enum": [
         "hierarchical",
         "edge",
         "sibling"
-      ]
+      ],
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-order": 3,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "kind",
+        "json": "kind"
+      }
     },
     "type": {
-      "$ref": "../core.json#/definitions/inputString",
-      "description": "Classification of relationships. Used to group relationships similar in nature."
+      "description": "Classification of relationships. Used to group relationships similar in nature.",
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-order": 4,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "type",
+        "json": "type"
+      }
     },
     "subType": {
-      "$ref": "../core.json#/definitions/inputString",
-      "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
+      "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship.",
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-order": 5,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "subType",
+        "json": "subType"
+      }
     },
     "evaluationQuery": {
-      "$ref": "../core.json#/definitions/inputString",
-      "description": "Determines the policy rule to be used for the evaluation of the relationship."
+      "description": "Determines the policy rule to be used for the evaluation of the relationship.",
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-order": 6,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "evaluationQuery",
+        "json": "evaluationQuery"
+      }
     },
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
       "properties": {
         "description": {
-          "$ref": "../core.json#/definitions/inputString",
-          "description": "Description of the Relationship."
+          "description": "Description of the Relationship.",
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+          "x-order": 1,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "description",
+            "json": "description"
+          }
         }
-      }
+      },
+      "x-order": 7
     },
     "model": {
-      "$ref": "../v1beta1/model.json",
-      "description": "Model of the Relationship."
+      "description": "Model of the Relationship.",
+      "$id": "https://schemas.meshery.io/model.json",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+          "x-order": 1,
+          "type": "string",
+          "format": "uuid",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          },
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "id",
+            "json": "id"
+          }
+        },
+        "schemaVersion": {
+          "description": "Specifies the version of the schema used for the definition.",
+          "x-order": 2,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "schemaVersion",
+            "json": "schemaVersion"
+          },
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+          "example": [
+            "v1",
+            "v1alpha1",
+            "v2beta3",
+            "v1.custom-suffix"
+          ]
+        },
+        "version": {
+          "description": "Version of the model definition.",
+          "type": "string",
+          "x-order": 3,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "version",
+            "json": "version"
+          },
+          "minLength": 5,
+          "maxLength": 100,
+          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+        },
+        "name": {
+          "description": "The unique name for the model within the scope of a registrant.",
+          "x-order": 4,
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "name",
+            "json": "name"
+          }
+        },
+        "displayName": {
+          "description": "Human-readable name for the model.",
+          "minLength": 1,
+          "maxLength": 100,
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "x-order": 5,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "displayName",
+            "json": "displayName"
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the model.",
+          "minLength": 1,
+          "maxLength": 1000,
+          "x-order": 6,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "description",
+            "json": "description"
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+          "enum": [
+            "ignored",
+            "enabled",
+            "duplicate"
+          ],
+          "x-order": 7,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "status",
+            "json": "status"
+          }
+        },
+        "registrant": {
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "registrant",
+            "json": "registrant",
+            "gorm": "foreignKey:RegistrantId;references:Id"
+          },
+          "x-order": 8,
+          "$id": "https://schemas.meshery.io/component.json",
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+          "additionalProperties": false,
+          "type": "object",
+          "required": [
+            "kind",
+            "type",
+            "status"
+          ],
+          "properties": {
+            "id": {
+              "x-order": 1,
+              "description": "ID",
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "id",
+                "json": "id"
+              }
+            },
+            "name": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "name",
+                "yaml": "name",
+                "json": "name"
+              },
+              "x-order": 2,
+              "type": "string",
+              "description": "Connection Name"
+            },
+            "credential_id": {
+              "x-go-name": "CredentialId",
+              "x-oapi-codegen-extra-tags": {
+                "db": "credential_id",
+                "yaml": "credential_id",
+                "json": "credential_id"
+              },
+              "x-order": 3,
+              "description": "Credential ID",
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "type": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "type",
+                "yaml": "type",
+                "json": "type"
+              },
+              "x-order": 4,
+              "type": "string",
+              "description": "Connection Type"
+            },
+            "sub_type": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "sub_type",
+                "yaml": "sub_type",
+                "json": "sub_type"
+              },
+              "x-order": 5,
+              "type": "string",
+              "description": "Connection Subtype"
+            },
+            "kind": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "kind",
+                "yaml": "kind",
+                "json": "kind"
+              },
+              "x-order": 6,
+              "type": "string",
+              "description": "Connection Kind"
+            },
+            "metadata": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "metadata",
+                "yaml": "metadata",
+                "json": "metadata"
+              },
+              "x-order": 7,
+              "type": "object"
+            },
+            "status": {
+              "x-oapi-codegen-extra-tags": {
+                "db": "status",
+                "yaml": "status",
+                "json": "status"
+              },
+              "x-order": 8,
+              "description": "Connection Status",
+              "type": "string",
+              "enum": [
+                "discovered",
+                "registered",
+                "connected",
+                "ignored",
+                "maintenance",
+                "disconnected",
+                "deleted",
+                "not found"
+              ]
+            },
+            "user_id": {
+              "x-go-name": "UserID",
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "user_id",
+                "json": "user_id"
+              },
+              "x-order": 9,
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "created_at": {
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "created_at",
+                "json": "created_at"
+              },
+              "x-order": 10,
+              "type": "string",
+              "format": "date-time",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "updated_at": {
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "updated_at",
+                "json": "updated_at"
+              },
+              "x-order": 11,
+              "type": "string",
+              "format": "date-time",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "deleted_at": {
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "deleted_at",
+                "json": "deleted_at"
+              },
+              "x-order": 12,
+              "type": "string",
+              "format": "date-time",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        },
+        "category": {
+          "type": "object",
+          "description": "Category of the model.",
+          "properties": {
+            "id": {
+              "x-order": 1,
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "id",
+                "json": "id"
+              }
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "name",
+                "json": "name"
+              },
+              "x-order": 2
+            },
+            "metadata": {
+              "type": "object",
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "metadata",
+                "json": "metadata"
+              },
+              "x-order": 3
+            }
+          },
+          "x-order": 9,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "category",
+            "json": "category",
+            "gorm": "foreignKey:CategoryId;references:Id"
+          }
+        },
+        "subCategory": {
+          "type": "string",
+          "description": "Sub-category of the model.",
+          "minLength": 1,
+          "maxLength": 100,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "subCategory",
+            "json": "subCategory"
+          },
+          "x-order": 10
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Metadata containing additional information associated with the model.",
+          "properties": {
+            "capabilities": {
+              "type": "array",
+              "description": "Capabilities associated with the model",
+              "items": {
+                "$id": "https://schemas.meshery.io/capability.json",
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+                "additionalProperties": false,
+                "type": "object",
+                "required": [
+                  "schemaVersion",
+                  "version",
+                  "displayName",
+                  "kind",
+                  "type",
+                  "entityState",
+                  "status"
+                ],
+                "x-oapi-codegen-extra-tags": {
+                  "gorm": "type:bytes;serializer:json"
+                },
+                "properties": {
+                  "schemaVersion": {
+                    "description": "Specifies the version of the schema to which the capability definition conforms.",
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100,
+                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                    "example": [
+                      "v1",
+                      "v1alpha1",
+                      "v2beta3",
+                      "v1.custom-suffix"
+                    ],
+                    "x-order": 1,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "schemaVersion",
+                      "json": "schemaVersion"
+                    }
+                  },
+                  "version": {
+                    "description": "Version of the capability definition.",
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 100,
+                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                    "x-order": 2,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "version",
+                      "json": "version"
+                    }
+                  },
+                  "displayName": {
+                    "description": "Name of the capability in human-readible format.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                    "x-order": 3,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "displayName",
+                      "json": "displayName"
+                    }
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A written representation of the purpose and characteristics of the capability.",
+                    "x-order": 4,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "description",
+                      "json": "description"
+                    }
+                  },
+                  "kind": {
+                    "description": "Top-level categorization of the capability",
+                    "additionalProperties": false,
+                    "anyOf": [
+                      {
+                        "const": "action",
+                        "description": "For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component."
+                      },
+                      {
+                        "const": "mutate",
+                        "description": "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
+                      },
+                      {
+                        "const": "view",
+                        "description": "For capabilities related to viewing an entity. Example: the ability to view a components configuration."
+                      },
+                      {
+                        "const": "interaction",
+                        "description": "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
+                      }
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                    "x-order": 5,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "kind",
+                      "json": "kind"
+                    }
+                  },
+                  "type": {
+                    "description": "Classification of capabilities. Used to group capabilities similar in nature.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                    "x-order": 6,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "type",
+                      "json": "type"
+                    }
+                  },
+                  "subType": {
+                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                    "x-order": 7,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "subType",
+                      "json": "subType"
+                    }
+                  },
+                  "key": {
+                    "description": "Key that backs the capability.",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                    "x-order": 8,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "key",
+                      "json": "key"
+                    }
+                  },
+                  "entityState": {
+                    "description": "State of the entity in which the capability is applicable.",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "declaration",
+                        "instance"
+                      ],
+                      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                      "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "entityState",
+                        "json": "entityState"
+                      }
+                    },
+                    "x-order": 9
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Status of the capability",
+                    "default": "enabled",
+                    "enum": [
+                      "enabled",
+                      "disabled"
+                    ],
+                    "x-order": 10,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "status",
+                      "json": "status"
+                    }
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Metadata contains additional information associated with the capability. Extension point.",
+                    "additionalProperties": true,
+                    "x-order": 11,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "metadata",
+                      "json": "metadata"
+                    }
+                  }
+                }
+              },
+              "x-order": 1
+            },
+            "isAnnotation": {
+              "type": "boolean",
+              "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations.",
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "isAnnotation",
+                "json": "isAnnotation"
+              },
+              "x-order": 2
+            },
+            "primaryColor": {
+              "type": "string",
+              "description": "Primary color associated with the model.",
+              "minLength": 1,
+              "maxLength": 50,
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "primaryColor",
+                "json": "primaryColor"
+              },
+              "x-order": 3
+            },
+            "secondaryColor": {
+              "type": "string",
+              "description": "Secondary color associated with the model.",
+              "minLength": 1,
+              "maxLength": 50,
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "secondaryColor",
+                "json": "secondaryColor"
+              },
+              "x-order": 4
+            },
+            "svgWhite": {
+              "type": "string",
+              "description": "SVG representation of the model in white color.",
+              "minLength": 1,
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "svgWhite",
+                "json": "svgWhite"
+              },
+              "x-order": 5
+            },
+            "svgColor": {
+              "type": "string",
+              "description": "SVG representation of the model in colored format.",
+              "minLength": 1,
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "svgColor",
+                "json": "svgColor"
+              },
+              "x-order": 6
+            },
+            "svgComplete": {
+              "type": "string",
+              "description": "SVG representation of the complete model.",
+              "minLength": 1,
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "svgComplete",
+                "json": "svgComplete"
+              },
+              "x-order": 7
+            }
+          },
+          "x-oapi-codegen-extra-tags": {
+            "gorm": "type:bytes;serializer:json"
+          },
+          "x-order": 11,
+          "additionalProperties": true
+        },
+        "model": {
+          "type": "object",
+          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+          "required": [
+            "version"
+          ],
+          "properties": {
+            "version": {
+              "description": "Version of the model as defined by the registrant.",
+              "x-oapi-codegen-extra-tags": {
+                "yaml": "version",
+                "json": "version"
+              },
+              "x-order": 1,
+              "type": "string",
+              "minLength": 5,
+              "maxLength": 100,
+              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+            }
+          },
+          "x-oapi-codegen-extra-tags": {
+            "gorm": "type:bytes;serializer:json"
+          },
+          "x-order": 12
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "registrant",
+        "category"
+      ],
+      "x-order": 8
     },
     "selectors": {
       "type": "array",
@@ -81,12 +729,1390 @@ const schema = {
             ],
             "properties": {
               "from": {
-                "$ref": "./selectors.json#/from"
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "x-order": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "kind",
+                        "json": "kind"
+                      }
+                    },
+                    "model": {
+                      "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models",
+                      "$id": "https://schemas.meshery.io/model.json",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "additionalProperties": false,
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+                          "x-order": 1,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          }
+                        },
+                        "schemaVersion": {
+                          "description": "Specifies the version of the schema used for the definition.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "schemaVersion",
+                            "json": "schemaVersion"
+                          },
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 100,
+                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "example": [
+                            "v1",
+                            "v1alpha1",
+                            "v2beta3",
+                            "v1.custom-suffix"
+                          ]
+                        },
+                        "version": {
+                          "description": "Version of the model definition.",
+                          "type": "string",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "version",
+                            "json": "version"
+                          },
+                          "minLength": 5,
+                          "maxLength": 100,
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                        },
+                        "name": {
+                          "description": "The unique name for the model within the scope of a registrant.",
+                          "x-order": 4,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "name",
+                            "json": "name"
+                          }
+                        },
+                        "displayName": {
+                          "description": "Human-readable name for the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "displayName",
+                            "json": "displayName"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the model.",
+                          "minLength": 1,
+                          "maxLength": 1000,
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "description",
+                            "json": "description"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+                          "enum": [
+                            "ignored",
+                            "enabled",
+                            "duplicate"
+                          ],
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "status",
+                            "json": "status"
+                          }
+                        },
+                        "registrant": {
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrant",
+                            "json": "registrant",
+                            "gorm": "foreignKey:RegistrantId;references:Id"
+                          },
+                          "x-order": 8,
+                          "$id": "https://schemas.meshery.io/component.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": [
+                            "kind",
+                            "type",
+                            "status"
+                          ],
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "description": "ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "name",
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2,
+                              "type": "string",
+                              "description": "Connection Name"
+                            },
+                            "credential_id": {
+                              "x-go-name": "CredentialId",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "credential_id",
+                                "yaml": "credential_id",
+                                "json": "credential_id"
+                              },
+                              "x-order": 3,
+                              "description": "Credential ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "type",
+                                "yaml": "type",
+                                "json": "type"
+                              },
+                              "x-order": 4,
+                              "type": "string",
+                              "description": "Connection Type"
+                            },
+                            "sub_type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "sub_type",
+                                "yaml": "sub_type",
+                                "json": "sub_type"
+                              },
+                              "x-order": 5,
+                              "type": "string",
+                              "description": "Connection Subtype"
+                            },
+                            "kind": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "kind",
+                                "yaml": "kind",
+                                "json": "kind"
+                              },
+                              "x-order": 6,
+                              "type": "string",
+                              "description": "Connection Kind"
+                            },
+                            "metadata": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "metadata",
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 7,
+                              "type": "object"
+                            },
+                            "status": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "status",
+                                "yaml": "status",
+                                "json": "status"
+                              },
+                              "x-order": 8,
+                              "description": "Connection Status",
+                              "type": "string",
+                              "enum": [
+                                "discovered",
+                                "registered",
+                                "connected",
+                                "ignored",
+                                "maintenance",
+                                "disconnected",
+                                "deleted",
+                                "not found"
+                              ]
+                            },
+                            "user_id": {
+                              "x-go-name": "UserID",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "user_id",
+                                "json": "user_id"
+                              },
+                              "x-order": 9,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "created_at",
+                                "json": "created_at"
+                              },
+                              "x-order": 10,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "updated_at",
+                                "json": "updated_at"
+                              },
+                              "x-order": 11,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "deleted_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "deleted_at",
+                                "json": "deleted_at"
+                              },
+                              "x-order": 12,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            }
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "description": "Category of the model.",
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 3
+                            }
+                          },
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          }
+                        },
+                        "subCategory": {
+                          "type": "string",
+                          "description": "Sub-category of the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "subCategory",
+                            "json": "subCategory"
+                          },
+                          "x-order": 10
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Metadata containing additional information associated with the model.",
+                          "properties": {
+                            "capabilities": {
+                              "type": "array",
+                              "description": "Capabilities associated with the model",
+                              "items": {
+                                "$id": "https://schemas.meshery.io/capability.json",
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                  "schemaVersion",
+                                  "version",
+                                  "displayName",
+                                  "kind",
+                                  "type",
+                                  "entityState",
+                                  "status"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json"
+                                },
+                                "properties": {
+                                  "schemaVersion": {
+                                    "description": "Specifies the version of the schema to which the capability definition conforms.",
+                                    "type": "string",
+                                    "minLength": 2,
+                                    "maxLength": 100,
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "example": [
+                                      "v1",
+                                      "v1alpha1",
+                                      "v2beta3",
+                                      "v1.custom-suffix"
+                                    ],
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "schemaVersion",
+                                      "json": "schemaVersion"
+                                    }
+                                  },
+                                  "version": {
+                                    "description": "Version of the capability definition.",
+                                    "type": "string",
+                                    "minLength": 5,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "version",
+                                      "json": "version"
+                                    }
+                                  },
+                                  "displayName": {
+                                    "description": "Name of the capability in human-readible format.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "displayName",
+                                      "json": "displayName"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "A written representation of the purpose and characteristics of the capability.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "description",
+                                      "json": "description"
+                                    }
+                                  },
+                                  "kind": {
+                                    "description": "Top-level categorization of the capability",
+                                    "additionalProperties": false,
+                                    "anyOf": [
+                                      {
+                                        "const": "action",
+                                        "description": "For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component."
+                                      },
+                                      {
+                                        "const": "mutate",
+                                        "description": "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
+                                      },
+                                      {
+                                        "const": "view",
+                                        "description": "For capabilities related to viewing an entity. Example: the ability to view a components configuration."
+                                      },
+                                      {
+                                        "const": "interaction",
+                                        "description": "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
+                                      }
+                                    ],
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "kind",
+                                      "json": "kind"
+                                    }
+                                  },
+                                  "type": {
+                                    "description": "Classification of capabilities. Used to group capabilities similar in nature.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "type",
+                                      "json": "type"
+                                    }
+                                  },
+                                  "subType": {
+                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "subType",
+                                      "json": "subType"
+                                    }
+                                  },
+                                  "key": {
+                                    "description": "Key that backs the capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "key",
+                                      "json": "key"
+                                    }
+                                  },
+                                  "entityState": {
+                                    "description": "State of the entity in which the capability is applicable.",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "declaration",
+                                        "instance"
+                                      ],
+                                      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                      "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "yaml": "entityState",
+                                        "json": "entityState"
+                                      }
+                                    },
+                                    "x-order": 9
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "description": "Status of the capability",
+                                    "default": "enabled",
+                                    "enum": [
+                                      "enabled",
+                                      "disabled"
+                                    ],
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "status",
+                                      "json": "status"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "description": "Metadata contains additional information associated with the capability. Extension point.",
+                                    "additionalProperties": true,
+                                    "x-order": 11,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "metadata",
+                                      "json": "metadata"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-order": 1
+                            },
+                            "isAnnotation": {
+                              "type": "boolean",
+                              "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "isAnnotation",
+                                "json": "isAnnotation"
+                              },
+                              "x-order": 2
+                            },
+                            "primaryColor": {
+                              "type": "string",
+                              "description": "Primary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "primaryColor",
+                                "json": "primaryColor"
+                              },
+                              "x-order": 3
+                            },
+                            "secondaryColor": {
+                              "type": "string",
+                              "description": "Secondary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "secondaryColor",
+                                "json": "secondaryColor"
+                              },
+                              "x-order": 4
+                            },
+                            "svgWhite": {
+                              "type": "string",
+                              "description": "SVG representation of the model in white color.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgWhite",
+                                "json": "svgWhite"
+                              },
+                              "x-order": 5
+                            },
+                            "svgColor": {
+                              "type": "string",
+                              "description": "SVG representation of the model in colored format.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgColor",
+                                "json": "svgColor"
+                              },
+                              "x-order": 6
+                            },
+                            "svgComplete": {
+                              "type": "string",
+                              "description": "SVG representation of the complete model.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgComplete",
+                                "json": "svgComplete"
+                              },
+                              "x-order": 7
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 11,
+                          "additionalProperties": true
+                        },
+                        "model": {
+                          "type": "object",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "required": [
+                            "version"
+                          ],
+                          "properties": {
+                            "version": {
+                              "description": "Version of the model as defined by the registrant.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "version",
+                                "json": "version"
+                              },
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 12
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "version",
+                        "registrant",
+                        "category"
+                      ],
+                      "x-order": 2
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 100,
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "x-order": 3,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "version",
+                        "json": "version"
+                      }
+                    },
+                    "match": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "self": {
+                          "description": "Defines paths which should be matched with 'kind'.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "self",
+                              "json": "self"
+                            }
+                          },
+                          "x-order": 1
+                        },
+                        "kind": {
+                          "description": "Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "kind",
+                              "json": "kind"
+                            }
+                          },
+                          "x-order": 2
+                        }
+                      },
+                      "x-order": 4
+                    },
+                    "patch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "patchStrategy": {
+                          "type": "string",
+                          "enum": [
+                            "replace"
+                          ],
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "patchStrategy",
+                            "json": "patchStrategy"
+                          }
+                        },
+                        "mutatorRef": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "mutatorRef",
+                              "json": "mutatorRef"
+                            }
+                          },
+                          "description": "JSON ref to value from where patch should be applied.",
+                          "x-order": 2
+                        }
+                      },
+                      "x-order": 5
+                    }
+                  },
+                  "description": "Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning."
+                },
+                "x-order": 1
               },
               "to": {
-                "$ref": "./selectors.json#/to"
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "x-order": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "kind",
+                        "json": "kind"
+                      }
+                    },
+                    "model": {
+                      "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models",
+                      "$id": "https://schemas.meshery.io/model.json",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "additionalProperties": false,
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+                          "x-order": 1,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          }
+                        },
+                        "schemaVersion": {
+                          "description": "Specifies the version of the schema used for the definition.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "schemaVersion",
+                            "json": "schemaVersion"
+                          },
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 100,
+                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "example": [
+                            "v1",
+                            "v1alpha1",
+                            "v2beta3",
+                            "v1.custom-suffix"
+                          ]
+                        },
+                        "version": {
+                          "description": "Version of the model definition.",
+                          "type": "string",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "version",
+                            "json": "version"
+                          },
+                          "minLength": 5,
+                          "maxLength": 100,
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                        },
+                        "name": {
+                          "description": "The unique name for the model within the scope of a registrant.",
+                          "x-order": 4,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "name",
+                            "json": "name"
+                          }
+                        },
+                        "displayName": {
+                          "description": "Human-readable name for the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "displayName",
+                            "json": "displayName"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the model.",
+                          "minLength": 1,
+                          "maxLength": 1000,
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "description",
+                            "json": "description"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+                          "enum": [
+                            "ignored",
+                            "enabled",
+                            "duplicate"
+                          ],
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "status",
+                            "json": "status"
+                          }
+                        },
+                        "registrant": {
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrant",
+                            "json": "registrant",
+                            "gorm": "foreignKey:RegistrantId;references:Id"
+                          },
+                          "x-order": 8,
+                          "$id": "https://schemas.meshery.io/component.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": [
+                            "kind",
+                            "type",
+                            "status"
+                          ],
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "description": "ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "name",
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2,
+                              "type": "string",
+                              "description": "Connection Name"
+                            },
+                            "credential_id": {
+                              "x-go-name": "CredentialId",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "credential_id",
+                                "yaml": "credential_id",
+                                "json": "credential_id"
+                              },
+                              "x-order": 3,
+                              "description": "Credential ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "type",
+                                "yaml": "type",
+                                "json": "type"
+                              },
+                              "x-order": 4,
+                              "type": "string",
+                              "description": "Connection Type"
+                            },
+                            "sub_type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "sub_type",
+                                "yaml": "sub_type",
+                                "json": "sub_type"
+                              },
+                              "x-order": 5,
+                              "type": "string",
+                              "description": "Connection Subtype"
+                            },
+                            "kind": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "kind",
+                                "yaml": "kind",
+                                "json": "kind"
+                              },
+                              "x-order": 6,
+                              "type": "string",
+                              "description": "Connection Kind"
+                            },
+                            "metadata": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "metadata",
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 7,
+                              "type": "object"
+                            },
+                            "status": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "status",
+                                "yaml": "status",
+                                "json": "status"
+                              },
+                              "x-order": 8,
+                              "description": "Connection Status",
+                              "type": "string",
+                              "enum": [
+                                "discovered",
+                                "registered",
+                                "connected",
+                                "ignored",
+                                "maintenance",
+                                "disconnected",
+                                "deleted",
+                                "not found"
+                              ]
+                            },
+                            "user_id": {
+                              "x-go-name": "UserID",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "user_id",
+                                "json": "user_id"
+                              },
+                              "x-order": 9,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "created_at",
+                                "json": "created_at"
+                              },
+                              "x-order": 10,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "updated_at",
+                                "json": "updated_at"
+                              },
+                              "x-order": 11,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "deleted_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "deleted_at",
+                                "json": "deleted_at"
+                              },
+                              "x-order": 12,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            }
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "description": "Category of the model.",
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 3
+                            }
+                          },
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          }
+                        },
+                        "subCategory": {
+                          "type": "string",
+                          "description": "Sub-category of the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "subCategory",
+                            "json": "subCategory"
+                          },
+                          "x-order": 10
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Metadata containing additional information associated with the model.",
+                          "properties": {
+                            "capabilities": {
+                              "type": "array",
+                              "description": "Capabilities associated with the model",
+                              "items": {
+                                "$id": "https://schemas.meshery.io/capability.json",
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                  "schemaVersion",
+                                  "version",
+                                  "displayName",
+                                  "kind",
+                                  "type",
+                                  "entityState",
+                                  "status"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json"
+                                },
+                                "properties": {
+                                  "schemaVersion": {
+                                    "description": "Specifies the version of the schema to which the capability definition conforms.",
+                                    "type": "string",
+                                    "minLength": 2,
+                                    "maxLength": 100,
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "example": [
+                                      "v1",
+                                      "v1alpha1",
+                                      "v2beta3",
+                                      "v1.custom-suffix"
+                                    ],
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "schemaVersion",
+                                      "json": "schemaVersion"
+                                    }
+                                  },
+                                  "version": {
+                                    "description": "Version of the capability definition.",
+                                    "type": "string",
+                                    "minLength": 5,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "version",
+                                      "json": "version"
+                                    }
+                                  },
+                                  "displayName": {
+                                    "description": "Name of the capability in human-readible format.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "displayName",
+                                      "json": "displayName"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "A written representation of the purpose and characteristics of the capability.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "description",
+                                      "json": "description"
+                                    }
+                                  },
+                                  "kind": {
+                                    "description": "Top-level categorization of the capability",
+                                    "additionalProperties": false,
+                                    "anyOf": [
+                                      {
+                                        "const": "action",
+                                        "description": "For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component."
+                                      },
+                                      {
+                                        "const": "mutate",
+                                        "description": "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
+                                      },
+                                      {
+                                        "const": "view",
+                                        "description": "For capabilities related to viewing an entity. Example: the ability to view a components configuration."
+                                      },
+                                      {
+                                        "const": "interaction",
+                                        "description": "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
+                                      }
+                                    ],
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "kind",
+                                      "json": "kind"
+                                    }
+                                  },
+                                  "type": {
+                                    "description": "Classification of capabilities. Used to group capabilities similar in nature.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "type",
+                                      "json": "type"
+                                    }
+                                  },
+                                  "subType": {
+                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "subType",
+                                      "json": "subType"
+                                    }
+                                  },
+                                  "key": {
+                                    "description": "Key that backs the capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "key",
+                                      "json": "key"
+                                    }
+                                  },
+                                  "entityState": {
+                                    "description": "State of the entity in which the capability is applicable.",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "declaration",
+                                        "instance"
+                                      ],
+                                      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                      "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "yaml": "entityState",
+                                        "json": "entityState"
+                                      }
+                                    },
+                                    "x-order": 9
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "description": "Status of the capability",
+                                    "default": "enabled",
+                                    "enum": [
+                                      "enabled",
+                                      "disabled"
+                                    ],
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "status",
+                                      "json": "status"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "description": "Metadata contains additional information associated with the capability. Extension point.",
+                                    "additionalProperties": true,
+                                    "x-order": 11,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "metadata",
+                                      "json": "metadata"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-order": 1
+                            },
+                            "isAnnotation": {
+                              "type": "boolean",
+                              "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "isAnnotation",
+                                "json": "isAnnotation"
+                              },
+                              "x-order": 2
+                            },
+                            "primaryColor": {
+                              "type": "string",
+                              "description": "Primary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "primaryColor",
+                                "json": "primaryColor"
+                              },
+                              "x-order": 3
+                            },
+                            "secondaryColor": {
+                              "type": "string",
+                              "description": "Secondary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "secondaryColor",
+                                "json": "secondaryColor"
+                              },
+                              "x-order": 4
+                            },
+                            "svgWhite": {
+                              "type": "string",
+                              "description": "SVG representation of the model in white color.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgWhite",
+                                "json": "svgWhite"
+                              },
+                              "x-order": 5
+                            },
+                            "svgColor": {
+                              "type": "string",
+                              "description": "SVG representation of the model in colored format.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgColor",
+                                "json": "svgColor"
+                              },
+                              "x-order": 6
+                            },
+                            "svgComplete": {
+                              "type": "string",
+                              "description": "SVG representation of the complete model.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgComplete",
+                                "json": "svgComplete"
+                              },
+                              "x-order": 7
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 11,
+                          "additionalProperties": true
+                        },
+                        "model": {
+                          "type": "object",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "required": [
+                            "version"
+                          ],
+                          "properties": {
+                            "version": {
+                              "description": "Version of the model as defined by the registrant.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "version",
+                                "json": "version"
+                              },
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 12
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "version",
+                        "registrant",
+                        "category"
+                      ],
+                      "x-order": 2
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 100,
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "x-order": 3,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "version",
+                        "json": "version"
+                      }
+                    },
+                    "match": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "self": {
+                          "description": "Defines paths which should be matched with 'kind'.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "self",
+                              "json": "self"
+                            }
+                          },
+                          "x-order": 1
+                        },
+                        "kind": {
+                          "description": "Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "kind",
+                              "json": "kind"
+                            }
+                          },
+                          "x-order": 2
+                        }
+                      },
+                      "x-order": 4
+                    },
+                    "patch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "patchStrategy": {
+                          "type": "string",
+                          "enum": [
+                            "replace"
+                          ],
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "patchStrategy",
+                            "json": "patchStrategy"
+                          }
+                        },
+                        "mutatedRef": {
+                          "type": "string",
+                          "description": "JSON ref to value that should be patched.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "mutatedRef",
+                            "json": "mutatedRef"
+                          }
+                        }
+                      },
+                      "x-order": 5
+                    }
+                  },
+                  "description": "Optional fields that are a part of the `to` selector. Absence of a field has an implied * meaning."
+                },
+                "x-order": 2
               }
-            }
+            },
+            "x-order": 1
           },
           "allow": {
             "type": "object",
@@ -97,15 +2123,1394 @@ const schema = {
             ],
             "properties": {
               "from": {
-                "$ref": "./selectors.json#/from"
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "x-order": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "kind",
+                        "json": "kind"
+                      }
+                    },
+                    "model": {
+                      "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models",
+                      "$id": "https://schemas.meshery.io/model.json",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "additionalProperties": false,
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+                          "x-order": 1,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          }
+                        },
+                        "schemaVersion": {
+                          "description": "Specifies the version of the schema used for the definition.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "schemaVersion",
+                            "json": "schemaVersion"
+                          },
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 100,
+                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "example": [
+                            "v1",
+                            "v1alpha1",
+                            "v2beta3",
+                            "v1.custom-suffix"
+                          ]
+                        },
+                        "version": {
+                          "description": "Version of the model definition.",
+                          "type": "string",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "version",
+                            "json": "version"
+                          },
+                          "minLength": 5,
+                          "maxLength": 100,
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                        },
+                        "name": {
+                          "description": "The unique name for the model within the scope of a registrant.",
+                          "x-order": 4,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "name",
+                            "json": "name"
+                          }
+                        },
+                        "displayName": {
+                          "description": "Human-readable name for the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "displayName",
+                            "json": "displayName"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the model.",
+                          "minLength": 1,
+                          "maxLength": 1000,
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "description",
+                            "json": "description"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+                          "enum": [
+                            "ignored",
+                            "enabled",
+                            "duplicate"
+                          ],
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "status",
+                            "json": "status"
+                          }
+                        },
+                        "registrant": {
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrant",
+                            "json": "registrant",
+                            "gorm": "foreignKey:RegistrantId;references:Id"
+                          },
+                          "x-order": 8,
+                          "$id": "https://schemas.meshery.io/component.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": [
+                            "kind",
+                            "type",
+                            "status"
+                          ],
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "description": "ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "name",
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2,
+                              "type": "string",
+                              "description": "Connection Name"
+                            },
+                            "credential_id": {
+                              "x-go-name": "CredentialId",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "credential_id",
+                                "yaml": "credential_id",
+                                "json": "credential_id"
+                              },
+                              "x-order": 3,
+                              "description": "Credential ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "type",
+                                "yaml": "type",
+                                "json": "type"
+                              },
+                              "x-order": 4,
+                              "type": "string",
+                              "description": "Connection Type"
+                            },
+                            "sub_type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "sub_type",
+                                "yaml": "sub_type",
+                                "json": "sub_type"
+                              },
+                              "x-order": 5,
+                              "type": "string",
+                              "description": "Connection Subtype"
+                            },
+                            "kind": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "kind",
+                                "yaml": "kind",
+                                "json": "kind"
+                              },
+                              "x-order": 6,
+                              "type": "string",
+                              "description": "Connection Kind"
+                            },
+                            "metadata": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "metadata",
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 7,
+                              "type": "object"
+                            },
+                            "status": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "status",
+                                "yaml": "status",
+                                "json": "status"
+                              },
+                              "x-order": 8,
+                              "description": "Connection Status",
+                              "type": "string",
+                              "enum": [
+                                "discovered",
+                                "registered",
+                                "connected",
+                                "ignored",
+                                "maintenance",
+                                "disconnected",
+                                "deleted",
+                                "not found"
+                              ]
+                            },
+                            "user_id": {
+                              "x-go-name": "UserID",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "user_id",
+                                "json": "user_id"
+                              },
+                              "x-order": 9,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "created_at",
+                                "json": "created_at"
+                              },
+                              "x-order": 10,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "updated_at",
+                                "json": "updated_at"
+                              },
+                              "x-order": 11,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "deleted_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "deleted_at",
+                                "json": "deleted_at"
+                              },
+                              "x-order": 12,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            }
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "description": "Category of the model.",
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 3
+                            }
+                          },
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          }
+                        },
+                        "subCategory": {
+                          "type": "string",
+                          "description": "Sub-category of the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "subCategory",
+                            "json": "subCategory"
+                          },
+                          "x-order": 10
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Metadata containing additional information associated with the model.",
+                          "properties": {
+                            "capabilities": {
+                              "type": "array",
+                              "description": "Capabilities associated with the model",
+                              "items": {
+                                "$id": "https://schemas.meshery.io/capability.json",
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                  "schemaVersion",
+                                  "version",
+                                  "displayName",
+                                  "kind",
+                                  "type",
+                                  "entityState",
+                                  "status"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json"
+                                },
+                                "properties": {
+                                  "schemaVersion": {
+                                    "description": "Specifies the version of the schema to which the capability definition conforms.",
+                                    "type": "string",
+                                    "minLength": 2,
+                                    "maxLength": 100,
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "example": [
+                                      "v1",
+                                      "v1alpha1",
+                                      "v2beta3",
+                                      "v1.custom-suffix"
+                                    ],
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "schemaVersion",
+                                      "json": "schemaVersion"
+                                    }
+                                  },
+                                  "version": {
+                                    "description": "Version of the capability definition.",
+                                    "type": "string",
+                                    "minLength": 5,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "version",
+                                      "json": "version"
+                                    }
+                                  },
+                                  "displayName": {
+                                    "description": "Name of the capability in human-readible format.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "displayName",
+                                      "json": "displayName"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "A written representation of the purpose and characteristics of the capability.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "description",
+                                      "json": "description"
+                                    }
+                                  },
+                                  "kind": {
+                                    "description": "Top-level categorization of the capability",
+                                    "additionalProperties": false,
+                                    "anyOf": [
+                                      {
+                                        "const": "action",
+                                        "description": "For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component."
+                                      },
+                                      {
+                                        "const": "mutate",
+                                        "description": "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
+                                      },
+                                      {
+                                        "const": "view",
+                                        "description": "For capabilities related to viewing an entity. Example: the ability to view a components configuration."
+                                      },
+                                      {
+                                        "const": "interaction",
+                                        "description": "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
+                                      }
+                                    ],
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "kind",
+                                      "json": "kind"
+                                    }
+                                  },
+                                  "type": {
+                                    "description": "Classification of capabilities. Used to group capabilities similar in nature.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "type",
+                                      "json": "type"
+                                    }
+                                  },
+                                  "subType": {
+                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "subType",
+                                      "json": "subType"
+                                    }
+                                  },
+                                  "key": {
+                                    "description": "Key that backs the capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "key",
+                                      "json": "key"
+                                    }
+                                  },
+                                  "entityState": {
+                                    "description": "State of the entity in which the capability is applicable.",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "declaration",
+                                        "instance"
+                                      ],
+                                      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                      "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "yaml": "entityState",
+                                        "json": "entityState"
+                                      }
+                                    },
+                                    "x-order": 9
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "description": "Status of the capability",
+                                    "default": "enabled",
+                                    "enum": [
+                                      "enabled",
+                                      "disabled"
+                                    ],
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "status",
+                                      "json": "status"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "description": "Metadata contains additional information associated with the capability. Extension point.",
+                                    "additionalProperties": true,
+                                    "x-order": 11,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "metadata",
+                                      "json": "metadata"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-order": 1
+                            },
+                            "isAnnotation": {
+                              "type": "boolean",
+                              "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "isAnnotation",
+                                "json": "isAnnotation"
+                              },
+                              "x-order": 2
+                            },
+                            "primaryColor": {
+                              "type": "string",
+                              "description": "Primary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "primaryColor",
+                                "json": "primaryColor"
+                              },
+                              "x-order": 3
+                            },
+                            "secondaryColor": {
+                              "type": "string",
+                              "description": "Secondary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "secondaryColor",
+                                "json": "secondaryColor"
+                              },
+                              "x-order": 4
+                            },
+                            "svgWhite": {
+                              "type": "string",
+                              "description": "SVG representation of the model in white color.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgWhite",
+                                "json": "svgWhite"
+                              },
+                              "x-order": 5
+                            },
+                            "svgColor": {
+                              "type": "string",
+                              "description": "SVG representation of the model in colored format.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgColor",
+                                "json": "svgColor"
+                              },
+                              "x-order": 6
+                            },
+                            "svgComplete": {
+                              "type": "string",
+                              "description": "SVG representation of the complete model.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgComplete",
+                                "json": "svgComplete"
+                              },
+                              "x-order": 7
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 11,
+                          "additionalProperties": true
+                        },
+                        "model": {
+                          "type": "object",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "required": [
+                            "version"
+                          ],
+                          "properties": {
+                            "version": {
+                              "description": "Version of the model as defined by the registrant.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "version",
+                                "json": "version"
+                              },
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 12
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "version",
+                        "registrant",
+                        "category"
+                      ],
+                      "x-order": 2
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 100,
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "x-order": 3,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "version",
+                        "json": "version"
+                      }
+                    },
+                    "match": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "self": {
+                          "description": "Defines paths which should be matched with 'kind'.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "self",
+                              "json": "self"
+                            }
+                          },
+                          "x-order": 1
+                        },
+                        "kind": {
+                          "description": "Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "kind",
+                              "json": "kind"
+                            }
+                          },
+                          "x-order": 2
+                        }
+                      },
+                      "x-order": 4
+                    },
+                    "patch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "patchStrategy": {
+                          "type": "string",
+                          "enum": [
+                            "replace"
+                          ],
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "patchStrategy",
+                            "json": "patchStrategy"
+                          }
+                        },
+                        "mutatorRef": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "mutatorRef",
+                              "json": "mutatorRef"
+                            }
+                          },
+                          "description": "JSON ref to value from where patch should be applied.",
+                          "x-order": 2
+                        }
+                      },
+                      "x-order": 5
+                    }
+                  },
+                  "description": "Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning."
+                },
+                "x-order": 1
               },
               "to": {
-                "$ref": "./selectors.json#/to"
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "x-order": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "kind",
+                        "json": "kind"
+                      }
+                    },
+                    "model": {
+                      "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models",
+                      "$id": "https://schemas.meshery.io/model.json",
+                      "$schema": "http://json-schema.org/draft-07/schema#",
+                      "additionalProperties": false,
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+                          "x-order": 1,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          }
+                        },
+                        "schemaVersion": {
+                          "description": "Specifies the version of the schema used for the definition.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "schemaVersion",
+                            "json": "schemaVersion"
+                          },
+                          "type": "string",
+                          "minLength": 2,
+                          "maxLength": 100,
+                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "example": [
+                            "v1",
+                            "v1alpha1",
+                            "v2beta3",
+                            "v1.custom-suffix"
+                          ]
+                        },
+                        "version": {
+                          "description": "Version of the model definition.",
+                          "type": "string",
+                          "x-order": 3,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "version",
+                            "json": "version"
+                          },
+                          "minLength": 5,
+                          "maxLength": 100,
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                        },
+                        "name": {
+                          "description": "The unique name for the model within the scope of a registrant.",
+                          "x-order": 4,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "name",
+                            "json": "name"
+                          }
+                        },
+                        "displayName": {
+                          "description": "Human-readable name for the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+                          "x-order": 5,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "displayName",
+                            "json": "displayName"
+                          }
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the model.",
+                          "minLength": 1,
+                          "maxLength": 1000,
+                          "x-order": 6,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "description",
+                            "json": "description"
+                          }
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
+                          "enum": [
+                            "ignored",
+                            "enabled",
+                            "duplicate"
+                          ],
+                          "x-order": 7,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "status",
+                            "json": "status"
+                          }
+                        },
+                        "registrant": {
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrant",
+                            "json": "registrant",
+                            "gorm": "foreignKey:RegistrantId;references:Id"
+                          },
+                          "x-order": 8,
+                          "$id": "https://schemas.meshery.io/component.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
+                          "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
+                          "additionalProperties": false,
+                          "type": "object",
+                          "required": [
+                            "kind",
+                            "type",
+                            "status"
+                          ],
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "description": "ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "name",
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2,
+                              "type": "string",
+                              "description": "Connection Name"
+                            },
+                            "credential_id": {
+                              "x-go-name": "CredentialId",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "credential_id",
+                                "yaml": "credential_id",
+                                "json": "credential_id"
+                              },
+                              "x-order": 3,
+                              "description": "Credential ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "type",
+                                "yaml": "type",
+                                "json": "type"
+                              },
+                              "x-order": 4,
+                              "type": "string",
+                              "description": "Connection Type"
+                            },
+                            "sub_type": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "sub_type",
+                                "yaml": "sub_type",
+                                "json": "sub_type"
+                              },
+                              "x-order": 5,
+                              "type": "string",
+                              "description": "Connection Subtype"
+                            },
+                            "kind": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "kind",
+                                "yaml": "kind",
+                                "json": "kind"
+                              },
+                              "x-order": 6,
+                              "type": "string",
+                              "description": "Connection Kind"
+                            },
+                            "metadata": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "metadata",
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 7,
+                              "type": "object"
+                            },
+                            "status": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "status",
+                                "yaml": "status",
+                                "json": "status"
+                              },
+                              "x-order": 8,
+                              "description": "Connection Status",
+                              "type": "string",
+                              "enum": [
+                                "discovered",
+                                "registered",
+                                "connected",
+                                "ignored",
+                                "maintenance",
+                                "disconnected",
+                                "deleted",
+                                "not found"
+                              ]
+                            },
+                            "user_id": {
+                              "x-go-name": "UserID",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "user_id",
+                                "json": "user_id"
+                              },
+                              "x-order": 9,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "created_at",
+                                "json": "created_at"
+                              },
+                              "x-order": 10,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "updated_at",
+                                "json": "updated_at"
+                              },
+                              "x-order": 11,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "deleted_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "deleted_at",
+                                "json": "deleted_at"
+                              },
+                              "x-order": 12,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            }
+                          }
+                        },
+                        "category": {
+                          "type": "object",
+                          "description": "Category of the model.",
+                          "properties": {
+                            "id": {
+                              "x-order": 1,
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 100,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "name",
+                                "json": "name"
+                              },
+                              "x-order": 2
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "metadata",
+                                "json": "metadata"
+                              },
+                              "x-order": 3
+                            }
+                          },
+                          "x-order": 9,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          }
+                        },
+                        "subCategory": {
+                          "type": "string",
+                          "description": "Sub-category of the model.",
+                          "minLength": 1,
+                          "maxLength": 100,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "subCategory",
+                            "json": "subCategory"
+                          },
+                          "x-order": 10
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Metadata containing additional information associated with the model.",
+                          "properties": {
+                            "capabilities": {
+                              "type": "array",
+                              "description": "Capabilities associated with the model",
+                              "items": {
+                                "$id": "https://schemas.meshery.io/capability.json",
+                                "$schema": "http://json-schema.org/draft-07/schema#",
+                                "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
+                                "additionalProperties": false,
+                                "type": "object",
+                                "required": [
+                                  "schemaVersion",
+                                  "version",
+                                  "displayName",
+                                  "kind",
+                                  "type",
+                                  "entityState",
+                                  "status"
+                                ],
+                                "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json"
+                                },
+                                "properties": {
+                                  "schemaVersion": {
+                                    "description": "Specifies the version of the schema to which the capability definition conforms.",
+                                    "type": "string",
+                                    "minLength": 2,
+                                    "maxLength": 100,
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "example": [
+                                      "v1",
+                                      "v1alpha1",
+                                      "v2beta3",
+                                      "v1.custom-suffix"
+                                    ],
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "schemaVersion",
+                                      "json": "schemaVersion"
+                                    }
+                                  },
+                                  "version": {
+                                    "description": "Version of the capability definition.",
+                                    "type": "string",
+                                    "minLength": 5,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "x-order": 2,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "version",
+                                      "json": "version"
+                                    }
+                                  },
+                                  "displayName": {
+                                    "description": "Name of the capability in human-readible format.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 3,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "displayName",
+                                      "json": "displayName"
+                                    }
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "A written representation of the purpose and characteristics of the capability.",
+                                    "x-order": 4,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "description",
+                                      "json": "description"
+                                    }
+                                  },
+                                  "kind": {
+                                    "description": "Top-level categorization of the capability",
+                                    "additionalProperties": false,
+                                    "anyOf": [
+                                      {
+                                        "const": "action",
+                                        "description": "For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component."
+                                      },
+                                      {
+                                        "const": "mutate",
+                                        "description": "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
+                                      },
+                                      {
+                                        "const": "view",
+                                        "description": "For capabilities related to viewing an entity. Example: the ability to view a components configuration."
+                                      },
+                                      {
+                                        "const": "interaction",
+                                        "description": "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
+                                      }
+                                    ],
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 5,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "kind",
+                                      "json": "kind"
+                                    }
+                                  },
+                                  "type": {
+                                    "description": "Classification of capabilities. Used to group capabilities similar in nature.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 6,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "type",
+                                      "json": "type"
+                                    }
+                                  },
+                                  "subType": {
+                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 7,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "subType",
+                                      "json": "subType"
+                                    }
+                                  },
+                                  "key": {
+                                    "description": "Key that backs the capability.",
+                                    "type": "string",
+                                    "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                    "x-order": 8,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "key",
+                                      "json": "key"
+                                    }
+                                  },
+                                  "entityState": {
+                                    "description": "State of the entity in which the capability is applicable.",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "enum": [
+                                        "declaration",
+                                        "instance"
+                                      ],
+                                      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+                                      "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "yaml": "entityState",
+                                        "json": "entityState"
+                                      }
+                                    },
+                                    "x-order": 9
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "description": "Status of the capability",
+                                    "default": "enabled",
+                                    "enum": [
+                                      "enabled",
+                                      "disabled"
+                                    ],
+                                    "x-order": 10,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "status",
+                                      "json": "status"
+                                    }
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "description": "Metadata contains additional information associated with the capability. Extension point.",
+                                    "additionalProperties": true,
+                                    "x-order": 11,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "metadata",
+                                      "json": "metadata"
+                                    }
+                                  }
+                                }
+                              },
+                              "x-order": 1
+                            },
+                            "isAnnotation": {
+                              "type": "boolean",
+                              "description": "Indicates whether the model and its entities should be treated as deployable entities or as logical representations.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "isAnnotation",
+                                "json": "isAnnotation"
+                              },
+                              "x-order": 2
+                            },
+                            "primaryColor": {
+                              "type": "string",
+                              "description": "Primary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "primaryColor",
+                                "json": "primaryColor"
+                              },
+                              "x-order": 3
+                            },
+                            "secondaryColor": {
+                              "type": "string",
+                              "description": "Secondary color associated with the model.",
+                              "minLength": 1,
+                              "maxLength": 50,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "secondaryColor",
+                                "json": "secondaryColor"
+                              },
+                              "x-order": 4
+                            },
+                            "svgWhite": {
+                              "type": "string",
+                              "description": "SVG representation of the model in white color.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgWhite",
+                                "json": "svgWhite"
+                              },
+                              "x-order": 5
+                            },
+                            "svgColor": {
+                              "type": "string",
+                              "description": "SVG representation of the model in colored format.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgColor",
+                                "json": "svgColor"
+                              },
+                              "x-order": 6
+                            },
+                            "svgComplete": {
+                              "type": "string",
+                              "description": "SVG representation of the complete model.",
+                              "minLength": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "svgComplete",
+                                "json": "svgComplete"
+                              },
+                              "x-order": 7
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 11,
+                          "additionalProperties": true
+                        },
+                        "model": {
+                          "type": "object",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "required": [
+                            "version"
+                          ],
+                          "properties": {
+                            "version": {
+                              "description": "Version of the model as defined by the registrant.",
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "version",
+                                "json": "version"
+                              },
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            }
+                          },
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 12
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "version",
+                        "registrant",
+                        "category"
+                      ],
+                      "x-order": 2
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 100,
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "x-order": 3,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "version",
+                        "json": "version"
+                      }
+                    },
+                    "match": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "self": {
+                          "description": "Defines paths which should be matched with 'kind'.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "self",
+                              "json": "self"
+                            }
+                          },
+                          "x-order": 1
+                        },
+                        "kind": {
+                          "description": "Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.",
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "kind",
+                              "json": "kind"
+                            }
+                          },
+                          "x-order": 2
+                        }
+                      },
+                      "x-order": 4
+                    },
+                    "patch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "properties": {
+                        "patchStrategy": {
+                          "type": "string",
+                          "enum": [
+                            "replace"
+                          ],
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "patchStrategy",
+                            "json": "patchStrategy"
+                          }
+                        },
+                        "mutatedRef": {
+                          "type": "string",
+                          "description": "JSON ref to value that should be patched.",
+                          "x-order": 2,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "mutatedRef",
+                            "json": "mutatedRef"
+                          }
+                        }
+                      },
+                      "x-order": 5
+                    }
+                  },
+                  "description": "Optional fields that are a part of the `to` selector. Absence of a field has an implied * meaning."
+                },
+                "x-order": 2
               }
-            }
+            },
+            "x-order": 2
           }
         }
-      }
+      },
+      "x-order": 9
     }
   }
 }
