@@ -7,17 +7,31 @@ const schema = {
   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
   "additionalProperties": false,
   "type": "object",
-  "required": ["kind", "type", "status"],
+  "required": [
+    "kind",
+    "type",
+    "status"
+  ],
   "properties": {
     "id": {
-      "$ref": "../core.json#/definitions/uuid",
       "x-order": 1,
-      "description": "ID"
+      "description": "ID",
+      "type": "string",
+      "format": "uuid",
+      "x-go-type": "uuid.UUID",
+      "x-go-type-import": {
+        "path": "github.com/gofrs/uuid"
+      },
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "id",
+        "json": "id"
+      }
     },
     "name": {
       "x-oapi-codegen-extra-tags": {
         "db": "name",
-        "yaml": "name"
+        "yaml": "name",
+        "json": "name"
       },
       "x-order": 2,
       "type": "string",
@@ -27,16 +41,23 @@ const schema = {
       "x-go-name": "CredentialId",
       "x-oapi-codegen-extra-tags": {
         "db": "credential_id",
-        "yaml": "credential_id"
+        "yaml": "credential_id",
+        "json": "credential_id"
       },
       "x-order": 3,
-      "$ref": "../core.json#/definitions/uuid",
-      "description": "Credential ID"
+      "description": "Credential ID",
+      "type": "string",
+      "format": "uuid",
+      "x-go-type": "uuid.UUID",
+      "x-go-type-import": {
+        "path": "github.com/gofrs/uuid"
+      }
     },
     "type": {
       "x-oapi-codegen-extra-tags": {
         "db": "type",
-        "yaml": "type"
+        "yaml": "type",
+        "json": "type"
       },
       "x-order": 4,
       "type": "string",
@@ -45,7 +66,8 @@ const schema = {
     "sub_type": {
       "x-oapi-codegen-extra-tags": {
         "db": "sub_type",
-        "yaml": "sub_type"
+        "yaml": "sub_type",
+        "json": "sub_type"
       },
       "x-order": 5,
       "type": "string",
@@ -54,7 +76,8 @@ const schema = {
     "kind": {
       "x-oapi-codegen-extra-tags": {
         "db": "kind",
-        "yaml": "kind"
+        "yaml": "kind",
+        "json": "kind"
       },
       "x-order": 6,
       "type": "string",
@@ -63,7 +86,8 @@ const schema = {
     "metadata": {
       "x-oapi-codegen-extra-tags": {
         "db": "metadata",
-        "yaml": "metadata"
+        "yaml": "metadata",
+        "json": "metadata"
       },
       "x-order": 7,
       "type": "object"
@@ -71,7 +95,8 @@ const schema = {
     "status": {
       "x-oapi-codegen-extra-tags": {
         "db": "status",
-        "yaml": "status"
+        "yaml": "status",
+        "json": "status"
       },
       "x-order": 8,
       "description": "Connection Status",
@@ -94,31 +119,43 @@ const schema = {
         "json": "user_id"
       },
       "x-order": 9,
-      "$ref": "../core.json#/definitions/uuid"
+      "type": "string",
+      "format": "uuid",
+      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+      "x-go-type": "uuid.UUID",
+      "x-go-type-import": {
+        "path": "github.com/gofrs/uuid"
+      }
     },
     "created_at": {
-      "$ref": "../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
         "yaml": "created_at",
         "json": "created_at"
       },
-      "x-order": 10
+      "x-order": 10,
+      "type": "string",
+      "format": "date-time",
+      "x-go-type-skip-optional-pointer": true
     },
     "updated_at": {
-      "$ref": "../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
         "yaml": "updated_at",
         "json": "updated_at"
       },
-      "x-order": 11
+      "x-order": 11,
+      "type": "string",
+      "format": "date-time",
+      "x-go-type-skip-optional-pointer": true
     },
     "deleted_at": {
-      "$ref": "../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
         "yaml": "deleted_at",
         "json": "deleted_at"
       },
-      "x-order": 12
+      "x-order": 12,
+      "type": "string",
+      "format": "date-time",
+      "x-go-type-skip-optional-pointer": true
     }
   }
 }
