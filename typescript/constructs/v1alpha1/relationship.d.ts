@@ -5,6 +5,57 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type From = {
+  kind?: string;
+  model?: string;
+  /**
+   * API version of the object
+   */
+  version?: string;
+  match?: {
+    /**
+     * Defines paths which should be matched with 'kind'.
+     */
+    self?: string[];
+    /**
+     * Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.
+     */
+    kind?: string[];
+  };
+  patch?: {
+    patchStrategy?: "replace";
+    /**
+     * JSON ref to value from where patch should be applied.
+     */
+    mutatorRef?: string[][];
+  };
+}[];
+export type To = {
+  kind?: string;
+  model?: string;
+  /**
+   * API version of the object
+   */
+  version?: string;
+  match?: {
+    /**
+     * Defines paths which should be matched with 'kind'.
+     */
+    self?: string[];
+    /**
+     * Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.
+     */
+    kind?: string[];
+  };
+  patch?: {
+    patchStrategy?: "replace";
+    /**
+     * JSON ref to value that should be patched.
+     */
+    mutatedRef?: string;
+  };
+}[];
+
 /**
  * `Relationships` define the genealogy between one or more interconnected `Components`. Just as in familial relationships, Meshery `Relationships` are represented in a variety of forms very much resembling familiar ancestral lineage, including `hierarchical` relationships such as direct parent and child relationships as well as any number of layers of indirect grandparent and grandchild relationships and branch relationships (e.g. aunt, uncle,..). Peer relationships like that of `sibling`s take on different types such as `network` and `dependency`.  Each type of `Relationship` has a `subtype`, `metadata`, `selectors` and some optional parameters.
  */
@@ -40,112 +91,16 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
      * Optional selectors used to define relationships which should not be created / is restricted.
      */
     deny?: {
-      from?: {
-        kind?: string;
-        model?: string;
-        /**
-         * API version of the object
-         */
-        version?: string;
-        match?: {
-          /**
-           * Defines paths which should be matched with 'kind'.
-           */
-          self?: string[];
-          /**
-           * Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.
-           */
-          kind?: string[];
-        };
-        patch?: {
-          patchStrategy?: "replace";
-          /**
-           * JSON ref to value from where patch should be applied.
-           */
-          mutatorRef?: string[][];
-        };
-      }[];
-      to?: {
-        kind?: string;
-        model?: string;
-        /**
-         * API version of the object
-         */
-        version?: string;
-        match?: {
-          /**
-           * Defines paths which should be matched with 'kind'.
-           */
-          self?: string[];
-          /**
-           * Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.
-           */
-          kind?: string[];
-        };
-        patch?: {
-          patchStrategy?: "replace";
-          /**
-           * JSON ref to value that should be patched.
-           */
-          mutatedRef?: string;
-        };
-      }[];
+      from?: From;
+      to?: To;
       [k: string]: unknown;
     };
     /**
      * Selectors used to define relationships which are allowed
      */
     allow?: {
-      from?: {
-        kind?: string;
-        model?: string;
-        /**
-         * API version of the object
-         */
-        version?: string;
-        match?: {
-          /**
-           * Defines paths which should be matched with 'kind'.
-           */
-          self?: string[];
-          /**
-           * Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.
-           */
-          kind?: string[];
-        };
-        patch?: {
-          patchStrategy?: "replace";
-          /**
-           * JSON ref to value from where patch should be applied.
-           */
-          mutatorRef?: string[][];
-        };
-      }[];
-      to?: {
-        kind?: string;
-        model?: string;
-        /**
-         * API version of the object
-         */
-        version?: string;
-        match?: {
-          /**
-           * Defines paths which should be matched with 'kind'.
-           */
-          self?: string[];
-          /**
-           * Optional property which defines paths which should be matched with 'self'. Here 'kind' is valid Component 'kind' belonging to the above specifed model. eg: If model is Kubernetes, valid 'kind' are 'Pod', 'Secret'. If the value for all paths of 'self' & 'kind' along with the value of all paths inside 'to.match.self' & 'to.match.kind are equal then the component with 'kind' act as an binded component. eg: ClusterRole, ClusterRoleBinding and ServiceAccount. If the paths for ClusterRole & ClusterRoleBinding and ServiceAccount & ClusterRoleBinding are equal then ClusterRoleBinding acts as an binding. Make sure the 'kind' value in 'from' and 'to' should be equal.
-           */
-          kind?: string[];
-        };
-        patch?: {
-          patchStrategy?: "replace";
-          /**
-           * JSON ref to value that should be patched.
-           */
-          mutatedRef?: string;
-        };
-      }[];
+      from?: From;
+      to?: To;
       [k: string]: unknown;
     };
   }[];

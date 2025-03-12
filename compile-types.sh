@@ -21,15 +21,6 @@ mkdir -p "$OUTPUT_DIR"
 TEMP_DIR="$OUTPUT_DIR/temp"
 mkdir -p "$TEMP_DIR"
 
-# Copy all JSON files from input directory to temporary directory (preserving directory structure)
-echo "Copying JSON files to temporary directory..."
-rsync -a --include='*/' --include='*.json' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
-
-# Run ref-resolver.js script on the temporary directory
-echo "Resolving references in JSON schemas..."
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-SCHEMA_PATH="$TEMP_DIR" node "./scripts/ref-resolver.js"
-
 # Store the original directory
 ORIGINAL_DIR=$(pwd)
 
@@ -54,14 +45,23 @@ generate_schema_export() {
   } > "$output_file"
 }
 
-# Function to process files
-process_file() {
+# Function to resolve references in JSON schemas
+resolve_references() {
+  echo "Resolving references in JSON schemas..."
+
+  # Get the directory where this script is located
+  local SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+  local RESOLVER_SCRIPT="$SCRIPT_DIR/scripts/ref-resolver.js"
+  SCHEMA_PATH="$TEMP_DIR" node "$RESOLVER_SCRIPT"
+}
+
+# Function to generate type definitions for a file
+generate_type_definition() {
   local file="$1"
   local relative_path="${file#$TEMP_DIR/}"
 
   local dir=$(dirname "$relative_path")
   local filename=$(basename "$file" .json)
-  local sanitized_filename=$(to_pascal_case_schema "$filename")
 
   # Create subdirectory in output folder if it doesn't exist
   mkdir -p "$OUTPUT_DIR/$dir"
@@ -77,33 +77,65 @@ process_file() {
     echo "Error: $output"
   fi
 
-  # Generate schema export file
-  local schema_ts_file="$OUTPUT_DIR/$dir/$sanitized_filename.ts"
-  generate_schema_export "$schema_ts_file" "$relative_path" "$(basename "$file")"
-  echo "Generated schema exports for: $file"
-
-  # Change back to the original directory
   cd "$ORIGINAL_DIR"
 }
 
-# Function to traverse directory
+# Function to generate schema export for a file
+generate_schema_for_file() {
+  local file="$1"
+  local relative_path="${file#$TEMP_DIR/}"
+
+  local dir=$(dirname "$relative_path")
+  local filename=$(basename "$file" .json)
+  local sanitized_filename=$(to_pascal_case_schema "$filename")
+
+  # Create subdirectory in output folder if it doesn't exist
+  mkdir -p "$OUTPUT_DIR/$dir"
+
+  # Generate schema export file
+  local schema_ts_file="$OUTPUT_DIR/$dir/$sanitized_filename.ts"
+  generate_schema_export "$schema_ts_file" "$relative_path" "$file"
+  echo "Generated schema exports for: $file"
+}
+
+# Function to traverse directory with a callback
 traverse_directory() {
   local dir="$1"
+  local callback="$2"
   for item in "$dir"/*; do
     if [ -d "$item" ]; then
       # If it's a directory, recurse into it
-      traverse_directory "$item"
+      traverse_directory "$item" "$callback"
     elif [ -f "$item" ] && [[ "$item" == *.json ]]; then
-      # If it's a JSON file, process it
-      process_file "$item"
+      # If it's a JSON file, call the provided callback
+      $callback "$item"
     fi
   done
 }
 
-# Start traversing from the temporary directory
-traverse_directory "$TEMP_DIR"
+# Function to traverse directory for type generation
+traverse_for_types() {
+  traverse_directory "$1" generate_type_definition
+}
 
-# Generate OpenApi types from single openapi.yaml file
+# Function to traverse directory for schema generation
+traverse_for_schemas() {
+  traverse_directory "$1" generate_schema_for_file
+}
+
+echo "Step 1: Copying JSON files to temporary directory..."
+rsync -a --include='*/' --include='*.json' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
+
+echo "Step 2: Generating TypeScript type definitions..."
+traverse_for_types "$TEMP_DIR"
+
+echo "Step 3: Resolving references in JSON schemas..."
+resolve_references
+
+echo "Step 4: Generating schema exports..."
+traverse_for_schemas "$TEMP_DIR"
+
+echo "Step 5: Generating OpenAPI types..."
 OPENAPI_FILE="$INPUT_DIR/openapi.yml"
 if [ -f "$OPENAPI_FILE" ]; then
   npx openapi-typescript "$OPENAPI_FILE" --output "$OUTPUT_DIR/openapi.d.ts"
@@ -112,8 +144,7 @@ else
   echo "Error: OpenAPI file '$OPENAPI_FILE' does not exist."
 fi
 
-# Clean up temporary directory
-echo "Cleaning up temporary directory..."
+echo "Step 6: Cleaning up temporary directory..."
 rm -rf "$TEMP_DIR"
 
 echo "Processing complete. Output files are in '$OUTPUT_DIR'."

@@ -117,7 +117,7 @@ export interface HttpsSchemasMesheryIoSelectorsJson {
  */
 export interface HttpsSchemasMesheryIoModelJson {
   /**
-   * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   id?: string;
   /**
@@ -217,7 +217,7 @@ export interface HttpsSchemasMesheryIoModelJson {
  */
 export interface HttpsSchemasMesheryIoComponentJson {
   /**
-   * ID
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   id?: string;
   /**
@@ -225,7 +225,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
    */
   name?: string;
   /**
-   * Credential ID
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   credential_id?: string;
   /**

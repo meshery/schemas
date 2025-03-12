@@ -6,6 +6,235 @@
  */
 
 /**
+ * Visualization styles for a component
+ */
+export type ComponentStyles = Styles & {
+  /**
+   * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+   */
+  shape?:
+    | "ellipse"
+    | "triangle"
+    | "round-triangle"
+    | "rectangle"
+    | "round-rectangle"
+    | "bottom-round-rectangle"
+    | "cut-rectangle"
+    | "barrel"
+    | "rhomboid"
+    | "diamond"
+    | "round-diamond"
+    | "pentagon"
+    | "round-pentagon"
+    | "hexagon"
+    | "round-hexagon"
+    | "concave-hexagon"
+    | "heptagon"
+    | "round-heptagon"
+    | "octagon"
+    | "round-octagon"
+    | "star"
+    | "tag"
+    | "round-tag"
+    | "vee"
+    | "polygon";
+  /**
+   * The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.
+   */
+  position?: {
+    /**
+     * The x-coordinate of the node.
+     */
+    x: number;
+    /**
+     * The y-coordinate of the node.
+     */
+    y: number;
+  };
+  /**
+   * The text to display for an element’s body. Can give a path, e.g. data(id) will label with the elements id
+   */
+  "body-text"?: string;
+  /**
+   * How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
+   */
+  "body-text-wrap"?: string;
+  /**
+   * The maximum width for wrapping text in the node.
+   */
+  "body-text-max-width"?: string;
+  /**
+   * The opacity of the node’s body text, including its outline.
+   */
+  "body-text-opacity"?: number;
+  /**
+   * The colour of the node’s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "body-text-background-color"?: string;
+  /**
+   * The size of the node’s body text.
+   */
+  "body-text-font-size"?: number;
+  /**
+   * The colour of the node’s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "body-text-color"?: string;
+  /**
+   * A CSS font weight to be applied to the node’s body text.
+   */
+  "body-text-font-weight"?: string;
+  /**
+   * A CSS horizontal alignment to be applied to the node’s body text.
+   */
+  "body-text-horizontal-align"?: string;
+  /**
+   * A CSS text decoration to be applied to the node’s body text.
+   */
+  "body-text-decoration"?: string;
+  /**
+   * A CSS vertical alignment to be applied to the node’s body text.
+   */
+  "body-text-vertical-align"?: string;
+  /**
+   * The width of the node’s body or the width of an edge’s line.
+   */
+  width?: number;
+  /**
+   * The height of the node’s body
+   */
+  height?: number;
+  /**
+   * The URL that points to the image to show in the node.
+   */
+  "background-image"?: string;
+  /**
+   * The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "background-color"?: string;
+  /**
+   * Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1.
+   */
+  "background-blacken"?: number;
+  /**
+   * The opacity level of the node’s background colour
+   */
+  "background-opacity"?: number;
+  /**
+   * The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-position-x"?: string;
+  /**
+   * The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-position-y"?: string;
+  /**
+   * The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-offset-x"?: string;
+  /**
+   * The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
+   */
+  "background-offset-y"?: string;
+  /**
+   * How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
+   */
+  "background-fit"?: string;
+  /**
+   * How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
+   */
+  "background-clip"?: string;
+  /**
+   * How the background image’s width is determined. Can be 'none', 'inner', or 'outer'.
+   */
+  "background-width-relative-to"?: string;
+  /**
+   * How the background image’s height is determined. Can be 'none', 'inner', or 'outer'.
+   */
+  "background-height-relative-to"?: string;
+  /**
+   * The size of the node’s border.
+   */
+  "border-width"?: number;
+  /**
+   * The style of the node’s border
+   */
+  "border-style"?: "solid" | "dotted" | "dashed" | "double";
+  /**
+   * The colour of the node’s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "border-color"?: string;
+  /**
+   * The opacity of the node’s border
+   */
+  "border-opacity"?: number;
+  /**
+   * The amount of padding around all sides of the node.
+   */
+  padding?: number;
+  /**
+   * The horizontal alignment of a node’s label
+   */
+  "text-halign"?: "left" | "center" | "right";
+  /**
+   * The vertical alignment of a node’s label
+   */
+  "text-valign"?: "top" | "center" | "bottom";
+  /**
+   * Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
+   */
+  ghost?: "yes" | "no";
+  /**
+   * The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "active-bg-color"?: string;
+  /**
+   *  The opacity of the active background indicator. Selector needs to be *core*.
+   */
+  "active-bg-opacity"?: string;
+  /**
+   *  The opacity of the active background indicator. Selector needs to be *core*.
+   */
+  "active-bg-size"?: string;
+  /**
+   * The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "selection-box-color"?: string;
+  /**
+   * The size of the border on the selection box. Selector needs to be *core*
+   */
+  "selection-box-border-width"?: number;
+  /**
+   * The opacity of the selection box.  Selector needs to be *core*
+   */
+  "selection-box-opacity"?: number;
+  /**
+   * The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "outside-texture-bg-color"?: string;
+  /**
+   * The opacity of the area outside the viewport texture. Selector needs to be *core*
+   */
+  "outside-texture-bg-opacity"?: number;
+  /**
+   * An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )
+   */
+  "shape-polygon-points"?: string;
+  /**
+   * The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "menu-background-color"?: string;
+  /**
+   * The opacity of the background of the component menu.
+   */
+  "menu-background-opacity"?: number;
+  /**
+   * The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  "menu-forground-color"?: string;
+  [k: string]: unknown;
+};
+
+/**
  * Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
  */
 export interface HttpsSchemasMesheryIoComponentJson {
@@ -34,306 +263,11 @@ export interface HttpsSchemasMesheryIoComponentJson {
    */
   format?: "JSON" | "CUE";
   model: HttpsSchemasMesheryIoModelJson;
-  /**
-   * Visualization styles for a component
-   */
-  styles?: {
-    /**
-     * Primary color of the component used for UI representation.
-     */
-    primaryColor: string;
-    /**
-     * Secondary color of the entity used for UI representation.
-     */
-    secondaryColor?: string;
-    /**
-     * White SVG of the entity used for UI representation on dark background.
-     */
-    svgWhite: string;
-    /**
-     * Colored SVG of the entity used for UI representation on light background.
-     */
-    svgColor: string;
-    /**
-     * Complete SVG of the entity used for UI representation, often inclusive of background.
-     */
-    svgComplete?: string;
-    /**
-     * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    color?: string;
-    /**
-     * The opacity of the label text, including its outline.
-     */
-    "text-opacity"?: number;
-    /**
-     * A comma-separated list of font names to use on the label text.
-     */
-    "font-family"?: string;
-    /**
-     * The size of the label text.
-     */
-    "font-size"?: string;
-    /**
-     * A CSS font style to be applied to the label text.
-     */
-    "font-style"?: string;
-    /**
-     * A CSS font weight to be applied to the label text.
-     */
-    "font-weight"?: string;
-    /**
-     * A transformation to apply to the label text
-     */
-    "text-transform"?: "none" | "uppercase" | "lowercase";
-    /**
-     * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
-     */
-    opacity?: number;
-    /**
-     * An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
-     */
-    "z-index"?: number;
-    /**
-     * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
-     */
-    label?: string;
-    /**
-     * The animation to apply to the element. example ripple,bounce,etc
-     */
-    animation?: {
-      [k: string]: unknown;
-    };
-    [k: string]: unknown;
-  } & {
-    /**
-     * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-     */
-    shape?:
-      | "ellipse"
-      | "triangle"
-      | "round-triangle"
-      | "rectangle"
-      | "round-rectangle"
-      | "bottom-round-rectangle"
-      | "cut-rectangle"
-      | "barrel"
-      | "rhomboid"
-      | "diamond"
-      | "round-diamond"
-      | "pentagon"
-      | "round-pentagon"
-      | "hexagon"
-      | "round-hexagon"
-      | "concave-hexagon"
-      | "heptagon"
-      | "round-heptagon"
-      | "octagon"
-      | "round-octagon"
-      | "star"
-      | "tag"
-      | "round-tag"
-      | "vee"
-      | "polygon";
-    /**
-     * The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.
-     */
-    position?: {
-      /**
-       * The x-coordinate of the node.
-       */
-      x: number;
-      /**
-       * The y-coordinate of the node.
-       */
-      y: number;
-    };
-    /**
-     * The text to display for an element’s body. Can give a path, e.g. data(id) will label with the elements id
-     */
-    "body-text"?: string;
-    /**
-     * How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
-     */
-    "body-text-wrap"?: string;
-    /**
-     * The maximum width for wrapping text in the node.
-     */
-    "body-text-max-width"?: string;
-    /**
-     * The opacity of the node’s body text, including its outline.
-     */
-    "body-text-opacity"?: number;
-    /**
-     * The colour of the node’s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "body-text-background-color"?: string;
-    /**
-     * The size of the node’s body text.
-     */
-    "body-text-font-size"?: number;
-    /**
-     * The colour of the node’s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "body-text-color"?: string;
-    /**
-     * A CSS font weight to be applied to the node’s body text.
-     */
-    "body-text-font-weight"?: string;
-    /**
-     * A CSS horizontal alignment to be applied to the node’s body text.
-     */
-    "body-text-horizontal-align"?: string;
-    /**
-     * A CSS text decoration to be applied to the node’s body text.
-     */
-    "body-text-decoration"?: string;
-    /**
-     * A CSS vertical alignment to be applied to the node’s body text.
-     */
-    "body-text-vertical-align"?: string;
-    /**
-     * The width of the node’s body or the width of an edge’s line.
-     */
-    width?: number;
-    /**
-     * The height of the node’s body
-     */
-    height?: number;
-    /**
-     * The URL that points to the image to show in the node.
-     */
-    "background-image"?: string;
-    /**
-     * The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "background-color"?: string;
-    /**
-     * Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1.
-     */
-    "background-blacken"?: number;
-    /**
-     * The opacity level of the node’s background colour
-     */
-    "background-opacity"?: number;
-    /**
-     * The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-     */
-    "background-position-x"?: string;
-    /**
-     * The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-     */
-    "background-position-y"?: string;
-    /**
-     * The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-     */
-    "background-offset-x"?: string;
-    /**
-     * The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-     */
-    "background-offset-y"?: string;
-    /**
-     * How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
-     */
-    "background-fit"?: string;
-    /**
-     * How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
-     */
-    "background-clip"?: string;
-    /**
-     * How the background image’s width is determined. Can be 'none', 'inner', or 'outer'.
-     */
-    "background-width-relative-to"?: string;
-    /**
-     * How the background image’s height is determined. Can be 'none', 'inner', or 'outer'.
-     */
-    "background-height-relative-to"?: string;
-    /**
-     * The size of the node’s border.
-     */
-    "border-width"?: number;
-    /**
-     * The style of the node’s border
-     */
-    "border-style"?: "solid" | "dotted" | "dashed" | "double";
-    /**
-     * The colour of the node’s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "border-color"?: string;
-    /**
-     * The opacity of the node’s border
-     */
-    "border-opacity"?: number;
-    /**
-     * The amount of padding around all sides of the node.
-     */
-    padding?: number;
-    /**
-     * The horizontal alignment of a node’s label
-     */
-    "text-halign"?: "left" | "center" | "right";
-    /**
-     * The vertical alignment of a node’s label
-     */
-    "text-valign"?: "top" | "center" | "bottom";
-    /**
-     * Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
-     */
-    ghost?: "yes" | "no";
-    /**
-     * The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "active-bg-color"?: string;
-    /**
-     *  The opacity of the active background indicator. Selector needs to be *core*.
-     */
-    "active-bg-opacity"?: string;
-    /**
-     *  The opacity of the active background indicator. Selector needs to be *core*.
-     */
-    "active-bg-size"?: string;
-    /**
-     * The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "selection-box-color"?: string;
-    /**
-     * The size of the border on the selection box. Selector needs to be *core*
-     */
-    "selection-box-border-width"?: number;
-    /**
-     * The opacity of the selection box.  Selector needs to be *core*
-     */
-    "selection-box-opacity"?: number;
-    /**
-     * The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "outside-texture-bg-color"?: string;
-    /**
-     * The opacity of the area outside the viewport texture. Selector needs to be *core*
-     */
-    "outside-texture-bg-opacity"?: number;
-    /**
-     * An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )
-     */
-    "shape-polygon-points"?: string;
-    /**
-     * The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "menu-background-color"?: string;
-    /**
-     * The opacity of the background of the component menu.
-     */
-    "menu-background-opacity"?: number;
-    /**
-     * The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
-     */
-    "menu-forground-color"?: string;
-    [k: string]: unknown;
-  };
+  styles?: ComponentStyles;
   /**
    * Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
    */
-  capabilities?: HttpsSchemasMesheryIoCapabilityJson1[];
+  capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
   /**
    * Status of component, including:
    * - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -602,53 +536,74 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   };
 }
 /**
- * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
+ * Common styles for all entities
  */
-export interface HttpsSchemasMesheryIoCapabilityJson1 {
+export interface Styles {
   /**
-   * Specifies the version of the schema to which the capability definition conforms.
+   * Primary color of the component used for UI representation.
    */
-  schemaVersion: string;
+  primaryColor: string;
   /**
-   * Version of the capability definition.
+   * Secondary color of the entity used for UI representation.
    */
-  version: string;
+  secondaryColor?: string;
   /**
-   * Name of the capability in human-readible format.
+   * White SVG of the entity used for UI representation on dark background.
    */
-  displayName: string;
+  svgWhite: string;
   /**
-   * A written representation of the purpose and characteristics of the capability.
+   * Colored SVG of the entity used for UI representation on light background.
    */
-  description?: string;
+  svgColor: string;
   /**
-   * Top-level categorization of the capability
+   * Complete SVG of the entity used for UI representation, often inclusive of background.
    */
-  kind: ("action" | "mutate" | "view" | "interaction") & string;
+  svgComplete?: string;
   /**
-   * Classification of capabilities. Used to group capabilities similar in nature.
+   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
    */
-  type: string;
+  color?: string;
   /**
-   * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
+   * The opacity of the label text, including its outline.
    */
-  subType?: string;
+  "text-opacity"?: number;
   /**
-   * Key that backs the capability.
+   * A comma-separated list of font names to use on the label text.
    */
-  key?: string;
+  "font-family"?: string;
   /**
-   * State of the entity in which the capability is applicable.
+   * The size of the label text.
    */
-  entityState: ("declaration" | "instance")[];
+  "font-size"?: string;
   /**
-   * Status of the capability
+   * A CSS font style to be applied to the label text.
    */
-  status: "enabled" | "disabled";
+  "font-style"?: string;
   /**
-   * Metadata contains additional information associated with the capability. Extension point.
+   * A CSS font weight to be applied to the label text.
    */
-  metadata?: {
+  "font-weight"?: string;
+  /**
+   * A transformation to apply to the label text
+   */
+  "text-transform"?: "none" | "uppercase" | "lowercase";
+  /**
+   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+   */
+  opacity?: number;
+  /**
+   * An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
+   */
+  "z-index"?: number;
+  /**
+   * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
+   */
+  label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: {
     [k: string]: unknown;
   };
+  [k: string]: unknown;
 }
