@@ -22,7 +22,6 @@ TEMP_DIR="$OUTPUT_DIR/temp"
 mkdir -p "$TEMP_DIR"
 
 # Copy all JSON files from input directory to temporary directory (preserving directory structure)
-# Copy JSON files while preserving directory structure
 echo "Copying JSON files to temporary directory..."
 rsync -a --include='*/' --include='*.json' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
 
@@ -55,7 +54,7 @@ generate_schema_export() {
   } > "$output_file"
 }
 
-# Function to process files - Update to use TEMP_DIR instead of INPUT_DIR for files
+# Function to process files
 process_file() {
   local file="$1"
   local relative_path="${file#$TEMP_DIR/}"
@@ -87,7 +86,7 @@ process_file() {
   cd "$ORIGINAL_DIR"
 }
 
-# Function to traverse directory - Update to traverse TEMP_DIR instead of INPUT_DIR
+# Function to traverse directory
 traverse_directory() {
   local dir="$1"
   for item in "$dir"/*; do
