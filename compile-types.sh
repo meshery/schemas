@@ -58,7 +58,7 @@ resolve_references() {
 # Function to generate type definitions for a file
 generate_type_definition() {
   local file="$1"
-  local relative_path="${file#$TEMP_DIR/}"
+  local relative_path="${file#$INPUT_DIR/}"
 
   local dir=$(dirname "$relative_path")
   local filename=$(basename "$file" .json)
@@ -123,11 +123,11 @@ traverse_for_schemas() {
   traverse_directory "$1" generate_schema_for_file
 }
 
-echo "Step 1: Copying JSON files to temporary directory..."
-rsync -a --include='*/' --include='*.json' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
+echo "Step 1: Generating TypeScript type definitions..."
+traverse_for_types "$INPUT_DIR"
 
-echo "Step 2: Generating TypeScript type definitions..."
-traverse_for_types "$TEMP_DIR"
+echo "Step 2: Copying JSON files to temporary directory..."
+rsync -a --include='*/' --include='*.json' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
 
 echo "Step 3: Resolving references in JSON schemas..."
 resolve_references
