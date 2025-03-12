@@ -32,7 +32,11 @@
     "name": {
       "type": "string",
       "description": "The unique name for the model within the scope of a registrant.",
-      "$ref": "../core.json#/definitions/inputString",
+      "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+      "pattern": "^[a-z0-9-]+$",
+      "examples": [
+        "cert-manager"
+      ],
       "x-order": 4
     },
     "displayName": {
@@ -41,7 +45,10 @@
       "minLength": 1,
       "maxLength": 100,
       "type": "string",
-      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+      "pattern": "^[a-zA-Z0-9 ]+$",
+      "examples": [
+        "Cert Manager"
+      ],
       "x-order": 5,
       "x-oapi-codegen-extra-tags": {
         "yaml": "displayName",

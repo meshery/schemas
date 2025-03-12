@@ -55,9 +55,12 @@ const schema = {
     "name": {
       "type": "string",
       "description": "The unique name for the model within the scope of a registrant.",
+      "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+      "pattern": "^[a-z0-9-]+$",
+      "examples": [
+        "cert-manager"
+      ],
       "x-order": 4,
-      "type": "string",
-      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
       "x-oapi-codegen-extra-tags": {
         "yaml": "name",
         "json": "name"
@@ -69,7 +72,10 @@ const schema = {
       "minLength": 1,
       "maxLength": 100,
       "type": "string",
-      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+      "pattern": "^[a-zA-Z0-9 ]+$",
+      "examples": [
+        "Cert Manager"
+      ],
       "x-order": 5,
       "x-oapi-codegen-extra-tags": {
         "yaml": "displayName",
@@ -285,7 +291,31 @@ const schema = {
         },
         "name": {
           "x-order": 2,
-          "$ref": "../core.json#/definitions/category"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "name",
+            "json": "name"
+          },
+          "description": "The category of the model that determines the main grouping.",
+          "enum": [
+            "Analytics",
+            "App Definition and Development",
+            "Cloud Native Network",
+            "Cloud Native Storage",
+            "Database",
+            "Machine Learning",
+            "Observability and Analysis",
+            "Orchestration & Management",
+            "Platform",
+            "Provisioning",
+            "Runtime",
+            "Security & Compliance",
+            "Serverless",
+            "Tools",
+            "Uncategorized"
+          ]
         },
         "metadata": {
           "type": "object",
@@ -304,8 +334,63 @@ const schema = {
       }
     },
     "subCategory": {
-      "$ref": "../core.json#/definitions/subCategory",
-      "x-order": 10
+      "x-order": 10,
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "subCategory",
+        "json": "subCategory"
+      },
+      "description": "The sub-category of the model that determines the secondary grouping.",
+      "enum": [
+        "API Gateway",
+        "API Integration",
+        "Application Definition & Image Build",
+        "Automation & Configuration",
+        "Certified Kubernetes - Distribution",
+        "Chaos Engineering",
+        "Cloud Native Storage",
+        "Cloud Provider",
+        "CNI",
+        "Compute",
+        "Container Registry",
+        "Container Runtime",
+        "Container Security",
+        "Container",
+        "Content Delivery Network",
+        "Continuous Integration & Delivery",
+        "Coordination & Service Discovery",
+        "Database",
+        "Flowchart",
+        "Framework",
+        "Installable Platform",
+        "Key Management",
+        "Key Management Service",
+        "Kubernetes",
+        "Logging",
+        "Machine Learning",
+        "Management Governance",
+        "Metrics",
+        "Monitoring",
+        "Networking Content Delivery",
+        "Operating System",
+        "Query",
+        "Remote Procedure Call",
+        "Scheduling & Orchestration",
+        "Secrets Management",
+        "Security Identity & Compliance",
+        "Service Mesh",
+        "Service Proxy",
+        "Source Version Control",
+        "Storage",
+        "Specifications",
+        "Streaming & Messaging",
+        "Tools",
+        "Tracing",
+        "Uncategorized",
+        "Video Conferencing"
+      ]
     },
     "metadata": {
       "type": "object",
@@ -550,7 +635,39 @@ const schema = {
         },
         "shape": {
           "x-order": 8,
-          "$ref": "../core.json#/definitions/shape"
+          "type": "string",
+          "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+          "enum": [
+            "ellipse",
+            "triangle",
+            "round-triangle",
+            "rectangle",
+            "round-rectangle",
+            "bottom-round-rectangle",
+            "cut-rectangle",
+            "barrel",
+            "rhomboid",
+            "diamond",
+            "round-diamond",
+            "pentagon",
+            "round-pentagon",
+            "hexagon",
+            "round-hexagon",
+            "concave-hexagon",
+            "heptagon",
+            "round-heptagon",
+            "octagon",
+            "round-octagon",
+            "star",
+            "tag",
+            "round-tag",
+            "vee",
+            "polygon"
+          ],
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "shape",
+            "json": "shape"
+          }
         },
         "sourceUri": {
           "type": "string",
