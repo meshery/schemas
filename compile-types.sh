@@ -17,6 +17,20 @@ fi
 # Create output directory if it doesn't exist
 mkdir -p "$OUTPUT_DIR"
 
+# Create temporary directory for JSON files
+TEMP_DIR="$OUTPUT_DIR/temp"
+mkdir -p "$TEMP_DIR"
+
+# Copy all JSON files from input directory to temporary directory (preserving directory structure)
+# Copy JSON files while preserving directory structure
+echo "Copying JSON files to temporary directory..."
+rsync -a --include='*/' --include='*.json' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
+
+# Run ref-resolver.js script on the temporary directory
+echo "Resolving references in JSON schemas..."
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+SCHEMA_PATH="$TEMP_DIR" node "./scripts/ref-resolver.js"
+
 # Store the original directory
 ORIGINAL_DIR=$(pwd)
 
@@ -41,10 +55,10 @@ generate_schema_export() {
   } > "$output_file"
 }
 
-# Function to process files
+# Function to process files - Update to use TEMP_DIR instead of INPUT_DIR for files
 process_file() {
   local file="$1"
-  local relative_path="${file#$INPUT_DIR/}"
+  local relative_path="${file#$TEMP_DIR/}"
 
   local dir=$(dirname "$relative_path")
   local filename=$(basename "$file" .json)
@@ -73,7 +87,7 @@ process_file() {
   cd "$ORIGINAL_DIR"
 }
 
-# Function to traverse directory
+# Function to traverse directory - Update to traverse TEMP_DIR instead of INPUT_DIR
 traverse_directory() {
   local dir="$1"
   for item in "$dir"/*; do
@@ -87,8 +101,8 @@ traverse_directory() {
   done
 }
 
-# Start traversing from the provided input directory
-traverse_directory "$INPUT_DIR"
+# Start traversing from the temporary directory
+traverse_directory "$TEMP_DIR"
 
 # Generate OpenApi types from single openapi.yaml file
 OPENAPI_FILE="$INPUT_DIR/openapi.yml"
@@ -98,5 +112,9 @@ if [ -f "$OPENAPI_FILE" ]; then
 else
   echo "Error: OpenAPI file '$OPENAPI_FILE' does not exist."
 fi
+
+# Clean up temporary directory
+echo "Cleaning up temporary directory..."
+rm -rf "$TEMP_DIR"
 
 echo "Processing complete. Output files are in '$OUTPUT_DIR'."
