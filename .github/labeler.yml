@@ -2,6 +2,7 @@ area/docs:
   - "docs/**/*"
 area/ci:
   - ".github/**/*"
+  - "build/*"
 component/ui:
   - "ui/**/*"
   - "provider-ui/**/*"
@@ -23,5 +24,7 @@ framework/graphql:
   - "server/internal/graphql/*"
 component/database:
   - "server/internal/sql/*"
-playground:
-  - "install/playground/**/*"
+language/go:
+  - "models"
+language/javascript:
+  - "typescript"
