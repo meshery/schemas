@@ -23,7 +23,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.6.4",
     "json-schema-default": "^1.0.2",
-    "json-schema-empty-strings": "^1.0.5",
+    "json-schema-empty-strings": "^1.0.2",
     "json-schema-faker": "^0.5.8",
     "json-schema-to-typescript": "^14.1.0",
     "lodash.merge": "^4.6.2",
