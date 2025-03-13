@@ -7,14 +7,14 @@ license: Apache-2
 homeURL: https://docs.meshery.io/concepts/logical/designs
 appVersion: 1.0.0
 keywords:
-    - kubernetes
-    - meshery
-    - service mesh
-    - orchestration
+  - kubernetes
+  - meshery
+  - cloud-native
+  - orchestration
 links:
-    - name: website
-      url: https://meshery.io/
-    - name: support
-      url: https://discuss.layer5.io/
+  - name: website
+    url: https://meshery.io/
+  - name: support
+    url: https://discuss.layer5.io/
 provider:
-    name: meshery-maintainers
+  name: meshery-maintainers
