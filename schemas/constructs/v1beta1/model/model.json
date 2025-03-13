@@ -80,6 +80,26 @@
       },
       "$ref": "../connection.json"
     },
+    "registrantId": {
+      "description": "ID of the registrant.",
+      "$ref": "../../core.json#/definitions/uuid",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "connection_id",
+        "json": "connection_id",
+        "gorm": "column:connection_id"
+      },
+      "x-order": 8
+    },
+    "categoryId": {
+      "description": "ID of the category.",
+      "$ref": "../../core.json#/definitions/uuid",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "category_id",
+        "json": "category_id",
+        "gorm": "categoryID"
+      },
+      "x-order": 8
+    },
     "category": {
       "$ref": "../category/category.json",
       "x-order": 9,
@@ -190,20 +210,7 @@
       "additionalProperties": true
     },
     "model": {
-      "type": "object",
-      "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-      "required": ["version"],
-      "properties": {
-        "version": {
-          "description": "Version of the model as defined by the registrant.",
-          "$ref": "../../core.json#/definitions/semverString",
-          "x-oapi-codegen-extra-tags": {
-            "yaml": "version",
-            "json": "version"
-          },
-          "x-order": 1
-        }
-      },
+      "$ref": "./openapi.yml#/components/schemas/Model",
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json"
       },
@@ -221,6 +228,8 @@
     "description",
     "version",
     "registrant",
-    "category"
+    "category",
+    "categoryId",
+    "registrantId"
   ]
 }
