@@ -20,3 +20,22 @@ output-options:
   include-tags: 
   - patterns
   
+# Example:
+
+# package: myapi
+# generate:
+#   - input: ./schemas/users.yaml
+#     output: ./models/users
+#     package: users
+#     generate:
+#       models: true
+#   - input: ./schemas/products.yaml
+#     output: ./models/products
+#     package: products
+#     generate:
+#       models: true
+#   - input: ./schemas/orders.yaml
+#     output: ./models/orders
+#     package: orders
+#     generate:
+#       models: true
