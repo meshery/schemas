@@ -4,7 +4,7 @@
   "description": "Reusable relationships selectors schema elements",
   "$comment": "Sets of selectors are interpreted as a logical OR, while sets of allow/deny are interpreted a logical AND.",
   "definitions": {
-    "matchSelector": {
+    "matchSelector"w {
       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
       "type": "array",
       "items": {
