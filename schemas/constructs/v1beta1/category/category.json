@@ -1,0 +1,30 @@
+{
+  "$id": "https://schemas.meshery.io/category.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Category of the model.",
+  "properties": {
+    "id": {
+      "$ref": "../../core.json#/definitions/uuid",
+      "x-order": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "name",
+        "json": "name"
+      },
+      "x-order": 2
+    },
+    "metadata": {
+      "type": "object",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "metadata",
+        "json": "metadata"
+      },
+      "x-order": 3
+    }
+  }
+}
