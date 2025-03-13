@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+include build/Makefile.core.mk
+include build/Makefile.show-help.mk
+
+#-----------------------------------------------------------------------------
+# Schemas Site and public reference
+#-----------------------------------------------------------------------------
+.PHONY: site
 
 jekyll=bundle exec jekyll
 
 site:
 	bundle install; $(jekyll) serve --drafts --incremental --livereload 
+
 
 
 ## Lint check Meshery Server.
