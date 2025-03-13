@@ -40,3 +40,4 @@ autolabeler:
   - label: 'area/ci'    
     branch:
       - '/.github/'
+      - '/build/'
