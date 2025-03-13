@@ -5,10 +5,8 @@ categories:
     labels:
       - 'kind/feature'
       - 'kind/enhancement'
-  - title: '🔋 Patterns, Filters'
-    labels:
-      - 'component/patterns'
-      - 'component/filters'      
+      - 'language/javascript'
+      - 'language/go'
   - title: '🐛 Bug Fixes'
     labels:
       - 'kind/fix'
@@ -19,10 +17,10 @@ categories:
       - 'kind/chore'
       - 'area/ci'
       - 'area/tests'
-  - title: 📖 Documentation
-    label: area/docs
-  - title: 🔒 Security
-    label: security  
+  - title: '📖 Documentation'
+    label: 'area/docs'
+  - title: '🔒 Security'
+    label: 'security'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
   ## What's New
