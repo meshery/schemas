@@ -78,10 +78,10 @@
             ],
             "properties": {
               "from": {
-                "$ref": "./selectors.json#/from"
+                "$ref": "./selector.json#/from"
               },
               "to": {
-                "$ref": "./selectors.json#/to"
+                "$ref": "./selector.json#/to"
               }
             }
           },
@@ -94,10 +94,10 @@
             ],
             "properties": {
               "from": {
-                "$ref": "./selectors.json#/from"
+                "$ref": "./selector.json#/from"
               },
               "to": {
-                "$ref": "./selectors.json#/to"
+                "$ref": "./selector.json#/to"
               }
             }
           }
