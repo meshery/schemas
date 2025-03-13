@@ -107,6 +107,7 @@
     "metadata": {
       "type": "object",
       "description": "Metadata containing additional information associated with the model.",
+      "required": ["svgWhite", "svgColor"],
       "properties": {
         "capabilities": {
           "type": "array",
@@ -209,5 +210,17 @@
       "x-order": 12
     }
   },
-  "required": ["name", "version", "registrant", "category"]
+  "required": [
+    "id",
+    "schemaVersion",
+    "displayName",
+    "status",
+    "subCategory",
+    "model",
+    "name",
+    "description",
+    "version",
+    "registrant",
+    "category"
+  ]
 }
