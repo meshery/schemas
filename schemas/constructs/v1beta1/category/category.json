@@ -3,6 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "description": "Category of the model.",
+  "required": ["id", "name", "metadata"],
   "properties": {
     "id": {
       "$ref": "../../core.json#/definitions/uuid",
@@ -14,15 +15,17 @@
       "maxLength": 100,
       "x-oapi-codegen-extra-tags": {
         "yaml": "name",
-        "json": "name"
+        "json": "name",
+        "gorm": "name"
       },
       "x-order": 2
     },
     "metadata": {
       "type": "object",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "metadata",
-        "json": "metadata"
+        "yaml": "metadata,omitempty",
+        "json": "metadata,omitempty",
+        "gorm": "type:bytes;serializer:json"
       },
       "x-order": 3
     }
