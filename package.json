@@ -14,14 +14,19 @@
   },
   "scripts": {
     "build": "tsup",
-    "generate:types": "./compile-types.sh ./schemas/  ./typescript",
+    "generate:types": "./compile-types.sh ./schemas/  ./typescript ./json_models",
+    "generate:json": "node ./compile-json-schema.mjs",
     "publish-ts-lib": "node ./publish-npm-package.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^11.6.4",
+    "json-schema-default": "^1.0.2",
+    "json-schema-empty-strings": "^1.0.5",
+    "json-schema-faker": "^0.5.8",
     "json-schema-to-typescript": "^14.1.0",
+    "lodash.merge": "^4.6.2",
     "tsup": "^8.4.0",
     "typescript": "^4.9.5"
   }

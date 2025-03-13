@@ -1,0 +1,23 @@
+{
+  "name": "",
+  "schemaVersion": "",
+  "version": "",
+  "services": {
+    "additionalProperties": {
+      "id": "",
+      "name": "",
+      "type": "",
+      "apiVersion": "",
+      "namespace": "",
+      "version": "",
+      "model": "",
+      "labels": {},
+      "annotations": {},
+      "dependsOn": {}
+    }
+  },
+  "labels": {},
+  "annotations": {},
+  "settings": {},
+  "traits": {}
+}
