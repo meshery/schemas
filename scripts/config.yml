@@ -1,14 +1,14 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/deepmap/oapi-codegen/HEAD/configuration-schema.json
 package: schemas
 
-import-mapping:
-  "./core.yml": ""
-  "./common/core.yml": "github.com/meshery/schemas/models/core"
-  "../core.json": "github.com/meshery/schemas/models/core"
-  "./common/parameters.yml": "github.com/meshery/schemas/models/core"
-  "../v1beta1/model.json": "github.com/meshery/schemas/models/v1beta1/model"
-  "../v1beta1/component.json": "github.com/meshery/schemas/models/v1beta1/model"
-  "../v1alpha1/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
+# import-mapping:
+#   "./core.yml": "github.com/meshery/schemas/models"
+#   "./common/core.yml": "github.com/meshery/schemas/models/core"
+#   "../core.json": "github.com/meshery/schemas/models/core"
+#   "./common/parameters.yml": "github.com/meshery/schemas/models/core"
+#   "../v1beta1/model.json": "github.com/meshery/schemas/models/v1beta1/model"
+#   "../v1beta1/component.json": "github.com/meshery/schemas/models/v1beta1/model"
+#   "../v1alpha1/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
 
 generate:
   - input: schemas/constructs/v1beta1/connection.json
