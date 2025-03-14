@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Design Schema",
+  "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../../core.json#/definitions/uuid",
+      "x-order": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the design; a descriptive, but concise title for the design document.",
+      "x-order": 2
+    },
+    "schemaVersion": {
+      "$ref": "../../core.json#/definitions/versionString",
+      "description": "Specifies the version of the schema to which the design conforms.",
+      "x-order": 3
+    },
+    "version": {
+      "$ref": "../../core.json#/definitions/semverString",
+      "x-order": 4,
+      "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "metadata": {
+      "type": "object",
+      "x-order": 5,
+      "properties": {
+        "resolvedAliases": {
+          "description": "Map of resolved aliases present in the design",
+          "type": "object",
+          "additionalProperties": {
+            "ref": "../../core.json#/definitions/semverString"
+          }
+        }
+      }
+    },
+    "components": {
+      "description": "A list of one or more component declarations.",
+      "minItems": 0,
+      "x-order": 6,
+      "type": "array",
+      "items": {
+        "$ref": "../component.json",
+        "x-go-type": "component.ComponentDefinition",
+        "x-go-type-import": {
+          "path": "github.com/meshery/schemas/models/v1beta1/component"
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "description": "Design-level preferences",
+      "x-order": 7,
+      "properties": {
+        "layers": {
+          "type": "object",
+          "description": "List of available layers"
+        }
+      },
+      "required": ["layers"]
+    },
+    "relationships": {
+      "description": "List of relationships between components",
+      "type": "array",
+      "x-order": 8,
+      "items": {
+        "$ref": "../../v1alpha3/relationship.json",
+        "x-go-type": "relationship.Relationship",
+        "x-go-type-import": {
+          "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
+        }
+      }
+    }
+  },
+
+  "required": ["name", "schemaVersion", "version", "components"]
+}

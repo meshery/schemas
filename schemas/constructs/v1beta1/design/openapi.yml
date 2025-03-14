@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: Meshery Pattern API
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    DeletePatternModel:
+      type: object
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+        name:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+
+    PatternFile:
+      $ref: "./design.json"
+
+    MesheryPattern:
+      type: object
+      properties:
+        catalog_data:
+          $ref: "../../v1alpha1/catalog_data.json"
+        created_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+        user_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+        location:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/MapObject"
+        name:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+        pattern_file:
+          $ref: "#/components/schemas/PatternFile"
+        updated_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+        visibility:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+
+    MesheryPatternPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        patterns:
+          type: array
+          items:
+            $ref: "#/components/schemas/MesheryPattern"
+        resultType:
+          type: string
+        total_count:
+          type: integer
+
+    MesheryPatternDeleteRequestBody:
+      type: object
+      properties:
+        patterns:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeletePatternModel"
+
+    MesheryPatternRequestBody:
+      type: object
+      properties:
+        path:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+        pattern_data:
+          $ref: "#/components/schemas/MesheryPattern"
+        save:
+          type: boolean
+        url:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Endpoint"
+        name:
+          type: string
