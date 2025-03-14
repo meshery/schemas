@@ -28,12 +28,17 @@
     "metadata": {
       "type": "object",
       "x-order": 5,
+      "additionalProperties": true,
       "properties": {
         "resolvedAliases": {
           "description": "Map of resolved aliases present in the design",
           "type": "object",
+          "x-go-type": "map[string]core.ResolvedAlias",
+          "x-go-type-import": {
+            "path": "github.com/meshery/schemas/models/v1alpha1/core"
+          },
           "additionalProperties": {
-            "ref": "../../core.json#/definitions/semverString"
+            "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/ResolvedAlias"
           }
         }
       }
@@ -45,7 +50,7 @@
       "type": "array",
       "items": {
         "$ref": "../component.json",
-        "x-go-type": "component.ComponentDefinition",
+        "x-go-type": "*component.ComponentDefinition",
         "x-go-type-import": {
           "path": "github.com/meshery/schemas/models/v1beta1/component"
         }
@@ -69,7 +74,7 @@
       "x-order": 8,
       "items": {
         "$ref": "../../v1alpha3/relationship.json",
-        "x-go-type": "relationship.Relationship",
+        "x-go-type": "*relationship.RelationshipDefinition",
         "x-go-type-import": {
           "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
         }
@@ -77,5 +82,12 @@
     }
   },
 
-  "required": ["name", "schemaVersion", "version", "components"]
+  "required": [
+    "id",
+    "name",
+    "schemaVersion",
+    "version",
+    "components",
+    "relationships"
+  ]
 }

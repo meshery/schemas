@@ -20,7 +20,11 @@ components:
       type: object
       properties:
         catalog_data:
-          $ref: "../../v1alpha1/catalog_data.json"
+          $ref: "../../v1alpha2/catalog/openapi.yml#/components/schemas/CatalogData"
+          x-go-type: catalog.CatalogData
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1alpha2/catalog
+
         created_at:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
         user_id:
@@ -31,6 +35,8 @@ components:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
         pattern_file:
           $ref: "#/components/schemas/PatternFile"
+          x-go-type: PatternFile
+
         updated_at:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
         id:
@@ -49,6 +55,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/MesheryPattern"
+            x-go-type: MesheryPattern
+
         resultType:
           type: string
         total_count:
@@ -61,6 +69,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/DeletePatternModel"
+            x-go-type: DeletePatternModel
 
     MesheryPatternRequestBody:
       type: object
@@ -69,6 +78,7 @@ components:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
         pattern_data:
           $ref: "#/components/schemas/MesheryPattern"
+          x-go-type: MesheryPattern
         save:
           type: boolean
         url:
