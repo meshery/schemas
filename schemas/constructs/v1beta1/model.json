@@ -69,11 +69,7 @@
     "status": {
       "type": "string",
       "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-      "enum": [
-        "ignored",
-        "enabled",
-        "duplicate"
-      ],
+      "enum": ["ignored", "enabled", "duplicate"],
       "x-order": 7,
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
@@ -91,15 +87,15 @@
     },
     "category": {
       "type": "object",
-      "description": "Determines the main grouping of the model.",
+      "description": "Main grouping of the model.",
       "properties": {
         "id": {
           "$ref": "../core.json#/definitions/uuid",
           "x-order": 1
         },
         "name": {
-          "x-order": 2,
-          "$ref": "../core.json#/definitions/category"
+          "$ref": "../core.json#/definitions/category",
+          "x-order": 2
         },
         "metadata": {
           "type": "object",
@@ -250,9 +246,7 @@
     "model": {
       "type": "object",
       "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-      "required": [
-        "version"
-      ],
+      "required": ["version"],
       "properties": {
         "version": {
           "description": "Version of the model as defined by the registrant.",
@@ -270,10 +264,5 @@
       "x-order": 12
     }
   },
-  "required": [
-    "name",
-    "version",
-    "registrant",
-    "category"
-  ]
+  "required": ["name", "version", "registrant", "category"]
 }

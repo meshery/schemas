@@ -434,7 +434,7 @@ export interface HttpsSchemasMesheryIoModelJson {
   status?: "ignored" | "enabled" | "duplicate";
   registrant: HttpsSchemasMesheryIoComponentJson1;
   /**
-   * Determines the main grouping of the model.
+   * Main grouping of the model.
    */
   category: {
     /**

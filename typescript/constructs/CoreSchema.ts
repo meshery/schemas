@@ -17,12 +17,7 @@ const schema = {
       "maxLength": 100,
       "description": "API version of the object",
       "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-      "example": [
-        "v1",
-        "v1alpha1",
-        "v2beta3",
-        "v1.custom-suffix"
-      ]
+      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
     },
     "semverString": {
       "type": "string",
@@ -49,11 +44,7 @@ const schema = {
       "type": "object",
       "description": "Common styles for all entities",
       "additionalProperties": true,
-      "required": [
-        "primaryColor",
-        "svgColor",
-        "svgWhite"
-      ],
+      "required": ["primaryColor", "svgColor", "svgWhite"],
       "properties": {
         "primaryColor": {
           "type": "string",
@@ -104,11 +95,7 @@ const schema = {
         "text-transform": {
           "type": "string",
           "description": "A transformation to apply to the label text",
-          "enum": [
-            "none",
-            "uppercase",
-            "lowercase"
-          ]
+          "enum": ["none", "uppercase", "lowercase"]
         },
         "opacity": {
           "type": "number",
@@ -279,20 +266,12 @@ const schema = {
             "line-style": {
               "type": "string",
               "description": "The style of the edge\u2019s line.",
-              "enum": [
-                "solid",
-                "dotted",
-                "dashed"
-              ]
+              "enum": ["solid", "dotted", "dashed"]
             },
             "line-cap": {
               "type": "string",
               "description": "The cap style of the edge\u2019s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
-              "enum": [
-                "butt",
-                "round",
-                "square"
-              ],
+              "enum": ["butt", "round", "square"],
               "default": "butt"
             },
             "line-opacity": {
@@ -327,10 +306,7 @@ const schema = {
             "target-arrow-fill": {
               "type": "string",
               "description": "The fill state of the edge\u2019s source arrow",
-              "enum": [
-                "filled",
-                "hollow"
-              ]
+              "enum": ["filled", "hollow"]
             },
             "mid-target-arrow-color": {
               "type": "string",
@@ -357,10 +333,7 @@ const schema = {
             "mid-target-arrow-fill": {
               "type": "string",
               "description": "The fill state of the edge\u2019s source arrow",
-              "enum": [
-                "filled",
-                "hollow"
-              ]
+              "enum": ["filled", "hollow"]
             },
             "arrow-scale": {
               "type": "number",
@@ -382,12 +355,7 @@ const schema = {
     "componentStyles": {
       "type": "object",
       "description": "Visualization styles for a component",
-      "required": [
-        "shape",
-        "primaryColor",
-        "svgColor",
-        "svgWhite"
-      ],
+      "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
       "allOf": [
         {
           "$ref": "#/definitions/styles"
@@ -400,10 +368,7 @@ const schema = {
             "position": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "x",
-                "y"
-              ],
+              "required": ["x", "y"],
               "description": "The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.",
               "properties": {
                 "x": {
@@ -532,12 +497,7 @@ const schema = {
             "border-style": {
               "type": "string",
               "description": "The style of the node\u2019s border",
-              "enum": [
-                "solid",
-                "dotted",
-                "dashed",
-                "double"
-              ]
+              "enum": ["solid", "dotted", "dashed", "double"]
             },
             "border-color": {
               "type": "string",
@@ -557,29 +517,18 @@ const schema = {
             "text-halign": {
               "type": "string",
               "description": "The horizontal alignment of a node\u2019s label",
-              "enum": [
-                "left",
-                "center",
-                "right"
-              ]
+              "enum": ["left", "center", "right"]
             },
             "text-valign": {
               "type": "string",
               "description": "The vertical alignment of a node\u2019s label",
-              "enum": [
-                "top",
-                "center",
-                "bottom"
-              ]
+              "enum": ["top", "center", "bottom"]
             },
             "ghost": {
               "type": "string",
               "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
               "default": "no",
-              "enum": [
-                "yes",
-                "no"
-              ]
+              "enum": ["yes", "no"]
             },
             "active-bg-color": {
               "type": "string",
@@ -698,10 +647,7 @@ const schema = {
               }
             }
           },
-          "required": [
-            "resolved_parent_id",
-            "resolved_ref_field_path"
-          ]
+          "required": ["resolved_parent_id", "resolved_ref_field_path"]
         }
       ]
     },

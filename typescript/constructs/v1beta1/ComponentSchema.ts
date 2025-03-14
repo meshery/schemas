@@ -361,7 +361,7 @@ const schema = {
         },
         "category": {
           "type": "object",
-          "description": "Determines the main grouping of the model.",
+          "description": "Main grouping of the model.",
           "properties": {
             "id": {
               "x-order": 1,

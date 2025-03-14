@@ -163,7 +163,7 @@ export interface HttpsSchemasMesheryIoModelJson {
   status?: "ignored" | "enabled" | "duplicate";
   registrant: HttpsSchemasMesheryIoComponentJson;
   /**
-   * Determines the main grouping of the model.
+   * Main grouping of the model.
    */
   category: {
     /**
@@ -462,7 +462,7 @@ export interface HttpsSchemasMesheryIoModelJson1 {
   status?: "ignored" | "enabled" | "duplicate";
   registrant: HttpsSchemasMesheryIoComponentJson;
   /**
-   * Determines the main grouping of the model.
+   * Main grouping of the model.
    */
   category: {
     /**
@@ -659,7 +659,7 @@ export interface HttpsSchemasMesheryIoModelJson2 {
   status?: "ignored" | "enabled" | "duplicate";
   registrant: HttpsSchemasMesheryIoComponentJson;
   /**
-   * Determines the main grouping of the model.
+   * Main grouping of the model.
    */
   category: {
     /**
