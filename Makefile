@@ -64,7 +64,7 @@ publish-ts: build-ts
 resolve-ref: setup
 	SCHEMA_PATH=$(path) node scripts/ref-resolver.js
 
-generate-golang: setup
+generate-golang:
 	./generate-golang.sh
 
 setup:
