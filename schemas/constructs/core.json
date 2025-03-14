@@ -145,6 +145,91 @@
         "polygon"
       ]
     },
+    "category": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "name",
+        "json": "name"
+      },
+      "description": "The category of the model that determines the main grouping.",
+      "enum": [
+        "Analytics",
+        "App Definition and Development",
+        "Cloud Native Network",
+        "Cloud Native Storage",
+        "Database",
+        "Machine Learning",
+        "Observability and Analysis",
+        "Orchestration & Management",
+        "Platform",
+        "Provisioning",
+        "Runtime",
+        "Security & Compliance",
+        "Serverless",
+        "Tools",
+        "Uncategorized"
+      ]
+    },
+    "subCategory": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "subCategory",
+        "json": "subCategory"
+      },
+      "description": "The sub-category of the model that determines the secondary grouping.",
+      "enum": [
+        "API Gateway",
+        "API Integration",
+        "Application Definition & Image Build",
+        "Automation & Configuration",
+        "Certified Kubernetes - Distribution",
+        "Chaos Engineering",
+        "Cloud Native Storage",
+        "Cloud Provider",
+        "CNI",
+        "Compute",
+        "Container Registry",
+        "Container Runtime",
+        "Container Security",
+        "Container",
+        "Content Delivery Network",
+        "Continuous Integration & Delivery",
+        "Coordination & Service Discovery",
+        "Database",
+        "Flowchart",
+        "Framework",
+        "Installable Platform",
+        "Key Management",
+        "Key Management Service",
+        "Kubernetes",
+        "Logging",
+        "Machine Learning",
+        "Management Governance",
+        "Metrics",
+        "Monitoring",
+        "Networking Content Delivery",
+        "Operating System",
+        "Query",
+        "Remote Procedure Call",
+        "Scheduling & Orchestration",
+        "Secrets Management",
+        "Security Identity & Compliance",
+        "Service Mesh",
+        "Service Proxy",
+        "Source Version Control",
+        "Storage",
+        "Specifications",
+        "Streaming & Messaging",
+        "Tools",
+        "Tracing",
+        "Uncategorized",
+        "Video Conferencing"
+      ]
+    },
     "edgeStyles": {
       "type": "object",
       "description": "Visualization styles for a relationship",
@@ -295,7 +380,6 @@
                 }
               }
             },
-
             "body-text": {
               "type": "string",
               "description": "The text to display for an element\u2019s body. Can give a path, e.g. data(id) will label with the elements id"
@@ -350,7 +434,6 @@
               "type": "number",
               "description": "The height of the node\u2019s body"
             },
-
             "background-image": {
               "type": "string",
               "description": "The URL that points to the image to show in the node."
@@ -387,7 +470,6 @@
               "type": "string",
               "description": "The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)"
             },
-
             "background-fit": {
               "type": "string",
               "description": "How the background image is fit to the node. Can be 'none', 'contain', or 'cover'."
@@ -515,7 +597,6 @@
         }
       ]
     },
-
     "NonResolvedAlias": {
       "description": "An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents",
       "type": "object",
@@ -543,7 +624,6 @@
         "immediate_ref_field_path"
       ]
     },
-
     "ResolvedAlias": {
       "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
       "type": "object",
@@ -568,7 +648,6 @@
         }
       ]
     },
-
     "IaCFileTypes": {
       "type": "string",
       "description": "The type of the IaC file",

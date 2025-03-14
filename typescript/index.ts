@@ -33,9 +33,11 @@ import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/ComponentSche
 import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/ModelSchema";
 import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/DesignsSchema";
 import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
+import CoreDefinitionSchema from "./constructs/CoreSchema";
 
 export {
   core,
+  CoreDefinitionSchema,
   CapabilityDefinitionV1Alpha1Schema,
   CatalogDataDefinitionV1Alpha1Schema,
   DesignDefinitionV1Alpha2Schema,
