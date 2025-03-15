@@ -1,0 +1,11 @@
+{
+  "metadata": {},
+  "selectors": {
+    "items": {
+      "deny": {},
+      "allow": {}
+    }
+  },
+  "deny": {},
+  "allow": {}
+}

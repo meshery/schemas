@@ -1,0 +1,17 @@
+{
+  "1": {},
+  "contentType": {
+    "oneOf": {
+      "0": {
+        "model": {}
+      }
+    }
+  },
+  "pattern_caveats": "",
+  "pattern_info": "",
+  "type": "Deployment",
+  "snapshotURL": {},
+  "tags": "",
+  "category": "",
+  "subCategory": ""
+}
