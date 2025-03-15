@@ -1,0 +1,24 @@
+openapi: 3.0.0
+info:
+  title: Model API
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    Model:
+      type: object
+      description: "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)."
+      required:
+        - version
+      properties:
+        version:
+          description: "Version of the model as defined by the registrant."
+          allOf:
+            - $ref: "../../core.json#/definitions/semverString"
+          x-oapi-codegen-extra-tags:
+            yaml: "version"
+            json: "version"
+          x-order: 1
+
+    ModelDefinition:
+      $ref: "./model.json"
