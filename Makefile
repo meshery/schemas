@@ -23,7 +23,7 @@ include build/Makefile.show-help.mk
 jekyll=bundle exec jekyll
 
 site:
-	bundle install; $(jekyll) serve --drafts --incremental --livereload 
+	bundle install; $(jekyll) serve --drafts --incremental --livereload
 
 
 
@@ -62,9 +62,13 @@ publish-ts: build-ts
 
 
 resolve-ref: setup
-	SCHEMA_PATH=$(path) node scripts/ref-resolver.js 
+	SCHEMA_PATH=$(path) node scripts/ref-resolver.js
+
+generate-golang:
+	./generate-golang.sh
 
 setup:
+	go mod tidy
 	npm install
 #-----------------------------------------------------------------------------
 # Dependencies
@@ -81,14 +85,24 @@ ifeq (,$(findstring $(GOVERSION), $(INSTALLED_GO_VERSION)))
 	@echo "Dependency missing: go$(GOVERSION). Ensure 'go$(GOVERSION).x' is installed and available in your 'PATH'"
 	@echo "GOVERSION: " $(GOVERSION)
 	@echo "INSTALLED_GO_VERSION: " $(INSTALLED_GO_VERSION)
-# Force error and stop.
-#	$(error Found $(INSTALLED_GO_VERSION). \
-#	 Required golang version is: 'go$(GOVERSION).x'. \
-#	 Ensure go '$(GOVERSION).x' is installed and available in your 'PATH'.)
 endif
 
-# redocly join openapi/schemas/applications.yml openapi/schemas/capabilities.yml openapi/schemas/catalog.yml openapi/schemas/collaboration.yml openapi/schemas/connections.yml openapi/schemas/credentials.yml openapi/schemas/events.yml  openapi/schemas/meshmodels.yml openapi/schemas/smp_profile.yml openapi/schemas/tokens.yml openapi/schemas/user_onboarding.yml openapi/schemas/users.yml
+# redocly cli
+ifeq (,$(shell command -v redocly))
+	@echo "Dependency missing: redocly. Install redocly cli from https://redoc.ly/docs/cli/installation/"
+	@echo "installing redocly"
+	npm install -g @redocly/cli
+endif
+
+# oapi-codegen
+ifeq (,$(shell command -v oapi-codegen))
+	@echo "Dependency missing: oapi-codegen. Install oapi-codegen cli from
+	@echo "installing oapi-codegen"
+	# for the binary install
+    go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+endif
 
 
 
-# redocly join openapi-schema/schemas/applications.yml openapi-schema/schemas/connections.yml yml openapi-schema/schemas/user_onboarding.yml openapi-schema/schemas/users.yml
+
+

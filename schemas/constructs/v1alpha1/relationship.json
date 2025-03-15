@@ -50,10 +50,10 @@
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
             "properties": {
               "from": {
-                "$ref": "./selectors.json#/from"
+                "$ref": "./selector.json#/from"
               },
               "to": {
-                "$ref": "./selectors.json#/to"
+                "$ref": "./selector.json#/to"
               }
             }
           },
@@ -62,10 +62,10 @@
             "description": "Selectors used to define relationships which are allowed",
             "properties": {
               "from": {
-                "$ref": "./selectors.json#/from"
+                "$ref": "./selector.json#/from"
               },
               "to": {
-                "$ref": "./selectors.json#/to"
+                "$ref": "./selector.json#/to"
               }
             }
           }

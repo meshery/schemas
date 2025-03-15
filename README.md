@@ -128,6 +128,96 @@ Please do! We're a warm and welcoming community of open source contributors. All
 
 <div>&nbsp;</div>
 
+
+# **Schema-Driven Development Guide**
+
+Meshery follows a **Schema-Driven Development (SDD)** approach. This means that the **structure of data** used in the application is defined using **schemas**, ensuring consistency, validation, and code generation across the project.  
+
+## **Schema Definition in Meshery**
+Meshery uses **OpenAPI v3** specification to define schemas. Given the complexity of the project, where multiple constructs and APIs exist, we adopt a structured approach to schema management:  
+- **Schemas are versioned** to maintain backward compatibility.  
+- **Schemas are modular** to support different components of Meshery independently.  
+- **Schemas are used for validation, API definition, and automatic code generation.**  
+
+### **Schema Directory Structure**
+All schemas are stored in the **`schemas`** directory at the root of the project. The structure follows:  
+
+```
+schemas/
+  constructs/
+    <schema-version>/  # e.g., v1beta1
+      <construct>/  # e.g., model, component
+        <construct>.json    # Schema definition for the construct (noun)
+        subschemas/         # Any subschemas used within the construct
+        openapi.yml         # OpenAPI schema defining API operations (verbs like create, update, delete)
+```
+
+### **Explanation**
+- **`constructs/`** – Contains schemas for different versions.  
+- **`<schema-version>/`** – Each schema version (e.g., `v1beta1`, `v1alpha2`) is a separate directory.  
+- **`<construct>/`** – Each construct (e.g., `capability`, `category`) has its own folder.  
+- **`<construct>.json`** – Defines the **schema for the noun** (i.e., the entity).  
+- **`subschemas/`** – Contains reusable subschemas for modularity.  
+- **`openapi.yml`** – Defines **API operations** (verbs: `create`, `update`, `delete`) and serves as the **entry point** for the schema.  
+
+This approach ensures that **schemas are well-organized, reusable, and scalable** across different Meshery components.
+
+---
+
+## **Code Generation**
+Meshery supports **automatic code generation** for:
+- **Golang** (structs and types)
+- **TypeScript** (interfaces and types)
+
+### **Generating Code from Schemas**
+The schema-to-code mapping is defined in **`generate.sh`**, which automates the generation process.
+
+#### **Generating Golang Models**
+To generate Go structs from schemas, use:  
+```bash
+make generate-golang
+```
+
+#### **Generating TypeScript Models**
+To generate TypeScript types from schemas, use:  
+```bash
+make generate-ts
+```
+
+### **Schema-to-Code Mapping**
+Example mapping in **`generate.sh`**:
+```bash
+generate_schema_models <construct> <schema-version>
+generate_schema_models "capability" "v1alpha1"
+generate_schema_models "category" "v1beta1"
+generate_schema_models "component" "v1beta1"
+generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
+generate_schema_models "core" "v1alpha1"
+generate_schema_models "catalog" "v1alpha2"
+```
+- The **package name matches the construct name**.
+- Example: For the `capability` construct in `v1alpha1`, the generated Go code will be in:
+  ```
+  models/v1alpha1/capability/capability.go
+  ```
+
+### **Example Output**
+```bash
+./generate-golang.sh
+🔹 Processing: capability (v1alpha1)...
+✅ Generated: models/v1alpha1/capability/capability.go
+🔹 Processing: category (v1beta1)...
+✅ Generated: models/v1beta1/category/category.go
+🔹 Processing: pattern (v1beta1)...
+✅ Generated: models/v1beta1/pattern/pattern.go
+🔹 Processing: core (v1alpha1)...
+✅ Generated: models/v1alpha1/core/core.go
+🔹 Processing: catalog (v1alpha2)...
+✅ Generated: models/v1alpha2/catalog/catalog.go
+```
+
+This ensures that schemas remain the **single source of truth**, making development **efficient, consistent, and scalable**.  
+
 ### License
 
 This repository and site are available as open-source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
