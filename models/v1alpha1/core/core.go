@@ -511,7 +511,7 @@ type ComponentStyles struct {
 	SvgColor string `json:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete *string `json:"svgComplete,omitempty"`
+	SvgComplete string `json:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
 	SvgWhite string `json:"svgWhite"`
@@ -635,7 +635,7 @@ type EdgeStyles struct {
 	SvgColor string `json:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete *string `json:"svgComplete,omitempty"`
+	SvgComplete string `json:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
 	SvgWhite string `json:"svgWhite"`
@@ -817,7 +817,7 @@ type RelationshipStyles0 struct {
 	SvgColor string `json:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete *string `json:"svgComplete,omitempty"`
+	SvgComplete string `json:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
 	SvgWhite string `json:"svgWhite"`
@@ -905,7 +905,7 @@ type RelationshipStyles1 struct {
 	SvgColor string `json:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete *string `json:"svgComplete,omitempty"`
+	SvgComplete string `json:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
 	SvgWhite string `json:"svgWhite"`
@@ -980,7 +980,7 @@ type Styles struct {
 	SvgColor string `json:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete *string `json:"svgComplete,omitempty"`
+	SvgComplete string `json:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
 	SvgWhite string `json:"svgWhite"`
@@ -1961,11 +1961,9 @@ func (a ComponentStyles) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
+	object["svgComplete"], err = json.Marshal(a.SvgComplete)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
 	}
 
 	object["svgWhite"], err = json.Marshal(a.SvgWhite)
@@ -2466,11 +2464,9 @@ func (a EdgeStyles) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
+	object["svgComplete"], err = json.Marshal(a.SvgComplete)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
 	}
 
 	object["svgWhite"], err = json.Marshal(a.SvgWhite)
@@ -2978,11 +2974,9 @@ func (a RelationshipStyles0) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
+	object["svgComplete"], err = json.Marshal(a.SvgComplete)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
 	}
 
 	object["svgWhite"], err = json.Marshal(a.SvgWhite)
@@ -3293,11 +3287,9 @@ func (a RelationshipStyles1) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
+	object["svgComplete"], err = json.Marshal(a.SvgComplete)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
 	}
 
 	object["svgWhite"], err = json.Marshal(a.SvgWhite)
@@ -3580,11 +3572,9 @@ func (a Styles) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
 	}
 
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
+	object["svgComplete"], err = json.Marshal(a.SvgComplete)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
 	}
 
 	object["svgWhite"], err = json.Marshal(a.SvgWhite)
