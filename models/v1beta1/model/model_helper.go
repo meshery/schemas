@@ -20,6 +20,8 @@ import (
 
 var modelCreationLock sync.Mutex //Each component/relationship will perform a check and if the model already doesn't exist, it will create a model. This lock will make sure that there are no race conditions.
 
+const ModelDefinitionStatusIgnored = Ignored
+
 func (m ModelDefinition) TableName() string {
 	return "model_dbs"
 }

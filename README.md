@@ -175,7 +175,7 @@ The schema-to-code mapping is defined in **`generate.sh`**, which automates the 
 #### **Generating Golang Models**
 To generate Go structs from schemas, use:  
 ```bash
-make generate-golang
+make golang-generate
 ```
 
 #### **Generating TypeScript Models**
