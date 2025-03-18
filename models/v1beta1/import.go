@@ -8,6 +8,7 @@ type ImportBody struct {
 	ComponentCsv string `json:"component_csv" yaml:"component_csv"`
 	FileName string `json:"file_name" yaml:"file_name"`
     Model    Model  `json:"model" yaml:"model"`
+    Components []Component `json:"components" yaml:"components"`
 	ModelCsv     string `json:"model_csv" yaml:"model_csv"`
 
 	// ModelFile represents the binary content of the file as a byte array
@@ -51,6 +52,8 @@ type Component struct{
     SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
     PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
     SecondaryColor string `json:"secondaryColor" yaml:"secondaryColor"`
+    Category string `json:"category" yaml:"category"`
+    SubCategory string `json:"subCategory" yaml:"subCategory"`
     IsAnnotation bool `json:"isAnnotation" yaml:"isAnnotation"`
     PublishToRegistry bool `json:"publishToRegistry" yaml:"publishToRegistry"`
 }

@@ -120,6 +120,10 @@ components:
           type: string
         model:
           type: string
+        category:
+          type: string
+        subCategory:
+          type: string
         shape:
           type: string
         primaryColor:
