@@ -40,3 +40,17 @@ type Model struct {
     SvgComplete       string `json:"svgComplete" yaml:"svgComplete"`
     SvgWhite          string `json:"svgWhite" yaml:"svgWhite"`
 }
+
+type Component struct{
+    Registrant string `json:"registrant" yaml:"registrant"`
+    Component string `json:"component" yaml:"component"`
+    Model string `json:"model" yaml:"model"`
+    Shape string `json:"shape" yaml:"shape"`
+    SvgColor string `json:"svgColor" yaml:"svgColor"`
+    SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
+    SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
+    PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
+    SecondaryColor string `json:"secondaryColor" yaml:"secondaryColor"`
+    IsAnnotation bool `json:"isAnnotation" yaml:"isAnnotation"`
+    PublishToRegistry bool `json:"publishToRegistry" yaml:"publishToRegistry"`
+}
