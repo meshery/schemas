@@ -30,16 +30,25 @@
       }
     },
     "name": {
+      "type": "string",
       "description": "The unique name for the model within the scope of a registrant.",
-      "$ref": "../core.json#/definitions/inputString",
+      "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+      "pattern": "^[a-z0-9-]+$",
+      "examples": [
+        "cert-manager"
+      ],
       "x-order": 4
     },
     "displayName": {
       "description": "Human-readable name for the model.",
+      "helperText": "Model display name should be a friendly name for your model.",
       "minLength": 1,
       "maxLength": 100,
       "type": "string",
-      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+      "pattern": "^[a-zA-Z0-9 ]+$",
+      "examples": [
+        "Cert Manager"
+      ],
       "x-order": 5,
       "x-oapi-codegen-extra-tags": {
         "yaml": "displayName",
@@ -78,20 +87,14 @@
     },
     "category": {
       "type": "object",
-      "description": "Category of the model.",
+      "description": "Main grouping of the model.",
       "properties": {
         "id": {
           "$ref": "../core.json#/definitions/uuid",
           "x-order": 1
         },
         "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 100,
-          "x-oapi-codegen-extra-tags": {
-            "yaml": "name",
-            "json": "name"
-          },
+          "$ref": "../core.json#/definitions/category",
           "x-order": 2
         },
         "metadata": {
@@ -111,14 +114,7 @@
       }
     },
     "subCategory": {
-      "type": "string",
-      "description": "Sub-category of the model.",
-      "minLength": 1,
-      "maxLength": 100,
-      "x-oapi-codegen-extra-tags": {
-        "yaml": "subCategory",
-        "json": "subCategory"
-      },
+      "$ref": "../core.json#/definitions/subCategory",
       "x-order": 10
     },
     "metadata": {
@@ -193,6 +189,52 @@
             "json": "svgComplete"
           },
           "x-order": 7
+        },
+        "shape": {
+          "x-order": 8,
+          "$ref": "../core.json#/definitions/shape"
+        },
+        "sourceUri": {
+          "type": "string",
+          "description": "URI to the source code or package of the model.",
+          "oneOf": [
+            {
+              "title": "GitHub",
+              "type": "string",
+              "pattern": "^git://github\\.com/[\\w.-]+/[\\w.-]+(/[\\w.-]+/[\\w/-]+)?$",
+              "description": "Git protocol URL for GitHub repository or specific resource path",
+              "examples": [
+                "git://github.com/cert-manager/cert-manager/master/deploy/crds"
+              ],
+              "metadata": {
+                "uiType": "url",
+                "validationHint": "Enter a git protocol URL (e.g., git://github.com/owner/repo)"
+              }
+            },
+            {
+              "title": "Artifact Hub",
+              "type": "string",
+              "pattern": "^https:\\/\\/artifacthub\\.io\\/packages\\/(search\\?ts_query_web=[\\w.-]+|[\\w.-]+\\/[\\w.-]+\\/[\\w.-]+)$",
+              "description": "Artifact Hub package URL or search query URL with model name parameter",
+              "examples": [
+                "https://artifacthub.io/packages/search?ts_query_web={model-name}"
+              ],
+              "metadata": {
+                "uiType": "url",
+                "validationHint": "Enter an Artifact Hub URL (e.g., https://artifacthub.io/packages/search?ts_query_web={meshery-operator})"
+              }
+            }
+          ],
+          "x-order": 9,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "sourceUri",
+            "json": "sourceUri"
+          },
+          "metadata": {
+            "uiType": "url",
+            "urlValidation": true,
+            "validationHint": "Enter either a git:// GitHub URL or an Artifact Hub URL"
+          }
         }
       },
       "x-oapi-codegen-extra-tags": {
