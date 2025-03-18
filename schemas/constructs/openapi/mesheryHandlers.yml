@@ -9,8 +9,8 @@ components:
       type: object
       required:
         - importBody
-        - uploadType  
-        - register   
+        - uploadType
+        - register
       properties:
         importBody:
           $ref: '#/components/schemas/ImportBody'
@@ -18,9 +18,9 @@ components:
           type: string
         register:
           type: boolean
-          nullable: false  
+          nullable: false
 
-    ImportBody:   
+    ImportBody:
       type: object
       required:
         - model_file
@@ -29,11 +29,12 @@ components:
         - model_csv
         - component_csv
         - relationship_csv
-        - model 
+        - model
+        - component
       properties:
         model_file:
           type: string
-          format: byte  
+          format: byte
           description: "This represents the binary content of the file as a byte array"
         url:
           type: string
@@ -45,8 +46,10 @@ components:
           type: string
         relationship_csv:
           type: string
-        model: 
+        model:
           $ref: '#/components/schemas/Model'
+        component:
+          $ref: '#/components/schemas/Component'
 
     Model:
       type: object
@@ -74,6 +77,48 @@ components:
         category:
           type: string
         subCategory:
+          type: string
+        shape:
+          type: string
+        primaryColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        secondaryColor:
+          type: string
+          pattern: "^#[0-9A-Fa-f]{6}$"
+        svgColor:
+          type: string
+        svgWhite:
+          type: string
+        svgComplete:
+          type: string
+        isAnnotation:
+          type: boolean
+        publishToRegistry:
+          type: boolean
+
+    Component:
+      type: object
+      required:
+        - registrant
+        - component
+        - model
+        - category
+        - subCategory
+        - shape
+        - primaryColor
+        - secondaryColor
+        - svgColor
+        - svgWhite
+        - svgComplete
+        - isAnnotation
+        - publishToRegistry
+      properties:
+        registrant:
+          type: string
+        component:
+          type: string
+        model:
           type: string
         shape:
           type: string
