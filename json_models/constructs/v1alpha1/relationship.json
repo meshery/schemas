@@ -1,0 +1,16 @@
+{
+  "apiVersion": "",
+  "kind": "",
+  "metadata": {
+    "description": ""
+  },
+  "subType": "",
+  "selectors": {
+    "items": {
+      "deny": {},
+      "allow": {}
+    }
+  },
+  "deny": {},
+  "allow": {}
+}

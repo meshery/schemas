@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "",
+  "version": "",
+  "description": "",
+  "format": "JSON",
+  "metadata": {
+    "genealogy": "",
+    "shape": "",
+    "primaryColor": "",
+    "secondaryColor": "",
+    "svgWhite": "",
+    "svgColor": "",
+    "svgComplete": "",
+    "status": ""
+  },
+  "capabilities": {},
+  "component": {
+    "version": "",
+    "kind": "",
+    "schema": ""
+  }
+}
