@@ -29,10 +29,7 @@ function walk(fullPath) {
       let abosolutePath = path.join(fullPath, entry);
 
       console.log(`Processing ${abosolutePath}...`);
-      if (
-        abosolutePath.includes("openapi") ||
-        abosolutePath.includes("draft")
-      ) {
+      if (abosolutePath.includes("openapi") || abosolutePath.includes("draft")) {
         return;
       }
       if (isDir(abosolutePath)) {
@@ -49,18 +46,13 @@ function walk(fullPath) {
 async function processFile(path) {
   let resolvedSchema = await resolveRef(path);
   if (!!resolvedSchema && resolvedSchema["properties"]) {
-    resolvedSchema["properties"] = addAdditionalTagsToSchema(
-      resolvedSchema["properties"],
-    );
+    resolvedSchema["properties"] = addAdditionalTagsToSchema(resolvedSchema["properties"]);
 
     try {
       fs.writeFileSync(path, JSON.stringify(resolvedSchema, null, "  "));
     } catch (err) {
       console.error(err);
-      console.log(
-        "error writing the resolved schema to file: ",
-        resolvedSchema,
-      );
+      console.log("error writing the resolved schema to file: ", resolvedSchema);
     }
   }
 }
@@ -74,42 +66,34 @@ function walkObject(object, parentOrder = 0) {
   try {
     let orderCount = parentOrder;
     Object.keys(object).forEach((key) => {
+      if (!object[key]) return;
       // Add x-order to the current field
       object[key]["x-order"] = ++orderCount;
 
-      Object.values(object[key]).forEach((val) => {
-        if (object[key]["type"] == "object" && !!object[key]["properties"]) {
-          // For nested objects, start a new ordering sequence
-          object[key]["properties"] = walkObject(object[key]["properties"], 0);
-        } else if (object[key]["type"] == "array") {
-          if (
-            object[key]["items"]["type"] == "object" &&
-            !!object[key]["items"]["properties"]
-          ) {
-            // For array of objects, start a new ordering sequence for the nested properties
-            object[key]["items"]["properties"] = walkObject(
-              object[key]["items"]["properties"],
-              0,
-            );
-          } else {
-            let existingTags = getExistingExtraTags(object[key]["items"]);
-            object[key]["items"]["x-oapi-codegen-extra-tags"] = {
-              ...existingTags,
-              yaml: key,
-              json: key,
-            };
-          }
-        } else {
-          let existingTags = getExistingExtraTags(object[key]);
-          object[key]["x-oapi-codegen-extra-tags"] = {
+      if (object[key].type === "object" && object[key].properties) {
+        // For nested objects, start a new ordering sequence
+
+        object[key].properties = walkObject(object[key].properties, 0);
+      } else if (object[key].type === "array" && object[key].items) {
+        if (object[key].items.type === "object" && object[key].items.properties) {
+          // For array of objects, start a new ordering sequence for the nested properties
+          object[key].items.properties = walkObject(object[key].items.properties, 0);
+        } else if (object[key].items) {
+          let existingTags = getExistingExtraTags(object[key].items);
+          object[key].items["x-oapi-codegen-extra-tags"] = {
             ...existingTags,
             yaml: key,
             json: key,
           };
         }
-        return val;
-      });
-      return object;
+      } else {
+        let existingTags = getExistingExtraTags(object[key]);
+        object[key]["x-oapi-codegen-extra-tags"] = {
+          ...existingTags,
+          yaml: key,
+          json: key,
+        };
+      }
     });
   } catch (e) {
     console.error(e);
@@ -127,3 +111,4 @@ function getExistingExtraTags(object) {
 }
 
 walk(schemaPath);
+

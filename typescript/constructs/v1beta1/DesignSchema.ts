@@ -1,4 +1,4 @@
-// Generated from constructs/v1beta1/designs.json
+// Generated from constructs/v1beta1/design.json
 // This file exports the original JSON schema
 
 const schema = {

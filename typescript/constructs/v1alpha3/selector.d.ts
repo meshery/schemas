@@ -6,7 +6,7 @@
  */
 
 /**
- * This interface was referenced by `HttpsSchemasMesheryIoSelectorsJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoSelectorJson`'s JSON-Schema
  * via the `definition` "matchSelector".
  */
 export type MatchSelector = ({
@@ -32,7 +32,7 @@ export type MatchSelector = ({
 /**
  * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
  *
- * This interface was referenced by `HttpsSchemasMesheryIoSelectorsJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoSelectorJson`'s JSON-Schema
  * via the `definition` "selector".
  */
 export type Selector = {
@@ -84,7 +84,7 @@ export type Selector = {
 /**
  * Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.
  *
- * This interface was referenced by `HttpsSchemasMesheryIoSelectorsJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoSelectorJson`'s JSON-Schema
  * via the `definition` "selectors".
  */
 export type Selectors = {
@@ -109,7 +109,7 @@ export type Selectors = {
 /**
  * Reusable relationships selectors schema elements
  */
-export interface HttpsSchemasMesheryIoSelectorsJson {
+export interface HttpsSchemasMesheryIoSelectorJson {
   [k: string]: unknown;
 }
 /**
