@@ -6,6 +6,6 @@ components:
     # component_definition:
     #   $ref: ../v1beta1/component.json
     # capability:
-    #   $ref: ../v1alpha1/capability.json
+    #   $ref: ../v1alpha1/capability/capability.json
     relationship_definition:
       $ref: ../v1alpha3/relationship.json

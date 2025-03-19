@@ -141,7 +141,7 @@
           "type": "array",
           "description": "Capabilities associated with the model",
           "items": {
-            "$ref": "../../v1alpha1/capability.json",
+            "$ref": "../../v1alpha1/capability/capability.json",
             "x-go-type": "capability.Capability",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/v1alpha1/capability"

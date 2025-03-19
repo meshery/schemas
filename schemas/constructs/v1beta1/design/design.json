@@ -49,7 +49,7 @@
       "x-order": 6,
       "type": "array",
       "items": {
-        "$ref": "../component.json",
+        "$ref": "../component/component.json",
         "x-go-type": "*component.ComponentDefinition",
         "x-go-type-import": {
           "path": "github.com/meshery/schemas/models/v1beta1/component"
