@@ -43,7 +43,7 @@ Consider this schema snippet with an external reference:
   "type": "array",
   "description": "Meshery manages components...",
   "items": {
-    "$ref": "../v1alpha1/capability.json" // reference here
+    "$ref": "../v1alpha1/capability/capability.json" // reference here
   }
 }
 ```
@@ -98,7 +98,7 @@ generate:
 
 import-mapping:  # Map schema references to Go imports
   "../v1beta1/model.json": "github.com/meshery/schemas/models/v1beta1/model"
-  "../v1alpha1/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
+  "../v1alpha1/capability/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
 
 output: models/v1beta1/organization.go  # Specify output file
 output-options:
@@ -198,7 +198,7 @@ generate:
 
 import-mapping:
   "../v1beta1/model.json": "github.com/meshery/schemas/models/v1beta1/model"
-  "../v1alpha1/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
+  "../v1alpha1/capability/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
 
 output: models/v1beta1/component/component.go
 output-options:
