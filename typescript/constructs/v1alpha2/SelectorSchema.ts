@@ -16,7 +16,7 @@ const schema = {
           "type": "string"
         },
         "model": {
-          "$ref": "../v1beta1/model.json",
+          "$ref": "../v1beta1/model/model.json",
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {
@@ -79,7 +79,7 @@ const schema = {
           "type": "string"
         },
         "model": {
-          "$ref": "../v1beta1/model.json",
+          "$ref": "../v1beta1/model/model.json",
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {

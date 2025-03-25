@@ -119,15 +119,15 @@ const schema = {
         "id": {
           "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
           "x-order": 1,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "id",
+            "json": "id"
+          },
           "type": "string",
           "format": "uuid",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
             "path": "github.com/gofrs/uuid"
-          },
-          "x-oapi-codegen-extra-tags": {
-            "yaml": "id",
-            "json": "id"
           }
         },
         "schemaVersion": {
@@ -163,12 +163,12 @@ const schema = {
         "name": {
           "description": "The unique name for the model within the scope of a registrant.",
           "x-order": 4,
-          "type": "string",
-          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
           "x-oapi-codegen-extra-tags": {
             "yaml": "name",
             "json": "name"
-          }
+          },
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
         },
         "displayName": {
           "description": "Human-readable name for the model.",
@@ -214,6 +214,10 @@ const schema = {
             "gorm": "foreignKey:RegistrantId;references:Id"
           },
           "x-order": 8,
+          "x-go-type": "connection.Connection",
+          "x-go-type-import": {
+            "path": "github.com/meshery/schemas/models/v1beta1/connection"
+          },
           "$id": "https://schemas.meshery.io/component.json",
           "$schema": "http://json-schema.org/draft-07/schema#",
           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -371,9 +375,56 @@ const schema = {
             }
           }
         },
+        "registrantId": {
+          "description": "ID of the registrant.",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "registrantId",
+            "json": "registrantId",
+            "gorm": "column:connection_id"
+          },
+          "x-order": 9,
+          "type": "string",
+          "format": "uuid",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
+        },
+        "categoryId": {
+          "description": "ID of the category.",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "categoryId",
+            "json": "categoryId",
+            "gorm": "categoryID"
+          },
+          "x-order": 10,
+          "type": "string",
+          "format": "uuid",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
+        },
         "category": {
+          "x-order": 11,
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "category",
+            "json": "category",
+            "gorm": "foreignKey:CategoryId;references:Id"
+          },
+          "x-go-type": "category.CategoryDefinition",
+          "x-go-type-import": {
+            "path": "github.com/meshery/schemas/models/v1beta1/category"
+          },
+          "$id": "https://schemas.meshery.io/category.json",
+          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "description": "Category of the model.",
+          "required": [
+            "id",
+            "name",
+            "metadata"
+          ],
           "properties": {
             "id": {
               "x-order": 1,
@@ -395,7 +446,8 @@ const schema = {
               "maxLength": 100,
               "x-oapi-codegen-extra-tags": {
                 "yaml": "name",
-                "json": "name"
+                "json": "name",
+                "gorm": "name"
               },
               "x-order": 2
             },
@@ -403,16 +455,11 @@ const schema = {
               "type": "object",
               "x-oapi-codegen-extra-tags": {
                 "yaml": "metadata",
-                "json": "metadata"
+                "json": "metadata",
+                "gorm": "type:bytes;serializer:json"
               },
               "x-order": 3
             }
-          },
-          "x-order": 9,
-          "x-oapi-codegen-extra-tags": {
-            "yaml": "category",
-            "json": "category",
-            "gorm": "foreignKey:CategoryId;references:Id"
           }
         },
         "subCategory": {
@@ -424,28 +471,39 @@ const schema = {
             "yaml": "subCategory",
             "json": "subCategory"
           },
-          "x-order": 10
+          "x-order": 12
         },
         "metadata": {
           "type": "object",
           "description": "Metadata containing additional information associated with the model.",
+          "required": [
+            "svgWhite",
+            "svgColor"
+          ],
           "properties": {
             "capabilities": {
               "type": "array",
               "description": "Capabilities associated with the model",
               "items": {
+                "x-go-type": "capability.Capability",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                },
                 "$id": "https://schemas.meshery.io/capability.json",
                 "$schema": "http://json-schema.org/draft-07/schema#",
                 "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                 "additionalProperties": false,
                 "type": "object",
                 "required": [
+                  "description",
                   "schemaVersion",
                   "version",
                   "displayName",
                   "kind",
                   "type",
+                  "subType",
                   "entityState",
+                  "key",
                   "status"
                 ],
                 "x-oapi-codegen-extra-tags": {
@@ -669,42 +727,107 @@ const schema = {
             }
           },
           "x-oapi-codegen-extra-tags": {
-            "gorm": "type:bytes;serializer:json"
+            "gorm": "type:bytes;serializer:json",
+            "json": "metadata",
+            "yaml": "metadata"
           },
-          "x-order": 11,
+          "x-order": 13,
           "additionalProperties": true
         },
         "model": {
+          "x-oapi-codegen-extra-tags": {
+            "gorm": "type:bytes;serializer:json"
+          },
+          "x-order": 14,
           "type": "object",
-          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
           "required": [
             "version"
           ],
           "properties": {
             "version": {
               "description": "Version of the model as defined by the registrant.",
+              "allOf": [
+                {
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 100,
+                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                  "x-order": 3,
+                  "x-oapi-codegen-extra-tags": {
+                    "yaml": "version",
+                    "json": "version"
+                  }
+                }
+              ],
               "x-oapi-codegen-extra-tags": {
                 "yaml": "version",
                 "json": "version"
               },
-              "x-order": 1,
-              "type": "string",
-              "minLength": 5,
-              "maxLength": 100,
-              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+              "x-order": 1
             }
-          },
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "x-go-type": "interface{}",
           "x-oapi-codegen-extra-tags": {
-            "gorm": "type:bytes;serializer:json"
+            "gorm": "-",
+            "json": "relationships",
+            "yaml": "relationships"
           },
-          "x-order": 12
+          "x-order": 15
+        },
+        "components": {
+          "type": "array",
+          "x-go-type": "interface{}",
+          "x-oapi-codegen-extra-tags": {
+            "gorm": "-",
+            "json": "components",
+            "yaml": "components"
+          },
+          "x-order": 16
+        },
+        "componentsCount": {
+          "type": "integer",
+          "description": "Number of components associated with the model.",
+          "x-order": 17,
+          "x-oapi-codegen-extra-tags": {
+            "json": "componentsCount",
+            "yaml": "componentsCount",
+            "gorm": "-"
+          }
+        },
+        "relationshipsCount": {
+          "type": "integer",
+          "description": "Number of relationships associated with the model.",
+          "x-order": 18,
+          "x-oapi-codegen-extra-tags": {
+            "gorm": "-",
+            "json": "relationshipsCount",
+            "yaml": "relationshipsCount"
+          }
         }
       },
       "required": [
+        "id",
+        "schemaVersion",
+        "displayName",
+        "status",
+        "subCategory",
+        "model",
         "name",
+        "description",
         "version",
         "registrant",
-        "category"
+        "category",
+        "categoryId",
+        "registrantId",
+        "relationshipsCount",
+        "componentsCount",
+        "components",
+        "relationships"
       ],
       "x-order": 8
     },
@@ -752,15 +875,15 @@ const schema = {
                         "id": {
                           "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
                           "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          },
                           "type": "string",
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "id",
-                            "json": "id"
                           }
                         },
                         "schemaVersion": {
@@ -796,12 +919,12 @@ const schema = {
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
                           "x-order": 4,
-                          "type": "string",
-                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -847,6 +970,10 @@ const schema = {
                             "gorm": "foreignKey:RegistrantId;references:Id"
                           },
                           "x-order": 8,
+                          "x-go-type": "connection.Connection",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                          },
                           "$id": "https://schemas.meshery.io/component.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -1004,9 +1131,56 @@ const schema = {
                             }
                           }
                         },
+                        "registrantId": {
+                          "description": "ID of the registrant.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrantId",
+                            "json": "registrantId",
+                            "gorm": "column:connection_id"
+                          },
+                          "x-order": 9,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "categoryId": {
+                          "description": "ID of the category.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "categoryId",
+                            "json": "categoryId",
+                            "gorm": "categoryID"
+                          },
+                          "x-order": 10,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
                         "category": {
+                          "x-order": 11,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          },
+                          "x-go-type": "category.CategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/category"
+                          },
+                          "$id": "https://schemas.meshery.io/category.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "object",
                           "description": "Category of the model.",
+                          "required": [
+                            "id",
+                            "name",
+                            "metadata"
+                          ],
                           "properties": {
                             "id": {
                               "x-order": 1,
@@ -1028,7 +1202,8 @@ const schema = {
                               "maxLength": 100,
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
-                                "json": "name"
+                                "json": "name",
+                                "gorm": "name"
                               },
                               "x-order": 2
                             },
@@ -1036,16 +1211,11 @@ const schema = {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
-                                "json": "metadata"
+                                "json": "metadata",
+                                "gorm": "type:bytes;serializer:json"
                               },
                               "x-order": 3
                             }
-                          },
-                          "x-order": 9,
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "category",
-                            "json": "category",
-                            "gorm": "foreignKey:CategoryId;references:Id"
                           }
                         },
                         "subCategory": {
@@ -1057,28 +1227,39 @@ const schema = {
                             "yaml": "subCategory",
                             "json": "subCategory"
                           },
-                          "x-order": 10
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
                           "description": "Metadata containing additional information associated with the model.",
+                          "required": [
+                            "svgWhite",
+                            "svgColor"
+                          ],
                           "properties": {
                             "capabilities": {
                               "type": "array",
                               "description": "Capabilities associated with the model",
                               "items": {
+                                "x-go-type": "capability.Capability",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                },
                                 "$id": "https://schemas.meshery.io/capability.json",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "additionalProperties": false,
                                 "type": "object",
                                 "required": [
+                                  "description",
                                   "schemaVersion",
                                   "version",
                                   "displayName",
                                   "kind",
                                   "type",
+                                  "subType",
                                   "entityState",
+                                  "key",
                                   "status"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
@@ -1302,42 +1483,107 @@ const schema = {
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "type:bytes;serializer:json",
+                            "json": "metadata",
+                            "yaml": "metadata"
                           },
-                          "x-order": 11,
+                          "x-order": 13,
                           "additionalProperties": true
                         },
                         "model": {
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 14,
                           "type": "object",
-                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
                           "required": [
                             "version"
                           ],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
+                              "allOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 5,
+                                  "maxLength": 100,
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "x-order": 3,
+                                  "x-oapi-codegen-extra-tags": {
+                                    "yaml": "version",
+                                    "json": "version"
+                                  }
+                                }
+                              ],
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
                               },
-                              "x-order": 1,
-                              "type": "string",
-                              "minLength": 5,
-                              "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "x-order": 1
                             }
-                          },
+                          }
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "-",
+                            "json": "relationships",
+                            "yaml": "relationships"
                           },
-                          "x-order": 12
+                          "x-order": 15
+                        },
+                        "components": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "components",
+                            "yaml": "components"
+                          },
+                          "x-order": 16
+                        },
+                        "componentsCount": {
+                          "type": "integer",
+                          "description": "Number of components associated with the model.",
+                          "x-order": 17,
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "componentsCount",
+                            "yaml": "componentsCount",
+                            "gorm": "-"
+                          }
+                        },
+                        "relationshipsCount": {
+                          "type": "integer",
+                          "description": "Number of relationships associated with the model.",
+                          "x-order": 18,
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "relationshipsCount",
+                            "yaml": "relationshipsCount"
+                          }
                         }
                       },
                       "required": [
+                        "id",
+                        "schemaVersion",
+                        "displayName",
+                        "status",
+                        "subCategory",
+                        "model",
                         "name",
+                        "description",
                         "version",
                         "registrant",
-                        "category"
+                        "category",
+                        "categoryId",
+                        "registrantId",
+                        "relationshipsCount",
+                        "componentsCount",
+                        "components",
+                        "relationships"
                       ],
                       "x-order": 2
                     },
@@ -1447,15 +1693,15 @@ const schema = {
                         "id": {
                           "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
                           "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          },
                           "type": "string",
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "id",
-                            "json": "id"
                           }
                         },
                         "schemaVersion": {
@@ -1491,12 +1737,12 @@ const schema = {
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
                           "x-order": 4,
-                          "type": "string",
-                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -1542,6 +1788,10 @@ const schema = {
                             "gorm": "foreignKey:RegistrantId;references:Id"
                           },
                           "x-order": 8,
+                          "x-go-type": "connection.Connection",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                          },
                           "$id": "https://schemas.meshery.io/component.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -1699,9 +1949,56 @@ const schema = {
                             }
                           }
                         },
+                        "registrantId": {
+                          "description": "ID of the registrant.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrantId",
+                            "json": "registrantId",
+                            "gorm": "column:connection_id"
+                          },
+                          "x-order": 9,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "categoryId": {
+                          "description": "ID of the category.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "categoryId",
+                            "json": "categoryId",
+                            "gorm": "categoryID"
+                          },
+                          "x-order": 10,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
                         "category": {
+                          "x-order": 11,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          },
+                          "x-go-type": "category.CategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/category"
+                          },
+                          "$id": "https://schemas.meshery.io/category.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "object",
                           "description": "Category of the model.",
+                          "required": [
+                            "id",
+                            "name",
+                            "metadata"
+                          ],
                           "properties": {
                             "id": {
                               "x-order": 1,
@@ -1723,7 +2020,8 @@ const schema = {
                               "maxLength": 100,
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
-                                "json": "name"
+                                "json": "name",
+                                "gorm": "name"
                               },
                               "x-order": 2
                             },
@@ -1731,16 +2029,11 @@ const schema = {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
-                                "json": "metadata"
+                                "json": "metadata",
+                                "gorm": "type:bytes;serializer:json"
                               },
                               "x-order": 3
                             }
-                          },
-                          "x-order": 9,
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "category",
-                            "json": "category",
-                            "gorm": "foreignKey:CategoryId;references:Id"
                           }
                         },
                         "subCategory": {
@@ -1752,28 +2045,39 @@ const schema = {
                             "yaml": "subCategory",
                             "json": "subCategory"
                           },
-                          "x-order": 10
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
                           "description": "Metadata containing additional information associated with the model.",
+                          "required": [
+                            "svgWhite",
+                            "svgColor"
+                          ],
                           "properties": {
                             "capabilities": {
                               "type": "array",
                               "description": "Capabilities associated with the model",
                               "items": {
+                                "x-go-type": "capability.Capability",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                },
                                 "$id": "https://schemas.meshery.io/capability.json",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "additionalProperties": false,
                                 "type": "object",
                                 "required": [
+                                  "description",
                                   "schemaVersion",
                                   "version",
                                   "displayName",
                                   "kind",
                                   "type",
+                                  "subType",
                                   "entityState",
+                                  "key",
                                   "status"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
@@ -1997,42 +2301,107 @@ const schema = {
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "type:bytes;serializer:json",
+                            "json": "metadata",
+                            "yaml": "metadata"
                           },
-                          "x-order": 11,
+                          "x-order": 13,
                           "additionalProperties": true
                         },
                         "model": {
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 14,
                           "type": "object",
-                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
                           "required": [
                             "version"
                           ],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
+                              "allOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 5,
+                                  "maxLength": 100,
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "x-order": 3,
+                                  "x-oapi-codegen-extra-tags": {
+                                    "yaml": "version",
+                                    "json": "version"
+                                  }
+                                }
+                              ],
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
                               },
-                              "x-order": 1,
-                              "type": "string",
-                              "minLength": 5,
-                              "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "x-order": 1
                             }
-                          },
+                          }
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "-",
+                            "json": "relationships",
+                            "yaml": "relationships"
                           },
-                          "x-order": 12
+                          "x-order": 15
+                        },
+                        "components": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "components",
+                            "yaml": "components"
+                          },
+                          "x-order": 16
+                        },
+                        "componentsCount": {
+                          "type": "integer",
+                          "description": "Number of components associated with the model.",
+                          "x-order": 17,
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "componentsCount",
+                            "yaml": "componentsCount",
+                            "gorm": "-"
+                          }
+                        },
+                        "relationshipsCount": {
+                          "type": "integer",
+                          "description": "Number of relationships associated with the model.",
+                          "x-order": 18,
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "relationshipsCount",
+                            "yaml": "relationshipsCount"
+                          }
                         }
                       },
                       "required": [
+                        "id",
+                        "schemaVersion",
+                        "displayName",
+                        "status",
+                        "subCategory",
+                        "model",
                         "name",
+                        "description",
                         "version",
                         "registrant",
-                        "category"
+                        "category",
+                        "categoryId",
+                        "registrantId",
+                        "relationshipsCount",
+                        "componentsCount",
+                        "components",
+                        "relationships"
                       ],
                       "x-order": 2
                     },
@@ -2146,15 +2515,15 @@ const schema = {
                         "id": {
                           "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
                           "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          },
                           "type": "string",
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "id",
-                            "json": "id"
                           }
                         },
                         "schemaVersion": {
@@ -2190,12 +2559,12 @@ const schema = {
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
                           "x-order": 4,
-                          "type": "string",
-                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -2241,6 +2610,10 @@ const schema = {
                             "gorm": "foreignKey:RegistrantId;references:Id"
                           },
                           "x-order": 8,
+                          "x-go-type": "connection.Connection",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                          },
                           "$id": "https://schemas.meshery.io/component.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -2398,9 +2771,56 @@ const schema = {
                             }
                           }
                         },
+                        "registrantId": {
+                          "description": "ID of the registrant.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrantId",
+                            "json": "registrantId",
+                            "gorm": "column:connection_id"
+                          },
+                          "x-order": 9,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "categoryId": {
+                          "description": "ID of the category.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "categoryId",
+                            "json": "categoryId",
+                            "gorm": "categoryID"
+                          },
+                          "x-order": 10,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
                         "category": {
+                          "x-order": 11,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          },
+                          "x-go-type": "category.CategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/category"
+                          },
+                          "$id": "https://schemas.meshery.io/category.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "object",
                           "description": "Category of the model.",
+                          "required": [
+                            "id",
+                            "name",
+                            "metadata"
+                          ],
                           "properties": {
                             "id": {
                               "x-order": 1,
@@ -2422,7 +2842,8 @@ const schema = {
                               "maxLength": 100,
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
-                                "json": "name"
+                                "json": "name",
+                                "gorm": "name"
                               },
                               "x-order": 2
                             },
@@ -2430,16 +2851,11 @@ const schema = {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
-                                "json": "metadata"
+                                "json": "metadata",
+                                "gorm": "type:bytes;serializer:json"
                               },
                               "x-order": 3
                             }
-                          },
-                          "x-order": 9,
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "category",
-                            "json": "category",
-                            "gorm": "foreignKey:CategoryId;references:Id"
                           }
                         },
                         "subCategory": {
@@ -2451,28 +2867,39 @@ const schema = {
                             "yaml": "subCategory",
                             "json": "subCategory"
                           },
-                          "x-order": 10
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
                           "description": "Metadata containing additional information associated with the model.",
+                          "required": [
+                            "svgWhite",
+                            "svgColor"
+                          ],
                           "properties": {
                             "capabilities": {
                               "type": "array",
                               "description": "Capabilities associated with the model",
                               "items": {
+                                "x-go-type": "capability.Capability",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                },
                                 "$id": "https://schemas.meshery.io/capability.json",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "additionalProperties": false,
                                 "type": "object",
                                 "required": [
+                                  "description",
                                   "schemaVersion",
                                   "version",
                                   "displayName",
                                   "kind",
                                   "type",
+                                  "subType",
                                   "entityState",
+                                  "key",
                                   "status"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
@@ -2696,42 +3123,107 @@ const schema = {
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "type:bytes;serializer:json",
+                            "json": "metadata",
+                            "yaml": "metadata"
                           },
-                          "x-order": 11,
+                          "x-order": 13,
                           "additionalProperties": true
                         },
                         "model": {
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 14,
                           "type": "object",
-                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
                           "required": [
                             "version"
                           ],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
+                              "allOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 5,
+                                  "maxLength": 100,
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "x-order": 3,
+                                  "x-oapi-codegen-extra-tags": {
+                                    "yaml": "version",
+                                    "json": "version"
+                                  }
+                                }
+                              ],
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
                               },
-                              "x-order": 1,
-                              "type": "string",
-                              "minLength": 5,
-                              "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "x-order": 1
                             }
-                          },
+                          }
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "-",
+                            "json": "relationships",
+                            "yaml": "relationships"
                           },
-                          "x-order": 12
+                          "x-order": 15
+                        },
+                        "components": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "components",
+                            "yaml": "components"
+                          },
+                          "x-order": 16
+                        },
+                        "componentsCount": {
+                          "type": "integer",
+                          "description": "Number of components associated with the model.",
+                          "x-order": 17,
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "componentsCount",
+                            "yaml": "componentsCount",
+                            "gorm": "-"
+                          }
+                        },
+                        "relationshipsCount": {
+                          "type": "integer",
+                          "description": "Number of relationships associated with the model.",
+                          "x-order": 18,
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "relationshipsCount",
+                            "yaml": "relationshipsCount"
+                          }
                         }
                       },
                       "required": [
+                        "id",
+                        "schemaVersion",
+                        "displayName",
+                        "status",
+                        "subCategory",
+                        "model",
                         "name",
+                        "description",
                         "version",
                         "registrant",
-                        "category"
+                        "category",
+                        "categoryId",
+                        "registrantId",
+                        "relationshipsCount",
+                        "componentsCount",
+                        "components",
+                        "relationships"
                       ],
                       "x-order": 2
                     },
@@ -2841,15 +3333,15 @@ const schema = {
                         "id": {
                           "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
                           "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          },
                           "type": "string",
                           "format": "uuid",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "id",
-                            "json": "id"
                           }
                         },
                         "schemaVersion": {
@@ -2885,12 +3377,12 @@ const schema = {
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
                           "x-order": 4,
-                          "type": "string",
-                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -2936,6 +3428,10 @@ const schema = {
                             "gorm": "foreignKey:RegistrantId;references:Id"
                           },
                           "x-order": 8,
+                          "x-go-type": "connection.Connection",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                          },
                           "$id": "https://schemas.meshery.io/component.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -3093,9 +3589,56 @@ const schema = {
                             }
                           }
                         },
+                        "registrantId": {
+                          "description": "ID of the registrant.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "registrantId",
+                            "json": "registrantId",
+                            "gorm": "column:connection_id"
+                          },
+                          "x-order": 9,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "categoryId": {
+                          "description": "ID of the category.",
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "categoryId",
+                            "json": "categoryId",
+                            "gorm": "categoryID"
+                          },
+                          "x-order": 10,
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
                         "category": {
+                          "x-order": 11,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "category",
+                            "json": "category",
+                            "gorm": "foreignKey:CategoryId;references:Id"
+                          },
+                          "x-go-type": "category.CategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/category"
+                          },
+                          "$id": "https://schemas.meshery.io/category.json",
+                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "object",
                           "description": "Category of the model.",
+                          "required": [
+                            "id",
+                            "name",
+                            "metadata"
+                          ],
                           "properties": {
                             "id": {
                               "x-order": 1,
@@ -3117,7 +3660,8 @@ const schema = {
                               "maxLength": 100,
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
-                                "json": "name"
+                                "json": "name",
+                                "gorm": "name"
                               },
                               "x-order": 2
                             },
@@ -3125,16 +3669,11 @@ const schema = {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
-                                "json": "metadata"
+                                "json": "metadata",
+                                "gorm": "type:bytes;serializer:json"
                               },
                               "x-order": 3
                             }
-                          },
-                          "x-order": 9,
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "category",
-                            "json": "category",
-                            "gorm": "foreignKey:CategoryId;references:Id"
                           }
                         },
                         "subCategory": {
@@ -3146,28 +3685,39 @@ const schema = {
                             "yaml": "subCategory",
                             "json": "subCategory"
                           },
-                          "x-order": 10
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
                           "description": "Metadata containing additional information associated with the model.",
+                          "required": [
+                            "svgWhite",
+                            "svgColor"
+                          ],
                           "properties": {
                             "capabilities": {
                               "type": "array",
                               "description": "Capabilities associated with the model",
                               "items": {
+                                "x-go-type": "capability.Capability",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                },
                                 "$id": "https://schemas.meshery.io/capability.json",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "additionalProperties": false,
                                 "type": "object",
                                 "required": [
+                                  "description",
                                   "schemaVersion",
                                   "version",
                                   "displayName",
                                   "kind",
                                   "type",
+                                  "subType",
                                   "entityState",
+                                  "key",
                                   "status"
                                 ],
                                 "x-oapi-codegen-extra-tags": {
@@ -3391,42 +3941,107 @@ const schema = {
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "type:bytes;serializer:json",
+                            "json": "metadata",
+                            "yaml": "metadata"
                           },
-                          "x-order": 11,
+                          "x-order": 13,
                           "additionalProperties": true
                         },
                         "model": {
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json"
+                          },
+                          "x-order": 14,
                           "type": "object",
-                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                          "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
                           "required": [
                             "version"
                           ],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
+                              "allOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 5,
+                                  "maxLength": 100,
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "x-order": 3,
+                                  "x-oapi-codegen-extra-tags": {
+                                    "yaml": "version",
+                                    "json": "version"
+                                  }
+                                }
+                              ],
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
                               },
-                              "x-order": 1,
-                              "type": "string",
-                              "minLength": 5,
-                              "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "x-order": 1
                             }
-                          },
+                          }
+                        },
+                        "relationships": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "type:bytes;serializer:json"
+                            "gorm": "-",
+                            "json": "relationships",
+                            "yaml": "relationships"
                           },
-                          "x-order": 12
+                          "x-order": 15
+                        },
+                        "components": {
+                          "type": "array",
+                          "x-go-type": "interface{}",
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "components",
+                            "yaml": "components"
+                          },
+                          "x-order": 16
+                        },
+                        "componentsCount": {
+                          "type": "integer",
+                          "description": "Number of components associated with the model.",
+                          "x-order": 17,
+                          "x-oapi-codegen-extra-tags": {
+                            "json": "componentsCount",
+                            "yaml": "componentsCount",
+                            "gorm": "-"
+                          }
+                        },
+                        "relationshipsCount": {
+                          "type": "integer",
+                          "description": "Number of relationships associated with the model.",
+                          "x-order": 18,
+                          "x-oapi-codegen-extra-tags": {
+                            "gorm": "-",
+                            "json": "relationshipsCount",
+                            "yaml": "relationshipsCount"
+                          }
                         }
                       },
                       "required": [
+                        "id",
+                        "schemaVersion",
+                        "displayName",
+                        "status",
+                        "subCategory",
+                        "model",
                         "name",
+                        "description",
                         "version",
                         "registrant",
-                        "category"
+                        "category",
+                        "categoryId",
+                        "registrantId",
+                        "relationshipsCount",
+                        "componentsCount",
+                        "components",
+                        "relationships"
                       ],
                       "x-order": 2
                     },

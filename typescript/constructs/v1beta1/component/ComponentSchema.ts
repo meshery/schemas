@@ -479,12 +479,15 @@ const schema = {
                 "additionalProperties": false,
                 "type": "object",
                 "required": [
+                  "description",
                   "schemaVersion",
                   "version",
                   "displayName",
                   "kind",
                   "type",
+                  "subType",
                   "entityState",
+                  "key",
                   "status"
                 ],
                 "x-oapi-codegen-extra-tags": {
@@ -1253,11 +1256,11 @@ const schema = {
             }
           },
           "version": {
+            "description": "Version of the capability definition.",
             "type": "string",
             "minLength": 5,
             "maxLength": 100,
             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
             "x-order": 2,
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",

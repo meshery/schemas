@@ -173,20 +173,24 @@ const schema = {
           "id": {
             "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
             "x-order": 1,
+            "x-oapi-codegen-extra-tags": {
+              "yaml": "id",
+              "json": "id"
+            },
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "yaml": "id",
-              "json": "id"
             }
           },
           "schemaVersion": {
             "x-order": 2,
             "description": "Specifies the version of the schema to which the component definition conforms.",
+            "x-oapi-codegen-extra-tags": {
+              "yaml": "schemaVersion",
+              "json": "schemaVersion"
+            },
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
@@ -196,33 +200,29 @@ const schema = {
               "v1alpha1",
               "v2beta3",
               "v1.custom-suffix"
-            ],
-            "x-oapi-codegen-extra-tags": {
-              "yaml": "schemaVersion",
-              "json": "schemaVersion"
-            }
+            ]
           },
           "version": {
             "x-order": 3,
             "description": "Version of the component definition.",
             "minLength": 1,
             "maxLength": 50,
-            "type": "string",
-            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",
               "json": "version"
-            }
+            },
+            "type": "string",
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
           "displayName": {
             "x-order": 4,
             "description": "Name of the component in human-readible format.",
-            "type": "string",
-            "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
             "x-oapi-codegen-extra-tags": {
               "yaml": "displayName",
               "json": "displayName"
-            }
+            },
+            "type": "string",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
           },
           "description": {
             "x-order": 5,
@@ -248,6 +248,10 @@ const schema = {
             }
           },
           "model": {
+            "x-go-type": "model.ModelDefinition",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta1/model"
+            },
             "x-order": 7,
             "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
             "x-oapi-codegen-extra-tags": {
@@ -261,15 +265,15 @@ const schema = {
               "id": {
                 "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
                 "x-order": 1,
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "id",
+                  "json": "id"
+                },
                 "type": "string",
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
                   "path": "github.com/gofrs/uuid"
-                },
-                "x-oapi-codegen-extra-tags": {
-                  "yaml": "id",
-                  "json": "id"
                 }
               },
               "schemaVersion": {
@@ -305,12 +309,12 @@ const schema = {
               "name": {
                 "description": "The unique name for the model within the scope of a registrant.",
                 "x-order": 4,
-                "type": "string",
-                "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "name",
                   "json": "name"
-                }
+                },
+                "type": "string",
+                "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
               },
               "displayName": {
                 "description": "Human-readable name for the model.",
@@ -356,6 +360,10 @@ const schema = {
                   "gorm": "foreignKey:RegistrantId;references:Id"
                 },
                 "x-order": 8,
+                "x-go-type": "connection.Connection",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                },
                 "$id": "https://schemas.meshery.io/component.json",
                 "$schema": "http://json-schema.org/draft-07/schema#",
                 "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -513,9 +521,56 @@ const schema = {
                   }
                 }
               },
+              "registrantId": {
+                "description": "ID of the registrant.",
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "registrantId",
+                  "json": "registrantId",
+                  "gorm": "column:connection_id"
+                },
+                "x-order": 9,
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "categoryId": {
+                "description": "ID of the category.",
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "categoryId",
+                  "json": "categoryId",
+                  "gorm": "categoryID"
+                },
+                "x-order": 10,
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
               "category": {
+                "x-order": 11,
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "category",
+                  "json": "category",
+                  "gorm": "foreignKey:CategoryId;references:Id"
+                },
+                "x-go-type": "category.CategoryDefinition",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/v1beta1/category"
+                },
+                "$id": "https://schemas.meshery.io/category.json",
+                "$schema": "http://json-schema.org/draft-07/schema#",
                 "type": "object",
                 "description": "Category of the model.",
+                "required": [
+                  "id",
+                  "name",
+                  "metadata"
+                ],
                 "properties": {
                   "id": {
                     "x-order": 1,
@@ -537,7 +592,8 @@ const schema = {
                     "maxLength": 100,
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "name",
-                      "json": "name"
+                      "json": "name",
+                      "gorm": "name"
                     },
                     "x-order": 2
                   },
@@ -545,16 +601,11 @@ const schema = {
                     "type": "object",
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "metadata",
-                      "json": "metadata"
+                      "json": "metadata",
+                      "gorm": "type:bytes;serializer:json"
                     },
                     "x-order": 3
                   }
-                },
-                "x-order": 9,
-                "x-oapi-codegen-extra-tags": {
-                  "yaml": "category",
-                  "json": "category",
-                  "gorm": "foreignKey:CategoryId;references:Id"
                 }
               },
               "subCategory": {
@@ -566,28 +617,39 @@ const schema = {
                   "yaml": "subCategory",
                   "json": "subCategory"
                 },
-                "x-order": 10
+                "x-order": 12
               },
               "metadata": {
                 "type": "object",
                 "description": "Metadata containing additional information associated with the model.",
+                "required": [
+                  "svgWhite",
+                  "svgColor"
+                ],
                 "properties": {
                   "capabilities": {
                     "type": "array",
                     "description": "Capabilities associated with the model",
                     "items": {
+                      "x-go-type": "capability.Capability",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                      },
                       "$id": "https://schemas.meshery.io/capability.json",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                       "additionalProperties": false,
                       "type": "object",
                       "required": [
+                        "description",
                         "schemaVersion",
                         "version",
                         "displayName",
                         "kind",
                         "type",
+                        "subType",
                         "entityState",
+                        "key",
                         "status"
                       ],
                       "x-oapi-codegen-extra-tags": {
@@ -811,53 +873,138 @@ const schema = {
                   }
                 },
                 "x-oapi-codegen-extra-tags": {
-                  "gorm": "type:bytes;serializer:json"
+                  "gorm": "type:bytes;serializer:json",
+                  "json": "metadata",
+                  "yaml": "metadata"
                 },
-                "x-order": 11,
+                "x-order": 13,
                 "additionalProperties": true
               },
               "model": {
+                "x-oapi-codegen-extra-tags": {
+                  "gorm": "type:bytes;serializer:json"
+                },
+                "x-order": 14,
                 "type": "object",
-                "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
+                "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
                 "required": [
                   "version"
                 ],
                 "properties": {
                   "version": {
                     "description": "Version of the model as defined by the registrant.",
+                    "allOf": [
+                      {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 100,
+                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                        "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                      }
+                    ],
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "version",
                       "json": "version"
                     },
-                    "x-order": 1,
-                    "type": "string",
-                    "minLength": 5,
-                    "maxLength": 100,
-                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                    "x-order": 1
                   }
-                },
+                }
+              },
+              "relationships": {
+                "type": "array",
+                "x-go-type": "interface{}",
                 "x-oapi-codegen-extra-tags": {
-                  "gorm": "type:bytes;serializer:json"
+                  "gorm": "-",
+                  "json": "relationships",
+                  "yaml": "relationships"
                 },
-                "x-order": 12
+                "x-order": 15
+              },
+              "components": {
+                "type": "array",
+                "x-go-type": "interface{}",
+                "x-oapi-codegen-extra-tags": {
+                  "gorm": "-",
+                  "json": "components",
+                  "yaml": "components"
+                },
+                "x-order": 16
+              },
+              "componentsCount": {
+                "type": "integer",
+                "description": "Number of components associated with the model.",
+                "x-order": 17,
+                "x-oapi-codegen-extra-tags": {
+                  "json": "componentsCount",
+                  "yaml": "componentsCount",
+                  "gorm": "-"
+                }
+              },
+              "relationshipsCount": {
+                "type": "integer",
+                "description": "Number of relationships associated with the model.",
+                "x-order": 18,
+                "x-oapi-codegen-extra-tags": {
+                  "gorm": "-",
+                  "json": "relationshipsCount",
+                  "yaml": "relationshipsCount"
+                }
               }
             },
             "required": [
+              "id",
+              "schemaVersion",
+              "displayName",
+              "status",
+              "subCategory",
+              "model",
               "name",
+              "description",
               "version",
               "registrant",
-              "category"
+              "category",
+              "categoryId",
+              "registrantId",
+              "relationshipsCount",
+              "componentsCount",
+              "components",
+              "relationships"
             ]
           },
+          "modelId": {
+            "description": "ModelId is the foreign key to the model to which the component belongs.",
+            "x-oapi-codegen-extra-tags": {
+              "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
+              "yaml": "modelId",
+              "json": "modelId"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-order": 8
+          },
           "styles": {
-            "x-order": 8,
+            "x-oapi-codegen-extra-tags": {
+              "gorm": "type:bytes;serializer:json",
+              "yaml": "styles",
+              "json": "styles"
+            },
+            "x-go-type": "core.ComponentStyles",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1alpha1/core"
+            },
+            "x-order": 9,
             "type": "object",
             "description": "Visualization styles for a component",
             "required": [
               "shape",
               "primaryColor",
               "svgColor",
-              "svgWhite"
+              "svgWhite",
+              "svgComplete"
             ],
             "allOf": [
               {
@@ -867,7 +1014,8 @@ const schema = {
                 "required": [
                   "primaryColor",
                   "svgColor",
-                  "svgWhite"
+                  "svgWhite",
+                  "svgComplete"
                 ],
                 "properties": {
                   "primaryColor": {
@@ -892,7 +1040,7 @@ const schema = {
                   },
                   "color": {
                     "type": "string",
-                    "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "text-opacity": {
                     "type": "number",
@@ -927,7 +1075,7 @@ const schema = {
                   },
                   "opacity": {
                     "type": "number",
-                    "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                    "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                     "minimum": 0,
                     "maximum": 1
                   },
@@ -937,19 +1085,20 @@ const schema = {
                   },
                   "label": {
                     "type": "string",
-                    "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                    "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                   },
                   "animation": {
                     "type": "object",
-                    "description": "The animation to apply to the element. example ripple,bounce,etc "
+                    "description": "The animation to apply to the element. example ripple,bounce,etc"
                   }
                 }
               },
               {
+                "type": "object",
                 "properties": {
                   "shape": {
                     "type": "string",
-                    "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+                    "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
                     "enum": [
                       "ellipse",
                       "triangle",
@@ -1001,7 +1150,7 @@ const schema = {
                   },
                   "body-text": {
                     "type": "string",
-                    "description": "The text to display for an element’s body. Can give a path, e.g. data(id) will label with the elements id"
+                    "description": "The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id"
                   },
                   "body-text-wrap": {
                     "type": "string",
@@ -1013,45 +1162,45 @@ const schema = {
                   },
                   "body-text-opacity": {
                     "type": "number",
-                    "description": "The opacity of the node’s body text, including its outline.",
+                    "description": "The opacity of the node's body text, including its outline.",
                     "minimum": 0,
                     "maximum": 1
                   },
                   "body-text-background-color": {
                     "type": "string",
-                    "description": "The colour of the node’s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "body-text-font-size": {
                     "type": "number",
-                    "description": "The size of the node’s body text."
+                    "description": "The size of the node's body text."
                   },
                   "body-text-color": {
                     "type": "string",
-                    "description": "The colour of the node’s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "body-text-font-weight": {
                     "type": "string",
-                    "description": "A CSS font weight to be applied to the node’s body text."
+                    "description": "A CSS font weight to be applied to the node's body text."
                   },
                   "body-text-horizontal-align": {
                     "type": "string",
-                    "description": "A CSS horizontal alignment to be applied to the node’s body text."
+                    "description": "A CSS horizontal alignment to be applied to the node's body text."
                   },
                   "body-text-decoration": {
                     "type": "string",
-                    "description": "A CSS text decoration to be applied to the node’s body text."
+                    "description": "A CSS text decoration to be applied to the node's body text."
                   },
                   "body-text-vertical-align": {
                     "type": "string",
-                    "description": "A CSS vertical alignment to be applied to the node’s body text."
+                    "description": "A CSS vertical alignment to be applied to the node's body text."
                   },
                   "width": {
                     "type": "number",
-                    "description": "The width of the node’s body or the width of an edge’s line."
+                    "description": "The width of the node's body or the width of an edge's line."
                   },
                   "height": {
                     "type": "number",
-                    "description": "The height of the node’s body"
+                    "description": "The height of the node's body"
                   },
                   "background-image": {
                     "type": "string",
@@ -1059,17 +1208,17 @@ const schema = {
                   },
                   "background-color": {
                     "type": "string",
-                    "description": "The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "background-blacken": {
                     "type": "number",
-                    "description": "Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1.",
+                    "description": "Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1.",
                     "maximum": 1,
                     "minimum": -1
                   },
                   "background-opacity": {
                     "type": "number",
-                    "description": "The opacity level of the node’s background colour",
+                    "description": "The opacity level of the node's background colour",
                     "maximum": 1,
                     "minimum": 0
                   },
@@ -1099,20 +1248,20 @@ const schema = {
                   },
                   "background-width-relative-to": {
                     "type": "string",
-                    "description": "How the background image’s width is determined. Can be 'none', 'inner', or 'outer'."
+                    "description": "How the background image's width is determined. Can be 'none', 'inner', or 'outer'."
                   },
                   "background-height-relative-to": {
                     "type": "string",
-                    "description": "How the background image’s height is determined. Can be 'none', 'inner', or 'outer'."
+                    "description": "How the background image's height is determined. Can be 'none', 'inner', or 'outer'."
                   },
                   "border-width": {
                     "type": "number",
-                    "description": "The size of the node’s border.",
+                    "description": "The size of the node's border.",
                     "minimum": 0
                   },
                   "border-style": {
                     "type": "string",
-                    "description": "The style of the node’s border",
+                    "description": "The style of the node's border",
                     "enum": [
                       "solid",
                       "dotted",
@@ -1122,11 +1271,11 @@ const schema = {
                   },
                   "border-color": {
                     "type": "string",
-                    "description": "The colour of the node’s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "border-opacity": {
                     "type": "number",
-                    "description": "The opacity of the node’s border",
+                    "description": "The opacity of the node's border",
                     "minimum": 0,
                     "maximum": 1
                   },
@@ -1137,7 +1286,7 @@ const schema = {
                   },
                   "text-halign": {
                     "type": "string",
-                    "description": "The horizontal alignment of a node’s label",
+                    "description": "The horizontal alignment of a node's label",
                     "enum": [
                       "left",
                       "center",
@@ -1146,7 +1295,7 @@ const schema = {
                   },
                   "text-valign": {
                     "type": "string",
-                    "description": "The vertical alignment of a node’s label",
+                    "description": "The vertical alignment of a node's label",
                     "enum": [
                       "top",
                       "center",
@@ -1164,19 +1313,19 @@ const schema = {
                   },
                   "active-bg-color": {
                     "type": "string",
-                    "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "active-bg-opacity": {
                     "type": "string",
-                    "description": " The opacity of the active background indicator. Selector needs to be *core*."
+                    "description": "The opacity of the active background indicator. Selector needs to be *core*."
                   },
                   "active-bg-size": {
                     "type": "string",
-                    "description": " The opacity of the active background indicator. Selector needs to be *core*."
+                    "description": "The opacity of the active background indicator. Selector needs to be *core*."
                   },
                   "selection-box-color": {
                     "type": "string",
-                    "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "selection-box-border-width": {
                     "type": "number",
@@ -1184,13 +1333,13 @@ const schema = {
                   },
                   "selection-box-opacity": {
                     "type": "number",
-                    "description": "The opacity of the selection box.  Selector needs to be *core*",
+                    "description": "The opacity of the selection box. Selector needs to be *core*",
                     "minimum": 0,
                     "maximum": 1
                   },
                   "outside-texture-bg-color": {
                     "type": "string",
-                    "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "outside-texture-bg-opacity": {
                     "type": "number",
@@ -1200,11 +1349,11 @@ const schema = {
                   },
                   "shape-polygon-points": {
                     "type": "string",
-                    "description": "An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )"
+                    "description": "An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 )"
                   },
                   "menu-background-color": {
                     "type": "string",
-                    "description": "The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g."
                   },
                   "menu-background-opacity": {
                     "type": "number",
@@ -1214,33 +1363,36 @@ const schema = {
                   },
                   "menu-forground-color": {
                     "type": "string",
-                    "description": "The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                    "description": "The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g."
                   }
                 }
               }
-            ],
-            "x-oapi-codegen-extra-tags": {
-              "yaml": "styles",
-              "json": "styles"
-            }
+            ]
           },
           "capabilities": {
-            "x-order": 9,
+            "x-order": 10,
             "type": "array",
             "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
             "items": {
+              "x-go-type": "capability.Capability",
+              "x-go-type-import": {
+                "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+              },
               "$id": "https://schemas.meshery.io/capability.json",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
               "additionalProperties": false,
               "type": "object",
               "required": [
+                "description",
                 "schemaVersion",
                 "version",
                 "displayName",
                 "kind",
                 "type",
+                "subType",
                 "entityState",
+                "key",
                 "status"
               ],
               "x-oapi-codegen-extra-tags": {
@@ -1398,10 +1550,15 @@ const schema = {
                   }
                 }
               }
+            },
+            "x-oapi-codegen-extra-tags": {
+              "gorm": "type:bytes;serializer:json",
+              "yaml": "capabilities",
+              "json": "capabilities"
             }
           },
           "status": {
-            "x-order": 10,
+            "x-order": 11,
             "type": "string",
             "description": "Status of component, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
             "default": "enabled",
@@ -1418,9 +1575,17 @@ const schema = {
             }
           },
           "metadata": {
-            "x-order": 11,
+            "x-order": 12,
             "type": "object",
             "description": "Metadata contains additional information associated with the component.",
+            "required": [
+              "genealogy",
+              "isAnnotation",
+              "isNamespaced",
+              "published",
+              "instanceDetails",
+              "configurationUISchema"
+            ],
             "properties": {
               "genealogy": {
                 "x-order": 1,
@@ -1483,7 +1648,7 @@ const schema = {
             "additionalProperties": true
           },
           "configuration": {
-            "x-order": 12,
+            "x-order": 13,
             "description": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
             "type": "object",
             "$comment": "The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).",
@@ -1494,40 +1659,41 @@ const schema = {
             }
           },
           "component": {
-            "x-order": 13,
+            "x-order": 14,
+            "x-oapi-codegen-extra-tags": {
+              "gorm": "type:bytes;serializer:json"
+            },
+            "x-go-type": "Component",
+            "description": "data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an",
             "type": "object",
-            "description": "Component and it's properties.",
             "properties": {
               "version": {
-                "x-order": 1,
                 "type": "string",
                 "description": "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.",
+                "x-order": 1,
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "version",
                   "json": "version"
                 }
               },
               "kind": {
-                "x-order": 2,
                 "type": "string",
                 "description": "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.",
+                "x-order": 2,
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "kind",
                   "json": "kind"
                 }
               },
               "schema": {
-                "x-order": 3,
                 "type": "string",
                 "description": "JSON schema of the object as defined by the registrant.",
+                "x-order": 3,
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "schema",
                   "json": "schema"
                 }
               }
-            },
-            "x-oapi-codegen-extra-tags": {
-              "gorm": "type:bytes;serializer:json"
             },
             "required": [
               "version",
@@ -1537,8 +1703,15 @@ const schema = {
           }
         },
         "required": [
+          "id",
+          "displayName",
+          "description",
           "schemaVersion",
+          "format",
           "version",
+          "configuration",
+          "metadata",
+          "modelId",
           "model",
           "component"
         ]

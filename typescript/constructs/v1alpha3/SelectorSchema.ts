@@ -70,7 +70,7 @@ const schema = {
             "type": "string"
           },
           "model": {
-            "$ref": "../v1beta1/model.json",
+            "$ref": "../v1beta1/model/model.json",
             "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models"
           },
           "id": {
