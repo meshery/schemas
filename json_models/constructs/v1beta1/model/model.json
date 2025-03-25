@@ -33,12 +33,16 @@
     "svgColor": "",
     "svgComplete": ""
   },
+  "registrantId": "",
+  "categoryId": "",
   "category": {
     "id": "",
     "name": ""
   },
   "subCategory": "",
   "model": {
-    "version": ""
+    "version": {
+      "0": ""
+    }
   }
 }

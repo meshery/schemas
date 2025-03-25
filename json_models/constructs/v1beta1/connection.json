@@ -1,8 +1,14 @@
 {
+  "id": "",
   "name": "",
+  "credential_id": "",
   "type": "",
   "sub_type": "",
   "kind": "",
   "metadata": {},
-  "status": ""
+  "status": "",
+  "user_id": "",
+  "created_at": "",
+  "updated_at": "",
+  "deleted_at": ""
 }

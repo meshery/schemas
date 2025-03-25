@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^11.6.4",
+    "@apidevtools/json-schema-ref-parser": "^11.9.3",
     "json-schema-default": "^1.0.2",
     "json-schema-empty-strings": "^1.0.2",
     "json-schema-faker": "^0.5.8",

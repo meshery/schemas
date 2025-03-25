@@ -4,13 +4,89 @@
   "metadata": {
     "description": ""
   },
+  "model": {
+    "name": "",
+    "displayName": "",
+    "status": "",
+    "version": "",
+    "category": "",
+    "subCategory": ""
+  },
   "subType": "",
   "selectors": {
     "items": {
-      "deny": {},
-      "allow": {}
+      "deny": {
+        "from": {
+          "items": {
+            "kind": "",
+            "model": "",
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatorRef": {
+                "items": {}
+              }
+            }
+          }
+        },
+        "to": {
+          "items": {
+            "kind": "",
+            "model": "",
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatedRef": ""
+            }
+          }
+        }
+      },
+      "allow": {
+        "from": {
+          "items": {
+            "kind": "",
+            "model": "",
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatorRef": {
+                "items": {}
+              }
+            }
+          }
+        },
+        "to": {
+          "items": {
+            "kind": "",
+            "model": "",
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatedRef": ""
+            }
+          }
+        }
+      }
     }
   },
   "deny": {},
+  "match": {},
+  "patch": {},
   "allow": {}
 }

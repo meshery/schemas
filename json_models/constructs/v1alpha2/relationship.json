@@ -1,11 +1,301 @@
 {
+  "schemaVersion": "",
+  "version": "",
+  "kind": "",
+  "type": "",
+  "subType": "",
+  "evaluationQuery": "",
   "metadata": {},
+  "model": {
+    "registrant": {},
+    "category": {},
+    "metadata": {
+      "capabilities": {
+        "items": {
+          "kind": {},
+          "entityState": {},
+          "status": "enabled"
+        }
+      }
+    },
+    "model": {}
+  },
+  "registrant": {},
+  "category": {},
   "selectors": {
     "items": {
-      "deny": {},
-      "allow": {}
+      "deny": {
+        "from": {
+          "items": {
+            "kind": "",
+            "model": {
+              "id": "",
+              "schemaVersion": "",
+              "version": "",
+              "name": "",
+              "displayName": "",
+              "description": "",
+              "status": "",
+              "registrant": {
+                "id": "",
+                "name": "",
+                "credential_id": "",
+                "type": "",
+                "sub_type": "",
+                "kind": "",
+                "status": "",
+                "user_id": "",
+                "created_at": "",
+                "updated_at": "",
+                "deleted_at": ""
+              },
+              "category": {
+                "id": "",
+                "name": ""
+              },
+              "subCategory": "",
+              "metadata": {
+                "capabilities": {
+                  "items": {
+                    "schemaVersion": "",
+                    "version": "",
+                    "displayName": "",
+                    "description": "",
+                    "kind": {},
+                    "type": "",
+                    "subType": "",
+                    "key": "",
+                    "entityState": {},
+                    "status": "enabled"
+                  }
+                },
+                "primaryColor": "",
+                "secondaryColor": "",
+                "svgWhite": "",
+                "svgColor": "",
+                "svgComplete": ""
+              },
+              "model": {
+                "version": ""
+              }
+            },
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatorRef": {
+                "items": {}
+              }
+            }
+          }
+        },
+        "to": {
+          "items": {
+            "kind": "",
+            "model": {
+              "id": "",
+              "schemaVersion": "",
+              "version": "",
+              "name": "",
+              "displayName": "",
+              "description": "",
+              "status": "",
+              "registrant": {
+                "id": "",
+                "name": "",
+                "credential_id": "",
+                "type": "",
+                "sub_type": "",
+                "kind": "",
+                "status": "",
+                "user_id": "",
+                "created_at": "",
+                "updated_at": "",
+                "deleted_at": ""
+              },
+              "category": {
+                "id": "",
+                "name": ""
+              },
+              "subCategory": "",
+              "metadata": {
+                "capabilities": {
+                  "items": {
+                    "schemaVersion": "",
+                    "version": "",
+                    "displayName": "",
+                    "description": "",
+                    "kind": {},
+                    "type": "",
+                    "subType": "",
+                    "key": "",
+                    "entityState": {},
+                    "status": "enabled"
+                  }
+                },
+                "primaryColor": "",
+                "secondaryColor": "",
+                "svgWhite": "",
+                "svgColor": "",
+                "svgComplete": ""
+              },
+              "model": {
+                "version": ""
+              }
+            },
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatedRef": ""
+            }
+          }
+        }
+      },
+      "allow": {
+        "from": {
+          "items": {
+            "kind": "",
+            "model": {
+              "id": "",
+              "schemaVersion": "",
+              "version": "",
+              "name": "",
+              "displayName": "",
+              "description": "",
+              "status": "",
+              "registrant": {
+                "id": "",
+                "name": "",
+                "credential_id": "",
+                "type": "",
+                "sub_type": "",
+                "kind": "",
+                "status": "",
+                "user_id": "",
+                "created_at": "",
+                "updated_at": "",
+                "deleted_at": ""
+              },
+              "category": {
+                "id": "",
+                "name": ""
+              },
+              "subCategory": "",
+              "metadata": {
+                "capabilities": {
+                  "items": {
+                    "schemaVersion": "",
+                    "version": "",
+                    "displayName": "",
+                    "description": "",
+                    "kind": {},
+                    "type": "",
+                    "subType": "",
+                    "key": "",
+                    "entityState": {},
+                    "status": "enabled"
+                  }
+                },
+                "primaryColor": "",
+                "secondaryColor": "",
+                "svgWhite": "",
+                "svgColor": "",
+                "svgComplete": ""
+              },
+              "model": {
+                "version": ""
+              }
+            },
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatorRef": {
+                "items": {}
+              }
+            }
+          }
+        },
+        "to": {
+          "items": {
+            "kind": "",
+            "model": {
+              "id": "",
+              "schemaVersion": "",
+              "version": "",
+              "name": "",
+              "displayName": "",
+              "description": "",
+              "status": "",
+              "registrant": {
+                "id": "",
+                "name": "",
+                "credential_id": "",
+                "type": "",
+                "sub_type": "",
+                "kind": "",
+                "status": "",
+                "user_id": "",
+                "created_at": "",
+                "updated_at": "",
+                "deleted_at": ""
+              },
+              "category": {
+                "id": "",
+                "name": ""
+              },
+              "subCategory": "",
+              "metadata": {
+                "capabilities": {
+                  "items": {
+                    "schemaVersion": "",
+                    "version": "",
+                    "displayName": "",
+                    "description": "",
+                    "kind": {},
+                    "type": "",
+                    "subType": "",
+                    "key": "",
+                    "entityState": {},
+                    "status": "enabled"
+                  }
+                },
+                "primaryColor": "",
+                "secondaryColor": "",
+                "svgWhite": "",
+                "svgColor": "",
+                "svgComplete": ""
+              },
+              "model": {
+                "version": ""
+              }
+            },
+            "version": "",
+            "match": {
+              "self": {},
+              "kind": {}
+            },
+            "patch": {
+              "patchStrategy": "",
+              "mutatedRef": ""
+            }
+          }
+        }
+      }
     }
   },
   "deny": {},
+  "match": {},
+  "patch": {},
   "allow": {}
 }

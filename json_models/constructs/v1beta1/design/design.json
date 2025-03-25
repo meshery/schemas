@@ -5,7 +5,18 @@
   "schemaVersion": "",
   "version": "",
   "metadata": {
-    "resolvedAliases": {}
+    "resolvedAliases": {
+      "additionalProperties": {
+        "allOf": {
+          "0": {
+            "immediate_ref_field_path": {}
+          },
+          "1": {
+            "resolved_ref_field_path": {}
+          }
+        }
+      }
+    }
   },
   "resolvedAliases": {},
   "components": {
