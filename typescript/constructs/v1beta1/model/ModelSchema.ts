@@ -387,12 +387,15 @@ const schema = {
             "additionalProperties": false,
             "type": "object",
             "required": [
+              "description",
               "schemaVersion",
               "version",
               "displayName",
               "kind",
               "type",
+              "subType",
               "entityState",
+              "key",
               "status"
             ],
             "x-oapi-codegen-extra-tags": {

@@ -54,7 +54,7 @@
       }
     },
     "model": {
-      "$ref": "../v1beta1/model.json",
+      "$ref": "../v1beta1/model/model.json",
       "description": "Model of the Relationship."
     },
     "selectors": {

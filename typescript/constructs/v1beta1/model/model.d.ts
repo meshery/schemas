@@ -185,7 +185,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * A written representation of the purpose and characteristics of the capability.
    */
-  description?: string;
+  description: string;
   /**
    * Top-level categorization of the capability
    */
@@ -197,11 +197,11 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
    */
-  subType?: string;
+  subType: string;
   /**
    * Key that backs the capability.
    */
-  key?: string;
+  key: string;
   /**
    * State of the entity in which the capability is applicable.
    */

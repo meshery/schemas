@@ -500,7 +500,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * A written representation of the purpose and characteristics of the capability.
    */
-  description?: string;
+  description: string;
   /**
    * Top-level categorization of the capability
    */
@@ -512,11 +512,11 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
    */
-  subType?: string;
+  subType: string;
   /**
    * Key that backs the capability.
    */
-  key?: string;
+  key: string;
   /**
    * State of the entity in which the capability is applicable.
    */
@@ -623,7 +623,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson1 {
    */
   schemaVersion: string;
   /**
-   * A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+   * Version of the capability definition.
    */
   version: string;
   /**
@@ -634,9 +634,6 @@ export interface HttpsSchemasMesheryIoCapabilityJson1 {
    * A written representation of the purpose and characteristics of the capability.
    */
   description: string;
-  /**
-   * Top-level categorization of the capability
-   */
   kind: ("action" | "mutate" | "view" | "interaction") & string;
   /**
    * Classification of capabilities. Used to group capabilities similar in nature.

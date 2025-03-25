@@ -10,7 +10,7 @@
  */
 export type ComponentStyles = Styles & {
   /**
-   * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+   * The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
    */
   shape?:
     | "ellipse"
@@ -52,7 +52,7 @@ export type ComponentStyles = Styles & {
     y: number;
   };
   /**
-   * The text to display for an element’s body. Can give a path, e.g. data(id) will label with the elements id
+   * The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id
    */
   "body-text"?: string;
   /**
@@ -64,43 +64,43 @@ export type ComponentStyles = Styles & {
    */
   "body-text-max-width"?: string;
   /**
-   * The opacity of the node’s body text, including its outline.
+   * The opacity of the node's body text, including its outline.
    */
   "body-text-opacity"?: number;
   /**
-   * The colour of the node’s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "body-text-background-color"?: string;
   /**
-   * The size of the node’s body text.
+   * The size of the node's body text.
    */
   "body-text-font-size"?: number;
   /**
-   * The colour of the node’s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "body-text-color"?: string;
   /**
-   * A CSS font weight to be applied to the node’s body text.
+   * A CSS font weight to be applied to the node's body text.
    */
   "body-text-font-weight"?: string;
   /**
-   * A CSS horizontal alignment to be applied to the node’s body text.
+   * A CSS horizontal alignment to be applied to the node's body text.
    */
   "body-text-horizontal-align"?: string;
   /**
-   * A CSS text decoration to be applied to the node’s body text.
+   * A CSS text decoration to be applied to the node's body text.
    */
   "body-text-decoration"?: string;
   /**
-   * A CSS vertical alignment to be applied to the node’s body text.
+   * A CSS vertical alignment to be applied to the node's body text.
    */
   "body-text-vertical-align"?: string;
   /**
-   * The width of the node’s body or the width of an edge’s line.
+   * The width of the node's body or the width of an edge's line.
    */
   width?: number;
   /**
-   * The height of the node’s body
+   * The height of the node's body
    */
   height?: number;
   /**
@@ -108,15 +108,15 @@ export type ComponentStyles = Styles & {
    */
   "background-image"?: string;
   /**
-   * The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "background-color"?: string;
   /**
-   * Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1.
+   * Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1.
    */
   "background-blacken"?: number;
   /**
-   * The opacity level of the node’s background colour
+   * The opacity level of the node's background colour
    */
   "background-opacity"?: number;
   /**
@@ -144,27 +144,27 @@ export type ComponentStyles = Styles & {
    */
   "background-clip"?: string;
   /**
-   * How the background image’s width is determined. Can be 'none', 'inner', or 'outer'.
+   * How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
    */
   "background-width-relative-to"?: string;
   /**
-   * How the background image’s height is determined. Can be 'none', 'inner', or 'outer'.
+   * How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
    */
   "background-height-relative-to"?: string;
   /**
-   * The size of the node’s border.
+   * The size of the node's border.
    */
   "border-width"?: number;
   /**
-   * The style of the node’s border
+   * The style of the node's border
    */
   "border-style"?: "solid" | "dotted" | "dashed" | "double";
   /**
-   * The colour of the node’s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "border-color"?: string;
   /**
-   * The opacity of the node’s border
+   * The opacity of the node's border
    */
   "border-opacity"?: number;
   /**
@@ -172,11 +172,11 @@ export type ComponentStyles = Styles & {
    */
   padding?: number;
   /**
-   * The horizontal alignment of a node’s label
+   * The horizontal alignment of a node's label
    */
   "text-halign"?: "left" | "center" | "right";
   /**
-   * The vertical alignment of a node’s label
+   * The vertical alignment of a node's label
    */
   "text-valign"?: "top" | "center" | "bottom";
   /**
@@ -184,19 +184,19 @@ export type ComponentStyles = Styles & {
    */
   ghost?: "yes" | "no";
   /**
-   * The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "active-bg-color"?: string;
   /**
-   *  The opacity of the active background indicator. Selector needs to be *core*.
+   * The opacity of the active background indicator. Selector needs to be *core*.
    */
   "active-bg-opacity"?: string;
   /**
-   *  The opacity of the active background indicator. Selector needs to be *core*.
+   * The opacity of the active background indicator. Selector needs to be *core*.
    */
   "active-bg-size"?: string;
   /**
-   * The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "selection-box-color"?: string;
   /**
@@ -204,11 +204,11 @@ export type ComponentStyles = Styles & {
    */
   "selection-box-border-width"?: number;
   /**
-   * The opacity of the selection box.  Selector needs to be *core*
+   * The opacity of the selection box. Selector needs to be *core*
    */
   "selection-box-opacity"?: number;
   /**
-   * The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "outside-texture-bg-color"?: string;
   /**
@@ -216,11 +216,11 @@ export type ComponentStyles = Styles & {
    */
   "outside-texture-bg-opacity"?: number;
   /**
-   * An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node’s shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node’s position is the origin (0, 0 )
+   * An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 )
    */
   "shape-polygon-points"?: string;
   /**
-   * The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "menu-background-color"?: string;
   /**
@@ -228,7 +228,7 @@ export type ComponentStyles = Styles & {
    */
   "menu-background-opacity"?: number;
   /**
-   * The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "menu-forground-color"?: string;
   [k: string]: unknown;
@@ -323,7 +323,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
   /**
    * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
    */
-  id?: string;
+  id: string;
   /**
    * Specifies the version of the schema to which the component definition conforms.
    */
@@ -335,21 +335,25 @@ export interface HttpsSchemasMesheryIoComponentJson {
   /**
    * Name of the component in human-readible format.
    */
-  displayName?: string;
+  displayName: string;
   /**
    * A written representation of the purpose and characteristics of the component.
    */
-  description?: string;
+  description: string;
   /**
    * Format specifies the format used in the `component.schema` field. JSON is the default.
    */
-  format?: "JSON" | "CUE";
+  format: "JSON" | "CUE";
   model: HttpsSchemasMesheryIoModelJson;
+  /**
+   * ModelId is the foreign key to the model to which the component belongs.
+   */
+  modelId: string;
   styles?: ComponentStyles;
   /**
    * Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
    */
-  capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+  capabilities?: HttpsSchemasMesheryIoCapabilityJson1[];
   /**
    * Status of component, including:
    * - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -361,59 +365,42 @@ export interface HttpsSchemasMesheryIoComponentJson {
   /**
    * Metadata contains additional information associated with the component.
    */
-  metadata?: {
+  metadata: {
     /**
      * Genealogy represents the various representational states of the component.
      */
-    genealogy?: string;
+    genealogy: string;
     /**
      * Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.
      */
-    isAnnotation?: boolean;
+    isAnnotation: boolean;
     /**
      * Identifies whether the component is scoped to namespace or clsuter wide.
      */
-    isNamespaced?: boolean;
+    isNamespaced: boolean;
     /**
      * 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
      */
-    published?: boolean;
+    published: boolean;
     /**
      * InstanceDetails contains information about the instance of the component.
      */
-    instanceDetails?: {
+    instanceDetails: {
       [k: string]: unknown;
     };
     /**
      * Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ .
      */
-    configurationUISchema?: string;
+    configurationUISchema: string;
     [k: string]: unknown;
   };
   /**
    * The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).
    */
-  configuration?: {
+  configuration: {
     [k: string]: unknown;
   };
-  /**
-   * Component and it's properties.
-   */
-  component: {
-    /**
-     * Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.
-     */
-    version: string;
-    /**
-     * The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.
-     */
-    kind: string;
-    /**
-     * JSON schema of the object as defined by the registrant.
-     */
-    schema: string;
-    [k: string]: unknown;
-  };
+  component: Component;
 }
 /**
  * Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
@@ -422,11 +409,11 @@ export interface HttpsSchemasMesheryIoModelJson {
   /**
    * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
    */
-  id?: string;
+  id: string;
   /**
    * Specifies the version of the schema used for the definition.
    */
-  schemaVersion?: string;
+  schemaVersion: string;
   /**
    * Version of the model definition.
    */
@@ -438,11 +425,11 @@ export interface HttpsSchemasMesheryIoModelJson {
   /**
    * Human-readable name for the model.
    */
-  displayName?: string;
+  displayName: string;
   /**
    * Description of the model.
    */
-  description?: string;
+  description: string;
   /**
    * Status of model, including:
    * - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -450,26 +437,21 @@ export interface HttpsSchemasMesheryIoModelJson {
    * - enabled: model is available for use for all users of this Meshery Server.
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
-  status?: "ignored" | "enabled" | "duplicate";
+  status: "ignored" | "enabled" | "duplicate";
   registrant: HttpsSchemasMesheryIoComponentJson1;
   /**
-   * Category of the model.
+   * ID of the registrant.
    */
-  category: {
-    /**
-     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-     */
-    id?: string;
-    name?: string;
-    metadata?: {
-      [k: string]: unknown;
-    };
-    [k: string]: unknown;
-  };
+  registrantId: string;
+  /**
+   * ID of the category.
+   */
+  categoryId: string;
+  category: HttpsSchemasMesheryIoCategoryJson;
   /**
    * Sub-category of the model.
    */
-  subCategory?: string;
+  subCategory: string;
   /**
    * Metadata containing additional information associated with the model.
    */
@@ -493,27 +475,28 @@ export interface HttpsSchemasMesheryIoModelJson {
     /**
      * SVG representation of the model in white color.
      */
-    svgWhite?: string;
+    svgWhite: string;
     /**
      * SVG representation of the model in colored format.
      */
-    svgColor?: string;
+    svgColor: string;
     /**
      * SVG representation of the complete model.
      */
     svgComplete?: string;
     [k: string]: unknown;
   };
+  model: Model;
+  relationships: unknown[];
+  components: unknown[];
   /**
-   * Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
+   * Number of components associated with the model.
    */
-  model?: {
-    /**
-     * Version of the model as defined by the registrant.
-     */
-    version: string;
-    [k: string]: unknown;
-  };
+  componentsCount: number;
+  /**
+   * Number of relationships associated with the model.
+   */
+  relationshipsCount: number;
 }
 /**
  * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
@@ -567,6 +550,20 @@ export interface HttpsSchemasMesheryIoComponentJson1 {
   deleted_at?: string;
 }
 /**
+ * Category of the model.
+ */
+export interface HttpsSchemasMesheryIoCategoryJson {
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id: string;
+  name: string;
+  metadata: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
+}
+/**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
 export interface HttpsSchemasMesheryIoCapabilityJson {
@@ -585,7 +582,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * A written representation of the purpose and characteristics of the capability.
    */
-  description?: string;
+  description: string;
   /**
    * Top-level categorization of the capability
    */
@@ -597,11 +594,11 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
    */
-  subType?: string;
+  subType: string;
   /**
    * Key that backs the capability.
    */
-  key?: string;
+  key: string;
   /**
    * State of the entity in which the capability is applicable.
    */
@@ -616,6 +613,16 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   metadata?: {
     [k: string]: unknown;
   };
+}
+/**
+ * Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
+ */
+export interface Model {
+  /**
+   * Version of the model as defined by the registrant.
+   */
+  version: string;
+  [k: string]: unknown;
 }
 /**
  * Common styles for all entities
@@ -640,9 +647,9 @@ export interface Styles {
   /**
    * Complete SVG of the entity used for UI representation, often inclusive of background.
    */
-  svgComplete?: string;
+  svgComplete: string;
   /**
-   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
    */
   color?: string;
   /**
@@ -670,7 +677,7 @@ export interface Styles {
    */
   "text-transform"?: "none" | "uppercase" | "lowercase";
   /**
-   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
    */
   opacity?: number;
   /**
@@ -678,7 +685,7 @@ export interface Styles {
    */
   "z-index"?: number;
   /**
-   * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
+   * The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
    */
   label?: string;
   /**
@@ -687,6 +694,72 @@ export interface Styles {
   animation?: {
     [k: string]: unknown;
   };
+  [k: string]: unknown;
+}
+/**
+ * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
+ */
+export interface HttpsSchemasMesheryIoCapabilityJson1 {
+  /**
+   * Specifies the version of the schema to which the capability definition conforms.
+   */
+  schemaVersion: string;
+  /**
+   * Version of the capability definition.
+   */
+  version: string;
+  /**
+   * Name of the capability in human-readible format.
+   */
+  displayName: string;
+  /**
+   * A written representation of the purpose and characteristics of the capability.
+   */
+  description: string;
+  kind: ("action" | "mutate" | "view" | "interaction") & string;
+  /**
+   * Classification of capabilities. Used to group capabilities similar in nature.
+   */
+  type: string;
+  /**
+   * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
+   */
+  subType: string;
+  /**
+   * Key that backs the capability.
+   */
+  key: string;
+  /**
+   * State of the entity in which the capability is applicable.
+   */
+  entityState: ("declaration" | "instance")[];
+  /**
+   * Status of the capability
+   */
+  status: "enabled" | "disabled";
+  /**
+   * Metadata contains additional information associated with the capability. Extension point.
+   */
+  metadata?: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an
+ */
+export interface Component {
+  /**
+   * Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.
+   */
+  version: string;
+  /**
+   * The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.
+   */
+  kind: string;
+  /**
+   * JSON schema of the object as defined by the registrant.
+   */
+  schema: string;
   [k: string]: unknown;
 }
 /**
@@ -729,7 +802,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
   /**
    * Capabilities associated with the relationship.
    */
-  capabilities?: HttpsSchemasMesheryIoCapabilityJson2[];
+  capabilities?: HttpsSchemasMesheryIoCapabilityJson3[];
   /**
    * Metadata contains additional information associated with the Relationship.
    */
@@ -1371,7 +1444,7 @@ export interface HttpsSchemasMesheryIoModelJson1 {
     /**
      * Capabilities associated with the model
      */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson1[];
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson2[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
@@ -1463,7 +1536,7 @@ export interface HttpsSchemasMesheryIoComponentJson2 {
 /**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
-export interface HttpsSchemasMesheryIoCapabilityJson1 {
+export interface HttpsSchemasMesheryIoCapabilityJson2 {
   /**
    * Specifies the version of the schema to which the capability definition conforms.
    */
@@ -1515,7 +1588,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson1 {
 /**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
-export interface HttpsSchemasMesheryIoCapabilityJson2 {
+export interface HttpsSchemasMesheryIoCapabilityJson3 {
   /**
    * Specifies the version of the schema to which the capability definition conforms.
    */
@@ -1625,7 +1698,7 @@ export interface HttpsSchemasMesheryIoModelJson2 {
     /**
      * Capabilities associated with the model
      */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson3[];
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson4[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
@@ -1717,7 +1790,7 @@ export interface HttpsSchemasMesheryIoComponentJson3 {
 /**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
-export interface HttpsSchemasMesheryIoCapabilityJson3 {
+export interface HttpsSchemasMesheryIoCapabilityJson4 {
   /**
    * Specifies the version of the schema to which the capability definition conforms.
    */
@@ -1827,7 +1900,7 @@ export interface HttpsSchemasMesheryIoModelJson3 {
     /**
      * Capabilities associated with the model
      */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson4[];
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson5[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
@@ -1919,7 +1992,7 @@ export interface HttpsSchemasMesheryIoComponentJson4 {
 /**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
-export interface HttpsSchemasMesheryIoCapabilityJson4 {
+export interface HttpsSchemasMesheryIoCapabilityJson5 {
   /**
    * Specifies the version of the schema to which the capability definition conforms.
    */
@@ -2029,7 +2102,7 @@ export interface HttpsSchemasMesheryIoModelJson4 {
     /**
      * Capabilities associated with the model
      */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson5[];
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson6[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
@@ -2121,7 +2194,7 @@ export interface HttpsSchemasMesheryIoComponentJson5 {
 /**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
-export interface HttpsSchemasMesheryIoCapabilityJson5 {
+export interface HttpsSchemasMesheryIoCapabilityJson6 {
   /**
    * Specifies the version of the schema to which the capability definition conforms.
    */
@@ -2231,7 +2304,7 @@ export interface HttpsSchemasMesheryIoModelJson5 {
     /**
      * Capabilities associated with the model
      */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson6[];
+    capabilities?: HttpsSchemasMesheryIoCapabilityJson7[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
@@ -2323,7 +2396,7 @@ export interface HttpsSchemasMesheryIoComponentJson6 {
 /**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
-export interface HttpsSchemasMesheryIoCapabilityJson6 {
+export interface HttpsSchemasMesheryIoCapabilityJson7 {
   /**
    * Specifies the version of the schema to which the capability definition conforms.
    */

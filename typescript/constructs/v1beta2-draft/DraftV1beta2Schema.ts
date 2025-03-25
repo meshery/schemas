@@ -34,7 +34,7 @@ const schema = {
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
     "model": {
-      "$ref": "../v1beta1/model.json",
+      "$ref": "../v1beta1/model/model.json",
       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
     },
     "metadata": {
