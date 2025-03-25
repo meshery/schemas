@@ -491,6 +491,10 @@ const schema = {
         },
         "subCategory": {
           "x-order": 12,
+          "x-go-type": "subcategory.SubCategoryDefinition",
+          "x-go-type-import": {
+            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+          },
           "$id": "https://schemas.meshery.io/category.json",
           "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "string",
@@ -1408,6 +1412,10 @@ const schema = {
                         },
                         "subCategory": {
                           "x-order": 12,
+                          "x-go-type": "subcategory.SubCategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                          },
                           "$id": "https://schemas.meshery.io/category.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
@@ -2387,6 +2395,10 @@ const schema = {
                         },
                         "subCategory": {
                           "x-order": 12,
+                          "x-go-type": "subcategory.SubCategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                          },
                           "$id": "https://schemas.meshery.io/category.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
@@ -3370,6 +3382,10 @@ const schema = {
                         },
                         "subCategory": {
                           "x-order": 12,
+                          "x-go-type": "subcategory.SubCategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                          },
                           "$id": "https://schemas.meshery.io/category.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
@@ -4349,6 +4365,10 @@ const schema = {
                         },
                         "subCategory": {
                           "x-order": 12,
+                          "x-go-type": "subcategory.SubCategoryDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                          },
                           "$id": "https://schemas.meshery.io/category.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",

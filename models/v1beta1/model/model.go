@@ -11,6 +11,7 @@ import (
 	"github.com/meshery/schemas/models/v1alpha1/capability"
 	"github.com/meshery/schemas/models/v1beta1/category"
 	"github.com/meshery/schemas/models/v1beta1/connection"
+	"github.com/meshery/schemas/models/v1beta1/subcategory"
 )
 
 // Defines values for ModelDefinitionStatus.
@@ -18,56 +19,6 @@ const (
 	Duplicate ModelDefinitionStatus = "duplicate"
 	Enabled   ModelDefinitionStatus = "enabled"
 	Ignored   ModelDefinitionStatus = "ignored"
-)
-
-// Defines values for ModelDefinitionSubCategory.
-const (
-	APIGateway                      ModelDefinitionSubCategory = "API Gateway"
-	APIIntegration                  ModelDefinitionSubCategory = "API Integration"
-	ApplicationDefinitionImageBuild ModelDefinitionSubCategory = "Application Definition & Image Build"
-	AutomationConfiguration         ModelDefinitionSubCategory = "Automation & Configuration"
-	CNI                             ModelDefinitionSubCategory = "CNI"
-	CertifiedKubernetesDistribution ModelDefinitionSubCategory = "Certified Kubernetes - Distribution"
-	ChaosEngineering                ModelDefinitionSubCategory = "Chaos Engineering"
-	CloudNativeStorage              ModelDefinitionSubCategory = "Cloud Native Storage"
-	CloudProvider                   ModelDefinitionSubCategory = "Cloud Provider"
-	Compute                         ModelDefinitionSubCategory = "Compute"
-	Container                       ModelDefinitionSubCategory = "Container"
-	ContainerRegistry               ModelDefinitionSubCategory = "Container Registry"
-	ContainerRuntime                ModelDefinitionSubCategory = "Container Runtime"
-	ContainerSecurity               ModelDefinitionSubCategory = "Container Security"
-	ContentDeliveryNetwork          ModelDefinitionSubCategory = "Content Delivery Network"
-	ContinuousIntegrationDelivery   ModelDefinitionSubCategory = "Continuous Integration & Delivery"
-	CoordinationServiceDiscovery    ModelDefinitionSubCategory = "Coordination & Service Discovery"
-	Database                        ModelDefinitionSubCategory = "Database"
-	Flowchart                       ModelDefinitionSubCategory = "Flowchart"
-	Framework                       ModelDefinitionSubCategory = "Framework"
-	InstallablePlatform             ModelDefinitionSubCategory = "Installable Platform"
-	KeyManagement                   ModelDefinitionSubCategory = "Key Management"
-	KeyManagementService            ModelDefinitionSubCategory = "Key Management Service"
-	Kubernetes                      ModelDefinitionSubCategory = "Kubernetes"
-	Logging                         ModelDefinitionSubCategory = "Logging"
-	MachineLearning                 ModelDefinitionSubCategory = "Machine Learning"
-	ManagementGovernance            ModelDefinitionSubCategory = "Management Governance"
-	Metrics                         ModelDefinitionSubCategory = "Metrics"
-	Monitoring                      ModelDefinitionSubCategory = "Monitoring"
-	NetworkingContentDelivery       ModelDefinitionSubCategory = "Networking Content Delivery"
-	OperatingSystem                 ModelDefinitionSubCategory = "Operating System"
-	Query                           ModelDefinitionSubCategory = "Query"
-	RemoteProcedureCall             ModelDefinitionSubCategory = "Remote Procedure Call"
-	SchedulingOrchestration         ModelDefinitionSubCategory = "Scheduling & Orchestration"
-	SecretsManagement               ModelDefinitionSubCategory = "Secrets Management"
-	SecurityIdentityCompliance      ModelDefinitionSubCategory = "Security Identity & Compliance"
-	ServiceMesh                     ModelDefinitionSubCategory = "Service Mesh"
-	ServiceProxy                    ModelDefinitionSubCategory = "Service Proxy"
-	SourceVersionControl            ModelDefinitionSubCategory = "Source Version Control"
-	Specifications                  ModelDefinitionSubCategory = "Specifications"
-	Storage                         ModelDefinitionSubCategory = "Storage"
-	StreamingMessaging              ModelDefinitionSubCategory = "Streaming & Messaging"
-	Tools                           ModelDefinitionSubCategory = "Tools"
-	Tracing                         ModelDefinitionSubCategory = "Tracing"
-	Uncategorized                   ModelDefinitionSubCategory = "Uncategorized"
-	VideoConferencing               ModelDefinitionSubCategory = "Video Conferencing"
 )
 
 // Defines values for ModelDefinitionMetadataShape.
@@ -146,7 +97,7 @@ type ModelDefinition struct {
 	Category category.CategoryDefinition `gorm:"foreignKey:CategoryId;references:Id" json:"category" yaml:"category"`
 
 	// SubCategory Sub category of the model determines the secondary grouping.
-	SubCategory ModelDefinitionSubCategory `json:"subCategory" yaml:"subCategory"`
+	SubCategory subcategory.SubCategoryDefinition `json:"subCategory" yaml:"subCategory"`
 
 	// Metadata Metadata containing additional information associated with the model.
 	Metadata *ModelDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata" yaml:"metadata"`
@@ -172,9 +123,6 @@ type ModelDefinition struct {
 // - enabled: model is available for use for all users of this Meshery Server.
 // - ignored: model is unavailable for use for all users of this Meshery Server.
 type ModelDefinitionStatus string
-
-// ModelDefinitionSubCategory Sub category of the model determines the secondary grouping.
-type ModelDefinitionSubCategory string
 
 // ModelDefinitionMetadataShape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
 type ModelDefinitionMetadataShape string
