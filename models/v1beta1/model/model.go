@@ -20,6 +20,86 @@ const (
 	Ignored   ModelDefinitionStatus = "ignored"
 )
 
+// Defines values for ModelDefinitionSubCategory.
+const (
+	APIGateway                      ModelDefinitionSubCategory = "API Gateway"
+	APIIntegration                  ModelDefinitionSubCategory = "API Integration"
+	ApplicationDefinitionImageBuild ModelDefinitionSubCategory = "Application Definition & Image Build"
+	AutomationConfiguration         ModelDefinitionSubCategory = "Automation & Configuration"
+	CNI                             ModelDefinitionSubCategory = "CNI"
+	CertifiedKubernetesDistribution ModelDefinitionSubCategory = "Certified Kubernetes - Distribution"
+	ChaosEngineering                ModelDefinitionSubCategory = "Chaos Engineering"
+	CloudNativeStorage              ModelDefinitionSubCategory = "Cloud Native Storage"
+	CloudProvider                   ModelDefinitionSubCategory = "Cloud Provider"
+	Compute                         ModelDefinitionSubCategory = "Compute"
+	Container                       ModelDefinitionSubCategory = "Container"
+	ContainerRegistry               ModelDefinitionSubCategory = "Container Registry"
+	ContainerRuntime                ModelDefinitionSubCategory = "Container Runtime"
+	ContainerSecurity               ModelDefinitionSubCategory = "Container Security"
+	ContentDeliveryNetwork          ModelDefinitionSubCategory = "Content Delivery Network"
+	ContinuousIntegrationDelivery   ModelDefinitionSubCategory = "Continuous Integration & Delivery"
+	CoordinationServiceDiscovery    ModelDefinitionSubCategory = "Coordination & Service Discovery"
+	Database                        ModelDefinitionSubCategory = "Database"
+	Flowchart                       ModelDefinitionSubCategory = "Flowchart"
+	Framework                       ModelDefinitionSubCategory = "Framework"
+	InstallablePlatform             ModelDefinitionSubCategory = "Installable Platform"
+	KeyManagement                   ModelDefinitionSubCategory = "Key Management"
+	KeyManagementService            ModelDefinitionSubCategory = "Key Management Service"
+	Kubernetes                      ModelDefinitionSubCategory = "Kubernetes"
+	Logging                         ModelDefinitionSubCategory = "Logging"
+	MachineLearning                 ModelDefinitionSubCategory = "Machine Learning"
+	ManagementGovernance            ModelDefinitionSubCategory = "Management Governance"
+	Metrics                         ModelDefinitionSubCategory = "Metrics"
+	Monitoring                      ModelDefinitionSubCategory = "Monitoring"
+	NetworkingContentDelivery       ModelDefinitionSubCategory = "Networking Content Delivery"
+	OperatingSystem                 ModelDefinitionSubCategory = "Operating System"
+	Query                           ModelDefinitionSubCategory = "Query"
+	RemoteProcedureCall             ModelDefinitionSubCategory = "Remote Procedure Call"
+	SchedulingOrchestration         ModelDefinitionSubCategory = "Scheduling & Orchestration"
+	SecretsManagement               ModelDefinitionSubCategory = "Secrets Management"
+	SecurityIdentityCompliance      ModelDefinitionSubCategory = "Security Identity & Compliance"
+	ServiceMesh                     ModelDefinitionSubCategory = "Service Mesh"
+	ServiceProxy                    ModelDefinitionSubCategory = "Service Proxy"
+	SourceVersionControl            ModelDefinitionSubCategory = "Source Version Control"
+	Specifications                  ModelDefinitionSubCategory = "Specifications"
+	Storage                         ModelDefinitionSubCategory = "Storage"
+	StreamingMessaging              ModelDefinitionSubCategory = "Streaming & Messaging"
+	Tools                           ModelDefinitionSubCategory = "Tools"
+	Tracing                         ModelDefinitionSubCategory = "Tracing"
+	Uncategorized                   ModelDefinitionSubCategory = "Uncategorized"
+	VideoConferencing               ModelDefinitionSubCategory = "Video Conferencing"
+)
+
+// Defines values for ModelDefinitionMetadataShape.
+const (
+	Barrel               ModelDefinitionMetadataShape = "barrel"
+	BottomRoundRectangle ModelDefinitionMetadataShape = "bottom-round-rectangle"
+	Circle               ModelDefinitionMetadataShape = "circle"
+	ConcaveHexagon       ModelDefinitionMetadataShape = "concave-hexagon"
+	CutRectangle         ModelDefinitionMetadataShape = "cut-rectangle"
+	Diamond              ModelDefinitionMetadataShape = "diamond"
+	Ellipse              ModelDefinitionMetadataShape = "ellipse"
+	Heptagon             ModelDefinitionMetadataShape = "heptagon"
+	Hexagon              ModelDefinitionMetadataShape = "hexagon"
+	Octagon              ModelDefinitionMetadataShape = "octagon"
+	Pentagon             ModelDefinitionMetadataShape = "pentagon"
+	Polygon              ModelDefinitionMetadataShape = "polygon"
+	Rectangle            ModelDefinitionMetadataShape = "rectangle"
+	Rhomboid             ModelDefinitionMetadataShape = "rhomboid"
+	RoundDiamond         ModelDefinitionMetadataShape = "round-diamond"
+	RoundHeptagon        ModelDefinitionMetadataShape = "round-heptagon"
+	RoundHexagon         ModelDefinitionMetadataShape = "round-hexagon"
+	RoundOctagon         ModelDefinitionMetadataShape = "round-octagon"
+	RoundPentagon        ModelDefinitionMetadataShape = "round-pentagon"
+	RoundRectangle       ModelDefinitionMetadataShape = "round-rectangle"
+	RoundTag             ModelDefinitionMetadataShape = "round-tag"
+	RoundTriangle        ModelDefinitionMetadataShape = "round-triangle"
+	Star                 ModelDefinitionMetadataShape = "star"
+	Tag                  ModelDefinitionMetadataShape = "tag"
+	Triangle             ModelDefinitionMetadataShape = "triangle"
+	Vee                  ModelDefinitionMetadataShape = "vee"
+)
+
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {
 	// Version Version of the model as defined by the registrant.
@@ -65,8 +145,8 @@ type ModelDefinition struct {
 	// Category Category of the model.
 	Category category.CategoryDefinition `gorm:"foreignKey:CategoryId;references:Id" json:"category" yaml:"category"`
 
-	// SubCategory Sub-category of the model.
-	SubCategory string `json:"subCategory" yaml:"subCategory"`
+	// SubCategory Sub category of the model determines the secondary grouping.
+	SubCategory ModelDefinitionSubCategory `json:"subCategory" yaml:"subCategory"`
 
 	// Metadata Metadata containing additional information associated with the model.
 	Metadata *ModelDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata" yaml:"metadata"`
@@ -93,6 +173,12 @@ type ModelDefinition struct {
 // - ignored: model is unavailable for use for all users of this Meshery Server.
 type ModelDefinitionStatus string
 
+// ModelDefinitionSubCategory Sub category of the model determines the secondary grouping.
+type ModelDefinitionSubCategory string
+
+// ModelDefinitionMetadataShape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+type ModelDefinitionMetadataShape string
+
 // ModelDefinition_Metadata Metadata containing additional information associated with the model.
 type ModelDefinition_Metadata struct {
 	// Capabilities Capabilities associated with the model
@@ -114,7 +200,13 @@ type ModelDefinition_Metadata struct {
 	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete SVG representation of the complete model.
-	SvgComplete          *string                `json:"svgComplete" yaml:"svgComplete"`
+	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
+
+	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+	Shape *ModelDefinitionMetadataShape `json:"shape,omitempty"`
+
+	// SourceUri URI to the source code or package of the model.
+	SourceUri            *string                `json:"sourceUri" yaml:"sourceUri"`
 	AdditionalProperties map[string]interface{} `json:"-"`
 }
 
@@ -199,6 +291,22 @@ func (a *ModelDefinition_Metadata) UnmarshalJSON(b []byte) error {
 		delete(object, "svgComplete")
 	}
 
+	if raw, found := object["shape"]; found {
+		err = json.Unmarshal(raw, &a.Shape)
+		if err != nil {
+			return fmt.Errorf("error reading 'shape': %w", err)
+		}
+		delete(object, "shape")
+	}
+
+	if raw, found := object["sourceUri"]; found {
+		err = json.Unmarshal(raw, &a.SourceUri)
+		if err != nil {
+			return fmt.Errorf("error reading 'sourceUri': %w", err)
+		}
+		delete(object, "sourceUri")
+	}
+
 	if len(object) != 0 {
 		a.AdditionalProperties = make(map[string]interface{})
 		for fieldName, fieldBuf := range object {
@@ -260,6 +368,20 @@ func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		object["svgComplete"], err = json.Marshal(a.SvgComplete)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
+		}
+	}
+
+	if a.Shape != nil {
+		object["shape"], err = json.Marshal(a.Shape)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'shape': %w", err)
+		}
+	}
+
+	if a.SourceUri != nil {
+		object["sourceUri"], err = json.Marshal(a.SourceUri)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'sourceUri': %w", err)
 		}
 	}
 
