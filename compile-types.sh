@@ -138,8 +138,8 @@ traverse_for_schemas() {
 echo "Step 1: Generating TypeScript type definitions..."
 traverse_for_types "$INPUT_DIR"
 
-echo "Step 2: Copying JSON files to temporary directory..."
-rsync -a --include='*/' --include='*.json' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
+echo "Step 2: Copying JSON and YAML files to temporary directory..."
+rsync -a --include='*/' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
 
 echo "Step 3: Resolving references in JSON schemas..."
 resolve_references

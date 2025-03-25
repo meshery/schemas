@@ -132,11 +132,11 @@ export interface HttpsSchemasMesheryIoModelJson {
   /**
    * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
    */
-  id?: string;
+  id: string;
   /**
    * Specifies the version of the schema used for the definition.
    */
-  schemaVersion?: string;
+  schemaVersion: string;
   /**
    * Version of the model definition.
    */
@@ -148,11 +148,11 @@ export interface HttpsSchemasMesheryIoModelJson {
   /**
    * Human-readable name for the model.
    */
-  displayName?: string;
+  displayName: string;
   /**
    * Description of the model.
    */
-  description?: string;
+  description: string;
   /**
    * Status of model, including:
    * - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -160,26 +160,21 @@ export interface HttpsSchemasMesheryIoModelJson {
    * - enabled: model is available for use for all users of this Meshery Server.
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
-  status?: "ignored" | "enabled" | "duplicate";
+  status: "ignored" | "enabled" | "duplicate";
   registrant: HttpsSchemasMesheryIoComponentJson1;
   /**
-   * Category of the model.
+   * ID of the registrant.
    */
-  category: {
-    /**
-     * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-     */
-    id?: string;
-    name?: string;
-    metadata?: {
-      [k: string]: unknown;
-    };
-    [k: string]: unknown;
-  };
+  registrantId: string;
+  /**
+   * ID of the category.
+   */
+  categoryId: string;
+  category: HttpsSchemasMesheryIoCategoryJson;
   /**
    * Sub-category of the model.
    */
-  subCategory?: string;
+  subCategory: string;
   /**
    * Metadata containing additional information associated with the model.
    */
@@ -203,27 +198,28 @@ export interface HttpsSchemasMesheryIoModelJson {
     /**
      * SVG representation of the model in white color.
      */
-    svgWhite?: string;
+    svgWhite: string;
     /**
      * SVG representation of the model in colored format.
      */
-    svgColor?: string;
+    svgColor: string;
     /**
      * SVG representation of the complete model.
      */
     svgComplete?: string;
     [k: string]: unknown;
   };
+  model: Model;
+  relationships: unknown[];
+  components: unknown[];
   /**
-   * Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)
+   * Number of components associated with the model.
    */
-  model?: {
-    /**
-     * Version of the model as defined by the registrant.
-     */
-    version: string;
-    [k: string]: unknown;
-  };
+  componentsCount: number;
+  /**
+   * Number of relationships associated with the model.
+   */
+  relationshipsCount: number;
 }
 /**
  * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
@@ -277,6 +273,20 @@ export interface HttpsSchemasMesheryIoComponentJson1 {
   deleted_at?: string;
 }
 /**
+ * Category of the model.
+ */
+export interface HttpsSchemasMesheryIoCategoryJson {
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id: string;
+  name: string;
+  metadata: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
+}
+/**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
 export interface HttpsSchemasMesheryIoCapabilityJson {
@@ -295,7 +305,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * A written representation of the purpose and characteristics of the capability.
    */
-  description?: string;
+  description: string;
   /**
    * Top-level categorization of the capability
    */
@@ -307,11 +317,11 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   /**
    * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
    */
-  subType?: string;
+  subType: string;
   /**
    * Key that backs the capability.
    */
-  key?: string;
+  key: string;
   /**
    * State of the entity in which the capability is applicable.
    */
@@ -326,4 +336,14 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
   metadata?: {
     [k: string]: unknown;
   };
+}
+/**
+ * Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
+ */
+export interface Model {
+  /**
+   * Version of the model as defined by the registrant.
+   */
+  version: string;
+  [k: string]: unknown;
 }

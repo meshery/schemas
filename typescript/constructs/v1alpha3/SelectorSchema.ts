@@ -1,8 +1,8 @@
-// Generated from constructs/v1alpha3/selectors.json
+// Generated from constructs/v1alpha3/selector.json
 // This file exports the original JSON schema
 
 const schema = {
-  "$id": "https://schemas.meshery.io/selectors.json",
+  "$id": "https://schemas.meshery.io/selector.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Reusable relationships selectors schema elements",
   "$comment": "Sets of selectors are interpreted as a logical OR, while sets of allow/deny are interpreted a logical AND.",
@@ -70,7 +70,7 @@ const schema = {
             "type": "string"
           },
           "model": {
-            "$ref": "../v1beta1/model.json",
+            "$ref": "../v1beta1/model/model.json",
             "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models"
           },
           "id": {

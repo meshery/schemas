@@ -390,6 +390,7 @@ components:
         - primaryColor
         - svgColor
         - svgWhite
+        - svgComplete
       properties:
         primaryColor:
           type: string
@@ -579,6 +580,7 @@ components:
         - primaryColor
         - svgColor
         - svgWhite
+        - svgComplete
       allOf:
         - $ref: "#/components/schemas/styles"
         - type: object

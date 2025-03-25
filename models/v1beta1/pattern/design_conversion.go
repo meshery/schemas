@@ -172,10 +172,12 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 	positionX, _ := big.NewFloat(0).SetInt(randX).Float64()
 	positionY, _ := big.NewFloat(0).SetInt(randY).Float64()
 
-	cmp.Styles = &component.Styles{
+	cmp.Styles = &component.ComponentDefinition_Styles{
 		Position: &struct {
-			X float64 "json:\"x\" yaml:\"x\""
-			Y float64 "json:\"y\" yaml:\"y\""
+			// X The x-coordinate of the node.
+			X float64 `json:"x"`
+			// Y The y-coordinate of the node.
+			Y float64 `json:"y"`
 		}{
 			X: positionX,
 			Y: positionY,

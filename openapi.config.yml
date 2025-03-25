@@ -8,7 +8,7 @@ import-mapping:
   "./common/parameters.yml": "github.com/meshery/schemas/models/core"
 
   # v1alpha1
-  "../v1alpha1/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
+  "../v1alpha1/capability/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
   "../v1alpha1/catalog_data.json": "github.com/meshery/schemas/models/v1alpha1/catalog_data"
 
   # v1alpha3

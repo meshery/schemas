@@ -14,6 +14,8 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+type Styles = ComponentDefinition_Styles
+
 func (c ComponentDefinition) TableName() string {
 	return "component_definition_dbs"
 }

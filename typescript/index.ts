@@ -11,12 +11,12 @@ import { HttpsSchemasMesheryIoRelationshipJson } from "./constructs/v1alpha2/rel
 
 // v1alpha3
 import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship";
-import { HttpsSchemasMesheryIoSelectorsJson as V1alpha3Selectors } from "./constructs/v1alpha3/selectors";
+import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector";
 
 // v1beta1
 import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/component";
 import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model";
-import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/designs";
+import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design";
 import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./constructs/v1beta1/connection";
 
 //OpenAPI
@@ -28,10 +28,10 @@ import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDa
 import DesignDefinitionV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
 import RelationshipDefinitionV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
 import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
-import SelectorsDefinitionV1Alpha3Schema from "./constructs/v1alpha3/SelectorsSchema";
+import SelectorsDefinitionV1Alpha3Schema from "./constructs/v1alpha3/SelectorSchema";
 import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/ComponentSchema";
 import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/ModelSchema";
-import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/DesignsSchema";
+import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/DesignSchema";
 import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
 
 export {

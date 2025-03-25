@@ -20,7 +20,7 @@ const schema = {
                         "model": {
                             "type": "array",
                             "items": {
-                                "$ref": "../v1beta1/model.json"
+                                "$ref": "../v1beta1/model/model.json"
                             },
                             "uniqueItems": true,
                             "$comment": "Content published into the catalog must reference at least one model, and by implication, contain at least one component.",
@@ -32,7 +32,7 @@ const schema = {
                 {
                     "$comment": "Catalog cotent schema for Model",
                     "type": "object",
-                    "$ref": "../v1beta1/model.json"
+                    "$ref": "../v1beta1/model/model.json"
                 }
             ]
         },

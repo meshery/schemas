@@ -8,7 +8,11 @@
     "id": {
       "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
       "$ref": "../../core.json#/definitions/uuid",
-      "x-order": 1
+      "x-order": 1,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "id",
+        "json": "id"
+      }
     },
     "schemaVersion": {
       "description": "Specifies the version of the schema used for the definition.",
@@ -32,7 +36,11 @@
     "name": {
       "description": "The unique name for the model within the scope of a registrant.",
       "$ref": "../../core.json#/definitions/inputString",
-      "x-order": 4
+      "x-order": 4,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "name",
+        "json": "name"
+      }
     },
     "displayName": {
       "description": "Human-readable name for the model.",
@@ -53,8 +61,8 @@
       "maxLength": 1000,
       "x-order": 6,
       "x-oapi-codegen-extra-tags": {
-        "yaml": "description",
-        "json": "description"
+        "yaml": "description,omitempty",
+        "json": "description,omitempty"
       }
     },
     "status": {
@@ -94,8 +102,8 @@
       "description": "ID of the category.",
       "$ref": "../../core.json#/definitions/uuid",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "category_id",
-        "json": "category_id",
+        "yaml": "-",
+        "json": "-",
         "gorm": "categoryID"
       },
       "x-order": 8
@@ -133,7 +141,7 @@
           "type": "array",
           "description": "Capabilities associated with the model",
           "items": {
-            "$ref": "../../v1alpha1/capability.json",
+            "$ref": "../../v1alpha1/capability/capability.json",
             "x-go-type": "capability.Capability",
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/v1alpha1/capability"
@@ -204,7 +212,9 @@
         }
       },
       "x-oapi-codegen-extra-tags": {
-        "gorm": "type:bytes;serializer:json"
+        "gorm": "type:bytes;serializer:json",
+        "json": "metadata",
+        "yaml": "metadata"
       },
       "x-order": 11,
       "additionalProperties": true
@@ -215,6 +225,44 @@
         "gorm": "type:bytes;serializer:json"
       },
       "x-order": 12
+    },
+    "relationships": {
+      "type": "array",
+      "x-go-type": "interface{}",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "-",
+        "json": "relationships",
+        "yaml": "relationships"
+      }
+    },
+    "components": {
+      "type": "array",
+      "x-go-type": "interface{}",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "-",
+        "json": "components",
+        "yaml": "components"
+      }
+    },
+    "componentsCount": {
+      "type": "integer",
+      "description": "Number of components associated with the model.",
+      "x-order": 13,
+      "x-oapi-codegen-extra-tags": {
+        "json": "components_count",
+        "yaml": "components_count",
+        "gorm": "-"
+      }
+    },
+    "relationshipsCount": {
+      "type": "integer",
+      "description": "Number of relationships associated with the model.",
+      "x-order": 13,
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "-",
+        "json": "relationships_count",
+        "yaml": "relationships_count"
+      }
     }
   },
   "required": [
@@ -230,6 +278,10 @@
     "registrant",
     "category",
     "categoryId",
-    "registrantId"
+    "registrantId",
+    "relationshipsCount",
+    "componentsCount",
+    "components",
+    "relationships"
   ]
 }

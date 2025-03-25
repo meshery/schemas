@@ -1,11 +1,10 @@
-// Generated from constructs/v1alpha2/selectors.json
+// Generated from constructs/v1alpha1/selector.json
 // This file exports the original JSON schema
 
 const schema = {
-  "$id": "https://schemas.meshery.io/selectors.json",
+  "$id": "https://schemas.meshery.io/selector.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Reusable relationships selectors schema elements",
-  "$comment": "Sets of selectors are interpreted as a locical OR, while sets of allow/deny are interpreted a logical AND.",
   "from": {
     "type": "array",
     "items": {
@@ -16,11 +15,10 @@ const schema = {
           "type": "string"
         },
         "model": {
-          "$ref": "../v1beta1/model.json",
-          "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
+          "type": "string"
         },
         "version": {
-          "$ref": "../core.json#/definitions/semverString"
+          "$ref": "../core.json#/definitions/versionString"
         },
         "match": {
           "type": "object",
@@ -79,11 +77,10 @@ const schema = {
           "type": "string"
         },
         "model": {
-          "$ref": "../v1beta1/model.json",
-          "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
+          "type": "string"
         },
         "version": {
-          "$ref": "../core.json#/definitions/semverString"
+          "$ref": "../core.json#/definitions/versionString"
         },
         "match": {
           "type": "object",

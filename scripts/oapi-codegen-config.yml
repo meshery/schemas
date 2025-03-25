@@ -7,15 +7,15 @@ import-mapping:
   "../core.json": "github.com/meshery/schemas/models/core"
   "./common/parameters.yml": "github.com/meshery/schemas/models/core"
 
-# v1alpha1
-  "../v1alpha1/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
-  "../v1alpha1/catalog_data.json": "github.com/meshery/schemas/models/v1alpha1/catalog_data.json"  
+  # v1alpha1
+  "../v1alpha1/capability/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
+  "../v1alpha1/catalog_data.json": "github.com/meshery/schemas/models/v1alpha1/catalog_data.json"
 
-# v1alpha3
+  # v1alpha3
   "../v1alphav3/relationship.json": "github.com/meshery/schemas/models/v1alphav3/relationship"
   "../v1alphav3/selector.json": "github.com/meshery/schemas/models/v1alphav3/selector"
 
-# v1beta1
+  # v1beta1
   "../v1beta1/model.json": "github.com/meshery/schemas/models/v1beta1/model"
   "../v1beta1/component.json": "github.com/meshery/schemas/models/v1beta1/model"
   "../v1beta1/connection.json": "github.com/meshery/schemas/models/v1beta1/connection"
@@ -23,7 +23,7 @@ import-mapping:
   # "../v1beta1/credential.json": "github.com/meshery/schemas/models/v1beta1/credential"
 
 generate:
-  - input: schemas/constructs/v1alpha1/capability.json
+  - input: schemas/constructs/v1alpha1/capability/capability.json
     output: models/v1alpha1/capability
     package: capabilities
     generate:
@@ -52,7 +52,7 @@ generate:
     output: models/v1beta1/component
     package: components
     generate:
-      models: true      
+      models: true
   - input: schemas/constructs/v1beta1/connection.json
     output: models/v1beta1/connection
     package: connections
@@ -62,22 +62,20 @@ generate:
     output: models/v1beta1/design
     package: designs
     generate:
-      models: true                  
+      models: true
   # - input: schemas/constructs/v1beta1/credential.json
   #   output: models/v1beta1/credential
   #   package: credentials
   #   generate:
   #     models: true
-
-
 # # Update the "output" and "include-tags" based on the resource for which code generation needs to be invoked.
 # generate:
 #   models: true
 
-# output: models/v1alpha3/relationship/relationship.go 
+# output: models/v1alpha3/relationship/relationship.go
 # output-options:
 #   # name-normalizer: ToCamelCaseWithInitialisms
 #   skip-prune: true
-#   include-tags: 
+#   include-tags:
 #   - patterns
-  
+
