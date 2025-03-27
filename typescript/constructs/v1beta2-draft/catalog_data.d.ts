@@ -6,56 +6,6 @@
  */
 
 /**
- * Sub category of the model determines the secondary grouping.
- */
-export type SubCategory =
-  | "API Gateway"
-  | "API Integration"
-  | "Application Definition & Image Build"
-  | "Automation & Configuration"
-  | "Certified Kubernetes - Distribution"
-  | "Chaos Engineering"
-  | "Cloud Native Storage"
-  | "Cloud Provider"
-  | "CNI"
-  | "Compute"
-  | "Container Registry"
-  | "Container Runtime"
-  | "Container Security"
-  | "Container"
-  | "Content Delivery Network"
-  | "Continuous Integration & Delivery"
-  | "Coordination & Service Discovery"
-  | "Database"
-  | "Flowchart"
-  | "Framework"
-  | "Installable Platform"
-  | "Key Management"
-  | "Key Management Service"
-  | "Kubernetes"
-  | "Logging"
-  | "Machine Learning"
-  | "Management Governance"
-  | "Metrics"
-  | "Monitoring"
-  | "Networking Content Delivery"
-  | "Operating System"
-  | "Query"
-  | "Remote Procedure Call"
-  | "Scheduling & Orchestration"
-  | "Secrets Management"
-  | "Security Identity & Compliance"
-  | "Service Mesh"
-  | "Service Proxy"
-  | "Source Version Control"
-  | "Storage"
-  | "Specifications"
-  | "Streaming & Messaging"
-  | "Tools"
-  | "Tracing"
-  | "Uncategorized"
-  | "Video Conferencing";
-/**
  * Specific stipulations to consider and known behaviors to be aware of when using this design.
  */
 export type CaveatsAndConsiderations = string;
@@ -153,7 +103,10 @@ export interface HttpsSchemasMesheryIoModelJson {
    */
   categoryId: string;
   category: HttpsSchemasMesheryIoCategoryJson;
-  subCategory: SubCategory;
+  /**
+   * Sub-category of the model.
+   */
+  subCategory: string;
   /**
    * Metadata containing additional information associated with the model.
    */
@@ -186,36 +139,6 @@ export interface HttpsSchemasMesheryIoModelJson {
      * SVG representation of the complete model.
      */
     svgComplete?: string;
-    /**
-     * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-     */
-    shape?:
-      | "circle"
-      | "ellipse"
-      | "triangle"
-      | "round-triangle"
-      | "rectangle"
-      | "round-rectangle"
-      | "bottom-round-rectangle"
-      | "cut-rectangle"
-      | "barrel"
-      | "rhomboid"
-      | "diamond"
-      | "round-diamond"
-      | "pentagon"
-      | "round-pentagon"
-      | "hexagon"
-      | "round-hexagon"
-      | "concave-hexagon"
-      | "heptagon"
-      | "round-heptagon"
-      | "octagon"
-      | "round-octagon"
-      | "star"
-      | "tag"
-      | "round-tag"
-      | "vee"
-      | "polygon";
     [k: string]: unknown;
   };
   model: Model;
@@ -289,25 +212,7 @@ export interface HttpsSchemasMesheryIoCategoryJson {
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   id: string;
-  /**
-   * The category of the model that determines the main grouping.
-   */
-  name:
-    | "Analytics"
-    | "App Definition and Development"
-    | "Cloud Native Network"
-    | "Cloud Native Storage"
-    | "Database"
-    | "Machine Learning"
-    | "Observability and Analysis"
-    | "Orchestration & Management"
-    | "Platform"
-    | "Provisioning"
-    | "Runtime"
-    | "Security & Compliance"
-    | "Serverless"
-    | "Tools"
-    | "Uncategorized";
+  name: string;
   metadata: {
     [k: string]: unknown;
   };
@@ -420,7 +325,10 @@ export interface HttpsSchemasMesheryIoModelJson1 {
    */
   categoryId: string;
   category: HttpsSchemasMesheryIoCategoryJson;
-  subCategory: SubCategory;
+  /**
+   * Sub-category of the model.
+   */
+  subCategory: string;
   /**
    * Metadata containing additional information associated with the model.
    */
@@ -453,36 +361,6 @@ export interface HttpsSchemasMesheryIoModelJson1 {
      * SVG representation of the complete model.
      */
     svgComplete?: string;
-    /**
-     * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-     */
-    shape?:
-      | "circle"
-      | "ellipse"
-      | "triangle"
-      | "round-triangle"
-      | "rectangle"
-      | "round-rectangle"
-      | "bottom-round-rectangle"
-      | "cut-rectangle"
-      | "barrel"
-      | "rhomboid"
-      | "diamond"
-      | "round-diamond"
-      | "pentagon"
-      | "round-pentagon"
-      | "hexagon"
-      | "round-hexagon"
-      | "concave-hexagon"
-      | "heptagon"
-      | "round-heptagon"
-      | "octagon"
-      | "round-octagon"
-      | "star"
-      | "tag"
-      | "round-tag"
-      | "vee"
-      | "polygon";
     [k: string]: unknown;
   };
   model: Model;
