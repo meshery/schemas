@@ -27,6 +27,10 @@ components:
                 deleted_at:
                     $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
                     nullable: true
+                billing_id:
+                    type: string
+                    description: "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe"
+                    nullable: true
             required:
                 - id
                 - org_id
@@ -38,5 +42,6 @@ components:
             enum:
                 - active
                 - inactive
+                - overdue
                 - canceled
                 - expired

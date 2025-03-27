@@ -15,10 +15,13 @@ const (
 	Canceled SubscriptionStatus = "canceled"
 	Expired  SubscriptionStatus = "expired"
 	Inactive SubscriptionStatus = "inactive"
+	Overdue  SubscriptionStatus = "overdue"
 )
 
 // Subscription defines model for Subscription.
 type Subscription struct {
+	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
+	BillingId *string   `json:"billing_id"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	DeletedAt time.Time `json:"deleted_at"`
 	EndDate   time.Time `json:"end_date,omitempty"`
