@@ -4,10 +4,11 @@
 package core
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"database/sql"
 
 	"github.com/gofrs/uuid"
 	"github.com/oapi-codegen/runtime"
@@ -321,6 +322,9 @@ type ResolvedAlias struct {
 	ResolvedParentId     uuid.UUID `json:"resolved_parent_id"`
 	ResolvedRefFieldPath []string  `json:"resolved_ref_field_path"`
 }
+
+// SqlNullTime defines model for SqlNullTime.
+type SqlNullTime = sql.NullTime
 
 // Text defines model for Text.
 type Text = string

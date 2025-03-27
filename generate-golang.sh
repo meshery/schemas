@@ -21,6 +21,9 @@ generate_schema_models() {
     local merged_output="schemas/constructs/${version}/${package}/merged-openapis.yml"
     local output_go_file="models/${version}/${package}/${package}.go"
 
+    mkdir -p "models/${version}/${package}"
+    touch "$output_go_file"
+
     if [[ ! -f "$input_schema" ]]; then
         echo -e "${RED}Error: Schema not found: $input_schema${NC}"
         return 1
@@ -28,7 +31,7 @@ generate_schema_models() {
 
     echo -e "${CYAN}🔹 Processing: $package ($version)...${NC}"
 
-    npx swagger-cli bundle --dereference "$input_schema" -o "$merged_output" > /dev/null || {
+    npx --yes swagger-cli bundle --dereference "$input_schema" -o "$merged_output"  || {
         echo -e "${RED}❌ Bundling failed!${NC}"; return 1;
     }
 
@@ -49,3 +52,5 @@ generate_schema_models "component" "v1beta1"
 generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
 generate_schema_models "core" "v1alpha1"
 generate_schema_models "catalog" "v1alpha2"
+generate_schema_models "subscription" "v1beta1"
+generate_schema_models "plan" "v1beta1"
