@@ -175,9 +175,10 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 	cmp.Styles = &component.ComponentDefinition_Styles{
 		Position: &struct {
 			// X The x-coordinate of the node.
-			X float64 `json:"x"`
+			X float64 `json:"x" yaml:"x"`
+
 			// Y The y-coordinate of the node.
-			Y float64 `json:"y"`
+			Y float64 `json:"y" yaml:"y"`
 		}{
 			X: positionX,
 			Y: positionY,

@@ -75,7 +75,7 @@ type ModelDefinition struct {
 	Model struct {
 		// Version Version of the model as defined by the registrant.
 		Version string `json:"version" yaml:"version"`
-	} `gorm:"type:bytes;serializer:json" json:"model"`
+	} `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
 
 	// ComponentsCount Number of components associated with the model.
 	ComponentsCount int `gorm:"-" json:"components_count" yaml:"components_count"`
@@ -96,7 +96,7 @@ type ModelDefinitionStatus string
 // ModelDefinition_Metadata Metadata containing additional information associated with the model.
 type ModelDefinition_Metadata struct {
 	// Capabilities Capabilities associated with the model
-	Capabilities *[]capability.Capability `json:"capabilities,omitempty"`
+	Capabilities *[]capability.Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
 
 	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
 	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
@@ -115,7 +115,7 @@ type ModelDefinition_Metadata struct {
 
 	// SvgComplete SVG representation of the complete model.
 	SvgComplete          *string                `json:"svgComplete" yaml:"svgComplete"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // Getter for additional properties for ModelDefinition_Metadata. Returns the specified

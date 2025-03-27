@@ -38,6 +38,10 @@ generate_schema_models() {
     oapi-codegen --config openapi.config.yml --package "$package" -generate types --include-tags all -o "$output_go_file" "$merged_output" || {
         echo -e "${RED}❌ Model generation failed!${NC}"; rm -f "$merged_output"; return 1;
     }
+    # 🏆 Apply sed to inject YAML struct tags alongside JSON ones
+    #  Add yaml struct tags only if missing, avoiding duplicates or overwrites
+    # the added yaml tags are the same as the json tags default or user defined
+    sed -i 's/\(json:"\([^"]*\)"\)\( yaml:"[^"]*"\)\?/\1 yaml:"\2"/g' "$output_go_file"
 
     rm -f "$merged_output"
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
