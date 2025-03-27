@@ -54,3 +54,4 @@ generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/op
 generate_schema_models "core" "v1alpha1"
 generate_schema_models "catalog" "v1alpha2"
 generate_schema_models "subscription" "v1beta1"
+generate_schema_models "plan" "v1beta1"
