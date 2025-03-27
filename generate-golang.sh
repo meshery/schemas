@@ -43,7 +43,6 @@ generate_schema_models() {
 # Run model generation for multiple packages
 generate_schema_models "capability" "v1alpha1"
 generate_schema_models "category" "v1beta1"
-generate_schema_models "subcategory" "v1beta1"
 # there are some discrepancies in the schema ( missing some field related to db which are present in the code)
 generate_schema_models "model" "v1beta1"
 generate_schema_models "component" "v1beta1"

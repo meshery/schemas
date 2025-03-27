@@ -7,34 +7,10 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// Defines values for CategoryDefinitionName.
-const (
-	Analytics                   CategoryDefinitionName = "Analytics"
-	AppDefinitionAndDevelopment CategoryDefinitionName = "App Definition and Development"
-	CloudNativeNetwork          CategoryDefinitionName = "Cloud Native Network"
-	CloudNativeStorage          CategoryDefinitionName = "Cloud Native Storage"
-	Database                    CategoryDefinitionName = "Database"
-	MachineLearning             CategoryDefinitionName = "Machine Learning"
-	ObservabilityAndAnalysis    CategoryDefinitionName = "Observability and Analysis"
-	OrchestrationManagement     CategoryDefinitionName = "Orchestration & Management"
-	Platform                    CategoryDefinitionName = "Platform"
-	Provisioning                CategoryDefinitionName = "Provisioning"
-	Runtime                     CategoryDefinitionName = "Runtime"
-	SecurityCompliance          CategoryDefinitionName = "Security & Compliance"
-	Serverless                  CategoryDefinitionName = "Serverless"
-	Tools                       CategoryDefinitionName = "Tools"
-	Uncategorized               CategoryDefinitionName = "Uncategorized"
-)
-
 // CategoryDefinition Category of the model.
 type CategoryDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	Id uuid.UUID `json:"id"`
-
-	// Name The category of the model that determines the main grouping.
-	Name     CategoryDefinitionName `gorm:"name" json:"name" yaml:"name"`
+	Id       uuid.UUID              `json:"id"`
+	Name     string                 `gorm:"name" json:"name" yaml:"name"`
 	Metadata map[string]interface{} `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 }
-
-// CategoryDefinitionName The category of the model that determines the main grouping.
-type CategoryDefinitionName string

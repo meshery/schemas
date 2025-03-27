@@ -13,25 +13,7 @@ export interface HttpsSchemasMesheryIoCategoryJson {
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   id: string;
-  /**
-   * The category of the model that determines the main grouping.
-   */
-  name:
-    | "Analytics"
-    | "App Definition and Development"
-    | "Cloud Native Network"
-    | "Cloud Native Storage"
-    | "Database"
-    | "Machine Learning"
-    | "Observability and Analysis"
-    | "Orchestration & Management"
-    | "Platform"
-    | "Provisioning"
-    | "Runtime"
-    | "Security & Compliance"
-    | "Serverless"
-    | "Tools"
-    | "Uncategorized";
+  name: string;
   metadata: {
     [k: string]: unknown;
   };

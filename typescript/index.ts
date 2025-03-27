@@ -3,7 +3,7 @@
 
 // v1alpha1
 import { CatalogData as CatalogDataT, CaveatsAndConsiderations } from "./constructs/v1alpha1/catalog_data";
-import { HttpsSchemasMesheryIoCapabilityJson } from "./constructs/v1alpha1/capability/capability";
+import { HttpsSchemasMesheryIoCapabilityJson } from "./constructs/v1alpha1/capability";
 
 // v1alpha2
 import { DesignSchema } from "./constructs/v1alpha2/design";
@@ -14,27 +14,25 @@ import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from ".
 import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector";
 
 // v1beta1
-import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/component/component";
-import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model/model";
-import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design/design";
+import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/component";
+import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model";
+import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design";
 import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./constructs/v1beta1/connection";
 
 //OpenAPI
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
-import CapabilityDefinitionV1Alpha1Schema from "./constructs/v1alpha1/capability/CapabilitySchema";
+import CapabilityDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CapabilitySchema";
 import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
 import DesignDefinitionV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
 import RelationshipDefinitionV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
 import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
 import SelectorsDefinitionV1Alpha3Schema from "./constructs/v1alpha3/SelectorSchema";
-import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/component/ComponentSchema";
-import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema";
-import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/design/DesignSchema";
+import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/ComponentSchema";
+import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/ModelSchema";
+import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/DesignSchema";
 import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
-import CategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/category/CategorySchema";
-import SubCategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/subcategory/SubcategorySchema";
 
 export {
   core,
@@ -48,8 +46,6 @@ export {
   ModelDefinitionV1Beta1Schema,
   DesignDefinitionV1Beta1Schema,
   ConnectionDefinitionV1Beta1Schema,
-  CategoryDefinitionV1Beta1Schema,
-  SubCategoryDefinitionV1Beta1Schema,
 };
 
 // Contructs

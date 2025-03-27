@@ -45,7 +45,6 @@ export type Time = string;
  * via the `definition` "shape".
  */
 export type Shape =
-  | "circle"
   | "ellipse"
   | "triangle"
   | "round-triangle"
