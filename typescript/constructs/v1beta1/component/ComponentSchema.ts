@@ -831,48 +831,6 @@ const schema = {
                 "yaml": "shape",
                 "json": "shape"
               }
-            },
-            "sourceUri": {
-              "type": "string",
-              "description": "URI to the source code or package of the model.",
-              "oneOf": [
-                {
-                  "title": "GitHub",
-                  "type": "string",
-                  "pattern": "^git://github\\.com/[\\w.-]+/[\\w.-]+(/[\\w.-]+/[\\w/-]+)?$",
-                  "description": "Git protocol URL for GitHub repository or specific resource path",
-                  "examples": [
-                    "git://github.com/cert-manager/cert-manager/master/deploy/crds"
-                  ],
-                  "metadata": {
-                    "uiType": "url",
-                    "validationHint": "Enter a git protocol URL (e.g., git://github.com/owner/repo)"
-                  }
-                },
-                {
-                  "title": "Artifact Hub",
-                  "type": "string",
-                  "pattern": "^https:\\/\\/artifacthub\\.io\\/packages\\/(search\\?ts_query_web=[\\w.-]+|[\\w.-]+\\/[\\w.-]+\\/[\\w.-]+)$",
-                  "description": "Artifact Hub package URL or search query URL with model name parameter",
-                  "examples": [
-                    "https://artifacthub.io/packages/search?ts_query_web={model-name}"
-                  ],
-                  "metadata": {
-                    "uiType": "url",
-                    "validationHint": "Enter an Artifact Hub URL (e.g., https://artifacthub.io/packages/search?ts_query_web={meshery-operator})"
-                  }
-                }
-              ],
-              "x-order": 9,
-              "x-oapi-codegen-extra-tags": {
-                "yaml": "sourceUri",
-                "json": "sourceUri"
-              },
-              "metadata": {
-                "uiType": "url",
-                "urlValidation": true,
-                "validationHint": "Enter either a git:// GitHub URL or an Artifact Hub URL"
-              }
             }
           },
           "x-oapi-codegen-extra-tags": {

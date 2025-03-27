@@ -80,14 +80,6 @@ export type SubCategory =
   | "Uncategorized"
   | "Video Conferencing";
 /**
- * Git protocol URL for GitHub repository or specific resource path
- */
-export type GitHub = string;
-/**
- * Artifact Hub package URL or search query URL with model name parameter
- */
-export type ArtifactHub = string;
-/**
  * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
  *
  * This interface was referenced by `HttpsSchemasMesheryIoSelectorJson`'s JSON-Schema
@@ -279,10 +271,6 @@ export interface HttpsSchemasMesheryIoModelJson {
       | "round-tag"
       | "vee"
       | "polygon";
-    /**
-     * URI to the source code or package of the model.
-     */
-    sourceUri?: (GitHub | ArtifactHub) & string;
     [k: string]: unknown;
   };
   model: Model;

@@ -55,14 +55,6 @@ export type SubCategory =
   | "Tracing"
   | "Uncategorized"
   | "Video Conferencing";
-/**
- * Git protocol URL for GitHub repository or specific resource path
- */
-export type GitHub = string;
-/**
- * Artifact Hub package URL or search query URL with model name parameter
- */
-export type ArtifactHub = string;
 
 /**
  * Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
@@ -173,10 +165,6 @@ export interface HttpsSchemasMesheryIoModelJson {
       | "round-tag"
       | "vee"
       | "polygon";
-    /**
-     * URI to the source code or package of the model.
-     */
-    sourceUri?: (GitHub | ArtifactHub) & string;
     [k: string]: unknown;
   };
   model: Model;

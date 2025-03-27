@@ -151,11 +151,8 @@ type ModelDefinition_Metadata struct {
 	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
 
 	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape *ModelDefinitionMetadataShape `json:"shape,omitempty"`
-
-	// SourceUri URI to the source code or package of the model.
-	SourceUri            *string                `json:"sourceUri" yaml:"sourceUri"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	Shape                *ModelDefinitionMetadataShape `json:"shape,omitempty"`
+	AdditionalProperties map[string]interface{}        `json:"-"`
 }
 
 // Getter for additional properties for ModelDefinition_Metadata. Returns the specified
@@ -247,14 +244,6 @@ func (a *ModelDefinition_Metadata) UnmarshalJSON(b []byte) error {
 		delete(object, "shape")
 	}
 
-	if raw, found := object["sourceUri"]; found {
-		err = json.Unmarshal(raw, &a.SourceUri)
-		if err != nil {
-			return fmt.Errorf("error reading 'sourceUri': %w", err)
-		}
-		delete(object, "sourceUri")
-	}
-
 	if len(object) != 0 {
 		a.AdditionalProperties = make(map[string]interface{})
 		for fieldName, fieldBuf := range object {
@@ -323,13 +312,6 @@ func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		object["shape"], err = json.Marshal(a.Shape)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'shape': %w", err)
-		}
-	}
-
-	if a.SourceUri != nil {
-		object["sourceUri"], err = json.Marshal(a.SourceUri)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'sourceUri': %w", err)
 		}
 	}
 
