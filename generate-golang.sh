@@ -31,7 +31,7 @@ generate_schema_models() {
 
     echo -e "${CYAN}🔹 Processing: $package ($version)...${NC}"
 
-    npx --yes @redocly/cli bundle --dereferenced "$input_schema" -o "$merged_output"  || {
+    npx --yes swagger-cli bundle --dereference "$input_schema" -o "$merged_output"  || {
         echo -e "${RED}❌ Bundling failed!${NC}"; return 1;
     }
 
@@ -53,3 +53,4 @@ generate_schema_models "component" "v1beta1"
 generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
 generate_schema_models "core" "v1alpha1"
 generate_schema_models "catalog" "v1alpha2"
+generate_schema_models "subscription" "v1beta1"
