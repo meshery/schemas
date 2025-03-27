@@ -21,6 +21,9 @@ generate_schema_models() {
     local merged_output="schemas/constructs/${version}/${package}/merged-openapis.yml"
     local output_go_file="models/${version}/${package}/${package}.go"
 
+    mkdir -p "models/${version}/${package}"
+    touch "$output_go_file"
+
     if [[ ! -f "$input_schema" ]]; then
         echo -e "${RED}Error: Schema not found: $input_schema${NC}"
         return 1
@@ -28,7 +31,7 @@ generate_schema_models() {
 
     echo -e "${CYAN}🔹 Processing: $package ($version)...${NC}"
 
-    npx swagger-cli bundle --dereference "$input_schema" -o "$merged_output" > /dev/null || {
+    npx --yes @redocly/cli bundle --dereferenced "$input_schema" -o "$merged_output"  || {
         echo -e "${RED}❌ Bundling failed!${NC}"; return 1;
     }
 
