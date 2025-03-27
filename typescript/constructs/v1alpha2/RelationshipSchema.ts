@@ -161,29 +161,21 @@ const schema = {
           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
         },
         "name": {
-          "type": "string",
           "description": "The unique name for the model within the scope of a registrant.",
-          "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
-          "pattern": "^[a-z0-9-]+$",
-          "examples": [
-            "cert-manager"
-          ],
           "x-order": 4,
           "x-oapi-codegen-extra-tags": {
             "yaml": "name",
             "json": "name"
-          }
+          },
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
         },
         "displayName": {
           "description": "Human-readable name for the model.",
-          "helperText": "Model display name should be a friendly name for your model.",
           "minLength": 1,
           "maxLength": 100,
           "type": "string",
-          "pattern": "^[a-zA-Z0-9 ]+$",
-          "examples": [
-            "Cert Manager"
-          ],
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
           "x-order": 5,
           "x-oapi-codegen-extra-tags": {
             "yaml": "displayName",
@@ -457,25 +449,6 @@ const schema = {
                 "json": "name",
                 "gorm": "name"
               },
-              "default": "Uncategorized",
-              "description": "The category of the model that determines the main grouping.",
-              "enum": [
-                "Analytics",
-                "App Definition and Development",
-                "Cloud Native Network",
-                "Cloud Native Storage",
-                "Database",
-                "Machine Learning",
-                "Observability and Analysis",
-                "Orchestration & Management",
-                "Platform",
-                "Provisioning",
-                "Runtime",
-                "Security & Compliance",
-                "Serverless",
-                "Tools",
-                "Uncategorized"
-              ],
               "x-order": 2
             },
             "metadata": {
@@ -490,71 +463,15 @@ const schema = {
           }
         },
         "subCategory": {
-          "x-order": 12,
-          "x-go-type": "subcategory.SubCategoryDefinition",
-          "x-go-type-import": {
-            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
-          },
-          "$id": "https://schemas.meshery.io/category.json",
-          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "string",
-          "title": "SubCategory",
-          "description": "Sub category of the model determines the secondary grouping.",
-          "default": "Uncategorized",
-          "enum": [
-            "API Gateway",
-            "API Integration",
-            "Application Definition & Image Build",
-            "Automation & Configuration",
-            "Certified Kubernetes - Distribution",
-            "Chaos Engineering",
-            "Cloud Native Storage",
-            "Cloud Provider",
-            "CNI",
-            "Compute",
-            "Container Registry",
-            "Container Runtime",
-            "Container Security",
-            "Container",
-            "Content Delivery Network",
-            "Continuous Integration & Delivery",
-            "Coordination & Service Discovery",
-            "Database",
-            "Flowchart",
-            "Framework",
-            "Installable Platform",
-            "Key Management",
-            "Key Management Service",
-            "Kubernetes",
-            "Logging",
-            "Machine Learning",
-            "Management Governance",
-            "Metrics",
-            "Monitoring",
-            "Networking Content Delivery",
-            "Operating System",
-            "Query",
-            "Remote Procedure Call",
-            "Scheduling & Orchestration",
-            "Secrets Management",
-            "Security Identity & Compliance",
-            "Service Mesh",
-            "Service Proxy",
-            "Source Version Control",
-            "Storage",
-            "Specifications",
-            "Streaming & Messaging",
-            "Tools",
-            "Tracing",
-            "Uncategorized",
-            "Video Conferencing"
-          ],
+          "description": "Sub-category of the model.",
           "minLength": 1,
           "maxLength": 100,
           "x-oapi-codegen-extra-tags": {
             "yaml": "subCategory",
             "json": "subCategory"
-          }
+          },
+          "x-order": 12
         },
         "metadata": {
           "type": "object",
@@ -761,7 +678,6 @@ const schema = {
               "description": "Primary color associated with the model.",
               "minLength": 1,
               "maxLength": 50,
-              "default": "#00b39f",
               "x-oapi-codegen-extra-tags": {
                 "yaml": "primaryColor",
                 "json": "primaryColor"
@@ -773,7 +689,6 @@ const schema = {
               "description": "Secondary color associated with the model.",
               "minLength": 1,
               "maxLength": 50,
-              "default": "#00D3A9",
               "x-oapi-codegen-extra-tags": {
                 "yaml": "secondaryColor",
                 "json": "secondaryColor"
@@ -809,44 +724,6 @@ const schema = {
                 "json": "svgComplete"
               },
               "x-order": 7
-            },
-            "shape": {
-              "x-order": 8,
-              "type": "string",
-              "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-              "default": "circle",
-              "enum": [
-                "circle",
-                "ellipse",
-                "triangle",
-                "round-triangle",
-                "rectangle",
-                "round-rectangle",
-                "bottom-round-rectangle",
-                "cut-rectangle",
-                "barrel",
-                "rhomboid",
-                "diamond",
-                "round-diamond",
-                "pentagon",
-                "round-pentagon",
-                "hexagon",
-                "round-hexagon",
-                "concave-hexagon",
-                "heptagon",
-                "round-heptagon",
-                "octagon",
-                "round-octagon",
-                "star",
-                "tag",
-                "round-tag",
-                "vee",
-                "polygon"
-              ],
-              "x-oapi-codegen-extra-tags": {
-                "yaml": "shape",
-                "json": "shape"
-              }
             }
           },
           "x-oapi-codegen-extra-tags": {
@@ -1040,29 +917,21 @@ const schema = {
                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "name": {
-                          "type": "string",
                           "description": "The unique name for the model within the scope of a registrant.",
-                          "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
-                          "pattern": "^[a-z0-9-]+$",
-                          "examples": [
-                            "cert-manager"
-                          ],
                           "x-order": 4,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
-                          "helperText": "Model display name should be a friendly name for your model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "type": "string",
-                          "pattern": "^[a-zA-Z0-9 ]+$",
-                          "examples": [
-                            "Cert Manager"
-                          ],
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
@@ -1336,25 +1205,6 @@ const schema = {
                                 "json": "name",
                                 "gorm": "name"
                               },
-                              "default": "Uncategorized",
-                              "description": "The category of the model that determines the main grouping.",
-                              "enum": [
-                                "Analytics",
-                                "App Definition and Development",
-                                "Cloud Native Network",
-                                "Cloud Native Storage",
-                                "Database",
-                                "Machine Learning",
-                                "Observability and Analysis",
-                                "Orchestration & Management",
-                                "Platform",
-                                "Provisioning",
-                                "Runtime",
-                                "Security & Compliance",
-                                "Serverless",
-                                "Tools",
-                                "Uncategorized"
-                              ],
                               "x-order": 2
                             },
                             "metadata": {
@@ -1369,71 +1219,15 @@ const schema = {
                           }
                         },
                         "subCategory": {
-                          "x-order": 12,
-                          "x-go-type": "subcategory.SubCategoryDefinition",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
-                          },
-                          "$id": "https://schemas.meshery.io/category.json",
-                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
-                          "title": "SubCategory",
-                          "description": "Sub category of the model determines the secondary grouping.",
-                          "default": "Uncategorized",
-                          "enum": [
-                            "API Gateway",
-                            "API Integration",
-                            "Application Definition & Image Build",
-                            "Automation & Configuration",
-                            "Certified Kubernetes - Distribution",
-                            "Chaos Engineering",
-                            "Cloud Native Storage",
-                            "Cloud Provider",
-                            "CNI",
-                            "Compute",
-                            "Container Registry",
-                            "Container Runtime",
-                            "Container Security",
-                            "Container",
-                            "Content Delivery Network",
-                            "Continuous Integration & Delivery",
-                            "Coordination & Service Discovery",
-                            "Database",
-                            "Flowchart",
-                            "Framework",
-                            "Installable Platform",
-                            "Key Management",
-                            "Key Management Service",
-                            "Kubernetes",
-                            "Logging",
-                            "Machine Learning",
-                            "Management Governance",
-                            "Metrics",
-                            "Monitoring",
-                            "Networking Content Delivery",
-                            "Operating System",
-                            "Query",
-                            "Remote Procedure Call",
-                            "Scheduling & Orchestration",
-                            "Secrets Management",
-                            "Security Identity & Compliance",
-                            "Service Mesh",
-                            "Service Proxy",
-                            "Source Version Control",
-                            "Storage",
-                            "Specifications",
-                            "Streaming & Messaging",
-                            "Tools",
-                            "Tracing",
-                            "Uncategorized",
-                            "Video Conferencing"
-                          ],
+                          "description": "Sub-category of the model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
@@ -1640,7 +1434,6 @@ const schema = {
                               "description": "Primary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00b39f",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
@@ -1652,7 +1445,6 @@ const schema = {
                               "description": "Secondary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00D3A9",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
@@ -1688,44 +1480,6 @@ const schema = {
                                 "json": "svgComplete"
                               },
                               "x-order": 7
-                            },
-                            "shape": {
-                              "x-order": 8,
-                              "type": "string",
-                              "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                              "default": "circle",
-                              "enum": [
-                                "circle",
-                                "ellipse",
-                                "triangle",
-                                "round-triangle",
-                                "rectangle",
-                                "round-rectangle",
-                                "bottom-round-rectangle",
-                                "cut-rectangle",
-                                "barrel",
-                                "rhomboid",
-                                "diamond",
-                                "round-diamond",
-                                "pentagon",
-                                "round-pentagon",
-                                "hexagon",
-                                "round-hexagon",
-                                "concave-hexagon",
-                                "heptagon",
-                                "round-heptagon",
-                                "octagon",
-                                "round-octagon",
-                                "star",
-                                "tag",
-                                "round-tag",
-                                "vee",
-                                "polygon"
-                              ],
-                              "x-oapi-codegen-extra-tags": {
-                                "yaml": "shape",
-                                "json": "shape"
-                              }
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
@@ -1981,29 +1735,21 @@ const schema = {
                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "name": {
-                          "type": "string",
                           "description": "The unique name for the model within the scope of a registrant.",
-                          "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
-                          "pattern": "^[a-z0-9-]+$",
-                          "examples": [
-                            "cert-manager"
-                          ],
                           "x-order": 4,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
-                          "helperText": "Model display name should be a friendly name for your model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "type": "string",
-                          "pattern": "^[a-zA-Z0-9 ]+$",
-                          "examples": [
-                            "Cert Manager"
-                          ],
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
@@ -2277,25 +2023,6 @@ const schema = {
                                 "json": "name",
                                 "gorm": "name"
                               },
-                              "default": "Uncategorized",
-                              "description": "The category of the model that determines the main grouping.",
-                              "enum": [
-                                "Analytics",
-                                "App Definition and Development",
-                                "Cloud Native Network",
-                                "Cloud Native Storage",
-                                "Database",
-                                "Machine Learning",
-                                "Observability and Analysis",
-                                "Orchestration & Management",
-                                "Platform",
-                                "Provisioning",
-                                "Runtime",
-                                "Security & Compliance",
-                                "Serverless",
-                                "Tools",
-                                "Uncategorized"
-                              ],
                               "x-order": 2
                             },
                             "metadata": {
@@ -2310,71 +2037,15 @@ const schema = {
                           }
                         },
                         "subCategory": {
-                          "x-order": 12,
-                          "x-go-type": "subcategory.SubCategoryDefinition",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
-                          },
-                          "$id": "https://schemas.meshery.io/category.json",
-                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
-                          "title": "SubCategory",
-                          "description": "Sub category of the model determines the secondary grouping.",
-                          "default": "Uncategorized",
-                          "enum": [
-                            "API Gateway",
-                            "API Integration",
-                            "Application Definition & Image Build",
-                            "Automation & Configuration",
-                            "Certified Kubernetes - Distribution",
-                            "Chaos Engineering",
-                            "Cloud Native Storage",
-                            "Cloud Provider",
-                            "CNI",
-                            "Compute",
-                            "Container Registry",
-                            "Container Runtime",
-                            "Container Security",
-                            "Container",
-                            "Content Delivery Network",
-                            "Continuous Integration & Delivery",
-                            "Coordination & Service Discovery",
-                            "Database",
-                            "Flowchart",
-                            "Framework",
-                            "Installable Platform",
-                            "Key Management",
-                            "Key Management Service",
-                            "Kubernetes",
-                            "Logging",
-                            "Machine Learning",
-                            "Management Governance",
-                            "Metrics",
-                            "Monitoring",
-                            "Networking Content Delivery",
-                            "Operating System",
-                            "Query",
-                            "Remote Procedure Call",
-                            "Scheduling & Orchestration",
-                            "Secrets Management",
-                            "Security Identity & Compliance",
-                            "Service Mesh",
-                            "Service Proxy",
-                            "Source Version Control",
-                            "Storage",
-                            "Specifications",
-                            "Streaming & Messaging",
-                            "Tools",
-                            "Tracing",
-                            "Uncategorized",
-                            "Video Conferencing"
-                          ],
+                          "description": "Sub-category of the model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
@@ -2581,7 +2252,6 @@ const schema = {
                               "description": "Primary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00b39f",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
@@ -2593,7 +2263,6 @@ const schema = {
                               "description": "Secondary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00D3A9",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
@@ -2629,44 +2298,6 @@ const schema = {
                                 "json": "svgComplete"
                               },
                               "x-order": 7
-                            },
-                            "shape": {
-                              "x-order": 8,
-                              "type": "string",
-                              "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                              "default": "circle",
-                              "enum": [
-                                "circle",
-                                "ellipse",
-                                "triangle",
-                                "round-triangle",
-                                "rectangle",
-                                "round-rectangle",
-                                "bottom-round-rectangle",
-                                "cut-rectangle",
-                                "barrel",
-                                "rhomboid",
-                                "diamond",
-                                "round-diamond",
-                                "pentagon",
-                                "round-pentagon",
-                                "hexagon",
-                                "round-hexagon",
-                                "concave-hexagon",
-                                "heptagon",
-                                "round-heptagon",
-                                "octagon",
-                                "round-octagon",
-                                "star",
-                                "tag",
-                                "round-tag",
-                                "vee",
-                                "polygon"
-                              ],
-                              "x-oapi-codegen-extra-tags": {
-                                "yaml": "shape",
-                                "json": "shape"
-                              }
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
@@ -2926,29 +2557,21 @@ const schema = {
                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "name": {
-                          "type": "string",
                           "description": "The unique name for the model within the scope of a registrant.",
-                          "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
-                          "pattern": "^[a-z0-9-]+$",
-                          "examples": [
-                            "cert-manager"
-                          ],
                           "x-order": 4,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
-                          "helperText": "Model display name should be a friendly name for your model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "type": "string",
-                          "pattern": "^[a-zA-Z0-9 ]+$",
-                          "examples": [
-                            "Cert Manager"
-                          ],
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
@@ -3222,25 +2845,6 @@ const schema = {
                                 "json": "name",
                                 "gorm": "name"
                               },
-                              "default": "Uncategorized",
-                              "description": "The category of the model that determines the main grouping.",
-                              "enum": [
-                                "Analytics",
-                                "App Definition and Development",
-                                "Cloud Native Network",
-                                "Cloud Native Storage",
-                                "Database",
-                                "Machine Learning",
-                                "Observability and Analysis",
-                                "Orchestration & Management",
-                                "Platform",
-                                "Provisioning",
-                                "Runtime",
-                                "Security & Compliance",
-                                "Serverless",
-                                "Tools",
-                                "Uncategorized"
-                              ],
                               "x-order": 2
                             },
                             "metadata": {
@@ -3255,71 +2859,15 @@ const schema = {
                           }
                         },
                         "subCategory": {
-                          "x-order": 12,
-                          "x-go-type": "subcategory.SubCategoryDefinition",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
-                          },
-                          "$id": "https://schemas.meshery.io/category.json",
-                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
-                          "title": "SubCategory",
-                          "description": "Sub category of the model determines the secondary grouping.",
-                          "default": "Uncategorized",
-                          "enum": [
-                            "API Gateway",
-                            "API Integration",
-                            "Application Definition & Image Build",
-                            "Automation & Configuration",
-                            "Certified Kubernetes - Distribution",
-                            "Chaos Engineering",
-                            "Cloud Native Storage",
-                            "Cloud Provider",
-                            "CNI",
-                            "Compute",
-                            "Container Registry",
-                            "Container Runtime",
-                            "Container Security",
-                            "Container",
-                            "Content Delivery Network",
-                            "Continuous Integration & Delivery",
-                            "Coordination & Service Discovery",
-                            "Database",
-                            "Flowchart",
-                            "Framework",
-                            "Installable Platform",
-                            "Key Management",
-                            "Key Management Service",
-                            "Kubernetes",
-                            "Logging",
-                            "Machine Learning",
-                            "Management Governance",
-                            "Metrics",
-                            "Monitoring",
-                            "Networking Content Delivery",
-                            "Operating System",
-                            "Query",
-                            "Remote Procedure Call",
-                            "Scheduling & Orchestration",
-                            "Secrets Management",
-                            "Security Identity & Compliance",
-                            "Service Mesh",
-                            "Service Proxy",
-                            "Source Version Control",
-                            "Storage",
-                            "Specifications",
-                            "Streaming & Messaging",
-                            "Tools",
-                            "Tracing",
-                            "Uncategorized",
-                            "Video Conferencing"
-                          ],
+                          "description": "Sub-category of the model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
@@ -3526,7 +3074,6 @@ const schema = {
                               "description": "Primary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00b39f",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
@@ -3538,7 +3085,6 @@ const schema = {
                               "description": "Secondary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00D3A9",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
@@ -3574,44 +3120,6 @@ const schema = {
                                 "json": "svgComplete"
                               },
                               "x-order": 7
-                            },
-                            "shape": {
-                              "x-order": 8,
-                              "type": "string",
-                              "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                              "default": "circle",
-                              "enum": [
-                                "circle",
-                                "ellipse",
-                                "triangle",
-                                "round-triangle",
-                                "rectangle",
-                                "round-rectangle",
-                                "bottom-round-rectangle",
-                                "cut-rectangle",
-                                "barrel",
-                                "rhomboid",
-                                "diamond",
-                                "round-diamond",
-                                "pentagon",
-                                "round-pentagon",
-                                "hexagon",
-                                "round-hexagon",
-                                "concave-hexagon",
-                                "heptagon",
-                                "round-heptagon",
-                                "octagon",
-                                "round-octagon",
-                                "star",
-                                "tag",
-                                "round-tag",
-                                "vee",
-                                "polygon"
-                              ],
-                              "x-oapi-codegen-extra-tags": {
-                                "yaml": "shape",
-                                "json": "shape"
-                              }
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
@@ -3867,29 +3375,21 @@ const schema = {
                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "name": {
-                          "type": "string",
                           "description": "The unique name for the model within the scope of a registrant.",
-                          "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
-                          "pattern": "^[a-z0-9-]+$",
-                          "examples": [
-                            "cert-manager"
-                          ],
                           "x-order": 4,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "type": "string",
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
-                          "helperText": "Model display name should be a friendly name for your model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "type": "string",
-                          "pattern": "^[a-zA-Z0-9 ]+$",
-                          "examples": [
-                            "Cert Manager"
-                          ],
+                          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
@@ -4163,25 +3663,6 @@ const schema = {
                                 "json": "name",
                                 "gorm": "name"
                               },
-                              "default": "Uncategorized",
-                              "description": "The category of the model that determines the main grouping.",
-                              "enum": [
-                                "Analytics",
-                                "App Definition and Development",
-                                "Cloud Native Network",
-                                "Cloud Native Storage",
-                                "Database",
-                                "Machine Learning",
-                                "Observability and Analysis",
-                                "Orchestration & Management",
-                                "Platform",
-                                "Provisioning",
-                                "Runtime",
-                                "Security & Compliance",
-                                "Serverless",
-                                "Tools",
-                                "Uncategorized"
-                              ],
                               "x-order": 2
                             },
                             "metadata": {
@@ -4196,71 +3677,15 @@ const schema = {
                           }
                         },
                         "subCategory": {
-                          "x-order": 12,
-                          "x-go-type": "subcategory.SubCategoryDefinition",
-                          "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
-                          },
-                          "$id": "https://schemas.meshery.io/category.json",
-                          "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
-                          "title": "SubCategory",
-                          "description": "Sub category of the model determines the secondary grouping.",
-                          "default": "Uncategorized",
-                          "enum": [
-                            "API Gateway",
-                            "API Integration",
-                            "Application Definition & Image Build",
-                            "Automation & Configuration",
-                            "Certified Kubernetes - Distribution",
-                            "Chaos Engineering",
-                            "Cloud Native Storage",
-                            "Cloud Provider",
-                            "CNI",
-                            "Compute",
-                            "Container Registry",
-                            "Container Runtime",
-                            "Container Security",
-                            "Container",
-                            "Content Delivery Network",
-                            "Continuous Integration & Delivery",
-                            "Coordination & Service Discovery",
-                            "Database",
-                            "Flowchart",
-                            "Framework",
-                            "Installable Platform",
-                            "Key Management",
-                            "Key Management Service",
-                            "Kubernetes",
-                            "Logging",
-                            "Machine Learning",
-                            "Management Governance",
-                            "Metrics",
-                            "Monitoring",
-                            "Networking Content Delivery",
-                            "Operating System",
-                            "Query",
-                            "Remote Procedure Call",
-                            "Scheduling & Orchestration",
-                            "Secrets Management",
-                            "Security Identity & Compliance",
-                            "Service Mesh",
-                            "Service Proxy",
-                            "Source Version Control",
-                            "Storage",
-                            "Specifications",
-                            "Streaming & Messaging",
-                            "Tools",
-                            "Tracing",
-                            "Uncategorized",
-                            "Video Conferencing"
-                          ],
+                          "description": "Sub-category of the model.",
                           "minLength": 1,
                           "maxLength": 100,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 12
                         },
                         "metadata": {
                           "type": "object",
@@ -4467,7 +3892,6 @@ const schema = {
                               "description": "Primary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00b39f",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
@@ -4479,7 +3903,6 @@ const schema = {
                               "description": "Secondary color associated with the model.",
                               "minLength": 1,
                               "maxLength": 50,
-                              "default": "#00D3A9",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
@@ -4515,44 +3938,6 @@ const schema = {
                                 "json": "svgComplete"
                               },
                               "x-order": 7
-                            },
-                            "shape": {
-                              "x-order": 8,
-                              "type": "string",
-                              "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                              "default": "circle",
-                              "enum": [
-                                "circle",
-                                "ellipse",
-                                "triangle",
-                                "round-triangle",
-                                "rectangle",
-                                "round-rectangle",
-                                "bottom-round-rectangle",
-                                "cut-rectangle",
-                                "barrel",
-                                "rhomboid",
-                                "diamond",
-                                "round-diamond",
-                                "pentagon",
-                                "round-pentagon",
-                                "hexagon",
-                                "round-hexagon",
-                                "concave-hexagon",
-                                "heptagon",
-                                "round-heptagon",
-                                "octagon",
-                                "round-octagon",
-                                "star",
-                                "tag",
-                                "round-tag",
-                                "vee",
-                                "polygon"
-                              ],
-                              "x-oapi-codegen-extra-tags": {
-                                "yaml": "shape",
-                                "json": "shape"
-                              }
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
