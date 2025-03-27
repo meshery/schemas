@@ -39,6 +39,8 @@ generate_schema_models() {
         echo -e "${RED}❌ Model generation failed!${NC}"; rm -f "$merged_output"; return 1;
     }
     # 🏆 Apply sed to inject YAML struct tags alongside JSON ones
+    #  Add yaml struct tags only if missing, avoiding duplicates or overwrites
+    # the added yaml tags are the same as the json tags default or user defined
     sed -i 's/\(json:"\([^"]*\)"\)\( yaml:"[^"]*"\)\?/\1 yaml:"\2"/g' "$output_go_file"
 
     rm -f "$merged_output"
