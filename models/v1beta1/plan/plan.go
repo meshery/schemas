@@ -34,18 +34,18 @@ type Currency string
 
 // Plan defines model for Plan.
 type Plan struct {
-	Cadence  PlanCadence  `json:"cadence"`
-	Currency PlanCurrency `json:"currency"`
+	Cadence  PlanCadence  `json:"cadence" yaml:"cadence"`
+	Currency PlanCurrency `json:"currency" yaml:"currency"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id uuid.UUID `json:"id"`
+	Id uuid.UUID `json:"id" yaml:"id"`
 
 	// Name Name of the plan
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 
 	// PricePerUnit Price per unit of the plan
-	PricePerUnit float32  `json:"price_per_unit"`
-	Unit         PlanUnit `json:"unit"`
+	PricePerUnit float32  `json:"price_per_unit" yaml:"price_per_unit"`
+	Unit         PlanUnit `json:"unit" yaml:"unit"`
 }
 
 // PlanCadence defines model for Plan.Cadence.
