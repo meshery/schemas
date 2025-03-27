@@ -25,8 +25,7 @@ components:
                 updated_at:
                     $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
                 deleted_at:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
-                    nullable: true
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/SqlNullTime"
                 billing_id:
                     type: string
                     description: "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe"
@@ -35,6 +34,7 @@ components:
                 - id
                 - org_id
                 - plan_id
+                - billing_id
                 - status
 
         SubscriptionStatus:

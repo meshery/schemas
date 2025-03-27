@@ -6,6 +6,8 @@ package subscription
 import (
 	"time"
 
+	"database/sql"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -21,10 +23,10 @@ const (
 // Subscription defines model for Subscription.
 type Subscription struct {
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
-	BillingId *string   `json:"billing_id"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	DeletedAt time.Time `json:"deleted_at"`
-	EndDate   time.Time `json:"end_date,omitempty"`
+	BillingId *string      `json:"billing_id"`
+	CreatedAt time.Time    `json:"created_at,omitempty"`
+	DeletedAt sql.NullTime `json:"deleted_at,omitempty"`
+	EndDate   time.Time    `json:"end_date,omitempty"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Id uuid.UUID `json:"id"`
