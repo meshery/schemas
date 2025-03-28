@@ -21,7 +21,7 @@ const (
 // Defines values for PlanName.
 const (
 	Ambassador PlanName = "Ambassador"
-	Enterprice PlanName = "Enterprice"
+	Enterprise PlanName = "Enterprise"
 	Personal   PlanName = "Personal"
 	Team       PlanName = "Team"
 )

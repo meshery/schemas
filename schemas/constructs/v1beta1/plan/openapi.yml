@@ -64,7 +64,7 @@ components:
             enum:
                 - "Personal"
                 - "Team"
-                - "Enterprice"
+                - "Enterprise"
                 - "Ambassador"
 
         PlanCadence:
