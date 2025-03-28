@@ -5,10 +5,31 @@ info:
 paths: {}
 components:
     schemas:
+
+        
+        SubscriptionPage:
+            type: object
+            required:
+                - page
+                - page_size
+                - total_count
+                - subscriptions
+            properties:
+                page:
+                    type: integer
+                page_size:
+                    type: integer
+                total_count:
+                    type: integer
+                subscriptions:
+                    type: "array"
+                    items:
+                        $ref: "#/components/schemas/Subscription"
+                        x-go-type: Subscription
         Subscription:
             type: object
             properties:
-                id:
+                ID:
                     $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
                 org_id:
                     $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
@@ -20,6 +41,7 @@ components:
                     $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
                 status:
                     $ref: "#/components/schemas/SubscriptionStatus"
+                    x-go-type: SubscriptionStatus
                 created_at:
                     $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
                 updated_at:
@@ -31,7 +53,7 @@ components:
                     description: "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe"
                     nullable: true
             required:
-                - id
+                - ID
                 - org_id
                 - plan_id
                 - billing_id

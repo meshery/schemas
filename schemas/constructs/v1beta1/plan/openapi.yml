@@ -5,6 +5,27 @@ info:
 paths: {}
 components:
     schemas:
+        
+        PlanPage:
+            type: object
+            required:
+                - page
+                - page_size
+                - total_count
+                - plans
+            properties:
+                page:
+                    type: integer
+                page_size:
+                    type: integer
+                total_count:
+                    type: integer
+                plans:
+                    type: "array"
+                    items:
+                        $ref: "#/components/schemas/Plan"
+                        x-go-type: Plan
+        
         Plan:
             type: object
             properties:
@@ -12,12 +33,15 @@ components:
                     $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
                 name:
                     type: "string"
-                    description: "Name of the plan"
+                    $ref: "#/components/schemas/PlanName"
+                    x-go-type: PlanName
                 cadence:
                     $ref: "#/components/schemas/PlanCadence"
+                    x-go-type: PlanCadence
 
                 unit:
                     $ref: "#/components/schemas/PlanUnit"
+                    x-go-type: PlanUnit
 
                 price_per_unit:
                     type: "number"
@@ -25,6 +49,7 @@ components:
 
                 currency:
                     $ref: "#/components/schemas/Currency"
+                    x-go-type: Currency
 
             required:
                 - id
@@ -33,6 +58,14 @@ components:
                 - unit
                 - price_per_unit
                 - currency
+        PlanName:
+            type: string
+            description: "Name of the plan"
+            enum:
+                - "Personal"
+                - "Team"
+                - "Enterprice"
+                - "Ambassador"
 
         PlanCadence:
             type: string
