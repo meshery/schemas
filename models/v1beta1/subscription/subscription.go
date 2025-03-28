@@ -22,14 +22,14 @@ const (
 
 // Subscription defines model for Subscription.
 type Subscription struct {
+	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID uuid.UUID `json:"ID" yaml:"ID"`
+
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
 	BillingId *string      `json:"billing_id" yaml:"billing_id"`
 	CreatedAt time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	DeletedAt sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	EndDate   time.Time    `json:"end_date,omitempty" yaml:"end_date,omitempty"`
-
-	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id uuid.UUID `json:"id" yaml:"id"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	OrgId uuid.UUID `json:"org_id" yaml:"org_id"`
@@ -41,5 +41,13 @@ type Subscription struct {
 	UpdatedAt time.Time          `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
-// SubscriptionStatus defines model for Subscription.Status.
+// SubscriptionPage defines model for SubscriptionPage.
+type SubscriptionPage struct {
+	Page          int            `json:"page" yaml:"page"`
+	PageSize      int            `json:"page_size" yaml:"page_size"`
+	Subscriptions []Subscription `json:"subscriptions" yaml:"subscriptions"`
+	TotalCount    int            `json:"total_count" yaml:"total_count"`
+}
+
+// SubscriptionStatus defines model for SubscriptionStatus.
 type SubscriptionStatus string
