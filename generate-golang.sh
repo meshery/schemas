@@ -21,6 +21,9 @@ generate_schema_models() {
     local merged_output="schemas/constructs/${version}/${package}/merged-openapis.yml"
     local output_go_file="models/${version}/${package}/${package}.go"
 
+    mkdir -p "models/${version}/${package}"
+    touch "$output_go_file"
+
     if [[ ! -f "$input_schema" ]]; then
         echo -e "${RED}Error: Schema not found: $input_schema${NC}"
         return 1
@@ -28,13 +31,17 @@ generate_schema_models() {
 
     echo -e "${CYAN}🔹 Processing: $package ($version)...${NC}"
 
-    npx swagger-cli bundle --dereference "$input_schema" -o "$merged_output" > /dev/null || {
+    npx --yes swagger-cli bundle --dereference "$input_schema" -o "$merged_output"  || {
         echo -e "${RED}❌ Bundling failed!${NC}"; return 1;
     }
 
     oapi-codegen --config openapi.config.yml --package "$package" -generate types --include-tags all -o "$output_go_file" "$merged_output" || {
         echo -e "${RED}❌ Model generation failed!${NC}"; rm -f "$merged_output"; return 1;
     }
+    # 🏆 Apply sed to inject YAML struct tags alongside JSON ones
+    #  Add yaml struct tags only if missing, avoiding duplicates or overwrites
+    # the added yaml tags are the same as the json tags default or user defined
+    sed -i 's/\(json:"\([^"]*\)"\)\( yaml:"[^"]*"\)\?/\1 yaml:"\2"/g' "$output_go_file"
 
     rm -f "$merged_output"
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
@@ -49,3 +56,5 @@ generate_schema_models "component" "v1beta1"
 generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
 generate_schema_models "core" "v1alpha1"
 generate_schema_models "catalog" "v1alpha2"
+generate_schema_models "subscription" "v1beta1"
+generate_schema_models "plan" "v1beta1"

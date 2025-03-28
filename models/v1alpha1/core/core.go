@@ -4,10 +4,11 @@
 package core
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"database/sql"
 
 	"github.com/gofrs/uuid"
 	"github.com/oapi-codegen/runtime"
@@ -295,32 +296,35 @@ type MapObject map[string]string
 // NonResolvedAlias An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents
 type NonResolvedAlias struct {
 	// AliasComponentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	AliasComponentId uuid.UUID `json:"alias_component_id"`
+	AliasComponentId uuid.UUID `json:"alias_component_id" yaml:"alias_component_id"`
 
 	// ImmediateParentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ImmediateParentId     uuid.UUID `json:"immediate_parent_id"`
-	ImmediateRefFieldPath []string  `json:"immediate_ref_field_path"`
+	ImmediateParentId     uuid.UUID `json:"immediate_parent_id" yaml:"immediate_parent_id"`
+	ImmediateRefFieldPath []string  `json:"immediate_ref_field_path" yaml:"immediate_ref_field_path"`
 
 	// RelationshipId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RelationshipId uuid.UUID `json:"relationship_id"`
+	RelationshipId uuid.UUID `json:"relationship_id" yaml:"relationship_id"`
 }
 
 // ResolvedAlias defines model for ResolvedAlias.
 type ResolvedAlias struct {
 	// AliasComponentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	AliasComponentId uuid.UUID `json:"alias_component_id"`
+	AliasComponentId uuid.UUID `json:"alias_component_id" yaml:"alias_component_id"`
 
 	// ImmediateParentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ImmediateParentId     uuid.UUID `json:"immediate_parent_id"`
-	ImmediateRefFieldPath []string  `json:"immediate_ref_field_path"`
+	ImmediateParentId     uuid.UUID `json:"immediate_parent_id" yaml:"immediate_parent_id"`
+	ImmediateRefFieldPath []string  `json:"immediate_ref_field_path" yaml:"immediate_ref_field_path"`
 
 	// RelationshipId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RelationshipId uuid.UUID `json:"relationship_id"`
+	RelationshipId uuid.UUID `json:"relationship_id" yaml:"relationship_id"`
 
 	// ResolvedParentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ResolvedParentId     uuid.UUID `json:"resolved_parent_id"`
-	ResolvedRefFieldPath []string  `json:"resolved_ref_field_path"`
+	ResolvedParentId     uuid.UUID `json:"resolved_parent_id" yaml:"resolved_parent_id"`
+	ResolvedRefFieldPath []string  `json:"resolved_ref_field_path" yaml:"resolved_ref_field_path"`
 }
+
+// SqlNullTime defines model for SqlNullTime.
+type SqlNullTime = sql.NullTime
 
 // Text defines model for Text.
 type Text = string
@@ -340,200 +344,200 @@ type Bio = string
 // ComponentStyles defines model for componentStyles.
 type ComponentStyles struct {
 	// ActiveBgColor The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
-	ActiveBgColor *string `json:"active-bg-color,omitempty"`
+	ActiveBgColor *string `json:"active-bg-color,omitempty" yaml:"active-bg-color,omitempty"`
 
 	// ActiveBgOpacity The opacity of the active background indicator. Selector needs to be *core*.
-	ActiveBgOpacity *string `json:"active-bg-opacity,omitempty"`
+	ActiveBgOpacity *string `json:"active-bg-opacity,omitempty" yaml:"active-bg-opacity,omitempty"`
 
 	// ActiveBgSize The opacity of the active background indicator. Selector needs to be *core*.
-	ActiveBgSize *string `json:"active-bg-size,omitempty"`
+	ActiveBgSize *string `json:"active-bg-size,omitempty" yaml:"active-bg-size,omitempty"`
 
 	// Animation The animation to apply to the element. example ripple,bounce,etc
-	Animation *map[string]interface{} `json:"animation,omitempty"`
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// BackgroundBlacken Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1.
-	BackgroundBlacken *float32 `json:"background-blacken,omitempty"`
+	BackgroundBlacken *float32 `json:"background-blacken,omitempty" yaml:"background-blacken,omitempty"`
 
 	// BackgroundClip How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
-	BackgroundClip *string `json:"background-clip,omitempty"`
+	BackgroundClip *string `json:"background-clip,omitempty" yaml:"background-clip,omitempty"`
 
 	// BackgroundColor The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g.
-	BackgroundColor *string `json:"background-color,omitempty"`
+	BackgroundColor *string `json:"background-color,omitempty" yaml:"background-color,omitempty"`
 
 	// BackgroundFit How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
-	BackgroundFit *string `json:"background-fit,omitempty"`
+	BackgroundFit *string `json:"background-fit,omitempty" yaml:"background-fit,omitempty"`
 
 	// BackgroundHeightRelativeTo How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
-	BackgroundHeightRelativeTo *string `json:"background-height-relative-to,omitempty"`
+	BackgroundHeightRelativeTo *string `json:"background-height-relative-to,omitempty" yaml:"background-height-relative-to,omitempty"`
 
 	// BackgroundImage The URL that points to the image to show in the node.
-	BackgroundImage *string `json:"background-image,omitempty"`
+	BackgroundImage *string `json:"background-image,omitempty" yaml:"background-image,omitempty"`
 
 	// BackgroundOffsetX The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundOffsetX *string `json:"background-offset-x,omitempty"`
+	BackgroundOffsetX *string `json:"background-offset-x,omitempty" yaml:"background-offset-x,omitempty"`
 
 	// BackgroundOffsetY The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundOffsetY *string `json:"background-offset-y,omitempty"`
+	BackgroundOffsetY *string `json:"background-offset-y,omitempty" yaml:"background-offset-y,omitempty"`
 
 	// BackgroundOpacity The opacity level of the node's background colour
-	BackgroundOpacity *float32 `json:"background-opacity,omitempty"`
+	BackgroundOpacity *float32 `json:"background-opacity,omitempty" yaml:"background-opacity,omitempty"`
 
 	// BackgroundPositionX The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundPositionX *string `json:"background-position-x,omitempty"`
+	BackgroundPositionX *string `json:"background-position-x,omitempty" yaml:"background-position-x,omitempty"`
 
 	// BackgroundPositionY The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundPositionY *string `json:"background-position-y,omitempty"`
+	BackgroundPositionY *string `json:"background-position-y,omitempty" yaml:"background-position-y,omitempty"`
 
 	// BackgroundWidthRelativeTo How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
-	BackgroundWidthRelativeTo *string `json:"background-width-relative-to,omitempty"`
+	BackgroundWidthRelativeTo *string `json:"background-width-relative-to,omitempty" yaml:"background-width-relative-to,omitempty"`
 
 	// BodyText The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id
-	BodyText *string `json:"body-text,omitempty"`
+	BodyText *string `json:"body-text,omitempty" yaml:"body-text,omitempty"`
 
 	// BodyTextBackgroundColor The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g.
-	BodyTextBackgroundColor *string `json:"body-text-background-color,omitempty"`
+	BodyTextBackgroundColor *string `json:"body-text-background-color,omitempty" yaml:"body-text-background-color,omitempty"`
 
 	// BodyTextColor The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g.
-	BodyTextColor *string `json:"body-text-color,omitempty"`
+	BodyTextColor *string `json:"body-text-color,omitempty" yaml:"body-text-color,omitempty"`
 
 	// BodyTextDecoration A CSS text decoration to be applied to the node's body text.
-	BodyTextDecoration *string `json:"body-text-decoration,omitempty"`
+	BodyTextDecoration *string `json:"body-text-decoration,omitempty" yaml:"body-text-decoration,omitempty"`
 
 	// BodyTextFontSize The size of the node's body text.
-	BodyTextFontSize *float32 `json:"body-text-font-size,omitempty"`
+	BodyTextFontSize *float32 `json:"body-text-font-size,omitempty" yaml:"body-text-font-size,omitempty"`
 
 	// BodyTextFontWeight A CSS font weight to be applied to the node's body text.
-	BodyTextFontWeight *string `json:"body-text-font-weight,omitempty"`
+	BodyTextFontWeight *string `json:"body-text-font-weight,omitempty" yaml:"body-text-font-weight,omitempty"`
 
 	// BodyTextHorizontalAlign A CSS horizontal alignment to be applied to the node's body text.
-	BodyTextHorizontalAlign *string `json:"body-text-horizontal-align,omitempty"`
+	BodyTextHorizontalAlign *string `json:"body-text-horizontal-align,omitempty" yaml:"body-text-horizontal-align,omitempty"`
 
 	// BodyTextMaxWidth The maximum width for wrapping text in the node.
-	BodyTextMaxWidth *string `json:"body-text-max-width,omitempty"`
+	BodyTextMaxWidth *string `json:"body-text-max-width,omitempty" yaml:"body-text-max-width,omitempty"`
 
 	// BodyTextOpacity The opacity of the node's body text, including its outline.
-	BodyTextOpacity *float32 `json:"body-text-opacity,omitempty"`
+	BodyTextOpacity *float32 `json:"body-text-opacity,omitempty" yaml:"body-text-opacity,omitempty"`
 
 	// BodyTextVerticalAlign A CSS vertical alignment to be applied to the node's body text.
-	BodyTextVerticalAlign *string `json:"body-text-vertical-align,omitempty"`
+	BodyTextVerticalAlign *string `json:"body-text-vertical-align,omitempty" yaml:"body-text-vertical-align,omitempty"`
 
 	// BodyTextWrap How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
-	BodyTextWrap *string `json:"body-text-wrap,omitempty"`
+	BodyTextWrap *string `json:"body-text-wrap,omitempty" yaml:"body-text-wrap,omitempty"`
 
 	// BorderColor The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g.
-	BorderColor *string `json:"border-color,omitempty"`
+	BorderColor *string `json:"border-color,omitempty" yaml:"border-color,omitempty"`
 
 	// BorderOpacity The opacity of the node's border
-	BorderOpacity *float32 `json:"border-opacity,omitempty"`
+	BorderOpacity *float32 `json:"border-opacity,omitempty" yaml:"border-opacity,omitempty"`
 
 	// BorderStyle The style of the node's border
-	BorderStyle *ComponentStylesBorderStyle `json:"border-style,omitempty"`
+	BorderStyle *ComponentStylesBorderStyle `json:"border-style,omitempty" yaml:"border-style,omitempty"`
 
 	// BorderWidth The size of the node's border.
-	BorderWidth *float32 `json:"border-width,omitempty"`
+	BorderWidth *float32 `json:"border-width,omitempty" yaml:"border-width,omitempty"`
 
 	// Color The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
-	Color *string `json:"color,omitempty"`
+	Color *string `json:"color,omitempty" yaml:"color,omitempty"`
 
 	// FontFamily A comma-separated list of font names to use on the label text.
-	FontFamily *string `json:"font-family,omitempty"`
+	FontFamily *string `json:"font-family,omitempty" yaml:"font-family,omitempty"`
 
 	// FontSize The size of the label text.
-	FontSize *string `json:"font-size,omitempty"`
+	FontSize *string `json:"font-size,omitempty" yaml:"font-size,omitempty"`
 
 	// FontStyle A CSS font style to be applied to the label text.
-	FontStyle *string `json:"font-style,omitempty"`
+	FontStyle *string `json:"font-style,omitempty" yaml:"font-style,omitempty"`
 
 	// FontWeight A CSS font weight to be applied to the label text.
-	FontWeight *string `json:"font-weight,omitempty"`
+	FontWeight *string `json:"font-weight,omitempty" yaml:"font-weight,omitempty"`
 
 	// Ghost Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
-	Ghost *ComponentStylesGhost `json:"ghost,omitempty"`
+	Ghost *ComponentStylesGhost `json:"ghost,omitempty" yaml:"ghost,omitempty"`
 
 	// Height The height of the node's body
-	Height *float32 `json:"height,omitempty"`
+	Height *float32 `json:"height,omitempty" yaml:"height,omitempty"`
 
 	// Label The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
-	Label *string `json:"label,omitempty"`
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 
 	// MenuBackgroundColor The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g.
-	MenuBackgroundColor *string `json:"menu-background-color,omitempty"`
+	MenuBackgroundColor *string `json:"menu-background-color,omitempty" yaml:"menu-background-color,omitempty"`
 
 	// MenuBackgroundOpacity The opacity of the background of the component menu.
-	MenuBackgroundOpacity *float32 `json:"menu-background-opacity,omitempty"`
+	MenuBackgroundOpacity *float32 `json:"menu-background-opacity,omitempty" yaml:"menu-background-opacity,omitempty"`
 
 	// MenuForgroundColor The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g.
-	MenuForgroundColor *string `json:"menu-forground-color,omitempty"`
+	MenuForgroundColor *string `json:"menu-forground-color,omitempty" yaml:"menu-forground-color,omitempty"`
 
 	// Opacity The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
-	Opacity *float32 `json:"opacity,omitempty"`
+	Opacity *float32 `json:"opacity,omitempty" yaml:"opacity,omitempty"`
 
 	// OutsideTextureBgColor The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
-	OutsideTextureBgColor *string `json:"outside-texture-bg-color,omitempty"`
+	OutsideTextureBgColor *string `json:"outside-texture-bg-color,omitempty" yaml:"outside-texture-bg-color,omitempty"`
 
 	// OutsideTextureBgOpacity The opacity of the area outside the viewport texture. Selector needs to be *core*
-	OutsideTextureBgOpacity *float32 `json:"outside-texture-bg-opacity,omitempty"`
+	OutsideTextureBgOpacity *float32 `json:"outside-texture-bg-opacity,omitempty" yaml:"outside-texture-bg-opacity,omitempty"`
 
 	// Padding The amount of padding around all sides of the node.
-	Padding *float32 `json:"padding,omitempty"`
+	Padding *float32 `json:"padding,omitempty" yaml:"padding,omitempty"`
 
 	// Position The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.
 	Position *struct {
 		// X The x-coordinate of the node.
-		X float64 `json:"x"`
+		X float64 `json:"x" yaml:"x"`
 
 		// Y The y-coordinate of the node.
-		Y float64 `json:"y"`
-	} `json:"position,omitempty"`
+		Y float64 `json:"y" yaml:"y"`
+	} `json:"position,omitempty" yaml:"position,omitempty"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
-	PrimaryColor string `json:"primaryColor"`
+	PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
 
 	// SecondaryColor Secondary color of the entity used for UI representation.
-	SecondaryColor *string `json:"secondaryColor,omitempty"`
+	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// SelectionBoxBorderWidth The size of the border on the selection box. Selector needs to be *core*
-	SelectionBoxBorderWidth *float32 `json:"selection-box-border-width,omitempty"`
+	SelectionBoxBorderWidth *float32 `json:"selection-box-border-width,omitempty" yaml:"selection-box-border-width,omitempty"`
 
 	// SelectionBoxColor The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
-	SelectionBoxColor *string `json:"selection-box-color,omitempty"`
+	SelectionBoxColor *string `json:"selection-box-color,omitempty" yaml:"selection-box-color,omitempty"`
 
 	// SelectionBoxOpacity The opacity of the selection box. Selector needs to be *core*
-	SelectionBoxOpacity *float32 `json:"selection-box-opacity,omitempty"`
+	SelectionBoxOpacity *float32 `json:"selection-box-opacity,omitempty" yaml:"selection-box-opacity,omitempty"`
 
 	// Shape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape *ComponentStylesShape `json:"shape,omitempty"`
+	Shape *ComponentStylesShape `json:"shape,omitempty" yaml:"shape,omitempty"`
 
 	// ShapePolygonPoints An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 )
-	ShapePolygonPoints *string `json:"shape-polygon-points,omitempty"`
+	ShapePolygonPoints *string `json:"shape-polygon-points,omitempty" yaml:"shape-polygon-points,omitempty"`
 
 	// SvgColor Colored SVG of the entity used for UI representation on light background.
-	SvgColor string `json:"svgColor"`
+	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete string `json:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
-	SvgWhite string `json:"svgWhite"`
+	SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
 
 	// TextHalign The horizontal alignment of a node's label
-	TextHalign *ComponentStylesTextHalign `json:"text-halign,omitempty"`
+	TextHalign *ComponentStylesTextHalign `json:"text-halign,omitempty" yaml:"text-halign,omitempty"`
 
 	// TextOpacity The opacity of the label text, including its outline.
-	TextOpacity *float32 `json:"text-opacity,omitempty"`
+	TextOpacity *float32 `json:"text-opacity,omitempty" yaml:"text-opacity,omitempty"`
 
 	// TextTransform A transformation to apply to the label text
-	TextTransform *ComponentStylesTextTransform `json:"text-transform,omitempty"`
+	TextTransform *ComponentStylesTextTransform `json:"text-transform,omitempty" yaml:"text-transform,omitempty"`
 
 	// TextValign The vertical alignment of a node's label
-	TextValign *ComponentStylesTextValign `json:"text-valign,omitempty"`
+	TextValign *ComponentStylesTextValign `json:"text-valign,omitempty" yaml:"text-valign,omitempty"`
 
 	// Width The width of the node's body or the width of an edge's line.
-	Width *float32 `json:"width,omitempty"`
+	Width *float32 `json:"width,omitempty" yaml:"width,omitempty"`
 
 	// ZIndex An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
-	ZIndex               *int                   `json:"z-index,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	ZIndex               *int                   `json:"z-index,omitempty" yaml:"z-index,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // ComponentStylesBorderStyle The style of the node's border
@@ -569,98 +573,98 @@ type DesignId = uuid.UUID
 // EdgeStyles defines model for edgeStyles.
 type EdgeStyles struct {
 	// Animation The animation to apply to the element. example ripple,bounce,etc
-	Animation *map[string]interface{} `json:"animation,omitempty"`
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// ArrowScale Scaling for the arrow size.
-	ArrowScale *float32 `json:"arrow-scale,omitempty"`
+	ArrowScale *float32 `json:"arrow-scale,omitempty" yaml:"arrow-scale,omitempty"`
 
 	// Color The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
-	Color *string `json:"color,omitempty"`
+	Color *string `json:"color,omitempty" yaml:"color,omitempty"`
 
 	// CurveStyle The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-	CurveStyle *EdgeStylesCurveStyle `json:"curve-style,omitempty"`
+	CurveStyle *EdgeStylesCurveStyle `json:"curve-style,omitempty" yaml:"curve-style,omitempty"`
 
 	// EdgeAnimation The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .
-	EdgeAnimation *string `json:"edge-animation,omitempty"`
+	EdgeAnimation *string `json:"edge-animation,omitempty" yaml:"edge-animation,omitempty"`
 
 	// FontFamily A comma-separated list of font names to use on the label text.
-	FontFamily *string `json:"font-family,omitempty"`
+	FontFamily *string `json:"font-family,omitempty" yaml:"font-family,omitempty"`
 
 	// FontSize The size of the label text.
-	FontSize *string `json:"font-size,omitempty"`
+	FontSize *string `json:"font-size,omitempty" yaml:"font-size,omitempty"`
 
 	// FontStyle A CSS font style to be applied to the label text.
-	FontStyle *string `json:"font-style,omitempty"`
+	FontStyle *string `json:"font-style,omitempty" yaml:"font-style,omitempty"`
 
 	// FontWeight A CSS font weight to be applied to the label text.
-	FontWeight *string `json:"font-weight,omitempty"`
+	FontWeight *string `json:"font-weight,omitempty" yaml:"font-weight,omitempty"`
 
 	// Label The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
-	Label *string `json:"label,omitempty"`
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 
 	// LineCap The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-	LineCap *EdgeStylesLineCap `json:"line-cap,omitempty"`
+	LineCap *EdgeStylesLineCap `json:"line-cap,omitempty" yaml:"line-cap,omitempty"`
 
 	// LineColor The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g.
-	LineColor *string `json:"line-color,omitempty"`
+	LineColor *string `json:"line-color,omitempty" yaml:"line-color,omitempty"`
 
 	// LineOpacity The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-	LineOpacity *float32 `json:"line-opacity,omitempty"`
+	LineOpacity *float32 `json:"line-opacity,omitempty" yaml:"line-opacity,omitempty"`
 
 	// LineStyle The style of the edge's line.
-	LineStyle *EdgeStylesLineStyle `json:"line-style,omitempty"`
+	LineStyle *EdgeStylesLineStyle `json:"line-style,omitempty" yaml:"line-style,omitempty"`
 
 	// MidTargetArrowColor The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.
-	MidTargetArrowColor *string `json:"mid-target-arrow-color,omitempty"`
+	MidTargetArrowColor *string `json:"mid-target-arrow-color,omitempty" yaml:"mid-target-arrow-color,omitempty"`
 
 	// MidTargetArrowFill The fill state of the edge's source arrow
-	MidTargetArrowFill *EdgeStylesMidTargetArrowFill `json:"mid-target-arrow-fill,omitempty"`
+	MidTargetArrowFill *EdgeStylesMidTargetArrowFill `json:"mid-target-arrow-fill,omitempty" yaml:"mid-target-arrow-fill,omitempty"`
 
 	// MidTargetArrowShape The shape of the edge's source arrow
-	MidTargetArrowShape *EdgeStylesMidTargetArrowShape `json:"mid-target-arrow-shape,omitempty"`
+	MidTargetArrowShape *EdgeStylesMidTargetArrowShape `json:"mid-target-arrow-shape,omitempty" yaml:"mid-target-arrow-shape,omitempty"`
 
 	// Opacity The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
-	Opacity *float32 `json:"opacity,omitempty"`
+	Opacity *float32 `json:"opacity,omitempty" yaml:"opacity,omitempty"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
-	PrimaryColor string `json:"primaryColor"`
+	PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
 
 	// SecondaryColor Secondary color of the entity used for UI representation.
-	SecondaryColor *string `json:"secondaryColor,omitempty"`
+	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// SourceLabel The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id
-	SourceLabel *string `json:"source-label,omitempty"`
+	SourceLabel *string `json:"source-label,omitempty" yaml:"source-label,omitempty"`
 
 	// SvgColor Colored SVG of the entity used for UI representation on light background.
-	SvgColor string `json:"svgColor"`
+	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete string `json:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
-	SvgWhite string `json:"svgWhite"`
+	SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
 
 	// TargetArrowColor The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.
-	TargetArrowColor *string `json:"target-arrow-color,omitempty"`
+	TargetArrowColor *string `json:"target-arrow-color,omitempty" yaml:"target-arrow-color,omitempty"`
 
 	// TargetArrowFill The fill state of the edge's source arrow
-	TargetArrowFill *EdgeStylesTargetArrowFill `json:"target-arrow-fill,omitempty"`
+	TargetArrowFill *EdgeStylesTargetArrowFill `json:"target-arrow-fill,omitempty" yaml:"target-arrow-fill,omitempty"`
 
 	// TargetArrowShape The shape of the edge's source arrow
-	TargetArrowShape *EdgeStylesTargetArrowShape `json:"target-arrow-shape,omitempty"`
+	TargetArrowShape *EdgeStylesTargetArrowShape `json:"target-arrow-shape,omitempty" yaml:"target-arrow-shape,omitempty"`
 
 	// TargetLabel The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id
-	TargetLabel *string `json:"target-label,omitempty"`
+	TargetLabel *string `json:"target-label,omitempty" yaml:"target-label,omitempty"`
 
 	// TextOpacity The opacity of the label text, including its outline.
-	TextOpacity *float32 `json:"text-opacity,omitempty"`
+	TextOpacity *float32 `json:"text-opacity,omitempty" yaml:"text-opacity,omitempty"`
 
 	// TextTransform A transformation to apply to the label text
-	TextTransform *EdgeStylesTextTransform `json:"text-transform,omitempty"`
+	TextTransform *EdgeStylesTextTransform `json:"text-transform,omitempty" yaml:"text-transform,omitempty"`
 
 	// ZIndex An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
-	ZIndex               *int                   `json:"z-index,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	ZIndex               *int                   `json:"z-index,omitempty" yaml:"z-index,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // EdgeStylesCurveStyle The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
@@ -692,8 +696,8 @@ type Email = openapi_types.Email
 
 // EmailPreference defines model for email_preference.
 type EmailPreference struct {
-	NotifyRoleChange bool `json:"notify_role_change,omitempty"`
-	WelcomeEmail     bool `json:"welcome_email,omitempty"`
+	NotifyRoleChange bool `json:"notify_role_change,omitempty" yaml:"notify_role_change,omitempty"`
+	WelcomeEmail     bool `json:"welcome_email,omitempty" yaml:"welcome_email,omitempty"`
 }
 
 // Emails defines model for emails.
@@ -737,10 +741,10 @@ type Provider = string
 
 // RecordsPage defines model for recordsPage.
 type RecordsPage struct {
-	Page         int    `json:"page,omitempty"`
-	PageSize     int    `json:"page_size,omitempty"`
-	RecordType   string `json:"recordType,omitempty"`
-	RecordsTotal int    `json:"records_total,omitempty"`
+	Page         int    `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize     int    `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	RecordType   string `json:"recordType,omitempty" yaml:"recordType,omitempty"`
+	RecordsTotal int    `json:"records_total,omitempty" yaml:"records_total,omitempty"`
 }
 
 // RelationshipStyles defines model for relationshipStyles.
@@ -751,98 +755,98 @@ type RelationshipStyles struct {
 // RelationshipStyles0 defines model for .
 type RelationshipStyles0 struct {
 	// Animation The animation to apply to the element. example ripple,bounce,etc
-	Animation *map[string]interface{} `json:"animation,omitempty"`
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// ArrowScale Scaling for the arrow size.
-	ArrowScale *float32 `json:"arrow-scale,omitempty"`
+	ArrowScale *float32 `json:"arrow-scale,omitempty" yaml:"arrow-scale,omitempty"`
 
 	// Color The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
-	Color *string `json:"color,omitempty"`
+	Color *string `json:"color,omitempty" yaml:"color,omitempty"`
 
 	// CurveStyle The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-	CurveStyle *RelationshipStyles0CurveStyle `json:"curve-style,omitempty"`
+	CurveStyle *RelationshipStyles0CurveStyle `json:"curve-style,omitempty" yaml:"curve-style,omitempty"`
 
 	// EdgeAnimation The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .
-	EdgeAnimation *string `json:"edge-animation,omitempty"`
+	EdgeAnimation *string `json:"edge-animation,omitempty" yaml:"edge-animation,omitempty"`
 
 	// FontFamily A comma-separated list of font names to use on the label text.
-	FontFamily *string `json:"font-family,omitempty"`
+	FontFamily *string `json:"font-family,omitempty" yaml:"font-family,omitempty"`
 
 	// FontSize The size of the label text.
-	FontSize *string `json:"font-size,omitempty"`
+	FontSize *string `json:"font-size,omitempty" yaml:"font-size,omitempty"`
 
 	// FontStyle A CSS font style to be applied to the label text.
-	FontStyle *string `json:"font-style,omitempty"`
+	FontStyle *string `json:"font-style,omitempty" yaml:"font-style,omitempty"`
 
 	// FontWeight A CSS font weight to be applied to the label text.
-	FontWeight *string `json:"font-weight,omitempty"`
+	FontWeight *string `json:"font-weight,omitempty" yaml:"font-weight,omitempty"`
 
 	// Label The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
-	Label *string `json:"label,omitempty"`
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 
 	// LineCap The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-	LineCap *RelationshipStyles0LineCap `json:"line-cap,omitempty"`
+	LineCap *RelationshipStyles0LineCap `json:"line-cap,omitempty" yaml:"line-cap,omitempty"`
 
 	// LineColor The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g.
-	LineColor *string `json:"line-color,omitempty"`
+	LineColor *string `json:"line-color,omitempty" yaml:"line-color,omitempty"`
 
 	// LineOpacity The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-	LineOpacity *float32 `json:"line-opacity,omitempty"`
+	LineOpacity *float32 `json:"line-opacity,omitempty" yaml:"line-opacity,omitempty"`
 
 	// LineStyle The style of the edge's line.
-	LineStyle *RelationshipStyles0LineStyle `json:"line-style,omitempty"`
+	LineStyle *RelationshipStyles0LineStyle `json:"line-style,omitempty" yaml:"line-style,omitempty"`
 
 	// MidTargetArrowColor The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.
-	MidTargetArrowColor *string `json:"mid-target-arrow-color,omitempty"`
+	MidTargetArrowColor *string `json:"mid-target-arrow-color,omitempty" yaml:"mid-target-arrow-color,omitempty"`
 
 	// MidTargetArrowFill The fill state of the edge's source arrow
-	MidTargetArrowFill *RelationshipStyles0MidTargetArrowFill `json:"mid-target-arrow-fill,omitempty"`
+	MidTargetArrowFill *RelationshipStyles0MidTargetArrowFill `json:"mid-target-arrow-fill,omitempty" yaml:"mid-target-arrow-fill,omitempty"`
 
 	// MidTargetArrowShape The shape of the edge's source arrow
-	MidTargetArrowShape *RelationshipStyles0MidTargetArrowShape `json:"mid-target-arrow-shape,omitempty"`
+	MidTargetArrowShape *RelationshipStyles0MidTargetArrowShape `json:"mid-target-arrow-shape,omitempty" yaml:"mid-target-arrow-shape,omitempty"`
 
 	// Opacity The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
-	Opacity *float32 `json:"opacity,omitempty"`
+	Opacity *float32 `json:"opacity,omitempty" yaml:"opacity,omitempty"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
-	PrimaryColor string `json:"primaryColor"`
+	PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
 
 	// SecondaryColor Secondary color of the entity used for UI representation.
-	SecondaryColor *string `json:"secondaryColor,omitempty"`
+	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// SourceLabel The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id
-	SourceLabel *string `json:"source-label,omitempty"`
+	SourceLabel *string `json:"source-label,omitempty" yaml:"source-label,omitempty"`
 
 	// SvgColor Colored SVG of the entity used for UI representation on light background.
-	SvgColor string `json:"svgColor"`
+	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete string `json:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
-	SvgWhite string `json:"svgWhite"`
+	SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
 
 	// TargetArrowColor The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.
-	TargetArrowColor *string `json:"target-arrow-color,omitempty"`
+	TargetArrowColor *string `json:"target-arrow-color,omitempty" yaml:"target-arrow-color,omitempty"`
 
 	// TargetArrowFill The fill state of the edge's source arrow
-	TargetArrowFill *RelationshipStyles0TargetArrowFill `json:"target-arrow-fill,omitempty"`
+	TargetArrowFill *RelationshipStyles0TargetArrowFill `json:"target-arrow-fill,omitempty" yaml:"target-arrow-fill,omitempty"`
 
 	// TargetArrowShape The shape of the edge's source arrow
-	TargetArrowShape *RelationshipStyles0TargetArrowShape `json:"target-arrow-shape,omitempty"`
+	TargetArrowShape *RelationshipStyles0TargetArrowShape `json:"target-arrow-shape,omitempty" yaml:"target-arrow-shape,omitempty"`
 
 	// TargetLabel The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id
-	TargetLabel *string `json:"target-label,omitempty"`
+	TargetLabel *string `json:"target-label,omitempty" yaml:"target-label,omitempty"`
 
 	// TextOpacity The opacity of the label text, including its outline.
-	TextOpacity *float32 `json:"text-opacity,omitempty"`
+	TextOpacity *float32 `json:"text-opacity,omitempty" yaml:"text-opacity,omitempty"`
 
 	// TextTransform A transformation to apply to the label text
-	TextTransform *RelationshipStyles0TextTransform `json:"text-transform,omitempty"`
+	TextTransform *RelationshipStyles0TextTransform `json:"text-transform,omitempty" yaml:"text-transform,omitempty"`
 
 	// ZIndex An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
-	ZIndex               *int                   `json:"z-index,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	ZIndex               *int                   `json:"z-index,omitempty" yaml:"z-index,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // RelationshipStyles0CurveStyle The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
@@ -872,53 +876,53 @@ type RelationshipStyles0TextTransform string
 // RelationshipStyles1 defines model for .
 type RelationshipStyles1 struct {
 	// Animation The animation to apply to the element. example ripple,bounce,etc
-	Animation *map[string]interface{} `json:"animation,omitempty"`
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// Color The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
-	Color *string `json:"color,omitempty"`
+	Color *string `json:"color,omitempty" yaml:"color,omitempty"`
 
 	// FontFamily A comma-separated list of font names to use on the label text.
-	FontFamily *string `json:"font-family,omitempty"`
+	FontFamily *string `json:"font-family,omitempty" yaml:"font-family,omitempty"`
 
 	// FontSize The size of the label text.
-	FontSize *string `json:"font-size,omitempty"`
+	FontSize *string `json:"font-size,omitempty" yaml:"font-size,omitempty"`
 
 	// FontStyle A CSS font style to be applied to the label text.
-	FontStyle *string `json:"font-style,omitempty"`
+	FontStyle *string `json:"font-style,omitempty" yaml:"font-style,omitempty"`
 
 	// FontWeight A CSS font weight to be applied to the label text.
-	FontWeight *string `json:"font-weight,omitempty"`
+	FontWeight *string `json:"font-weight,omitempty" yaml:"font-weight,omitempty"`
 
 	// Label The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
-	Label *string `json:"label,omitempty"`
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 
 	// Opacity The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
-	Opacity *float32 `json:"opacity,omitempty"`
+	Opacity *float32 `json:"opacity,omitempty" yaml:"opacity,omitempty"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
-	PrimaryColor string `json:"primaryColor"`
+	PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
 
 	// SecondaryColor Secondary color of the entity used for UI representation.
-	SecondaryColor *string `json:"secondaryColor,omitempty"`
+	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// SvgColor Colored SVG of the entity used for UI representation on light background.
-	SvgColor string `json:"svgColor"`
+	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete string `json:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
-	SvgWhite string `json:"svgWhite"`
+	SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
 
 	// TextOpacity The opacity of the label text, including its outline.
-	TextOpacity *float32 `json:"text-opacity,omitempty"`
+	TextOpacity *float32 `json:"text-opacity,omitempty" yaml:"text-opacity,omitempty"`
 
 	// TextTransform A transformation to apply to the label text
-	TextTransform *RelationshipStyles1TextTransform `json:"text-transform,omitempty"`
+	TextTransform *RelationshipStyles1TextTransform `json:"text-transform,omitempty" yaml:"text-transform,omitempty"`
 
 	// ZIndex An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
-	ZIndex               *int                   `json:"z-index,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	ZIndex               *int                   `json:"z-index,omitempty" yaml:"z-index,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // RelationshipStyles1TextTransform A transformation to apply to the label text
@@ -926,10 +930,10 @@ type RelationshipStyles1TextTransform string
 
 // ResultsPage defines model for resultsPage.
 type ResultsPage struct {
-	Page       int    `json:"page,omitempty"`
-	PageSize   int    `json:"page_size,omitempty"`
-	ResultType string `json:"resultType,omitempty"`
-	TotalCount int    `json:"total_count,omitempty"`
+	Page       int    `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   int    `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	ResultType string `json:"resultType,omitempty" yaml:"resultType,omitempty"`
+	TotalCount int    `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // RoleNames defines model for roleNames.
@@ -947,53 +951,53 @@ type Status = string
 // Styles Common styles for all entities
 type Styles struct {
 	// Animation The animation to apply to the element. example ripple,bounce,etc
-	Animation *map[string]interface{} `json:"animation,omitempty"`
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// Color The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
-	Color *string `json:"color,omitempty"`
+	Color *string `json:"color,omitempty" yaml:"color,omitempty"`
 
 	// FontFamily A comma-separated list of font names to use on the label text.
-	FontFamily *string `json:"font-family,omitempty"`
+	FontFamily *string `json:"font-family,omitempty" yaml:"font-family,omitempty"`
 
 	// FontSize The size of the label text.
-	FontSize *string `json:"font-size,omitempty"`
+	FontSize *string `json:"font-size,omitempty" yaml:"font-size,omitempty"`
 
 	// FontStyle A CSS font style to be applied to the label text.
-	FontStyle *string `json:"font-style,omitempty"`
+	FontStyle *string `json:"font-style,omitempty" yaml:"font-style,omitempty"`
 
 	// FontWeight A CSS font weight to be applied to the label text.
-	FontWeight *string `json:"font-weight,omitempty"`
+	FontWeight *string `json:"font-weight,omitempty" yaml:"font-weight,omitempty"`
 
 	// Label The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
-	Label *string `json:"label,omitempty"`
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 
 	// Opacity The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
-	Opacity *float32 `json:"opacity,omitempty"`
+	Opacity *float32 `json:"opacity,omitempty" yaml:"opacity,omitempty"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
-	PrimaryColor string `json:"primaryColor"`
+	PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
 
 	// SecondaryColor Secondary color of the entity used for UI representation.
-	SecondaryColor *string `json:"secondaryColor,omitempty"`
+	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// SvgColor Colored SVG of the entity used for UI representation on light background.
-	SvgColor string `json:"svgColor"`
+	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete string `json:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
-	SvgWhite string `json:"svgWhite"`
+	SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
 
 	// TextOpacity The opacity of the label text, including its outline.
-	TextOpacity *float32 `json:"text-opacity,omitempty"`
+	TextOpacity *float32 `json:"text-opacity,omitempty" yaml:"text-opacity,omitempty"`
 
 	// TextTransform A transformation to apply to the label text
-	TextTransform *StylesTextTransform `json:"text-transform,omitempty"`
+	TextTransform *StylesTextTransform `json:"text-transform,omitempty" yaml:"text-transform,omitempty"`
 
 	// ZIndex An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
-	ZIndex               *int                   `json:"z-index,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	ZIndex               *int                   `json:"z-index,omitempty" yaml:"z-index,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // StylesTextTransform A transformation to apply to the label text

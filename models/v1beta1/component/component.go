@@ -94,13 +94,13 @@ const (
 // Component data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an
 type Component struct {
 	// Version Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.
-	Version string `json:"version"`
+	Version string `json:"version" yaml:"version"`
 
 	// Kind The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.
-	Kind string `json:"kind"`
+	Kind string `json:"kind" yaml:"kind"`
 
 	// Schema JSON schema of the object as defined by the registrant.
-	Schema string `json:"schema"`
+	Schema string `json:"schema" yaml:"schema"`
 }
 
 // ComponentDefinition Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
@@ -124,7 +124,7 @@ type ComponentDefinition struct {
 	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	Model model.ModelDefinition `gorm:"foreignKey:ModelId;references:Id" json:"model"`
+	Model model.ModelDefinition `gorm:"foreignKey:ModelId;references:Id" json:"model" yaml:"model"`
 
 	// Styles Visualization styles for a component
 	Styles *ComponentDefinition_Styles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
@@ -140,13 +140,13 @@ type ComponentDefinition struct {
 	Status *ComponentDefinitionStatus `json:"status" yaml:"status"`
 
 	// Metadata Metadata contains additional information associated with the component.
-	Metadata ComponentDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata"`
+	Metadata ComponentDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata" yaml:"metadata"`
 
 	// Configuration The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema).
-	Configuration map[string]interface{} `gorm:"type:bytes;serializer:json" json:"configuration"`
+	Configuration map[string]interface{} `gorm:"type:bytes;serializer:json" json:"configuration" yaml:"configuration"`
 
 	// Component data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an
-	Component Component `gorm:"type:bytes;serializer:json" json:"component"`
+	Component Component `gorm:"type:bytes;serializer:json" json:"component" yaml:"component"`
 
 	// ModelId ModelId is the foreign key to the model to which the component belongs.
 	ModelId uuid.UUID `gorm:"index:idx_component_definition_dbs_model_id,column:model_id" json:"-" yaml:"-"`
@@ -176,200 +176,200 @@ type ComponentDefinitionStylesTextValign string
 // ComponentDefinition_Styles defines model for ComponentDefinition.Styles.
 type ComponentDefinition_Styles struct {
 	// ActiveBgColor The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
-	ActiveBgColor *string `json:"active-bg-color,omitempty"`
+	ActiveBgColor *string `json:"active-bg-color,omitempty" yaml:"active-bg-color,omitempty"`
 
 	// ActiveBgOpacity The opacity of the active background indicator. Selector needs to be *core*.
-	ActiveBgOpacity *string `json:"active-bg-opacity,omitempty"`
+	ActiveBgOpacity *string `json:"active-bg-opacity,omitempty" yaml:"active-bg-opacity,omitempty"`
 
 	// ActiveBgSize The opacity of the active background indicator. Selector needs to be *core*.
-	ActiveBgSize *string `json:"active-bg-size,omitempty"`
+	ActiveBgSize *string `json:"active-bg-size,omitempty" yaml:"active-bg-size,omitempty"`
 
 	// Animation The animation to apply to the element. example ripple,bounce,etc
-	Animation *map[string]interface{} `json:"animation,omitempty"`
+	Animation *map[string]interface{} `json:"animation,omitempty" yaml:"animation,omitempty"`
 
 	// BackgroundBlacken Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1.
-	BackgroundBlacken *float32 `json:"background-blacken,omitempty"`
+	BackgroundBlacken *float32 `json:"background-blacken,omitempty" yaml:"background-blacken,omitempty"`
 
 	// BackgroundClip How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.
-	BackgroundClip *string `json:"background-clip,omitempty"`
+	BackgroundClip *string `json:"background-clip,omitempty" yaml:"background-clip,omitempty"`
 
 	// BackgroundColor The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g.
-	BackgroundColor *string `json:"background-color,omitempty"`
+	BackgroundColor *string `json:"background-color,omitempty" yaml:"background-color,omitempty"`
 
 	// BackgroundFit How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.
-	BackgroundFit *string `json:"background-fit,omitempty"`
+	BackgroundFit *string `json:"background-fit,omitempty" yaml:"background-fit,omitempty"`
 
 	// BackgroundHeightRelativeTo How the background image's height is determined. Can be 'none', 'inner', or 'outer'.
-	BackgroundHeightRelativeTo *string `json:"background-height-relative-to,omitempty"`
+	BackgroundHeightRelativeTo *string `json:"background-height-relative-to,omitempty" yaml:"background-height-relative-to,omitempty"`
 
 	// BackgroundImage The URL that points to the image to show in the node.
-	BackgroundImage *string `json:"background-image,omitempty"`
+	BackgroundImage *string `json:"background-image,omitempty" yaml:"background-image,omitempty"`
 
 	// BackgroundOffsetX The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundOffsetX *string `json:"background-offset-x,omitempty"`
+	BackgroundOffsetX *string `json:"background-offset-x,omitempty" yaml:"background-offset-x,omitempty"`
 
 	// BackgroundOffsetY The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundOffsetY *string `json:"background-offset-y,omitempty"`
+	BackgroundOffsetY *string `json:"background-offset-y,omitempty" yaml:"background-offset-y,omitempty"`
 
 	// BackgroundOpacity The opacity level of the node's background colour
-	BackgroundOpacity *float32 `json:"background-opacity,omitempty"`
+	BackgroundOpacity *float32 `json:"background-opacity,omitempty" yaml:"background-opacity,omitempty"`
 
 	// BackgroundPositionX The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundPositionX *string `json:"background-position-x,omitempty"`
+	BackgroundPositionX *string `json:"background-position-x,omitempty" yaml:"background-position-x,omitempty"`
 
 	// BackgroundPositionY The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)
-	BackgroundPositionY *string `json:"background-position-y,omitempty"`
+	BackgroundPositionY *string `json:"background-position-y,omitempty" yaml:"background-position-y,omitempty"`
 
 	// BackgroundWidthRelativeTo How the background image's width is determined. Can be 'none', 'inner', or 'outer'.
-	BackgroundWidthRelativeTo *string `json:"background-width-relative-to,omitempty"`
+	BackgroundWidthRelativeTo *string `json:"background-width-relative-to,omitempty" yaml:"background-width-relative-to,omitempty"`
 
 	// BodyText The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id
-	BodyText *string `json:"body-text,omitempty"`
+	BodyText *string `json:"body-text,omitempty" yaml:"body-text,omitempty"`
 
 	// BodyTextBackgroundColor The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g.
-	BodyTextBackgroundColor *string `json:"body-text-background-color,omitempty"`
+	BodyTextBackgroundColor *string `json:"body-text-background-color,omitempty" yaml:"body-text-background-color,omitempty"`
 
 	// BodyTextColor The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g.
-	BodyTextColor *string `json:"body-text-color,omitempty"`
+	BodyTextColor *string `json:"body-text-color,omitempty" yaml:"body-text-color,omitempty"`
 
 	// BodyTextDecoration A CSS text decoration to be applied to the node's body text.
-	BodyTextDecoration *string `json:"body-text-decoration,omitempty"`
+	BodyTextDecoration *string `json:"body-text-decoration,omitempty" yaml:"body-text-decoration,omitempty"`
 
 	// BodyTextFontSize The size of the node's body text.
-	BodyTextFontSize *float32 `json:"body-text-font-size,omitempty"`
+	BodyTextFontSize *float32 `json:"body-text-font-size,omitempty" yaml:"body-text-font-size,omitempty"`
 
 	// BodyTextFontWeight A CSS font weight to be applied to the node's body text.
-	BodyTextFontWeight *string `json:"body-text-font-weight,omitempty"`
+	BodyTextFontWeight *string `json:"body-text-font-weight,omitempty" yaml:"body-text-font-weight,omitempty"`
 
 	// BodyTextHorizontalAlign A CSS horizontal alignment to be applied to the node's body text.
-	BodyTextHorizontalAlign *string `json:"body-text-horizontal-align,omitempty"`
+	BodyTextHorizontalAlign *string `json:"body-text-horizontal-align,omitempty" yaml:"body-text-horizontal-align,omitempty"`
 
 	// BodyTextMaxWidth The maximum width for wrapping text in the node.
-	BodyTextMaxWidth *string `json:"body-text-max-width,omitempty"`
+	BodyTextMaxWidth *string `json:"body-text-max-width,omitempty" yaml:"body-text-max-width,omitempty"`
 
 	// BodyTextOpacity The opacity of the node's body text, including its outline.
-	BodyTextOpacity *float32 `json:"body-text-opacity,omitempty"`
+	BodyTextOpacity *float32 `json:"body-text-opacity,omitempty" yaml:"body-text-opacity,omitempty"`
 
 	// BodyTextVerticalAlign A CSS vertical alignment to be applied to the node's body text.
-	BodyTextVerticalAlign *string `json:"body-text-vertical-align,omitempty"`
+	BodyTextVerticalAlign *string `json:"body-text-vertical-align,omitempty" yaml:"body-text-vertical-align,omitempty"`
 
 	// BodyTextWrap How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.
-	BodyTextWrap *string `json:"body-text-wrap,omitempty"`
+	BodyTextWrap *string `json:"body-text-wrap,omitempty" yaml:"body-text-wrap,omitempty"`
 
 	// BorderColor The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g.
-	BorderColor *string `json:"border-color,omitempty"`
+	BorderColor *string `json:"border-color,omitempty" yaml:"border-color,omitempty"`
 
 	// BorderOpacity The opacity of the node's border
-	BorderOpacity *float32 `json:"border-opacity,omitempty"`
+	BorderOpacity *float32 `json:"border-opacity,omitempty" yaml:"border-opacity,omitempty"`
 
 	// BorderStyle The style of the node's border
-	BorderStyle *ComponentDefinitionStylesBorderStyle `json:"border-style,omitempty"`
+	BorderStyle *ComponentDefinitionStylesBorderStyle `json:"border-style,omitempty" yaml:"border-style,omitempty"`
 
 	// BorderWidth The size of the node's border.
-	BorderWidth *float32 `json:"border-width,omitempty"`
+	BorderWidth *float32 `json:"border-width,omitempty" yaml:"border-width,omitempty"`
 
 	// Color The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
-	Color *string `json:"color,omitempty"`
+	Color *string `json:"color,omitempty" yaml:"color,omitempty"`
 
 	// FontFamily A comma-separated list of font names to use on the label text.
-	FontFamily *string `json:"font-family,omitempty"`
+	FontFamily *string `json:"font-family,omitempty" yaml:"font-family,omitempty"`
 
 	// FontSize The size of the label text.
-	FontSize *string `json:"font-size,omitempty"`
+	FontSize *string `json:"font-size,omitempty" yaml:"font-size,omitempty"`
 
 	// FontStyle A CSS font style to be applied to the label text.
-	FontStyle *string `json:"font-style,omitempty"`
+	FontStyle *string `json:"font-style,omitempty" yaml:"font-style,omitempty"`
 
 	// FontWeight A CSS font weight to be applied to the label text.
-	FontWeight *string `json:"font-weight,omitempty"`
+	FontWeight *string `json:"font-weight,omitempty" yaml:"font-weight,omitempty"`
 
 	// Ghost Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
-	Ghost *ComponentDefinitionStylesGhost `json:"ghost,omitempty"`
+	Ghost *ComponentDefinitionStylesGhost `json:"ghost,omitempty" yaml:"ghost,omitempty"`
 
 	// Height The height of the node's body
-	Height *float32 `json:"height,omitempty"`
+	Height *float32 `json:"height,omitempty" yaml:"height,omitempty"`
 
 	// Label The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
-	Label *string `json:"label,omitempty"`
+	Label *string `json:"label,omitempty" yaml:"label,omitempty"`
 
 	// MenuBackgroundColor The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g.
-	MenuBackgroundColor *string `json:"menu-background-color,omitempty"`
+	MenuBackgroundColor *string `json:"menu-background-color,omitempty" yaml:"menu-background-color,omitempty"`
 
 	// MenuBackgroundOpacity The opacity of the background of the component menu.
-	MenuBackgroundOpacity *float32 `json:"menu-background-opacity,omitempty"`
+	MenuBackgroundOpacity *float32 `json:"menu-background-opacity,omitempty" yaml:"menu-background-opacity,omitempty"`
 
 	// MenuForgroundColor The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g.
-	MenuForgroundColor *string `json:"menu-forground-color,omitempty"`
+	MenuForgroundColor *string `json:"menu-forground-color,omitempty" yaml:"menu-forground-color,omitempty"`
 
 	// Opacity The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
-	Opacity *float32 `json:"opacity,omitempty"`
+	Opacity *float32 `json:"opacity,omitempty" yaml:"opacity,omitempty"`
 
 	// OutsideTextureBgColor The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
-	OutsideTextureBgColor *string `json:"outside-texture-bg-color,omitempty"`
+	OutsideTextureBgColor *string `json:"outside-texture-bg-color,omitempty" yaml:"outside-texture-bg-color,omitempty"`
 
 	// OutsideTextureBgOpacity The opacity of the area outside the viewport texture. Selector needs to be *core*
-	OutsideTextureBgOpacity *float32 `json:"outside-texture-bg-opacity,omitempty"`
+	OutsideTextureBgOpacity *float32 `json:"outside-texture-bg-opacity,omitempty" yaml:"outside-texture-bg-opacity,omitempty"`
 
 	// Padding The amount of padding around all sides of the node.
-	Padding *float32 `json:"padding,omitempty"`
+	Padding *float32 `json:"padding,omitempty" yaml:"padding,omitempty"`
 
 	// Position The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.
 	Position *struct {
 		// X The x-coordinate of the node.
-		X float64 `json:"x"`
+		X float64 `json:"x" yaml:"x"`
 
 		// Y The y-coordinate of the node.
-		Y float64 `json:"y"`
-	} `json:"position,omitempty"`
+		Y float64 `json:"y" yaml:"y"`
+	} `json:"position,omitempty" yaml:"position,omitempty"`
 
 	// PrimaryColor Primary color of the component used for UI representation.
-	PrimaryColor string `json:"primaryColor"`
+	PrimaryColor string `json:"primaryColor" yaml:"primaryColor"`
 
 	// SecondaryColor Secondary color of the entity used for UI representation.
-	SecondaryColor *string `json:"secondaryColor,omitempty"`
+	SecondaryColor *string `json:"secondaryColor,omitempty" yaml:"secondaryColor,omitempty"`
 
 	// SelectionBoxBorderWidth The size of the border on the selection box. Selector needs to be *core*
-	SelectionBoxBorderWidth *float32 `json:"selection-box-border-width,omitempty"`
+	SelectionBoxBorderWidth *float32 `json:"selection-box-border-width,omitempty" yaml:"selection-box-border-width,omitempty"`
 
 	// SelectionBoxColor The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.
-	SelectionBoxColor *string `json:"selection-box-color,omitempty"`
+	SelectionBoxColor *string `json:"selection-box-color,omitempty" yaml:"selection-box-color,omitempty"`
 
 	// SelectionBoxOpacity The opacity of the selection box. Selector needs to be *core*
-	SelectionBoxOpacity *float32 `json:"selection-box-opacity,omitempty"`
+	SelectionBoxOpacity *float32 `json:"selection-box-opacity,omitempty" yaml:"selection-box-opacity,omitempty"`
 
 	// Shape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape *ComponentDefinitionStylesShape `json:"shape,omitempty"`
+	Shape *ComponentDefinitionStylesShape `json:"shape,omitempty" yaml:"shape,omitempty"`
 
 	// ShapePolygonPoints An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 )
-	ShapePolygonPoints *string `json:"shape-polygon-points,omitempty"`
+	ShapePolygonPoints *string `json:"shape-polygon-points,omitempty" yaml:"shape-polygon-points,omitempty"`
 
 	// SvgColor Colored SVG of the entity used for UI representation on light background.
-	SvgColor string `json:"svgColor"`
+	SvgColor string `json:"svgColor" yaml:"svgColor"`
 
 	// SvgComplete Complete SVG of the entity used for UI representation, often inclusive of background.
-	SvgComplete string `json:"svgComplete"`
+	SvgComplete string `json:"svgComplete" yaml:"svgComplete"`
 
 	// SvgWhite White SVG of the entity used for UI representation on dark background.
-	SvgWhite string `json:"svgWhite"`
+	SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
 
 	// TextHalign The horizontal alignment of a node's label
-	TextHalign *ComponentDefinitionStylesTextHalign `json:"text-halign,omitempty"`
+	TextHalign *ComponentDefinitionStylesTextHalign `json:"text-halign,omitempty" yaml:"text-halign,omitempty"`
 
 	// TextOpacity The opacity of the label text, including its outline.
-	TextOpacity *float32 `json:"text-opacity,omitempty"`
+	TextOpacity *float32 `json:"text-opacity,omitempty" yaml:"text-opacity,omitempty"`
 
 	// TextTransform A transformation to apply to the label text
-	TextTransform *ComponentDefinitionStylesTextTransform `json:"text-transform,omitempty"`
+	TextTransform *ComponentDefinitionStylesTextTransform `json:"text-transform,omitempty" yaml:"text-transform,omitempty"`
 
 	// TextValign The vertical alignment of a node's label
-	TextValign *ComponentDefinitionStylesTextValign `json:"text-valign,omitempty"`
+	TextValign *ComponentDefinitionStylesTextValign `json:"text-valign,omitempty" yaml:"text-valign,omitempty"`
 
 	// Width The width of the node's body or the width of an edge's line.
-	Width *float32 `json:"width,omitempty"`
+	Width *float32 `json:"width,omitempty" yaml:"width,omitempty"`
 
 	// ZIndex An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
-	ZIndex               *int                   `json:"z-index,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	ZIndex               *int                   `json:"z-index,omitempty" yaml:"z-index,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // ComponentDefinitionStatus Status of component, including:
@@ -382,23 +382,23 @@ type ComponentDefinitionStatus string
 // ComponentDefinition_Metadata Metadata contains additional information associated with the component.
 type ComponentDefinition_Metadata struct {
 	// Genealogy Genealogy represents the various representational states of the component.
-	Genealogy string `json:"genealogy"`
+	Genealogy string `json:"genealogy" yaml:"genealogy"`
 
 	// IsAnnotation Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.
-	IsAnnotation bool `json:"isAnnotation"`
+	IsAnnotation bool `json:"isAnnotation" yaml:"isAnnotation"`
 
 	// IsNamespaced Identifies whether the component is scoped to namespace or clsuter wide.
-	IsNamespaced bool `json:"isNamespaced"`
+	IsNamespaced bool `json:"isNamespaced" yaml:"isNamespaced"`
 
 	// Published 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered.
-	Published bool `json:"published"`
+	Published bool `json:"published" yaml:"published"`
 
 	// InstanceDetails InstanceDetails contains information about the instance of the component.
-	InstanceDetails map[string]interface{} `json:"instanceDetails"`
+	InstanceDetails map[string]interface{} `json:"instanceDetails" yaml:"instanceDetails"`
 
 	// ConfigurationUISchema Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ .
-	ConfigurationUISchema string                 `json:"configurationUISchema"`
-	AdditionalProperties  map[string]interface{} `json:"-"`
+	ConfigurationUISchema string                 `json:"configurationUISchema" yaml:"configurationUISchema"`
+	AdditionalProperties  map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // Getter for additional properties for ComponentDefinition_Styles. Returns the specified

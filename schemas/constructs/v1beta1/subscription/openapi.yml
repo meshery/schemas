@@ -1,0 +1,47 @@
+openapi: 3.0.0
+info:
+    title: Subscription API
+    version: 1.0.0
+paths: {}
+components:
+    schemas:
+        Subscription:
+            type: object
+            properties:
+                id:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+                org_id:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+                plan_id:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+                start_date:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+                end_date:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+                status:
+                    $ref: "#/components/schemas/SubscriptionStatus"
+                created_at:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+                updated_at:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+                deleted_at:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/SqlNullTime"
+                billing_id:
+                    type: string
+                    description: "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe"
+                    nullable: true
+            required:
+                - id
+                - org_id
+                - plan_id
+                - billing_id
+                - status
+
+        SubscriptionStatus:
+            type: string
+            enum:
+                - active
+                - inactive
+                - overdue
+                - canceled
+                - expired

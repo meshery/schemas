@@ -1,0 +1,52 @@
+openapi: 3.0.0
+info:
+    title: Plans Api
+    version: 1.0.0
+paths: {}
+components:
+    schemas:
+        Plan:
+            type: object
+            properties:
+                id:
+                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+                name:
+                    type: "string"
+                    description: "Name of the plan"
+                cadence:
+                    $ref: "#/components/schemas/PlanCadence"
+
+                unit:
+                    $ref: "#/components/schemas/PlanUnit"
+
+                price_per_unit:
+                    type: "number"
+                    description: "Price per unit of the plan"
+
+                currency:
+                    $ref: "#/components/schemas/Currency"
+
+            required:
+                - id
+                - name
+                - cadence
+                - unit
+                - price_per_unit
+                - currency
+
+        PlanCadence:
+            type: string
+            enum:
+                - monthly
+                - yearly
+
+        PlanUnit:
+            type: string
+            enum:
+                - user
+                - free
+
+        Currency:
+            type: string
+            enum:
+                - usd
