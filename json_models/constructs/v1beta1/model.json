@@ -1,0 +1,44 @@
+{
+  "id": "",
+  "schemaVersion": "",
+  "version": "",
+  "name": "",
+  "displayName": "",
+  "description": "",
+  "status": "",
+  "registrant": {
+    "id": "",
+    "name": "",
+    "credential_id": "",
+    "type": "",
+    "sub_type": "",
+    "kind": "",
+    "status": "",
+    "user_id": "",
+    "created_at": "",
+    "updated_at": "",
+    "deleted_at": ""
+  },
+  "metadata": {
+    "capabilities": {
+      "items": {
+        "kind": {},
+        "entityState": {},
+        "status": "enabled"
+      }
+    },
+    "primaryColor": "",
+    "secondaryColor": "",
+    "svgWhite": "",
+    "svgColor": "",
+    "svgComplete": ""
+  },
+  "category": {
+    "id": "",
+    "name": ""
+  },
+  "subCategory": "",
+  "model": {
+    "version": ""
+  }
+}

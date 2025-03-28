@@ -1,0 +1,844 @@
+{
+  "1": {},
+  "id": "",
+  "name": "",
+  "schemaVersion": "",
+  "version": "",
+  "metadata": {
+    "resolvedAliases": {}
+  },
+  "resolvedAliases": {},
+  "components": {
+    "items": {
+      "id": "",
+      "schemaVersion": "",
+      "version": "",
+      "displayName": "",
+      "description": "",
+      "format": "JSON",
+      "model": {
+        "id": "",
+        "schemaVersion": "",
+        "version": "",
+        "name": "",
+        "displayName": "",
+        "description": "",
+        "status": "",
+        "registrant": {
+          "id": "",
+          "name": "",
+          "credential_id": "",
+          "type": "",
+          "sub_type": "",
+          "kind": "",
+          "status": "",
+          "user_id": "",
+          "created_at": "",
+          "updated_at": "",
+          "deleted_at": ""
+        },
+        "category": {
+          "id": "",
+          "name": ""
+        },
+        "subCategory": "",
+        "metadata": {
+          "capabilities": {
+            "items": {
+              "schemaVersion": "",
+              "version": "",
+              "displayName": "",
+              "description": "",
+              "kind": {},
+              "type": "",
+              "subType": "",
+              "key": "",
+              "entityState": {},
+              "status": "enabled"
+            }
+          },
+          "primaryColor": "",
+          "secondaryColor": "",
+          "svgWhite": "",
+          "svgColor": "",
+          "svgComplete": ""
+        },
+        "model": {
+          "version": ""
+        }
+      },
+      "styles": {
+        "allOf": {
+          "0": {
+            "primaryColor": "",
+            "secondaryColor": "",
+            "svgWhite": "",
+            "svgColor": "",
+            "svgComplete": "",
+            "color": "",
+            "font-family": "",
+            "font-size": "",
+            "font-style": "",
+            "font-weight": "",
+            "text-transform": "",
+            "label": ""
+          },
+          "1": {
+            "shape": "",
+            "position": {},
+            "body-text": "",
+            "body-text-wrap": "",
+            "body-text-max-width": "",
+            "body-text-background-color": "",
+            "body-text-color": "",
+            "body-text-font-weight": "",
+            "body-text-horizontal-align": "",
+            "body-text-decoration": "",
+            "body-text-vertical-align": "",
+            "background-image": "",
+            "background-color": "",
+            "background-position-x": "",
+            "background-position-y": "",
+            "background-offset-x": "",
+            "background-offset-y": "",
+            "background-fit": "",
+            "background-clip": "",
+            "background-width-relative-to": "",
+            "background-height-relative-to": "",
+            "border-style": "",
+            "border-color": "",
+            "text-halign": "",
+            "text-valign": "",
+            "ghost": "no",
+            "active-bg-color": "",
+            "active-bg-opacity": "",
+            "active-bg-size": "",
+            "selection-box-color": "",
+            "outside-texture-bg-color": "",
+            "shape-polygon-points": "",
+            "menu-background-color": "",
+            "menu-forground-color": ""
+          }
+        }
+      },
+      "capabilities": {
+        "items": {
+          "schemaVersion": "",
+          "version": "",
+          "displayName": "",
+          "description": "",
+          "kind": {},
+          "type": "",
+          "subType": "",
+          "key": "",
+          "entityState": {},
+          "status": "enabled"
+        }
+      },
+      "status": "enabled",
+      "metadata": {
+        "genealogy": "",
+        "configurationUISchema": ""
+      },
+      "component": {
+        "version": "",
+        "kind": "",
+        "schema": ""
+      }
+    }
+  },
+  "model": {},
+  "registrant": {},
+  "category": {},
+  "styles": {},
+  "animation": {},
+  "position": {},
+  "instanceDetails": {},
+  "configuration": {},
+  "component": {},
+  "preferences": {},
+  "layers": {},
+  "relationships": {
+    "items": {
+      "id": "",
+      "schemaVersion": "",
+      "version": "",
+      "model": {
+        "id": "",
+        "schemaVersion": "",
+        "version": "",
+        "name": "",
+        "displayName": "",
+        "description": "",
+        "status": "",
+        "registrant": {
+          "id": "",
+          "name": "",
+          "credential_id": "",
+          "type": "",
+          "sub_type": "",
+          "kind": "",
+          "status": "",
+          "user_id": "",
+          "created_at": "",
+          "updated_at": "",
+          "deleted_at": ""
+        },
+        "category": {
+          "id": "",
+          "name": ""
+        },
+        "subCategory": "",
+        "metadata": {
+          "capabilities": {
+            "items": {
+              "schemaVersion": "",
+              "version": "",
+              "displayName": "",
+              "description": "",
+              "kind": {},
+              "type": "",
+              "subType": {},
+              "key": "",
+              "entityState": {},
+              "status": "enabled"
+            }
+          },
+          "primaryColor": "",
+          "secondaryColor": "",
+          "svgWhite": "",
+          "svgColor": "",
+          "svgComplete": ""
+        },
+        "model": {
+          "version": ""
+        }
+      },
+      "kind": "",
+      "type": "",
+      "subType": "",
+      "status": "enabled",
+      "evaluationQuery": "",
+      "capabilities": {
+        "items": {
+          "schemaVersion": "",
+          "version": "",
+          "displayName": "",
+          "description": "",
+          "kind": {},
+          "type": "",
+          "subType": "",
+          "key": "",
+          "entityState": {},
+          "status": "enabled"
+        }
+      },
+      "metadata": {
+        "description": "",
+        "styles": {
+          "anyOf": {
+            "0": {
+              "allOf": {
+                "0": {
+                  "primaryColor": "",
+                  "secondaryColor": "",
+                  "svgWhite": "",
+                  "svgColor": "",
+                  "svgComplete": "",
+                  "color": "",
+                  "font-family": "",
+                  "font-size": "",
+                  "font-style": "",
+                  "font-weight": "",
+                  "text-transform": "",
+                  "label": ""
+                },
+                "1": {
+                  "edge-animation": "",
+                  "curve-style": "straight",
+                  "line-color": "",
+                  "line-style": "",
+                  "line-cap": "butt",
+                  "target-arrow-color": "",
+                  "target-arrow-shape": "",
+                  "target-arrow-fill": "",
+                  "mid-target-arrow-color": "",
+                  "mid-target-arrow-shape": "",
+                  "mid-target-arrow-fill": "",
+                  "source-label": "",
+                  "target-label": "",
+                  "line-opacity": 1
+                }
+              }
+            },
+            "1": {
+              "primaryColor": "",
+              "secondaryColor": "",
+              "svgWhite": "",
+              "svgColor": "",
+              "svgComplete": "",
+              "color": "",
+              "font-family": "",
+              "font-size": "",
+              "font-style": "",
+              "font-weight": "",
+              "text-transform": "",
+              "label": ""
+            }
+          }
+        }
+      },
+      "selectors": {
+        "items": {
+          "deny": {
+            "from": {
+              "items": {
+                "kind": "",
+                "model": {
+                  "id": "",
+                  "schemaVersion": "",
+                  "version": "",
+                  "name": "",
+                  "displayName": "",
+                  "description": "",
+                  "status": "",
+                  "registrant": {
+                    "id": "",
+                    "name": "",
+                    "credential_id": "",
+                    "type": "",
+                    "sub_type": "",
+                    "kind": "",
+                    "status": "",
+                    "user_id": "",
+                    "created_at": "",
+                    "updated_at": "",
+                    "deleted_at": ""
+                  },
+                  "category": {
+                    "id": "",
+                    "name": ""
+                  },
+                  "subCategory": "",
+                  "metadata": {
+                    "capabilities": {
+                      "items": {
+                        "schemaVersion": "",
+                        "version": "",
+                        "displayName": "",
+                        "description": "",
+                        "kind": {},
+                        "type": "",
+                        "subType": "",
+                        "key": "",
+                        "entityState": {},
+                        "status": "enabled"
+                      }
+                    },
+                    "primaryColor": "",
+                    "secondaryColor": "",
+                    "svgWhite": "",
+                    "svgColor": "",
+                    "svgComplete": ""
+                  },
+                  "model": {
+                    "version": ""
+                  }
+                },
+                "id": "",
+                "match": {
+                  "oneOf": {
+                    "0": {
+                      "items": {}
+                    },
+                    "1": {
+                      "from": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "to": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "patch": {
+                  "allOf": {
+                    "0": {
+                      "patchStrategy": "copy"
+                    },
+                    "1": {
+                      "oneOf": {
+                        "0": {
+                          "mutatorRef": {
+                            "items": {}
+                          }
+                        },
+                        "1": {
+                          "mutatedRef": {
+                            "items": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "to": {
+              "items": {
+                "kind": "",
+                "model": {
+                  "id": "",
+                  "schemaVersion": "",
+                  "version": "",
+                  "name": "",
+                  "displayName": "",
+                  "description": "",
+                  "status": "",
+                  "registrant": {
+                    "id": "",
+                    "name": "",
+                    "credential_id": "",
+                    "type": "",
+                    "sub_type": "",
+                    "kind": "",
+                    "status": "",
+                    "user_id": "",
+                    "created_at": "",
+                    "updated_at": "",
+                    "deleted_at": ""
+                  },
+                  "category": {
+                    "id": "",
+                    "name": ""
+                  },
+                  "subCategory": "",
+                  "metadata": {
+                    "capabilities": {
+                      "items": {
+                        "schemaVersion": "",
+                        "version": "",
+                        "displayName": "",
+                        "description": "",
+                        "kind": {},
+                        "type": "",
+                        "subType": "",
+                        "key": "",
+                        "entityState": {},
+                        "status": "enabled"
+                      }
+                    },
+                    "primaryColor": "",
+                    "secondaryColor": "",
+                    "svgWhite": "",
+                    "svgColor": "",
+                    "svgComplete": ""
+                  },
+                  "model": {
+                    "version": ""
+                  }
+                },
+                "id": "",
+                "match": {
+                  "oneOf": {
+                    "0": {
+                      "items": {}
+                    },
+                    "1": {
+                      "from": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "to": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "patch": {
+                  "allOf": {
+                    "0": {
+                      "patchStrategy": "copy"
+                    },
+                    "1": {
+                      "oneOf": {
+                        "0": {
+                          "mutatorRef": {
+                            "items": {}
+                          }
+                        },
+                        "1": {
+                          "mutatedRef": {
+                            "items": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "allow": {
+            "from": {
+              "items": {
+                "kind": "",
+                "model": {
+                  "id": "",
+                  "schemaVersion": "",
+                  "version": "",
+                  "name": "",
+                  "displayName": "",
+                  "description": "",
+                  "status": "",
+                  "registrant": {
+                    "id": "",
+                    "name": "",
+                    "credential_id": "",
+                    "type": "",
+                    "sub_type": "",
+                    "kind": "",
+                    "status": "",
+                    "user_id": "",
+                    "created_at": "",
+                    "updated_at": "",
+                    "deleted_at": ""
+                  },
+                  "category": {
+                    "id": "",
+                    "name": ""
+                  },
+                  "subCategory": "",
+                  "metadata": {
+                    "capabilities": {
+                      "items": {
+                        "schemaVersion": "",
+                        "version": "",
+                        "displayName": "",
+                        "description": "",
+                        "kind": {},
+                        "type": "",
+                        "subType": "",
+                        "key": "",
+                        "entityState": {},
+                        "status": "enabled"
+                      }
+                    },
+                    "primaryColor": "",
+                    "secondaryColor": "",
+                    "svgWhite": "",
+                    "svgColor": "",
+                    "svgComplete": ""
+                  },
+                  "model": {
+                    "version": ""
+                  }
+                },
+                "id": "",
+                "match": {
+                  "oneOf": {
+                    "0": {
+                      "items": {}
+                    },
+                    "1": {
+                      "from": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "to": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "patch": {
+                  "allOf": {
+                    "0": {
+                      "patchStrategy": "copy"
+                    },
+                    "1": {
+                      "oneOf": {
+                        "0": {
+                          "mutatorRef": {
+                            "items": {}
+                          }
+                        },
+                        "1": {
+                          "mutatedRef": {
+                            "items": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "to": {
+              "items": {
+                "kind": "",
+                "model": {
+                  "id": "",
+                  "schemaVersion": "",
+                  "version": "",
+                  "name": "",
+                  "displayName": "",
+                  "description": "",
+                  "status": "",
+                  "registrant": {
+                    "id": "",
+                    "name": "",
+                    "credential_id": "",
+                    "type": "",
+                    "sub_type": "",
+                    "kind": "",
+                    "status": "",
+                    "user_id": "",
+                    "created_at": "",
+                    "updated_at": "",
+                    "deleted_at": ""
+                  },
+                  "category": {
+                    "id": "",
+                    "name": ""
+                  },
+                  "subCategory": "",
+                  "metadata": {
+                    "capabilities": {
+                      "items": {
+                        "schemaVersion": "",
+                        "version": "",
+                        "displayName": "",
+                        "description": "",
+                        "kind": {},
+                        "type": "",
+                        "subType": "",
+                        "key": "",
+                        "entityState": {},
+                        "status": "enabled"
+                      }
+                    },
+                    "primaryColor": "",
+                    "secondaryColor": "",
+                    "svgWhite": "",
+                    "svgColor": "",
+                    "svgComplete": ""
+                  },
+                  "model": {
+                    "version": ""
+                  }
+                },
+                "id": "",
+                "match": {
+                  "oneOf": {
+                    "0": {
+                      "items": {}
+                    },
+                    "1": {
+                      "from": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "to": {
+                        "items": {
+                          "allOf": {
+                            "0": {
+                              "kind": "",
+                              "id": ""
+                            },
+                            "1": {
+                              "oneOf": {
+                                "0": {
+                                  "mutatorRef": {
+                                    "items": {}
+                                  }
+                                },
+                                "1": {
+                                  "mutatedRef": {
+                                    "items": {}
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "patch": {
+                  "allOf": {
+                    "0": {
+                      "patchStrategy": "copy"
+                    },
+                    "1": {
+                      "oneOf": {
+                        "0": {
+                          "mutatorRef": {
+                            "items": {}
+                          }
+                        },
+                        "1": {
+                          "mutatedRef": {
+                            "items": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "deny": {},
+  "match": {},
+  "allow": {}
+}

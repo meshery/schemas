@@ -1,0 +1,108 @@
+{
+  "id": "",
+  "schemaVersion": "",
+  "version": "",
+  "displayName": "",
+  "description": "",
+  "format": "JSON",
+  "model": {
+    "model": {
+      "version": ""
+    },
+    "registrant": {},
+    "category": {},
+    "metadata": {
+      "capabilities": {
+        "items": {
+          "kind": {},
+          "entityState": {},
+          "status": "enabled"
+        }
+      }
+    }
+  },
+  "registrant": {},
+  "metadata": {
+    "genealogy": "",
+    "configurationUISchema": ""
+  },
+  "category": {},
+  "styles": {
+    "allOf": {
+      "0": {
+        "primaryColor": "",
+        "secondaryColor": "",
+        "svgWhite": "",
+        "svgColor": "",
+        "svgComplete": "",
+        "color": "",
+        "font-family": "",
+        "font-size": "",
+        "font-style": "",
+        "font-weight": "",
+        "text-transform": "",
+        "label": ""
+      },
+      "1": {
+        "shape": "",
+        "position": {},
+        "body-text": "",
+        "body-text-wrap": "",
+        "body-text-max-width": "",
+        "body-text-background-color": "",
+        "body-text-color": "",
+        "body-text-font-weight": "",
+        "body-text-horizontal-align": "",
+        "body-text-decoration": "",
+        "body-text-vertical-align": "",
+        "background-image": "",
+        "background-color": "",
+        "background-position-x": "",
+        "background-position-y": "",
+        "background-offset-x": "",
+        "background-offset-y": "",
+        "background-fit": "",
+        "background-clip": "",
+        "background-width-relative-to": "",
+        "background-height-relative-to": "",
+        "border-style": "",
+        "border-color": "",
+        "text-halign": "",
+        "text-valign": "",
+        "ghost": "no",
+        "active-bg-color": "",
+        "active-bg-opacity": "",
+        "active-bg-size": "",
+        "selection-box-color": "",
+        "outside-texture-bg-color": "",
+        "shape-polygon-points": "",
+        "menu-background-color": "",
+        "menu-forground-color": ""
+      }
+    }
+  },
+  "animation": {},
+  "position": {},
+  "capabilities": {
+    "items": {
+      "schemaVersion": "",
+      "version": "",
+      "displayName": "",
+      "description": "",
+      "kind": {},
+      "type": "",
+      "subType": "",
+      "key": "",
+      "entityState": {},
+      "status": "enabled"
+    }
+  },
+  "status": "enabled",
+  "instanceDetails": {},
+  "configuration": {},
+  "component": {
+    "version": "",
+    "kind": "",
+    "schema": ""
+  }
+}

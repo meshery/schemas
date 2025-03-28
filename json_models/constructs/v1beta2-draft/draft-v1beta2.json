@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "",
+  "version": "",
+  "displayName": "",
+  "description": "",
+  "format": "JSON",
+  "model": {
+    "model": {
+      "version": ""
+    },
+    "registrant": {},
+    "category": {},
+    "metadata": {
+      "capabilities": {
+        "items": {
+          "kind": {},
+          "entityState": {},
+          "status": "enabled"
+        }
+      }
+    }
+  },
+  "registrant": {},
+  "metadata": {
+    "genealogy": "",
+    "shape": "",
+    "primaryColor": "",
+    "secondaryColor": "",
+    "svgWhite": "",
+    "svgColor": "",
+    "svgComplete": "",
+    "status": ""
+  },
+  "category": {},
+  "capabilities": {},
+  "component": {
+    "version": "",
+    "kind": "",
+    "schema": ""
+  }
+}
