@@ -1,0 +1,9 @@
+openapi: 3.0.0
+info:
+  title: SubCategory API
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    SubCategoryDefinition:
+      $ref: "./subcategory.json"

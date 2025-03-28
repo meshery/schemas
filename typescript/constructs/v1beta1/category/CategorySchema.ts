@@ -35,6 +35,25 @@ const schema = {
         "json": "name",
         "gorm": "name"
       },
+      "default": "Uncategorized",
+      "description": "The category of the model that determines the main grouping.",
+      "enum": [
+        "Analytics",
+        "App Definition and Development",
+        "Cloud Native Network",
+        "Cloud Native Storage",
+        "Database",
+        "Machine Learning",
+        "Observability and Analysis",
+        "Orchestration & Management",
+        "Platform",
+        "Provisioning",
+        "Runtime",
+        "Security & Compliance",
+        "Serverless",
+        "Tools",
+        "Uncategorized"
+      ],
       "x-order": 2
     },
     "metadata": {

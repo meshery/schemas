@@ -34,8 +34,13 @@
       }
     },
     "name": {
+      "type": "string",
       "description": "The unique name for the model within the scope of a registrant.",
-      "$ref": "../../core.json#/definitions/inputString",
+      "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+      "pattern": "^[a-z0-9-]+$",
+      "examples": [
+        "cert-manager"
+      ],
       "x-order": 4,
       "x-oapi-codegen-extra-tags": {
         "yaml": "name",
@@ -44,10 +49,14 @@
     },
     "displayName": {
       "description": "Human-readable name for the model.",
+      "helperText": "Model display name should be a friendly name for your model.",
       "minLength": 1,
       "maxLength": 100,
       "type": "string",
-      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+      "pattern": "^[a-zA-Z0-9 ]+$",
+      "examples": [
+        "Cert Manager"
+      ],
       "x-order": 5,
       "x-oapi-codegen-extra-tags": {
         "yaml": "displayName",
@@ -68,7 +77,11 @@
     "status": {
       "type": "string",
       "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-      "enum": ["ignored", "enabled", "duplicate"],
+      "enum": [
+        "ignored",
+        "enabled",
+        "duplicate"
+      ],
       "x-order": 7,
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
@@ -122,20 +135,20 @@
       }
     },
     "subCategory": {
-      "type": "string",
-      "description": "Sub-category of the model.",
-      "minLength": 1,
-      "maxLength": 100,
-      "x-oapi-codegen-extra-tags": {
-        "yaml": "subCategory",
-        "json": "subCategory"
-      },
-      "x-order": 10
+      "$ref": "../subcategory/subcategory.json",
+      "x-order": 10,
+      "x-go-type": "subcategory.SubCategoryDefinition",
+      "x-go-type-import": {
+        "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+      }
     },
     "metadata": {
       "type": "object",
       "description": "Metadata containing additional information associated with the model.",
-      "required": ["svgWhite", "svgColor"],
+      "required": [
+        "svgWhite",
+        "svgColor"
+      ],
       "properties": {
         "capabilities": {
           "type": "array",
@@ -163,6 +176,7 @@
           "description": "Primary color associated with the model.",
           "minLength": 1,
           "maxLength": 50,
+          "default": "#00b39f",
           "x-oapi-codegen-extra-tags": {
             "yaml": "primaryColor",
             "json": "primaryColor"
@@ -174,6 +188,7 @@
           "description": "Secondary color associated with the model.",
           "minLength": 1,
           "maxLength": 50,
+          "default": "#00D3A9",
           "x-oapi-codegen-extra-tags": {
             "yaml": "secondaryColor",
             "json": "secondaryColor"
@@ -209,6 +224,10 @@
             "json": "svgComplete"
           },
           "x-order": 7
+        },
+        "shape": {
+          "x-order": 8,
+          "$ref": "../../core.json#/definitions/shape"
         }
       },
       "x-oapi-codegen-extra-tags": {
