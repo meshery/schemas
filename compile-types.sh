@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Check if both input and output directories are provided
-if [ $# -ne 2 ]; then
-  echo "Usage: $0 <input_directory> <output_directory>"
+if [ $# -ne 3 ]; then
+  echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_models>"
   exit 1
 fi
 
 INPUT_DIR=$(realpath "$1")
 OUTPUT_DIR=$(realpath "$2")
+OUTPUT_DIR_JSON=$(realpath "$3")
+
 
 # Check if input directory exists
 if [ ! -d "$INPUT_DIR" ]; then
@@ -65,6 +67,7 @@ generate_type_definition() {
 
   # Create subdirectory in output folder if it doesn't exist
   mkdir -p "$OUTPUT_DIR/$dir"
+  mkdir -p "$OUTPUT_DIR_JSON/$dir"
 
   # Change to the directory containing the JSON file
   cd "$(dirname "$file")"
@@ -76,6 +79,15 @@ generate_type_definition() {
     echo "Failed to generate types for: $file"
     echo "Error: $output"
   fi
+
+  # Generate json model definitions
+  if output=$(npm run generate:json "$(realpath "$file")" "$OUTPUT_DIR_JSON/$dir/$filename.json" 2>&1); then
+    echo "Generated json for: $file"
+  else
+    echo "Failed to generate json for: $file"
+    echo "Error: $output"
+  fi
+  
 
   cd "$ORIGINAL_DIR"
 }
