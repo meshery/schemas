@@ -47,6 +47,10 @@ components:
                     type: "number"
                     description: "Price per unit of the plan"
 
+                price_id:
+                    type : "string"
+                    description: "Id of price associated with the plan in a billing provider like stripe"
+
                 currency:
                     $ref: "#/components/schemas/Currency"
                     x-go-type: Currency
@@ -57,6 +61,7 @@ components:
                 - cadence
                 - unit
                 - price_per_unit
+                - price_id
                 - currency
         PlanName:
             type: string

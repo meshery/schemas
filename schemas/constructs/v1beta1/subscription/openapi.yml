@@ -1,12 +1,143 @@
 openapi: 3.0.0
 info:
-    title: Subscription API
+    title: Payment Processor Subscription Management API
+    description: API for managing subscriptions using various payment processors in a SaaS application.
     version: 1.0.0
-paths: {}
+servers:
+    - url: http://localhost:8080
+      description: Local development server
+paths:
+    /subscriptions/create:
+        post:
+            summary: Create a new subscription for an organization
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateSubscriptionRequest"
+            responses:
+                "200":
+                    description: Subscription created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CreateSubscriptionResponse"
+                "400":
+                    description: Invalid request
+                "500":
+                    description: Internal server error
+
+    /subscriptions/update-users/{org_id}:
+        post:
+            summary: Update the user count in a subscription
+            parameters:
+                - in: path
+                  name: org_id
+                  required: true
+                  schema:
+                      type: string
+                  description: Organization ID
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateUsersRequest"
+            responses:
+                "200":
+                    description: Subscription updated successfully
+                "500":
+                    description: Internal server error
+
+    /subscriptions/cancel:
+        post:
+            summary: Cancel a subscription
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CancelSubscriptionRequest"
+            responses:
+                "200":
+                    description: Subscription canceled successfully
+                "400":
+                    description: Invalid request
+                "500":
+                    description: Internal server error
+
+    /subscriptions/webhooks:
+        post:
+            summary: Handle webhook events from payment processors
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/WebhookEvent"
+            responses:
+                "200":
+                    description: Webhook processed successfully
+                "400":
+                    description: Invalid webhook event
+
 components:
     schemas:
+        PaymentProcessor:
+            type: string
+            enum:
+                - stripe
+                - paypal
+                - braintree
+            description: Supported payment processors
 
-        
+        CreateSubscriptionRequest:
+            type: object
+            properties:
+                org_id:
+                    type: string
+                    description: Organization ID
+                plan_id:
+                    type: string
+                    description: Price ID from the payment processor
+                user_count:
+                    type: integer
+                    description: Number of users in the organization
+                email:
+                    type: string
+                    format: email
+                    description: Email of the customer
+                payment_processor:
+                    $ref: "#/components/schemas/PaymentProcessor"
+
+        CreateSubscriptionResponse:
+            type: object
+            properties:
+                subscription_id:
+                    type: string
+                clientSecret:
+                    type: string
+
+        UpdateUsersRequest:
+            type: object
+            properties:
+                payment_processor:
+                    $ref: "#/components/schemas/PaymentProcessor"
+
+        CancelSubscriptionRequest:
+            type: object
+            properties:
+                subscription_id:
+                    type: string
+                    description: Subscription ID from the payment processor
+                payment_processor:
+                    $ref: "#/components/schemas/PaymentProcessor"
+
+        WebhookEvent:
+            type: object
+            description: Payload for webhook events from payment processors
+
         SubscriptionPage:
             type: object
             required:
@@ -51,7 +182,7 @@ components:
                 billing_id:
                     type: string
                     description: "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe"
-                    nullable: true
+
             required:
                 - ID
                 - org_id
@@ -59,11 +190,24 @@ components:
                 - billing_id
                 - status
 
+                
         SubscriptionStatus:
-            type: string
-            enum:
+              type: string
+              description: Possible statuses of a Stripe subscription.
+              enum:
+                - incomplete
+                - incomplete_expired
+                - trialing
                 - active
-                - inactive
-                - overdue
+                - past_due
                 - canceled
-                - expired
+                - unpaid
+              x-enumDescriptions:
+                incomplete: "The subscription has been created, but the initial payment is pending. It may transition to 'active' or 'incomplete_expired'."
+                incomplete_expired: "The subscription was created but never activated due to failed initial payment. It is now expired."
+                trialing: "The subscription is currently in a trial period before the first payment is due."
+                active: "The subscription is active, and billing is functioning normally."
+                past_due: "The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge."
+                canceled: "The subscription has been canceled and will no longer generate invoices."
+                unpaid: "The subscription is still technically active but has unpaid invoices and is no longer generating new invoices."
+    

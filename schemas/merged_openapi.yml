@@ -409,12 +409,38 @@ components:
               status:
                 x-go-type: SubscriptionStatus
                 type: string
+                description: Possible statuses of a Stripe subscription.
                 enum:
+                  - incomplete
+                  - incomplete_expired
+                  - trialing
                   - active
-                  - inactive
-                  - overdue
+                  - past_due
                   - canceled
-                  - expired
+                  - unpaid
+                x-enumDescriptions:
+                  incomplete: >-
+                    The subscription has been created, but the initial payment
+                    is pending. It may transition to 'active' or
+                    'incomplete_expired'.
+                  incomplete_expired: >-
+                    The subscription was created but never activated due to
+                    failed initial payment. It is now expired.
+                  trialing: >-
+                    The subscription is currently in a trial period before the
+                    first payment is due.
+                  active: >-
+                    The subscription is active, and billing is functioning
+                    normally.
+                  past_due: >-
+                    The latest payment attempt failed, but the subscription
+                    remains active. Stripe may retry the charge.
+                  canceled: >-
+                    The subscription has been canceled and will no longer
+                    generate invoices.
+                  unpaid: >-
+                    The subscription is still technically active but has unpaid
+                    invoices and is no longer generating new invoices.
               created_at:
                 type: string
                 format: date-time
@@ -485,12 +511,35 @@ components:
         status:
           x-go-type: SubscriptionStatus
           type: string
+          description: Possible statuses of a Stripe subscription.
           enum:
+            - incomplete
+            - incomplete_expired
+            - trialing
             - active
-            - inactive
-            - overdue
+            - past_due
             - canceled
-            - expired
+            - unpaid
+          x-enumDescriptions:
+            incomplete: >-
+              The subscription has been created, but the initial payment is
+              pending. It may transition to 'active' or 'incomplete_expired'.
+            incomplete_expired: >-
+              The subscription was created but never activated due to failed
+              initial payment. It is now expired.
+            trialing: >-
+              The subscription is currently in a trial period before the first
+              payment is due.
+            active: The subscription is active, and billing is functioning normally.
+            past_due: >-
+              The latest payment attempt failed, but the subscription remains
+              active. Stripe may retry the charge.
+            canceled: >-
+              The subscription has been canceled and will no longer generate
+              invoices.
+            unpaid: >-
+              The subscription is still technically active but has unpaid
+              invoices and is no longer generating new invoices.
         created_at:
           type: string
           format: date-time
@@ -519,12 +568,35 @@ components:
         - status
     SubscriptionStatus:
       type: string
+      description: Possible statuses of a Stripe subscription.
       enum:
+        - incomplete
+        - incomplete_expired
+        - trialing
         - active
-        - inactive
-        - overdue
+        - past_due
         - canceled
-        - expired
+        - unpaid
+      x-enumDescriptions:
+        incomplete: >-
+          The subscription has been created, but the initial payment is pending.
+          It may transition to 'active' or 'incomplete_expired'.
+        incomplete_expired: >-
+          The subscription was created but never activated due to failed initial
+          payment. It is now expired.
+        trialing: >-
+          The subscription is currently in a trial period before the first
+          payment is due.
+        active: The subscription is active, and billing is functioning normally.
+        past_due: >-
+          The latest payment attempt failed, but the subscription remains
+          active. Stripe may retry the charge.
+        canceled: >-
+          The subscription has been canceled and will no longer generate
+          invoices.
+        unpaid: >-
+          The subscription is still technically active but has unpaid invoices
+          and is no longer generating new invoices.
     CatalogData:
       type: object
       properties:

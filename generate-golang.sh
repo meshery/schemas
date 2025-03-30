@@ -43,9 +43,22 @@ generate_schema_models() {
     # the added yaml tags are the same as the json tags default or user defined
     sed -i 's/\(json:"\([^"]*\)"\)\( yaml:"[^"]*"\)\?/\1 yaml:"\2"/g' "$output_go_file"
 
+    npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml
+
     rm -f "$merged_output"
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
 }
+
+# generate e,pty schema for the merged openapi
+touch schemas/merged_openapi.yml
+echo "openapi: 3.0.0" > schemas/merged_openapi.yml
+echo "info:" >> schemas/merged_openapi.yml
+echo "  title: Merged API Spec" >> schemas/merged_openapi.yml
+echo "  version: 1.0.0" >> schemas/merged_openapi.yml
+echo "paths: {}" >> schemas/merged_openapi.yml
+
+
+
 
 # Run model generation for multiple packages
 generate_schema_models "capability" "v1alpha1"
