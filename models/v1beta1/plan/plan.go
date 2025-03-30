@@ -46,6 +46,9 @@ type Plan struct {
 	// Name Name of the plan
 	Name PlanName `json:"name" yaml:"name"`
 
+	// PriceId Id of price associated with the plan in a billing provider like stripe
+	PriceId string `json:"price_id" yaml:"price_id"`
+
 	// PricePerUnit Price per unit of the plan
 	PricePerUnit float32  `json:"price_per_unit" yaml:"price_per_unit"`
 	Unit         PlanUnit `json:"unit" yaml:"unit"`

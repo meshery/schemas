@@ -9,16 +9,89 @@ import (
 	"database/sql"
 
 	"github.com/gofrs/uuid"
+	openapi_types "github.com/oapi-codegen/runtime/types"
+)
+
+// Defines values for CancelSubscriptionRequestPaymentProcessor.
+const (
+	CancelSubscriptionRequestPaymentProcessorBraintree CancelSubscriptionRequestPaymentProcessor = "braintree"
+	CancelSubscriptionRequestPaymentProcessorPaypal    CancelSubscriptionRequestPaymentProcessor = "paypal"
+	CancelSubscriptionRequestPaymentProcessorStripe    CancelSubscriptionRequestPaymentProcessor = "stripe"
+)
+
+// Defines values for CreateSubscriptionRequestPaymentProcessor.
+const (
+	CreateSubscriptionRequestPaymentProcessorBraintree CreateSubscriptionRequestPaymentProcessor = "braintree"
+	CreateSubscriptionRequestPaymentProcessorPaypal    CreateSubscriptionRequestPaymentProcessor = "paypal"
+	CreateSubscriptionRequestPaymentProcessorStripe    CreateSubscriptionRequestPaymentProcessor = "stripe"
+)
+
+// Defines values for PaymentProcessor.
+const (
+	PaymentProcessorBraintree PaymentProcessor = "braintree"
+	PaymentProcessorPaypal    PaymentProcessor = "paypal"
+	PaymentProcessorStripe    PaymentProcessor = "stripe"
 )
 
 // Defines values for SubscriptionStatus.
 const (
-	Active   SubscriptionStatus = "active"
-	Canceled SubscriptionStatus = "canceled"
-	Expired  SubscriptionStatus = "expired"
-	Inactive SubscriptionStatus = "inactive"
-	Overdue  SubscriptionStatus = "overdue"
+	Active            SubscriptionStatus = "active"
+	Canceled          SubscriptionStatus = "canceled"
+	Incomplete        SubscriptionStatus = "incomplete"
+	IncompleteExpired SubscriptionStatus = "incomplete_expired"
+	PastDue           SubscriptionStatus = "past_due"
+	Trialing          SubscriptionStatus = "trialing"
+	Unpaid            SubscriptionStatus = "unpaid"
 )
+
+// Defines values for UpdateUsersRequestPaymentProcessor.
+const (
+	UpdateUsersRequestPaymentProcessorBraintree UpdateUsersRequestPaymentProcessor = "braintree"
+	UpdateUsersRequestPaymentProcessorPaypal    UpdateUsersRequestPaymentProcessor = "paypal"
+	UpdateUsersRequestPaymentProcessorStripe    UpdateUsersRequestPaymentProcessor = "stripe"
+)
+
+// CancelSubscriptionRequest defines model for CancelSubscriptionRequest.
+type CancelSubscriptionRequest struct {
+	// PaymentProcessor Supported payment processors
+	PaymentProcessor *CancelSubscriptionRequestPaymentProcessor `json:"payment_processor,omitempty" yaml:"payment_processor,omitempty"`
+
+	// SubscriptionId Subscription ID from the payment processor
+	SubscriptionId *string `json:"subscription_id,omitempty" yaml:"subscription_id,omitempty"`
+}
+
+// CancelSubscriptionRequestPaymentProcessor Supported payment processors
+type CancelSubscriptionRequestPaymentProcessor string
+
+// CreateSubscriptionRequest defines model for CreateSubscriptionRequest.
+type CreateSubscriptionRequest struct {
+	// Email Email of the customer
+	Email *openapi_types.Email `json:"email,omitempty" yaml:"email,omitempty"`
+
+	// OrgId Organization ID
+	OrgId *string `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+
+	// PaymentProcessor Supported payment processors
+	PaymentProcessor *CreateSubscriptionRequestPaymentProcessor `json:"payment_processor,omitempty" yaml:"payment_processor,omitempty"`
+
+	// PlanId Price ID from the payment processor
+	PlanId *string `json:"plan_id,omitempty" yaml:"plan_id,omitempty"`
+
+	// UserCount Number of users in the organization
+	UserCount *int `json:"user_count,omitempty" yaml:"user_count,omitempty"`
+}
+
+// CreateSubscriptionRequestPaymentProcessor Supported payment processors
+type CreateSubscriptionRequestPaymentProcessor string
+
+// CreateSubscriptionResponse defines model for CreateSubscriptionResponse.
+type CreateSubscriptionResponse struct {
+	ClientSecret   *string `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"`
+	SubscriptionId *string `json:"subscription_id,omitempty" yaml:"subscription_id,omitempty"`
+}
+
+// PaymentProcessor Supported payment processors
+type PaymentProcessor string
 
 // Subscription defines model for Subscription.
 type Subscription struct {
@@ -26,7 +99,7 @@ type Subscription struct {
 	ID uuid.UUID `json:"ID" yaml:"ID"`
 
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
-	BillingId *string      `json:"billing_id" yaml:"billing_id"`
+	BillingId string       `json:"billing_id" yaml:"billing_id"`
 	CreatedAt time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	DeletedAt sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	EndDate   time.Time    `json:"end_date,omitempty" yaml:"end_date,omitempty"`
@@ -35,8 +108,10 @@ type Subscription struct {
 	OrgId uuid.UUID `json:"org_id" yaml:"org_id"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	PlanId    uuid.UUID          `json:"plan_id" yaml:"plan_id"`
-	StartDate time.Time          `json:"start_date,omitempty" yaml:"start_date,omitempty"`
+	PlanId    uuid.UUID `json:"plan_id" yaml:"plan_id"`
+	StartDate time.Time `json:"start_date,omitempty" yaml:"start_date,omitempty"`
+
+	// Status Possible statuses of a Stripe subscription.
 	Status    SubscriptionStatus `json:"status" yaml:"status"`
 	UpdatedAt time.Time          `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
@@ -49,5 +124,17 @@ type SubscriptionPage struct {
 	TotalCount    int            `json:"total_count" yaml:"total_count"`
 }
 
-// SubscriptionStatus defines model for SubscriptionStatus.
+// SubscriptionStatus Possible statuses of a Stripe subscription.
 type SubscriptionStatus string
+
+// UpdateUsersRequest defines model for UpdateUsersRequest.
+type UpdateUsersRequest struct {
+	// PaymentProcessor Supported payment processors
+	PaymentProcessor *UpdateUsersRequestPaymentProcessor `json:"payment_processor,omitempty" yaml:"payment_processor,omitempty"`
+}
+
+// UpdateUsersRequestPaymentProcessor Supported payment processors
+type UpdateUsersRequestPaymentProcessor string
+
+// WebhookEvent Payload for webhook events from payment processors
+type WebhookEvent = map[string]interface{}
