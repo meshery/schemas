@@ -30,7 +30,7 @@ type ImportRequest struct {
 
 // Model defines model for Model.
 type Model struct {
-    Category          category.CategoryDefinition `json:"category" yaml:"category"`
+    Category          category.CategoryDefinitionName `json:"category" yaml:"category"`
     IsAnnotation      bool   `json:"isAnnotation" yaml:"isAnnotation"`
     Model             string `json:"model" yaml:"model"`
     ModelDisplayName  string `json:"modelDisplayName" yaml:"modelDisplayName"`
