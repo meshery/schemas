@@ -117,7 +117,9 @@
     "shape": {
       "type": "string",
       "description": "The shape of the node\u2019s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+      "default": "circle",
       "enum": [
+        "circle",
         "ellipse",
         "triangle",
         "round-triangle",

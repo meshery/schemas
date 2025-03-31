@@ -9,18 +9,18 @@ components:
       type: object
       required:
         - importBody
-        - uploadType  
-        - register   
+        - uploadType
+        - register
       properties:
         importBody:
-          $ref: '#/components/schemas/ImportBody'
+          $ref: "#/components/schemas/ImportBody"
         uploadType:
           type: string
         register:
           type: boolean
-          nullable: false  
+          nullable: false
 
-    ImportBody:   
+    ImportBody:
       type: object
       required:
         - model_file
@@ -29,11 +29,11 @@ components:
         - model_csv
         - component_csv
         - relationship_csv
-        - model 
+        - model
       properties:
         model_file:
           type: string
-          format: byte  
+          format: byte
           description: "This represents the binary content of the file as a byte array"
         url:
           type: string
@@ -45,8 +45,8 @@ components:
           type: string
         relationship_csv:
           type: string
-        model: 
-          $ref: '#/components/schemas/Model'
+        model:
+          $ref: "#/components/schemas/Model"
 
     Model:
       type: object
@@ -72,9 +72,9 @@ components:
         model:
           type: string
         category:
-          type: string
+          $ref: "../v1beta1/category/openapi.yml#/components/schemas/CategoryDefinition"
         subCategory:
-          type: string
+          $ref: "../v1beta1/subcategory/openapi.yml#/components/schemas/SubCategoryDefinition"
         shape:
           type: string
         primaryColor:
@@ -104,9 +104,9 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ImportRequest'
+              $ref: "#/components/schemas/ImportRequest"
       responses:
-        '200':
+        "200":
           description: Successful registration
           content:
             application/json:
@@ -115,9 +115,9 @@ paths:
                 properties:
                   message:
                     type: string
-        '400':
+        "400":
           description: Invalid request format
-        '500':
+        "500":
           description: Internal server error
 
   /api/meshmodels/export:
@@ -151,15 +151,15 @@ paths:
             enum: [oci, tar, gzip]
             default: oci
       responses:
-        '200':
+        "200":
           description: Successful export
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
-        '400':
+        "400":
           description: Invalid request format
-        '500':
+        "500":
           description: Internal server error
 
