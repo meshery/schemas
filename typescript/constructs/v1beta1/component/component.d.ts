@@ -729,9 +729,6 @@ export interface HttpsSchemasMesheryIoCapabilityJson1 {
    * A written representation of the purpose and characteristics of the capability.
    */
   description: string;
-  /**
-   * Top-level categorization of the capability
-   */
   kind: ("action" | "mutate" | "view" | "interaction") & string;
   /**
    * Classification of capabilities. Used to group capabilities similar in nature.
