@@ -26,11 +26,13 @@
               "updated_at": "",
               "deleted_at": ""
             },
+            "registrantId": "",
+            "categoryId": "",
             "category": {
               "id": "",
-              "name": ""
+              "name": "Uncategorized"
             },
-            "subCategory": "",
+            "subCategory": "Uncategorized",
             "metadata": {
               "capabilities": {
                 "items": {
@@ -46,14 +48,17 @@
                   "status": "enabled"
                 }
               },
-              "primaryColor": "",
-              "secondaryColor": "",
+              "primaryColor": "#00b39f",
+              "secondaryColor": "#00D3A9",
               "svgWhite": "",
               "svgColor": "",
-              "svgComplete": ""
+              "svgComplete": "",
+              "shape": "circle"
             },
             "model": {
-              "version": ""
+              "version": {
+                "0": ""
+              }
             }
           }
         }
@@ -79,11 +84,13 @@
           "updated_at": "",
           "deleted_at": ""
         },
+        "registrantId": "",
+        "categoryId": "",
         "category": {
           "id": "",
-          "name": ""
+          "name": "Uncategorized"
         },
-        "subCategory": "",
+        "subCategory": "Uncategorized",
         "metadata": {
           "capabilities": {
             "items": {
@@ -99,14 +106,17 @@
               "status": "enabled"
             }
           },
-          "primaryColor": "",
-          "secondaryColor": "",
+          "primaryColor": "#00b39f",
+          "secondaryColor": "#00D3A9",
           "svgWhite": "",
           "svgColor": "",
-          "svgComplete": ""
+          "svgComplete": "",
+          "shape": "circle"
         },
         "model": {
-          "version": ""
+          "version": {
+            "0": ""
+          }
         }
       }
     }
