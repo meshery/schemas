@@ -27,19 +27,20 @@
         "status": "enabled"
       }
     },
-    "primaryColor": "",
-    "secondaryColor": "",
+    "primaryColor": "#00b39f",
+    "secondaryColor": "#00D3A9",
     "svgWhite": "",
     "svgColor": "",
-    "svgComplete": ""
+    "svgComplete": "",
+    "shape": "circle"
   },
   "registrantId": "",
   "categoryId": "",
   "category": {
     "id": "",
-    "name": ""
+    "name": "Uncategorized"
   },
-  "subCategory": "",
+  "subCategory": "Uncategorized",
   "model": {
     "version": {
       "0": ""

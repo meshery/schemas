@@ -13,7 +13,10 @@
       }
     },
     "registrant": {},
-    "category": {},
+    "category": {
+      "name": "Uncategorized"
+    },
+    "subCategory": "Uncategorized",
     "metadata": {
       "capabilities": {
         "items": {
@@ -21,7 +24,10 @@
           "entityState": {},
           "status": "enabled"
         }
-      }
+      },
+      "primaryColor": "#00b39f",
+      "secondaryColor": "#00D3A9",
+      "shape": "circle"
     }
   },
   "registrant": {},
@@ -30,6 +36,7 @@
     "configurationUISchema": ""
   },
   "category": {},
+  "modelId": "",
   "styles": {
     "allOf": {
       "0": {
