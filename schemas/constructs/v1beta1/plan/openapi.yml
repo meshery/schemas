@@ -2,10 +2,32 @@ openapi: 3.0.0
 info:
     title: Plans Api
     version: 1.0.0
-paths: {}
+tags:
+    - name: Plans
+      description: Operations related to plans
+
+paths:
+    /api/entitlements/plans:
+        get:
+            tags:
+                - Plans
+            summary: Get all plans supported by the system
+            responses:
+                "200":
+                    description: Plans fetched successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: "array"
+                                items:
+                                    $ref: "#/components/schemas/Plan"
+                "400":
+                    description: Invalid request
+                "500":
+                    description: Internal server error
+
 components:
     schemas:
-        
         PlanPage:
             type: object
             required:
@@ -25,7 +47,7 @@ components:
                     items:
                         $ref: "#/components/schemas/Plan"
                         x-go-type: Plan
-        
+
         Plan:
             type: object
             properties:
@@ -46,10 +68,12 @@ components:
                 price_per_unit:
                     type: "number"
                     description: "Price per unit of the plan"
+                    x-oapi-codegen-extra-tags:
+                        db: "price_per_unit"
 
-                price_id:
-                    type : "string"
-                    description: "Id of price associated with the plan in a billing provider like stripe"
+                # price_id:
+                #     type: "string"
+                #     description: "Id of price associated with the plan in a billing provider like stripe"
 
                 currency:
                     $ref: "#/components/schemas/Currency"
@@ -67,10 +91,10 @@ components:
             type: string
             description: "Name of the plan"
             enum:
-                - "Personal"
-                - "Team"
+                - "Free"
+                - "Team Designer"
+                - "Team Operator"
                 - "Enterprise"
-                - "Ambassador"
 
         PlanCadence:
             type: string

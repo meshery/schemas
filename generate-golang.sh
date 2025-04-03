@@ -42,8 +42,10 @@ generate_schema_models() {
     #  Add yaml struct tags only if missing, avoiding duplicates or overwrites
     # the added yaml tags are the same as the json tags default or user defined
     sed -i 's/\(json:"\([^"]*\)"\)\( yaml:"[^"]*"\)\?/\1 yaml:"\2"/g' "$output_go_file"
+    # same for db tags
+    # sed -i 's/\(json:"\([^"]*\)"\)\( db:"[^"]*"\)\?/\1 db:"\2"/g' "$output_go_file"
 
-    npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml
+    npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml --without-x-tag-groups
 
     rm -f "$merged_output"
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"

@@ -9,6 +9,7 @@ import (
 	"database/sql"
 
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/v1beta1/plan"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -96,24 +97,26 @@ type PaymentProcessor string
 // Subscription defines model for Subscription.
 type Subscription struct {
 	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID uuid.UUID `json:"ID" yaml:"ID"`
+	ID uuid.UUID `db:"id" json:"ID" yaml:"ID"`
 
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
-	BillingId string       `json:"billing_id" yaml:"billing_id"`
-	CreatedAt time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	EndDate   time.Time    `json:"end_date,omitempty" yaml:"end_date,omitempty"`
+	BillingId string       `db:"billing_id" json:"billing_id" yaml:"billing_id"`
+	CreatedAt time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	EndDate   time.Time    `db:"end_date" json:"end_date,omitempty" yaml:"end_date,omitempty"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrgId uuid.UUID `json:"org_id" yaml:"org_id"`
+	OrgId uuid.UUID  `db:"org_id" json:"org_id" yaml:"org_id"`
+	Plan  *plan.Plan `belongs_to:"plans" fk_id:"PlanId" json:"plan,omitempty" yaml:"plan,omitempty"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	PlanId    uuid.UUID `json:"plan_id" yaml:"plan_id"`
-	StartDate time.Time `json:"start_date,omitempty" yaml:"start_date,omitempty"`
+	PlanId    uuid.UUID `db:"plan_id" json:"plan_id" yaml:"plan_id"`
+	Quantity  int       `db:"quantity" json:"quantity" yaml:"quantity"`
+	StartDate time.Time `db:"start_date" json:"start_date,omitempty" yaml:"start_date,omitempty"`
 
 	// Status Possible statuses of a Stripe subscription.
-	Status    SubscriptionStatus `json:"status" yaml:"status"`
-	UpdatedAt time.Time          `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Status    SubscriptionStatus `db:"status" json:"status" yaml:"status"`
+	UpdatedAt time.Time          `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // SubscriptionPage defines model for SubscriptionPage.
@@ -138,3 +141,18 @@ type UpdateUsersRequestPaymentProcessor string
 
 // WebhookEvent Payload for webhook events from payment processors
 type WebhookEvent = map[string]interface{}
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// PagesizeWithAll defines model for pagesizeWithAll.
+type PagesizeWithAll = string
+
+// SubscriptionId defines model for subscriptionId.
+type SubscriptionId = string
