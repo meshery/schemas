@@ -54,6 +54,23 @@ paths:
                 "500":
                     $ref: "#/components/responses/500"
 
+    /api/entitlement/subscriptions/{subscriptionId}/cancel:
+        post:
+            summary: Cancel an existing subscription
+            
+            parameters:
+              - $ref: "#/components/parameters/subscriptionId"
+            responses:
+                "200":
+                    description: Subscription created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/SubscriptionPage"
+                "400":
+                    description: Invalid request
+                "500":
+                    description: Internal server error
     /api/entitlement/subscriptions/create:
         post:
             summary: Create a new subscription for an organization
@@ -74,28 +91,6 @@ paths:
                     description: Invalid request
                 "500":
                     description: Internal server error
-
-    /api/entitlement/subscriptions/{subscriptionId}/cancel:
-        post:
-        tags:
-            - subscription
-        description: Cancels the subscription
-        operationId: cancelSubscriptionByID
-        summary: Cancel a subscription
-        parameters:
-            - $ref: "#/components/parameters/subscriptionId"
-        responses:
-            "200":
-            content:
-                application/json:
-                schema:
-                    $ref: "#/components/schemas/SubscriptionPage"
-            "400":
-                $ref: "#/components/responses/400"
-            "401":
-                $ref: "#/components/responses/401"
-            "500":
-                $ref: "#/components/responses/500"
 
     /api/entitlement/subscriptions/webhooks:
         post:

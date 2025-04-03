@@ -7,8 +7,9 @@ tags:
       description: Operations related to plans
 
 paths:
-    /api/entitlements/plans:
+    /api/entitlement/plans:
         get:
+            operationId: getPlans
             tags:
                 - Plans
             summary: Get all plans supported by the system
