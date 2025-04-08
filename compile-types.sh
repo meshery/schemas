@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Check if both input and output directories are provided
-if [ $# -ne 3 ]; then
-  echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_models>"
+if [ $# -ne 4 ]; then
+  echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_models> <output_directory_for_yaml_models>"
   exit 1
 fi
 
 INPUT_DIR=$(realpath "$1")
 OUTPUT_DIR=$(realpath "$2")
 OUTPUT_DIR_JSON=$(realpath "$3")
+OUTPUT_DIR_YAML=$(realpath "$4")
 
 
 # Check if input directory exists
@@ -81,12 +82,26 @@ generate_type_definition() {
   fi
 
   # Generate json model definitions
-  if output=$(npm run generate:json "$(realpath "$file")" "$OUTPUT_DIR_JSON/$dir/$filename.json" 2>&1); then
+  local json_model_file="$OUTPUT_DIR_JSON/$dir/$filename.json"
+  
+  if output=$(npm run generate:json "$(realpath "$file")" "$json_model_file" 2>&1); then
     echo "Generated json for: $file"
   else
     echo "Failed to generate json for: $file"
     echo "Error: $output"
   fi
+
+  # Generate yaml model definitions
+  local yaml_model_dir="$OUTPUT_DIR_YAML/$dir"
+  local yaml_model_file="$yaml_model_dir/$filename.yaml"
+  
+  mkdir -p $yaml_model_dir
+  if $(js-yaml "$json_model_file" 1>"$yaml_model_file"); then
+    echo "Generated yaml for: $json_model_file"
+  else
+    echo "Failed to generate yaml for: $json_model_file"
+  fi
+  echo ""
   
 
   cd "$ORIGINAL_DIR"
