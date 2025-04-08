@@ -1036,6 +1036,81 @@ type ViewId = uuid.UUID
 // WorkspaceId defines model for workspace_id.
 type WorkspaceId = uuid.UUID
 
+// ActorType defines model for actorType.
+type ActorType = string
+
+// All defines model for all.
+type All = bool
+
+// Class defines model for class.
+type Class = string
+
+// ContentTechnology defines model for contentTechnology.
+type ContentTechnology = string
+
+// ContentType defines model for contentType.
+type ContentType = string
+
+// Cumulative defines model for cumulative.
+type Cumulative = string
+
+// Filter defines model for filter.
+type Filter = string
+
+// IsOAuth defines model for isOAuth.
+type IsOAuth = string
+
+// MesheryVersion defines model for mesheryVersion.
+type MesheryVersion = string
+
+// Metrics defines model for metrics.
+type Metrics = string
+
+// Name defines model for name.
+type Name = string
+
+// Namespace defines model for namespace.
+type Namespace = string
+
+// Order defines model for order.
+type Order = string
+
+// Os defines model for os.
+type Os = string
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// PagesizeWithAll defines model for pagesizeWithAll.
+type PagesizeWithAll = string
+
+// Playground defines model for playground.
+type Playground = string
+
+// Populate defines model for populate.
+type Populate = string
+
+// Purpose defines model for purpose.
+type Purpose = string
+
+// ResourceType defines model for resourceType.
+type ResourceType = string
+
+// Search defines model for search.
+type Search = string
+
+// Type defines model for type.
+type Type = string
+
+// Userid defines model for userid.
+type Userid = string
+
+// Visibility defines model for visibility.
+type Visibility = string
+
 // Getter for additional properties for ComponentStyles. Returns the specified
 // element and whether it was found
 func (a ComponentStyles) Get(fieldName string) (value interface{}, found bool) {
