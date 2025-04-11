@@ -123,7 +123,7 @@ generate_templates() {
 
   # Generate yaml model definitions
   local yaml_model_file="$OUTPUT_DIR_TEMPLATES/$dir/${filename}_template.yaml"
-  if $(js-yaml "$json_model_file" 1>"$yaml_model_file"); then
+  if js-yaml "$json_model_file" 1>"$yaml_model_file"; then
     echo "Generated yaml for: $json_model_file"
   else
     echo "Failed to generate yaml for: $json_model_file"
