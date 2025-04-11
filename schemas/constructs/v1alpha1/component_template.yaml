@@ -1,0 +1,18 @@
+apiVersion: ''
+kind: ''
+metadata:
+  description: ''
+  name: ''
+  version: ''
+capabilities: {}
+model:
+  name: ''
+  displayName: ''
+  status: ''
+  version: ''
+  category: ''
+  subCategory: ''
+displayName: ''
+format: JSON
+schema: ''
+
