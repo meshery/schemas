@@ -21,12 +21,7 @@ mkdir -p "$OUTPUT_DIR"
 
 # Create temporary directory for JSON files
 TEMP_DIR="$OUTPUT_DIR/temp"
-mkdir -p "$TEMP_DIR"
-
-# Create temporary directory for templates generation
-TEMP_DIR_NO_TEMPLATES="schemas_temp"
-mkdir -p "$TEMP_DIR_NO_TEMPLATES"
- 
+mkdir -p "$TEMP_DIR" 
 
 # Store the original directory
 ORIGINAL_DIR=$(pwd)
@@ -62,10 +57,24 @@ resolve_references() {
   SCHEMA_PATH="$TEMP_DIR" node "$RESOLVER_SCRIPT"
 }
 
+is_template_file() {
+  local file="$1"
+  if [[ "$file" == *_template.json || "$file" == *_template.yaml || "$file" == *_template.yml ]]; then
+    return 0  # true
+  else
+    return 1  # false
+  fi
+}
+
 # Function to generate type definitions for a file
 generate_type_definition() {
   local file="$1"
-  local relative_path="${file#$TEMP_DIR_NO_TEMPLATES/}"
+  if is_template_file "$file"; then
+    echo "Skipping template file: $file"
+    return
+  fi
+
+  local relative_path="${file#$INPUT_DIR/}"
 
   local dir=$(dirname "$relative_path")
   local filename=$(basename "$file" .json)
@@ -91,7 +100,11 @@ generate_type_definition() {
 # Function to generate templates 
 generate_templates() {
   local file="$1"
-  local relative_path="${file#$TEMP_DIR_NO_TEMPLATES/}"
+  if is_template_file "$file"; then
+    echo "Skipping template file: $file"
+    return
+  fi
+  local relative_path="${file#$INPUT_DIR/}"
 
   local dir=$(dirname "$relative_path")
   local filename=$(basename "$file" .json)
@@ -165,16 +178,13 @@ traverse_for_schemas() {
   traverse_directory "$1" generate_schema_for_file
 }
 
-echo "Step 0: Copying JSON and YAML files (exclusing templates) to temporary directory..."
-rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR_NO_TEMPLATES/"
-
 echo "Step 1: Generating TypeScript type definitions..."
-traverse_for_types "$TEMP_DIR_NO_TEMPLATES"
+traverse_for_types "$INPUT_DIR"
 
 echo "Step 2: Generating templates..."
-traverse_for_templates "$TEMP_DIR_NO_TEMPLATES"
+traverse_for_templates "$INPUT_DIR"
 
-echo "Step 3: Copying JSON and YAML files (exclusing templates) to temporary directory..."
+echo "Step 3: Copying JSON and YAML files (excluding templates) to temporary directory..."
 rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
 
 echo "Step 4: Resolving references in JSON schemas..."
@@ -194,6 +204,5 @@ fi
 
 echo "Step 7: Cleaning up temporary directory..."
 rm -rf "$TEMP_DIR"
-rm -rf "$TEMP_DIR_NO_TEMPLATES"
 
 echo "Processing complete. Output files are in '$OUTPUT_DIR'."
