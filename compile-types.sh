@@ -168,22 +168,22 @@ traverse_for_schemas() {
 echo "Step 0: Copying JSON and YAML files (exclusing templates) to temporary directory..."
 rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR_NO_TEMPLATES/"
 
-# echo "Step 1: Generating TypeScript type definitions..."
-# traverse_for_types "$TEMP_DIR_NO_TEMPLATES"
+echo "Step 1: Generating TypeScript type definitions..."
+traverse_for_types "$TEMP_DIR_NO_TEMPLATES"
 
-echo "Step 1.1: Generating templates..."
+echo "Step 2: Generating templates..."
 traverse_for_templates "$TEMP_DIR_NO_TEMPLATES"
 
-echo "Step 2: Copying JSON and YAML files (exclusing templates) to temporary directory..."
+echo "Step 3: Copying JSON and YAML files (exclusing templates) to temporary directory..."
 rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
 
-echo "Step 3: Resolving references in JSON schemas..."
+echo "Step 4: Resolving references in JSON schemas..."
 resolve_references
 
-echo "Step 4: Generating schema exports..."
+echo "Step 5: Generating schema exports..."
 traverse_for_schemas "$TEMP_DIR"
 
-echo "Step 5: Generating OpenAPI types..."
+echo "Step 6: Generating OpenAPI types..."
 OPENAPI_FILE="$INPUT_DIR/openapi.yml"
 if [ -f "$OPENAPI_FILE" ]; then
   npx openapi-typescript "$OPENAPI_FILE" --output "$OUTPUT_DIR/openapi.d.ts"
@@ -192,7 +192,7 @@ else
   echo "Error: OpenAPI file '$OPENAPI_FILE' does not exist."
 fi
 
-echo "Step 6: Cleaning up temporary directory..."
+echo "Step 7: Cleaning up temporary directory..."
 rm -rf "$TEMP_DIR"
 rm -rf "$TEMP_DIR_NO_TEMPLATES"
 
