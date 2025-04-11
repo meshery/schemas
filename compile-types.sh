@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # Check if both input and output directories are provided
-if [ $# -ne 4 ]; then
-  echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_models> <output_directory_for_yaml_models>"
+if [ $# -ne 3 ]; then
+  echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_yaml_templates>"
   exit 1
 fi
 
 INPUT_DIR=$(realpath "$1")
 OUTPUT_DIR=$(realpath "$2")
-OUTPUT_DIR_JSON=$(realpath "$3")
-OUTPUT_DIR_YAML=$(realpath "$4")
+OUTPUT_DIR_TEMPLATES=$(realpath "$3")
 
 
 # Check if input directory exists
@@ -23,6 +22,11 @@ mkdir -p "$OUTPUT_DIR"
 # Create temporary directory for JSON files
 TEMP_DIR="$OUTPUT_DIR/temp"
 mkdir -p "$TEMP_DIR"
+
+# Create temporary directory for templates generation
+TEMP_DIR_NO_TEMPLATES="schemas_temp"
+mkdir -p "$TEMP_DIR_NO_TEMPLATES"
+ 
 
 # Store the original directory
 ORIGINAL_DIR=$(pwd)
@@ -61,14 +65,13 @@ resolve_references() {
 # Function to generate type definitions for a file
 generate_type_definition() {
   local file="$1"
-  local relative_path="${file#$INPUT_DIR/}"
+  local relative_path="${file#$TEMP_DIR_NO_TEMPLATES/}"
 
   local dir=$(dirname "$relative_path")
   local filename=$(basename "$file" .json)
 
   # Create subdirectory in output folder if it doesn't exist
   mkdir -p "$OUTPUT_DIR/$dir"
-  mkdir -p "$OUTPUT_DIR_JSON/$dir"
 
   # Change to the directory containing the JSON file
   cd "$(dirname "$file")"
@@ -80,10 +83,24 @@ generate_type_definition() {
     echo "Failed to generate types for: $file"
     echo "Error: $output"
   fi
+  
+
+  cd "$ORIGINAL_DIR"
+}
+
+# Function to generate templates 
+generate_templates() {
+  local file="$1"
+  local relative_path="${file#$TEMP_DIR_NO_TEMPLATES/}"
+
+  local dir=$(dirname "$relative_path")
+  local filename=$(basename "$file" .json)
+
+  # Create subdirectory in output folder if it doesn't exist
+  mkdir -p "$OUTPUT_DIR_TEMPLATES/$dir"
 
   # Generate json model definitions
-  local json_model_file="$OUTPUT_DIR_JSON/$dir/$filename.json"
-  
+  local json_model_file="$OUTPUT_DIR_TEMPLATES/$dir/${filename}_template.json"
   if output=$(npm run generate:json "$(realpath "$file")" "$json_model_file" 2>&1); then
     echo "Generated json for: $file"
   else
@@ -92,19 +109,13 @@ generate_type_definition() {
   fi
 
   # Generate yaml model definitions
-  local yaml_model_dir="$OUTPUT_DIR_YAML/$dir"
-  local yaml_model_file="$yaml_model_dir/$filename.yaml"
-  
-  mkdir -p $yaml_model_dir
+  local yaml_model_file="$OUTPUT_DIR_TEMPLATES/$dir/${filename}_template.yaml"
   if $(js-yaml "$json_model_file" 1>"$yaml_model_file"); then
     echo "Generated yaml for: $json_model_file"
   else
     echo "Failed to generate yaml for: $json_model_file"
   fi
   echo ""
-  
-
-  cd "$ORIGINAL_DIR"
 }
 
 # Function to generate schema export for a file
@@ -145,16 +156,26 @@ traverse_for_types() {
   traverse_directory "$1" generate_type_definition
 }
 
+traverse_for_templates() {
+  traverse_directory "$1" generate_templates
+}
+
 # Function to traverse directory for schema generation
 traverse_for_schemas() {
   traverse_directory "$1" generate_schema_for_file
 }
 
-echo "Step 1: Generating TypeScript type definitions..."
-traverse_for_types "$INPUT_DIR"
+echo "Step 0: Copying JSON and YAML files (exclusing templates) to temporary directory..."
+rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR_NO_TEMPLATES/"
 
-echo "Step 2: Copying JSON and YAML files to temporary directory..."
-rsync -a --include='*/' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
+# echo "Step 1: Generating TypeScript type definitions..."
+# traverse_for_types "$TEMP_DIR_NO_TEMPLATES"
+
+echo "Step 1.1: Generating templates..."
+traverse_for_templates "$TEMP_DIR_NO_TEMPLATES"
+
+echo "Step 2: Copying JSON and YAML files (exclusing templates) to temporary directory..."
+rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
 
 echo "Step 3: Resolving references in JSON schemas..."
 resolve_references
@@ -173,5 +194,6 @@ fi
 
 echo "Step 6: Cleaning up temporary directory..."
 rm -rf "$TEMP_DIR"
+rm -rf "$TEMP_DIR_NO_TEMPLATES"
 
 echo "Processing complete. Output files are in '$OUTPUT_DIR'."

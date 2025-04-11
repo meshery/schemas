@@ -4,5 +4,5 @@ import "embed"
 
 // Embedding schemas
 //
-//go:embed schemas json_models yaml_models
+//go:embed schemas json_models
 var Schemas embed.FS

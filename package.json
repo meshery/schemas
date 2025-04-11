@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "generate:types": "./compile-types.sh ./schemas/  ./typescript ./json_models ./yaml_models",
+    "generate:types": "./compile-types.sh ./schemas/  ./typescript ./schemas",
     "generate:json": "node ./compile-json-schema.mjs",
     "publish-ts-lib": "node ./publish-npm-package.js"
   },
