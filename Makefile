@@ -99,7 +99,7 @@ ifeq (,$(shell command -v oapi-codegen))
 	@echo "Dependency missing: oapi-codegen. Install oapi-codegen cli from
 	@echo "installing oapi-codegen"
 	# for the binary install
-    go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 endif
 
 
