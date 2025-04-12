@@ -173,7 +173,7 @@ Meshery supports **automatic code generation** for:
 - **Golang** (structs and types)
 - **TypeScript** (interfaces and types)
 - **JSON template** (json document with default values)
-- **YAML template** (yaml documents with default values)
+- **YAML template** (yaml document with default values)
 
 ### **Generating Code from Schemas**
 The schema-to-code mapping is defined in **`generate.sh`**, which automates the generation process.
