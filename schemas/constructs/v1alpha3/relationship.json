@@ -41,7 +41,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
-      }
+      },
+      "default": "v1alpha3"
     },
     "version": {
       "description": "Specifies the version of the relationship definition.",
@@ -52,7 +53,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
         "json": "version"
-      }
+      },
+      "default": "v0.1.0"
     },
     "model": {
       "description": "Name of the model in which this relationship is packaged.",
@@ -890,7 +892,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "isAnnotation",
                 "json": "isAnnotation"
-              }
+              },
+              "default": false
             },    
         "styles": {
           "anyOf": [
