@@ -34,6 +34,12 @@ type Trace struct {
 	RelationshipsUpdated []relationship.RelationshipDefinition `json:"relationshipsUpdated" yaml:"relationshipsUpdated"`
 }
 
+
+type Action struct {
+	Op string `json:"op"`
+	Value  map[string]interface{} `json:"value"`
+}
+
 // EvaluationResponse Schema for the response of a relationship evaluation process in Meshery
 type EvaluationResponse struct {
 	// Design Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
@@ -48,6 +54,8 @@ type EvaluationResponse struct {
 
 	// Trace A detailed trace of the evaluation process, including actions taken and changes made.
 	Trace Trace `json:"trace" yaml:"trace"`
+
+	Actions []Action `json:"actions" yaml:"actions"`
 }
 
 type Options struct {
