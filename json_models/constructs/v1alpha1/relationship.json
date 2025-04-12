@@ -5,12 +5,12 @@
     "description": ""
   },
   "model": {
-    "name": "",
-    "displayName": "",
-    "status": "",
-    "version": "",
-    "category": "",
-    "subCategory": ""
+    "name": "meshery-integration-template",
+    "displayName": "Meshery Integration Template",
+    "status": "enabled",
+    "version": "v0.1.0",
+    "category": "Uncategorized",
+    "subCategory": "Uncategorized"
   },
   "subType": "",
   "selectors": {

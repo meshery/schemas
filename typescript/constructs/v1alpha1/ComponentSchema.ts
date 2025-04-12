@@ -104,6 +104,7 @@ const schema = {
       "properties": {
         "name": {
           "description": "The name for the model.",
+          "default": "meshery-integration-template",
           "type": "string",
           "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
           "x-order": 1,
@@ -114,6 +115,7 @@ const schema = {
         },
         "displayName": {
           "description": "The display name for the model.",
+          "default": "Meshery Integration Template",
           "type": "string",
           "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
           "x-order": 2,
@@ -125,6 +127,7 @@ const schema = {
         "status": {
           "type": "string",
           "description": "Status of model, e.g. Registered, Ignored, Enabled ...",
+          "default": "enabled",
           "x-order": 3,
           "x-oapi-codegen-extra-tags": {
             "yaml": "status",
@@ -133,6 +136,7 @@ const schema = {
         },
         "version": {
           "description": "Version of the model.",
+          "default": "v0.1.0",
           "type": "string",
           "minLength": 2,
           "maxLength": 100,
@@ -152,6 +156,7 @@ const schema = {
         "category": {
           "type": "string",
           "description": "Category of the model.",
+          "default": "Uncategorized",
           "x-order": 5,
           "x-oapi-codegen-extra-tags": {
             "yaml": "category",
@@ -161,6 +166,7 @@ const schema = {
         "subCategory": {
           "type": "string",
           "description": "Sub-category of the model.",
+          "default": "Uncategorized",
           "x-order": 6,
           "x-oapi-codegen-extra-tags": {
             "yaml": "subCategory",

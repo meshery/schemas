@@ -191,6 +191,7 @@ const schema = {
               "yaml": "schemaVersion",
               "json": "schemaVersion"
             },
+            "default": "v1beta1",
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
@@ -211,6 +212,7 @@ const schema = {
               "yaml": "version",
               "json": "version"
             },
+            "default": "v0.1.0",
             "type": "string",
             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
@@ -283,6 +285,7 @@ const schema = {
                   "yaml": "schemaVersion",
                   "json": "schemaVersion"
                 },
+                "default": "v1beta1",
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
@@ -302,6 +305,7 @@ const schema = {
                   "yaml": "version",
                   "json": "version"
                 },
+                "default": "v0.1.0",
                 "minLength": 5,
                 "maxLength": 100,
                 "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
@@ -318,7 +322,8 @@ const schema = {
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "name",
                   "json": "name"
-                }
+                },
+                "default": "meshery-integration-template"
               },
               "displayName": {
                 "description": "Human-readable name for the model.",
@@ -334,7 +339,8 @@ const schema = {
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "displayName",
                   "json": "displayName"
-                }
+                },
+                "default": "Meshery Integration Template"
               },
               "description": {
                 "type": "string",
@@ -359,7 +365,8 @@ const schema = {
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "status",
                   "json": "status"
-                }
+                },
+                "default": "enabled"
               },
               "registrant": {
                 "x-oapi-codegen-extra-tags": {
@@ -958,7 +965,8 @@ const schema = {
                       "yaml": "isAnnotation",
                       "json": "isAnnotation"
                     },
-                    "x-order": 2
+                    "x-order": 2,
+                    "default": false
                   },
                   "primaryColor": {
                     "type": "string",
@@ -1121,7 +1129,8 @@ const schema = {
                   "json": "componentsCount",
                   "yaml": "componentsCount",
                   "gorm": "-"
-                }
+                },
+                "default": 0
               },
               "relationshipsCount": {
                 "type": "integer",
@@ -1131,7 +1140,8 @@ const schema = {
                   "gorm": "-",
                   "json": "relationshipsCount",
                   "yaml": "relationshipsCount"
-                }
+                },
+                "default": 0
               }
             },
             "required": [
@@ -1841,6 +1851,7 @@ const schema = {
                 "x-order": 2,
                 "type": "boolean",
                 "description": "Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.",
+                "default": false,
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "isAnnotation",
                   "json": "isAnnotation"
@@ -2030,6 +2041,7 @@ const schema = {
               "yaml": "schemaVersion",
               "json": "schemaVersion"
             },
+            "default": "v1alpha3",
             "x-order": 2
           },
           "version": {
@@ -2042,6 +2054,7 @@ const schema = {
               "yaml": "version",
               "json": "version"
             },
+            "default": "v0.1.0",
             "x-order": 3
           },
           "model": {
@@ -2945,6 +2958,7 @@ const schema = {
                   "yaml": "isAnnotation",
                   "json": "isAnnotation"
                 },
+                "default": false,
                 "x-order": 2
               },
               "styles": {

@@ -46,6 +46,7 @@ const schema = {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
       },
+      "default": "v1alpha3",
       "x-order": 2
     },
     "version": {
@@ -58,6 +59,7 @@ const schema = {
         "yaml": "version",
         "json": "version"
       },
+      "default": "v0.1.0",
       "x-order": 3
     },
     "model": {
@@ -961,6 +963,7 @@ const schema = {
             "yaml": "isAnnotation",
             "json": "isAnnotation"
           },
+          "default": false,
           "x-order": 2
         },
         "styles": {
