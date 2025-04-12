@@ -161,6 +161,8 @@ schemas/
 - **`<construct>.json`** – Defines the **schema for the noun** (i.e., the entity).  
 - **`subschemas/`** – Contains reusable subschemas for modularity.  
 - **`openapi.yml`** – Defines **API operations** (verbs: `create`, `update`, `delete`) and serves as the **entry point** for the schema.  
+- **`<construct>_template.json`** - json template generated from schema. Valid json document generated from schema definition. Has all references resolved, contains default values.
+- **`<construct>_template.yaml`** - yaml template generated from schema. Valid yaml document generated from schema definition. Has all references resolved, contains default values.
 
 This approach ensures that **schemas are well-organized, reusable, and scalable** across different Meshery components.
 
