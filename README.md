@@ -172,6 +172,8 @@ This approach ensures that **schemas are well-organized, reusable, and scalable*
 Meshery supports **automatic code generation** for:
 - **Golang** (structs and types)
 - **TypeScript** (interfaces and types)
+- **JSON template** (json document with default values)
+- **YAML template** (yaml documents with default values)
 
 ### **Generating Code from Schemas**
 The schema-to-code mapping is defined in **`generate.sh`**, which automates the generation process.
@@ -182,8 +184,8 @@ To generate Go structs from schemas, use:
 make golang-generate
 ```
 
-#### **Generating TypeScript Models**
-To generate TypeScript types from schemas, use:  
+#### **Generating TypeScript Models, JSON and YAML templates**
+To generate TypeScript types and json and yaml templates from schemas, use:  
 ```bash
 make generate-ts
 ```
