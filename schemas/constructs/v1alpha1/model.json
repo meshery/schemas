@@ -13,27 +13,33 @@
   "properties": {
     "name": {
       "$ref": "../core.json#/definitions/inputString",
-      "description": "The name for the model."
+      "description": "The name for the model.",
+      "default": "meshery-integration-template"
     },
     "displayName": {
       "$ref": "../core.json#/definitions/inputString",
-      "description": "The display name for the model."
+      "description": "The display name for the model.",
+      "default": "Meshery Integration Template"
     },
     "status": {
       "type": "string",
-      "description": "Status of model, e.g. Registered, Ignored, Enabled ..."
+      "description": "Status of model, e.g. Registered, Ignored, Enabled ...",
+      "default": "enabled"
     },
     "version": {
       "$ref": "../core.json#/definitions/versionString",
-      "description": "Version of the model."
+      "description": "Version of the model.",
+      "default": "v0.1.0"
     },
     "category": {
       "type": "string",
-      "description": "Category of the model."
+      "description": "Category of the model.",
+      "default": "Uncategorized"
     },
     "subCategory": {
       "type": "string",
-      "description": "Sub-category of the model."
+      "description": "Sub-category of the model.",
+      "default": "Uncategorized"
     }
   }
 }
