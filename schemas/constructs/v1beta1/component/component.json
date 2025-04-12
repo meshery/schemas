@@ -21,7 +21,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
-      }
+      },
+      "default": "v1beta1"
     },
     "version": {
       "$ref": "../../core.json#/definitions/semverString",
@@ -32,7 +33,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
         "json": "version"
-      }
+      },
+      "default": "v0.1.0"
     },
     "displayName": {
       "$ref": "../../core.json#/definitions/inputString",
@@ -147,7 +149,8 @@
         "isAnnotation": {
           "x-order": 2,
           "type": "boolean",
-          "description": "Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation."
+          "description": "Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation.",
+          "default": false
         },
         "isNamespaced": {
           "x-order": 3,
