@@ -185,9 +185,15 @@ make golang-generate
 ```
 
 #### **Generating TypeScript Models, JSON and YAML templates**
-To generate TypeScript types and json and yaml templates from schemas, use:  
+To generate
+
+- TypeScript types
+- json templates
+- yaml templates 
+
+from schemas, use:  
 ```bash
-make generate-ts
+make generate-types
 ```
 
 ### **Schema-to-Code Mapping**
