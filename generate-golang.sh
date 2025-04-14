@@ -42,14 +42,30 @@ generate_schema_models() {
     #  Add yaml struct tags only if missing, avoiding duplicates or overwrites
     # the added yaml tags are the same as the json tags default or user defined
     sed -i 's/\(json:"\([^"]*\)"\)\( yaml:"[^"]*"\)\?/\1 yaml:"\2"/g' "$output_go_file"
+    # same for db tags
+    # sed -i 's/\(json:"\([^"]*\)"\)\( db:"[^"]*"\)\?/\1 db:"\2"/g' "$output_go_file"
+
+    npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml --without-x-tag-groups
 
     rm -f "$merged_output"
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
 }
 
+# generate e,pty schema for the merged openapi
+touch schemas/merged_openapi.yml
+echo "openapi: 3.0.0" > schemas/merged_openapi.yml
+echo "info:" >> schemas/merged_openapi.yml
+echo "  title: Merged API Spec" >> schemas/merged_openapi.yml
+echo "  version: 1.0.0" >> schemas/merged_openapi.yml
+echo "paths: {}" >> schemas/merged_openapi.yml
+
+
+
+
 # Run model generation for multiple packages
 generate_schema_models "capability" "v1alpha1"
 generate_schema_models "category" "v1beta1"
+generate_schema_models "subcategory" "v1beta1"
 # there are some discrepancies in the schema ( missing some field related to db which are present in the code)
 generate_schema_models "model" "v1beta1"
 generate_schema_models "component" "v1beta1"
@@ -59,3 +75,4 @@ generate_schema_models "catalog" "v1alpha2"
 generate_schema_models "subscription" "v1beta1"
 generate_schema_models "plan" "v1beta1"
 generate_schema_models "evaluation" "v1beta1"
+

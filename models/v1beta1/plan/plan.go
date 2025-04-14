@@ -9,7 +9,7 @@ import (
 
 // Defines values for Currency.
 const (
-	CurrencyUsd Currency = "usd"
+	Usd Currency = "usd"
 )
 
 // Defines values for PlanCadence.
@@ -18,15 +18,18 @@ const (
 	Yearly  PlanCadence = "yearly"
 )
 
-// Defines values for PlanCurrency.
+// Defines values for PlanName.
 const (
-	PlanCurrencyUsd PlanCurrency = "usd"
+	PlanNameEnterprise   PlanName = "Enterprise"
+	PlanNameFree         PlanName = "Free"
+	PlanNameTeamDesigner PlanName = "Team Designer"
+	PlanNameTeamOperator PlanName = "Team Operator"
 )
 
 // Defines values for PlanUnit.
 const (
-	Free PlanUnit = "free"
-	User PlanUnit = "user"
+	PlanUnitFree PlanUnit = "free"
+	PlanUnitUser PlanUnit = "user"
 )
 
 // Currency defines model for Currency.
@@ -34,25 +37,33 @@ type Currency string
 
 // Plan defines model for Plan.
 type Plan struct {
-	Cadence  PlanCadence  `json:"cadence" yaml:"cadence"`
-	Currency PlanCurrency `json:"currency" yaml:"currency"`
+	Cadence  PlanCadence `json:"cadence" yaml:"cadence"`
+	Currency Currency    `json:"currency" yaml:"currency"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Id uuid.UUID `json:"id" yaml:"id"`
 
 	// Name Name of the plan
-	Name string `json:"name" yaml:"name"`
+	Name PlanName `json:"name" yaml:"name"`
 
 	// PricePerUnit Price per unit of the plan
-	PricePerUnit float32  `json:"price_per_unit" yaml:"price_per_unit"`
+	PricePerUnit float32  `db:"price_per_unit" json:"price_per_unit" yaml:"price_per_unit"`
 	Unit         PlanUnit `json:"unit" yaml:"unit"`
 }
 
-// PlanCadence defines model for Plan.Cadence.
+// PlanCadence defines model for PlanCadence.
 type PlanCadence string
 
-// PlanCurrency defines model for Plan.Currency.
-type PlanCurrency string
+// PlanName Name of the plan
+type PlanName string
 
-// PlanUnit defines model for Plan.Unit.
+// PlanPage defines model for PlanPage.
+type PlanPage struct {
+	Page       int    `json:"page" yaml:"page"`
+	PageSize   int    `json:"page_size" yaml:"page_size"`
+	Plans      []Plan `json:"plans" yaml:"plans"`
+	TotalCount int    `json:"total_count" yaml:"total_count"`
+}
+
+// PlanUnit defines model for PlanUnit.
 type PlanUnit string

@@ -50,9 +50,12 @@ docs-build:
 	redocly build-docs openapi/bundled-schema.yml --output=openapi/index.html
 	rm openapi/bundled-schema.yml
 
-## Generate typescript library
-generate-ts:
+## Generate typescript library, json templates, yaml templates
+generate-types:
 	npm run generate:types
+
+## Generate typescript library
+generate-ts: generate-types
 
 build-ts: generate-ts
 	npm run build
@@ -99,7 +102,7 @@ ifeq (,$(shell command -v oapi-codegen))
 	@echo "Dependency missing: oapi-codegen. Install oapi-codegen cli from
 	@echo "installing oapi-codegen"
 	# for the binary install
-    go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 endif
 
 
