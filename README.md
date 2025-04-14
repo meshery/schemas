@@ -145,11 +145,13 @@ All schemas are stored in the **`schemas`** directory at the root of the project
 ```
 schemas/
   constructs/
-    <schema-version>/  # e.g., v1beta1
-      <construct>/  # e.g., model, component
-        <construct>.json    # Schema definition for the construct (noun)
-        subschemas/         # Any subschemas used within the construct
-        openapi.yml         # OpenAPI schema defining API operations (verbs like create, update, delete)
+    <schema-version>/               # e.g., v1beta1
+      <construct>/                  # e.g., model, component
+        <construct>.json            # Schema definition for the construct (noun)
+        subschemas/                 # Any subschemas used within the construct
+        openapi.yml                 # OpenAPI schema defining API operations (verbs like create, update, delete)
+        <construct>_template.json   # json template generated from schema
+        <construct>_template.yaml   # yaml template generated from schema
 ```
 
 ### **Explanation**
@@ -159,6 +161,8 @@ schemas/
 - **`<construct>.json`** – Defines the **schema for the noun** (i.e., the entity).  
 - **`subschemas/`** – Contains reusable subschemas for modularity.  
 - **`openapi.yml`** – Defines **API operations** (verbs: `create`, `update`, `delete`) and serves as the **entry point** for the schema.  
+- **`<construct>_template.json`** - json template generated from schema. Valid json document generated from schema definition. Has all references resolved, contains default values.
+- **`<construct>_template.yaml`** - yaml template generated from schema. Valid yaml document generated from schema definition. Has all references resolved, contains default values.
 
 This approach ensures that **schemas are well-organized, reusable, and scalable** across different Meshery components.
 
@@ -168,6 +172,8 @@ This approach ensures that **schemas are well-organized, reusable, and scalable*
 Meshery supports **automatic code generation** for:
 - **Golang** (structs and types)
 - **TypeScript** (interfaces and types)
+- **JSON template** (json document with default values)
+- **YAML template** (yaml document with default values)
 
 ### **Generating Code from Schemas**
 The schema-to-code mapping is defined in **`generate.sh`**, which automates the generation process.
@@ -178,10 +184,16 @@ To generate Go structs from schemas, use:
 make golang-generate
 ```
 
-#### **Generating TypeScript Models**
-To generate TypeScript types from schemas, use:  
+#### **Generating TypeScript Models, JSON and YAML templates**
+To generate
+
+- TypeScript types
+- json templates
+- yaml templates 
+
+from schemas, use:  
 ```bash
-make generate-ts
+make generate-types
 ```
 
 ### **Schema-to-Code Mapping**
