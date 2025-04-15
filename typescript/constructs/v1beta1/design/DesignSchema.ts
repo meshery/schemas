@@ -213,7 +213,7 @@ const schema = {
               "yaml": "version",
               "json": "version"
             },
-            "default": "v0.1.0",
+            "default": "v0.0.1",
             "type": "string",
             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
@@ -306,7 +306,7 @@ const schema = {
                   "yaml": "version",
                   "json": "version"
                 },
-                "default": "v0.1.0",
+                "default": "v0.0.1",
                 "minLength": 5,
                 "maxLength": 100,
                 "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
@@ -2122,7 +2122,7 @@ const schema = {
               "yaml": "version",
               "json": "version"
             },
-            "default": "v0.1.0",
+            "default": "v0.0.1",
             "x-order": 3
           },
           "model": {

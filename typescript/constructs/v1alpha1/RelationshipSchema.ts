@@ -95,7 +95,7 @@ const schema = {
         },
         "version": {
           "description": "Version of the model.",
-          "default": "v0.1.0",
+          "default": "v0.0.1",
           "type": "string",
           "minLength": 2,
           "maxLength": 100,
