@@ -1,7 +1,7 @@
 '1': {}
 id: ''
 schemaVersion: v1alpha3
-version: v0.1.0
+version: v0.0.1
 model:
   registrant: {}
   category: {}

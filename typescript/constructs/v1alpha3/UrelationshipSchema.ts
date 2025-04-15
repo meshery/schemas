@@ -59,7 +59,7 @@ const schema = {
         "yaml": "version",
         "json": "version"
       },
-      "default": "v0.1.0",
+      "default": "v0.0.1",
       "x-order": 3
     },
     "model": {

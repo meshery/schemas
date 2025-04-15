@@ -22,7 +22,7 @@
     "version": {
       "$ref": "../core.json#/definitions/semverString",
       "description": "Specifies the version of the definition.",
-      "default": "v0.1.0"
+      "default": "v0.0.1"
     },
     "kind": {
       "$ref": "../core.json#/definitions/inputString",

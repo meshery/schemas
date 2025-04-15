@@ -54,7 +54,7 @@
         "yaml": "version",
         "json": "version"
       },
-      "default": "v0.1.0"
+      "default": "v0.0.1"
     },
     "model": {
       "description": "Name of the model in which this relationship is packaged.",

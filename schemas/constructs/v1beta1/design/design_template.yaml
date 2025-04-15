@@ -16,14 +16,14 @@ components:
   items:
     id: ''
     schemaVersion: v1beta1
-    version: v0.1.0
+    version: v0.0.1
     displayName: ''
     description: ''
     format: JSON
     model:
       id: ''
       schemaVersion: v1beta1
-      version: v0.1.0
+      version: v0.0.1
       name: untitled-model
       displayName: Untitled Model
       description: A new Meshery model.
@@ -229,7 +229,7 @@ relationships:
   items:
     id: ''
     schemaVersion: v1alpha3
-    version: v0.1.0
+    version: v0.0.1
     model:
       id: ''
       schemaVersion: ''

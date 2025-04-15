@@ -2,7 +2,7 @@
   "1": {},
   "id": "",
   "schemaVersion": "v1beta1",
-  "version": "v0.1.0",
+  "version": "v0.0.1",
   "displayName": "",
   "description": "",
   "format": "JSON",
@@ -13,7 +13,7 @@
       }
     },
     "schemaVersion": "v1beta1",
-    "version": "v0.1.0",
+    "version": "v0.0.1",
     "name": "untitled-model",
     "displayName": "Untitled Model",
     "description": "A new Meshery model.",

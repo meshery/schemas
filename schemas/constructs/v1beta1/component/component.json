@@ -34,7 +34,7 @@
         "yaml": "version",
         "json": "version"
       },
-      "default": "v0.1.0"
+      "default": "v0.0.1"
     },
     "displayName": {
       "$ref": "../../core.json#/definitions/inputString",

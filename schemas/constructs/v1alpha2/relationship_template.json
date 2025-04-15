@@ -1,6 +1,6 @@
 {
   "schemaVersion": "v1alpha2",
-  "version": "v0.1.0",
+  "version": "v0.0.1",
   "kind": "",
   "type": "",
   "subType": "",
@@ -8,7 +8,7 @@
   "metadata": {},
   "model": {
     "schemaVersion": "v1beta1",
-    "version": "v0.1.0",
+    "version": "v0.0.1",
     "name": "untitled-model",
     "displayName": "Untitled Model",
     "description": "A new Meshery model.",
@@ -50,7 +50,7 @@
             "model": {
               "id": "",
               "schemaVersion": "v1beta1",
-              "version": "v0.1.0",
+              "version": "v0.0.1",
               "name": "untitled-model",
               "displayName": "Untitled Model",
               "description": "A new Meshery model.",
@@ -125,7 +125,7 @@
             "model": {
               "id": "",
               "schemaVersion": "v1beta1",
-              "version": "v0.1.0",
+              "version": "v0.0.1",
               "name": "untitled-model",
               "displayName": "Untitled Model",
               "description": "A new Meshery model.",
@@ -200,7 +200,7 @@
             "model": {
               "id": "",
               "schemaVersion": "v1beta1",
-              "version": "v0.1.0",
+              "version": "v0.0.1",
               "name": "untitled-model",
               "displayName": "Untitled Model",
               "description": "A new Meshery model.",
@@ -275,7 +275,7 @@
             "model": {
               "id": "",
               "schemaVersion": "v1beta1",
-              "version": "v0.1.0",
+              "version": "v0.0.1",
               "name": "untitled-model",
               "displayName": "Untitled Model",
               "description": "A new Meshery model.",
