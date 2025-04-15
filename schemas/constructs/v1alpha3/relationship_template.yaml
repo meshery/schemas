@@ -1,7 +1,7 @@
 '1': {}
 id: ''
-schemaVersion: ''
-version: ''
+schemaVersion: v1alpha3
+version: v0.1.0
 model:
   registrant: {}
   category: {}
@@ -15,6 +15,7 @@ model:
   model: {}
 registrant: {}
 metadata:
+  isAnnotation: false
   styles:
     anyOf:
       '0':
