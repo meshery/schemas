@@ -14,7 +14,7 @@
     "name": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "The name for the model.",
-      "default": "meshery-integration-template"
+      "default": "untitled-model"
     },
     "displayName": {
       "$ref": "../core.json#/definitions/inputString",
