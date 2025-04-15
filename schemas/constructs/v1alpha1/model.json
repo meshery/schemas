@@ -19,7 +19,7 @@
     "displayName": {
       "$ref": "../core.json#/definitions/inputString",
       "description": "The display name for the model.",
-      "default": "Meshery Integration Template"
+      "default": "Untitled Model"
     },
     "status": {
       "type": "string",
