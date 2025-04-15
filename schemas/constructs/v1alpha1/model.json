@@ -29,7 +29,7 @@
     "version": {
       "$ref": "../core.json#/definitions/versionString",
       "description": "Version of the model.",
-      "default": "v0.1.0"
+      "default": "v0.0.1"
     },
     "category": {
       "type": "string",
