@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Check if both input and output directories are provided
 if [ $# -ne 3 ]; then
-  echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_models>"
+  echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_yaml_templates>"
   exit 1
 fi
 
 INPUT_DIR=$(realpath "$1")
 OUTPUT_DIR=$(realpath "$2")
-OUTPUT_DIR_JSON=$(realpath "$3")
+OUTPUT_DIR_TEMPLATES=$(realpath "$3")
 
 
 # Check if input directory exists
@@ -21,7 +21,7 @@ mkdir -p "$OUTPUT_DIR"
 
 # Create temporary directory for JSON files
 TEMP_DIR="$OUTPUT_DIR/temp"
-mkdir -p "$TEMP_DIR"
+mkdir -p "$TEMP_DIR" 
 
 # Store the original directory
 ORIGINAL_DIR=$(pwd)
@@ -57,9 +57,23 @@ resolve_references() {
   SCHEMA_PATH="$TEMP_DIR" node "$RESOLVER_SCRIPT"
 }
 
+is_template_file() {
+  local file="$1"
+  if [[ "$file" == *_template.json || "$file" == *_template.yaml || "$file" == *_template.yml ]]; then
+    return 0  # true
+  else
+    return 1  # false
+  fi
+}
+
 # Function to generate type definitions for a file
 generate_type_definition() {
   local file="$1"
+  if is_template_file "$file"; then
+    echo "Skipping template file: $file"
+    return
+  fi
+
   local relative_path="${file#$INPUT_DIR/}"
 
   local dir=$(dirname "$relative_path")
@@ -67,7 +81,6 @@ generate_type_definition() {
 
   # Create subdirectory in output folder if it doesn't exist
   mkdir -p "$OUTPUT_DIR/$dir"
-  mkdir -p "$OUTPUT_DIR_JSON/$dir"
 
   # Change to the directory containing the JSON file
   cd "$(dirname "$file")"
@@ -79,17 +92,43 @@ generate_type_definition() {
     echo "Failed to generate types for: $file"
     echo "Error: $output"
   fi
+  
+
+  cd "$ORIGINAL_DIR"
+}
+
+# Function to generate templates 
+generate_templates() {
+  local file="$1"
+  if is_template_file "$file"; then
+    echo "Skipping template file: $file"
+    return
+  fi
+  local relative_path="${file#$INPUT_DIR/}"
+
+  local dir=$(dirname "$relative_path")
+  local filename=$(basename "$file" .json)
+
+  # Create subdirectory in output folder if it doesn't exist
+  mkdir -p "$OUTPUT_DIR_TEMPLATES/$dir"
 
   # Generate json model definitions
-  if output=$(npm run generate:json "$(realpath "$file")" "$OUTPUT_DIR_JSON/$dir/$filename.json" 2>&1); then
+  local json_model_file="$OUTPUT_DIR_TEMPLATES/$dir/${filename}_template.json"
+  if output=$(npm run generate:json "$(realpath "$file")" "$json_model_file" 2>&1); then
     echo "Generated json for: $file"
   else
     echo "Failed to generate json for: $file"
     echo "Error: $output"
   fi
-  
 
-  cd "$ORIGINAL_DIR"
+  # Generate yaml model definitions
+  local yaml_model_file="$OUTPUT_DIR_TEMPLATES/$dir/${filename}_template.yaml"
+  if js-yaml "$json_model_file" 1>"$yaml_model_file"; then
+    echo "Generated yaml for: $json_model_file"
+  else
+    echo "Failed to generate yaml for: $json_model_file"
+  fi
+  echo ""
 }
 
 # Function to generate schema export for a file
@@ -130,6 +169,10 @@ traverse_for_types() {
   traverse_directory "$1" generate_type_definition
 }
 
+traverse_for_templates() {
+  traverse_directory "$1" generate_templates
+}
+
 # Function to traverse directory for schema generation
 traverse_for_schemas() {
   traverse_directory "$1" generate_schema_for_file
@@ -138,16 +181,19 @@ traverse_for_schemas() {
 echo "Step 1: Generating TypeScript type definitions..."
 traverse_for_types "$INPUT_DIR"
 
-echo "Step 2: Copying JSON and YAML files to temporary directory..."
-rsync -a --include='*/' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
+echo "Step 2: Generating templates..."
+traverse_for_templates "$INPUT_DIR"
 
-echo "Step 3: Resolving references in JSON schemas..."
+echo "Step 3: Copying JSON and YAML files (excluding templates) to temporary directory..."
+rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
+
+echo "Step 4: Resolving references in JSON schemas..."
 resolve_references
 
-echo "Step 4: Generating schema exports..."
+echo "Step 5: Generating schema exports..."
 traverse_for_schemas "$TEMP_DIR"
 
-echo "Step 5: Generating OpenAPI types..."
+echo "Step 6: Generating OpenAPI types..."
 OPENAPI_FILE="$INPUT_DIR/openapi.yml"
 if [ -f "$OPENAPI_FILE" ]; then
   npx openapi-typescript "$OPENAPI_FILE" --output "$OUTPUT_DIR/openapi.d.ts"
@@ -156,7 +202,7 @@ else
   echo "Error: OpenAPI file '$OPENAPI_FILE' does not exist."
 fi
 
-echo "Step 6: Cleaning up temporary directory..."
+echo "Step 7: Cleaning up temporary directory..."
 rm -rf "$TEMP_DIR"
 
 echo "Processing complete. Output files are in '$OUTPUT_DIR'."
