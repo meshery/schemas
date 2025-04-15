@@ -48,7 +48,7 @@
         "yaml": "name",
         "json": "name"
       },
-      "default": "meshery-integration-template"
+      "default": "untitled-model"
     },
     "displayName": {
       "description": "Human-readable name for the model.",
