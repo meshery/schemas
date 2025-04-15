@@ -69,6 +69,7 @@
     },
     "description": {
       "type": "string",
+      "default": "A new Meshery model.",
       "description": "Description of the model.",
       "minLength": 1,
       "maxLength": 1000,
