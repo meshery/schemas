@@ -25,7 +25,6 @@ model:
         kind: {}
         entityState: {}
         status: enabled
-    isAnnotation: false
     primaryColor: '#00b39f'
     secondaryColor: '#00D3A9'
     svgWhite: >-
@@ -99,13 +98,10 @@ model:
       class="cls-1"/><polygon points="31.51 83.44 31.51 51.56 3.83 67.43 31.51
       83.44" class="cls-2"/></svg>
     shape: circle
-  componentsCount: 0
-  relationshipsCount: 0
 registrant: {}
 metadata:
   genealogy: ''
   configurationUISchema: ''
-  isAnnotation: false
 category: {}
 modelId: ''
 styles:
