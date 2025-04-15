@@ -16,7 +16,7 @@ const schema = {
   "properties": {
     "name": {
       "description": "The name for the model.",
-      "default": "meshery-integration-template",
+      "default": "untitled-model",
       "type": "string",
       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
       "x-order": 1,
@@ -27,7 +27,7 @@ const schema = {
     },
     "displayName": {
       "description": "The display name for the model.",
-      "default": "Meshery Integration Template",
+      "default": "Untitled Model",
       "type": "string",
       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
       "x-order": 2,

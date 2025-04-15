@@ -177,7 +177,7 @@ const schema = {
             "yaml": "name",
             "json": "name"
           },
-          "default": "meshery-integration-template"
+          "default": "untitled-model"
         },
         "displayName": {
           "description": "Human-readable name for the model.",
@@ -194,10 +194,11 @@ const schema = {
             "yaml": "displayName",
             "json": "displayName"
           },
-          "default": "Meshery Integration Template"
+          "default": "Untitled Model"
         },
         "description": {
           "type": "string",
+          "default": "A new Meshery model.",
           "description": "Description of the model.",
           "minLength": 1,
           "maxLength": 1000,
@@ -1124,7 +1125,7 @@ const schema = {
                             "yaml": "name",
                             "json": "name"
                           },
-                          "default": "meshery-integration-template"
+                          "default": "untitled-model"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -1141,10 +1142,11 @@ const schema = {
                             "yaml": "displayName",
                             "json": "displayName"
                           },
-                          "default": "Meshery Integration Template"
+                          "default": "Untitled Model"
                         },
                         "description": {
                           "type": "string",
+                          "default": "A new Meshery model.",
                           "description": "Description of the model.",
                           "minLength": 1,
                           "maxLength": 1000,
@@ -2133,7 +2135,7 @@ const schema = {
                             "yaml": "name",
                             "json": "name"
                           },
-                          "default": "meshery-integration-template"
+                          "default": "untitled-model"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -2150,10 +2152,11 @@ const schema = {
                             "yaml": "displayName",
                             "json": "displayName"
                           },
-                          "default": "Meshery Integration Template"
+                          "default": "Untitled Model"
                         },
                         "description": {
                           "type": "string",
+                          "default": "A new Meshery model.",
                           "description": "Description of the model.",
                           "minLength": 1,
                           "maxLength": 1000,
@@ -3146,7 +3149,7 @@ const schema = {
                             "yaml": "name",
                             "json": "name"
                           },
-                          "default": "meshery-integration-template"
+                          "default": "untitled-model"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -3163,10 +3166,11 @@ const schema = {
                             "yaml": "displayName",
                             "json": "displayName"
                           },
-                          "default": "Meshery Integration Template"
+                          "default": "Untitled Model"
                         },
                         "description": {
                           "type": "string",
+                          "default": "A new Meshery model.",
                           "description": "Description of the model.",
                           "minLength": 1,
                           "maxLength": 1000,
@@ -4155,7 +4159,7 @@ const schema = {
                             "yaml": "name",
                             "json": "name"
                           },
-                          "default": "meshery-integration-template"
+                          "default": "untitled-model"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -4172,10 +4176,11 @@ const schema = {
                             "yaml": "displayName",
                             "json": "displayName"
                           },
-                          "default": "Meshery Integration Template"
+                          "default": "Untitled Model"
                         },
                         "description": {
                           "type": "string",
+                          "default": "A new Meshery model.",
                           "description": "Description of the model.",
                           "minLength": 1,
                           "maxLength": 1000,

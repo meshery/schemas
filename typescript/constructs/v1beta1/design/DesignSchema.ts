@@ -49,6 +49,7 @@ const schema = {
       }
     },
     "version": {
+      "default": "v0.0.1",
       "x-order": 4,
       "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
       "minLength": 1,
@@ -323,7 +324,7 @@ const schema = {
                   "yaml": "name",
                   "json": "name"
                 },
-                "default": "meshery-integration-template"
+                "default": "untitled-model"
               },
               "displayName": {
                 "description": "Human-readable name for the model.",
@@ -340,10 +341,11 @@ const schema = {
                   "yaml": "displayName",
                   "json": "displayName"
                 },
-                "default": "Meshery Integration Template"
+                "default": "Untitled Model"
               },
               "description": {
                 "type": "string",
+                "default": "A new Meshery model.",
                 "description": "Description of the model.",
                 "minLength": 1,
                 "maxLength": 1000,
@@ -1571,6 +1573,130 @@ const schema = {
               "x-go-type-import": {
                 "path": "github.com/meshery/schemas/models/v1alpha1/capability"
               },
+              "default": [
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Performance Test",
+                  "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
+                  "kind": "action",
+                  "type": "operator",
+                  "subType": "perf-test",
+                  "key": "",
+                  "entityState": [
+                    "instance"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                },
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Workload Configuration",
+                  "description": "Configure the workload specific setting of a component",
+                  "kind": "mutate",
+                  "type": "configuration",
+                  "subType": "config",
+                  "key": "",
+                  "entityState": [
+                    "declaration"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                },
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Labels and Annotations Configuration",
+                  "description": "Configure Labels And Annotations for  the component ",
+                  "kind": "mutate",
+                  "type": "configuration",
+                  "subType": "labels-and-annotations",
+                  "key": "",
+                  "entityState": [
+                    "declaration"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                },
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Relationships",
+                  "description": "View relationships for the component",
+                  "kind": "view",
+                  "type": "configuration",
+                  "subType": "relationship",
+                  "key": "",
+                  "entityState": [
+                    "declaration",
+                    "instance"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                },
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Json Schema",
+                  "description": "View Component Definition ",
+                  "kind": "view",
+                  "type": "configuration",
+                  "subType": "definition",
+                  "key": "",
+                  "entityState": [
+                    "declaration",
+                    "instance"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                },
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Styling",
+                  "description": "Configure the visual styles for the component",
+                  "kind": "mutate",
+                  "type": "style",
+                  "subType": "",
+                  "key": "",
+                  "entityState": [
+                    "declaration"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                },
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Change Shape",
+                  "description": "Change the shape of the component",
+                  "kind": "mutate",
+                  "type": "style",
+                  "subType": "shape",
+                  "key": "",
+                  "entityState": [
+                    "declaration"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                },
+                {
+                  "schemaVersion": "capability.meshery.io/v1alpha1",
+                  "version": "0.7.0",
+                  "displayName": "Compound Drag And Drop",
+                  "description": "Drag and Drop a component into a parent component in graph view",
+                  "kind": "interaction",
+                  "type": "graph",
+                  "subType": "compoundDnd",
+                  "key": "",
+                  "entityState": [
+                    "declaration"
+                  ],
+                  "status": "enabled",
+                  "metadata": null
+                }
+              ],
               "$id": "https://schemas.meshery.io/capability.json",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
@@ -1742,65 +1868,7 @@ const schema = {
                     "json": "metadata"
                   }
                 }
-              },
-              "default": [
-                {
-                  "description": "Configure the visual styles for the component",
-                  "displayName": "Styling",
-                  "entityState": [
-                    "declaration"
-                  ],
-                  "key": "",
-                  "kind": "mutate",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
-                  "status": "enabled",
-                  "subType": "",
-                  "type": "style",
-                  "version": "0.7.0"
-                },
-                {
-                  "description": "Change the shape of the component",
-                  "displayName": "Change Shape",
-                  "entityState": [
-                    "declaration"
-                  ],
-                  "key": "",
-                  "kind": "mutate",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
-                  "status": "enabled",
-                  "subType": "shape",
-                  "type": "style",
-                  "version": "0.7.0"
-                },
-                {
-                  "description": "Drag and Drop a component into a parent component in graph view",
-                  "displayName": "Compound Drag And Drop",
-                  "entityState": [
-                    "declaration"
-                  ],
-                  "key": "",
-                  "kind": "interaction",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
-                  "status": "enabled",
-                  "subType": "compoundDnd",
-                  "type": "graph",
-                  "version": "0.7.0"
-                },
-                {
-                  "description": "Add text to nodes body",
-                  "displayName": "Body Text",
-                  "entityState": [
-                    "declaration"
-                  ],
-                  "key": "",
-                  "kind": "mutate",
-                  "schemaVersion": "capability.meshery.io/v1alpha1",
-                  "status": "enabled",
-                  "subType": "body-text",
-                  "type": "style",
-                  "version": "0.7.0"
-                }
-              ]
+              }
             },
             "x-oapi-codegen-extra-tags": {
               "gorm": "type:bytes;serializer:json",
