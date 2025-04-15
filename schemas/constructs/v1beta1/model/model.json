@@ -65,7 +65,7 @@
         "yaml": "displayName",
         "json": "displayName"
       },
-      "default": "Meshery Integration Template"
+      "default": "Untitled Model"
     },
     "description": {
       "type": "string",
