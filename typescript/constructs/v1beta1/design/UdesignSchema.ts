@@ -1,4 +1,7 @@
-{
+// Generated from constructs/v1beta1/design/design.json
+// This file exports the original JSON schema
+
+const schema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Design Schema",
   "description": "Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.",
@@ -20,7 +23,6 @@
     },
     "version": {
       "$ref": "../../core.json#/definitions/semverString",
-      "default":"v0.0.1",
       "x-order": 4,
       "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
       "minLength": 1,
@@ -92,3 +94,5 @@
     "relationships"
   ]
 }
+
+export default schema;

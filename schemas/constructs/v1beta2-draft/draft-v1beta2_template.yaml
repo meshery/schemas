@@ -7,6 +7,12 @@ model:
   model:
     version:
       '0': ''
+  schemaVersion: v1beta1
+  version: v0.0.1
+  name: untitled-model
+  displayName: Untitled Model
+  description: A new Meshery model.
+  status: enabled
   registrant: {}
   category:
     name: Uncategorized
@@ -17,6 +23,7 @@ model:
         kind: {}
         entityState: {}
         status: enabled
+    isAnnotation: false
     primaryColor: '#00b39f'
     secondaryColor: '#00D3A9'
     svgWhite: >-
@@ -90,6 +97,8 @@ model:
       class="cls-1"/><polygon points="31.51 83.44 31.51 51.56 3.83 67.43 31.51
       83.44" class="cls-2"/></svg>
     shape: circle
+  componentsCount: 0
+  relationshipsCount: 0
 registrant: {}
 metadata:
   genealogy: ''
