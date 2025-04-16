@@ -58,6 +58,7 @@ import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema
 // import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
 // import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
 // import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
+import EnvironmentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/environment/EnvironmentOpenApiSchema";
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
@@ -68,6 +69,7 @@ export {
   ModelDefinitionV1Beta1Schema,
   CategoryDefinitionV1Beta1Schema,
   SubCategoryDefinitionV1Beta1Schema,
+  EnvironmentDefinitionV1Beta1OpenApiSchema,
 };
 
 // Contructs
