@@ -19,61 +19,47 @@ import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model/model
 import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design/design";
 import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./constructs/v1beta1/connection";
 
+import CategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/category/CategorySchema";
+import SubCategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/subcategory/SubcategorySchema";
+import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
+import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/component/ComponentSchema";
+import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema";
+
+// The following imports are commented out to optimize bundle size.
+// These schema definitions contain large JSON structures that significantly increase the bundle size.
+// Only uncomment and use these imports when specific schema validation is needed in the UI.
+// Use only latest version of the schema for validation.
+
+// import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
+// import CapabilityDefinitionV1Alpha1Schema from "./constructs/v1alpha1/capability/CapabilitySchema";
+// import DesignDefinitionV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
+// import RelationshipDefinitionV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
+// import SelectorsDefinitionV1Alpha3Schema from "./constructs/v1alpha3/SelectorSchema";
+// import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/design/DesignSchema";
+// import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
+
 //OpenAPI
+
+// import CapabilityDefinitionV1Alpha1OpenApiSchema from "./constructs/v1alpha1/capability/CapabilityOpenApiSchema";
+// import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
+// import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
+// import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
+// import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
+// import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
+// import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
+// import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
+// import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
+// import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
-import CapabilityDefinitionV1Alpha1Schema from "./constructs/v1alpha1/capability/CapabilitySchema";
-import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
-import DesignDefinitionV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
-import RelationshipDefinitionV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
-import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
-import SelectorsDefinitionV1Alpha3Schema from "./constructs/v1alpha3/SelectorSchema";
-import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/component/ComponentSchema";
-import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema";
-import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/design/DesignSchema";
-import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
-import CategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/category/CategorySchema";
-import SubCategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/subcategory/SubcategorySchema";
-
-import CapabilityDefinitionV1Alpha1OpenApiSchema from "./constructs/v1alpha1/capability/CapabilityOpenApiSchema";
-import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
-import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
-import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
-import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
-import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
-import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
-import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
-import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
-import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
-
 export {
   core,
-  CapabilityDefinitionV1Alpha1Schema,
-  CatalogDataDefinitionV1Alpha1Schema,
-  DesignDefinitionV1Alpha2Schema,
-  RelationshipDefinitionV1Alpha2Schema,
   RelationshipDefinitionV1Alpha3Schema,
-  SelectorsDefinitionV1Alpha3Schema,
   ComponentDefinitionV1Beta1Schema,
   ModelDefinitionV1Beta1Schema,
-  DesignDefinitionV1Beta1Schema,
-  ConnectionDefinitionV1Beta1Schema,
   CategoryDefinitionV1Beta1Schema,
   SubCategoryDefinitionV1Beta1Schema,
-};
-
-export {
-  CapabilityDefinitionV1Alpha1OpenApiSchema,
-  CatalogDefinitionV1Alpha2OpenApiSchema,
-  CategoryDefinitionV1Beta1OpenApiSchema,
-  SubCategoryDefinitionV1Beta1OpenApiSchema,
-  DesignDefinitionV1Beta1OpenApiSchema,
-  ComponentDefinitionV1Beta1OpenApiSchema,
-  ModelDefinitionV1Beta1OpenApiSchema,
-  PlanDefinitionV1Beta1OpenApiSchema,
-  SubscriptionDefinitionV1Beta1OpenApiSchema,
-  EvaluationDefinitionV1Beta1OpenApiSchema,
 };
 
 // Contructs
