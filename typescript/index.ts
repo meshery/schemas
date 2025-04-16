@@ -25,10 +25,18 @@ import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/Relation
 import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/component/ComponentSchema";
 import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema";
 
-// The following imports are commented out to optimize bundle size.
-// These schema definitions contain large JSON structures that significantly increase the bundle size.
-// Only uncomment and use these imports when specific schema validation is needed in the UI.
-// Use only latest version of the schema for validation.
+/**
+ * SCHEMA OPTIMIZATION NOTICE
+ * -------------------------
+ * The following imports are commented out to optimize bundle size.
+ * These schema definitions contain large JSON structures that significantly
+ * increase the bundle size when included.
+ *
+ * USAGE GUIDELINES:
+ * - Only uncomment these imports when specific schema validation is needed in the UI
+ * - When validating, prefer using only the latest version of the schema
+ * - Avoid using multiple versions of the same schema to prevent redundancy
+ */
 
 // import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
 // import CapabilityDefinitionV1Alpha1Schema from "./constructs/v1alpha1/capability/CapabilitySchema";
