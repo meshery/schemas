@@ -21,7 +21,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
-      }
+      },
+      "default": "v1beta1"
     },
     "version": {
       "description": "Version of the model definition.",
@@ -31,7 +32,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
         "json": "version"
-      }
+      },
+      "default": "v0.0.1"
     },
     "name": {
       "type": "string",
@@ -45,7 +47,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "name",
         "json": "name"
-      }
+      },
+      "default": "untitled-model"
     },
     "displayName": {
       "description": "Human-readable name for the model.",
@@ -61,10 +64,12 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "displayName",
         "json": "displayName"
-      }
+      },
+      "default": "Untitled Model"
     },
     "description": {
       "type": "string",
+      "default": "A new Meshery model.",
       "description": "Description of the model.",
       "minLength": 1,
       "maxLength": 1000,
@@ -86,7 +91,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
         "json": "status"
-      }
+      },
+      "default": "enabled"
     },
     "registrant": {
       "x-oapi-codegen-extra-tags": {
@@ -169,7 +175,8 @@
             "yaml": "isAnnotation",
             "json": "isAnnotation"
           },
-          "x-order": 2
+          "x-order": 2,
+          "default": false
         },
         "primaryColor": {
           "type": "string",
@@ -273,7 +280,8 @@
         "json": "components_count",
         "yaml": "components_count",
         "gorm": "-"
-      }
+      },
+      "default": 0
     },
     "relationshipsCount": {
       "type": "integer",
@@ -283,7 +291,8 @@
         "gorm": "-",
         "json": "relationships_count",
         "yaml": "relationships_count"
-      }
+      },
+      "default": 0
     }
   },
   "required": [

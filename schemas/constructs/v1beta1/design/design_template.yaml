@@ -2,7 +2,7 @@
 id: ''
 name: ''
 schemaVersion: ''
-version: ''
+version: v0.0.1
 metadata:
   resolvedAliases:
     additionalProperties:
@@ -15,19 +15,19 @@ resolvedAliases: {}
 components:
   items:
     id: ''
-    schemaVersion: ''
-    version: ''
+    schemaVersion: v1beta1
+    version: v0.0.1
     displayName: ''
     description: ''
     format: JSON
     model:
       id: ''
-      schemaVersion: ''
-      version: ''
-      name: ''
-      displayName: ''
-      description: ''
-      status: ''
+      schemaVersion: v1beta1
+      version: v0.0.1
+      name: untitled-model
+      displayName: Untitled Model
+      description: A new Meshery model.
+      status: enabled
       registrant:
         id: ''
         name: ''
@@ -136,9 +136,12 @@ components:
           31.51 83.44" class="cls-2"/></svg>
         svgComplete: ''
         shape: circle
+        isAnnotation: false
       model:
         version:
           '0': ''
+      componentsCount: 0
+      relationshipsCount: 0
     modelId: ''
     styles:
       allOf:
@@ -206,6 +209,7 @@ components:
     metadata:
       genealogy: ''
       configurationUISchema: ''
+      isAnnotation: false
     component:
       version: ''
       kind: ''
@@ -224,8 +228,8 @@ layers: {}
 relationships:
   items:
     id: ''
-    schemaVersion: ''
-    version: ''
+    schemaVersion: v1alpha3
+    version: v0.0.1
     model:
       id: ''
       schemaVersion: ''
@@ -334,6 +338,7 @@ relationships:
             font-weight: ''
             text-transform: ''
             label: ''
+      isAnnotation: false
     selectors:
       items:
         deny:

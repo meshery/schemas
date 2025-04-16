@@ -1,11 +1,17 @@
-schemaVersion: ''
-version: ''
+schemaVersion: v1alpha2
+version: v0.0.1
 kind: ''
 type: ''
 subType: ''
 evaluationQuery: ''
 metadata: {}
 model:
+  schemaVersion: v1beta1
+  version: v0.0.1
+  name: untitled-model
+  displayName: Untitled Model
+  description: A new Meshery model.
+  status: enabled
   registrant: {}
   category:
     name: Uncategorized
@@ -16,6 +22,7 @@ model:
         kind: {}
         entityState: {}
         status: enabled
+    isAnnotation: false
     primaryColor: '#00b39f'
     secondaryColor: '#00D3A9'
     svgWhite: >-
@@ -91,6 +98,8 @@ model:
     shape: circle
   model:
     version: {}
+  componentsCount: 0
+  relationshipsCount: 0
 registrant: {}
 category: {}
 selectors:
@@ -101,12 +110,12 @@ selectors:
           kind: ''
           model:
             id: ''
-            schemaVersion: ''
-            version: ''
-            name: ''
-            displayName: ''
-            description: ''
-            status: ''
+            schemaVersion: v1beta1
+            version: v0.0.1
+            name: untitled-model
+            displayName: Untitled Model
+            description: A new Meshery model.
+            status: enabled
             registrant:
               id: ''
               name: ''
@@ -222,9 +231,12 @@ selectors:
                 67.43 31.51 83.44" class="cls-2"/></svg>
               svgComplete: ''
               shape: circle
+              isAnnotation: false
             model:
               version:
                 '0': ''
+            componentsCount: 0
+            relationshipsCount: 0
           version: ''
           match:
             self: {}
@@ -238,12 +250,12 @@ selectors:
           kind: ''
           model:
             id: ''
-            schemaVersion: ''
-            version: ''
-            name: ''
-            displayName: ''
-            description: ''
-            status: ''
+            schemaVersion: v1beta1
+            version: v0.0.1
+            name: untitled-model
+            displayName: Untitled Model
+            description: A new Meshery model.
+            status: enabled
             registrant:
               id: ''
               name: ''
@@ -359,9 +371,12 @@ selectors:
                 67.43 31.51 83.44" class="cls-2"/></svg>
               svgComplete: ''
               shape: circle
+              isAnnotation: false
             model:
               version:
                 '0': ''
+            componentsCount: 0
+            relationshipsCount: 0
           version: ''
           match:
             self: {}
@@ -375,12 +390,12 @@ selectors:
           kind: ''
           model:
             id: ''
-            schemaVersion: ''
-            version: ''
-            name: ''
-            displayName: ''
-            description: ''
-            status: ''
+            schemaVersion: v1beta1
+            version: v0.0.1
+            name: untitled-model
+            displayName: Untitled Model
+            description: A new Meshery model.
+            status: enabled
             registrant:
               id: ''
               name: ''
@@ -496,9 +511,12 @@ selectors:
                 67.43 31.51 83.44" class="cls-2"/></svg>
               svgComplete: ''
               shape: circle
+              isAnnotation: false
             model:
               version:
                 '0': ''
+            componentsCount: 0
+            relationshipsCount: 0
           version: ''
           match:
             self: {}
@@ -512,12 +530,12 @@ selectors:
           kind: ''
           model:
             id: ''
-            schemaVersion: ''
-            version: ''
-            name: ''
-            displayName: ''
-            description: ''
-            status: ''
+            schemaVersion: v1beta1
+            version: v0.0.1
+            name: untitled-model
+            displayName: Untitled Model
+            description: A new Meshery model.
+            status: enabled
             registrant:
               id: ''
               name: ''
@@ -633,9 +651,12 @@ selectors:
                 67.43 31.51 83.44" class="cls-2"/></svg>
               svgComplete: ''
               shape: circle
+              isAnnotation: false
             model:
               version:
                 '0': ''
+            componentsCount: 0
+            relationshipsCount: 0
           version: ''
           match:
             self: {}

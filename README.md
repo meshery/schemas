@@ -47,44 +47,10 @@ Meshery schemas offer a powerful system designed for:
 - **Visual Representation:** The properties for styling of edges and nodes is for creating a user friendly visual representation.
 - **Automated Operations:** The schemas can support validation and automated configuration of infrastructure and applications, and patching.
 
+For an explanation of Meshery's terminology regarding schemas, definitions, declarations, and instances, please see [Contributor's Guide to Models](https://docs.meshery.io/project/contributing/contributing-models).
 
-<!-- The schema.go emabeds the openapi schema which gets packaged & released  used for purpose like validation
-
-We can refer the unresolved schemas, but
-1. It increases the size of the pkg as it will then embed multiple dirs.
-2. Resolution of refs at run time is ineffective. And because every request will be valiated, it is better to pre-process the schema.
--->
-
-<!-- For code generation (schema to golang structs), unresolved schemas should be used, and proper import mappings needs to be provided.
-(In some cases, first level resolution of schemas might be required.)
- -->
-### External
-
-Meshery schemas file structure is defined based on definitions and schemas, checkout [docs.meshery.io](https://docs.meshery.io/concepts/logical) to learn more about definitions and schemas.
-
-Definitions
-- model
-  - version
-    - model.definition
-    - components
-      - component-1.definition
-      - component-2.definition
-    - policy.definition
-    - relationship.definition
-
-Schemas
-- constructs
-  - schema.version // Schema version
-    - component.schema
-    - model.schema
-    - policy.schema
-    - relationship.schema
-
-REST API
- - swagger.yaml
-
-Adapters
-- meshes.proto
+## Contributing 
+--> **For an explanation of the directory structure of this repository and how to contribute changes to Meshery's schemas, see [Contributor's Guide to Schema-Driven Development](https://docs.meshery.io/project/contributing/contributing-schemas).**
  
 <p style="clear:both;">&nbsp;</p>
 
