@@ -4,31 +4,9 @@ const yaml = require("js-yaml");
 const $RefParser = require("@apidevtools/json-schema-ref-parser");
 var { openapiSchemaToJsonSchema: toJsonSchema } = require("@openapi-contrib/openapi-schema-to-json-schema");
 
-// Default root directory if no command line args provided
-const ROOT_DIR = path.resolve(__dirname, "../schemas/constructs");
-
 // Get input and output paths from command line arguments
 const inputPath = process.argv[2];
 const outputDir = process.argv[3];
-
-// Private helper functions
-function _findOpenApiFiles(dir) {
-  let results = [];
-  const list = fs.readdirSync(dir);
-
-  for (const file of list) {
-    const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
-
-    if (stat.isDirectory()) {
-      results = results.concat(_findOpenApiFiles(fullPath));
-    } else if (/openapi\.ya?ml$/.test(file)) {
-      results.push(fullPath);
-    }
-  }
-
-  return results;
-}
 
 /**
  * Convert OpenAPI YAML schema to TypeScript
@@ -92,17 +70,6 @@ async function main() {
   if (inputPath) {
     await convertSchemas(inputPath, outputDir);
     return;
-  }
-
-  // Otherwise search for all OpenAPI files
-  const files = _findOpenApiFiles(ROOT_DIR);
-  if (files.length === 0) {
-    console.log("❌ No OpenAPI YAML files found");
-    return;
-  }
-
-  for (const file of files) {
-    await convertSchemas(file);
   }
 }
 
