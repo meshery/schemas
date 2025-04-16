@@ -1,0 +1,190 @@
+/**
+ * This file was automatically generated from OpenAPI schema.
+ * Do not manually modify this file.
+ */
+
+export const PlanSchema = {
+  "PlanPage": {
+    "type": "object",
+    "required": [
+      "page",
+      "page_size",
+      "total_count",
+      "plans"
+    ],
+    "properties": {
+      "page": {
+        "type": "integer"
+      },
+      "page_size": {
+        "type": "integer"
+      },
+      "total_count": {
+        "type": "integer"
+      },
+      "plans": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            },
+            "name": {
+              "type": "string",
+              "x-go-type": "PlanName",
+              "description": "Name of the plan",
+              "enum": [
+                "Free",
+                "Team Designer",
+                "Team Operator",
+                "Enterprise"
+              ]
+            },
+            "cadence": {
+              "x-go-type": "PlanCadence",
+              "type": "string",
+              "enum": [
+                "monthly",
+                "yearly"
+              ]
+            },
+            "unit": {
+              "x-go-type": "PlanUnit",
+              "type": "string",
+              "enum": [
+                "user",
+                "free"
+              ]
+            },
+            "price_per_unit": {
+              "type": "number",
+              "description": "Price per unit of the plan",
+              "x-oapi-codegen-extra-tags": {
+                "db": "price_per_unit"
+              }
+            },
+            "currency": {
+              "x-go-type": "Currency",
+              "type": "string",
+              "enum": [
+                "usd"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "cadence",
+            "unit",
+            "price_per_unit",
+            "price_id",
+            "currency"
+          ],
+          "x-go-type": "Plan"
+        }
+      }
+    }
+  },
+  "Plan": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid",
+        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        }
+      },
+      "name": {
+        "type": "string",
+        "x-go-type": "PlanName",
+        "description": "Name of the plan",
+        "enum": [
+          "Free",
+          "Team Designer",
+          "Team Operator",
+          "Enterprise"
+        ]
+      },
+      "cadence": {
+        "x-go-type": "PlanCadence",
+        "type": "string",
+        "enum": [
+          "monthly",
+          "yearly"
+        ]
+      },
+      "unit": {
+        "x-go-type": "PlanUnit",
+        "type": "string",
+        "enum": [
+          "user",
+          "free"
+        ]
+      },
+      "price_per_unit": {
+        "type": "number",
+        "description": "Price per unit of the plan",
+        "x-oapi-codegen-extra-tags": {
+          "db": "price_per_unit"
+        }
+      },
+      "currency": {
+        "x-go-type": "Currency",
+        "type": "string",
+        "enum": [
+          "usd"
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "cadence",
+      "unit",
+      "price_per_unit",
+      "price_id",
+      "currency"
+    ]
+  },
+  "PlanName": {
+    "type": "string",
+    "description": "Name of the plan",
+    "enum": [
+      "Free",
+      "Team Designer",
+      "Team Operator",
+      "Enterprise"
+    ]
+  },
+  "PlanCadence": {
+    "type": "string",
+    "enum": [
+      "monthly",
+      "yearly"
+    ]
+  },
+  "PlanUnit": {
+    "type": "string",
+    "enum": [
+      "user",
+      "free"
+    ]
+  },
+  "Currency": {
+    "type": "string",
+    "enum": [
+      "usd"
+    ]
+  },
+  "$schema": "http://json-schema.org/draft-04/schema#"
+};
