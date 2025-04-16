@@ -21,7 +21,7 @@ mkdir -p "$OUTPUT_DIR"
 
 # Create temporary directory for JSON files
 TEMP_DIR="$OUTPUT_DIR/temp"
-mkdir -p "$TEMP_DIR" 
+mkdir -p "$TEMP_DIR"
 
 # Store the original directory
 ORIGINAL_DIR=$(pwd)
@@ -92,12 +92,12 @@ generate_type_definition() {
     echo "Failed to generate types for: $file"
     echo "Error: $output"
   fi
-  
+
 
   cd "$ORIGINAL_DIR"
 }
 
-# Function to generate templates 
+# Function to generate templates
 generate_templates() {
   local file="$1"
   if is_template_file "$file"; then
@@ -178,6 +178,27 @@ traverse_for_schemas() {
   traverse_directory "$1" generate_schema_for_file
 }
 
+# Function to convert OpenAPI YAML files to JSON
+convert_openapi_yaml_to_json() {
+  echo "Converting OpenAPI YAML files to typescript JSON files..."
+
+  # Get the directory where this script is located
+  local SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+  local CONVERTER_SCRIPT="$SCRIPT_DIR/scripts/convert-openapi-yml-to-json.js"
+
+  # Find all openapi.yaml or openapi.yml files
+  for openapiPath in $(find "$INPUT_DIR" -name "openapi.yaml" -o -name "openapi.yml"); do
+    local dirName=$(dirname "$openapiPath")
+    local relativePath="${dirName#$INPUT_DIR/}"
+    local outputDir="$OUTPUT_DIR/$relativePath"
+
+    # Create output directory if it doesn't exist
+    mkdir -p "$outputDir"
+
+    node "$CONVERTER_SCRIPT" "$openapiPath" "$outputDir"
+  done
+}
+
 echo "Step 1: Generating TypeScript type definitions..."
 traverse_for_types "$INPUT_DIR"
 
@@ -202,7 +223,10 @@ else
   echo "Error: OpenAPI file '$OPENAPI_FILE' does not exist."
 fi
 
-echo "Step 7: Cleaning up temporary directory..."
+echo "Step 7: Converting OpenAPI YAML to JSON..."
+convert_openapi_yaml_to_json
+
+echo "Step 8: Cleaning up temporary directory..."
 rm -rf "$TEMP_DIR"
 
 echo "Processing complete. Output files are in '$OUTPUT_DIR'."
