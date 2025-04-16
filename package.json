@@ -29,6 +29,7 @@
     "json-schema-to-typescript": "^14.1.0",
     "lodash.merge": "^4.6.2",
     "tsup": "^8.4.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "@openapi-contrib/openapi-schema-to-json-schema": "^5.1.0"
   }
 }
