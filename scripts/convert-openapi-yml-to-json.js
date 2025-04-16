@@ -19,9 +19,8 @@ async function convertSchemas(openapiPath, outputDirectory = null) {
     const yamlDoc = yaml.load(raw);
 
     // Resolve all $refs (internal + external)
-    const dereferenced = await $RefParser.dereference(openapiPath, yamlDoc);
+    const schemas = await $RefParser.dereference(openapiPath, yamlDoc);
 
-    const schemas = dereferenced?.components?.schemas;
     if (!schemas) {
       console.log(`⚠️  No schemas found in: ${openapiPath}`);
       return;

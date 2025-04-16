@@ -36,6 +36,17 @@ import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSc
 import CategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/category/CategorySchema";
 import SubCategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/subcategory/SubcategorySchema";
 
+import CapabilityDefinitionV1Alpha1OpenApiSchema from "./constructs/v1alpha1/capability/CapabilityOpenApiSchema";
+import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
+import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
+import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
+import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
+import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
+import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
+import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
+import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
+import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
+
 export {
   core,
   CapabilityDefinitionV1Alpha1Schema,
@@ -50,6 +61,19 @@ export {
   ConnectionDefinitionV1Beta1Schema,
   CategoryDefinitionV1Beta1Schema,
   SubCategoryDefinitionV1Beta1Schema,
+};
+
+export {
+  CapabilityDefinitionV1Alpha1OpenApiSchema,
+  CatalogDefinitionV1Alpha2OpenApiSchema,
+  CategoryDefinitionV1Beta1OpenApiSchema,
+  SubCategoryDefinitionV1Beta1OpenApiSchema,
+  DesignDefinitionV1Beta1OpenApiSchema,
+  ComponentDefinitionV1Beta1OpenApiSchema,
+  ModelDefinitionV1Beta1OpenApiSchema,
+  PlanDefinitionV1Beta1OpenApiSchema,
+  SubscriptionDefinitionV1Beta1OpenApiSchema,
+  EvaluationDefinitionV1Beta1OpenApiSchema,
 };
 
 // Contructs
