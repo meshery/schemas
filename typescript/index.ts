@@ -19,6 +19,7 @@ import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model/model
 import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design/design";
 import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./constructs/v1beta1/connection";
 
+import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
 import CategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/category/CategorySchema";
 import SubCategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/subcategory/SubcategorySchema";
 import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
@@ -59,6 +60,8 @@ import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema
 // import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
 // import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
 import EnvironmentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/environment/EnvironmentOpenApiSchema";
+import WorkspaceDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/workspace/WorkspaceOpenApiSchema";
+
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
@@ -70,6 +73,8 @@ export {
   CategoryDefinitionV1Beta1Schema,
   SubCategoryDefinitionV1Beta1Schema,
   EnvironmentDefinitionV1Beta1OpenApiSchema,
+  WorkspaceDefinitionV1Beta1OpenApiSchema,
+  CatalogDataDefinitionV1Alpha1Schema,
 };
 
 // Contructs
