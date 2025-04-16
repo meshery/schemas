@@ -58,6 +58,7 @@ export const ModelSchema = {
           "yaml": "schemaVersion",
           "json": "schemaVersion"
         },
+        "default": "v1beta1",
         "type": "string",
         "minLength": 2,
         "maxLength": 100,
@@ -79,7 +80,8 @@ export const ModelSchema = {
         "x-oapi-codegen-extra-tags": {
           "yaml": "version",
           "json": "version"
-        }
+        },
+        "default": "v0.0.1"
       },
       "name": {
         "type": "string",
@@ -93,7 +95,8 @@ export const ModelSchema = {
         "x-oapi-codegen-extra-tags": {
           "yaml": "name",
           "json": "name"
-        }
+        },
+        "default": "untitled-model"
       },
       "displayName": {
         "description": "Human-readable name for the model.",
@@ -109,10 +112,12 @@ export const ModelSchema = {
         "x-oapi-codegen-extra-tags": {
           "yaml": "displayName",
           "json": "displayName"
-        }
+        },
+        "default": "Untitled Model"
       },
       "description": {
         "type": "string",
+        "default": "A new Meshery model.",
         "description": "Description of the model.",
         "minLength": 1,
         "maxLength": 1000,
@@ -134,7 +139,8 @@ export const ModelSchema = {
         "x-oapi-codegen-extra-tags": {
           "yaml": "status",
           "json": "status"
-        }
+        },
+        "default": "enabled"
       },
       "registrant": {
         "x-oapi-codegen-extra-tags": {
@@ -663,7 +669,8 @@ export const ModelSchema = {
               "yaml": "isAnnotation",
               "json": "isAnnotation"
             },
-            "x-order": 2
+            "x-order": 2,
+            "default": false
           },
           "primaryColor": {
             "type": "string",
@@ -820,7 +827,8 @@ export const ModelSchema = {
           "json": "components_count",
           "yaml": "components_count",
           "gorm": "-"
-        }
+        },
+        "default": 0
       },
       "relationshipsCount": {
         "type": "integer",
@@ -830,7 +838,8 @@ export const ModelSchema = {
           "gorm": "-",
           "json": "relationships_count",
           "yaml": "relationships_count"
-        }
+        },
+        "default": 0
       }
     },
     "required": [
