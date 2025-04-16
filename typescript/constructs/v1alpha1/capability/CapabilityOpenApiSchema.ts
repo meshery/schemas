@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const CapabilitySchema = {
+const schema = {
   "Capability": {
     "$id": "https://schemas.meshery.io/capability.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -183,3 +183,5 @@ export const CapabilitySchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

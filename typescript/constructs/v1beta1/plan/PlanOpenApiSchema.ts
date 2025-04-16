@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const PlanSchema = {
+const schema = {
   "PlanPage": {
     "type": "object",
     "required": [
@@ -188,3 +188,5 @@ export const PlanSchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

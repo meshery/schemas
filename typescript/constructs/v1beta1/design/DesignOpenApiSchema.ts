@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const DesignSchema = {
+const schema = {
   "DeletePatternModel": {
     "type": "object",
     "properties": {
@@ -25608,3 +25608,5 @@ export const DesignSchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

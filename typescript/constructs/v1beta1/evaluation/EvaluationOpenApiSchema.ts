@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const EvaluationSchema = {
+const schema = {
   "EvaluationRequest": {
     "type": "object",
     "required": [
@@ -12872,3 +12872,5 @@ export const EvaluationSchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

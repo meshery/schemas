@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const SubcategorySchema = {
+const schema = {
   "SubCategoryDefinition": {
     "$id": "https://schemas.meshery.io/category.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -68,3 +68,5 @@ export const SubcategorySchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

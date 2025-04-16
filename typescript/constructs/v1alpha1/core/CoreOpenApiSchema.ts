@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const CoreSchema = {
+const schema = {
   "inputString": {
     "type": "string",
     "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
@@ -1600,3 +1600,5 @@ export const CoreSchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

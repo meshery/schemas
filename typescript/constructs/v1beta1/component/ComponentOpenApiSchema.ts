@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const ComponentSchema = {
+const schema = {
   "ComponentDefinition": {
     "$id": "https://schemas.meshery.io/component.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1734,3 +1734,5 @@ export const ComponentSchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

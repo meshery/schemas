@@ -69,9 +69,9 @@ async function convertSchemas(openapiPath, outputDirectory = null) {
       ` * This file was automatically generated from OpenAPI schema.\n` +
       ` * Do not manually modify this file.\n` +
       ` */\n\n` +
-      `export const ${_pascalCase(fileName)}Schema = ` +
+      `const schema = ` +
       jsonContent +
-      ";\n";
+      `;\n\nexport default schema;\n`;
 
     const tsOutputPath = path.join(fileDir, `${fileName}OpenApiSchema.ts`);
 

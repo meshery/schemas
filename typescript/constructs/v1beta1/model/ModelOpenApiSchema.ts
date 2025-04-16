@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const ModelSchema = {
+const schema = {
   "Model": {
     "type": "object",
     "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
@@ -864,3 +864,5 @@ export const ModelSchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;

@@ -3,7 +3,7 @@
  * Do not manually modify this file.
  */
 
-export const CatalogSchema = {
+const schema = {
   "CatalogData": {
     "type": "object",
     "properties": {
@@ -88,3 +88,5 @@ export const CatalogSchema = {
   },
   "$schema": "http://json-schema.org/draft-04/schema#"
 };
+
+export default schema;
