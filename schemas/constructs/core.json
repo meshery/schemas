@@ -569,18 +569,6 @@
           "required": ["resolved_parent_id", "resolved_ref_field_path"]
         }
       ]
-    },
-
-    "IaCFileTypes": {
-      "type": "string",
-      "description": "The type of the IaC file",
-      "enum": [
-        "meshery-design",
-        "helm-chart",
-        "k8s-manifest",
-        "docker-compose",
-        "k8s-kustomize"
-      ]
     }
   }
 }
