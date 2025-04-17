@@ -53,7 +53,7 @@ import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema
 // import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
 // import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
 // import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
-// import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
+import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
 // import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
 import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
 // import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
@@ -76,6 +76,7 @@ export {
   WorkspaceDefinitionV1Beta1OpenApiSchema,
   CatalogDataDefinitionV1Alpha1Schema,
   ModelDefinitionV1Beta1OpenApiSchema,
+  DesignDefinitionV1Beta1OpenApiSchema,
 };
 
 // Contructs
