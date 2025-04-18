@@ -1,4 +1,7 @@
-{
+// Generated from constructs/core.json
+// This file exports the original JSON schema
+
+const schema = {
   "$id": "../core.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Reusable core schema elements",
@@ -586,3 +589,5 @@
     }
   }
 }
+
+export default schema;
