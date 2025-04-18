@@ -17,6 +17,82 @@ security:
 tags:
   - name: workspaces
     description: Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces).
+paths:
+  /api/workspaces:
+    get:
+      summary: Get all workspaces
+      tags:
+        - workspaces
+      responses:
+        "200":
+          description: List of workspaces
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspacePage"
+    post:
+      summary: Create a workspace
+      tags:
+        - workspaces
+      requestBody:
+        $ref: "#/components/requestBodies/workspacePayload"
+      responses:
+        "201":
+          description: Workspace created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+  /api/workspaces/{id}:
+    get:
+      summary: Get workspace by ID
+      tags:
+        - workspaces
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspace details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+    put:
+      summary: Update workspace
+      tags:
+        - workspaces
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/workspaceUpdatePayload"
+      responses:
+        "200":
+          description: Workspace updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+    delete:
+      summary: Delete workspace
+      tags:
+        - workspaces
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspace deleted successfully
 components:
   securitySchemes:
     jwt:
@@ -27,13 +103,13 @@ components:
     workspace:
       properties:
         ID:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
         name:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
         description:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
         organization_id:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/organization_id
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/organization_id"
         owner:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
         created_at:
@@ -45,7 +121,7 @@ components:
     workspacesTeamsMapping:
       properties:
         ID:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
         team_id:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/team_id"
         workspace_id:
@@ -59,7 +135,7 @@ components:
     workspacesEnvironmentsMapping:
       properties:
         ID:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
         environment_id:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/environment_id"
         workspace_id:
@@ -73,7 +149,7 @@ components:
     workspacesViewsMapping:
       properties:
         ID:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
         view_id:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/view_id"
         workspace_id:
@@ -87,7 +163,7 @@ components:
     workspacesDesignsMapping:
       properties:
         ID:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
         design_id:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/design_id"
         workspace_id:
@@ -132,15 +208,15 @@ components:
             json: organization_id
       required:
         - name
-        - organization
+        - organization_id
     workspacePage:
       properties:
         page:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/number
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/number"
         page_size:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/number
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/number"
         total_count:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/number
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/number"
         workspaces:
           type: array
           x-go-type-skip-optional-pointer: true

@@ -12,12 +12,6 @@ servers:
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL (controlled via PORT environment variable)
-  - url: https://playground.meshery.io
-    description: Meshery Playground server URL
-  - url: https://staging-playground.meshery.io
-    description: Meshery Playground staging server URL
-  - url: http://localhost:9081
-    description: Meshery Playground development server URL (controlled via PORT environment variable)
 
 security:
   - jwt: []
@@ -31,10 +25,8 @@ components:
       $ref: "../../v1alpha1/core/openapi.yml#/components/responses/200"
     400:
       $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
-
     401:
       $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
-
     500:
       $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
 
@@ -61,14 +53,6 @@ components:
       schema:
         type: string
       required: true
-
-      properties:
-        page:
-          type: integer
-        page_size:
-          type: integer
-        total_count:
-          type: integer
 
   securitySchemes:
     jwt:
@@ -135,47 +119,48 @@ components:
           schema:
             $ref: "#/components/schemas/environmentPayload"
 
-  paths:
-    /api/environments:
-      post:
-        tags:
-          - environments
-        operationId: CreateEnvironment
-        summary: Create an environment
-        description: Creates a new environment
-        requestBody:
-          $ref: "#/components/requestBodies/environmentPayload"
-        responses:
-          "201":
-            description: Created environment
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/environment"
-          "400":
-            $ref: "#/components/responses/400"
-          "500":
-            $ref: "#/components/responses/500"
-      get:
-        tags:
-          - environments
-        operationId: GetEnvironments
-        summary: Get all environments
-        description: Gets all environments
-        parameters:
-          - $ref: "#/components/parameters/search"
-          - $ref: "#/components/parameters/order"
-          - $ref: "#/components/parameters/page"
-          - $ref: "#/components/parameters/pagesize"
-          - $ref: "#/components/parameters/orgIDQuery"
-        responses:
-          "200":
-            description: Environments
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/environmentPage"
-          "401":
-            $ref: "#/components/responses/401"
-          "500":
-            $ref: "#/components/responses/500"
+paths:
+  /api/environments:
+    post:
+      tags:
+        - environments
+      operationId: CreateEnvironment
+      summary: Create an environment
+      description: Creates a new environment
+      requestBody:
+        $ref: "#/components/requestBodies/environmentPayload"
+      responses:
+        "201":
+          description: Created environment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environment"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - environments
+      operationId: GetEnvironments
+      summary: Get all environments
+      description: Gets all environments
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/orgIDQuery"
+      responses:
+        "200":
+          description: Environments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
