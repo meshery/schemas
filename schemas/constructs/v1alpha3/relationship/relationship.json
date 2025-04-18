@@ -1,0 +1,180 @@
+{
+  "$id": "https://schemas.meshery.io/relationship.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
+  "required": [
+    "schemaVersion",
+    "version",
+    "model",
+    "kind",
+    "type",
+    "subType"
+  ],
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
+      "type": "string",
+      "format": "uuid",
+      "x-go-type": "uuid.UUID",
+      "x-go-type-import": {
+        "path": "github.com/gofrs/uuid"
+      },
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "id",
+        "json": "id"
+      }
+    },
+    "schemaVersion": {
+      "description": "Specifies the version of the schema used for the relationship definition.",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 100,
+      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+      "example": [
+        "v1",
+        "v1alpha1",
+        "v2beta3",
+        "v1.custom-suffix"
+      ],
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "schemaVersion",
+        "json": "schemaVersion"
+      },
+      "default": "v1alpha3"
+    },
+    "version": {
+      "description": "Specifies the version of the relationship definition.",
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 100,
+      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "version",
+        "json": "version"
+      },
+      "default": "v0.0.1"
+    },
+    "model": {
+      "$ref": "../../v1beta1/model/model.json"
+    },
+    "kind": {
+      "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
+      "enum": [
+        "hierarchical",
+        "edge",
+        "sibling"
+      ],
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "kind",
+        "json": "kind"
+      }
+    },
+    "type": {
+      "description": "Classification of relationships. Used to group relationships similar in nature.",
+      "x-go-name": "RelationshipType",
+      "gorm": "column:type",
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "type",
+        "json": "type"
+      }
+    },
+    "subType": {
+      "description": "Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship.",
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "subType",
+        "json": "subType"
+      }
+    },
+    "status": {
+      "type": "string",
+      "description": "Status of the relationship.",
+      "default": "enabled",
+      "enum": [
+        "pending",
+        "approved",
+        "ignored",
+        "enabled",
+        "deleted"
+      ],
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "status",
+        "json": "status"
+      }
+    },
+    "evaluationQuery": {
+      "description": "Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.",
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "evaluationQuery",
+        "json": "evaluationQuery"
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "Capabilities associated with the relationship.",
+      "items": {
+        "$ref": "../../v1alpha1/capability/capability.json"
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata contains additional information associated with the Relationship.",
+      "additionalProperties": true,
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "foreignKey:ModelId;references:Id"
+      },
+      "properties": {
+        "description": {
+          "description": "Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.",
+          "type": "string",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "description",
+            "json": "description"
+          }
+        },
+        "isAnnotation": {
+          "type": "boolean",
+          "description": "Indicates whether the relationship should be treated as a logical representation only",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "isAnnotation",
+            "json": "isAnnotation"
+          },
+          "default": false
+        },
+        "styles": {
+          "anyOf": [
+            {
+              "$ref": "../../core.json#/definitions/edgeStyles"
+            },
+            {
+              "$ref": "../../core.json#/definitions/styles"
+            }
+          ],
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "styles",
+            "json": "styles"
+          }
+        }
+      }
+    },
+    "selectors": {
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json"
+      },
+      "$ref": "../selector.json#/definitions/selectors"
+    }
+  }
+}
