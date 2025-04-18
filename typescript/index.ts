@@ -10,7 +10,7 @@ import { DesignSchema } from "./constructs/v1alpha2/design";
 import { HttpsSchemasMesheryIoRelationshipJson } from "./constructs/v1alpha2/relationship";
 
 // v1alpha3
-import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship";
+import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship/relationship";
 import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector";
 
 // v1beta1
@@ -18,12 +18,6 @@ import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/compone
 import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model/model";
 import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design/design";
 import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./constructs/v1beta1/connection";
-
-import CategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/category/CategorySchema";
-import SubCategoryDefinitionV1Beta1Schema from "./constructs/v1beta1/subcategory/SubcategorySchema";
-import RelationshipDefinitionV1Alpha3Schema from "./constructs/v1alpha3/RelationshipSchema";
-import ComponentDefinitionV1Beta1Schema from "./constructs/v1beta1/component/ComponentSchema";
-import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema";
 
 /**
  * SCHEMA OPTIMIZATION NOTICE
@@ -38,23 +32,15 @@ import ModelDefinitionV1Beta1Schema from "./constructs/v1beta1/model/ModelSchema
  * - Avoid using multiple versions of the same schema to prevent redundancy
  */
 
-// import CatalogDataDefinitionV1Alpha1Schema from "./constructs/v1alpha1/CatalogDataSchema";
-// import CapabilityDefinitionV1Alpha1Schema from "./constructs/v1alpha1/capability/CapabilitySchema";
-// import DesignDefinitionV1Alpha2Schema from "./constructs/v1alpha2/DesignSchema";
-// import RelationshipDefinitionV1Alpha2Schema from "./constructs/v1alpha2/RelationshipSchema";
-// import SelectorsDefinitionV1Alpha3Schema from "./constructs/v1alpha3/SelectorSchema";
-// import DesignDefinitionV1Beta1Schema from "./constructs/v1beta1/design/DesignSchema";
-// import ConnectionDefinitionV1Beta1Schema from "./constructs/v1beta1/ConnectionSchema";
-
 //OpenAPI
 
 // import CapabilityDefinitionV1Alpha1OpenApiSchema from "./constructs/v1alpha1/capability/CapabilityOpenApiSchema";
 // import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
-// import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
-// import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
+import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
+import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
 // import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
-// import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
-// import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
+import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
+import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
 // import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
 // import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
 // import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
@@ -63,11 +49,10 @@ import type * as core from "./constructs/core";
 
 export {
   core,
-  RelationshipDefinitionV1Alpha3Schema,
-  ComponentDefinitionV1Beta1Schema,
-  ModelDefinitionV1Beta1Schema,
-  CategoryDefinitionV1Beta1Schema,
-  SubCategoryDefinitionV1Beta1Schema,
+  ComponentDefinitionV1Beta1OpenApiSchema,
+  ModelDefinitionV1Beta1OpenApiSchema,
+  CategoryDefinitionV1Beta1OpenApiSchema,
+  SubCategoryDefinitionV1Beta1OpenApiSchema,
 };
 
 // Contructs
