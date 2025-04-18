@@ -6,9 +6,9 @@ info:
     email: support@layer5.io
   version: v0.6.394
 servers:
-  - url: https://meshery.layer5.io
+  - url: https://cloud.layer5.io
     description: Meshery Cloud production server URL
-  - url: https://staging-meshery.layer5.io
+  - url: https://staging-cloud.layer5.io
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL (controlled via PORT environment variable)
@@ -44,7 +44,7 @@ components:
 
         system_id:
           description: |
-            The system from which the request is sourced. In the case of Meshery Server, 
+            The system from which the request is sourced. In the case of Meshery Server,
             the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
           $ref: "./common/core.yml#/components/schemas/system_id"
 
@@ -99,17 +99,7 @@ components:
           description: |
             A set of seven standard event levels.
           type: string
-          enum:
-            [
-              emergency,
-              critical,
-              alert,
-              error,
-              warning,
-              debug,
-              informational,
-              success,
-            ]
+          enum: [emergency, critical, alert, error, warning, debug, informational, success]
           example: info
           x-oapi-codegen-extra-tags:
             db: severity
@@ -177,8 +167,7 @@ components:
         order:
           type: string
           description: "order of sort asc/desc, default is asc"
-      required:
-        [provider, category, action, severity, limit, offset, sort_on, order]
+      required: [provider, category, action, severity, limit, offset, sort_on, order]
 
     eventTrackerGrouped:
       properties:
@@ -433,3 +422,4 @@ paths:
           $ref: ./common/responses.yml#/404
         "500":
           $ref: ./common/responses.yml#/500
+

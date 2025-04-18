@@ -13,6 +13,7 @@ import (
 	"github.com/meshery/schemas/models/v1alpha2/catalog"
 	"github.com/meshery/schemas/models/v1alpha3/relationship"
 	"github.com/meshery/schemas/models/v1beta1/component"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // DeletePatternModel defines model for DeletePatternModel.
@@ -39,6 +40,21 @@ type MesheryPattern struct {
 // MesheryPatternDeleteRequestBody defines model for MesheryPatternDeleteRequestBody.
 type MesheryPatternDeleteRequestBody struct {
 	Patterns *[]DeletePatternModel `json:"patterns,omitempty" yaml:"patterns,omitempty"`
+}
+
+// MesheryPatternImportRequestBody Choose the method you prefer to upload your  design file. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.
+type MesheryPatternImportRequestBody struct {
+	// File Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details
+	File *openapi_types.File `json:"file,omitempty" yaml:"file,omitempty"`
+
+	// FileName The name of the pattern file being imported.
+	FileName *string `json:"file_name,omitempty" yaml:"file_name,omitempty"`
+
+	// Name Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it.
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Url Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details
+	Url *string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // MesheryPatternPage defines model for MesheryPatternPage.

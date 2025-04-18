@@ -75,4 +75,6 @@ generate_schema_models "catalog" "v1alpha2"
 generate_schema_models "subscription" "v1beta1"
 generate_schema_models "plan" "v1beta1"
 generate_schema_models "evaluation" "v1beta1"
+generate_schema_models "workspace" "v1beta1"
+generate_schema_models "environment" "v1beta1"
 
