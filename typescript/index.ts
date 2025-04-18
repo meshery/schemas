@@ -36,18 +36,24 @@ import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./const
 
 // import CapabilityDefinitionV1Alpha1OpenApiSchema from "./constructs/v1alpha1/capability/CapabilityOpenApiSchema";
 // import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
-// import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
-// import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
+import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
+import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
 // import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
-// import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
-// import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
+import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
+import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
 // import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
 // import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
 // import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
-export { core };
+export {
+  core,
+  ComponentDefinitionV1Beta1OpenApiSchema,
+  ModelDefinitionV1Beta1OpenApiSchema,
+  CategoryDefinitionV1Beta1OpenApiSchema,
+  SubCategoryDefinitionV1Beta1OpenApiSchema,
+};
 
 // Contructs
 export namespace v1alpha1 {
