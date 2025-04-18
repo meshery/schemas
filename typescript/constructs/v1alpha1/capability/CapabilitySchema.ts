@@ -47,6 +47,7 @@ const schema = {
       "minLength": 5,
       "maxLength": 100,
       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "default": "v0.0.1",
       "x-order": 2,
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",

@@ -136,17 +136,11 @@ const schema = {
         },
         "version": {
           "description": "Version of the model.",
-          "default": "v0.0.1",
           "type": "string",
-          "minLength": 2,
+          "minLength": 5,
           "maxLength": 100,
-          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-          "example": [
-            "v1",
-            "v1alpha1",
-            "v2beta3",
-            "v1.custom-suffix"
-          ],
+          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+          "default": "v0.0.1",
           "x-order": 4,
           "x-oapi-codegen-extra-tags": {
             "yaml": "version",

@@ -21,6 +21,7 @@ const schema = {
       "x-go-type-import": {
         "path": "github.com/gofrs/uuid"
       },
+      "default": "00000000-00000000-00000000-00000000",
       "x-oapi-codegen-extra-tags": {
         "yaml": "id",
         "json": "id"

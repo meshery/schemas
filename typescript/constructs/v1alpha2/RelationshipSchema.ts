@@ -38,11 +38,11 @@ const schema = {
     },
     "version": {
       "description": "Specifies the version of the definition.",
-      "default": "v0.0.1",
       "type": "string",
       "minLength": 5,
       "maxLength": 100,
       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "default": "v0.0.1",
       "x-order": 2,
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
@@ -130,7 +130,8 @@ const schema = {
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
             "path": "github.com/gofrs/uuid"
-          }
+          },
+          "default": "00000000-00000000-00000000-00000000"
         },
         "schemaVersion": {
           "description": "Specifies the version of the schema used for the definition.",
@@ -159,10 +160,10 @@ const schema = {
             "yaml": "version",
             "json": "version"
           },
-          "default": "v0.0.1",
           "minLength": 5,
           "maxLength": 100,
-          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+          "default": "v0.0.1"
         },
         "name": {
           "type": "string",
@@ -254,6 +255,7 @@ const schema = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               },
+              "default": "00000000-00000000-00000000-00000000",
               "x-oapi-codegen-extra-tags": {
                 "yaml": "id",
                 "json": "id"
@@ -283,7 +285,8 @@ const schema = {
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
-              }
+              },
+              "default": "00000000-00000000-00000000-00000000"
             },
             "type": {
               "x-oapi-codegen-extra-tags": {
@@ -357,7 +360,8 @@ const schema = {
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
-              }
+              },
+              "default": "00000000-00000000-00000000-00000000"
             },
             "created_at": {
               "x-oapi-codegen-extra-tags": {
@@ -404,7 +408,8 @@ const schema = {
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
             "path": "github.com/gofrs/uuid"
-          }
+          },
+          "default": "00000000-00000000-00000000-00000000"
         },
         "categoryId": {
           "description": "ID of the category.",
@@ -419,7 +424,8 @@ const schema = {
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
             "path": "github.com/gofrs/uuid"
-          }
+          },
+          "default": "00000000-00000000-00000000-00000000"
         },
         "category": {
           "x-order": 11,
@@ -451,6 +457,7 @@ const schema = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               },
+              "default": "00000000-00000000-00000000-00000000",
               "x-oapi-codegen-extra-tags": {
                 "yaml": "id",
                 "json": "id"
@@ -625,6 +632,7 @@ const schema = {
                     "minLength": 5,
                     "maxLength": 100,
                     "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                    "default": "v0.0.1",
                     "x-order": 2,
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "version",
@@ -946,6 +954,7 @@ const schema = {
                   "maxLength": 100,
                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                   "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                  "default": "v0.0.1",
                   "x-order": 3,
                   "x-oapi-codegen-extra-tags": {
                     "yaml": "version",
@@ -1078,7 +1087,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -1107,10 +1117,10 @@ const schema = {
                             "yaml": "version",
                             "json": "version"
                           },
-                          "default": "v0.0.1",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "default": "v0.0.1"
                         },
                         "name": {
                           "type": "string",
@@ -1202,6 +1212,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -1231,7 +1242,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -1305,7 +1317,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -1352,7 +1365,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "categoryId": {
                           "description": "ID of the category.",
@@ -1367,7 +1381,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "category": {
                           "x-order": 11,
@@ -1399,6 +1414,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -1573,6 +1589,7 @@ const schema = {
                                     "minLength": 5,
                                     "maxLength": 100,
                                     "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1",
                                     "x-order": 2,
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
@@ -1894,6 +1911,7 @@ const schema = {
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                                   "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "default": "v0.0.1",
                                   "x-order": 3,
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "version",
@@ -1979,6 +1997,7 @@ const schema = {
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                       "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "default": "v0.0.1",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
@@ -2088,7 +2107,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -2117,10 +2137,10 @@ const schema = {
                             "yaml": "version",
                             "json": "version"
                           },
-                          "default": "v0.0.1",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "default": "v0.0.1"
                         },
                         "name": {
                           "type": "string",
@@ -2212,6 +2232,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -2241,7 +2262,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -2315,7 +2337,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -2362,7 +2385,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "categoryId": {
                           "description": "ID of the category.",
@@ -2377,7 +2401,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "category": {
                           "x-order": 11,
@@ -2409,6 +2434,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -2583,6 +2609,7 @@ const schema = {
                                     "minLength": 5,
                                     "maxLength": 100,
                                     "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1",
                                     "x-order": 2,
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
@@ -2904,6 +2931,7 @@ const schema = {
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                                   "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "default": "v0.0.1",
                                   "x-order": 3,
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "version",
@@ -2989,6 +3017,7 @@ const schema = {
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                       "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "default": "v0.0.1",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
@@ -3102,7 +3131,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -3131,10 +3161,10 @@ const schema = {
                             "yaml": "version",
                             "json": "version"
                           },
-                          "default": "v0.0.1",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "default": "v0.0.1"
                         },
                         "name": {
                           "type": "string",
@@ -3226,6 +3256,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -3255,7 +3286,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -3329,7 +3361,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -3376,7 +3409,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "categoryId": {
                           "description": "ID of the category.",
@@ -3391,7 +3425,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "category": {
                           "x-order": 11,
@@ -3423,6 +3458,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -3597,6 +3633,7 @@ const schema = {
                                     "minLength": 5,
                                     "maxLength": 100,
                                     "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1",
                                     "x-order": 2,
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
@@ -3918,6 +3955,7 @@ const schema = {
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                                   "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "default": "v0.0.1",
                                   "x-order": 3,
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "version",
@@ -4003,6 +4041,7 @@ const schema = {
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                       "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "default": "v0.0.1",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
@@ -4112,7 +4151,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -4141,10 +4181,10 @@ const schema = {
                             "yaml": "version",
                             "json": "version"
                           },
-                          "default": "v0.0.1",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "default": "v0.0.1"
                         },
                         "name": {
                           "type": "string",
@@ -4236,6 +4276,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -4265,7 +4306,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -4339,7 +4381,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -4386,7 +4429,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "categoryId": {
                           "description": "ID of the category.",
@@ -4401,7 +4445,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "category": {
                           "x-order": 11,
@@ -4433,6 +4478,7 @@ const schema = {
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
+                              "default": "00000000-00000000-00000000-00000000",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
@@ -4607,6 +4653,7 @@ const schema = {
                                     "minLength": 5,
                                     "maxLength": 100,
                                     "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1",
                                     "x-order": 2,
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
@@ -4928,6 +4975,7 @@ const schema = {
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                                   "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "default": "v0.0.1",
                                   "x-order": 3,
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "version",
@@ -5013,6 +5061,7 @@ const schema = {
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                       "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                      "default": "v0.0.1",
                       "x-order": 3,
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
