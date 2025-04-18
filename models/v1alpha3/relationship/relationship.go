@@ -11,20 +11,9 @@ import (
 	"github.com/meshery/schemas/models/v1alpha1/capability"
 	"github.com/meshery/schemas/models/v1beta1/category"
 	"github.com/meshery/schemas/models/v1beta1/connection"
+	"github.com/meshery/schemas/models/v1beta1/model"
 	"github.com/meshery/schemas/models/v1beta1/subcategory"
 	"github.com/oapi-codegen/runtime"
-)
-
-// Defines values for RelationshipDefinitionCapabilitiesEntityState.
-const (
-	Declaration RelationshipDefinitionCapabilitiesEntityState = "declaration"
-	Instance    RelationshipDefinitionCapabilitiesEntityState = "instance"
-)
-
-// Defines values for RelationshipDefinitionCapabilitiesStatus.
-const (
-	RelationshipDefinitionCapabilitiesStatusDisabled RelationshipDefinitionCapabilitiesStatus = "disabled"
-	RelationshipDefinitionCapabilitiesStatusEnabled  RelationshipDefinitionCapabilitiesStatus = "enabled"
 )
 
 // Defines values for RelationshipDefinitionKind.
@@ -114,43 +103,6 @@ const (
 	Lowercase RelationshipDefinitionMetadataStyles1TextTransform = "lowercase"
 	None      RelationshipDefinitionMetadataStyles1TextTransform = "none"
 	Uppercase RelationshipDefinitionMetadataStyles1TextTransform = "uppercase"
-)
-
-// Defines values for RelationshipDefinitionModelStatus.
-const (
-	RelationshipDefinitionModelStatusDuplicate RelationshipDefinitionModelStatus = "duplicate"
-	RelationshipDefinitionModelStatusEnabled   RelationshipDefinitionModelStatus = "enabled"
-	RelationshipDefinitionModelStatusIgnored   RelationshipDefinitionModelStatus = "ignored"
-)
-
-// Defines values for RelationshipDefinitionModelMetadataShape.
-const (
-	RelationshipDefinitionModelMetadataShapeBarrel               RelationshipDefinitionModelMetadataShape = "barrel"
-	RelationshipDefinitionModelMetadataShapeBottomRoundRectangle RelationshipDefinitionModelMetadataShape = "bottom-round-rectangle"
-	RelationshipDefinitionModelMetadataShapeCircle               RelationshipDefinitionModelMetadataShape = "circle"
-	RelationshipDefinitionModelMetadataShapeConcaveHexagon       RelationshipDefinitionModelMetadataShape = "concave-hexagon"
-	RelationshipDefinitionModelMetadataShapeCutRectangle         RelationshipDefinitionModelMetadataShape = "cut-rectangle"
-	RelationshipDefinitionModelMetadataShapeDiamond              RelationshipDefinitionModelMetadataShape = "diamond"
-	RelationshipDefinitionModelMetadataShapeEllipse              RelationshipDefinitionModelMetadataShape = "ellipse"
-	RelationshipDefinitionModelMetadataShapeHeptagon             RelationshipDefinitionModelMetadataShape = "heptagon"
-	RelationshipDefinitionModelMetadataShapeHexagon              RelationshipDefinitionModelMetadataShape = "hexagon"
-	RelationshipDefinitionModelMetadataShapeOctagon              RelationshipDefinitionModelMetadataShape = "octagon"
-	RelationshipDefinitionModelMetadataShapePentagon             RelationshipDefinitionModelMetadataShape = "pentagon"
-	RelationshipDefinitionModelMetadataShapePolygon              RelationshipDefinitionModelMetadataShape = "polygon"
-	RelationshipDefinitionModelMetadataShapeRectangle            RelationshipDefinitionModelMetadataShape = "rectangle"
-	RelationshipDefinitionModelMetadataShapeRhomboid             RelationshipDefinitionModelMetadataShape = "rhomboid"
-	RelationshipDefinitionModelMetadataShapeRoundDiamond         RelationshipDefinitionModelMetadataShape = "round-diamond"
-	RelationshipDefinitionModelMetadataShapeRoundHeptagon        RelationshipDefinitionModelMetadataShape = "round-heptagon"
-	RelationshipDefinitionModelMetadataShapeRoundHexagon         RelationshipDefinitionModelMetadataShape = "round-hexagon"
-	RelationshipDefinitionModelMetadataShapeRoundOctagon         RelationshipDefinitionModelMetadataShape = "round-octagon"
-	RelationshipDefinitionModelMetadataShapeRoundPentagon        RelationshipDefinitionModelMetadataShape = "round-pentagon"
-	RelationshipDefinitionModelMetadataShapeRoundRectangle       RelationshipDefinitionModelMetadataShape = "round-rectangle"
-	RelationshipDefinitionModelMetadataShapeRoundTag             RelationshipDefinitionModelMetadataShape = "round-tag"
-	RelationshipDefinitionModelMetadataShapeRoundTriangle        RelationshipDefinitionModelMetadataShape = "round-triangle"
-	RelationshipDefinitionModelMetadataShapeStar                 RelationshipDefinitionModelMetadataShape = "star"
-	RelationshipDefinitionModelMetadataShapeTag                  RelationshipDefinitionModelMetadataShape = "tag"
-	RelationshipDefinitionModelMetadataShapeTriangle             RelationshipDefinitionModelMetadataShape = "triangle"
-	RelationshipDefinitionModelMetadataShapeVee                  RelationshipDefinitionModelMetadataShape = "vee"
 )
 
 // Defines values for RelationshipDefinitionSelectorsAllowFromModelStatus.
@@ -306,32 +258,32 @@ const (
 
 // Defines values for RelationshipDefinitionSelectorsDenyToModelMetadataShape.
 const (
-	Barrel               RelationshipDefinitionSelectorsDenyToModelMetadataShape = "barrel"
-	BottomRoundRectangle RelationshipDefinitionSelectorsDenyToModelMetadataShape = "bottom-round-rectangle"
-	Circle               RelationshipDefinitionSelectorsDenyToModelMetadataShape = "circle"
-	ConcaveHexagon       RelationshipDefinitionSelectorsDenyToModelMetadataShape = "concave-hexagon"
-	CutRectangle         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "cut-rectangle"
-	Diamond              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "diamond"
-	Ellipse              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "ellipse"
-	Heptagon             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "heptagon"
-	Hexagon              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "hexagon"
-	Octagon              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "octagon"
-	Pentagon             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "pentagon"
-	Polygon              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "polygon"
-	Rectangle            RelationshipDefinitionSelectorsDenyToModelMetadataShape = "rectangle"
-	Rhomboid             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "rhomboid"
-	RoundDiamond         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-diamond"
-	RoundHeptagon        RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-heptagon"
-	RoundHexagon         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-hexagon"
-	RoundOctagon         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-octagon"
-	RoundPentagon        RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-pentagon"
-	RoundRectangle       RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-rectangle"
-	RoundTag             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-tag"
-	RoundTriangle        RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-triangle"
-	Star                 RelationshipDefinitionSelectorsDenyToModelMetadataShape = "star"
-	Tag                  RelationshipDefinitionSelectorsDenyToModelMetadataShape = "tag"
-	Triangle             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "triangle"
-	Vee                  RelationshipDefinitionSelectorsDenyToModelMetadataShape = "vee"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeBarrel               RelationshipDefinitionSelectorsDenyToModelMetadataShape = "barrel"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeBottomRoundRectangle RelationshipDefinitionSelectorsDenyToModelMetadataShape = "bottom-round-rectangle"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeCircle               RelationshipDefinitionSelectorsDenyToModelMetadataShape = "circle"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeConcaveHexagon       RelationshipDefinitionSelectorsDenyToModelMetadataShape = "concave-hexagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeCutRectangle         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "cut-rectangle"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeDiamond              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "diamond"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeEllipse              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "ellipse"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeHeptagon             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "heptagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeHexagon              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "hexagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeOctagon              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "octagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapePentagon             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "pentagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapePolygon              RelationshipDefinitionSelectorsDenyToModelMetadataShape = "polygon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRectangle            RelationshipDefinitionSelectorsDenyToModelMetadataShape = "rectangle"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRhomboid             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "rhomboid"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundDiamond         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-diamond"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundHeptagon        RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-heptagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundHexagon         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-hexagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundOctagon         RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-octagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundPentagon        RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-pentagon"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundRectangle       RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-rectangle"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundTag             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-tag"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeRoundTriangle        RelationshipDefinitionSelectorsDenyToModelMetadataShape = "round-triangle"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeStar                 RelationshipDefinitionSelectorsDenyToModelMetadataShape = "star"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeTag                  RelationshipDefinitionSelectorsDenyToModelMetadataShape = "tag"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeTriangle             RelationshipDefinitionSelectorsDenyToModelMetadataShape = "triangle"
+	RelationshipDefinitionSelectorsDenyToModelMetadataShapeVee                  RelationshipDefinitionSelectorsDenyToModelMetadataShape = "vee"
 )
 
 // Defines values for RelationshipDefinitionSelectorsDenyToPatchPatchStrategy.
@@ -357,40 +309,7 @@ const (
 // RelationshipDefinition Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
 type RelationshipDefinition struct {
 	// Capabilities Capabilities associated with the relationship.
-	Capabilities *[]struct {
-		// Description A written representation of the purpose and characteristics of the capability.
-		Description string `json:"description" yaml:"description"`
-
-		// DisplayName Name of the capability in human-readible format.
-		DisplayName string `json:"displayName" yaml:"displayName"`
-
-		// EntityState State of the entity in which the capability is applicable.
-		EntityState []RelationshipDefinitionCapabilitiesEntityState `json:"entityState" yaml:"entityState"`
-
-		// Key Key that backs the capability.
-		Key string `json:"key" yaml:"key"`
-
-		// Kind Top-level categorization of the capability
-		Kind string `json:"kind" yaml:"kind"`
-
-		// Metadata Metadata contains additional information associated with the capability. Extension point.
-		Metadata *map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-
-		// SchemaVersion Specifies the version of the schema to which the capability definition conforms.
-		SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
-
-		// Status Status of the capability
-		Status RelationshipDefinitionCapabilitiesStatus `json:"status" yaml:"status"`
-
-		// SubType Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
-		SubType string `json:"subType" yaml:"subType"`
-
-		// Type Classification of capabilities. Used to group capabilities similar in nature.
-		Type string `json:"type" yaml:"type"`
-
-		// Version Version of the capability definition.
-		Version string `json:"version" yaml:"version"`
-	} `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
+	Capabilities *[]capability.Capability `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
 
 	// EvaluationQuery Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
 	EvaluationQuery *string `json:"evaluationQuery" yaml:"evaluationQuery"`
@@ -405,64 +324,7 @@ type RelationshipDefinition struct {
 	Metadata *RelationshipDefinition_Metadata `gorm:"foreignKey:ModelId;references:Id" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
-	Model struct {
-		// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-		Id uuid.UUID `json:"id" yaml:"id"`
-
-		// SchemaVersion Specifies the version of the schema used for the definition.
-		SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
-
-		// Version Version of the model definition.
-		Version string `json:"version" yaml:"version"`
-
-		// Name The unique name for the model within the scope of a registrant.
-		Name string `json:"name" yaml:"name"`
-
-		// DisplayName Human-readable name for the model.
-		DisplayName string `json:"displayName" yaml:"displayName"`
-
-		// Description Description of the model.
-		Description string `json:"description,omitempty" yaml:"description,omitempty"`
-
-		// Status Status of model, including:
-		// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-		// - maintenance: model is unavailable for a period of time.
-		// - enabled: model is available for use for all users of this Meshery Server.
-		// - ignored: model is unavailable for use for all users of this Meshery Server.
-		Status RelationshipDefinitionModelStatus `json:"status" yaml:"status"`
-
-		// CategoryId ID of the category.
-		CategoryId uuid.UUID `gorm:"categoryID" json:"-" yaml:"-"`
-
-		// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
-		Registrant connection.Connection `gorm:"foreignKey:RegistrantId;references:Id" json:"registrant" yaml:"registrant"`
-
-		// RegistrantId ID of the registrant.
-		RegistrantId uuid.UUID `gorm:"column:connection_id" json:"connection_id" yaml:"connection_id"`
-
-		// Category Category of the model.
-		Category category.CategoryDefinition `gorm:"foreignKey:CategoryId;references:Id" json:"category" yaml:"category"`
-
-		// SubCategory Sub category of the model determines the secondary grouping.
-		SubCategory subcategory.SubCategoryDefinition `json:"subCategory" yaml:"subCategory"`
-
-		// Metadata Metadata containing additional information associated with the model.
-		Metadata *RelationshipDefinition_Model_Metadata `gorm:"type:bytes;serializer:json" json:"metadata" yaml:"metadata"`
-
-		// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
-		Model struct {
-			// Version Version of the model as defined by the registrant.
-			Version string `json:"version" yaml:"version"`
-		} `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
-
-		// ComponentsCount Number of components associated with the model.
-		ComponentsCount int `gorm:"-" json:"components_count" yaml:"components_count"`
-
-		// RelationshipsCount Number of relationships associated with the model.
-		RelationshipsCount int         `gorm:"-" json:"relationships_count" yaml:"relationships_count"`
-		Components         interface{} `gorm:"-" json:"components" yaml:"components"`
-		Relationships      interface{} `gorm:"-" json:"relationships" yaml:"relationships"`
-	} `json:"model" yaml:"model"`
+	Model model.ModelDefinition `json:"model" yaml:"model"`
 
 	// SchemaVersion Specifies the version of the schema used for the relationship definition.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
@@ -478,7 +340,7 @@ type RelationshipDefinition struct {
 				Kind  *string                                            `json:"kind,omitempty" yaml:"kind,omitempty"`
 				Match *RelationshipDefinition_Selectors_Allow_From_Match `json:"match,omitempty" yaml:"match,omitempty"`
 
-				// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
+				// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
 				Model *struct {
 					// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
 					Id uuid.UUID `json:"id" yaml:"id"`
@@ -547,7 +409,7 @@ type RelationshipDefinition struct {
 				Kind  *string                                          `json:"kind,omitempty" yaml:"kind,omitempty"`
 				Match *RelationshipDefinition_Selectors_Allow_To_Match `json:"match,omitempty" yaml:"match,omitempty"`
 
-				// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
+				// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
 				Model *struct {
 					// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
 					Id uuid.UUID `json:"id" yaml:"id"`
@@ -619,7 +481,7 @@ type RelationshipDefinition struct {
 				Kind  *string                                           `json:"kind,omitempty" yaml:"kind,omitempty"`
 				Match *RelationshipDefinition_Selectors_Deny_From_Match `json:"match,omitempty" yaml:"match,omitempty"`
 
-				// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
+				// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
 				Model *struct {
 					// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
 					Id uuid.UUID `json:"id" yaml:"id"`
@@ -688,7 +550,7 @@ type RelationshipDefinition struct {
 				Kind  *string                                         `json:"kind,omitempty" yaml:"kind,omitempty"`
 				Match *RelationshipDefinition_Selectors_Deny_To_Match `json:"match,omitempty" yaml:"match,omitempty"`
 
-				// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
+				// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
 				Model *struct {
 					// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
 					Id uuid.UUID `json:"id" yaml:"id"`
@@ -764,12 +626,6 @@ type RelationshipDefinition struct {
 	// Version Specifies the version of the relationship definition.
 	Version string `json:"version" yaml:"version"`
 }
-
-// RelationshipDefinitionCapabilitiesEntityState A string starting with an alphanumeric character. Spaces and hyphens allowed.
-type RelationshipDefinitionCapabilitiesEntityState string
-
-// RelationshipDefinitionCapabilitiesStatus Status of the capability
-type RelationshipDefinitionCapabilitiesStatus string
 
 // RelationshipDefinitionKind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
 type RelationshipDefinitionKind string
@@ -964,44 +820,6 @@ type RelationshipDefinition_Metadata struct {
 	IsAnnotation         *bool                                   `json:"isAnnotation" yaml:"isAnnotation"`
 	Styles               *RelationshipDefinition_Metadata_Styles `json:"styles" yaml:"styles"`
 	AdditionalProperties map[string]interface{}                  `json:"-" yaml:"-"`
-}
-
-// RelationshipDefinitionModelStatus Status of model, including:
-// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-// - maintenance: model is unavailable for a period of time.
-// - enabled: model is available for use for all users of this Meshery Server.
-// - ignored: model is unavailable for use for all users of this Meshery Server.
-type RelationshipDefinitionModelStatus string
-
-// RelationshipDefinitionModelMetadataShape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-type RelationshipDefinitionModelMetadataShape string
-
-// RelationshipDefinition_Model_Metadata Metadata containing additional information associated with the model.
-type RelationshipDefinition_Model_Metadata struct {
-	// Capabilities Capabilities associated with the model
-	Capabilities *[]capability.Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
-
-	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
-	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
-
-	// PrimaryColor Primary color associated with the model.
-	PrimaryColor *string `json:"primaryColor" yaml:"primaryColor"`
-
-	// SecondaryColor Secondary color associated with the model.
-	SecondaryColor *string `json:"secondaryColor" yaml:"secondaryColor"`
-
-	// SvgWhite SVG representation of the model in white color.
-	SvgWhite string `json:"svgWhite" yaml:"svgWhite"`
-
-	// SvgColor SVG representation of the model in colored format.
-	SvgColor string `json:"svgColor" yaml:"svgColor"`
-
-	// SvgComplete SVG representation of the complete model.
-	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
-
-	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape                *RelationshipDefinitionModelMetadataShape `json:"shape,omitempty" yaml:"shape,omitempty"`
-	AdditionalProperties map[string]interface{}                    `json:"-" yaml:"-"`
 }
 
 // RelationshipDefinitionSelectorsAllowFromMatch0 defines model for .
@@ -2416,175 +2234,6 @@ func (a RelationshipDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		object["styles"], err = json.Marshal(a.Styles)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'styles': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for RelationshipDefinition_Model_Metadata. Returns the specified
-// element and whether it was found
-func (a RelationshipDefinition_Model_Metadata) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for RelationshipDefinition_Model_Metadata
-func (a *RelationshipDefinition_Model_Metadata) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for RelationshipDefinition_Model_Metadata to handle AdditionalProperties
-func (a *RelationshipDefinition_Model_Metadata) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["capabilities"]; found {
-		err = json.Unmarshal(raw, &a.Capabilities)
-		if err != nil {
-			return fmt.Errorf("error reading 'capabilities': %w", err)
-		}
-		delete(object, "capabilities")
-	}
-
-	if raw, found := object["isAnnotation"]; found {
-		err = json.Unmarshal(raw, &a.IsAnnotation)
-		if err != nil {
-			return fmt.Errorf("error reading 'isAnnotation': %w", err)
-		}
-		delete(object, "isAnnotation")
-	}
-
-	if raw, found := object["primaryColor"]; found {
-		err = json.Unmarshal(raw, &a.PrimaryColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'primaryColor': %w", err)
-		}
-		delete(object, "primaryColor")
-	}
-
-	if raw, found := object["secondaryColor"]; found {
-		err = json.Unmarshal(raw, &a.SecondaryColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'secondaryColor': %w", err)
-		}
-		delete(object, "secondaryColor")
-	}
-
-	if raw, found := object["svgWhite"]; found {
-		err = json.Unmarshal(raw, &a.SvgWhite)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgWhite': %w", err)
-		}
-		delete(object, "svgWhite")
-	}
-
-	if raw, found := object["svgColor"]; found {
-		err = json.Unmarshal(raw, &a.SvgColor)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgColor': %w", err)
-		}
-		delete(object, "svgColor")
-	}
-
-	if raw, found := object["svgComplete"]; found {
-		err = json.Unmarshal(raw, &a.SvgComplete)
-		if err != nil {
-			return fmt.Errorf("error reading 'svgComplete': %w", err)
-		}
-		delete(object, "svgComplete")
-	}
-
-	if raw, found := object["shape"]; found {
-		err = json.Unmarshal(raw, &a.Shape)
-		if err != nil {
-			return fmt.Errorf("error reading 'shape': %w", err)
-		}
-		delete(object, "shape")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for RelationshipDefinition_Model_Metadata to handle AdditionalProperties
-func (a RelationshipDefinition_Model_Metadata) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.Capabilities != nil {
-		object["capabilities"], err = json.Marshal(a.Capabilities)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'capabilities': %w", err)
-		}
-	}
-
-	if a.IsAnnotation != nil {
-		object["isAnnotation"], err = json.Marshal(a.IsAnnotation)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'isAnnotation': %w", err)
-		}
-	}
-
-	if a.PrimaryColor != nil {
-		object["primaryColor"], err = json.Marshal(a.PrimaryColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'primaryColor': %w", err)
-		}
-	}
-
-	if a.SecondaryColor != nil {
-		object["secondaryColor"], err = json.Marshal(a.SecondaryColor)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'secondaryColor': %w", err)
-		}
-	}
-
-	object["svgWhite"], err = json.Marshal(a.SvgWhite)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'svgWhite': %w", err)
-	}
-
-	object["svgColor"], err = json.Marshal(a.SvgColor)
-	if err != nil {
-		return nil, fmt.Errorf("error marshaling 'svgColor': %w", err)
-	}
-
-	if a.SvgComplete != nil {
-		object["svgComplete"], err = json.Marshal(a.SvgComplete)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'svgComplete': %w", err)
-		}
-	}
-
-	if a.Shape != nil {
-		object["shape"], err = json.Marshal(a.Shape)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'shape': %w", err)
 		}
 	}
 

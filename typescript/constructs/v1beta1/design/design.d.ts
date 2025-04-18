@@ -1339,7 +1339,7 @@ export interface Styles1 {
   [k: string]: unknown;
 }
 /**
- * Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
+ * Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
  */
 export interface HttpsSchemasMesheryIoModelJson2 {
   /**

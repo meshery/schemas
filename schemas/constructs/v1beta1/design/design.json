@@ -74,7 +74,7 @@
       "type": "array",
       "x-order": 8,
       "items": {
-        "$ref": "../../v1alpha3/relationship.json",
+        "$ref": "../../v1alpha3/relationship/relationship.json",
         "x-go-type": "*relationship.RelationshipDefinition",
         "x-go-type-import": {
           "path": "github.com/meshery/schemas/models/v1alpha3/relationship"

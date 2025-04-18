@@ -57,7 +57,11 @@
       "default": "v0.0.1"
     },
     "model": {
-      "$ref": "../../v1beta1/model/model.json"
+      "$ref": "../../v1beta1/model/model.json",
+      "x-go-type": "model.ModelDefinition",
+      "x-go-type-import": {
+        "path": "github.com/meshery/schemas/models/v1beta1/model"
+      }
     },
     "kind": {
       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -122,7 +126,11 @@
       "type": "array",
       "description": "Capabilities associated with the relationship.",
       "items": {
-        "$ref": "../../v1alpha1/capability/capability.json"
+        "$ref": "../../v1alpha1/capability/capability.json",
+        "x-go-type": "capability.Capability",
+        "x-go-type-import": {
+          "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+        }
       },
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json"

@@ -1956,6 +1956,10 @@ const schema = {
                   "default": "v0.0.1"
                 },
                 "model": {
+                  "x-go-type": "model.ModelDefinition",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/v1beta1/model"
+                  },
                   "$id": "https://schemas.meshery.io/model.json",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
@@ -2850,6 +2854,10 @@ const schema = {
                   "type": "array",
                   "description": "Capabilities associated with the relationship.",
                   "items": {
+                    "x-go-type": "capability.Capability",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                    },
                     "$id": "https://schemas.meshery.io/capability.json",
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
@@ -3400,9 +3408,9 @@ const schema = {
                                   "type": "string"
                                 },
                                 "model": {
+                                  "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                   "$id": "https://schemas.meshery.io/model.json",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
-                                  "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                   "additionalProperties": false,
                                   "type": "object",
                                   "properties": {
@@ -4450,9 +4458,9 @@ const schema = {
                                   "type": "string"
                                 },
                                 "model": {
+                                  "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                   "$id": "https://schemas.meshery.io/model.json",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
-                                  "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                   "additionalProperties": false,
                                   "type": "object",
                                   "properties": {
@@ -5510,9 +5518,9 @@ const schema = {
                                   "type": "string"
                                 },
                                 "model": {
+                                  "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                   "$id": "https://schemas.meshery.io/model.json",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
-                                  "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                   "additionalProperties": false,
                                   "type": "object",
                                   "properties": {
@@ -6560,9 +6568,9 @@ const schema = {
                                   "type": "string"
                                 },
                                 "model": {
+                                  "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                   "$id": "https://schemas.meshery.io/model.json",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
-                                  "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                   "additionalProperties": false,
                                   "type": "object",
                                   "properties": {
@@ -9658,6 +9666,10 @@ const schema = {
                       "default": "v0.0.1"
                     },
                     "model": {
+                      "x-go-type": "model.ModelDefinition",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                      },
                       "$id": "https://schemas.meshery.io/model.json",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
@@ -10552,6 +10564,10 @@ const schema = {
                       "type": "array",
                       "description": "Capabilities associated with the relationship.",
                       "items": {
+                        "x-go-type": "capability.Capability",
+                        "x-go-type-import": {
+                          "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                        },
                         "$id": "https://schemas.meshery.io/capability.json",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
@@ -11102,9 +11118,9 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
-                                      "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                       "additionalProperties": false,
                                       "type": "object",
                                       "properties": {
@@ -12152,9 +12168,9 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
-                                      "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                       "additionalProperties": false,
                                       "type": "object",
                                       "properties": {
@@ -13212,9 +13228,9 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
-                                      "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                       "additionalProperties": false,
                                       "type": "object",
                                       "properties": {
@@ -14262,9 +14278,9 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
-                                      "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                       "additionalProperties": false,
                                       "type": "object",
                                       "properties": {
@@ -17392,6 +17408,10 @@ const schema = {
                             "default": "v0.0.1"
                           },
                           "model": {
+                            "x-go-type": "model.ModelDefinition",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta1/model"
+                            },
                             "$id": "https://schemas.meshery.io/model.json",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
@@ -18286,6 +18306,10 @@ const schema = {
                             "type": "array",
                             "description": "Capabilities associated with the relationship.",
                             "items": {
+                              "x-go-type": "capability.Capability",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                              },
                               "$id": "https://schemas.meshery.io/capability.json",
                               "$schema": "http://json-schema.org/draft-07/schema#",
                               "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
@@ -18836,9 +18860,9 @@ const schema = {
                                             "type": "string"
                                           },
                                           "model": {
+                                            "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                             "$id": "https://schemas.meshery.io/model.json",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
-                                            "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                             "additionalProperties": false,
                                             "type": "object",
                                             "properties": {
@@ -19886,9 +19910,9 @@ const schema = {
                                             "type": "string"
                                           },
                                           "model": {
+                                            "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                             "$id": "https://schemas.meshery.io/model.json",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
-                                            "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                             "additionalProperties": false,
                                             "type": "object",
                                             "properties": {
@@ -20946,9 +20970,9 @@ const schema = {
                                             "type": "string"
                                           },
                                           "model": {
+                                            "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                             "$id": "https://schemas.meshery.io/model.json",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
-                                            "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                             "additionalProperties": false,
                                             "type": "object",
                                             "properties": {
@@ -21996,9 +22020,9 @@ const schema = {
                                             "type": "string"
                                           },
                                           "model": {
+                                            "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                             "$id": "https://schemas.meshery.io/model.json",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
-                                            "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                             "additionalProperties": false,
                                             "type": "object",
                                             "properties": {
@@ -25158,6 +25182,10 @@ const schema = {
                           "default": "v0.0.1"
                         },
                         "model": {
+                          "x-go-type": "model.ModelDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                          },
                           "$id": "https://schemas.meshery.io/model.json",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
@@ -26052,6 +26080,10 @@ const schema = {
                           "type": "array",
                           "description": "Capabilities associated with the relationship.",
                           "items": {
+                            "x-go-type": "capability.Capability",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                            },
                             "$id": "https://schemas.meshery.io/capability.json",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
@@ -26602,9 +26634,9 @@ const schema = {
                                           "type": "string"
                                         },
                                         "model": {
+                                          "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "$id": "https://schemas.meshery.io/model.json",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
-                                          "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                           "additionalProperties": false,
                                           "type": "object",
                                           "properties": {
@@ -27652,9 +27684,9 @@ const schema = {
                                           "type": "string"
                                         },
                                         "model": {
+                                          "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "$id": "https://schemas.meshery.io/model.json",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
-                                          "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                           "additionalProperties": false,
                                           "type": "object",
                                           "properties": {
@@ -28712,9 +28744,9 @@ const schema = {
                                           "type": "string"
                                         },
                                         "model": {
+                                          "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "$id": "https://schemas.meshery.io/model.json",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
-                                          "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                           "additionalProperties": false,
                                           "type": "object",
                                           "properties": {
@@ -29762,9 +29794,9 @@ const schema = {
                                           "type": "string"
                                         },
                                         "model": {
+                                          "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "$id": "https://schemas.meshery.io/model.json",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
-                                          "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
                                           "additionalProperties": false,
                                           "type": "object",
                                           "properties": {
