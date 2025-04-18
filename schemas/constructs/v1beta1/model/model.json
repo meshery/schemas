@@ -32,8 +32,7 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
         "json": "version"
-      },
-      "default": "v0.0.1"
+      }
     },
     "name": {
       "type": "string",
