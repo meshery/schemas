@@ -10,7 +10,7 @@ import { DesignSchema } from "./constructs/v1alpha2/design";
 import { HttpsSchemasMesheryIoRelationshipJson } from "./constructs/v1alpha2/relationship";
 
 // v1alpha3
-import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship/relationship";
+import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship";
 import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector";
 
 // v1beta1
