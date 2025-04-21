@@ -26,21 +26,10 @@ type Workspace struct {
 
 // WorkspacePage defines model for workspacePage.
 type WorkspacePage struct {
-	Page       int `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
-	Workspaces []struct {
-		ID        uuid.UUID `db:"id" json:"id" yaml:"id"`
-		CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-
-		// DeletedAt SQL null Timestamp to handle null values of time.
-		DeletedAt      sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-		Description    string       `json:"description,omitempty" yaml:"description,omitempty"`
-		Name           string       `json:"name,omitempty" yaml:"name,omitempty"`
-		OrganizationId uuid.UUID    `db:"org_id" json:"org_id" yaml:"org_id"`
-		Owner          string       `json:"owner,omitempty" yaml:"owner,omitempty"`
-		UpdatedAt      time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	} `json:"workspaces,omitempty" yaml:"workspaces,omitempty"`
+	Page       int         `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   int         `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount int         `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Workspaces []Workspace `json:"workspaces,omitempty" yaml:"workspaces,omitempty"`
 }
 
 // WorkspacePayload defines model for workspacePayload.

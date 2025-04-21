@@ -108,6 +108,7 @@ components:
           type: array
           x-go-type-skip-optional-pointer: true
           items:
+            x-go-type: Environment
             $ref: "#/components/schemas/environment"
 
   requestBodies:
