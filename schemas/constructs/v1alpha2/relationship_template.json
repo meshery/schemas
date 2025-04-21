@@ -7,20 +7,29 @@
   "evaluationQuery": "",
   "metadata": {},
   "model": {
+    "id": "00000000-00000000-00000000-00000000",
     "schemaVersion": "v1beta1",
     "version": "v0.0.1",
     "name": "untitled-model",
     "displayName": "Untitled Model",
     "description": "A new Meshery model.",
     "status": "enabled",
-    "registrant": {},
+    "registrant": {
+      "id": "00000000-00000000-00000000-00000000",
+      "credential_id": "00000000-00000000-00000000-00000000",
+      "user_id": "00000000-00000000-00000000-00000000"
+    },
+    "registrantId": "00000000-00000000-00000000-00000000",
+    "categoryId": "00000000-00000000-00000000-00000000",
     "category": {
+      "id": "00000000-00000000-00000000-00000000",
       "name": "Uncategorized"
     },
     "subCategory": "Uncategorized",
     "metadata": {
       "capabilities": {
         "items": {
+          "version": "v0.0.1",
           "kind": {},
           "entityState": {},
           "status": "enabled"
@@ -34,7 +43,9 @@
       "shape": "circle"
     },
     "model": {
-      "version": {}
+      "version": {
+        "0": "v0.0.1"
+      }
     },
     "componentsCount": 0,
     "relationshipsCount": 0
@@ -48,7 +59,7 @@
           "items": {
             "kind": "",
             "model": {
-              "id": "",
+              "id": "00000000-00000000-00000000-00000000",
               "schemaVersion": "v1beta1",
               "version": "v0.0.1",
               "name": "untitled-model",
@@ -56,22 +67,22 @@
               "description": "A new Meshery model.",
               "status": "enabled",
               "registrant": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "",
-                "credential_id": "",
+                "credential_id": "00000000-00000000-00000000-00000000",
                 "type": "",
                 "sub_type": "",
                 "kind": "",
                 "status": "",
-                "user_id": "",
+                "user_id": "00000000-00000000-00000000-00000000",
                 "created_at": "",
                 "updated_at": "",
                 "deleted_at": ""
               },
-              "registrantId": "",
-              "categoryId": "",
+              "registrantId": "00000000-00000000-00000000-00000000",
+              "categoryId": "00000000-00000000-00000000-00000000",
               "category": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "Uncategorized"
               },
               "subCategory": "Uncategorized",
@@ -79,7 +90,7 @@
                 "capabilities": {
                   "items": {
                     "schemaVersion": "",
-                    "version": "",
+                    "version": "v0.0.1",
                     "displayName": "",
                     "description": "",
                     "kind": {},
@@ -100,13 +111,13 @@
               },
               "model": {
                 "version": {
-                  "0": ""
+                  "0": "v0.0.1"
                 }
               },
               "componentsCount": 0,
               "relationshipsCount": 0
             },
-            "version": "",
+            "version": "v0.0.1",
             "match": {
               "self": {},
               "kind": {}
@@ -123,7 +134,7 @@
           "items": {
             "kind": "",
             "model": {
-              "id": "",
+              "id": "00000000-00000000-00000000-00000000",
               "schemaVersion": "v1beta1",
               "version": "v0.0.1",
               "name": "untitled-model",
@@ -131,22 +142,22 @@
               "description": "A new Meshery model.",
               "status": "enabled",
               "registrant": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "",
-                "credential_id": "",
+                "credential_id": "00000000-00000000-00000000-00000000",
                 "type": "",
                 "sub_type": "",
                 "kind": "",
                 "status": "",
-                "user_id": "",
+                "user_id": "00000000-00000000-00000000-00000000",
                 "created_at": "",
                 "updated_at": "",
                 "deleted_at": ""
               },
-              "registrantId": "",
-              "categoryId": "",
+              "registrantId": "00000000-00000000-00000000-00000000",
+              "categoryId": "00000000-00000000-00000000-00000000",
               "category": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "Uncategorized"
               },
               "subCategory": "Uncategorized",
@@ -154,7 +165,7 @@
                 "capabilities": {
                   "items": {
                     "schemaVersion": "",
-                    "version": "",
+                    "version": "v0.0.1",
                     "displayName": "",
                     "description": "",
                     "kind": {},
@@ -175,13 +186,13 @@
               },
               "model": {
                 "version": {
-                  "0": ""
+                  "0": "v0.0.1"
                 }
               },
               "componentsCount": 0,
               "relationshipsCount": 0
             },
-            "version": "",
+            "version": "v0.0.1",
             "match": {
               "self": {},
               "kind": {}
@@ -198,7 +209,7 @@
           "items": {
             "kind": "",
             "model": {
-              "id": "",
+              "id": "00000000-00000000-00000000-00000000",
               "schemaVersion": "v1beta1",
               "version": "v0.0.1",
               "name": "untitled-model",
@@ -206,22 +217,22 @@
               "description": "A new Meshery model.",
               "status": "enabled",
               "registrant": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "",
-                "credential_id": "",
+                "credential_id": "00000000-00000000-00000000-00000000",
                 "type": "",
                 "sub_type": "",
                 "kind": "",
                 "status": "",
-                "user_id": "",
+                "user_id": "00000000-00000000-00000000-00000000",
                 "created_at": "",
                 "updated_at": "",
                 "deleted_at": ""
               },
-              "registrantId": "",
-              "categoryId": "",
+              "registrantId": "00000000-00000000-00000000-00000000",
+              "categoryId": "00000000-00000000-00000000-00000000",
               "category": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "Uncategorized"
               },
               "subCategory": "Uncategorized",
@@ -229,7 +240,7 @@
                 "capabilities": {
                   "items": {
                     "schemaVersion": "",
-                    "version": "",
+                    "version": "v0.0.1",
                     "displayName": "",
                     "description": "",
                     "kind": {},
@@ -250,13 +261,13 @@
               },
               "model": {
                 "version": {
-                  "0": ""
+                  "0": "v0.0.1"
                 }
               },
               "componentsCount": 0,
               "relationshipsCount": 0
             },
-            "version": "",
+            "version": "v0.0.1",
             "match": {
               "self": {},
               "kind": {}
@@ -273,7 +284,7 @@
           "items": {
             "kind": "",
             "model": {
-              "id": "",
+              "id": "00000000-00000000-00000000-00000000",
               "schemaVersion": "v1beta1",
               "version": "v0.0.1",
               "name": "untitled-model",
@@ -281,22 +292,22 @@
               "description": "A new Meshery model.",
               "status": "enabled",
               "registrant": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "",
-                "credential_id": "",
+                "credential_id": "00000000-00000000-00000000-00000000",
                 "type": "",
                 "sub_type": "",
                 "kind": "",
                 "status": "",
-                "user_id": "",
+                "user_id": "00000000-00000000-00000000-00000000",
                 "created_at": "",
                 "updated_at": "",
                 "deleted_at": ""
               },
-              "registrantId": "",
-              "categoryId": "",
+              "registrantId": "00000000-00000000-00000000-00000000",
+              "categoryId": "00000000-00000000-00000000-00000000",
               "category": {
-                "id": "",
+                "id": "00000000-00000000-00000000-00000000",
                 "name": "Uncategorized"
               },
               "subCategory": "Uncategorized",
@@ -304,7 +315,7 @@
                 "capabilities": {
                   "items": {
                     "schemaVersion": "",
-                    "version": "",
+                    "version": "v0.0.1",
                     "displayName": "",
                     "description": "",
                     "kind": {},
@@ -325,13 +336,13 @@
               },
               "model": {
                 "version": {
-                  "0": ""
+                  "0": "v0.0.1"
                 }
               },
               "componentsCount": 0,
               "relationshipsCount": 0
             },
-            "version": "",
+            "version": "v0.0.1",
             "match": {
               "self": {},
               "kind": {}

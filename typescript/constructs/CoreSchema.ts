@@ -1,4 +1,7 @@
-{
+// Generated from constructs/core.json
+// This file exports the original JSON schema
+
+const schema = {
   "$id": "../core.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Reusable core schema elements",
@@ -571,6 +574,20 @@
           "required": ["resolved_parent_id", "resolved_ref_field_path"]
         }
       ]
+    },
+
+    "IaCFileTypes": {
+      "type": "string",
+      "description": "The type of the IaC file",
+      "enum": [
+        "meshery-design",
+        "helm-chart",
+        "k8s-manifest",
+        "docker-compose",
+        "k8s-kustomize"
+      ]
     }
   }
 }
+
+export default schema;

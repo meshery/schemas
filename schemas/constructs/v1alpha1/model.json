@@ -27,9 +27,8 @@
       "default": "enabled"
     },
     "version": {
-      "$ref": "../core.json#/definitions/versionString",
-      "description": "Version of the model.",
-      "default": "v0.0.1"
+      "$ref": "../core.json#/definitions/semverString",
+      "description": "Version of the model."
     },
     "category": {
       "type": "string",
