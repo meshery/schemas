@@ -490,6 +490,7 @@ components:
             description: Visualization styles for a relationship
             allOf:
                 - $ref: "#/components/schemas/styles"
+                  x-go-type: core.Styles
                 - type: object
                   properties:
                       edge-animation:

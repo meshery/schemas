@@ -165,10 +165,18 @@
         "styles": {
           "anyOf": [
             {
-              "$ref": "../../core.json#/definitions/edgeStyles"
+              "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/styles",
+              "x-go-type": "core.Styles",
+              "x-go-type-import": {
+                "path": "github.com/meshery/schemas/models/v1alpha1/core"
+              }
             },
             {
-              "$ref": "../../core.json#/definitions/styles"
+              "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/edgeStyles",
+              "x-go-type": "core.EdgeStyles",
+              "x-go-type-import": {
+                "path": "github.com/meshery/schemas/models/v1alpha1/core"
+              }
             }
           ],
           "x-oapi-codegen-extra-tags": {
@@ -182,7 +190,11 @@
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json"
       },
-      "$ref": "../selector.json#/definitions/selectors"
+      "$ref": "../selector/selector.json#/definitions/selectors",
+      "x-go-type": "selector.Selectors",
+      "x-go-type-import": {
+        "path": "github.com/meshery/schemas/models/v1alpha3/selector/selector"
+      }
     }
   }
 }

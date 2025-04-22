@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+  title: Selector API
+  version: 1.0.0
+  description: Reusable relationships selectors schema elements
+paths: {}
+components:
+  schemas:
+    StringArrayArray:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+      description: Array of string arrays representing JSON paths
+
+    MutatorRef:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+      description: JSON ref to value from where patch should be applied. The sequence of mutatorRef and mutatedRef must match.
+
+    MutatedRef:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+      description: JSONPath to property to be patched.
+
+    PatchStrategy:
+      type: string
+      enum:
+        - merge
+        - strategic
+        - add
+        - remove
+        - copy
+        - move
+        - test
+      default: copy
+      description: patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+
+    MatchSelectorItem:
+      type: object
+      properties:
+        kind:
+          type: string
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
+        mutatorRef:
+          $ref: "#/components/schemas/MutatorRef"
+          x-go-type: MutatorRef
+        mutatedRef:
+          $ref: "#/components/schemas/MutatedRef"
+          x-go-type: MutatedRef
+
+    MatchSelector:
+      type: array
+      items:
+        $ref: "#/components/schemas/MatchSelectorItem"
+        x-go-type: MatchSelectorItem
+      description: Type is array so that multiple bindings can be supported between 2 nodes
+
+    Match:
+      type: object
+      additionalProperties: false
+      properties:
+        refs:
+          $ref: "#/components/schemas/StringArrayArray"
+        from:
+          $ref: "#/components/schemas/MatchSelector"
+          x-go-type: MatchSelector
+        to:
+          $ref: "#/components/schemas/MatchSelector"
+          x-go-type: MatchSelector
+
+    Patch:
+      type: object
+      properties:
+        patchStrategy:
+          $ref: "#/components/schemas/PatchStrategy"
+          x-go-type: PatchStrategy
+        mutatorRef:
+          $ref: "#/components/schemas/MutatorRef"
+          x-go-type: MutatorRef
+        mutatedRef:
+          $ref: "#/components/schemas/MutatedRef"
+          x-go-type: MutatedRef
+
+    ModelDefinition:
+      type: object
+      description: Name of the model implicated by this selector
+      x-go-type: model.ModelDefinition
+      x-go-type-import:
+        path: github.com/meshery/schemas/models/v1beta1/model
+
+    SelectorItem:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
+        model:
+          $ref: "#/components/schemas/ModelDefinition"
+        match:
+          $ref: "#/components/schemas/Match"
+          x-go-type: Match
+        patch:
+          $ref: "#/components/schemas/Patch"
+          x-go-type: Patch
+      description: Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning.
+
+    Selector:
+      type: array
+      items:
+        $ref: "#/components/schemas/SelectorItem"
+        x-go-type: SelectorItem
+      description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+
+    SelectorPair:
+      type: object
+      required:
+        - from
+        - to
+      properties:
+        from:
+          $ref: "#/components/schemas/Selector"
+          x-go-type: Selector
+        to:
+          $ref: "#/components/schemas/Selector"
+          x-go-type: Selector
+
+    SelectorsItem:
+      type: object
+      additionalProperties: false
+      required:
+        - allow
+      properties:
+        allow:
+          $ref: "#/components/schemas/SelectorPair"
+          x-go-type: SelectorPair
+          description: Selectors used to define relationships which are allowed.
+        deny:
+          $ref: "#/components/schemas/SelectorPair"
+          x-go-type: SelectorPair
+          description: Optional selectors used to define relationships which should not be created / is restricted.
+      description: Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
+
+    Selectors:
+      type: array
+      items:
+        $ref: "#/components/schemas/SelectorsItem"
+        x-go-type: SelectorsItem
+      description: Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality.
+
+    SelectorDefinition:
+      $ref: "./selector.json"
+

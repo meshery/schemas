@@ -274,7 +274,8 @@
       "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
       "allOf": [
         {
-          "$ref": "#/definitions/styles"
+          "$ref": "#/definitions/styles",
+          "X-go-type": "core.Styles"
         },
         {
           "properties": {
