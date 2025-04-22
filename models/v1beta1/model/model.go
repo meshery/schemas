@@ -12,6 +12,16 @@ import (
 	"github.com/meshery/schemas/models/v1beta1/category"
 	"github.com/meshery/schemas/models/v1beta1/connection"
 	"github.com/meshery/schemas/models/v1beta1/subcategory"
+	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
+)
+
+// Defines values for ImportRequestUploadType.
+const (
+	Csv       ImportRequestUploadType = "csv"
+	File      ImportRequestUploadType = "file"
+	Url       ImportRequestUploadType = "url"
+	UrlImport ImportRequestUploadType = "urlImport"
 )
 
 // Defines values for ModelDefinitionStatus.
@@ -50,6 +60,94 @@ const (
 	Triangle             ModelDefinitionMetadataShape = "triangle"
 	Vee                  ModelDefinitionMetadataShape = "vee"
 )
+
+// ImportBody defines model for ImportBody.
+type ImportBody struct {
+	union json.RawMessage
+}
+
+// ImportBody0 defines model for .
+type ImportBody0 struct {
+	// FileName Name of the file being uploaded.
+	FileName string `json:"fileName" yaml:"fileName"`
+
+	// ModelFile Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
+	ModelFile string `json:"modelFile" yaml:"modelFile"`
+}
+
+// ImportBody1 defines model for .
+type ImportBody1 struct {
+	// Url A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
+	Url string `json:"url" yaml:"url"`
+}
+
+// ImportBody2 defines model for .
+type ImportBody2 struct {
+	// ComponentCsv Upload a CSV file containing component definitions
+	ComponentCsv openapi_types.File `json:"componentCsv" yaml:"componentCsv"`
+
+	// ModelCsv Upload a CSV file containing model definitions
+	ModelCsv openapi_types.File `json:"modelCsv" yaml:"modelCsv"`
+
+	// RelationshipCsv Upload a CSV file containing relationship definitions
+	RelationshipCsv openapi_types.File `json:"relationshipCsv" yaml:"relationshipCsv"`
+}
+
+// ImportBody3 defines model for .
+type ImportBody3 struct {
+	// Url URI to the source code or package of the model.
+	Url string `json:"url" yaml:"url"`
+}
+
+// ImportRequest defines model for ImportRequest.
+type ImportRequest struct {
+	ImportBody ImportRequest_ImportBody `json:"importBody" yaml:"importBody"`
+	Register   bool                     `json:"register" yaml:"register"`
+
+	// UploadType Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.
+	UploadType ImportRequestUploadType `json:"uploadType" yaml:"uploadType"`
+}
+
+// ImportRequestImportBody0 defines model for .
+type ImportRequestImportBody0 struct {
+	// FileName Name of the file being uploaded.
+	FileName string `json:"fileName" yaml:"fileName"`
+
+	// ModelFile Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
+	ModelFile string `json:"modelFile" yaml:"modelFile"`
+}
+
+// ImportRequestImportBody1 defines model for .
+type ImportRequestImportBody1 struct {
+	// Url A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
+	Url string `json:"url" yaml:"url"`
+}
+
+// ImportRequestImportBody2 defines model for .
+type ImportRequestImportBody2 struct {
+	// ComponentCsv Upload a CSV file containing component definitions
+	ComponentCsv openapi_types.File `json:"componentCsv" yaml:"componentCsv"`
+
+	// ModelCsv Upload a CSV file containing model definitions
+	ModelCsv openapi_types.File `json:"modelCsv" yaml:"modelCsv"`
+
+	// RelationshipCsv Upload a CSV file containing relationship definitions
+	RelationshipCsv openapi_types.File `json:"relationshipCsv" yaml:"relationshipCsv"`
+}
+
+// ImportRequestImportBody3 defines model for .
+type ImportRequestImportBody3 struct {
+	// Url URI to the source code or package of the model.
+	Url string `json:"url" yaml:"url"`
+}
+
+// ImportRequest_ImportBody defines model for ImportRequest.ImportBody.
+type ImportRequest_ImportBody struct {
+	union json.RawMessage
+}
+
+// ImportRequestUploadType Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.
+type ImportRequestUploadType string
 
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {
@@ -322,4 +420,232 @@ func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(object)
+}
+
+// AsImportBody0 returns the union data inside the ImportBody as a ImportBody0
+func (t ImportBody) AsImportBody0() (ImportBody0, error) {
+	var body ImportBody0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportBody0 overwrites any union data inside the ImportBody as the provided ImportBody0
+func (t *ImportBody) FromImportBody0(v ImportBody0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportBody0 performs a merge with any union data inside the ImportBody, using the provided ImportBody0
+func (t *ImportBody) MergeImportBody0(v ImportBody0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsImportBody1 returns the union data inside the ImportBody as a ImportBody1
+func (t ImportBody) AsImportBody1() (ImportBody1, error) {
+	var body ImportBody1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportBody1 overwrites any union data inside the ImportBody as the provided ImportBody1
+func (t *ImportBody) FromImportBody1(v ImportBody1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportBody1 performs a merge with any union data inside the ImportBody, using the provided ImportBody1
+func (t *ImportBody) MergeImportBody1(v ImportBody1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsImportBody2 returns the union data inside the ImportBody as a ImportBody2
+func (t ImportBody) AsImportBody2() (ImportBody2, error) {
+	var body ImportBody2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportBody2 overwrites any union data inside the ImportBody as the provided ImportBody2
+func (t *ImportBody) FromImportBody2(v ImportBody2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportBody2 performs a merge with any union data inside the ImportBody, using the provided ImportBody2
+func (t *ImportBody) MergeImportBody2(v ImportBody2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsImportBody3 returns the union data inside the ImportBody as a ImportBody3
+func (t ImportBody) AsImportBody3() (ImportBody3, error) {
+	var body ImportBody3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportBody3 overwrites any union data inside the ImportBody as the provided ImportBody3
+func (t *ImportBody) FromImportBody3(v ImportBody3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportBody3 performs a merge with any union data inside the ImportBody, using the provided ImportBody3
+func (t *ImportBody) MergeImportBody3(v ImportBody3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ImportBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ImportBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
+
+// AsImportRequestImportBody0 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody0
+func (t ImportRequest_ImportBody) AsImportRequestImportBody0() (ImportRequestImportBody0, error) {
+	var body ImportRequestImportBody0
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportRequestImportBody0 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody0
+func (t *ImportRequest_ImportBody) FromImportRequestImportBody0(v ImportRequestImportBody0) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportRequestImportBody0 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody0
+func (t *ImportRequest_ImportBody) MergeImportRequestImportBody0(v ImportRequestImportBody0) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsImportRequestImportBody1 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody1
+func (t ImportRequest_ImportBody) AsImportRequestImportBody1() (ImportRequestImportBody1, error) {
+	var body ImportRequestImportBody1
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportRequestImportBody1 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody1
+func (t *ImportRequest_ImportBody) FromImportRequestImportBody1(v ImportRequestImportBody1) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportRequestImportBody1 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody1
+func (t *ImportRequest_ImportBody) MergeImportRequestImportBody1(v ImportRequestImportBody1) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsImportRequestImportBody2 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody2
+func (t ImportRequest_ImportBody) AsImportRequestImportBody2() (ImportRequestImportBody2, error) {
+	var body ImportRequestImportBody2
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportRequestImportBody2 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody2
+func (t *ImportRequest_ImportBody) FromImportRequestImportBody2(v ImportRequestImportBody2) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportRequestImportBody2 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody2
+func (t *ImportRequest_ImportBody) MergeImportRequestImportBody2(v ImportRequestImportBody2) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsImportRequestImportBody3 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody3
+func (t ImportRequest_ImportBody) AsImportRequestImportBody3() (ImportRequestImportBody3, error) {
+	var body ImportRequestImportBody3
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromImportRequestImportBody3 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody3
+func (t *ImportRequest_ImportBody) FromImportRequestImportBody3(v ImportRequestImportBody3) error {
+	b, err := json.Marshal(v)
+	t.union = b
+	return err
+}
+
+// MergeImportRequestImportBody3 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody3
+func (t *ImportRequest_ImportBody) MergeImportRequestImportBody3(v ImportRequestImportBody3) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t ImportRequest_ImportBody) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *ImportRequest_ImportBody) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
 }
