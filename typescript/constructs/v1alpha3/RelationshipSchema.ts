@@ -1,4 +1,7 @@
-{
+// Generated from constructs/v1alpha3/relationship.json
+// This file exports the original JSON schema
+
+const schema = {
   "$id": "https://schemas.meshery.io/relationship.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
@@ -24,7 +27,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "id",
         "json": "id"
-      }
+      },
+      "x-order": 1
     },
     "schemaVersion": {
       "description": "Specifies the version of the schema used for the relationship definition.",
@@ -42,18 +46,21 @@
         "yaml": "schemaVersion",
         "json": "schemaVersion"
       },
-      "default": "v1alpha3"
+      "default": "v1alpha3",
+      "x-order": 2
     },
     "version": {
       "description": "Specifies the version of the relationship definition.",
       "type": "string",
       "minLength": 5,
       "maxLength": 100,
-      "$ref": "../core.json#/definitions/semverString",
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
         "json": "version"
-      }
+      },
+      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "default": "v0.0.1",
+      "x-order": 3
     },
     "model": {
       "description": "Name of the model in which this relationship is packaged.",
@@ -73,7 +80,8 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "id",
             "json": "id"
-          }
+          },
+          "x-order": 1
         },
         "schemaVersion": {
           "description": "Specifies the version of the schema used for the definition.",
@@ -90,7 +98,8 @@
             "v1alpha1",
             "v2beta3",
             "v1.custom-suffix"
-          ]
+          ],
+          "x-order": 2
         },
         "version": {
           "description": "Version of the model definition.",
@@ -101,7 +110,8 @@
           },
           "minLength": 5,
           "maxLength": 100,
-          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+          "x-order": 3
         },
         "name": {
           "description": "The unique name for the model within the scope of a registrant.",
@@ -110,7 +120,8 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "name",
             "json": "name"
-          }
+          },
+          "x-order": 4
         },
         "displayName": {
           "description": "Human-readable name for the model.",
@@ -121,7 +132,8 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "displayName",
             "json": "displayName"
-          }
+          },
+          "x-order": 5
         },
         "description": {
           "type": "string",
@@ -131,7 +143,8 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "description",
             "json": "description"
-          }
+          },
+          "x-order": 6
         },
         "status": {
           "type": "string",
@@ -144,7 +157,8 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "status",
             "json": "status"
-          }
+          },
+          "x-order": 7
         },
         "registrant": {
           "x-oapi-codegen-extra-tags": {
@@ -174,7 +188,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "id",
                 "json": "id"
-              }
+              },
+              "x-order": 1
             },
             "name": {
               "x-oapi-codegen-extra-tags": {
@@ -183,7 +198,8 @@
                 "json": "name"
               },
               "type": "string",
-              "description": "Connection Name"
+              "description": "Connection Name",
+              "x-order": 2
             },
             "credential_id": {
               "x-go-name": "CredentialId",
@@ -198,7 +214,8 @@
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
-              }
+              },
+              "x-order": 3
             },
             "type": {
               "x-oapi-codegen-extra-tags": {
@@ -207,7 +224,8 @@
                 "json": "type"
               },
               "type": "string",
-              "description": "Connection Type"
+              "description": "Connection Type",
+              "x-order": 4
             },
             "sub_type": {
               "x-oapi-codegen-extra-tags": {
@@ -216,7 +234,8 @@
                 "json": "sub_type"
               },
               "type": "string",
-              "description": "Connection Subtype"
+              "description": "Connection Subtype",
+              "x-order": 5
             },
             "kind": {
               "x-oapi-codegen-extra-tags": {
@@ -225,7 +244,8 @@
                 "json": "kind"
               },
               "type": "string",
-              "description": "Connection Kind"
+              "description": "Connection Kind",
+              "x-order": 6
             },
             "metadata": {
               "x-oapi-codegen-extra-tags": {
@@ -233,7 +253,8 @@
                 "yaml": "metadata",
                 "json": "metadata"
               },
-              "type": "object"
+              "type": "object",
+              "x-order": 7
             },
             "status": {
               "x-oapi-codegen-extra-tags": {
@@ -252,7 +273,8 @@
                 "disconnected",
                 "deleted",
                 "not found"
-              ]
+              ],
+              "x-order": 8
             },
             "user_id": {
               "x-go-name": "UserID",
@@ -266,7 +288,8 @@
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
-              }
+              },
+              "x-order": 9
             },
             "created_at": {
               "x-oapi-codegen-extra-tags": {
@@ -275,7 +298,8 @@
               },
               "type": "string",
               "format": "date-time",
-              "x-go-type-skip-optional-pointer": true
+              "x-go-type-skip-optional-pointer": true,
+              "x-order": 10
             },
             "updated_at": {
               "x-oapi-codegen-extra-tags": {
@@ -284,7 +308,8 @@
               },
               "type": "string",
               "format": "date-time",
-              "x-go-type-skip-optional-pointer": true
+              "x-go-type-skip-optional-pointer": true,
+              "x-order": 11
             },
             "deleted_at": {
               "x-oapi-codegen-extra-tags": {
@@ -293,9 +318,11 @@
               },
               "type": "string",
               "format": "date-time",
-              "x-go-type-skip-optional-pointer": true
+              "x-go-type-skip-optional-pointer": true,
+              "x-order": 12
             }
-          }
+          },
+          "x-order": 8
         },
         "category": {
           "type": "object",
@@ -312,7 +339,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "id",
                 "json": "id"
-              }
+              },
+              "x-order": 1
             },
             "name": {
               "type": "string",
@@ -321,21 +349,24 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "name",
                 "json": "name"
-              }
+              },
+              "x-order": 2
             },
             "metadata": {
               "type": "object",
               "x-oapi-codegen-extra-tags": {
                 "yaml": "metadata",
                 "json": "metadata"
-              }
+              },
+              "x-order": 3
             }
           },
           "x-oapi-codegen-extra-tags": {
             "yaml": "category",
             "json": "category",
             "gorm": "foreignKey:CategoryId;references:Id"
-          }
+          },
+          "x-order": 9
         },
         "subCategory": {
           "type": "string",
@@ -345,7 +376,8 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "subCategory",
             "json": "subCategory"
-          }
+          },
+          "x-order": 10
         },
         "metadata": {
           "type": "object",
@@ -388,7 +420,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "schemaVersion",
                       "json": "schemaVersion"
-                    }
+                    },
+                    "x-order": 1
                   },
                   "version": {
                     "description": "Version of the capability definition.",
@@ -399,7 +432,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "version",
                       "json": "version"
-                    }
+                    },
+                    "x-order": 2
                   },
                   "displayName": {
                     "description": "Name of the capability in human-readible format.",
@@ -408,7 +442,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "displayName",
                       "json": "displayName"
-                    }
+                    },
+                    "x-order": 3
                   },
                   "description": {
                     "type": "string",
@@ -416,7 +451,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "description",
                       "json": "description"
-                    }
+                    },
+                    "x-order": 4
                   },
                   "kind": {
                     "description": "Top-level categorization of the capability",
@@ -444,7 +480,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "kind",
                       "json": "kind"
-                    }
+                    },
+                    "x-order": 5
                   },
                   "type": {
                     "description": "Classification of capabilities. Used to group capabilities similar in nature.",
@@ -453,7 +490,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "type",
                       "json": "type"
-                    }
+                    },
+                    "x-order": 6
                   },
                   "subType": {
                     "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
@@ -496,7 +534,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "subType",
                       "json": "subType"
-                    }
+                    },
+                    "x-order": 7
                   },
                   "key": {
                     "description": "Key that backs the capability.",
@@ -505,7 +544,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "key",
                       "json": "key"
-                    }
+                    },
+                    "x-order": 8
                   },
                   "entityState": {
                     "description": "State of the entity in which the capability is applicable.",
@@ -522,7 +562,8 @@
                         "yaml": "entityState",
                         "json": "entityState"
                       }
-                    }
+                    },
+                    "x-order": 9
                   },
                   "status": {
                     "type": "string",
@@ -535,7 +576,8 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "status",
                       "json": "status"
-                    }
+                    },
+                    "x-order": 10
                   },
                   "metadata": {
                     "type": "object",
@@ -544,10 +586,12 @@
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "metadata",
                       "json": "metadata"
-                    }
+                    },
+                    "x-order": 11
                   }
                 }
-              }
+              },
+              "x-order": 1
             },
             "isAnnotation": {
               "type": "boolean",
@@ -555,7 +599,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "isAnnotation",
                 "json": "isAnnotation"
-              }
+              },
+              "x-order": 2
             },
             "primaryColor": {
               "type": "string",
@@ -565,7 +610,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "primaryColor",
                 "json": "primaryColor"
-              }
+              },
+              "x-order": 3
             },
             "secondaryColor": {
               "type": "string",
@@ -575,7 +621,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "secondaryColor",
                 "json": "secondaryColor"
-              }
+              },
+              "x-order": 4
             },
             "svgWhite": {
               "type": "string",
@@ -584,7 +631,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "svgWhite",
                 "json": "svgWhite"
-              }
+              },
+              "x-order": 5
             },
             "svgColor": {
               "type": "string",
@@ -593,7 +641,8 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "svgColor",
                 "json": "svgColor"
-              }
+              },
+              "x-order": 6
             },
             "svgComplete": {
               "type": "string",
@@ -602,13 +651,15 @@
               "x-oapi-codegen-extra-tags": {
                 "yaml": "svgComplete",
                 "json": "svgComplete"
-              }
+              },
+              "x-order": 7
             }
           },
           "x-oapi-codegen-extra-tags": {
             "gorm": "type:bytes;serializer:json"
           },
-          "additionalProperties": true
+          "additionalProperties": true,
+          "x-order": 11
         },
         "model": {
           "type": "object",
@@ -626,12 +677,14 @@
               "type": "string",
               "minLength": 5,
               "maxLength": 100,
-              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+              "x-order": 1
             }
           },
           "x-oapi-codegen-extra-tags": {
             "gorm": "type:bytes;serializer:json"
-          }
+          },
+          "x-order": 12
         }
       },
       "required": [
@@ -639,7 +692,8 @@
         "version",
         "registrant",
         "category"
-      ]
+      ],
+      "x-order": 4
     },
     "kind": {
       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -653,7 +707,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "kind",
         "json": "kind"
-      }
+      },
+      "x-order": 5
     },
     "type": {
       "description": "Classification of relationships. Used to group relationships similar in nature.",
@@ -664,7 +719,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "type",
         "json": "type"
-      }
+      },
+      "x-order": 6
     },
     "subType": {
       "description": "Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship.",
@@ -673,7 +729,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "subType",
         "json": "subType"
-      }
+      },
+      "x-order": 7
     },
     "status": {
       "type": "string",
@@ -689,7 +746,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
         "json": "status"
-      }
+      },
+      "x-order": 8
     },
     "evaluationQuery": {
       "description": "Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.",
@@ -698,7 +756,8 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "evaluationQuery",
         "json": "evaluationQuery"
-      }
+      },
+      "x-order": 9
     },
     "capabilities": {
       "type": "array",
@@ -737,7 +796,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "schemaVersion",
               "json": "schemaVersion"
-            }
+            },
+            "x-order": 1
           },
           "version": {
             "description": "Version of the capability definition.",
@@ -748,7 +808,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",
               "json": "version"
-            }
+            },
+            "x-order": 2
           },
           "displayName": {
             "description": "Name of the capability in human-readible format.",
@@ -757,7 +818,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "displayName",
               "json": "displayName"
-            }
+            },
+            "x-order": 3
           },
           "description": {
             "type": "string",
@@ -765,7 +827,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "description",
               "json": "description"
-            }
+            },
+            "x-order": 4
           },
           "kind": {
             "description": "Top-level categorization of the capability",
@@ -793,7 +856,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "kind",
               "json": "kind"
-            }
+            },
+            "x-order": 5
           },
           "type": {
             "description": "Classification of capabilities. Used to group capabilities similar in nature.",
@@ -802,7 +866,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "type",
               "json": "type"
-            }
+            },
+            "x-order": 6
           },
           "subType": {
             "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
@@ -811,7 +876,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "subType",
               "json": "subType"
-            }
+            },
+            "x-order": 7
           },
           "key": {
             "description": "Key that backs the capability.",
@@ -820,7 +886,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "key",
               "json": "key"
-            }
+            },
+            "x-order": 8
           },
           "entityState": {
             "description": "State of the entity in which the capability is applicable.",
@@ -837,7 +904,8 @@
                 "yaml": "entityState",
                 "json": "entityState"
               }
-            }
+            },
+            "x-order": 9
           },
           "status": {
             "type": "string",
@@ -850,7 +918,8 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "status",
               "json": "status"
-            }
+            },
+            "x-order": 10
           },
           "metadata": {
             "type": "object",
@@ -859,18 +928,20 @@
             "x-oapi-codegen-extra-tags": {
               "yaml": "metadata",
               "json": "metadata"
-            }
+            },
+            "x-order": 11
           }
         }
       },
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json"
-      }
+      },
+      "x-order": 10
     },
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
-      "additionalProperties" : true ,
+      "additionalProperties": true,
       "x-oapi-codegen-extra-tags": {
         "gorm": "foreignKey:ModelId;references:Id"
       },
@@ -882,18 +953,19 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "description",
             "json": "description"
-          }
+          },
+          "x-order": 1
         },
-
         "isAnnotation": {
-              "type": "boolean",
-              "description": "Indicates whether the relationship should be treated as a logical representation only",
-              "x-oapi-codegen-extra-tags": {
-                "yaml": "isAnnotation",
-                "json": "isAnnotation"
-              },
-              "default": false
-            },    
+          "type": "boolean",
+          "description": "Indicates whether the relationship should be treated as a logical representation only",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "isAnnotation",
+            "json": "isAnnotation"
+          },
+          "default": false,
+          "x-order": 2
+        },
         "styles": {
           "anyOf": [
             {
@@ -1193,9 +1265,11 @@
           "x-oapi-codegen-extra-tags": {
             "yaml": "styles",
             "json": "styles"
-          }
+          },
+          "x-order": 3
         }
-      }
+      },
+      "x-order": 11
     },
     "selectors": {
       "x-oapi-codegen-extra-tags": {
@@ -1232,7 +1306,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "kind",
                         "json": "kind"
-                      }
+                      },
+                      "x-order": 1
                     },
                     "model": {
                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
@@ -1252,7 +1327,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "id",
                             "json": "id"
-                          }
+                          },
+                          "x-order": 1
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -1269,7 +1345,8 @@
                             "v1alpha1",
                             "v2beta3",
                             "v1.custom-suffix"
-                          ]
+                          ],
+                          "x-order": 2
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -1280,7 +1357,8 @@
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "x-order": 3
                         },
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
@@ -1289,7 +1367,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "x-order": 4
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -1300,7 +1379,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
                             "json": "displayName"
-                          }
+                          },
+                          "x-order": 5
                         },
                         "description": {
                           "type": "string",
@@ -1310,7 +1390,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "description",
                             "json": "description"
-                          }
+                          },
+                          "x-order": 6
                         },
                         "status": {
                           "type": "string",
@@ -1323,7 +1404,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
-                          }
+                          },
+                          "x-order": 7
                         },
                         "registrant": {
                           "x-oapi-codegen-extra-tags": {
@@ -1353,7 +1435,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -1362,7 +1445,8 @@
                                 "json": "name"
                               },
                               "type": "string",
-                              "description": "Connection Name"
+                              "description": "Connection Name",
+                              "x-order": 2
                             },
                             "credential_id": {
                               "x-go-name": "CredentialId",
@@ -1377,7 +1461,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -1386,7 +1471,8 @@
                                 "json": "type"
                               },
                               "type": "string",
-                              "description": "Connection Type"
+                              "description": "Connection Type",
+                              "x-order": 4
                             },
                             "sub_type": {
                               "x-oapi-codegen-extra-tags": {
@@ -1395,7 +1481,8 @@
                                 "json": "sub_type"
                               },
                               "type": "string",
-                              "description": "Connection Subtype"
+                              "description": "Connection Subtype",
+                              "x-order": 5
                             },
                             "kind": {
                               "x-oapi-codegen-extra-tags": {
@@ -1404,7 +1491,8 @@
                                 "json": "kind"
                               },
                               "type": "string",
-                              "description": "Connection Kind"
+                              "description": "Connection Kind",
+                              "x-order": 6
                             },
                             "metadata": {
                               "x-oapi-codegen-extra-tags": {
@@ -1412,7 +1500,8 @@
                                 "yaml": "metadata",
                                 "json": "metadata"
                               },
-                              "type": "object"
+                              "type": "object",
+                              "x-order": 7
                             },
                             "status": {
                               "x-oapi-codegen-extra-tags": {
@@ -1431,7 +1520,8 @@
                                 "disconnected",
                                 "deleted",
                                 "not found"
-                              ]
+                              ],
+                              "x-order": 8
                             },
                             "user_id": {
                               "x-go-name": "UserID",
@@ -1445,7 +1535,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 9
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -1454,7 +1545,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 10
                             },
                             "updated_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -1463,7 +1555,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 11
                             },
                             "deleted_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -1472,9 +1565,11 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 12
                             }
-                          }
+                          },
+                          "x-order": 8
                         },
                         "category": {
                           "type": "object",
@@ -1491,7 +1586,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "type": "string",
@@ -1500,21 +1596,24 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
                                 "json": "name"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "metadata": {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
                                 "json": "metadata"
-                              }
+                              },
+                              "x-order": 3
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "category",
                             "json": "category",
                             "gorm": "foreignKey:CategoryId;references:Id"
-                          }
+                          },
+                          "x-order": 9
                         },
                         "subCategory": {
                           "type": "string",
@@ -1524,7 +1623,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 10
                         },
                         "metadata": {
                           "type": "object",
@@ -1567,7 +1667,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
-                                    }
+                                    },
+                                    "x-order": 1
                                   },
                                   "version": {
                                     "description": "Version of the capability definition.",
@@ -1578,7 +1679,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
                                       "json": "version"
-                                    }
+                                    },
+                                    "x-order": 2
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -1587,7 +1689,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "displayName",
                                       "json": "displayName"
-                                    }
+                                    },
+                                    "x-order": 3
                                   },
                                   "description": {
                                     "type": "string",
@@ -1595,7 +1698,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "description",
                                       "json": "description"
-                                    }
+                                    },
+                                    "x-order": 4
                                   },
                                   "kind": {
                                     "description": "Top-level categorization of the capability",
@@ -1623,7 +1727,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "kind",
                                       "json": "kind"
-                                    }
+                                    },
+                                    "x-order": 5
                                   },
                                   "type": {
                                     "description": "Classification of capabilities. Used to group capabilities similar in nature.",
@@ -1632,7 +1737,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "type",
                                       "json": "type"
-                                    }
+                                    },
+                                    "x-order": 6
                                   },
                                   "subType": {
                                     "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
@@ -1641,7 +1747,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "subType",
                                       "json": "subType"
-                                    }
+                                    },
+                                    "x-order": 7
                                   },
                                   "key": {
                                     "description": "Key that backs the capability.",
@@ -1650,7 +1757,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "key",
                                       "json": "key"
-                                    }
+                                    },
+                                    "x-order": 8
                                   },
                                   "entityState": {
                                     "description": "State of the entity in which the capability is applicable.",
@@ -1667,7 +1775,8 @@
                                         "yaml": "entityState",
                                         "json": "entityState"
                                       }
-                                    }
+                                    },
+                                    "x-order": 9
                                   },
                                   "status": {
                                     "type": "string",
@@ -1680,7 +1789,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
-                                    }
+                                    },
+                                    "x-order": 10
                                   },
                                   "metadata": {
                                     "type": "object",
@@ -1689,10 +1799,12 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "metadata",
                                       "json": "metadata"
-                                    }
+                                    },
+                                    "x-order": 11
                                   }
                                 }
-                              }
+                              },
+                              "x-order": 1
                             },
                             "isAnnotation": {
                               "type": "boolean",
@@ -1700,7 +1812,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "isAnnotation",
                                 "json": "isAnnotation"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "primaryColor": {
                               "type": "string",
@@ -1710,7 +1823,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "secondaryColor": {
                               "type": "string",
@@ -1720,7 +1834,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
-                              }
+                              },
+                              "x-order": 4
                             },
                             "svgWhite": {
                               "type": "string",
@@ -1729,7 +1844,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgWhite",
                                 "json": "svgWhite"
-                              }
+                              },
+                              "x-order": 5
                             },
                             "svgColor": {
                               "type": "string",
@@ -1738,7 +1854,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgColor",
                                 "json": "svgColor"
-                              }
+                              },
+                              "x-order": 6
                             },
                             "svgComplete": {
                               "type": "string",
@@ -1747,13 +1864,15 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgComplete",
                                 "json": "svgComplete"
-                              }
+                              },
+                              "x-order": 7
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
                           },
-                          "additionalProperties": true
+                          "additionalProperties": true,
+                          "x-order": 11
                         },
                         "model": {
                           "type": "object",
@@ -1771,12 +1890,14 @@
                               "type": "string",
                               "minLength": 5,
                               "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                              "x-order": 1
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
-                          }
+                          },
+                          "x-order": 12
                         }
                       },
                       "required": [
@@ -1784,7 +1905,8 @@
                         "version",
                         "registrant",
                         "category"
-                      ]
+                      ],
+                      "x-order": 2
                     },
                     "id": {
                       "type": "string",
@@ -1797,7 +1919,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "id",
                         "json": "id"
-                      }
+                      },
+                      "x-order": 3
                     },
                     "match": {
                       "type": "object",
@@ -1944,7 +2067,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "match",
                         "json": "match"
-                      }
+                      },
+                      "x-order": 4
                     },
                     "patch": {
                       "allOf": [
@@ -2004,11 +2128,13 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "patch",
                         "json": "patch"
-                      }
+                      },
+                      "x-order": 5
                     }
                   },
                   "description": "Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning."
-                }
+                },
+                "x-order": 1
               },
               "to": {
                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
@@ -2022,7 +2148,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "kind",
                         "json": "kind"
-                      }
+                      },
+                      "x-order": 1
                     },
                     "model": {
                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
@@ -2042,7 +2169,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "id",
                             "json": "id"
-                          }
+                          },
+                          "x-order": 1
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -2059,7 +2187,8 @@
                             "v1alpha1",
                             "v2beta3",
                             "v1.custom-suffix"
-                          ]
+                          ],
+                          "x-order": 2
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -2070,7 +2199,8 @@
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "x-order": 3
                         },
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
@@ -2079,7 +2209,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "x-order": 4
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -2090,7 +2221,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
                             "json": "displayName"
-                          }
+                          },
+                          "x-order": 5
                         },
                         "description": {
                           "type": "string",
@@ -2100,7 +2232,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "description",
                             "json": "description"
-                          }
+                          },
+                          "x-order": 6
                         },
                         "status": {
                           "type": "string",
@@ -2113,7 +2246,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
-                          }
+                          },
+                          "x-order": 7
                         },
                         "registrant": {
                           "x-oapi-codegen-extra-tags": {
@@ -2143,7 +2277,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -2152,7 +2287,8 @@
                                 "json": "name"
                               },
                               "type": "string",
-                              "description": "Connection Name"
+                              "description": "Connection Name",
+                              "x-order": 2
                             },
                             "credential_id": {
                               "x-go-name": "CredentialId",
@@ -2167,7 +2303,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -2176,7 +2313,8 @@
                                 "json": "type"
                               },
                               "type": "string",
-                              "description": "Connection Type"
+                              "description": "Connection Type",
+                              "x-order": 4
                             },
                             "sub_type": {
                               "x-oapi-codegen-extra-tags": {
@@ -2185,7 +2323,8 @@
                                 "json": "sub_type"
                               },
                               "type": "string",
-                              "description": "Connection Subtype"
+                              "description": "Connection Subtype",
+                              "x-order": 5
                             },
                             "kind": {
                               "x-oapi-codegen-extra-tags": {
@@ -2194,7 +2333,8 @@
                                 "json": "kind"
                               },
                               "type": "string",
-                              "description": "Connection Kind"
+                              "description": "Connection Kind",
+                              "x-order": 6
                             },
                             "metadata": {
                               "x-oapi-codegen-extra-tags": {
@@ -2202,7 +2342,8 @@
                                 "yaml": "metadata",
                                 "json": "metadata"
                               },
-                              "type": "object"
+                              "type": "object",
+                              "x-order": 7
                             },
                             "status": {
                               "x-oapi-codegen-extra-tags": {
@@ -2221,7 +2362,8 @@
                                 "disconnected",
                                 "deleted",
                                 "not found"
-                              ]
+                              ],
+                              "x-order": 8
                             },
                             "user_id": {
                               "x-go-name": "UserID",
@@ -2235,7 +2377,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 9
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -2244,7 +2387,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 10
                             },
                             "updated_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -2253,7 +2397,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 11
                             },
                             "deleted_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -2262,9 +2407,11 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 12
                             }
-                          }
+                          },
+                          "x-order": 8
                         },
                         "category": {
                           "type": "object",
@@ -2281,7 +2428,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "type": "string",
@@ -2290,21 +2438,24 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
                                 "json": "name"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "metadata": {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
                                 "json": "metadata"
-                              }
+                              },
+                              "x-order": 3
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "category",
                             "json": "category",
                             "gorm": "foreignKey:CategoryId;references:Id"
-                          }
+                          },
+                          "x-order": 9
                         },
                         "subCategory": {
                           "type": "string",
@@ -2314,7 +2465,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 10
                         },
                         "metadata": {
                           "type": "object",
@@ -2357,7 +2509,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
-                                    }
+                                    },
+                                    "x-order": 1
                                   },
                                   "version": {
                                     "description": "Version of the capability definition.",
@@ -2368,7 +2521,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
                                       "json": "version"
-                                    }
+                                    },
+                                    "x-order": 2
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -2377,7 +2531,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "displayName",
                                       "json": "displayName"
-                                    }
+                                    },
+                                    "x-order": 3
                                   },
                                   "description": {
                                     "type": "string",
@@ -2385,7 +2540,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "description",
                                       "json": "description"
-                                    }
+                                    },
+                                    "x-order": 4
                                   },
                                   "kind": {
                                     "description": "Top-level categorization of the capability",
@@ -2413,7 +2569,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "kind",
                                       "json": "kind"
-                                    }
+                                    },
+                                    "x-order": 5
                                   },
                                   "type": {
                                     "description": "Classification of capabilities. Used to group capabilities similar in nature.",
@@ -2422,7 +2579,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "type",
                                       "json": "type"
-                                    }
+                                    },
+                                    "x-order": 6
                                   },
                                   "subType": {
                                     "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
@@ -2431,7 +2589,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "subType",
                                       "json": "subType"
-                                    }
+                                    },
+                                    "x-order": 7
                                   },
                                   "key": {
                                     "description": "Key that backs the capability.",
@@ -2440,7 +2599,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "key",
                                       "json": "key"
-                                    }
+                                    },
+                                    "x-order": 8
                                   },
                                   "entityState": {
                                     "description": "State of the entity in which the capability is applicable.",
@@ -2457,7 +2617,8 @@
                                         "yaml": "entityState",
                                         "json": "entityState"
                                       }
-                                    }
+                                    },
+                                    "x-order": 9
                                   },
                                   "status": {
                                     "type": "string",
@@ -2470,7 +2631,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
-                                    }
+                                    },
+                                    "x-order": 10
                                   },
                                   "metadata": {
                                     "type": "object",
@@ -2479,10 +2641,12 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "metadata",
                                       "json": "metadata"
-                                    }
+                                    },
+                                    "x-order": 11
                                   }
                                 }
-                              }
+                              },
+                              "x-order": 1
                             },
                             "isAnnotation": {
                               "type": "boolean",
@@ -2490,7 +2654,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "isAnnotation",
                                 "json": "isAnnotation"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "primaryColor": {
                               "type": "string",
@@ -2500,7 +2665,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "secondaryColor": {
                               "type": "string",
@@ -2510,7 +2676,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
-                              }
+                              },
+                              "x-order": 4
                             },
                             "svgWhite": {
                               "type": "string",
@@ -2519,7 +2686,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgWhite",
                                 "json": "svgWhite"
-                              }
+                              },
+                              "x-order": 5
                             },
                             "svgColor": {
                               "type": "string",
@@ -2528,7 +2696,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgColor",
                                 "json": "svgColor"
-                              }
+                              },
+                              "x-order": 6
                             },
                             "svgComplete": {
                               "type": "string",
@@ -2537,13 +2706,15 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgComplete",
                                 "json": "svgComplete"
-                              }
+                              },
+                              "x-order": 7
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
                           },
-                          "additionalProperties": true
+                          "additionalProperties": true,
+                          "x-order": 11
                         },
                         "model": {
                           "type": "object",
@@ -2561,12 +2732,14 @@
                               "type": "string",
                               "minLength": 5,
                               "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                              "x-order": 1
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
-                          }
+                          },
+                          "x-order": 12
                         }
                       },
                       "required": [
@@ -2574,7 +2747,8 @@
                         "version",
                         "registrant",
                         "category"
-                      ]
+                      ],
+                      "x-order": 2
                     },
                     "id": {
                       "type": "string",
@@ -2587,7 +2761,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "id",
                         "json": "id"
-                      }
+                      },
+                      "x-order": 3
                     },
                     "match": {
                       "type": "object",
@@ -2734,7 +2909,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "match",
                         "json": "match"
-                      }
+                      },
+                      "x-order": 4
                     },
                     "patch": {
                       "allOf": [
@@ -2794,13 +2970,16 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "patch",
                         "json": "patch"
-                      }
+                      },
+                      "x-order": 5
                     }
                   },
                   "description": "Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning."
-                }
+                },
+                "x-order": 2
               }
-            }
+            },
+            "x-order": 1
           },
           "allow": {
             "description": "Selectors used to define relationships which are allowed.",
@@ -2822,7 +3001,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "kind",
                         "json": "kind"
-                      }
+                      },
+                      "x-order": 1
                     },
                     "model": {
                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
@@ -2842,7 +3022,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "id",
                             "json": "id"
-                          }
+                          },
+                          "x-order": 1
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -2859,7 +3040,8 @@
                             "v1alpha1",
                             "v2beta3",
                             "v1.custom-suffix"
-                          ]
+                          ],
+                          "x-order": 2
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -2870,7 +3052,8 @@
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "x-order": 3
                         },
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
@@ -2879,7 +3062,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "x-order": 4
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -2890,7 +3074,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
                             "json": "displayName"
-                          }
+                          },
+                          "x-order": 5
                         },
                         "description": {
                           "type": "string",
@@ -2900,7 +3085,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "description",
                             "json": "description"
-                          }
+                          },
+                          "x-order": 6
                         },
                         "status": {
                           "type": "string",
@@ -2913,7 +3099,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
-                          }
+                          },
+                          "x-order": 7
                         },
                         "registrant": {
                           "x-oapi-codegen-extra-tags": {
@@ -2943,7 +3130,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -2952,7 +3140,8 @@
                                 "json": "name"
                               },
                               "type": "string",
-                              "description": "Connection Name"
+                              "description": "Connection Name",
+                              "x-order": 2
                             },
                             "credential_id": {
                               "x-go-name": "CredentialId",
@@ -2967,7 +3156,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -2976,7 +3166,8 @@
                                 "json": "type"
                               },
                               "type": "string",
-                              "description": "Connection Type"
+                              "description": "Connection Type",
+                              "x-order": 4
                             },
                             "sub_type": {
                               "x-oapi-codegen-extra-tags": {
@@ -2985,7 +3176,8 @@
                                 "json": "sub_type"
                               },
                               "type": "string",
-                              "description": "Connection Subtype"
+                              "description": "Connection Subtype",
+                              "x-order": 5
                             },
                             "kind": {
                               "x-oapi-codegen-extra-tags": {
@@ -2994,7 +3186,8 @@
                                 "json": "kind"
                               },
                               "type": "string",
-                              "description": "Connection Kind"
+                              "description": "Connection Kind",
+                              "x-order": 6
                             },
                             "metadata": {
                               "x-oapi-codegen-extra-tags": {
@@ -3002,7 +3195,8 @@
                                 "yaml": "metadata",
                                 "json": "metadata"
                               },
-                              "type": "object"
+                              "type": "object",
+                              "x-order": 7
                             },
                             "status": {
                               "x-oapi-codegen-extra-tags": {
@@ -3021,7 +3215,8 @@
                                 "disconnected",
                                 "deleted",
                                 "not found"
-                              ]
+                              ],
+                              "x-order": 8
                             },
                             "user_id": {
                               "x-go-name": "UserID",
@@ -3035,7 +3230,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 9
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -3044,7 +3240,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 10
                             },
                             "updated_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -3053,7 +3250,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 11
                             },
                             "deleted_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -3062,9 +3260,11 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 12
                             }
-                          }
+                          },
+                          "x-order": 8
                         },
                         "category": {
                           "type": "object",
@@ -3081,7 +3281,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "type": "string",
@@ -3090,21 +3291,24 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
                                 "json": "name"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "metadata": {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
                                 "json": "metadata"
-                              }
+                              },
+                              "x-order": 3
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "category",
                             "json": "category",
                             "gorm": "foreignKey:CategoryId;references:Id"
-                          }
+                          },
+                          "x-order": 9
                         },
                         "subCategory": {
                           "type": "string",
@@ -3114,7 +3318,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 10
                         },
                         "metadata": {
                           "type": "object",
@@ -3157,7 +3362,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
-                                    }
+                                    },
+                                    "x-order": 1
                                   },
                                   "version": {
                                     "description": "Version of the capability definition.",
@@ -3168,7 +3374,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
                                       "json": "version"
-                                    }
+                                    },
+                                    "x-order": 2
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -3177,7 +3384,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "displayName",
                                       "json": "displayName"
-                                    }
+                                    },
+                                    "x-order": 3
                                   },
                                   "description": {
                                     "type": "string",
@@ -3185,7 +3393,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "description",
                                       "json": "description"
-                                    }
+                                    },
+                                    "x-order": 4
                                   },
                                   "kind": {
                                     "description": "Top-level categorization of the capability",
@@ -3213,7 +3422,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "kind",
                                       "json": "kind"
-                                    }
+                                    },
+                                    "x-order": 5
                                   },
                                   "type": {
                                     "description": "Classification of capabilities. Used to group capabilities similar in nature.",
@@ -3222,7 +3432,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "type",
                                       "json": "type"
-                                    }
+                                    },
+                                    "x-order": 6
                                   },
                                   "subType": {
                                     "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
@@ -3231,7 +3442,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "subType",
                                       "json": "subType"
-                                    }
+                                    },
+                                    "x-order": 7
                                   },
                                   "key": {
                                     "description": "Key that backs the capability.",
@@ -3240,7 +3452,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "key",
                                       "json": "key"
-                                    }
+                                    },
+                                    "x-order": 8
                                   },
                                   "entityState": {
                                     "description": "State of the entity in which the capability is applicable.",
@@ -3257,7 +3470,8 @@
                                         "yaml": "entityState",
                                         "json": "entityState"
                                       }
-                                    }
+                                    },
+                                    "x-order": 9
                                   },
                                   "status": {
                                     "type": "string",
@@ -3270,7 +3484,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
-                                    }
+                                    },
+                                    "x-order": 10
                                   },
                                   "metadata": {
                                     "type": "object",
@@ -3279,10 +3494,12 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "metadata",
                                       "json": "metadata"
-                                    }
+                                    },
+                                    "x-order": 11
                                   }
                                 }
-                              }
+                              },
+                              "x-order": 1
                             },
                             "isAnnotation": {
                               "type": "boolean",
@@ -3290,7 +3507,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "isAnnotation",
                                 "json": "isAnnotation"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "primaryColor": {
                               "type": "string",
@@ -3300,7 +3518,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "secondaryColor": {
                               "type": "string",
@@ -3310,7 +3529,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
-                              }
+                              },
+                              "x-order": 4
                             },
                             "svgWhite": {
                               "type": "string",
@@ -3319,7 +3539,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgWhite",
                                 "json": "svgWhite"
-                              }
+                              },
+                              "x-order": 5
                             },
                             "svgColor": {
                               "type": "string",
@@ -3328,7 +3549,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgColor",
                                 "json": "svgColor"
-                              }
+                              },
+                              "x-order": 6
                             },
                             "svgComplete": {
                               "type": "string",
@@ -3337,13 +3559,15 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgComplete",
                                 "json": "svgComplete"
-                              }
+                              },
+                              "x-order": 7
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
                           },
-                          "additionalProperties": true
+                          "additionalProperties": true,
+                          "x-order": 11
                         },
                         "model": {
                           "type": "object",
@@ -3361,12 +3585,14 @@
                               "type": "string",
                               "minLength": 5,
                               "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                              "x-order": 1
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
-                          }
+                          },
+                          "x-order": 12
                         }
                       },
                       "required": [
@@ -3374,7 +3600,8 @@
                         "version",
                         "registrant",
                         "category"
-                      ]
+                      ],
+                      "x-order": 2
                     },
                     "id": {
                       "type": "string",
@@ -3387,7 +3614,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "id",
                         "json": "id"
-                      }
+                      },
+                      "x-order": 3
                     },
                     "match": {
                       "type": "object",
@@ -3534,7 +3762,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "match",
                         "json": "match"
-                      }
+                      },
+                      "x-order": 4
                     },
                     "patch": {
                       "allOf": [
@@ -3594,11 +3823,13 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "patch",
                         "json": "patch"
-                      }
+                      },
+                      "x-order": 5
                     }
                   },
                   "description": "Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning."
-                }
+                },
+                "x-order": 1
               },
               "to": {
                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
@@ -3612,7 +3843,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "kind",
                         "json": "kind"
-                      }
+                      },
+                      "x-order": 1
                     },
                     "model": {
                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
@@ -3632,7 +3864,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "id",
                             "json": "id"
-                          }
+                          },
+                          "x-order": 1
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -3649,7 +3882,8 @@
                             "v1alpha1",
                             "v2beta3",
                             "v1.custom-suffix"
-                          ]
+                          ],
+                          "x-order": 2
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -3660,7 +3894,8 @@
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "x-order": 3
                         },
                         "name": {
                           "description": "The unique name for the model within the scope of a registrant.",
@@ -3669,7 +3904,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "name",
                             "json": "name"
-                          }
+                          },
+                          "x-order": 4
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -3680,7 +3916,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "displayName",
                             "json": "displayName"
-                          }
+                          },
+                          "x-order": 5
                         },
                         "description": {
                           "type": "string",
@@ -3690,7 +3927,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "description",
                             "json": "description"
-                          }
+                          },
+                          "x-order": 6
                         },
                         "status": {
                           "type": "string",
@@ -3703,7 +3941,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
-                          }
+                          },
+                          "x-order": 7
                         },
                         "registrant": {
                           "x-oapi-codegen-extra-tags": {
@@ -3733,7 +3972,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -3742,7 +3982,8 @@
                                 "json": "name"
                               },
                               "type": "string",
-                              "description": "Connection Name"
+                              "description": "Connection Name",
+                              "x-order": 2
                             },
                             "credential_id": {
                               "x-go-name": "CredentialId",
@@ -3757,7 +3998,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -3766,7 +4008,8 @@
                                 "json": "type"
                               },
                               "type": "string",
-                              "description": "Connection Type"
+                              "description": "Connection Type",
+                              "x-order": 4
                             },
                             "sub_type": {
                               "x-oapi-codegen-extra-tags": {
@@ -3775,7 +4018,8 @@
                                 "json": "sub_type"
                               },
                               "type": "string",
-                              "description": "Connection Subtype"
+                              "description": "Connection Subtype",
+                              "x-order": 5
                             },
                             "kind": {
                               "x-oapi-codegen-extra-tags": {
@@ -3784,7 +4028,8 @@
                                 "json": "kind"
                               },
                               "type": "string",
-                              "description": "Connection Kind"
+                              "description": "Connection Kind",
+                              "x-order": 6
                             },
                             "metadata": {
                               "x-oapi-codegen-extra-tags": {
@@ -3792,7 +4037,8 @@
                                 "yaml": "metadata",
                                 "json": "metadata"
                               },
-                              "type": "object"
+                              "type": "object",
+                              "x-order": 7
                             },
                             "status": {
                               "x-oapi-codegen-extra-tags": {
@@ -3811,7 +4057,8 @@
                                 "disconnected",
                                 "deleted",
                                 "not found"
-                              ]
+                              ],
+                              "x-order": 8
                             },
                             "user_id": {
                               "x-go-name": "UserID",
@@ -3825,7 +4072,8 @@
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "x-order": 9
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -3834,7 +4082,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 10
                             },
                             "updated_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -3843,7 +4092,8 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 11
                             },
                             "deleted_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -3852,9 +4102,11 @@
                               },
                               "type": "string",
                               "format": "date-time",
-                              "x-go-type-skip-optional-pointer": true
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-order": 12
                             }
-                          }
+                          },
+                          "x-order": 8
                         },
                         "category": {
                           "type": "object",
@@ -3871,7 +4123,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "id",
                                 "json": "id"
-                              }
+                              },
+                              "x-order": 1
                             },
                             "name": {
                               "type": "string",
@@ -3880,21 +4133,24 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "name",
                                 "json": "name"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "metadata": {
                               "type": "object",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "metadata",
                                 "json": "metadata"
-                              }
+                              },
+                              "x-order": 3
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "category",
                             "json": "category",
                             "gorm": "foreignKey:CategoryId;references:Id"
-                          }
+                          },
+                          "x-order": 9
                         },
                         "subCategory": {
                           "type": "string",
@@ -3904,7 +4160,8 @@
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "subCategory",
                             "json": "subCategory"
-                          }
+                          },
+                          "x-order": 10
                         },
                         "metadata": {
                           "type": "object",
@@ -3947,7 +4204,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
-                                    }
+                                    },
+                                    "x-order": 1
                                   },
                                   "version": {
                                     "description": "Version of the capability definition.",
@@ -3958,7 +4216,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
                                       "json": "version"
-                                    }
+                                    },
+                                    "x-order": 2
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -3967,7 +4226,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "displayName",
                                       "json": "displayName"
-                                    }
+                                    },
+                                    "x-order": 3
                                   },
                                   "description": {
                                     "type": "string",
@@ -3975,7 +4235,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "description",
                                       "json": "description"
-                                    }
+                                    },
+                                    "x-order": 4
                                   },
                                   "kind": {
                                     "description": "Top-level categorization of the capability",
@@ -4003,7 +4264,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "kind",
                                       "json": "kind"
-                                    }
+                                    },
+                                    "x-order": 5
                                   },
                                   "type": {
                                     "description": "Classification of capabilities. Used to group capabilities similar in nature.",
@@ -4012,7 +4274,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "type",
                                       "json": "type"
-                                    }
+                                    },
+                                    "x-order": 6
                                   },
                                   "subType": {
                                     "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
@@ -4021,7 +4284,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "subType",
                                       "json": "subType"
-                                    }
+                                    },
+                                    "x-order": 7
                                   },
                                   "key": {
                                     "description": "Key that backs the capability.",
@@ -4030,7 +4294,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "key",
                                       "json": "key"
-                                    }
+                                    },
+                                    "x-order": 8
                                   },
                                   "entityState": {
                                     "description": "State of the entity in which the capability is applicable.",
@@ -4047,7 +4312,8 @@
                                         "yaml": "entityState",
                                         "json": "entityState"
                                       }
-                                    }
+                                    },
+                                    "x-order": 9
                                   },
                                   "status": {
                                     "type": "string",
@@ -4060,7 +4326,8 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
-                                    }
+                                    },
+                                    "x-order": 10
                                   },
                                   "metadata": {
                                     "type": "object",
@@ -4069,10 +4336,12 @@
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "metadata",
                                       "json": "metadata"
-                                    }
+                                    },
+                                    "x-order": 11
                                   }
                                 }
-                              }
+                              },
+                              "x-order": 1
                             },
                             "isAnnotation": {
                               "type": "boolean",
@@ -4080,7 +4349,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "isAnnotation",
                                 "json": "isAnnotation"
-                              }
+                              },
+                              "x-order": 2
                             },
                             "primaryColor": {
                               "type": "string",
@@ -4090,7 +4360,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "primaryColor",
                                 "json": "primaryColor"
-                              }
+                              },
+                              "x-order": 3
                             },
                             "secondaryColor": {
                               "type": "string",
@@ -4100,7 +4371,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "secondaryColor",
                                 "json": "secondaryColor"
-                              }
+                              },
+                              "x-order": 4
                             },
                             "svgWhite": {
                               "type": "string",
@@ -4109,7 +4381,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgWhite",
                                 "json": "svgWhite"
-                              }
+                              },
+                              "x-order": 5
                             },
                             "svgColor": {
                               "type": "string",
@@ -4118,7 +4391,8 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgColor",
                                 "json": "svgColor"
-                              }
+                              },
+                              "x-order": 6
                             },
                             "svgComplete": {
                               "type": "string",
@@ -4127,13 +4401,15 @@
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "svgComplete",
                                 "json": "svgComplete"
-                              }
+                              },
+                              "x-order": 7
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
                           },
-                          "additionalProperties": true
+                          "additionalProperties": true,
+                          "x-order": 11
                         },
                         "model": {
                           "type": "object",
@@ -4151,12 +4427,14 @@
                               "type": "string",
                               "minLength": 5,
                               "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                              "x-order": 1
                             }
                           },
                           "x-oapi-codegen-extra-tags": {
                             "gorm": "type:bytes;serializer:json"
-                          }
+                          },
+                          "x-order": 12
                         }
                       },
                       "required": [
@@ -4164,7 +4442,8 @@
                         "version",
                         "registrant",
                         "category"
-                      ]
+                      ],
+                      "x-order": 2
                     },
                     "id": {
                       "type": "string",
@@ -4177,7 +4456,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "id",
                         "json": "id"
-                      }
+                      },
+                      "x-order": 3
                     },
                     "match": {
                       "type": "object",
@@ -4324,7 +4604,8 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "match",
                         "json": "match"
-                      }
+                      },
+                      "x-order": 4
                     },
                     "patch": {
                       "allOf": [
@@ -4384,16 +4665,22 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "patch",
                         "json": "patch"
-                      }
+                      },
+                      "x-order": 5
                     }
                   },
                   "description": "Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning."
-                }
+                },
+                "x-order": 2
               }
-            }
+            },
+            "x-order": 2
           }
         }
-      }
+      },
+      "x-order": 12
     }
   }
 }
+
+export default schema;

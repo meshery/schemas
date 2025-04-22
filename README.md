@@ -103,7 +103,8 @@ Meshery follows a **Schema-Driven Development (SDD)** approach. This means that 
 Meshery uses **OpenAPI v3** specification to define schemas. Given the complexity of the project, where multiple constructs and APIs exist, we adopt a structured approach to schema management:  
 - **Schemas are versioned** to maintain backward compatibility.  
 - **Schemas are modular** to support different components of Meshery independently.  
-- **Schemas are used for validation, API definition, and automatic code generation.**  
+- **Schemas are used for validation, API definition, and automatic code generation.**
+-  NOTE: As you ref to model , etc or other existing constructs also add x-go-type and x-go-import-path so redudant structs are not generated , check existing implementation 
 
 ### **Schema Directory Structure**
 All schemas are stored in the **`schemas`** directory at the root of the project. The structure follows:  

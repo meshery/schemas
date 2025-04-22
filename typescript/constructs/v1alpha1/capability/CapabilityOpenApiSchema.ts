@@ -52,7 +52,8 @@ const schema = {
             "type": "string",
             "minLength": 5,
             "maxLength": 100,
-            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+            "default": "v0.0.1"
           },
           "displayName": {
             "description": "Name of the capability in human-readible format.",

@@ -7,23 +7,32 @@
   "model": {
     "model": {
       "version": {
-        "0": ""
+        "0": "v0.0.1"
       }
     },
+    "id": "00000000-00000000-00000000-00000000",
     "schemaVersion": "v1beta1",
     "version": "v0.0.1",
     "name": "untitled-model",
     "displayName": "Untitled Model",
     "description": "A new Meshery model.",
     "status": "enabled",
-    "registrant": {},
+    "registrant": {
+      "id": "00000000-00000000-00000000-00000000",
+      "credential_id": "00000000-00000000-00000000-00000000",
+      "user_id": "00000000-00000000-00000000-00000000"
+    },
+    "registrantId": "00000000-00000000-00000000-00000000",
+    "categoryId": "00000000-00000000-00000000-00000000",
     "category": {
+      "id": "00000000-00000000-00000000-00000000",
       "name": "Uncategorized"
     },
     "subCategory": "Uncategorized",
     "metadata": {
       "capabilities": {
         "items": {
+          "version": "v0.0.1",
           "kind": {},
           "entityState": {},
           "status": "enabled"
