@@ -78,6 +78,36 @@ components:
           $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
         deleted_at:
           $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/nullTime
+    environmentConnectionMapping:
+      properties:
+        ID:
+          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
+        environment_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: environment_id
+            json: environment_id
+          x-go-type-skip-optional-pointer: true
+        connection_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-oapi-codegen-extra-tags:
+            db: connection_id
+            json: connection_id
+          x-go-type-skip-optional-pointer: true
+        created_at:
+          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+        updated_at:
+          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+        deleted_at:
+          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/nullTime
     environmentPayload:
       properties:
         name:
