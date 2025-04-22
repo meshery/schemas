@@ -3,7 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Reusable relationships selectors schema elements",
   "$comment": "Sets of selectors are interpreted as a logical OR, while sets of allow/deny are interpreted a logical AND.",
-  "properties": {
+  "definitions": {
     "matchSelector": {
       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
       "type": "array",
@@ -98,11 +98,11 @@
               {
                 "properties": {
                   "from": {
-                    "$ref": "#/properties/matchSelector",
+                    "$ref": "#/definitions/matchSelector",
                     "x-go-type": "selector.Selector"
                   },
                   "to": {
-                    "$ref": "#/properties/matchSelector",
+                    "$ref": "#/definitions/matchSelector",
                     "x-go-type": "selector.Selector"
                   }
                 }
@@ -191,11 +191,11 @@
             ],
             "properties": {
               "from": {
-                "$ref": "#/properties/selector",
+                "$ref": "#/definitions/selector",
                 "x-go-type": "selector.Selector"
               },
               "to": {
-                "$ref": "#/properties/selector",
+                "$ref": "#/definitions/selector",
                 "x-go-type": "selector.Selector"
               }
             }
@@ -209,11 +209,11 @@
             ],
             "properties": {
               "from": {
-                "$ref": "#/properties/selector",
+                "$ref": "#/definitions/selector",
                 "x-go-type": "selector.Selector"
               },
               "to": {
-                "$ref": "#/properties/selector",
+                "$ref": "#/definitions/selector",
                 "x-go-type": "selector.Selector"
               }
             }

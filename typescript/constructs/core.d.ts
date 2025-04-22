@@ -170,7 +170,7 @@ export type EdgeStyles = Styles & {
  * This interface was referenced by `CoreJson`'s JSON-Schema
  * via the `definition` "componentStyles".
  */
-export type ComponentStyles = Styles & {
+export type ComponentStyles = Styles1 & {
   shape?: Shape;
   /**
    * The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.
@@ -371,7 +371,7 @@ export type ComponentStyles = Styles & {
  * This interface was referenced by `CoreJson`'s JSON-Schema
  * via the `definition` "relationshipStyles".
  */
-export type RelationshipStyles = EdgeStyles | Styles1;
+export type RelationshipStyles = EdgeStyles | Styles2;
 /**
  * An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also
  *
@@ -469,6 +469,78 @@ export interface Styles {
  * Common styles for all entities
  */
 export interface Styles1 {
+  /**
+   * Primary color of the component used for UI representation.
+   */
+  primaryColor: string;
+  /**
+   * Secondary color of the entity used for UI representation.
+   */
+  secondaryColor?: string;
+  /**
+   * White SVG of the entity used for UI representation on dark background.
+   */
+  svgWhite: string;
+  /**
+   * Colored SVG of the entity used for UI representation on light background.
+   */
+  svgColor: string;
+  /**
+   * Complete SVG of the entity used for UI representation, often inclusive of background.
+   */
+  svgComplete?: string;
+  /**
+   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   */
+  color?: string;
+  /**
+   * The opacity of the label text, including its outline.
+   */
+  "text-opacity"?: number;
+  /**
+   * A comma-separated list of font names to use on the label text.
+   */
+  "font-family"?: string;
+  /**
+   * The size of the label text.
+   */
+  "font-size"?: string;
+  /**
+   * A CSS font style to be applied to the label text.
+   */
+  "font-style"?: string;
+  /**
+   * A CSS font weight to be applied to the label text.
+   */
+  "font-weight"?: string;
+  /**
+   * A transformation to apply to the label text
+   */
+  "text-transform"?: "none" | "uppercase" | "lowercase";
+  /**
+   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+   */
+  opacity?: number;
+  /**
+   * An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
+   */
+  "z-index"?: number;
+  /**
+   * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
+   */
+  label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
+}
+/**
+ * Common styles for all entities
+ */
+export interface Styles2 {
   /**
    * Primary color of the component used for UI representation.
    */

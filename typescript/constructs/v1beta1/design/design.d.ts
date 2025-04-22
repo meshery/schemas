@@ -296,27 +296,27 @@ export type EdgeStyles = Styles1 & {
    */
   "curve-style"?: "straight" | "haystack" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
   /**
-   * The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "line-color"?: string;
   /**
-   * The style of the edge’s line.
+   * The style of the edge's line.
    */
   "line-style"?: "solid" | "dotted" | "dashed";
   /**
-   * The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+   * The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
    */
   "line-cap"?: "butt" | "round" | "square";
   /**
-   * The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+   * The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
    */
   "line-opacity"?: number;
   /**
-   * The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "target-arrow-color"?: string;
   /**
-   * The shape of the edge’s source arrow
+   * The shape of the edge's source arrow
    */
   "target-arrow-shape"?:
     | "triangle"
@@ -332,15 +332,15 @@ export type EdgeStyles = Styles1 & {
     | "chevron"
     | "none";
   /**
-   * The fill state of the edge’s source arrow
+   * The fill state of the edge's source arrow
    */
   "target-arrow-fill"?: "filled" | "hollow";
   /**
-   * The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.
    */
   "mid-target-arrow-color"?: string;
   /**
-   * The shape of the edge’s source arrow
+   * The shape of the edge's source arrow
    */
   "mid-target-arrow-shape"?:
     | "triangle"
@@ -356,7 +356,7 @@ export type EdgeStyles = Styles1 & {
     | "chevron"
     | "none";
   /**
-   * The fill state of the edge’s source arrow
+   * The fill state of the edge's source arrow
    */
   "mid-target-arrow-fill"?: "filled" | "hollow";
   /**
@@ -364,16 +364,36 @@ export type EdgeStyles = Styles1 & {
    */
   "arrow-scale"?: number;
   /**
-   * The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id
+   * The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id
    */
   "source-label"?: string;
   /**
-   * The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id
+   * The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id
    */
   "target-label"?: string;
   [k: string]: unknown;
 };
 export type MatchSelector = ({
+  kind?: string;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  [k: string]: unknown;
+} & (
+  | {
+      /**
+       * JSON ref to value from where patch should be applied.
+       */
+      mutatorRef?: string[][];
+      [k: string]: unknown;
+    }
+  | {
+      mutatedRef?: string[][];
+      [k: string]: unknown;
+    }
+))[];
+export type MatchSelector1 = ({
   kind?: string;
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
@@ -410,7 +430,154 @@ export type Selector = {
       }
     | {
         from?: MatchSelector;
-        to?: MatchSelector;
+        to?: MatchSelector1;
+        [k: string]: unknown;
+      };
+  patch?: {
+    /**
+     * patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * replace: Replaces a value.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     */
+    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+    [k: string]: unknown;
+  } & (
+    | {
+        /**
+         * JSON ref to value from where patch should be applied.
+         */
+        mutatorRef?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        mutatedRef?: string[][];
+        [k: string]: unknown;
+      }
+  );
+}[];
+/**
+ * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+ */
+export type Selector1 = {
+  kind?: string;
+  model?: HttpsSchemasMesheryIoModelJson2;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  match?:
+    | {
+        refs?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        from?: MatchSelector;
+        to?: MatchSelector1;
+        [k: string]: unknown;
+      };
+  patch?: {
+    /**
+     * patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * replace: Replaces a value.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     */
+    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+    [k: string]: unknown;
+  } & (
+    | {
+        /**
+         * JSON ref to value from where patch should be applied.
+         */
+        mutatorRef?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        mutatedRef?: string[][];
+        [k: string]: unknown;
+      }
+  );
+}[];
+/**
+ * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+ */
+export type Selector2 = {
+  kind?: string;
+  model?: HttpsSchemasMesheryIoModelJson2;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  match?:
+    | {
+        refs?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        from?: MatchSelector;
+        to?: MatchSelector1;
+        [k: string]: unknown;
+      };
+  patch?: {
+    /**
+     * patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * replace: Replaces a value.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     */
+    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+    [k: string]: unknown;
+  } & (
+    | {
+        /**
+         * JSON ref to value from where patch should be applied.
+         */
+        mutatorRef?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        mutatedRef?: string[][];
+        [k: string]: unknown;
+      }
+  );
+}[];
+/**
+ * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+ */
+export type Selector3 = {
+  kind?: string;
+  model?: HttpsSchemasMesheryIoModelJson2;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  match?:
+    | {
+        refs?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        from?: MatchSelector;
+        to?: MatchSelector1;
         [k: string]: unknown;
       };
   patch?: {
@@ -451,15 +618,15 @@ export type Selectors = {
    */
   deny?: {
     from: Selector;
-    to: Selector;
+    to: Selector1;
     [k: string]: unknown;
   };
   /**
    * Selectors used to define relationships which are allowed.
    */
   allow: {
-    from: Selector;
-    to: Selector;
+    from: Selector2;
+    to: Selector3;
     [k: string]: unknown;
   };
 }[];
@@ -1050,7 +1217,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
    */
   schemaVersion: string;
   /**
-   * A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+   * Specifies the version of the relationship definition.
    */
   version: string;
   model: HttpsSchemasMesheryIoModelJson1;
@@ -1090,7 +1257,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
      * Indicates whether the relationship should be treated as a logical representation only
      */
     isAnnotation?: boolean;
-    styles?: EdgeStyles | Styles1;
+    styles?: EdgeStyles | Styles2;
     [k: string]: unknown;
   };
   selectors?: Selectors;
@@ -1289,9 +1456,9 @@ export interface Styles1 {
   /**
    * Complete SVG of the entity used for UI representation, often inclusive of background.
    */
-  svgComplete?: string;
+  svgComplete: string;
   /**
-   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
    */
   color?: string;
   /**
@@ -1319,7 +1486,7 @@ export interface Styles1 {
    */
   "text-transform"?: "none" | "uppercase" | "lowercase";
   /**
-   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
    */
   opacity?: number;
   /**
@@ -1327,7 +1494,79 @@ export interface Styles1 {
    */
   "z-index"?: number;
   /**
-   * The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id
+   * The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
+   */
+  label?: string;
+  /**
+   * The animation to apply to the element. example ripple,bounce,etc
+   */
+  animation?: {
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
+}
+/**
+ * Common styles for all entities
+ */
+export interface Styles2 {
+  /**
+   * Primary color of the component used for UI representation.
+   */
+  primaryColor: string;
+  /**
+   * Secondary color of the entity used for UI representation.
+   */
+  secondaryColor?: string;
+  /**
+   * White SVG of the entity used for UI representation on dark background.
+   */
+  svgWhite: string;
+  /**
+   * Colored SVG of the entity used for UI representation on light background.
+   */
+  svgColor: string;
+  /**
+   * Complete SVG of the entity used for UI representation, often inclusive of background.
+   */
+  svgComplete: string;
+  /**
+   * The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.
+   */
+  color?: string;
+  /**
+   * The opacity of the label text, including its outline.
+   */
+  "text-opacity"?: number;
+  /**
+   * A comma-separated list of font names to use on the label text.
+   */
+  "font-family"?: string;
+  /**
+   * The size of the label text.
+   */
+  "font-size"?: string;
+  /**
+   * A CSS font style to be applied to the label text.
+   */
+  "font-style"?: string;
+  /**
+   * A CSS font weight to be applied to the label text.
+   */
+  "font-weight"?: string;
+  /**
+   * A transformation to apply to the label text
+   */
+  "text-transform"?: "none" | "uppercase" | "lowercase";
+  /**
+   * The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.
+   */
+  opacity?: number;
+  /**
+   * An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
+   */
+  "z-index"?: number;
+  /**
+   * The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
    */
   label?: string;
   /**

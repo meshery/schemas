@@ -79,6 +79,46 @@ export type SubCategory =
   | "Tracing"
   | "Uncategorized"
   | "Video Conferencing";
+export type MatchSelector1 = ({
+  kind?: string;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  [k: string]: unknown;
+} & (
+  | {
+      /**
+       * JSON ref to value from where patch should be applied.
+       */
+      mutatorRef?: string[][];
+      [k: string]: unknown;
+    }
+  | {
+      mutatedRef?: string[][];
+      [k: string]: unknown;
+    }
+))[];
+export type MatchSelector2 = ({
+  kind?: string;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  [k: string]: unknown;
+} & (
+  | {
+      /**
+       * JSON ref to value from where patch should be applied.
+       */
+      mutatorRef?: string[][];
+      [k: string]: unknown;
+    }
+  | {
+      mutatedRef?: string[][];
+      [k: string]: unknown;
+    }
+))[];
 /**
  * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
  *
@@ -98,8 +138,204 @@ export type Selector = {
         [k: string]: unknown;
       }
     | {
-        from?: MatchSelector;
-        to?: MatchSelector;
+        from?: MatchSelector1;
+        to?: MatchSelector2;
+        [k: string]: unknown;
+      };
+  patch?: {
+    /**
+     * patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * replace: Replaces a value.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     */
+    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+    [k: string]: unknown;
+  } & (
+    | {
+        /**
+         * JSON ref to value from where patch should be applied.
+         */
+        mutatorRef?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        mutatedRef?: string[][];
+        [k: string]: unknown;
+      }
+  );
+}[];
+/**
+ * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+ */
+export type Selector1 = {
+  kind?: string;
+  model?: HttpsSchemasMesheryIoModelJson;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  match?:
+    | {
+        refs?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        from?: MatchSelector1;
+        to?: MatchSelector2;
+        [k: string]: unknown;
+      };
+  patch?: {
+    /**
+     * patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * replace: Replaces a value.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     */
+    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+    [k: string]: unknown;
+  } & (
+    | {
+        /**
+         * JSON ref to value from where patch should be applied.
+         */
+        mutatorRef?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        mutatedRef?: string[][];
+        [k: string]: unknown;
+      }
+  );
+}[];
+/**
+ * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+ */
+export type Selector2 = {
+  kind?: string;
+  model?: HttpsSchemasMesheryIoModelJson;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  match?:
+    | {
+        refs?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        from?: MatchSelector1;
+        to?: MatchSelector2;
+        [k: string]: unknown;
+      };
+  patch?: {
+    /**
+     * patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * replace: Replaces a value.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     */
+    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+    [k: string]: unknown;
+  } & (
+    | {
+        /**
+         * JSON ref to value from where patch should be applied.
+         */
+        mutatorRef?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        mutatedRef?: string[][];
+        [k: string]: unknown;
+      }
+  );
+}[];
+/**
+ * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+ */
+export type Selector3 = {
+  kind?: string;
+  model?: HttpsSchemasMesheryIoModelJson;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  match?:
+    | {
+        refs?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        from?: MatchSelector1;
+        to?: MatchSelector2;
+        [k: string]: unknown;
+      };
+  patch?: {
+    /**
+     * patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+     *
+     * add: Inserts a value into an array or adds a member to an object.
+     * replace: Replaces a value.
+     * merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+     * strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
+     * remove: Removes a value.
+     * copy: Copies a value from one location to another.
+     * move: Moves a value from one location to another.
+     * test: Tests that a value at the target location is equal to a specified value.
+     */
+    patchStrategy?: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
+    [k: string]: unknown;
+  } & (
+    | {
+        /**
+         * JSON ref to value from where patch should be applied.
+         */
+        mutatorRef?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        mutatedRef?: string[][];
+        [k: string]: unknown;
+      }
+  );
+}[];
+/**
+ * Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+ */
+export type Selector4 = {
+  kind?: string;
+  model?: HttpsSchemasMesheryIoModelJson;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id?: string;
+  match?:
+    | {
+        refs?: string[][];
+        [k: string]: unknown;
+      }
+    | {
+        from?: MatchSelector1;
+        to?: MatchSelector2;
         [k: string]: unknown;
       };
   patch?: {
@@ -142,16 +378,16 @@ export type Selectors = {
    * Optional selectors used to define relationships which should not be created / is restricted.
    */
   deny?: {
-    from: Selector;
-    to: Selector;
+    from: Selector1;
+    to: Selector2;
     [k: string]: unknown;
   };
   /**
    * Selectors used to define relationships which are allowed.
    */
   allow: {
-    from: Selector;
-    to: Selector;
+    from: Selector3;
+    to: Selector4;
     [k: string]: unknown;
   };
 }[];

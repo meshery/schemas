@@ -11,7 +11,7 @@ import { HttpsSchemasMesheryIoRelationshipJson } from "./constructs/v1alpha2/rel
 
 // v1alpha3
 import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship/relationship";
-import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector";
+import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector/selector";
 
 // v1beta1
 import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/component/component";

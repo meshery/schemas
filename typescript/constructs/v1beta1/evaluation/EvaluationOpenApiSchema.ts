@@ -1956,16 +1956,16 @@ const schema = {
                               "default": "v1alpha3"
                             },
                             "version": {
+                              "description": "Specifies the version of the relationship definition.",
                               "type": "string",
                               "minLength": 5,
                               "maxLength": 100,
                               "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                              "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                              "default": "v0.0.1",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
-                              }
+                              },
+                              "default": "v0.0.1"
                             },
                             "model": {
                               "x-go-type": "model.ModelDefinition",
@@ -1990,7 +1990,8 @@ const schema = {
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
                                     "path": "github.com/gofrs/uuid"
-                                  }
+                                  },
+                                  "default": "00000000-00000000-00000000-00000000"
                                 },
                                 "schemaVersion": {
                                   "description": "Specifies the version of the schema used for the definition.",
@@ -2019,10 +2020,10 @@ const schema = {
                                     "yaml": "version",
                                     "json": "version"
                                   },
-                                  "default": "v0.0.1",
                                   "minLength": 5,
                                   "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                  "default": "v0.0.1"
                                 },
                                 "name": {
                                   "type": "string",
@@ -2113,7 +2114,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "name": {
                                       "x-oapi-codegen-extra-tags": {
@@ -2137,7 +2139,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "type": {
                                       "x-oapi-codegen-extra-tags": {
@@ -2206,7 +2209,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "created_at": {
                                       "x-oapi-codegen-extra-tags": {
@@ -2253,7 +2257,8 @@ const schema = {
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
                                     "path": "github.com/gofrs/uuid"
-                                  }
+                                  },
+                                  "default": "00000000-00000000-00000000-00000000"
                                 },
                                 "categoryId": {
                                   "description": "ID of the category.",
@@ -2268,7 +2273,8 @@ const schema = {
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
                                     "path": "github.com/gofrs/uuid"
-                                  }
+                                  },
+                                  "default": "00000000-00000000-00000000-00000000"
                                 },
                                 "category": {
                                   "x-order": 9,
@@ -2299,7 +2305,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "name": {
                                       "type": "string",
@@ -2464,7 +2471,8 @@ const schema = {
                                             "type": "string",
                                             "minLength": 5,
                                             "maxLength": 100,
-                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                            "default": "v0.0.1"
                                           },
                                           "displayName": {
                                             "description": "Name of the capability in human-readible format.",
@@ -2731,7 +2739,8 @@ const schema = {
                                           "minLength": 5,
                                           "maxLength": 100,
                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                          "default": "v0.0.1"
                                         }
                                       ],
                                       "x-oapi-codegen-extra-tags": {
@@ -2909,7 +2918,8 @@ const schema = {
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1"
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -3079,6 +3089,10 @@ const schema = {
                                 "styles": {
                                   "anyOf": [
                                     {
+                                      "x-go-type": "core.EdgeStyles",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                      },
                                       "type": "object",
                                       "description": "Visualization styles for a relationship",
                                       "allOf": [
@@ -3089,7 +3103,8 @@ const schema = {
                                           "required": [
                                             "primaryColor",
                                             "svgColor",
-                                            "svgWhite"
+                                            "svgWhite",
+                                            "svgComplete"
                                           ],
                                           "properties": {
                                             "primaryColor": {
@@ -3114,7 +3129,7 @@ const schema = {
                                             },
                                             "color": {
                                               "type": "string",
-                                              "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                              "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                             },
                                             "text-opacity": {
                                               "type": "number",
@@ -3149,7 +3164,7 @@ const schema = {
                                             },
                                             "opacity": {
                                               "type": "number",
-                                              "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                              "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                               "minimum": 0,
                                               "maximum": 1
                                             },
@@ -3159,15 +3174,17 @@ const schema = {
                                             },
                                             "label": {
                                               "type": "string",
-                                              "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                              "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                             },
                                             "animation": {
                                               "type": "object",
-                                              "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                              "description": "The animation to apply to the element. example ripple,bounce,etc"
                                             }
-                                          }
+                                          },
+                                          "x-go-type": "core.Styles"
                                         },
                                         {
+                                          "type": "object",
                                           "properties": {
                                             "edge-animation": {
                                               "type": "string",
@@ -3188,11 +3205,11 @@ const schema = {
                                             },
                                             "line-color": {
                                               "type": "string",
-                                              "description": "The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                              "description": "The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g."
                                             },
                                             "line-style": {
                                               "type": "string",
-                                              "description": "The style of the edge’s line.",
+                                              "description": "The style of the edge's line.",
                                               "enum": [
                                                 "solid",
                                                 "dotted",
@@ -3201,7 +3218,7 @@ const schema = {
                                             },
                                             "line-cap": {
                                               "type": "string",
-                                              "description": "The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
+                                              "description": "The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
                                               "enum": [
                                                 "butt",
                                                 "round",
@@ -3214,15 +3231,15 @@ const schema = {
                                               "minimum": 0,
                                               "maximum": 1,
                                               "default": 1,
-                                              "description": "The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
+                                              "description": "The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
                                             },
                                             "target-arrow-color": {
                                               "type": "string",
-                                              "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                              "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                             },
                                             "target-arrow-shape": {
                                               "type": "string",
-                                              "description": "The shape of the edge’s source arrow",
+                                              "description": "The shape of the edge's source arrow",
                                               "enum": [
                                                 "triangle",
                                                 "triangle-tee",
@@ -3240,7 +3257,7 @@ const schema = {
                                             },
                                             "target-arrow-fill": {
                                               "type": "string",
-                                              "description": "The fill state of the edge’s source arrow",
+                                              "description": "The fill state of the edge's source arrow",
                                               "enum": [
                                                 "filled",
                                                 "hollow"
@@ -3248,11 +3265,11 @@ const schema = {
                                             },
                                             "mid-target-arrow-color": {
                                               "type": "string",
-                                              "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                              "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                             },
                                             "mid-target-arrow-shape": {
                                               "type": "string",
-                                              "description": "The shape of the edge’s source arrow",
+                                              "description": "The shape of the edge's source arrow",
                                               "enum": [
                                                 "triangle",
                                                 "triangle-tee",
@@ -3270,7 +3287,7 @@ const schema = {
                                             },
                                             "mid-target-arrow-fill": {
                                               "type": "string",
-                                              "description": "The fill state of the edge’s source arrow",
+                                              "description": "The fill state of the edge's source arrow",
                                               "enum": [
                                                 "filled",
                                                 "hollow"
@@ -3283,11 +3300,11 @@ const schema = {
                                             },
                                             "source-label": {
                                               "type": "string",
-                                              "description": "The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id"
+                                              "description": "The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id"
                                             },
                                             "target-label": {
                                               "type": "string",
-                                              "description": "The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id"
+                                              "description": "The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id"
                                             }
                                           }
                                         }
@@ -3300,7 +3317,8 @@ const schema = {
                                       "required": [
                                         "primaryColor",
                                         "svgColor",
-                                        "svgWhite"
+                                        "svgWhite",
+                                        "svgComplete"
                                       ],
                                       "properties": {
                                         "primaryColor": {
@@ -3325,7 +3343,7 @@ const schema = {
                                         },
                                         "color": {
                                           "type": "string",
-                                          "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                          "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                         },
                                         "text-opacity": {
                                           "type": "number",
@@ -3360,7 +3378,7 @@ const schema = {
                                         },
                                         "opacity": {
                                           "type": "number",
-                                          "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                          "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                           "minimum": 0,
                                           "maximum": 1
                                         },
@@ -3370,12 +3388,16 @@ const schema = {
                                         },
                                         "label": {
                                           "type": "string",
-                                          "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                          "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                         },
                                         "animation": {
                                           "type": "object",
-                                          "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                          "description": "The animation to apply to the element. example ripple,bounce,etc"
                                         }
+                                      },
+                                      "x-go-type": "core.Styles",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/core"
                                       }
                                     }
                                   ],
@@ -3389,6 +3411,10 @@ const schema = {
                             "selectors": {
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "type:bytes;serializer:json"
+                              },
+                              "x-go-type": "selector.Selectors",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1alpha3/selector/selector"
                               },
                               "type": "array",
                               "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -3410,6 +3436,7 @@ const schema = {
                                     ],
                                     "properties": {
                                       "from": {
+                                        "x-go-type": "selector.Selector",
                                         "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                         "type": "array",
                                         "items": {
@@ -3420,6 +3447,10 @@ const schema = {
                                               "type": "string"
                                             },
                                             "model": {
+                                              "x-go-type": "model.ModelDefinition",
+                                              "x-go-type-import": {
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                              },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "$id": "https://schemas.meshery.io/model.json",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -3438,7 +3469,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "schemaVersion": {
                                                   "description": "Specifies the version of the schema used for the definition.",
@@ -3467,10 +3499,10 @@ const schema = {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "default": "v0.0.1",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                  "default": "v0.0.1"
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -3561,7 +3593,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -3585,7 +3618,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "type": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -3654,7 +3688,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "created_at": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -3701,7 +3736,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "categoryId": {
                                                   "description": "ID of the category.",
@@ -3716,7 +3752,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "category": {
                                                   "x-order": 9,
@@ -3747,7 +3784,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "type": "string",
@@ -3912,7 +3950,8 @@ const schema = {
                                                             "type": "string",
                                                             "minLength": 5,
                                                             "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                            "default": "v0.0.1"
                                                           },
                                                           "displayName": {
                                                             "description": "Name of the capability in human-readible format.",
@@ -4179,7 +4218,8 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                          "default": "v0.0.1"
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -4258,7 +4298,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "match": {
                                               "type": "object",
@@ -4280,6 +4321,7 @@ const schema = {
                                                 {
                                                   "properties": {
                                                     "from": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -4297,7 +4339,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -4338,6 +4381,7 @@ const schema = {
                                                       }
                                                     },
                                                     "to": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -4355,7 +4399,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -4460,6 +4505,7 @@ const schema = {
                                         }
                                       },
                                       "to": {
+                                        "x-go-type": "selector.Selector",
                                         "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                         "type": "array",
                                         "items": {
@@ -4470,6 +4516,10 @@ const schema = {
                                               "type": "string"
                                             },
                                             "model": {
+                                              "x-go-type": "model.ModelDefinition",
+                                              "x-go-type-import": {
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                              },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "$id": "https://schemas.meshery.io/model.json",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -4488,7 +4538,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "schemaVersion": {
                                                   "description": "Specifies the version of the schema used for the definition.",
@@ -4517,10 +4568,10 @@ const schema = {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "default": "v0.0.1",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                  "default": "v0.0.1"
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -4611,7 +4662,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -4635,7 +4687,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "type": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -4704,7 +4757,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "created_at": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -4751,7 +4805,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "categoryId": {
                                                   "description": "ID of the category.",
@@ -4766,7 +4821,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "category": {
                                                   "x-order": 9,
@@ -4797,7 +4853,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "type": "string",
@@ -4962,7 +5019,8 @@ const schema = {
                                                             "type": "string",
                                                             "minLength": 5,
                                                             "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                            "default": "v0.0.1"
                                                           },
                                                           "displayName": {
                                                             "description": "Name of the capability in human-readible format.",
@@ -5229,7 +5287,8 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                          "default": "v0.0.1"
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -5308,7 +5367,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "match": {
                                               "type": "object",
@@ -5330,6 +5390,7 @@ const schema = {
                                                 {
                                                   "properties": {
                                                     "from": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -5347,7 +5408,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -5388,6 +5450,7 @@ const schema = {
                                                       }
                                                     },
                                                     "to": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -5405,7 +5468,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -5520,6 +5584,7 @@ const schema = {
                                     ],
                                     "properties": {
                                       "from": {
+                                        "x-go-type": "selector.Selector",
                                         "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                         "type": "array",
                                         "items": {
@@ -5530,6 +5595,10 @@ const schema = {
                                               "type": "string"
                                             },
                                             "model": {
+                                              "x-go-type": "model.ModelDefinition",
+                                              "x-go-type-import": {
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                              },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "$id": "https://schemas.meshery.io/model.json",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5548,7 +5617,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "schemaVersion": {
                                                   "description": "Specifies the version of the schema used for the definition.",
@@ -5577,10 +5647,10 @@ const schema = {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "default": "v0.0.1",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                  "default": "v0.0.1"
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -5671,7 +5741,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -5695,7 +5766,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "type": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -5764,7 +5836,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "created_at": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -5811,7 +5884,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "categoryId": {
                                                   "description": "ID of the category.",
@@ -5826,7 +5900,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "category": {
                                                   "x-order": 9,
@@ -5857,7 +5932,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "type": "string",
@@ -6022,7 +6098,8 @@ const schema = {
                                                             "type": "string",
                                                             "minLength": 5,
                                                             "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                            "default": "v0.0.1"
                                                           },
                                                           "displayName": {
                                                             "description": "Name of the capability in human-readible format.",
@@ -6289,7 +6366,8 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                          "default": "v0.0.1"
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -6368,7 +6446,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "match": {
                                               "type": "object",
@@ -6390,6 +6469,7 @@ const schema = {
                                                 {
                                                   "properties": {
                                                     "from": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -6407,7 +6487,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -6448,6 +6529,7 @@ const schema = {
                                                       }
                                                     },
                                                     "to": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -6465,7 +6547,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -6570,6 +6653,7 @@ const schema = {
                                         }
                                       },
                                       "to": {
+                                        "x-go-type": "selector.Selector",
                                         "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                         "type": "array",
                                         "items": {
@@ -6580,6 +6664,10 @@ const schema = {
                                               "type": "string"
                                             },
                                             "model": {
+                                              "x-go-type": "model.ModelDefinition",
+                                              "x-go-type-import": {
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                              },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "$id": "https://schemas.meshery.io/model.json",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -6598,7 +6686,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "schemaVersion": {
                                                   "description": "Specifies the version of the schema used for the definition.",
@@ -6627,10 +6716,10 @@ const schema = {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "default": "v0.0.1",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                  "default": "v0.0.1"
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -6721,7 +6810,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -6745,7 +6835,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "type": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -6814,7 +6905,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "created_at": {
                                                       "x-oapi-codegen-extra-tags": {
@@ -6861,7 +6953,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "categoryId": {
                                                   "description": "ID of the category.",
@@ -6876,7 +6969,8 @@ const schema = {
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  }
+                                                  },
+                                                  "default": "00000000-00000000-00000000-00000000"
                                                 },
                                                 "category": {
                                                   "x-order": 9,
@@ -6907,7 +7001,8 @@ const schema = {
                                                       "x-go-type": "uuid.UUID",
                                                       "x-go-type-import": {
                                                         "path": "github.com/gofrs/uuid"
-                                                      }
+                                                      },
+                                                      "default": "00000000-00000000-00000000-00000000"
                                                     },
                                                     "name": {
                                                       "type": "string",
@@ -7072,7 +7167,8 @@ const schema = {
                                                             "type": "string",
                                                             "minLength": 5,
                                                             "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                            "default": "v0.0.1"
                                                           },
                                                           "displayName": {
                                                             "description": "Name of the capability in human-readible format.",
@@ -7339,7 +7435,8 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                          "default": "v0.0.1"
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -7418,7 +7515,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "match": {
                                               "type": "object",
@@ -7440,6 +7538,7 @@ const schema = {
                                                 {
                                                   "properties": {
                                                     "from": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -7457,7 +7556,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -7498,6 +7598,7 @@ const schema = {
                                                       }
                                                     },
                                                     "to": {
+                                                      "x-go-type": "selector.Selector",
                                                       "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                       "type": "array",
                                                       "items": {
@@ -7515,7 +7616,8 @@ const schema = {
                                                                 "x-go-type": "uuid.UUID",
                                                                 "x-go-type-import": {
                                                                   "path": "github.com/gofrs/uuid"
-                                                                }
+                                                                },
+                                                                "default": "00000000-00000000-00000000-00000000"
                                                               }
                                                             }
                                                           },
@@ -9604,16 +9706,16 @@ const schema = {
                                 "default": "v1alpha3"
                               },
                               "version": {
+                                "description": "Specifies the version of the relationship definition.",
                                 "type": "string",
                                 "minLength": 5,
                                 "maxLength": 100,
                                 "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                "default": "v0.0.1",
                                 "x-oapi-codegen-extra-tags": {
                                   "yaml": "version",
                                   "json": "version"
-                                }
+                                },
+                                "default": "v0.0.1"
                               },
                               "model": {
                                 "x-go-type": "model.ModelDefinition",
@@ -9638,7 +9740,8 @@ const schema = {
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
-                                    }
+                                    },
+                                    "default": "00000000-00000000-00000000-00000000"
                                   },
                                   "schemaVersion": {
                                     "description": "Specifies the version of the schema used for the definition.",
@@ -9667,10 +9770,10 @@ const schema = {
                                       "yaml": "version",
                                       "json": "version"
                                     },
-                                    "default": "v0.0.1",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1"
                                   },
                                   "name": {
                                     "type": "string",
@@ -9761,7 +9864,8 @@ const schema = {
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
                                           "path": "github.com/gofrs/uuid"
-                                        }
+                                        },
+                                        "default": "00000000-00000000-00000000-00000000"
                                       },
                                       "name": {
                                         "x-oapi-codegen-extra-tags": {
@@ -9785,7 +9889,8 @@ const schema = {
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
                                           "path": "github.com/gofrs/uuid"
-                                        }
+                                        },
+                                        "default": "00000000-00000000-00000000-00000000"
                                       },
                                       "type": {
                                         "x-oapi-codegen-extra-tags": {
@@ -9854,7 +9959,8 @@ const schema = {
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
                                           "path": "github.com/gofrs/uuid"
-                                        }
+                                        },
+                                        "default": "00000000-00000000-00000000-00000000"
                                       },
                                       "created_at": {
                                         "x-oapi-codegen-extra-tags": {
@@ -9901,7 +10007,8 @@ const schema = {
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
-                                    }
+                                    },
+                                    "default": "00000000-00000000-00000000-00000000"
                                   },
                                   "categoryId": {
                                     "description": "ID of the category.",
@@ -9916,7 +10023,8 @@ const schema = {
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
-                                    }
+                                    },
+                                    "default": "00000000-00000000-00000000-00000000"
                                   },
                                   "category": {
                                     "x-order": 9,
@@ -9947,7 +10055,8 @@ const schema = {
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
                                           "path": "github.com/gofrs/uuid"
-                                        }
+                                        },
+                                        "default": "00000000-00000000-00000000-00000000"
                                       },
                                       "name": {
                                         "type": "string",
@@ -10112,7 +10221,8 @@ const schema = {
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                              "default": "v0.0.1"
                                             },
                                             "displayName": {
                                               "description": "Name of the capability in human-readible format.",
@@ -10379,7 +10489,8 @@ const schema = {
                                             "minLength": 5,
                                             "maxLength": 100,
                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                            "default": "v0.0.1"
                                           }
                                         ],
                                         "x-oapi-codegen-extra-tags": {
@@ -10557,7 +10668,8 @@ const schema = {
                                       "type": "string",
                                       "minLength": 5,
                                       "maxLength": 100,
-                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                      "default": "v0.0.1"
                                     },
                                     "displayName": {
                                       "description": "Name of the capability in human-readible format.",
@@ -10727,6 +10839,10 @@ const schema = {
                                   "styles": {
                                     "anyOf": [
                                       {
+                                        "x-go-type": "core.EdgeStyles",
+                                        "x-go-type-import": {
+                                          "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                        },
                                         "type": "object",
                                         "description": "Visualization styles for a relationship",
                                         "allOf": [
@@ -10737,7 +10853,8 @@ const schema = {
                                             "required": [
                                               "primaryColor",
                                               "svgColor",
-                                              "svgWhite"
+                                              "svgWhite",
+                                              "svgComplete"
                                             ],
                                             "properties": {
                                               "primaryColor": {
@@ -10762,7 +10879,7 @@ const schema = {
                                               },
                                               "color": {
                                                 "type": "string",
-                                                "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                                "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                               },
                                               "text-opacity": {
                                                 "type": "number",
@@ -10797,7 +10914,7 @@ const schema = {
                                               },
                                               "opacity": {
                                                 "type": "number",
-                                                "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                                "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                                 "minimum": 0,
                                                 "maximum": 1
                                               },
@@ -10807,15 +10924,17 @@ const schema = {
                                               },
                                               "label": {
                                                 "type": "string",
-                                                "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                                "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                               },
                                               "animation": {
                                                 "type": "object",
-                                                "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                                "description": "The animation to apply to the element. example ripple,bounce,etc"
                                               }
-                                            }
+                                            },
+                                            "x-go-type": "core.Styles"
                                           },
                                           {
+                                            "type": "object",
                                             "properties": {
                                               "edge-animation": {
                                                 "type": "string",
@@ -10836,11 +10955,11 @@ const schema = {
                                               },
                                               "line-color": {
                                                 "type": "string",
-                                                "description": "The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                                "description": "The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g."
                                               },
                                               "line-style": {
                                                 "type": "string",
-                                                "description": "The style of the edge’s line.",
+                                                "description": "The style of the edge's line.",
                                                 "enum": [
                                                   "solid",
                                                   "dotted",
@@ -10849,7 +10968,7 @@ const schema = {
                                               },
                                               "line-cap": {
                                                 "type": "string",
-                                                "description": "The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
+                                                "description": "The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
                                                 "enum": [
                                                   "butt",
                                                   "round",
@@ -10862,15 +10981,15 @@ const schema = {
                                                 "minimum": 0,
                                                 "maximum": 1,
                                                 "default": 1,
-                                                "description": "The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
+                                                "description": "The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
                                               },
                                               "target-arrow-color": {
                                                 "type": "string",
-                                                "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                                "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                               },
                                               "target-arrow-shape": {
                                                 "type": "string",
-                                                "description": "The shape of the edge’s source arrow",
+                                                "description": "The shape of the edge's source arrow",
                                                 "enum": [
                                                   "triangle",
                                                   "triangle-tee",
@@ -10888,7 +11007,7 @@ const schema = {
                                               },
                                               "target-arrow-fill": {
                                                 "type": "string",
-                                                "description": "The fill state of the edge’s source arrow",
+                                                "description": "The fill state of the edge's source arrow",
                                                 "enum": [
                                                   "filled",
                                                   "hollow"
@@ -10896,11 +11015,11 @@ const schema = {
                                               },
                                               "mid-target-arrow-color": {
                                                 "type": "string",
-                                                "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                                "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                               },
                                               "mid-target-arrow-shape": {
                                                 "type": "string",
-                                                "description": "The shape of the edge’s source arrow",
+                                                "description": "The shape of the edge's source arrow",
                                                 "enum": [
                                                   "triangle",
                                                   "triangle-tee",
@@ -10918,7 +11037,7 @@ const schema = {
                                               },
                                               "mid-target-arrow-fill": {
                                                 "type": "string",
-                                                "description": "The fill state of the edge’s source arrow",
+                                                "description": "The fill state of the edge's source arrow",
                                                 "enum": [
                                                   "filled",
                                                   "hollow"
@@ -10931,11 +11050,11 @@ const schema = {
                                               },
                                               "source-label": {
                                                 "type": "string",
-                                                "description": "The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id"
+                                                "description": "The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id"
                                               },
                                               "target-label": {
                                                 "type": "string",
-                                                "description": "The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id"
+                                                "description": "The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id"
                                               }
                                             }
                                           }
@@ -10948,7 +11067,8 @@ const schema = {
                                         "required": [
                                           "primaryColor",
                                           "svgColor",
-                                          "svgWhite"
+                                          "svgWhite",
+                                          "svgComplete"
                                         ],
                                         "properties": {
                                           "primaryColor": {
@@ -10973,7 +11093,7 @@ const schema = {
                                           },
                                           "color": {
                                             "type": "string",
-                                            "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                            "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                           },
                                           "text-opacity": {
                                             "type": "number",
@@ -11008,7 +11128,7 @@ const schema = {
                                           },
                                           "opacity": {
                                             "type": "number",
-                                            "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                            "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                             "minimum": 0,
                                             "maximum": 1
                                           },
@@ -11018,12 +11138,16 @@ const schema = {
                                           },
                                           "label": {
                                             "type": "string",
-                                            "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                            "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                           },
                                           "animation": {
                                             "type": "object",
-                                            "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                            "description": "The animation to apply to the element. example ripple,bounce,etc"
                                           }
+                                        },
+                                        "x-go-type": "core.Styles",
+                                        "x-go-type-import": {
+                                          "path": "github.com/meshery/schemas/models/v1alpha1/core"
                                         }
                                       }
                                     ],
@@ -11037,6 +11161,10 @@ const schema = {
                               "selectors": {
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "type:bytes;serializer:json"
+                                },
+                                "x-go-type": "selector.Selectors",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1alpha3/selector/selector"
                                 },
                                 "type": "array",
                                 "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -11058,6 +11186,7 @@ const schema = {
                                       ],
                                       "properties": {
                                         "from": {
+                                          "x-go-type": "selector.Selector",
                                           "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                           "type": "array",
                                           "items": {
@@ -11068,6 +11197,10 @@ const schema = {
                                                 "type": "string"
                                               },
                                               "model": {
+                                                "x-go-type": "model.ModelDefinition",
+                                                "x-go-type-import": {
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "$id": "https://schemas.meshery.io/model.json",
                                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -11086,7 +11219,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "schemaVersion": {
                                                     "description": "Specifies the version of the schema used for the definition.",
@@ -11115,10 +11249,10 @@ const schema = {
                                                       "yaml": "version",
                                                       "json": "version"
                                                     },
-                                                    "default": "v0.0.1",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -11209,7 +11343,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -11233,7 +11368,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "type": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -11302,7 +11438,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "created_at": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -11349,7 +11486,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "categoryId": {
                                                     "description": "ID of the category.",
@@ -11364,7 +11502,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "category": {
                                                     "x-order": 9,
@@ -11395,7 +11534,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "type": "string",
@@ -11560,7 +11700,8 @@ const schema = {
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                              "default": "v0.0.1"
                                                             },
                                                             "displayName": {
                                                               "description": "Name of the capability in human-readible format.",
@@ -11827,7 +11968,8 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                            "default": "v0.0.1"
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -11906,7 +12048,8 @@ const schema = {
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
                                                   "path": "github.com/gofrs/uuid"
-                                                }
+                                                },
+                                                "default": "00000000-00000000-00000000-00000000"
                                               },
                                               "match": {
                                                 "type": "object",
@@ -11928,6 +12071,7 @@ const schema = {
                                                   {
                                                     "properties": {
                                                       "from": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -11945,7 +12089,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -11986,6 +12131,7 @@ const schema = {
                                                         }
                                                       },
                                                       "to": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -12003,7 +12149,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -12108,6 +12255,7 @@ const schema = {
                                           }
                                         },
                                         "to": {
+                                          "x-go-type": "selector.Selector",
                                           "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                           "type": "array",
                                           "items": {
@@ -12118,6 +12266,10 @@ const schema = {
                                                 "type": "string"
                                               },
                                               "model": {
+                                                "x-go-type": "model.ModelDefinition",
+                                                "x-go-type-import": {
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "$id": "https://schemas.meshery.io/model.json",
                                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -12136,7 +12288,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "schemaVersion": {
                                                     "description": "Specifies the version of the schema used for the definition.",
@@ -12165,10 +12318,10 @@ const schema = {
                                                       "yaml": "version",
                                                       "json": "version"
                                                     },
-                                                    "default": "v0.0.1",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -12259,7 +12412,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -12283,7 +12437,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "type": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -12352,7 +12507,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "created_at": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -12399,7 +12555,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "categoryId": {
                                                     "description": "ID of the category.",
@@ -12414,7 +12571,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "category": {
                                                     "x-order": 9,
@@ -12445,7 +12603,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "type": "string",
@@ -12610,7 +12769,8 @@ const schema = {
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                              "default": "v0.0.1"
                                                             },
                                                             "displayName": {
                                                               "description": "Name of the capability in human-readible format.",
@@ -12877,7 +13037,8 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                            "default": "v0.0.1"
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -12956,7 +13117,8 @@ const schema = {
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
                                                   "path": "github.com/gofrs/uuid"
-                                                }
+                                                },
+                                                "default": "00000000-00000000-00000000-00000000"
                                               },
                                               "match": {
                                                 "type": "object",
@@ -12978,6 +13140,7 @@ const schema = {
                                                   {
                                                     "properties": {
                                                       "from": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -12995,7 +13158,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -13036,6 +13200,7 @@ const schema = {
                                                         }
                                                       },
                                                       "to": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -13053,7 +13218,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -13168,6 +13334,7 @@ const schema = {
                                       ],
                                       "properties": {
                                         "from": {
+                                          "x-go-type": "selector.Selector",
                                           "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                           "type": "array",
                                           "items": {
@@ -13178,6 +13345,10 @@ const schema = {
                                                 "type": "string"
                                               },
                                               "model": {
+                                                "x-go-type": "model.ModelDefinition",
+                                                "x-go-type-import": {
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "$id": "https://schemas.meshery.io/model.json",
                                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -13196,7 +13367,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "schemaVersion": {
                                                     "description": "Specifies the version of the schema used for the definition.",
@@ -13225,10 +13397,10 @@ const schema = {
                                                       "yaml": "version",
                                                       "json": "version"
                                                     },
-                                                    "default": "v0.0.1",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -13319,7 +13491,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -13343,7 +13516,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "type": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -13412,7 +13586,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "created_at": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -13459,7 +13634,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "categoryId": {
                                                     "description": "ID of the category.",
@@ -13474,7 +13650,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "category": {
                                                     "x-order": 9,
@@ -13505,7 +13682,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "type": "string",
@@ -13670,7 +13848,8 @@ const schema = {
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                              "default": "v0.0.1"
                                                             },
                                                             "displayName": {
                                                               "description": "Name of the capability in human-readible format.",
@@ -13937,7 +14116,8 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                            "default": "v0.0.1"
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -14016,7 +14196,8 @@ const schema = {
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
                                                   "path": "github.com/gofrs/uuid"
-                                                }
+                                                },
+                                                "default": "00000000-00000000-00000000-00000000"
                                               },
                                               "match": {
                                                 "type": "object",
@@ -14038,6 +14219,7 @@ const schema = {
                                                   {
                                                     "properties": {
                                                       "from": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -14055,7 +14237,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -14096,6 +14279,7 @@ const schema = {
                                                         }
                                                       },
                                                       "to": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -14113,7 +14297,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -14218,6 +14403,7 @@ const schema = {
                                           }
                                         },
                                         "to": {
+                                          "x-go-type": "selector.Selector",
                                           "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                           "type": "array",
                                           "items": {
@@ -14228,6 +14414,10 @@ const schema = {
                                                 "type": "string"
                                               },
                                               "model": {
+                                                "x-go-type": "model.ModelDefinition",
+                                                "x-go-type-import": {
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "$id": "https://schemas.meshery.io/model.json",
                                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -14246,7 +14436,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "schemaVersion": {
                                                     "description": "Specifies the version of the schema used for the definition.",
@@ -14275,10 +14466,10 @@ const schema = {
                                                       "yaml": "version",
                                                       "json": "version"
                                                     },
-                                                    "default": "v0.0.1",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -14369,7 +14560,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -14393,7 +14585,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "type": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -14462,7 +14655,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "created_at": {
                                                         "x-oapi-codegen-extra-tags": {
@@ -14509,7 +14703,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "categoryId": {
                                                     "description": "ID of the category.",
@@ -14524,7 +14719,8 @@ const schema = {
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    }
+                                                    },
+                                                    "default": "00000000-00000000-00000000-00000000"
                                                   },
                                                   "category": {
                                                     "x-order": 9,
@@ -14555,7 +14751,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       },
                                                       "name": {
                                                         "type": "string",
@@ -14720,7 +14917,8 @@ const schema = {
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                              "default": "v0.0.1"
                                                             },
                                                             "displayName": {
                                                               "description": "Name of the capability in human-readible format.",
@@ -14987,7 +15185,8 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                            "default": "v0.0.1"
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -15066,7 +15265,8 @@ const schema = {
                                                 "x-go-type": "uuid.UUID",
                                                 "x-go-type-import": {
                                                   "path": "github.com/gofrs/uuid"
-                                                }
+                                                },
+                                                "default": "00000000-00000000-00000000-00000000"
                                               },
                                               "match": {
                                                 "type": "object",
@@ -15088,6 +15288,7 @@ const schema = {
                                                   {
                                                     "properties": {
                                                       "from": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -15105,7 +15306,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -15146,6 +15348,7 @@ const schema = {
                                                         }
                                                       },
                                                       "to": {
+                                                        "x-go-type": "selector.Selector",
                                                         "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                                         "type": "array",
                                                         "items": {
@@ -15163,7 +15366,8 @@ const schema = {
                                                                   "x-go-type": "uuid.UUID",
                                                                   "x-go-type-import": {
                                                                     "path": "github.com/gofrs/uuid"
-                                                                  }
+                                                                  },
+                                                                  "default": "00000000-00000000-00000000-00000000"
                                                                 }
                                                               }
                                                             },
@@ -17276,16 +17480,16 @@ const schema = {
                       "default": "v1alpha3"
                     },
                     "version": {
+                      "description": "Specifies the version of the relationship definition.",
                       "type": "string",
                       "minLength": 5,
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                      "default": "v0.0.1",
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
                         "json": "version"
-                      }
+                      },
+                      "default": "v0.0.1"
                     },
                     "model": {
                       "x-go-type": "model.ModelDefinition",
@@ -17310,7 +17514,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -17339,10 +17544,10 @@ const schema = {
                             "yaml": "version",
                             "json": "version"
                           },
-                          "default": "v0.0.1",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "default": "v0.0.1"
                         },
                         "name": {
                           "type": "string",
@@ -17433,7 +17638,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -17457,7 +17663,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -17526,7 +17733,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -17573,7 +17781,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "categoryId": {
                           "description": "ID of the category.",
@@ -17588,7 +17797,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "category": {
                           "x-order": 9,
@@ -17619,7 +17829,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "name": {
                               "type": "string",
@@ -17784,7 +17995,8 @@ const schema = {
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1"
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -18051,7 +18263,8 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "default": "v0.0.1"
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -18229,7 +18442,8 @@ const schema = {
                             "type": "string",
                             "minLength": 5,
                             "maxLength": 100,
-                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                            "default": "v0.0.1"
                           },
                           "displayName": {
                             "description": "Name of the capability in human-readible format.",
@@ -18399,6 +18613,10 @@ const schema = {
                         "styles": {
                           "anyOf": [
                             {
+                              "x-go-type": "core.EdgeStyles",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                              },
                               "type": "object",
                               "description": "Visualization styles for a relationship",
                               "allOf": [
@@ -18409,7 +18627,8 @@ const schema = {
                                   "required": [
                                     "primaryColor",
                                     "svgColor",
-                                    "svgWhite"
+                                    "svgWhite",
+                                    "svgComplete"
                                   ],
                                   "properties": {
                                     "primaryColor": {
@@ -18434,7 +18653,7 @@ const schema = {
                                     },
                                     "color": {
                                       "type": "string",
-                                      "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "text-opacity": {
                                       "type": "number",
@@ -18469,7 +18688,7 @@ const schema = {
                                     },
                                     "opacity": {
                                       "type": "number",
-                                      "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                      "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                       "minimum": 0,
                                       "maximum": 1
                                     },
@@ -18479,15 +18698,17 @@ const schema = {
                                     },
                                     "label": {
                                       "type": "string",
-                                      "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                      "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                     },
                                     "animation": {
                                       "type": "object",
-                                      "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                      "description": "The animation to apply to the element. example ripple,bounce,etc"
                                     }
-                                  }
+                                  },
+                                  "x-go-type": "core.Styles"
                                 },
                                 {
+                                  "type": "object",
                                   "properties": {
                                     "edge-animation": {
                                       "type": "string",
@@ -18508,11 +18729,11 @@ const schema = {
                                     },
                                     "line-color": {
                                       "type": "string",
-                                      "description": "The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "line-style": {
                                       "type": "string",
-                                      "description": "The style of the edge’s line.",
+                                      "description": "The style of the edge's line.",
                                       "enum": [
                                         "solid",
                                         "dotted",
@@ -18521,7 +18742,7 @@ const schema = {
                                     },
                                     "line-cap": {
                                       "type": "string",
-                                      "description": "The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
+                                      "description": "The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
                                       "enum": [
                                         "butt",
                                         "round",
@@ -18534,15 +18755,15 @@ const schema = {
                                       "minimum": 0,
                                       "maximum": 1,
                                       "default": 1,
-                                      "description": "The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
+                                      "description": "The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
                                     },
                                     "target-arrow-color": {
                                       "type": "string",
-                                      "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "target-arrow-shape": {
                                       "type": "string",
-                                      "description": "The shape of the edge’s source arrow",
+                                      "description": "The shape of the edge's source arrow",
                                       "enum": [
                                         "triangle",
                                         "triangle-tee",
@@ -18560,7 +18781,7 @@ const schema = {
                                     },
                                     "target-arrow-fill": {
                                       "type": "string",
-                                      "description": "The fill state of the edge’s source arrow",
+                                      "description": "The fill state of the edge's source arrow",
                                       "enum": [
                                         "filled",
                                         "hollow"
@@ -18568,11 +18789,11 @@ const schema = {
                                     },
                                     "mid-target-arrow-color": {
                                       "type": "string",
-                                      "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "mid-target-arrow-shape": {
                                       "type": "string",
-                                      "description": "The shape of the edge’s source arrow",
+                                      "description": "The shape of the edge's source arrow",
                                       "enum": [
                                         "triangle",
                                         "triangle-tee",
@@ -18590,7 +18811,7 @@ const schema = {
                                     },
                                     "mid-target-arrow-fill": {
                                       "type": "string",
-                                      "description": "The fill state of the edge’s source arrow",
+                                      "description": "The fill state of the edge's source arrow",
                                       "enum": [
                                         "filled",
                                         "hollow"
@@ -18603,11 +18824,11 @@ const schema = {
                                     },
                                     "source-label": {
                                       "type": "string",
-                                      "description": "The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id"
+                                      "description": "The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id"
                                     },
                                     "target-label": {
                                       "type": "string",
-                                      "description": "The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id"
+                                      "description": "The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id"
                                     }
                                   }
                                 }
@@ -18620,7 +18841,8 @@ const schema = {
                               "required": [
                                 "primaryColor",
                                 "svgColor",
-                                "svgWhite"
+                                "svgWhite",
+                                "svgComplete"
                               ],
                               "properties": {
                                 "primaryColor": {
@@ -18645,7 +18867,7 @@ const schema = {
                                 },
                                 "color": {
                                   "type": "string",
-                                  "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                  "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                 },
                                 "text-opacity": {
                                   "type": "number",
@@ -18680,7 +18902,7 @@ const schema = {
                                 },
                                 "opacity": {
                                   "type": "number",
-                                  "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                  "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                   "minimum": 0,
                                   "maximum": 1
                                 },
@@ -18690,12 +18912,16 @@ const schema = {
                                 },
                                 "label": {
                                   "type": "string",
-                                  "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                  "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                 },
                                 "animation": {
                                   "type": "object",
-                                  "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                  "description": "The animation to apply to the element. example ripple,bounce,etc"
                                 }
+                              },
+                              "x-go-type": "core.Styles",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1alpha1/core"
                               }
                             }
                           ],
@@ -18709,6 +18935,10 @@ const schema = {
                     "selectors": {
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "type:bytes;serializer:json"
+                      },
+                      "x-go-type": "selector.Selectors",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1alpha3/selector/selector"
                       },
                       "type": "array",
                       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -18730,6 +18960,7 @@ const schema = {
                             ],
                             "properties": {
                               "from": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -18740,6 +18971,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -18758,7 +18993,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -18787,10 +19023,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -18881,7 +19117,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -18905,7 +19142,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -18974,7 +19212,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -19021,7 +19260,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -19036,7 +19276,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -19067,7 +19308,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -19232,7 +19474,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -19499,7 +19742,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -19578,7 +19822,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -19600,6 +19845,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -19617,7 +19863,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -19658,6 +19905,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -19675,7 +19923,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -19780,6 +20029,7 @@ const schema = {
                                 }
                               },
                               "to": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -19790,6 +20040,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -19808,7 +20062,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -19837,10 +20092,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -19931,7 +20186,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -19955,7 +20211,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -20024,7 +20281,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -20071,7 +20329,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -20086,7 +20345,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -20117,7 +20377,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -20282,7 +20543,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -20549,7 +20811,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -20628,7 +20891,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -20650,6 +20914,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -20667,7 +20932,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -20708,6 +20974,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -20725,7 +20992,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -20840,6 +21108,7 @@ const schema = {
                             ],
                             "properties": {
                               "from": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -20850,6 +21119,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20868,7 +21141,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -20897,10 +21171,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -20991,7 +21265,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -21015,7 +21290,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -21084,7 +21360,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -21131,7 +21408,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -21146,7 +21424,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -21177,7 +21456,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -21342,7 +21622,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -21609,7 +21890,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -21688,7 +21970,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -21710,6 +21993,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -21727,7 +22011,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -21768,6 +22053,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -21785,7 +22071,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -21890,6 +22177,7 @@ const schema = {
                                 }
                               },
                               "to": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -21900,6 +22188,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -21918,7 +22210,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -21947,10 +22240,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -22041,7 +22334,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -22065,7 +22359,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -22134,7 +22429,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -22181,7 +22477,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -22196,7 +22493,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -22227,7 +22525,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -22392,7 +22691,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -22659,7 +22959,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -22738,7 +23039,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -22760,6 +23062,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -22777,7 +23080,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -22818,6 +23122,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -22835,7 +23140,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -24916,16 +25222,16 @@ const schema = {
                       "default": "v1alpha3"
                     },
                     "version": {
+                      "description": "Specifies the version of the relationship definition.",
                       "type": "string",
                       "minLength": 5,
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                      "default": "v0.0.1",
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
                         "json": "version"
-                      }
+                      },
+                      "default": "v0.0.1"
                     },
                     "model": {
                       "x-go-type": "model.ModelDefinition",
@@ -24950,7 +25256,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -24979,10 +25286,10 @@ const schema = {
                             "yaml": "version",
                             "json": "version"
                           },
-                          "default": "v0.0.1",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                          "default": "v0.0.1"
                         },
                         "name": {
                           "type": "string",
@@ -25073,7 +25380,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -25097,7 +25405,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -25166,7 +25475,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -25213,7 +25523,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "categoryId": {
                           "description": "ID of the category.",
@@ -25228,7 +25539,8 @@ const schema = {
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          }
+                          },
+                          "default": "00000000-00000000-00000000-00000000"
                         },
                         "category": {
                           "x-order": 9,
@@ -25259,7 +25571,8 @@ const schema = {
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
-                              }
+                              },
+                              "default": "00000000-00000000-00000000-00000000"
                             },
                             "name": {
                               "type": "string",
@@ -25424,7 +25737,8 @@ const schema = {
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                    "default": "v0.0.1"
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -25691,7 +26005,8 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                  "default": "v0.0.1"
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -25869,7 +26184,8 @@ const schema = {
                             "type": "string",
                             "minLength": 5,
                             "maxLength": 100,
-                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                            "default": "v0.0.1"
                           },
                           "displayName": {
                             "description": "Name of the capability in human-readible format.",
@@ -26039,6 +26355,10 @@ const schema = {
                         "styles": {
                           "anyOf": [
                             {
+                              "x-go-type": "core.EdgeStyles",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                              },
                               "type": "object",
                               "description": "Visualization styles for a relationship",
                               "allOf": [
@@ -26049,7 +26369,8 @@ const schema = {
                                   "required": [
                                     "primaryColor",
                                     "svgColor",
-                                    "svgWhite"
+                                    "svgWhite",
+                                    "svgComplete"
                                   ],
                                   "properties": {
                                     "primaryColor": {
@@ -26074,7 +26395,7 @@ const schema = {
                                     },
                                     "color": {
                                       "type": "string",
-                                      "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "text-opacity": {
                                       "type": "number",
@@ -26109,7 +26430,7 @@ const schema = {
                                     },
                                     "opacity": {
                                       "type": "number",
-                                      "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                      "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                       "minimum": 0,
                                       "maximum": 1
                                     },
@@ -26119,15 +26440,17 @@ const schema = {
                                     },
                                     "label": {
                                       "type": "string",
-                                      "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                      "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                     },
                                     "animation": {
                                       "type": "object",
-                                      "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                      "description": "The animation to apply to the element. example ripple,bounce,etc"
                                     }
-                                  }
+                                  },
+                                  "x-go-type": "core.Styles"
                                 },
                                 {
+                                  "type": "object",
                                   "properties": {
                                     "edge-animation": {
                                       "type": "string",
@@ -26148,11 +26471,11 @@ const schema = {
                                     },
                                     "line-color": {
                                       "type": "string",
-                                      "description": "The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "line-style": {
                                       "type": "string",
-                                      "description": "The style of the edge’s line.",
+                                      "description": "The style of the edge's line.",
                                       "enum": [
                                         "solid",
                                         "dotted",
@@ -26161,7 +26484,7 @@ const schema = {
                                     },
                                     "line-cap": {
                                       "type": "string",
-                                      "description": "The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
+                                      "description": "The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
                                       "enum": [
                                         "butt",
                                         "round",
@@ -26174,15 +26497,15 @@ const schema = {
                                       "minimum": 0,
                                       "maximum": 1,
                                       "default": 1,
-                                      "description": "The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
+                                      "description": "The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
                                     },
                                     "target-arrow-color": {
                                       "type": "string",
-                                      "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "target-arrow-shape": {
                                       "type": "string",
-                                      "description": "The shape of the edge’s source arrow",
+                                      "description": "The shape of the edge's source arrow",
                                       "enum": [
                                         "triangle",
                                         "triangle-tee",
@@ -26200,7 +26523,7 @@ const schema = {
                                     },
                                     "target-arrow-fill": {
                                       "type": "string",
-                                      "description": "The fill state of the edge’s source arrow",
+                                      "description": "The fill state of the edge's source arrow",
                                       "enum": [
                                         "filled",
                                         "hollow"
@@ -26208,11 +26531,11 @@ const schema = {
                                     },
                                     "mid-target-arrow-color": {
                                       "type": "string",
-                                      "description": "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                      "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g."
                                     },
                                     "mid-target-arrow-shape": {
                                       "type": "string",
-                                      "description": "The shape of the edge’s source arrow",
+                                      "description": "The shape of the edge's source arrow",
                                       "enum": [
                                         "triangle",
                                         "triangle-tee",
@@ -26230,7 +26553,7 @@ const schema = {
                                     },
                                     "mid-target-arrow-fill": {
                                       "type": "string",
-                                      "description": "The fill state of the edge’s source arrow",
+                                      "description": "The fill state of the edge's source arrow",
                                       "enum": [
                                         "filled",
                                         "hollow"
@@ -26243,11 +26566,11 @@ const schema = {
                                     },
                                     "source-label": {
                                       "type": "string",
-                                      "description": "The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id"
+                                      "description": "The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id"
                                     },
                                     "target-label": {
                                       "type": "string",
-                                      "description": "The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id"
+                                      "description": "The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id"
                                     }
                                   }
                                 }
@@ -26260,7 +26583,8 @@ const schema = {
                               "required": [
                                 "primaryColor",
                                 "svgColor",
-                                "svgWhite"
+                                "svgWhite",
+                                "svgComplete"
                               ],
                               "properties": {
                                 "primaryColor": {
@@ -26285,7 +26609,7 @@ const schema = {
                                 },
                                 "color": {
                                   "type": "string",
-                                  "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
+                                  "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g."
                                 },
                                 "text-opacity": {
                                   "type": "number",
@@ -26320,7 +26644,7 @@ const schema = {
                                 },
                                 "opacity": {
                                   "type": "number",
-                                  "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility",
+                                  "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
                                   "minimum": 0,
                                   "maximum": 1
                                 },
@@ -26330,12 +26654,16 @@ const schema = {
                                 },
                                 "label": {
                                   "type": "string",
-                                  "description": "The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id"
+                                  "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id"
                                 },
                                 "animation": {
                                   "type": "object",
-                                  "description": "The animation to apply to the element. example ripple,bounce,etc "
+                                  "description": "The animation to apply to the element. example ripple,bounce,etc"
                                 }
+                              },
+                              "x-go-type": "core.Styles",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1alpha1/core"
                               }
                             }
                           ],
@@ -26349,6 +26677,10 @@ const schema = {
                     "selectors": {
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "type:bytes;serializer:json"
+                      },
+                      "x-go-type": "selector.Selectors",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1alpha3/selector/selector"
                       },
                       "type": "array",
                       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -26370,6 +26702,7 @@ const schema = {
                             ],
                             "properties": {
                               "from": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -26380,6 +26713,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -26398,7 +26735,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -26427,10 +26765,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -26521,7 +26859,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -26545,7 +26884,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -26614,7 +26954,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -26661,7 +27002,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -26676,7 +27018,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -26707,7 +27050,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -26872,7 +27216,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -27139,7 +27484,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -27218,7 +27564,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -27240,6 +27587,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -27257,7 +27605,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -27298,6 +27647,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -27315,7 +27665,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -27420,6 +27771,7 @@ const schema = {
                                 }
                               },
                               "to": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -27430,6 +27782,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -27448,7 +27804,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -27477,10 +27834,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -27571,7 +27928,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -27595,7 +27953,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -27664,7 +28023,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -27711,7 +28071,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -27726,7 +28087,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -27757,7 +28119,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -27922,7 +28285,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -28189,7 +28553,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -28268,7 +28633,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -28290,6 +28656,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -28307,7 +28674,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -28348,6 +28716,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -28365,7 +28734,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -28480,6 +28850,7 @@ const schema = {
                             ],
                             "properties": {
                               "from": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -28490,6 +28861,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -28508,7 +28883,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -28537,10 +28913,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -28631,7 +29007,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -28655,7 +29032,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -28724,7 +29102,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -28771,7 +29150,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -28786,7 +29166,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -28817,7 +29198,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -28982,7 +29364,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -29249,7 +29632,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -29328,7 +29712,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -29350,6 +29735,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -29367,7 +29753,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -29408,6 +29795,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -29425,7 +29813,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -29530,6 +29919,7 @@ const schema = {
                                 }
                               },
                               "to": {
+                                "x-go-type": "selector.Selector",
                                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                                 "type": "array",
                                 "items": {
@@ -29540,6 +29930,10 @@ const schema = {
                                       "type": "string"
                                     },
                                     "model": {
+                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "$id": "https://schemas.meshery.io/model.json",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -29558,7 +29952,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "schemaVersion": {
                                           "description": "Specifies the version of the schema used for the definition.",
@@ -29587,10 +29982,10 @@ const schema = {
                                             "yaml": "version",
                                             "json": "version"
                                           },
-                                          "default": "v0.0.1",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                          "default": "v0.0.1"
                                         },
                                         "name": {
                                           "type": "string",
@@ -29681,7 +30076,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -29705,7 +30101,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "type": {
                                               "x-oapi-codegen-extra-tags": {
@@ -29774,7 +30171,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -29821,7 +30219,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "categoryId": {
                                           "description": "ID of the category.",
@@ -29836,7 +30235,8 @@ const schema = {
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          }
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "category": {
                                           "x-order": 9,
@@ -29867,7 +30267,8 @@ const schema = {
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
-                                              }
+                                              },
+                                              "default": "00000000-00000000-00000000-00000000"
                                             },
                                             "name": {
                                               "type": "string",
@@ -30032,7 +30433,8 @@ const schema = {
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                                                    "default": "v0.0.1"
                                                   },
                                                   "displayName": {
                                                     "description": "Name of the capability in human-readible format.",
@@ -30299,7 +30701,8 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                                                  "default": "v0.0.1"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -30378,7 +30781,8 @@ const schema = {
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
-                                      }
+                                      },
+                                      "default": "00000000-00000000-00000000-00000000"
                                     },
                                     "match": {
                                       "type": "object",
@@ -30400,6 +30804,7 @@ const schema = {
                                         {
                                           "properties": {
                                             "from": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -30417,7 +30822,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },
@@ -30458,6 +30864,7 @@ const schema = {
                                               }
                                             },
                                             "to": {
+                                              "x-go-type": "selector.Selector",
                                               "$comment": "Type is array so that mutliple bindings can be supported between 2 nodes",
                                               "type": "array",
                                               "items": {
@@ -30475,7 +30882,8 @@ const schema = {
                                                         "x-go-type": "uuid.UUID",
                                                         "x-go-type-import": {
                                                           "path": "github.com/gofrs/uuid"
-                                                        }
+                                                        },
+                                                        "default": "00000000-00000000-00000000-00000000"
                                                       }
                                                     }
                                                   },

@@ -577,6 +577,7 @@ const schema = {
         "description": "Visualization styles for a relationship",
         "allOf": [
           {
+            "x-go-type": "core.Styles",
             "type": "object",
             "description": "Common styles for all entities",
             "additionalProperties": true,
@@ -1169,6 +1170,7 @@ const schema = {
             "description": "Visualization styles for a relationship",
             "allOf": [
               {
+                "x-go-type": "core.Styles",
                 "type": "object",
                 "description": "Common styles for all entities",
                 "additionalProperties": true,

@@ -165,15 +165,15 @@
         "styles": {
           "anyOf": [
             {
-              "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/styles",
-              "x-go-type": "core.Styles",
+              "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/edgeStyles",
+              "x-go-type": "core.EdgeStyles",
               "x-go-type-import": {
                 "path": "github.com/meshery/schemas/models/v1alpha1/core"
               }
             },
             {
-              "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/edgeStyles",
-              "x-go-type": "core.EdgeStyles",
+              "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/styles",
+              "x-go-type": "core.Styles",
               "x-go-type-import": {
                 "path": "github.com/meshery/schemas/models/v1alpha1/core"
               }

@@ -231,7 +231,7 @@ relationships:
     schemaVersion: v1alpha3
     version: v0.0.1
     model:
-      id: ''
+      id: 00000000-00000000-00000000-00000000
       schemaVersion: v1beta1
       version: v0.0.1
       name: untitled-model
@@ -239,28 +239,28 @@ relationships:
       description: A new Meshery model.
       status: enabled
       registrant:
-        id: ''
+        id: 00000000-00000000-00000000-00000000
         name: ''
-        credential_id: ''
+        credential_id: 00000000-00000000-00000000-00000000
         type: ''
         sub_type: ''
         kind: ''
         status: ''
-        user_id: ''
+        user_id: 00000000-00000000-00000000-00000000
         created_at: ''
         updated_at: ''
         deleted_at: ''
-      registrantId: ''
-      categoryId: ''
+      registrantId: 00000000-00000000-00000000-00000000
+      categoryId: 00000000-00000000-00000000-00000000
       category:
-        id: ''
+        id: 00000000-00000000-00000000-00000000
         name: Uncategorized
       subCategory: Uncategorized
       metadata:
         capabilities:
           items:
             schemaVersion: ''
-            version: ''
+            version: v0.0.1
             displayName: ''
             description: ''
             kind: {}
@@ -349,7 +349,7 @@ relationships:
         isAnnotation: false
       model:
         version:
-          '0': ''
+          '0': v0.0.1
       componentsCount: 0
       relationshipsCount: 0
     kind: ''
@@ -360,7 +360,7 @@ relationships:
     capabilities:
       items:
         schemaVersion: ''
-        version: ''
+        version: v0.0.1
         displayName: ''
         description: ''
         kind: {}
@@ -424,7 +424,7 @@ relationships:
             items:
               kind: ''
               model:
-                id: ''
+                id: 00000000-00000000-00000000-00000000
                 schemaVersion: v1beta1
                 version: v0.0.1
                 name: untitled-model
@@ -432,28 +432,28 @@ relationships:
                 description: A new Meshery model.
                 status: enabled
                 registrant:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: ''
-                  credential_id: ''
+                  credential_id: 00000000-00000000-00000000-00000000
                   type: ''
                   sub_type: ''
                   kind: ''
                   status: ''
-                  user_id: ''
+                  user_id: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
-                registrantId: ''
-                categoryId: ''
+                registrantId: 00000000-00000000-00000000-00000000
+                categoryId: 00000000-00000000-00000000-00000000
                 category:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: Uncategorized
                 subCategory: Uncategorized
                 metadata:
                   capabilities:
                     items:
                       schemaVersion: ''
-                      version: ''
+                      version: v0.0.1
                       displayName: ''
                       description: ''
                       kind: {}
@@ -552,10 +552,10 @@ relationships:
                   isAnnotation: false
                 model:
                   version:
-                    '0': ''
+                    '0': v0.0.1
                 componentsCount: 0
                 relationshipsCount: 0
-              id: ''
+              id: 00000000-00000000-00000000-00000000
               match:
                 oneOf:
                   '0':
@@ -567,7 +567,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':
@@ -581,7 +581,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':
@@ -606,7 +606,7 @@ relationships:
             items:
               kind: ''
               model:
-                id: ''
+                id: 00000000-00000000-00000000-00000000
                 schemaVersion: v1beta1
                 version: v0.0.1
                 name: untitled-model
@@ -614,28 +614,28 @@ relationships:
                 description: A new Meshery model.
                 status: enabled
                 registrant:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: ''
-                  credential_id: ''
+                  credential_id: 00000000-00000000-00000000-00000000
                   type: ''
                   sub_type: ''
                   kind: ''
                   status: ''
-                  user_id: ''
+                  user_id: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
-                registrantId: ''
-                categoryId: ''
+                registrantId: 00000000-00000000-00000000-00000000
+                categoryId: 00000000-00000000-00000000-00000000
                 category:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: Uncategorized
                 subCategory: Uncategorized
                 metadata:
                   capabilities:
                     items:
                       schemaVersion: ''
-                      version: ''
+                      version: v0.0.1
                       displayName: ''
                       description: ''
                       kind: {}
@@ -734,10 +734,10 @@ relationships:
                   isAnnotation: false
                 model:
                   version:
-                    '0': ''
+                    '0': v0.0.1
                 componentsCount: 0
                 relationshipsCount: 0
-              id: ''
+              id: 00000000-00000000-00000000-00000000
               match:
                 oneOf:
                   '0':
@@ -749,7 +749,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':
@@ -763,7 +763,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':
@@ -789,7 +789,7 @@ relationships:
             items:
               kind: ''
               model:
-                id: ''
+                id: 00000000-00000000-00000000-00000000
                 schemaVersion: v1beta1
                 version: v0.0.1
                 name: untitled-model
@@ -797,28 +797,28 @@ relationships:
                 description: A new Meshery model.
                 status: enabled
                 registrant:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: ''
-                  credential_id: ''
+                  credential_id: 00000000-00000000-00000000-00000000
                   type: ''
                   sub_type: ''
                   kind: ''
                   status: ''
-                  user_id: ''
+                  user_id: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
-                registrantId: ''
-                categoryId: ''
+                registrantId: 00000000-00000000-00000000-00000000
+                categoryId: 00000000-00000000-00000000-00000000
                 category:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: Uncategorized
                 subCategory: Uncategorized
                 metadata:
                   capabilities:
                     items:
                       schemaVersion: ''
-                      version: ''
+                      version: v0.0.1
                       displayName: ''
                       description: ''
                       kind: {}
@@ -917,10 +917,10 @@ relationships:
                   isAnnotation: false
                 model:
                   version:
-                    '0': ''
+                    '0': v0.0.1
                 componentsCount: 0
                 relationshipsCount: 0
-              id: ''
+              id: 00000000-00000000-00000000-00000000
               match:
                 oneOf:
                   '0':
@@ -932,7 +932,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':
@@ -946,7 +946,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':
@@ -971,7 +971,7 @@ relationships:
             items:
               kind: ''
               model:
-                id: ''
+                id: 00000000-00000000-00000000-00000000
                 schemaVersion: v1beta1
                 version: v0.0.1
                 name: untitled-model
@@ -979,28 +979,28 @@ relationships:
                 description: A new Meshery model.
                 status: enabled
                 registrant:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: ''
-                  credential_id: ''
+                  credential_id: 00000000-00000000-00000000-00000000
                   type: ''
                   sub_type: ''
                   kind: ''
                   status: ''
-                  user_id: ''
+                  user_id: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
-                registrantId: ''
-                categoryId: ''
+                registrantId: 00000000-00000000-00000000-00000000
+                categoryId: 00000000-00000000-00000000-00000000
                 category:
-                  id: ''
+                  id: 00000000-00000000-00000000-00000000
                   name: Uncategorized
                 subCategory: Uncategorized
                 metadata:
                   capabilities:
                     items:
                       schemaVersion: ''
-                      version: ''
+                      version: v0.0.1
                       displayName: ''
                       description: ''
                       kind: {}
@@ -1099,10 +1099,10 @@ relationships:
                   isAnnotation: false
                 model:
                   version:
-                    '0': ''
+                    '0': v0.0.1
                 componentsCount: 0
                 relationshipsCount: 0
-              id: ''
+              id: 00000000-00000000-00000000-00000000
               match:
                 oneOf:
                   '0':
@@ -1114,7 +1114,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':
@@ -1128,7 +1128,7 @@ relationships:
                         allOf:
                           '0':
                             kind: ''
-                            id: ''
+                            id: 00000000-00000000-00000000-00000000
                           '1':
                             oneOf:
                               '0':

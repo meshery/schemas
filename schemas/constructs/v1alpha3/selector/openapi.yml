@@ -121,6 +121,7 @@ components:
         $ref: "#/components/schemas/SelectorItem"
         x-go-type: SelectorItem
       description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+      x-typescript-type: "Selector"
 
     SelectorPair:
       type: object
