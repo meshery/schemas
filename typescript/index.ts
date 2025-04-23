@@ -10,7 +10,7 @@ import { DesignSchema } from "./constructs/v1alpha2/design";
 import { HttpsSchemasMesheryIoRelationshipJson } from "./constructs/v1alpha2/relationship";
 
 // v1alpha3
-import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship/relationship";
+import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship";
 import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector";
 
 // v1beta1
@@ -36,6 +36,10 @@ import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./const
 
 // import CapabilityDefinitionV1Alpha1OpenApiSchema from "./constructs/v1alpha1/capability/CapabilityOpenApiSchema";
 // import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
+// import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
+// import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
+import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
+// import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
 import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
 import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
 // import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
@@ -44,11 +48,17 @@ import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/Mode
 // import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
 // import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
 // import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
+import EnvironmentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/environment/EnvironmentOpenApiSchema";
+import WorkspaceDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/workspace/WorkspaceOpenApiSchema";
+
 import { components, paths, webhooks } from "./openapi";
 import type * as core from "./constructs/core";
 
 export {
   core,
+  EnvironmentDefinitionV1Beta1OpenApiSchema,
+  WorkspaceDefinitionV1Beta1OpenApiSchema,
+  DesignDefinitionV1Beta1OpenApiSchema,
   ComponentDefinitionV1Beta1OpenApiSchema,
   ModelDefinitionV1Beta1OpenApiSchema,
   CategoryDefinitionV1Beta1OpenApiSchema,

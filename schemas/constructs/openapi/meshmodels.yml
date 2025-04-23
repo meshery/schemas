@@ -6,9 +6,9 @@ info:
     email: support@layer5.io
   version: v0.6.394
 servers:
-  - url: https://meshery.layer5.io
+  - url: https://cloud.layer5.io
     description: Meshery Cloud production server URL
-  - url: https://staging-meshery.layer5.io
+  - url: https://staging-cloud.layer5.io
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: Meshery Cloud development server URL (controlled via PORT environment variable)
@@ -24,7 +24,6 @@ components:
       scheme: Bearer
       bearerFormat: JWT
   schemas:
-    
     model:
       $ref: ../v1beta1/model.json
     component:
@@ -134,3 +133,4 @@ paths:
         "500":
           $ref: ./common/responses.yml#/500
       security: []
+
