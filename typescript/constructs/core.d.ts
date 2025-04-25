@@ -383,13 +383,6 @@ export type ResolvedAlias = NonResolvedAlias & {
   resolved_ref_field_path: string[];
   [k: string]: unknown;
 };
-/**
- * The type of the IaC file
- *
- * This interface was referenced by `CoreJson`'s JSON-Schema
- * via the `definition` "IaCFileTypes".
- */
-export type IaCFileTypes = "meshery-design" | "helm-chart" | "k8s-manifest" | "docker-compose" | "k8s-kustomize";
 
 /**
  * Reusable core schema elements
