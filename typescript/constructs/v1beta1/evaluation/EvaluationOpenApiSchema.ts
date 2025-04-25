@@ -338,7 +338,7 @@ const schema = {
                                 },
                                 "displayName": {
                                   "description": "Human-readable name for the model.",
-                                  "helperText": "Model display name should be a friendly name for your model.",
+                                  "helperText": "Model display name may include letters, numbers, and spaces. Special characters are not allowed.",
                                   "minLength": 1,
                                   "maxLength": 100,
                                   "type": "string",
@@ -6668,7 +6668,7 @@ const schema = {
                                   },
                                   "displayName": {
                                     "description": "Human-readable name for the model.",
-                                    "helperText": "Model display name should be a friendly name for your model.",
+                                    "helperText": "Model display name may include letters, numbers, and spaces. Special characters are not allowed.",
                                     "minLength": 1,
                                     "maxLength": 100,
                                     "type": "string",
@@ -13022,7 +13022,7 @@ const schema = {
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
-                          "helperText": "Model display name should be a friendly name for your model.",
+                          "helperText": "Model display name may include letters, numbers, and spaces. Special characters are not allowed.",
                           "minLength": 1,
                           "maxLength": 100,
                           "type": "string",
@@ -19344,7 +19344,7 @@ const schema = {
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
-                          "helperText": "Model display name should be a friendly name for your model.",
+                          "helperText": "Model display name may include letters, numbers, and spaces. Special characters are not allowed.",
                           "minLength": 1,
                           "maxLength": 100,
                           "type": "string",

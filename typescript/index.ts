@@ -51,7 +51,7 @@ import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/Mode
 import EnvironmentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/environment/EnvironmentOpenApiSchema";
 import WorkspaceDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/workspace/WorkspaceOpenApiSchema";
 
-import { components, paths, webhooks } from "./openapi";
+import { components, paths } from "./openapi";
 import type * as core from "./constructs/core";
 
 export {
@@ -93,6 +93,5 @@ export namespace v1beta1 {
 export namespace api {
   export type Components = components;
   export type Paths = paths;
-  export type Webhooks = webhooks;
 }
 
