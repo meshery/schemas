@@ -1,2 +1,5 @@
 plugins:
   - jekyll-redirect-from
+
+include:
+  - schemas/constructs
