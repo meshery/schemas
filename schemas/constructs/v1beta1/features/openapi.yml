@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: Features Construct Schema
+  description: OpenAPI schema for the Features construct with entitlement-related properties
+  version: v1beta1
+
+tags:
+  - name: Features
+    description: Operations related to features and entitlements
+
+paths:
+  /api/entitlement/features:
+    get:
+      operationId: getFeatures
+      tags:
+        - Features
+      summary: Get all features associated with plans
+      responses:
+        "200":
+          description: Features fetched successfully
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Features"
+        "400":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
+components:
+  schemas:
+    FeaturesPage:
+      type: object
+      required:
+        - page
+        - page_size
+        - total_count
+        - features
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        features:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Features"
+            x-go-type: Features
+
+    Feature:
+      type: string
+      enum:
+        - MESH_NODES
+        - USER_SEATS
+        - API_CALLS
+        - ENVIRONMENTS
+        - DESIGNS
+        - APPLICATIONS
+      description: Enumeration of possible feature types
+      x-go-type: Feature
+
+    Features:
+      type: object
+      required:
+        - id
+        - plan_id
+        - feature
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        plan_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "plan_id"
+        plan:
+          $ref: "../plan/openapi.yml#/components/schemas/Plan"
+          x-go-type: plan.Plan
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/plan
+          x-oapi-codegen-extra-tags:
+            belongs_to: "plans"
+            fk_id: "PlanId"
+            yaml: "plan,omitempty"
+            json: "plan,omitempty"
+        feature:
+          $ref: "#/components/schemas/Feature"
+          x-go-type: Feature
+          x-oapi-codegen-extra-tags:
+            db: "feature"
+        quantity:
+          type: number
+          nullable: true
+          description: Quantity of the feature allowed, null for unlimited
+          x-oapi-codegen-extra-tags:
+            db: "quantity"
+        created_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+        updated_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+      additionalProperties: false
