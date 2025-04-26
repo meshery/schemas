@@ -13,7 +13,8 @@
       "minLength": 2,
       "maxLength": 100,
       "description": "API version of the object",
-      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
+      "pattern": "^(([a-z.])+\/?)?v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix", "models.meshery.io/v1beta1"]
     },
     "semverString": {
       "type": "string",
