@@ -247,6 +247,7 @@
       "additionalProperties": true
     },
     "model": {
+      "$ref": "./openapi.yml#/components/schemas/Model",
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json"
       },

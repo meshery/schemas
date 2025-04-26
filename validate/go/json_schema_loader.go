@@ -1,6 +1,8 @@
 package validate
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
 	"os"
 	"path/filepath"
@@ -9,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	jsFormats "github.com/santhosh-tekuri/jsonschema/formats"
 	jsLoader "github.com/santhosh-tekuri/jsonschema/loader"
+	"gopkg.in/yaml.v3"
 )
 
 const schemaURL = "https://schemas.meshery.io"
@@ -21,20 +24,6 @@ var ul = &urlLoader{}
 
 func setUpBaseFolder(folder string) {
 	ul.baseFolder = folder
-}
-
-func (ul urlLoader) Load(url string) (io.ReadCloser, error) {
-	if strings.HasPrefix(url, schemaURL) {
-		localPath := filepath.Join(
-			ul.baseFolder,
-			strings.TrimLeft(
-				strings.TrimPrefix(url, schemaURL),
-				"/",
-			),
-		)
-		return os.Open(localPath)
-	}
-	return nil, os.ErrNotExist
 }
 
 func init() {
@@ -52,4 +41,48 @@ func init() {
 		"https",
 		ul,
 	)
+}
+
+func (ul urlLoader) Load(path string) (io.ReadCloser, error) {
+	localPath := path
+	if strings.HasPrefix(path, schemaURL) {
+		localPath = filepath.Join(
+			ul.baseFolder,
+			strings.TrimLeft(
+				strings.TrimPrefix(path, schemaURL),
+				"/",
+			),
+		)
+	}
+
+	if strings.HasSuffix(localPath, ".yaml") || strings.HasSuffix(localPath, ".yml") {
+		// return io.NopCloser(bytes.NewReader([]byte("{}"))), nil
+		return loadYAMLFile(localPath)
+	}
+
+	return os.Open(localPath)
+}
+
+// loadYAMLFile loads a YAML file, converts it to JSON, and returns it as io.ReadCloser
+func loadYAMLFile(path string) (io.ReadCloser, error) {
+	// Read the YAML file
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse YAML into an arbitrary Go structure
+	var yamlData interface{}
+	if err := yaml.Unmarshal(data, &yamlData); err != nil {
+		return nil, err
+	}
+
+	// Marshal it back into JSON
+	jsonData, err := json.Marshal(yamlData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Return a ReadCloser over the JSON data
+	return io.NopCloser(bytes.NewReader(jsonData)), nil
 }
