@@ -105,7 +105,10 @@ ifeq (,$(shell command -v oapi-codegen))
 	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 endif
 
+.PHONY: error
+error:
+	go run github.com/layer5io/meshkit/cmd/errorutil -d . analyze -i ./meshkiterrors -o ./meshkiterrors
 
-
-
-
+## Runs meshkit error utility to update error codes for mesheryctl.
+error-util:
+	go run github.com/layer5io/meshkit/cmd/errorutil -d . update -i ./meshkiterrors -o ./meshkiterrors
