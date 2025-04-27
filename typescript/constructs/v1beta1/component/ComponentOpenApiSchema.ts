@@ -45,7 +45,7 @@ const schema = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+            "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -140,7 +140,7 @@ const schema = {
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
-                "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                 "example": [
                   "v1",
                   "v1alpha1",
@@ -594,7 +594,7 @@ const schema = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -1505,7 +1505,7 @@ const schema = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                  "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",
