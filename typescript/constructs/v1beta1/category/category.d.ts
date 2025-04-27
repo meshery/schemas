@@ -8,7 +8,7 @@
 /**
  * Category of the model.
  */
-export interface HttpsSchemasMesheryIoCategoryJson {
+export interface HttpsSchemasMesheryIoV1Beta1CategoryCategoryJson {
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */

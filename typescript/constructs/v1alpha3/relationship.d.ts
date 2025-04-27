@@ -8,7 +8,7 @@
 /**
  * Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
  */
-export interface HttpsSchemasMesheryIoRelationshipJson {
+export interface HttpsSchemasMesheryIoV1Alpha3RelationshipJson {
   /**
    * Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
    */

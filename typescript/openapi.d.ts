@@ -4,1276 +4,2313 @@
  */
 
 export interface paths {
-    "/api/integrations/connections": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get connections
-         * @description Get connections
-         */
-        get: operations["GetConnections"];
-        put?: never;
-        /**
-         * Register Connection
-         * @description Register with Meshery Cloud
-         */
-        post: operations["RegisterConnection"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/integrations/connections/{connectionId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /**
-         * Edit Connection by ID
-         * @description Edit registered connection using the connection ID
-         */
-        put: operations["EditConnectionByID"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/integrations/connections/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get status of all connections
-         * @description Get summary about the status of all connections
-         */
-        get: operations["GetConnectionStatus"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/integrations/connections/{connectionKind}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get connections by kind
-         * @description Get connections by kind
-         */
-        get: operations["GetConnectionsByKind"];
-        put?: never;
-        post?: never;
-        /**
-         * Delete connection
-         * @description Delete registered connection
-         */
-        delete: operations["DeleteConnection"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/integrations/connections/{connectionKind}/{connectionId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get connections by kind and connectionID.
-         * @description Get connections by kind (kind is required because this API returns the results in non std format of a connection)
-         */
-        get: operations["GetConnectionsByKindAndConnectionID"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/integrations/connections/meshery/{mesheryServerID}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete Meshery connection
-         * @description Deletes a given meshery connection. This is generally used for deleting connections from Meshery Server UI where UI is not aware of connection IDs.
-         */
-        delete: operations["DeleteMesheryConnection"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/evaluate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Evaluate relationships in a design
-         * @description Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed.
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["EvaluationRequest"];
-                };
-            };
-            responses: {
-                /** @description Successful evaluation */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["EvaluationResponse"];
-                    };
-                };
-                /** @description Bad request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Internal server error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/capabilities": {
+    /** Get available capabilities for logged in user */
+    get: operations["GetCapabilitie"];
+  };
+  "/{meshery-version}/capabilities": {
+    /** Get available capabilities for logged in user */
+    get: operations["GetCapabilities"];
+  };
+  "/collaboration": {
+    /** Collaboration */
+    get: operations["CollaborationHandler"];
+  };
+  "/api/integrations/connections": {
+    /** Get connections */
+    get: operations["GetConnections"];
+    /** Register with Meshery Cloud */
+    post: operations["RegisterConnection"];
+  };
+  "/api/integrations/connections/{connectionId}": {
+    /** Edit registered connection using the connection ID */
+    put: operations["EditConnectionByID"];
+  };
+  "/api/integrations/connections/status": {
+    /** Get summary about the status of all connections */
+    get: operations["GetConnectionStatus"];
+  };
+  "/api/integrations/connections/{connectionKind}": {
+    /** Get connections by kind */
+    get: operations["GetConnectionsByKind"];
+    /** Delete registered connection */
+    delete: operations["DeleteConnection"];
+  };
+  "/api/integrations/connections/{connectionKind}/{connectionId}": {
+    /** Get connections by kind (kind is required because this API returns the results in non std format of a connection) */
+    get: operations["GetConnectionsByKindAndConnectionID"];
+  };
+  "/api/integrations/connections/meshery/{mesheryServerID}": {
+    /** Deletes a given meshery connection. This is generally used for deleting connections from Meshery Server UI where UI is not aware of connection IDs. */
+    delete: operations["DeleteMesheryConnection"];
+  };
+  "/api/system/user/credentials": {
+    /** Get all user's credentials for logged in user */
+    get: operations["GetUserCredentials"];
+    /** Update credentials for logged in user */
+    put: operations["UpdateUserCredential"];
+    /** Create new credentials for logged in user */
+    post: operations["SaveUserCredential"];
+    /** Delete user's credentials (tombstoned records) for logged in user */
+    delete: operations["DeleteUserCredential"];
+  };
+  "/api/events": {
+    /** Get Events Aggreate Count */
+    get: operations["GetEventsAggregate"];
+  };
+  "/api/events/date": {
+    /** Get Events by date */
+    get: operations["RetrieveResultsByDate"];
+  };
+  "/api/events/week": {
+    /** Get Events by week */
+    get: operations["RetrieveResultsByWeek"];
+  };
+  "/api/events/month": {
+    /** Get Events by month */
+    get: operations["RetrieveResultsByMonth"];
+  };
+  "/api/events/list": {
+    /** Get All events */
+    get: operations["GetEvents"];
+  };
+  "/api/events/summary": {
+    /** Get Events summary for a user */
+    get: operations["GetEventSummaryByUser"];
+  };
+  "/api/content/filters": {
+    /** Get paginated filters */
+    get: operations["GetFilters"];
+    /** It will insert the filter if not present else it will update the matching entry */
+    post: operations["UpsertFilter"];
+  };
+  "/api/content/filters/file/{id}": {
+    /** Get the filter associated with the given filter id without any metadata */
+    get: operations["GetFilterFile"];
+  };
+  "/api/content/filters/{id}": {
+    /** Get filter by ID */
+    get: operations["GetFilter"];
+    /** Delete filter associated with ID */
+    delete: operations["DeleteFilter"];
+  };
+  "/api/content/filters/clone/{id}": {
+    /** Clone filter associated with ID */
+    post: operations["CloneFilter"];
+  };
+  "/api/meshmodels/register": {
+    post: operations["RegisterMeshmodels"];
+  };
+  "/api/meshmodels/export": {
+    get: operations["ExportModel"];
+  };
+  "/system/roles": {
+    /** Get All supported roles */
+    get: operations["GetAllRoles"];
+    /** Assign role to user */
+    post: operations["AddRoleHolder"];
+  };
+  "/system/roles/edit": {
+    /** Edit role of user */
+    post: operations["EditRoleHolder"];
+  };
+  "/system/roles/edit/bulk": {
+    /** Edit roles of user in bulk */
+    post: operations["BulkEditRoleHolder"];
+  };
+  "/system/roles/{id}": {
+    /** Edit roles of user in bulk */
+    delete: operations["DeleteRole"];
+  };
+  "/api/performance/smp/profiles": {
+    /** Get Performance Profiles for SMP Dashboard */
+    get: operations["SMPDashboardPerfProfiles"];
+  };
+  "/api/performance/smp/profiles/{id}/results": {
+    /** Get Performance Profiles results by ID for SMP Dashboard */
+    get: operations["SMPDashboardTestResults"];
+  };
+  "/api/performance/profiles": {
+    /** Get performance profiles */
+    get: operations["GetPerformanceProfiles"];
+    /** Update performance profiles or create a new performance profile if no id is provided */
+    post: operations["UpsertPerformanceProfile"];
+  };
+  "/api/performance/profiles/{id}": {
+    /** Get Performance Profile by ID */
+    get: operations["GetPerformanceProfile"];
+    /** Delete performance profiles by ID */
+    delete: operations["DeletePerformanceProfile"];
+  };
+  "/api/performance/profiles/{id}/results": {
+    /** Get paginated Performance Profiles result */
+    get: operations["GetPerformanceProfileResults"];
+    /** Add performance profile result in given performance profile id */
+    post: operations["AddPerformanceProfileResult"];
+  };
+  "/api/performance/profiles/{id}/results/{resultID}": {
+    /** Get the performance test result associated with the given profile id and with the given test id */
+    get: operations["GetPerformanceProfileResult"];
+  };
+  "/system/user/tokens": {
+    /** Get tokens associated with logged in user */
+    get: operations["GetUserTokens"];
+    /** Generates infinite token (i.e. tokens that do not expire) for the logged in user. */
+    post: operations["GenerateToken"];
+    /** Delete token for logged in user */
+    delete: operations["DeleteUserTokens"];
+  };
+  "/system/token": {
+    /** Get Infinite Token */
+    get: operations["IssueIndefiniteLifetimeToken"];
+  };
+  "/api/identity/users/invite": {
+    /** Send invitation request to users */
+    post: operations["HandleUserInvite"];
+  };
+  "/api/identity/users/preferences": {
+    /** Upsert user preferences */
+    put: operations["UpdateUserPreference"];
+  };
+  "/api/identity/users/keys": {
+    /** Get all keys based on roles assigned to user */
+    get: operations["GetUserKeys"];
+  };
+  "/api/user/{user_id}": {
+    /** Get specific user by user id */
+    get: operations["GetUserById"];
+  };
+  "/api/identity/users/{delete_on}": {
+    /** Delete users based on delete_for parameter */
+    post: operations["DeleteUsers"];
+  };
+  "/api/system/delete/user/{user_id}": {
+    /** Delete account by ID */
+    get: operations["DeleteUserAccountById"];
+  };
+  "/api/identity/users": {
+    /** Get All users */
+    get: operations["GetRoleHolders"];
+  };
+  "/api/users": {
+    /** Get All users */
+    get: operations["GetUsers"];
+  };
+  "/api/identity/users/profile/{id}": {
+    /** Get user profile of given user Id */
+    get: operations["GetUserProfileById"];
+  };
+  "/api/identity/users/profile": {
+    /** Get user details for logged in user */
+    get: operations["GetUser"];
+    /** Update user profile data (also updates kratos identity) */
+    put: operations["UpdateProfile"];
+  };
+  "/api/identity/users/profile/details": {
+    /** Get Profile overview for logged in user */
+    get: operations["GetProfileOverview"];
+  };
+  "/api/identity/users/{user_id}/profile/activity": {
+    /** Get last 10 user activities */
+    get: operations["GetUserActivity"];
+  };
+  "/api/identity/users/online": {
+    /** Get info of active / online users in last 24 hours */
+    get: operations["GetRecentlyOnlineUsers"];
+  };
+  "/api/identity/badges": {
+    /** Gets available badges */
+    get: operations["GetAvailableBadges"];
+  };
 }
-export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        /** @description Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-        connection: {
-            /** @description ID */
-            id?: components["schemas"]["uuid"];
-            /** @description Connection Name */
-            name?: string;
-            /** @description Credential ID */
-            credential_id?: components["schemas"]["uuid"];
-            /** @description Connection Type */
-            type?: string;
-            /** @description Connection Subtype */
-            sub_type?: string;
-            /** @description Connection Kind */
-            kind?: string;
-            metadata?: Record<string, never>;
-            /**
-             * @description Connection Status
-             * @enum {string}
-             */
-            status?: "discovered" | "registered" | "connected" | "ignored" | "maintenance" | "disconnected" | "deleted" | "not found";
-            user_id?: components["schemas"]["uuid"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-            deleted_at?: components["schemas"]["time"];
+  schemas: {
+    capability: {
+      /** @description Provider type */
+      provider_type?: components["schemas"]["provider"];
+      /** @description Package version */
+      package_version?: components["schemas"]["text"];
+      /** @description Package url */
+      package_url?: components["schemas"]["text"];
+      /** @description Provider name */
+      provider_name?: components["schemas"]["text"];
+      provider_description?: components["schemas"]["text"][];
+      extensions?: components["schemas"]["capabilityExtension"];
+      capabilities?: components["schemas"]["capabilityGeneralCapability"];
+      restrictedAccess?: components["schemas"]["restrictedAccess"];
+    };
+    capabilityNavigatorExtension: {
+      /** @description Title */
+      title?: components["schemas"]["text"];
+      on_click_callback?: number;
+      href?: {
+        /** Format: uri */
+        uri?: string;
+        external?: boolean;
+      };
+      /** @description Component */
+      component?: components["schemas"]["text"];
+      /** @description Icon link */
+      icon?: components["schemas"]["text"];
+      /**
+       * Format: uri
+       * @description link
+       */
+      link?: components["schemas"]["text"];
+      /** @description Controls whether to show the extension or not */
+      show?: boolean;
+      /** @description Extension type */
+      type?: components["schemas"]["text"];
+      allowedTo?: { [key: string]: unknown };
+    };
+    capabilityUserPrefExtension: {
+      /** @description Component */
+      component?: components["schemas"]["text"];
+      /** @description Extension type */
+      type?: components["schemas"]["text"];
+    };
+    capabilityGraphQLExtension: {
+      /** @description Component */
+      component?: components["schemas"]["text"];
+      /** @description Path */
+      path?: components["schemas"]["text"];
+      /** @description Extension type */
+      type?: components["schemas"]["text"];
+    };
+    capabilitiesAccountExtension: {
+      /** @description Title */
+      title?: components["schemas"]["text"];
+      on_click_callback?: number;
+      href?: {
+        /** Format: uri */
+        uri?: string;
+        external?: boolean;
+      };
+      /** @description Component */
+      component?: components["schemas"]["text"];
+      /**
+       * Format: uri
+       * @description link
+       */
+      link?: components["schemas"]["text"];
+      /** @description Controls whether to show the extension or not */
+      show?: boolean;
+      /** @description Extension type */
+      type?: components["schemas"]["text"];
+    };
+    restrictedAccess: {
+      isMesheryUIRestricted?: boolean;
+      allowedComponents?: {
+        navigator?: { [key: string]: unknown };
+        header?: { [key: string]: unknown };
+      };
+    };
+    capabilityGeneralCapability: {
+      /** @description Feature name */
+      feature?: components["schemas"]["text"];
+      endpoint?: components["schemas"]["text"];
+    };
+    capabilityExtension: {
+      navigator?: components["schemas"]["capabilityNavigatorExtension"][];
+      user_prefs?: components["schemas"]["capabilityUserPrefExtension"][];
+      graphql?: components["schemas"]["capabilityGraphQLExtension"][];
+      account?: components["schemas"]["capabilitiesAccountExtension"][];
+    };
+    /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+    provider: string;
+    text: string;
+    /** @description Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
+    connection: {
+      /** @description ID */
+      id?: components["schemas"]["uuid"];
+      /** @description Connection Name */
+      name?: string;
+      /** @description Credential ID */
+      credential_id?: components["schemas"]["uuid"];
+      /** @description Connection Type */
+      type: string;
+      /** @description Connection Subtype */
+      sub_type?: string;
+      /** @description Connection Kind */
+      kind: string;
+      metadata?: { [key: string]: unknown };
+      /**
+       * @description Connection Status
+       * @enum {string}
+       */
+      status:
+        | "discovered"
+        | "registered"
+        | "connected"
+        | "ignored"
+        | "maintenance"
+        | "disconnected"
+        | "deleted"
+        | "not found";
+      user_id?: components["schemas"]["uuid"];
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+      deleted_at?: components["schemas"]["time"];
+    };
+    mesheryInstance: {
+      /** @description Connection id */
+      id?: components["schemas"]["id"];
+      /** @description Connection name */
+      name?: components["schemas"]["text"];
+      /** @description Connected server id */
+      server_id?: components["schemas"]["text"];
+      /** @description Running server version */
+      server_version?: components["schemas"]["text"];
+      server_location?: components["schemas"]["text"];
+      /** @description Server build SHA */
+      server_build_sha?: components["schemas"]["text"];
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+      deleted_at?: components["schemas"]["time"];
+      /** @description Status */
+      status?: components["schemas"]["text"];
+    };
+    connectionPage: components["schemas"]["resultsPage"] & {
+      connections?: components["schemas"]["connection"][];
+    };
+    connectionStatusInfo: {
+      /** @description Connection status */
+      status?: components["schemas"]["text"];
+      /** @description Number of connections having the status */
+      count?: number;
+    };
+    connectionsStatusPage: {
+      connections_status?: components["schemas"]["connectionStatusInfo"][];
+    };
+    k8sContext: {
+      id?: components["schemas"]["id"];
+      name?: components["schemas"]["text"];
+      auth?: components["schemas"]["map_object"];
+      cluster?: components["schemas"]["map_object"];
+      server?: string;
+      owner?: components["schemas"]["id"];
+      created_by?: components["schemas"]["id"];
+      meshery_instance_id?: components["schemas"]["id"];
+      kubernetes_server_id?: components["schemas"]["id"];
+      deployment_type?: string;
+      updated_at?: components["schemas"]["time"];
+      created_at?: components["schemas"]["time"];
+    };
+    k8sContextPersistResponse: {
+      k8sContext?: components["schemas"]["k8sContext"];
+      inserted?: boolean;
+    };
+    resultsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      resultType?: string;
+    };
+    /**
+     * Format: uuid
+     * @description A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+     * @default 00000000-00000000-00000000-00000000
+     */
+    uuid: string;
+    /** Format: date-time */
+    time: string;
+    map_object: { [key: string]: string };
+    /** Format: uuid */
+    id: string;
+    credential: {
+      id?: components["schemas"]["id"];
+      user_id?: components["schemas"]["id"];
+      name?: components["schemas"]["text"];
+      type?: string;
+      secret?: components["schemas"]["map_object"];
+      created_at?: components["schemas"]["created_at"];
+      updated_at?: components["schemas"]["updated_at"];
+      deleted_at?: components["schemas"]["deleted_at"];
+    };
+    credentialsPage: components["schemas"]["resultsPage"] & {
+      credential?: components["schemas"]["credential"][];
+    };
+    /**
+     * Format: date-time
+     * @description Timestamp when the resource was created.
+     */
+    created_at: string;
+    /**
+     * Format: date-time
+     * @description Timestamp when the resource was updated.
+     */
+    updated_at: string;
+    /**
+     * Format: date-time
+     * @description Timestamp when the resource was deleted.
+     */
+    deleted_at: string;
+    eventType: string;
+    /** @description Defines model for event_trackers */
+    event: {
+      /** @description UUID of the event. */
+      id: components["schemas"]["id"];
+      /** @description UUID of the user that initiated the event. In most cases this would be present, but not always. */
+      user_id?: components["schemas"]["user_uuid"];
+      /**
+       * @description The system from which the request is sourced. In the case of Meshery Server,
+       * the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
+       */
+      system_id: components["schemas"]["system_id"];
+      /** @description Each Event will have a OperationID. This field is never NULL, which is to say an operation can result in series of events, for eg: Different stages of Pattern Engine / activities of Workflow engine. Each operation (and sub-operation) will have a different operation ID. */
+      operation_id: components["schemas"]["operation_id"];
+      /**
+       * @description Resource name on which the operation is invoked.
+       *
+       * @example pattern
+       */
+      category: string;
+      /**
+       * @description Action taken on the resource.
+       *
+       * @example deployed
+       */
+      action: string;
+      /**
+       * @description Status for the event.
+       *
+       * @enum {string}
+       */
+      status: "read" | "unread";
+      /**
+       * Format: uuid
+       * @description UUID of the entity on which the event was performed.
+       *
+       * @example 110020-123230-434231-000213
+       */
+      acted_upon: string;
+      /**
+       * @description A summary/receipt of event that occured.
+       *
+       * @example “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
+       */
+      description: string;
+      /**
+       * @description A set of seven standard event levels.
+       *
+       * @example info
+       * @enum {string}
+       */
+      severity:
+        | "emergency"
+        | "critical"
+        | "alert"
+        | "error"
+        | "warning"
+        | "debug"
+        | "informational"
+        | "success";
+      /**
+       * @description Contains meaningful information, specific to the type of event.
+       * Structure of metadata can be different for different events.
+       */
+      metadata: { [key: string]: unknown };
+      created_at: components["schemas"]["created_at"];
+      updated_at: components["schemas"]["updated_at"];
+      deleted_at?: components["schemas"]["deleted_at"];
+    };
+    events_filter: {
+      provider: string[];
+      category: string[];
+      action: string[];
+      severity: string[];
+      limit: number;
+      offset: number;
+      /** @description Field on which records are sorted */
+      sort_on: string;
+      /** @description order of sort asc/desc, default is asc */
+      order: string;
+    };
+    eventTrackerGrouped: {
+      count?: number;
+      event_type?: components["schemas"]["text"];
+      dt?: components["schemas"]["time"];
+      week?: components["schemas"]["text"];
+      month?: components["schemas"]["text"];
+      year?: components["schemas"]["text"];
+    };
+    eventTrackerGroupedArray: components["schemas"]["eventTrackerGrouped"][];
+    eventResult: {
+      event: components["schemas"]["event"];
+      events_count: number;
+    };
+    eventsPage: components["schemas"]["recordsPage"] & {
+      data?: components["schemas"]["eventResult"][];
+    };
+    eventSummary: {
+      /** @description user's email or username */
+      user_id: string;
+      provider: string;
+      email: string;
+      /** @description First Name */
+      first_name: string;
+      /** @description Last Name */
+      last_name: string;
+      activity_count: number;
+      login_count: number;
+      signup_count: number;
+      perf_results_count: number;
+      smi_results_count: number;
+      meshery_apps_count: number;
+      meshery_patterns_count: number;
+      meshery_filters_count: number;
+      /** Format: data-time */
+      last_login_time: string;
+    };
+    eventSummaryPage: components["schemas"]["recordsPage"] & {
+      data?: components["schemas"]["eventSummary"][];
+    };
+    eventsAggregate: {
+      /** @description Number of audit events */
+      audit?: number;
+      /** @description Number of summary events */
+      summary?: number;
+    };
+    recordsPage: {
+      page?: number;
+      page_size?: number;
+      records_total?: number;
+      recordType?: string;
+    };
+    /** Format: uuid */
+    user_uuid: string;
+    /** Format: uuid */
+    system_id: string;
+    /** Format: uuid */
+    operation_id: string;
+    mesheryFilter: {
+      /** @description Connection id */
+      id?: components["schemas"]["id"];
+      user_id?: components["schemas"]["id"];
+      /**
+       * Format: byte
+       * @description Filter file
+       */
+      filter_file?: string;
+      /** @description Filter Name */
+      name?: components["schemas"]["text"];
+      location?: components["schemas"]["map_object"];
+      visibility?: components["schemas"]["text"];
+      catalog_data?: components["schemas"]["map_object"];
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+    };
+    mesheryFilterPage: components["schemas"]["resultsPage"] & {
+      filters?: components["schemas"]["mesheryFilter"][];
+    };
+    ImportRequest: {
+      importBody: components["schemas"]["ImportBody"];
+      uploadType: string;
+      register: boolean;
+    };
+    ImportBody: {
+      /**
+       * Format: byte
+       * @description This represents the binary content of the file as a byte array
+       */
+      model_file: string;
+      url: string;
+      file_name: string;
+      model_csv: string;
+      component_csv: string;
+      relationship_csv: string;
+      model: components["schemas"]["Model"];
+    };
+    Model: {
+      modelDisplayName: string;
+      registrant: string;
+      model: string;
+      category: components["schemas"]["category"];
+      subCategory: components["schemas"]["subcategory"];
+      shape: string;
+      primaryColor: string;
+      secondaryColor: string;
+      svgColor: string;
+      svgWhite: string;
+      svgComplete: string;
+      isAnnotation: boolean;
+      publishToRegistry: boolean;
+    };
+    /** @description Category of the model. */
+    category: {
+      id: components["schemas"]["uuid"];
+      /**
+       * @description The category of the model that determines the main grouping.
+       * @default Uncategorized
+       * @enum {string}
+       */
+      name:
+        | "Analytics"
+        | "App Definition and Development"
+        | "Cloud Native Network"
+        | "Cloud Native Storage"
+        | "Database"
+        | "Machine Learning"
+        | "Observability and Analysis"
+        | "Orchestration & Management"
+        | "Platform"
+        | "Provisioning"
+        | "Runtime"
+        | "Security & Compliance"
+        | "Serverless"
+        | "Tools"
+        | "Uncategorized";
+      metadata: { [key: string]: unknown };
+    };
+    /**
+     * SubCategory
+     * @description Sub category of the model determines the secondary grouping.
+     * @default Uncategorized
+     * @enum {string}
+     */
+    subcategory:
+      | "API Gateway"
+      | "API Integration"
+      | "Application Definition & Image Build"
+      | "Automation & Configuration"
+      | "Certified Kubernetes - Distribution"
+      | "Chaos Engineering"
+      | "Cloud Native Storage"
+      | "Cloud Provider"
+      | "CNI"
+      | "Compute"
+      | "Container Registry"
+      | "Container Runtime"
+      | "Container Security"
+      | "Container"
+      | "Content Delivery Network"
+      | "Continuous Integration & Delivery"
+      | "Coordination & Service Discovery"
+      | "Database"
+      | "Flowchart"
+      | "Framework"
+      | "Installable Platform"
+      | "Key Management"
+      | "Key Management Service"
+      | "Kubernetes"
+      | "Logging"
+      | "Machine Learning"
+      | "Management Governance"
+      | "Metrics"
+      | "Monitoring"
+      | "Networking Content Delivery"
+      | "Operating System"
+      | "Query"
+      | "Remote Procedure Call"
+      | "Scheduling & Orchestration"
+      | "Secrets Management"
+      | "Security Identity & Compliance"
+      | "Service Mesh"
+      | "Service Proxy"
+      | "Source Version Control"
+      | "Storage"
+      | "Specifications"
+      | "Streaming & Messaging"
+      | "Tools"
+      | "Tracing"
+      | "Uncategorized"
+      | "Video Conferencing";
+    roleHolderRequest: {
+      role_names: components["schemas"]["roleNames"];
+      email: components["schemas"]["email"];
+    };
+    role: {
+      id: components["schemas"]["id"];
+      user_id: components["schemas"]["user_id"];
+      username: components["schemas"]["username"];
+      email: components["schemas"]["email"];
+      /** @description First Name */
+      first_name: components["schemas"]["text"];
+      /** @description Last Name */
+      last_name: components["schemas"]["text"];
+      status: components["schemas"]["status"];
+      role_names: components["schemas"]["roleNames"];
+      created_at: components["schemas"]["time"];
+      updated_at: components["schemas"]["time"];
+      last_login_time: components["schemas"]["time"];
+      deleted_at: components["schemas"]["time"];
+      prefs?: components["schemas"]["email_preference"];
+    };
+    roleNames: string[];
+    /**
+     * Format: email
+     * @description email
+     */
+    email: string;
+    /** @description user's email or username */
+    user_id: string;
+    username: string;
+    status: string;
+    email_preference: {
+      welcome_email?: boolean;
+      notify_role_change?: boolean;
+    };
+    performanceProfile: {
+      id?: components["schemas"]["id"];
+      name?: components["schemas"]["text"];
+      user_id?: components["schemas"]["id"];
+      schedule?: components["schemas"]["id"];
+      load_generators?: string;
+      endpoints?: string;
+      service_mesh?: string;
+      concurrent_request?: number;
+      qps?: number;
+      duration?: string;
+      last_run?: components["schemas"]["time"];
+      total_results?: number;
+      request_headers?: string;
+      request_cookies?: string;
+      request_body?: string;
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+    };
+    performanceProfilePage: components["schemas"]["resultsPage"] & {
+      profiles?: components["schemas"]["performanceProfile"][];
+    };
+    performanceResult: {
+      id?: components["schemas"]["id"];
+      name?: components["schemas"]["text"];
+      test_start_time?: components["schemas"]["time"];
+      mesh?: string;
+      runner_results?: components["schemas"]["map_object"];
+      deleted?: boolean;
+      server_metrics?: components["schemas"]["map_object"];
+      server_board_config?: components["schemas"]["map_object"];
+      performance_profile?: components["schemas"]["id"];
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+    };
+    mesheryResultPage: components["schemas"]["resultsPage"] & {
+      results?: components["schemas"]["performanceResult"][];
+    };
+    tokenPage: components["schemas"]["resultsPage"] & {
+      tokens?: components["schemas"]["userToken"][];
+    };
+    userToken: {
+      id?: components["schemas"]["id"];
+      user_id?: components["schemas"]["id"];
+      provider?: components["schemas"]["provider"];
+      access_token?: components["schemas"]["text"];
+      refresh_token?: components["schemas"]["text"];
+      name?: components["schemas"]["text"];
+      purpose?: components["schemas"]["text"];
+      is_oauth?: boolean;
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+    };
+    userInvite: {
+      /** @description First Name */
+      first_name: components["schemas"]["text"];
+      /** @description Last Name */
+      last_name: components["schemas"]["text"];
+      email: components["schemas"]["email"];
+    };
+    bulkDelete: {
+      user_ids: components["schemas"]["id"];
+      user_emails: components["schemas"]["emails"];
+    };
+    user: {
+      id: components["schemas"]["id"];
+      user_id: components["schemas"]["user_id"];
+      provider: components["schemas"]["provider"];
+      email: components["schemas"]["email"];
+      /** @description First Name */
+      first_name: components["schemas"]["text"];
+      /** @description Last Name */
+      last_name: components["schemas"]["text"];
+      avatar_url?: components["schemas"]["avatar_url"];
+      status: components["schemas"]["status"];
+      bio?: components["schemas"]["bio"];
+      preferences?: components["schemas"]["map_object"];
+      accepted_terms_at?: components["schemas"]["accepted_terms_at"];
+      first_login_time?: components["schemas"]["time"];
+      last_login_time: components["schemas"]["time"];
+    } & {
+      created_at: unknown;
+      updated_at: unknown;
+      deleted_at: unknown;
+    };
+    recentUsers: {
+      id?: components["schemas"]["id"];
+      /** @description First Name */
+      first_name?: components["schemas"]["text"];
+      /** @description Last Name */
+      last_name?: components["schemas"]["text"];
+      avatar_url?: components["schemas"]["avatar_url"];
+    };
+    rolesPage: components["schemas"]["recordsPage"] & {
+      data?: components["schemas"]["role"][];
+    };
+    key: {
+      ID?: components["schemas"]["id"];
+      subcategory?: components["schemas"]["text"];
+      function?: components["schemas"]["text"];
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+      deleted_at?: components["schemas"]["nullTime"];
+      category?: components["schemas"]["text"];
+      description?: components["schemas"]["text"];
+      owner?: components["schemas"]["id"];
+    };
+    userKeys: {
+      keys?: components["schemas"]["key"][];
+      total_count?: number;
+    };
+    /** @enum {string} */
+    deleteOn: "self" | "bulk";
+    usersPageForAdmin: components["schemas"]["recordsPage"] & {
+      data?: components["schemas"]["usersWithRolesForAdmin"][];
+    };
+    usersWithRolesForAdmin: {
+      id: components["schemas"]["id"];
+      user_id: components["schemas"]["user_id"];
+      username: components["schemas"]["username"];
+      email: components["schemas"]["email"];
+      /** @description First Name */
+      first_name: components["schemas"]["text"];
+      /** @description Last Name */
+      last_name: components["schemas"]["text"];
+      status: components["schemas"]["status"];
+      role_names: components["schemas"]["roleNames"];
+      created_at: components["schemas"]["time"];
+      updated_at: components["schemas"]["time"];
+      last_login_time: components["schemas"]["time"];
+      deleted_at: components["schemas"]["time"];
+      prefs?: components["schemas"]["email_preference"];
+      avatar_url?: components["schemas"]["avatar_url"];
+      preferences?: components["schemas"]["map_object"];
+    };
+    teamMembers: {
+      id: components["schemas"]["id"];
+      user_id: components["schemas"]["user_id"];
+      username: components["schemas"]["username"];
+      email: components["schemas"]["email"];
+      /** @description First Name */
+      first_name: components["schemas"]["text"];
+      /** @description Last Name */
+      last_name: components["schemas"]["text"];
+      status: components["schemas"]["status"];
+      role_names: components["schemas"]["roleNames"];
+      joined_at: components["schemas"]["time"];
+      updated_at: components["schemas"]["time"];
+      last_login_time: components["schemas"]["time"];
+      deleted_at: components["schemas"]["time"];
+      prefs?: components["schemas"]["email_preference"];
+      avatar_url?: components["schemas"]["avatar_url"];
+    };
+    teamMembersPage: components["schemas"]["recordsPage"] & {
+      data?: components["schemas"]["teamMembers"][];
+    };
+    usersForNonAdmin: {
+      id: components["schemas"]["id"];
+      user_id: components["schemas"]["user_id"];
+      username: components["schemas"]["username"];
+      email: components["schemas"]["email"];
+      /** @description First Name */
+      first_name: components["schemas"]["text"];
+      /** @description Last Name */
+      last_name: components["schemas"]["text"];
+      prefs?: components["schemas"]["email_preference"];
+      avatar_url?: components["schemas"]["avatar_url"];
+      preferences?: components["schemas"]["map_object"];
+    };
+    usersPageForNonAdmin: components["schemas"]["recordsPage"] & {
+      data?: components["schemas"]["usersForNonAdmin"][];
+    };
+    recentActivityPage: {
+      recent_activity?: components["schemas"]["event"][];
+    };
+    accountOverview: {
+      k8s_count?: number;
+      app_count?: number;
+      pattern_count?: number;
+    };
+    badge: {
+      id?: components["schemas"]["id"];
+      name?: components["schemas"]["text"];
+      description?: components["schemas"]["text"];
+      label?: components["schemas"]["text"];
+      svg_location?: components["schemas"]["text"];
+      created_at?: components["schemas"]["time"];
+      updated_at?: components["schemas"]["time"];
+      deleted_at?: components["schemas"]["nullTime"];
+    };
+    badges: {
+      badges?: { [key: string]: components["schemas"]["badge"] };
+      total_count?: number;
+    };
+    /** @description SQL null Timestamp to handle null values of time. */
+    nullTime: string;
+    /** @description Link for profile picture */
+    avatar_url: string;
+    bio: string;
+    accepted_terms_at: string;
+    emails: components["schemas"]["email"][];
+    /** @description Body for empty request */
+    empty: { [key: string]: unknown };
+  };
+  responses: {
+    /** ok */
+    200: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** created */
+    201: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description user's os */
+    os: string;
+    /** @description Is playground mode */
+    playground: string;
+    /** @description meshery version */
+    mesheryVersion: string;
+    /** @description Connection kind (eg: Meshery) */
+    connectionKind: components["schemas"]["text"];
+    /** @description Connection ID */
+    connectionId: components["schemas"]["id"];
+    /** @description Meshery server ID */
+    serverId: components["schemas"]["id"];
+    /** @description Get reponses by page */
+    page: string;
+    /** @description Get reponses by pageSize */
+    page_size: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    /** @description credential Id */
+    credentialId: string;
+    /** @description Cumulative events */
+    cumulative: string;
+    /** @description Filter for retrieving events */
+    eventsFilter: {
+      provider?: string[];
+      event_type?: string[];
+    };
+    /** @description Unique identifier */
+    id: string;
+    /** @description Result id */
+    resultId: components["schemas"]["id"];
+    /** @description Performance Result Id */
+    resultID: string;
+    /** @description To get OAuth tokens as well */
+    isOAuth: string;
+    /** @description Name of the resource */
+    name: string;
+    /** @description Purpose for which token is generated */
+    purpose: string;
+    /** @description User's user_id */
+    userId: string;
+    /** @description Remote provider */
+    provider: string;
+    /** @description Defines on whom the delete operation is to be performed */
+    deleteOn: components["schemas"]["deleteOn"];
+    /** @description Get filtered reponses */
+    filter: string;
+  };
+  requestBodies: {
+    connectionPayload: {
+      content: {
+        "application/json": {
+          /** @description Kind */
+          kind?: components["schemas"]["text"];
+          /** @description Connection type */
+          type?: components["schemas"]["text"];
+          /** @description Connection subtype */
+          sub_type?: components["schemas"]["text"];
+          credential_secret?: components["schemas"]["map_object"];
+          metadata?: components["schemas"]["map_object"];
         };
-        mesheryInstance: {
-            /** @description Connection id */
-            id?: components["schemas"]["id"];
-            /** @description Connection name */
-            name?: components["schemas"]["text"];
-            /** @description Connected server id */
-            server_id?: components["schemas"]["text"];
-            /** @description Running server version */
-            server_version?: components["schemas"]["text"];
-            server_location?: components["schemas"]["text"];
-            /** @description Server build SHA */
-            server_build_sha?: components["schemas"]["text"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-            deleted_at?: components["schemas"]["time"];
-            /** @description Status */
-            status?: components["schemas"]["text"];
+      };
+    };
+    /** Body for user credential */
+    credentialBody: {
+      content: {
+        "application/json": components["schemas"]["credential"];
+      };
+    };
+    mesheryFilterRequestBody: {
+      content: {
+        "application/json": {
+          url?: components["schemas"]["text"];
+          path?: components["schemas"]["text"];
+          save?: boolean;
+          filter_data?: components["schemas"]["mesheryFilter"];
         };
-        connectionPage: {
-            resultType: "connectionPage";
-        } & (Omit<components["schemas"]["resultsPage"], "resultType"> & {
-            connections?: components["schemas"]["connection"][];
-        });
-        connectionStatusInfo: {
-            /** @description Connection status */
-            status?: components["schemas"]["text"];
-            /** @description Number of connections having the status */
-            count?: number;
+      };
+    };
+    /** Body for user invite request */
+    userInvite: {
+      content: {
+        "application/json": {
+          /** @description First Name */
+          first_name: components["schemas"]["text"];
+          /** @description Last Name */
+          last_name: components["schemas"]["text"];
+          email: components["schemas"]["email"];
         };
-        connectionsStatusPage: {
-            connections_status?: components["schemas"]["connectionStatusInfo"][];
-        };
-        k8sContext: {
-            id?: components["schemas"]["id"];
-            name?: components["schemas"]["text"];
-            auth?: components["schemas"]["map_object"];
-            cluster?: components["schemas"]["map_object"];
-            server?: string;
-            owner?: components["schemas"]["id"];
-            created_by?: components["schemas"]["id"];
-            meshery_instance_id?: components["schemas"]["id"];
-            kubernetes_server_id?: components["schemas"]["id"];
-            deployment_type?: string;
-            updated_at?: components["schemas"]["time"];
-            created_at?: components["schemas"]["time"];
-        };
-        k8sContextPersistResponse: {
-            k8sContext?: components["schemas"]["k8sContext"];
-            inserted?: boolean;
-        };
-        resultsPage: {
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            resultType?: string;
-        };
-        /**
-         * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-         */
-        uuid: string;
-        /** Format: date-time */
-        time: string;
-        text: string;
-        map_object: {
-            [key: string]: string;
-        };
-        /** Format: uuid */
-        id: string;
-        model_definition: components["schemas"]["model"];
-        component_definition: components["schemas"]["component"];
-        /** @description Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
-        capability: {
-            /** @description Specifies the version of the schema to which the capability definition conforms. */
-            schemaVersion: components["schemas"]["versionString"];
-            /** @description Version of the capability definition. */
-            version: components["schemas"]["semverString"];
-            /** @description Name of the capability in human-readible format. */
-            displayName: components["schemas"]["inputString"];
-            /** @description A written representation of the purpose and characteristics of the capability. */
-            description?: string;
-            /** @description Top-level categorization of the capability */
-            kind: components["schemas"]["inputString"];
-            /** @description Classification of capabilities. Used to group capabilities similar in nature. */
-            type: components["schemas"]["inputString"];
-            /** @description Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-            subType?: components["schemas"]["inputString"];
-            /** @description Key that backs the capability. */
-            key?: components["schemas"]["inputString"];
-            /** @description State of the entity in which the capability is applicable. */
-            entityState: components["schemas"]["inputString"][];
-            /**
-             * @description Status of the capability
-             * @default enabled
-             * @enum {string}
-             */
-            status: "enabled" | "disabled";
-            /** @description Metadata contains additional information associated with the capability. Extension point. */
-            metadata?: {
-                [key: string]: unknown;
-            };
-        };
-        relationship_definition: components["schemas"]["relationship"];
-        /**
-         * @description API version of the object
-         * @example [
-         *       "v1",
-         *       "v1alpha1",
-         *       "v2beta3",
-         *       "v1.custom-suffix"
-         *     ]
-         */
-        versionString: string;
-        /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
-        semverString: string;
-        /** @description A string starting with an alphanumeric character. Spaces and hyphens allowed. */
-        inputString: string;
-        /** @description Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities. */
-        model: {
-            /** @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-            id?: components["schemas"]["uuid"];
-            /**
-             * @description Specifies the version of the schema used for the definition.
-             * @example [
-             *       "v1",
-             *       "v1alpha1",
-             *       "v2beta3",
-             *       "v1.custom-suffix"
-             *     ]
-             */
-            schemaVersion?: string;
-            /** @description Version of the model definition. */
-            version: string;
-            /** @description The unique name for the model within the scope of a registrant. */
-            name: string;
-            /** @description Human-readable name for the model. */
-            displayName?: string;
-            /** @description Description of the model. */
-            description?: string;
-            /**
-             * @description Status of model, including:
-             *     - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-             *     - maintenance: model is unavailable for a period of time.
-             *     - enabled: model is available for use for all users of this Meshery Server.
-             *     - ignored: model is unavailable for use for all users of this Meshery Server.
-             * @enum {string}
-             */
-            status?: "ignored" | "enabled" | "duplicate";
-            registrant: components["schemas"]["connection"];
-            /** @description Category of the model. */
-            category: {
-                id?: components["schemas"]["uuid"];
-                name?: string;
-                metadata?: Record<string, never>;
-            };
-            /** @description Sub-category of the model. */
-            subCategory?: string;
-            /** @description Metadata containing additional information associated with the model. */
-            metadata?: {
-                /** @description Capabilities associated with the model */
-                capabilities?: components["schemas"]["capability"][];
-                /** @description Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                isAnnotation?: boolean;
-                /** @description Primary color associated with the model. */
-                primaryColor?: string;
-                /** @description Secondary color associated with the model. */
-                secondaryColor?: string;
-                /** @description SVG representation of the model in white color. */
-                svgWhite?: string;
-                /** @description SVG representation of the model in colored format. */
-                svgColor?: string;
-                /** @description SVG representation of the complete model. */
-                svgComplete?: string;
-            } & {
-                [key: string]: unknown;
-            };
-            /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-            model?: {
-                /**
-                 * @description Version of the model as defined by the registrant.
-                 * @example [
-                 *       "v1",
-                 *       "v1alpha1",
-                 *       "v2beta3",
-                 *       "v1.custom-suffix"
-                 *     ]
-                 */
-                version: string;
-            };
-        };
-        /** @description Common styles for all entities */
-        styles: {
-            /** @description Primary color of the component used for UI representation. */
-            primaryColor: string;
-            /** @description Secondary color of the entity used for UI representation. */
-            secondaryColor?: string;
-            /** @description White SVG of the entity used for UI representation on dark background. */
-            svgWhite: string;
-            /** @description Colored SVG of the entity used for UI representation on light background. */
-            svgColor: string;
-            /** @description Complete SVG of the entity used for UI representation, often inclusive of background. */
-            svgComplete?: string;
-            /** @description The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            color?: string;
-            /** @description The opacity of the label text, including its outline. */
-            "text-opacity"?: number;
-            /** @description A comma-separated list of font names to use on the label text. */
-            "font-family"?: string;
-            /** @description The size of the label text. */
-            "font-size"?: string;
-            /** @description A CSS font style to be applied to the label text. */
-            "font-style"?: string;
-            /** @description A CSS font weight to be applied to the label text. */
-            "font-weight"?: string;
-            /**
-             * @description A transformation to apply to the label text
-             * @enum {string}
-             */
-            "text-transform"?: "none" | "uppercase" | "lowercase";
-            /** @description The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility */
-            opacity?: number;
-            /** @description An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index. */
-            "z-index"?: number;
-            /** @description The text to display for an element’s label. Can give a path, e.g. data(id) will label with the elements id */
-            label?: string;
-        };
-        /**
-         * @description The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-         * @enum {string}
-         */
-        shape: "ellipse" | "triangle" | "round-triangle" | "rectangle" | "round-rectangle" | "bottom-round-rectangle" | "cut-rectangle" | "barrel" | "rhomboid" | "diamond" | "round-diamond" | "pentagon" | "round-pentagon" | "hexagon" | "round-hexagon" | "concave-hexagon" | "heptagon" | "round-heptagon" | "octagon" | "round-octagon" | "star" | "tag" | "round-tag" | "vee" | "polygon";
-        /** @description Visualization styles for a component */
-        componentStyles: WithRequired<components["schemas"]["styles"], "primaryColor" | "svgColor" | "svgWhite"> & {
-            shape: components["schemas"]["shape"];
-            /** @description The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position. */
-            position?: {
-                /** @description The x-coordinate of the node. */
-                x: number;
-                /** @description The y-coordinate of the node. */
-                y: number;
-            };
-            /** @description The text to display for an element’s body. Can give a path, e.g. data(id) will label with the elements id */
-            "body-text"?: string;
-            /** @description How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'. */
-            "body-text-wrap"?: string;
-            /** @description The maximum width for wrapping text in the node. */
-            "body-text-max-width"?: string;
-            /** @description The opacity of the node’s body text, including its outline. */
-            "body-text-opacity"?: number;
-            /** @description The colour of the node’s body text background. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "body-text-background-color"?: string;
-            /** @description The size of the node’s body text. */
-            "body-text-font-size"?: string;
-            /** @description The colour of the node’s body text. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "body-text-color"?: string;
-            /** @description A CSS font weight to be applied to the node’s body text. */
-            "body-text-weight"?: string;
-            /** @description A CSS horizontal alignment to be applied to the node’s body text. */
-            "body-text-horizontal-align"?: string;
-            /** @description A CSS text decoration to be applied to the node’s body text. */
-            "body-text-decoration"?: string;
-            /** @description A CSS vertical alignment to be applied to the node’s body text. */
-            "body-text-vertical-align"?: string;
-            /** @description The width of the node’s body or the width of an edge’s line. */
-            width?: number;
-            /** @description The height of the node’s body */
-            height?: number;
-            /** @description The colour of the node’s body. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "background-color"?: string;
-            /** @description Blackens the node’s body for values from 0 to 1; whitens the node’s body for values from 0 to -1. */
-            "background-blacken"?: number;
-            /** @description The opacity level of the node’s background colour */
-            "background-opacity"?: number;
-            /** @description The size of the node’s border. */
-            "border-width"?: number;
-            /**
-             * @description The style of the node’s border
-             * @enum {string}
-             */
-            "border-style"?: "solid" | "dotted" | "dashed" | "double";
-            /** @description The colour of the node’s border. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "border-color"?: string;
-            /** @description The opacity of the node’s border */
-            "border-opacity"?: number;
-            /** @description The amount of padding around all sides of the node. */
-            padding?: number;
-            /**
-             * @description The horizontal alignment of a node’s label
-             * @enum {string}
-             */
-            "text-halign"?: "left" | "center" | "right";
-            /**
-             * @description The vertical alignment of a node’s label
-             * @enum {string}
-             */
-            "text-valign"?: "top" | "center" | "bottom";
-            /**
-             * @description Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.
-             * @default no
-             * @enum {string}
-             */
-            ghost: "yes" | "no";
-            /** @description The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "active-bg-color"?: string;
-            /** @description  The opacity of the active background indicator. Selector needs to be *core*. */
-            "active-bg-opacity"?: string;
-            /** @description  The opacity of the active background indicator. Selector needs to be *core*. */
-            "active-bg-size"?: string;
-            /** @description The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "selection-box-color"?: string;
-            /** @description The size of the border on the selection box. Selector needs to be *core* */
-            "selection-box-border-width"?: number;
-            /** @description The opacity of the selection box.  Selector needs to be *core* */
-            "selection-box-opacity"?: number;
-            /** @description The colour of the area outside the viewport texture when initOptions.textureOnViewport === true.  Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "outside-texture-bg-color"?: string;
-            /** @description The opacity of the area outside the viewport texture. Selector needs to be *core* */
-            "outside-texture-bg-opacity"?: number;
-        };
-        /** @description Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components */
-        component: {
-            /** @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-            id?: components["schemas"]["uuid"];
-            /** @description Specifies the version of the schema to which the component definition conforms. */
-            schemaVersion: components["schemas"]["versionString"];
-            /** @description Version of the component definition. */
-            version: components["schemas"]["semverString"];
-            /** @description Name of the component in human-readible format. */
-            displayName?: components["schemas"]["inputString"];
-            /** @description A written representation of the purpose and characteristics of the component. */
-            description?: string;
-            /**
-             * @description Format specifies the format used in the `component.schema` field. JSON is the default.
-             * @default JSON
-             * @enum {string}
-             */
-            format: "JSON" | "CUE";
-            /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-            model: components["schemas"]["model"];
-            styles?: components["schemas"]["componentStyles"];
-            /** @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management. */
-            capabilities?: components["schemas"]["capability"][];
-            /**
-             * @description Status of component, including:
-             *     - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-             *     - maintenance: model is unavailable for a period of time.
-             *     - enabled: model is available for use for all users of this Meshery Server.
-             *     - ignored: model is unavailable for use for all users of this Meshery Server.
-             * @default enabled
-             * @enum {string}
-             */
-            status: "ignored" | "enabled" | "duplicate";
-            /** @description Metadata contains additional information associated with the component. */
-            metadata?: {
-                /** @description Genealogy represents the various representational states of the component. */
-                genealogy?: string;
-                /** @description Identifies whether the component is semantically meaningful or not; identifies whether the component should be treated as deployable entity or is for purposes of logical representation. */
-                isAnnotation?: boolean;
-                /** @description 'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered. */
-                published?: boolean;
-            } & {
-                [key: string]: unknown;
-            };
-            /** @description The configuration of the component. The configuration is based on the schema defined within the component definition(component.schema). */
-            configuration?: Record<string, never>;
-            /** @description Component and it's properties. */
-            component: {
-                /** @description Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod. */
-                version: string;
-                /** @description The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'. */
-                kind: string;
-                /** @description JSON schema of the object as defined by the registrant. */
-                schema: string;
-            };
-        };
-        /** @description Visualization styles for a relationship */
-        edgeStyles: components["schemas"]["styles"] & {
-            /** @description The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc . */
-            "edge-animation"?: string;
-            /**
-             * @description The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
-             * @default straight
-             * @enum {string}
-             */
-            "curve-style": "straight" | "haystack" | "bezier" | "unbundled-bezier" | "segments" | "taxi";
-            /** @description The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "line-color"?: string;
-            /**
-             * @description The style of the edge’s line.
-             * @enum {string}
-             */
-            "line-style"?: "solid" | "dotted" | "dashed";
-            /**
-             * @description The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
-             * @default butt
-             * @enum {string}
-             */
-            "line-cap": "butt" | "round" | "square";
-            /**
-             * @description The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
-             * @default 1
-             */
-            "line-opacity": number;
-            /** @description The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "target-arrow-color"?: string;
-            /**
-             * @description The shape of the edge’s source arrow
-             * @enum {string}
-             */
-            "target-arrow-shape"?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-            /**
-             * @description The fill state of the edge’s source arrow
-             * @enum {string}
-             */
-            "target-arrow-fill"?: "filled" | "hollow";
-            /** @description The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)). */
-            "mid-target-arrow-color"?: string;
-            /**
-             * @description The shape of the edge’s source arrow
-             * @enum {string}
-             */
-            "mid-target-arrow-shape"?: "triangle" | "triangle-tee" | "circle-triangle" | "triangle-cross" | "triangle-backcurve" | "vee" | "tee" | "square" | "circle" | "diamond" | "chevron" | "none";
-            /**
-             * @description The fill state of the edge’s source arrow
-             * @enum {string}
-             */
-            "mid-target-arrow-fill"?: "filled" | "hollow";
-            /** @description Scaling for the arrow size. */
-            "arrow-scale"?: number;
-            /** @description The text to display for an edge’s source label. Can give a path, e.g. data(id) will label with the elements id */
-            "source-label"?: string;
-            /** @description The text to display for an edge’s target label. Can give a path, e.g. data(id) will label with the elements id */
-            "target-label"?: string;
-        };
-        relationshipStyles: components["schemas"]["edgeStyles"] | components["schemas"]["styles"];
-        /** @description Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
-        selector: {
-            kind?: string;
-            /** @description Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
-            model?: components["schemas"]["model"];
-            id?: components["schemas"]["uuid"];
-            match?: Record<string, never>;
-            patch?: {
-                /**
-                 * @description patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-                 *
-                 *     add: Inserts a value into an array or adds a member to an object.
-                 *     replace: Replaces a value.
-                 *     merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-                 *     strategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.
-                 *     remove: Removes a value.
-                 *     copy: Copies a value from one location to another.
-                 *     move: Moves a value from one location to another.
-                 *     test: Tests that a value at the target location is equal to a specified value.
-                 * @default copy
-                 * @enum {string}
-                 */
-                patchStrategy: "merge" | "strategic" | "add" | "remove" | "copy" | "move" | "test";
-            } & ({
-                /** @description JSON ref to value from where patch should be applied. */
-                mutatorRef?: string[][];
-            } | {
-                mutatedRef?: string[][];
-            });
-        }[];
-        /** @description Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved. */
-        selectors: {
-            /** @description Optional selectors used to define relationships which should not be created / is restricted. */
-            deny?: {
-                from: components["schemas"]["selector"];
-                to: components["schemas"]["selector"];
-            };
-            /** @description Selectors used to define relationships which are allowed. */
-            allow: {
-                from: components["schemas"]["selector"];
-                to: components["schemas"]["selector"];
-            };
-        }[];
-        /** @description Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships. */
-        relationship: {
-            /** @description Specifies the version of the schema used for the relationship definition. */
-            schemaVersion: components["schemas"]["versionString"];
-            /** @description Specifies the version of the relationship definition. */
-            version: components["schemas"]["semverString"];
-            /** @description Name of the model in which this relationship is packaged. */
-            model: components["schemas"]["model"];
-            /**
-             * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
-             * @enum {unknown}
-             */
-            kind: components["schemas"]["inputString"];
-            /** @description Classification of relationships. Used to group relationships similar in nature. */
-            type: components["schemas"]["inputString"];
-            /** @description Most granular unit of relationship classification. The combination of Kind, Type and SubType together uniquely identify a Relationship. */
-            subType: components["schemas"]["inputString"];
-            /** @description Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs. */
-            evaluationQuery?: components["schemas"]["inputString"];
-            /** @description Capabilities associated with the relationship. */
-            capabilities?: components["schemas"]["capability"][];
-            /** @description Metadata contains additional information associated with the Relationship. */
-            metadata?: {
-                /** @description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management. */
-                description?: components["schemas"]["inputString"];
-                styles?: components["schemas"]["relationshipStyles"];
-            };
-            selectors?: components["schemas"]["selectors"];
-        };
-        mesheryPatternResource: {
-            id?: components["schemas"]["id"];
-            user_id?: components["schemas"]["id"];
-            /** @description Name */
-            name?: components["schemas"]["text"];
-            /** @description Namespace */
-            namepace?: components["schemas"]["text"];
-            /** @description Type */
-            type?: components["schemas"]["text"];
-            /** @description OAM type */
-            oam_type?: components["schemas"]["text"];
-            deleted?: boolean;
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-        };
-        mesheryPatternResourcePage: {
-            resultType: "mesheryPatternResourcePage";
-        } & (Omit<components["schemas"]["resultsPage"], "resultType"> & {
-            resources?: components["schemas"]["mesheryPatternResource"][];
-        });
-        mesheryPattern: {
-            id?: components["schemas"]["id"];
-            user_id?: components["schemas"]["id"];
-            /** @description Pattern file */
-            pattern_file?: components["schemas"]["designs"];
-            /** @description Pattern Name */
-            name?: components["schemas"]["text"];
-            location?: components["schemas"]["map_object"];
-            visibility?: components["schemas"]["text"];
-            catalog_data?: components["schemas"]["catalog_data"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-        };
-        mesheryPatternPage: {
-            resultType: "mesheryPatternPage";
-        } & (Omit<components["schemas"]["resultsPage"], "resultType"> & {
-            patterns?: components["schemas"]["mesheryPattern"][];
-        });
-        deletePatternModel: {
-            id?: components["schemas"]["id"];
-            /** @description Pattern name */
-            name?: components["schemas"]["text"];
-        };
-        /**
-         * Design Schema
-         * @description Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-         */
-        designs: {
-            id?: components["schemas"]["uuid"];
-            /** @description Name of the design; a descriptive, but concise title for the design document. */
-            name: string;
-            /** @description Specifies the version of the schema to which the design conforms. */
-            schemaVersion: components["schemas"]["versionString"];
-            /** @description Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number. */
-            version: components["schemas"]["semverString"];
-            /** @description A list of one or more component declarations. */
-            components: components["schemas"]["component"][];
-            /** @description Design-level preferences */
-            preferences?: {
-                /** @description List of available layers */
-                layers: string[];
-            };
-            /** @description List of relationships between components */
-            relationships: components["schemas"]["relationship"][];
-        };
-        catalog_data: {
-            /** @description Tracks the specific content version that has been made available in the Catalog. */
-            publishedVersion?: string;
-            /** @description Published content is classifed by its support level. Content classes help you understand the origin and expected support level for each piece of content. It is important to note that the level of support may vary within each class, and you should exercise discretion when using community-contributed content. Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable. Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility. Content produced and supported by the respective project or organization responsible for the specific technology. This class offers a level of support from the project maintainers themselves. Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Community content may have varying levels of support and reliability. */
-            class?: string & ("official" | "verified" | "reference architecture");
-            /**
-             * Model
-             * @description One or more models associated with this catalog item. For designs, a list of one or more models implicated by components within the design. For models, this is self-referential.
-             */
-            compatibility: "kubernetes"[];
-            /**
-             * Caveats and Considerations
-             * @description Specific stipulations to consider and known behaviors to be aware of when using this design.
-             */
-            pattern_caveats: string;
-            /**
-             * Description
-             * @description Purpose of the design along with its intended and unintended uses.
-             */
-            pattern_info: string;
-            /**
-             * Type
-             * @description Categorization of the type of design or operational flow depicted in this design.
-             * @default Deployment
-             * @enum {string}
-             */
-            type: "Deployment" | "Observability" | "Resiliency" | "Scaling" | "Security" | "Traffic-management" | "Troubleshooting" | "Workloads";
-            /** @description Contains reference to the dark and light mode snapshots of the design. */
-            snapshotURL?: string[];
-        };
-        /**
-         * Format: email
-         * @description email
-         */
-        email: string;
-        emails: components["schemas"]["email"][];
-        EvaluationRequest: {
-            design: components["schemas"]["designs"];
-            options?: {
-                /** @description If true, only return the diff of changes instead of the complete updated design */
-                returnDiffOnly?: boolean;
-                /** @description If true, include detailed trace information in the response */
-                enableTrace?: boolean;
-            };
-        };
-        /** @description Schema for the response of a relationship evaluation process in Meshery */
-        EvaluationResponse: {
-            /** @description Specifies the version of the schema to which the evaluation response conforms. */
-            schemaVersion: components["schemas"]["inputString"];
-            /** @description The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed. */
-            design: components["schemas"]["designs"];
-            /**
-             * @description Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.
-             * @example a1b2c3d4e5f6g7h8i9j0
-             */
-            evaluationHash?: string;
-            /**
-             * Format: date-time
-             * @description ISO 8601 formatted timestamp of when the evaluation was completed.
-             */
-            timestamp?: string;
-            /** @description A detailed trace of the evaluation process, including actions taken and changes made. */
-            trace: {
-                /** @description List of policy actions applied during the evaluation. */
-                policyActions: string[];
-                /** @description List of new relationships added to the design. */
-                relationshipsAdded: components["schemas"]["relationship"][];
-                /** @description List of relationships removed from the design. */
-                relationshipsRemoved: components["schemas"]["relationship"][];
-                /** @description List of new components added to the design. */
-                componentsAdded: components["schemas"]["component"][];
-                /** @description List of components removed from the design. */
-                componentsRemoved: components["schemas"]["component"][];
-            };
-        };
-        workspace: {
-            ID?: components["schemas"]["general_id"];
-            name?: components["schemas"]["text"];
-            description?: components["schemas"]["text"];
-            organization_id?: components["schemas"]["organization_id"];
-            owner?: components["schemas"]["text"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-            deleted_at?: components["schemas"]["nullTime"];
-        };
-        workspacesTeamsMapping: {
-            ID?: components["schemas"]["general_id"];
-            team_id?: components["schemas"]["team_id"];
-            workspace_id?: components["schemas"]["workspace_id"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-            deleted_at?: components["schemas"]["nullTime"];
-        };
-        workspacesEnvironmentsMapping: {
-            ID?: components["schemas"]["general_id"];
-            environment_id?: components["schemas"]["environment_id"];
-            workspace_id?: components["schemas"]["workspace_id"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-            deleted_at?: components["schemas"]["nullTime"];
-        };
-        workspacesViewsMapping: {
-            ID?: components["schemas"]["general_id"];
-            view_id?: components["schemas"]["view_id"];
-            workspace_id?: components["schemas"]["workspace_id"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-            deleted_at?: components["schemas"]["nullTime"];
-        };
-        workspacesDesignsMapping: {
-            ID?: components["schemas"]["general_id"];
-            design_id?: components["schemas"]["design_id"];
-            workspace_id?: components["schemas"]["workspace_id"];
-            created_at?: components["schemas"]["time"];
-            updated_at?: components["schemas"]["time"];
-            deleted_at?: components["schemas"]["nullTime"];
-        };
-        workspaceUpdatePayload: {
-            /** @description Name of workspace */
-            name?: components["schemas"]["text"];
-            /** @description Environment description */
-            description?: components["schemas"]["text"];
-            /** @description Organization ID */
-            organization_id: string;
-        };
-        workspacePayload: {
-            /** @description Name */
-            name: components["schemas"]["text"];
-            /** @description Environment description */
-            description?: components["schemas"]["text"];
-            /** @description Organization ID */
-            organization_id?: string;
-        };
-        workspacePage: {
-            page?: components["schemas"]["number"];
-            page_size?: components["schemas"]["number"];
-            total_count?: components["schemas"]["number"];
-            workspaces?: components["schemas"]["workspace"][];
-        };
-        /** Format: uuid */
-        general_id: string;
-        /** Format: uuid */
-        organization_id: string;
-        /** @description SQL null Timestamp to handle null values of time. */
-        nullTime: string;
-        /** Format: uuid */
-        team_id: string;
-        /** Format: uuid */
-        workspace_id: string;
-        /** Format: uuid */
-        environment_id: string;
-        /** Format: uuid */
-        view_id: string;
-        /** Format: uuid */
-        design_id: string;
-        number: number;
+      };
+    };
+    /** Body for delete of user accounts */
+    deleteUsers: {
+      content: {
+        "application/json":
+          | components["schemas"]["bulkDelete"]
+          | components["schemas"]["empty"];
+      };
+    };
+    /** Body for upserting user */
+    user: {
+      content: {
+        "application/json": components["schemas"]["user"];
+      };
+    };
+  };
+}
+
+export interface operations {
+  /** Get available capabilities for logged in user */
+  GetCapabilitie: {
+    parameters: {
+      query: {
+        /** user's os */
+        os?: components["parameters"]["os"];
+        /** Is playground mode */
+        playground?: components["parameters"]["playground"];
+      };
     };
     responses: {
-        /** @description ok */
-        200: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
+      /** capabilities */
+      200: {
+        content: {
+          "application/json": components["schemas"]["capability"];
         };
-        /** @description Expired JWT token used or insufficient privilege */
-        401: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
-        /** @description Internal server error */
-        500: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "text/plain": string;
-            };
-        };
+      };
+      500: components["responses"]["500"];
     };
+  };
+  /** Get available capabilities for logged in user */
+  GetCapabilities: {
     parameters: {
-        /** @description Connection kind (eg: Meshery) */
-        connectionKind: components["schemas"]["text"];
-        /** @description Connection ID */
-        connectionId: components["schemas"]["id"];
-        /** @description Meshery server ID */
-        serverId: components["schemas"]["id"];
-        /** @description Get reponses by page */
-        page: string;
-        /** @description Get reponses by pageSize */
-        page_size: string;
-        /** @description Get responses that match search param value */
-        search: string;
-        /** @description Get ordered responses */
-        order: string;
+      path: {
+        /** meshery version */
+        "meshery-version": components["parameters"]["mesheryVersion"];
+      };
+      query: {
+        /** user's os */
+        os?: components["parameters"]["os"];
+        /** Is playground mode */
+        playground?: components["parameters"]["playground"];
+      };
     };
-    requestBodies: {
-        connectionPayload: {
-            content: {
-                "application/json": {
-                    /** @description Kind */
-                    kind?: components["schemas"]["text"];
-                    /** @description Connection type */
-                    type?: components["schemas"]["text"];
-                    /** @description Connection subtype */
-                    sub_type?: components["schemas"]["text"];
-                    credential_secret?: components["schemas"]["map_object"];
-                    metadata?: components["schemas"]["map_object"];
-                };
-            };
+    responses: {
+      /** capabilities */
+      200: {
+        content: {
+          "application/json": components["schemas"]["capability"];
         };
-        /** @description Body for upserting meshery pattern resource */
-        mesheryPatternResource: {
-            content: {
-                "application/json": components["schemas"]["mesheryPatternResource"];
-            };
-        };
-        /** @description Body for upserting meshery pattern */
-        mesheryPatternRequestBody: {
-            content: {
-                "application/json": {
-                    url?: components["schemas"]["text"];
-                    path?: components["schemas"]["text"];
-                    save?: boolean;
-                    pattern_data?: components["schemas"]["mesheryPattern"];
-                };
-            };
-        };
-        /** @description Body for deleting meshery pattern */
-        mesheryPatternDeleteRequestBody: {
-            content: {
-                "application/json": {
-                    patterns?: components["schemas"]["deletePatternModel"][];
-                };
-            };
-        };
-        /** @description Body for sharing design */
-        designShare: {
-            content: {
-                "application/json": {
-                    emails: components["schemas"]["emails"];
-                    id: components["schemas"]["id"];
-                    content_type: string;
-                    share: boolean;
-                };
-            };
-        };
-        /** @description Body for creating workspace */
-        workspacePayload: {
-            content: {
-                "application/json": components["schemas"]["workspacePayload"];
-            };
-        };
-        /** @description Body for updating workspace */
-        workspaceUpdatePayload: {
-            content: {
-                "application/json": components["schemas"]["workspaceUpdatePayload"];
-            };
-        };
+      };
+      500: components["responses"]["500"];
     };
-    headers: never;
-    pathItems: never;
+  };
+  /** Collaboration */
+  CollaborationHandler: {
+    responses: {
+      /** initate cross server collaboration */
+      101: unknown;
+    };
+  };
+  /** Get connections */
+  GetConnections: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Paginated list of connections */
+      200: {
+        content: {
+          "application/json": components["schemas"]["connectionPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Register with Meshery Cloud */
+  RegisterConnection: {
+    responses: {
+      /** Inserted connection */
+      200: {
+        content: {
+          "application/json": components["schemas"]["connection"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["connectionPayload"];
+  };
+  /** Edit registered connection using the connection ID */
+  EditConnectionByID: {
+    parameters: {
+      path: {
+        /** Connection ID */
+        connectionId: components["parameters"]["connectionId"];
+      };
+    };
+    responses: {
+      /** Edited connection */
+      200: {
+        content: {
+          "application/json": components["schemas"]["connection"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["connectionPayload"];
+  };
+  /** Get summary about the status of all connections */
+  GetConnectionStatus: {
+    responses: {
+      /** Status of connections */
+      200: {
+        content: {
+          "application/json": components["schemas"]["connectionsStatusPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get connections by kind */
+  GetConnectionsByKind: {
+    parameters: {
+      path: {
+        /** Connection kind (eg: Meshery) */
+        connectionKind: components["parameters"]["connectionKind"];
+      };
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Connections by kind */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Delete registered connection */
+  DeleteConnection: {
+    parameters: {
+      path: {
+        /** Connection kind (eg: Meshery) */
+        connectionKind: components["parameters"]["connectionKind"];
+      };
+    };
+    responses: {
+      /** Deleted connection */
+      200: {
+        content: {
+          "application/json": components["schemas"]["connection"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get connections by kind (kind is required because this API returns the results in non std format of a connection) */
+  GetConnectionsByKindAndConnectionID: {
+    parameters: {
+      path: {
+        /** Connection kind (eg: Meshery) */
+        connectionKind: components["parameters"]["connectionKind"];
+        /** Connection ID */
+        connectionId: components["parameters"]["connectionId"];
+      };
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Connections by kind */
+      200: {
+        content: {
+          "application/json": components["schemas"]["k8sContextPersistResponse"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Deletes a given meshery connection. This is generally used for deleting connections from Meshery Server UI where UI is not aware of connection IDs. */
+  DeleteMesheryConnection: {
+    parameters: {
+      path: {
+        /** Meshery server ID */
+        mesheryServerID: components["parameters"]["serverId"];
+      };
+    };
+    responses: {
+      200: components["responses"]["200"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get all user's credentials for logged in user */
+  GetUserCredentials: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** credentials */
+      200: {
+        content: {
+          "application/json": components["schemas"]["credentialsPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Update credentials for logged in user */
+  UpdateUserCredential: {
+    responses: {
+      200: components["responses"]["200"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["credentialBody"];
+  };
+  /** Create new credentials for logged in user */
+  SaveUserCredential: {
+    responses: {
+      201: components["responses"]["201"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["credentialBody"];
+  };
+  /** Delete user's credentials (tombstoned records) for logged in user */
+  DeleteUserCredential: {
+    parameters: {
+      query: {
+        /** credential Id */
+        credential_id: components["parameters"]["credentialId"];
+      };
+    };
+    responses: {
+      200: components["responses"]["200"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get Events Aggreate Count */
+  GetEventsAggregate: {
+    parameters: {
+      query: {
+        /** Cumulative events */
+        cumulative?: components["parameters"]["cumulative"];
+      };
+    };
+    responses: {
+      /** Events Aggregate Count */
+      200: {
+        content: {
+          "application/json": components["schemas"]["eventsAggregate"];
+        };
+      };
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get Events by date */
+  RetrieveResultsByDate: {
+    parameters: {
+      query: {
+        /** Cumulative events */
+        cumulative?: components["parameters"]["cumulative"];
+      };
+    };
+    responses: {
+      /** Events by date */
+      200: {
+        content: {
+          "application/json": components["schemas"]["eventTrackerGroupedArray"];
+        };
+      };
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get Events by week */
+  RetrieveResultsByWeek: {
+    parameters: {
+      query: {
+        /** Cumulative events */
+        cumulative?: components["parameters"]["cumulative"];
+      };
+    };
+    responses: {
+      /** Events by week */
+      200: {
+        content: {
+          "application/json": components["schemas"]["eventTrackerGroupedArray"];
+        };
+      };
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get Events by month */
+  RetrieveResultsByMonth: {
+    parameters: {
+      query: {
+        /** Cumulative events */
+        cumulative?: components["parameters"]["cumulative"];
+      };
+    };
+    responses: {
+      /** Events by month */
+      200: {
+        content: {
+          "application/json": components["schemas"]["eventTrackerGroupedArray"];
+        };
+      };
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get All events */
+  GetEvents: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+        /** Filter for retrieving events */
+        filter?: components["parameters"]["eventsFilter"];
+      };
+    };
+    responses: {
+      /** Events list */
+      200: {
+        content: {
+          "application/json": components["schemas"]["eventsPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get Events summary for a user */
+  GetEventSummaryByUser: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Events Summary */
+      200: {
+        content: {
+          "application/json": components["schemas"]["eventSummaryPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get paginated filters */
+  GetFilters: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Filters */
+      200: {
+        content: {
+          "application/json": components["schemas"]["mesheryFilterPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** It will insert the filter if not present else it will update the matching entry */
+  UpsertFilter: {
+    responses: {
+      /** Upserted filter */
+      200: {
+        content: {
+          "application/json": components["schemas"]["mesheryFilter"][];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["mesheryFilterRequestBody"];
+  };
+  /** Get the filter associated with the given filter id without any metadata */
+  GetFilterFile: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Filter file */
+      200: {
+        content: {
+          "application/json": components["schemas"]["mesheryFilter"]["filter_file"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get filter by ID */
+  GetFilter: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Filter associated with ID */
+      200: {
+        content: {
+          "application/json": components["schemas"]["mesheryFilter"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Delete filter associated with ID */
+  DeleteFilter: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Deleted filter */
+      200: {
+        content: {
+          "application/json": components["schemas"]["mesheryFilter"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Clone filter associated with ID */
+  CloneFilter: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+    /** Body for cloning design */
+    requestBody: {
+      content: {
+        "application/json": {
+          name: string;
+        };
+      };
+    };
+  };
+  RegisterMeshmodels: {
+    responses: {
+      /** Successful registration */
+      200: {
+        content: {
+          "application/json": {
+            message?: string;
+          };
+        };
+      };
+      /** Invalid request format */
+      400: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["ImportRequest"];
+      };
+    };
+  };
+  ExportModel: {
+    parameters: {
+      query: {
+        id: string;
+        name?: string;
+        version?: string;
+        output_format?: "json" | "yaml" | "oci";
+        file_type?: "oci" | "tar" | "gzip";
+      };
+    };
+    responses: {
+      /** Successful export */
+      200: {
+        content: {
+          "application/octet-stream": string;
+        };
+      };
+      /** Invalid request format */
+      400: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+  };
+  /** Get All supported roles */
+  GetAllRoles: {
+    responses: {
+      /** Get all roles */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Assign role to user */
+  AddRoleHolder: {
+    responses: {
+      200: components["responses"]["200"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    /** Body for assigning role to the user */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["roleHolderRequest"];
+      };
+    };
+  };
+  /** Edit role of user */
+  EditRoleHolder: {
+    responses: {
+      200: components["responses"]["200"];
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    /** Body for editing role of the user */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["role"];
+      };
+    };
+  };
+  /** Edit roles of user in bulk */
+  BulkEditRoleHolder: {
+    responses: {
+      201: components["responses"]["201"];
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    /** Body for editing role of the users in bulk */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["role"][];
+      };
+    };
+  };
+  /** Edit roles of user in bulk */
+  DeleteRole: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Deleted roles */
+      201: {
+        content: {
+          "application/json": components["schemas"]["role"][];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get Performance Profiles for SMP Dashboard */
+  SMPDashboardPerfProfiles: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Get Performance Profiles with pagination */
+      200: {
+        content: {
+          "application/json": components["schemas"]["performanceProfilePage"];
+        };
+      };
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get Performance Profiles results by ID for SMP Dashboard */
+  SMPDashboardTestResults: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Get Performance Profiles Results with pagination */
+      200: {
+        content: {
+          "application/json": components["schemas"]["mesheryResultPage"];
+        };
+      };
+      500: components["responses"]["500"];
+      /** Invalid path parameter "id" */
+      502: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  /** Get performance profiles */
+  GetPerformanceProfiles: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Performance Profiles */
+      200: {
+        content: {
+          "application/json": components["schemas"]["performanceProfilePage"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Update performance profiles or create a new performance profile if no id is provided */
+  UpsertPerformanceProfile: {
+    responses: {
+      /** updated performance profile */
+      201: {
+        content: {
+          "application/json": components["schemas"]["performanceProfile"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    /** Body for upserting performance profile */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["performanceProfile"];
+      };
+    };
+  };
+  /** Get Performance Profile by ID */
+  GetPerformanceProfile: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Performance Profile for provided performance profile id */
+      200: {
+        content: {
+          "application/json": components["schemas"]["performanceProfile"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Delete performance profiles by ID */
+  DeletePerformanceProfile: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Deleted Performance Profile */
+      200: {
+        content: {
+          "application/json": components["schemas"]["performanceProfile"];
+        };
+      };
+      401: components["responses"]["401"];
+      404: components["responses"]["404"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get paginated Performance Profiles result */
+  GetPerformanceProfileResults: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** Performance Profile results */
+      200: {
+        content: {
+          "application/json": components["schemas"]["mesheryResultPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Add performance profile result in given performance profile id */
+  AddPerformanceProfileResult: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Performance Profile results */
+      201: {
+        content: {
+          "application/json": {
+            /** Format: uuid */
+            id?: string;
+          };
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    /** Body for adding perfor mance profile result */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["performanceResult"];
+      };
+    };
+  };
+  /** Get the performance test result associated with the given profile id and with the given test id */
+  GetPerformanceProfileResult: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+        /** Performance Result Id */
+        resultID: components["parameters"]["resultID"];
+      };
+    };
+    responses: {
+      /** Performance Profile results */
+      200: {
+        content: {
+          "application/json": components["schemas"]["performanceResult"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get tokens associated with logged in user */
+  GetUserTokens: {
+    parameters: {
+      query: {
+        /** To get OAuth tokens as well */
+        isOAuth?: components["parameters"]["isOAuth"];
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+      };
+    };
+    responses: {
+      /** user tokens */
+      200: {
+        content: {
+          "application/json": components["schemas"]["tokenPage"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Generates infinite token (i.e. tokens that do not expire) for the logged in user. */
+  GenerateToken: {
+    parameters: {
+      query: {
+        /** Name of the resource */
+        name?: components["parameters"]["name"];
+        /** Purpose for which token is generated */
+        purpose?: components["parameters"]["purpose"];
+      };
+    };
+    responses: {
+      /** generated token */
+      200: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Delete token for logged in user */
+  DeleteUserTokens: {
+    responses: {
+      200: components["responses"]["200"];
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["map_object"];
+      };
+    };
+  };
+  /** Get Infinite Token */
+  IssueIndefiniteLifetimeToken: {
+    parameters: {
+      path: {
+        /** User's user_id */
+        user_id: components["parameters"]["userId"];
+      };
+      query: {
+        /** Remote provider */
+        provider: components["parameters"]["provider"];
+      };
+    };
+    responses: {
+      /** generated token */
+      200: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Send invitation request to users */
+  HandleUserInvite: {
+    responses: {
+      /** Invitation sent */
+      200: components["responses"]["200"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["userInvite"];
+  };
+  /** Upsert user preferences */
+  UpdateUserPreference: {
+    responses: {
+      /** Preferences updated */
+      201: components["responses"]["201"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    /** Body for upserting user preferences */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["map_object"];
+      };
+    };
+  };
+  /** Get all keys based on roles assigned to user */
+  GetUserKeys: {
+    responses: {
+      /** Returns user keys based on roles assigned to user */
+      200: {
+        content: {
+          "application/json": components["schemas"]["userKeys"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get specific user by user id */
+  GetUserById: {
+    parameters: {
+      path: {
+        /** User's user_id */
+        user_id: components["parameters"]["userId"];
+      };
+    };
+    responses: {
+      /** Returns user with given user_id */
+      200: {
+        content: {
+          "application/json": components["schemas"]["user"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Delete users based on delete_for parameter */
+  DeleteUsers: {
+    parameters: {
+      path: {
+        /** Defines on whom the delete operation is to be performed */
+        delete_on: components["parameters"]["deleteOn"];
+      };
+    };
+    responses: {
+      201: components["responses"]["201"];
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["deleteUsers"];
+  };
+  /** Delete account by ID */
+  DeleteUserAccountById: {
+    parameters: {
+      path: {
+        /** User's user_id */
+        user_id: components["parameters"]["userId"];
+      };
+    };
+    responses: {
+      201: components["responses"]["201"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get All users */
+  GetRoleHolders: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+        /** Get filtered reponses */
+        filter?: components["parameters"]["filter"];
+      };
+    };
+    responses: {
+      /** Get all user with pagination */
+      200: {
+        content: {
+          "application/json": Partial<
+            components["schemas"]["usersPageForAdmin"]
+          > &
+            Partial<components["schemas"]["teamMembersPage"]>;
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get All users */
+  GetUsers: {
+    parameters: {
+      query: {
+        /** Get reponses by page */
+        page?: components["parameters"]["page"];
+        /** Get reponses by pageSize */
+        page_size?: components["parameters"]["page_size"];
+        /** Get responses that match search param value */
+        search?: components["parameters"]["search"];
+        /** Get ordered responses */
+        order?: components["parameters"]["order"];
+        /** Get filtered reponses */
+        filter?: components["parameters"]["filter"];
+      };
+    };
+    responses: {
+      /** Get all user with pagination */
+      200: {
+        content: {
+          "application/json": components["schemas"]["usersPageForNonAdmin"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get user profile of given user Id */
+  GetUserProfileById: {
+    parameters: {
+      path: {
+        /** Unique identifier */
+        id: components["parameters"]["id"];
+      };
+    };
+    responses: {
+      /** Returns user with given id */
+      200: {
+        content: {
+          "application/json": components["schemas"]["user"];
+        };
+      };
+      400: components["responses"]["400"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get user details for logged in user */
+  GetUser: {
+    responses: {
+      /** user details */
+      200: {
+        content: {
+          "application/json": components["schemas"]["user"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Update user profile data (also updates kratos identity) */
+  UpdateProfile: {
+    responses: {
+      201: components["responses"]["201"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+    requestBody: components["requestBodies"]["user"];
+  };
+  /** Get Profile overview for logged in user */
+  GetProfileOverview: {
+    responses: {
+      /** user account overview */
+      200: {
+        content: {
+          "application/json": components["schemas"]["accountOverview"];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get last 10 user activities */
+  GetUserActivity: {
+    parameters: {
+      path: {
+        /** UUID of User */
+        user_id: string;
+      };
+    };
+    responses: {
+      /** user activity */
+      200: {
+        content: {
+          "application/json": components["schemas"]["recentActivityPage"];
+        };
+      };
+      500: components["responses"]["500"];
+    };
+  };
+  /** Get info of active / online users in last 24 hours */
+  GetRecentlyOnlineUsers: {
+    responses: {
+      /** active users */
+      200: {
+        content: {
+          "application/json": components["schemas"]["recentUsers"][];
+        };
+      };
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
+  /** Gets available badges */
+  GetAvailableBadges: {
+    responses: {
+      /** Badges */
+      200: {
+        content: {
+          "application/json": components["schemas"]["badges"];
+        };
+      };
+      400: components["responses"]["400"];
+      401: components["responses"]["401"];
+      500: components["responses"]["500"];
+    };
+  };
 }
-export type $defs = Record<string, never>;
-export interface operations {
-    GetConnections: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: components["parameters"]["page"];
-                /** @description Get reponses by pageSize */
-                page_size?: components["parameters"]["page_size"];
-                /** @description Get responses that match search param value */
-                search?: components["parameters"]["search"];
-                /** @description Get ordered responses */
-                order?: components["parameters"]["order"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Paginated list of connections */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["connectionPage"];
-                };
-            };
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-    RegisterConnection: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: components["requestBodies"]["connectionPayload"];
-        responses: {
-            /** @description Inserted connection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["connection"];
-                };
-            };
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-    EditConnectionByID: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Connection ID */
-                connectionId: components["parameters"]["connectionId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: components["requestBodies"]["connectionPayload"];
-        responses: {
-            /** @description Edited connection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["connection"];
-                };
-            };
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-    GetConnectionStatus: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Status of connections */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["connectionsStatusPage"];
-                };
-            };
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-    GetConnectionsByKind: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: components["parameters"]["page"];
-                /** @description Get reponses by pageSize */
-                page_size?: components["parameters"]["page_size"];
-                /** @description Get responses that match search param value */
-                search?: components["parameters"]["search"];
-                /** @description Get ordered responses */
-                order?: components["parameters"]["order"];
-            };
-            header?: never;
-            path: {
-                /** @description Connection kind (eg: Meshery) */
-                connectionKind: components["parameters"]["connectionKind"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Connections by kind */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": Record<string, never>;
-                };
-            };
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-    DeleteConnection: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Connection kind (eg: Meshery) */
-                connectionKind: components["parameters"]["connectionKind"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Deleted connection */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["connection"];
-                };
-            };
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-    GetConnectionsByKindAndConnectionID: {
-        parameters: {
-            query?: {
-                /** @description Get reponses by page */
-                page?: components["parameters"]["page"];
-                /** @description Get reponses by pageSize */
-                page_size?: components["parameters"]["page_size"];
-                /** @description Get responses that match search param value */
-                search?: components["parameters"]["search"];
-                /** @description Get ordered responses */
-                order?: components["parameters"]["order"];
-            };
-            header?: never;
-            path: {
-                /** @description Connection kind (eg: Meshery) */
-                connectionKind: components["parameters"]["connectionKind"];
-                /** @description Connection ID */
-                connectionId: components["parameters"]["connectionId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Connections by kind */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["k8sContextPersistResponse"];
-                };
-            };
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-    DeleteMesheryConnection: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Meshery server ID */
-                mesheryServerID: components["parameters"]["serverId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: components["responses"]["200"];
-            401: components["responses"]["401"];
-            500: components["responses"]["500"];
-        };
-    };
-}
-type WithRequired<T, K extends keyof T> = T & {
-    [P in K]-?: T[P];
-};
+
+export interface external {}

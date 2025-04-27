@@ -87,7 +87,7 @@ export type SubCategory =
  */
 export type Selector = {
   kind?: string;
-  model?: HttpsSchemasMesheryIoModelJson;
+  model?: HttpsSchemasMesheryIoV1Beta1ModelModelJson;
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
@@ -165,7 +165,7 @@ export interface HttpsSchemasMesheryIoSelectorJson {
 /**
  * Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
  */
-export interface HttpsSchemasMesheryIoModelJson {
+export interface HttpsSchemasMesheryIoV1Beta1ModelModelJson {
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
@@ -198,7 +198,7 @@ export interface HttpsSchemasMesheryIoModelJson {
    * - ignored: model is unavailable for use for all users of this Meshery Server.
    */
   status: "ignored" | "enabled" | "duplicate";
-  registrant: HttpsSchemasMesheryIoComponentJson;
+  registrant: HttpsSchemasMesheryIoV1Beta1ConnectionJson;
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
@@ -207,7 +207,7 @@ export interface HttpsSchemasMesheryIoModelJson {
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   categoryId: string;
-  category: HttpsSchemasMesheryIoCategoryJson;
+  category: HttpsSchemasMesheryIoV1Beta1CategoryCategoryJson;
   subCategory: SubCategory;
   /**
    * Metadata containing additional information associated with the model.
@@ -216,7 +216,7 @@ export interface HttpsSchemasMesheryIoModelJson {
     /**
      * Capabilities associated with the model
      */
-    capabilities?: HttpsSchemasMesheryIoCapabilityJson[];
+    capabilities?: HttpsSchemasMesheryIoV1Alpha1CapabilityCapabilityJson[];
     /**
      * Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
      */
@@ -288,7 +288,7 @@ export interface HttpsSchemasMesheryIoModelJson {
 /**
  * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
  */
-export interface HttpsSchemasMesheryIoComponentJson {
+export interface HttpsSchemasMesheryIoV1Beta1ConnectionJson {
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
@@ -339,7 +339,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
 /**
  * Category of the model.
  */
-export interface HttpsSchemasMesheryIoCategoryJson {
+export interface HttpsSchemasMesheryIoV1Beta1CategoryCategoryJson {
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
@@ -371,7 +371,7 @@ export interface HttpsSchemasMesheryIoCategoryJson {
 /**
  * Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
  */
-export interface HttpsSchemasMesheryIoCapabilityJson {
+export interface HttpsSchemasMesheryIoV1Alpha1CapabilityCapabilityJson {
   /**
    * Specifies the version of the schema to which the capability definition conforms.
    */
