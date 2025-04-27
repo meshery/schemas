@@ -1,5 +1,5 @@
 {
-  "$id": "https://schemas.meshery.io/relationship.json",
+  "$id": "https://schemas.meshery.io/v1alpha3/relationship.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
   "required": [

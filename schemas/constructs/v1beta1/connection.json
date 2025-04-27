@@ -1,5 +1,5 @@
 {
-  "$id": "https://schemas.meshery.io/component.json",
+  "$id": "https://schemas.meshery.io/v1beta1/connection.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
   "additionalProperties": false,
