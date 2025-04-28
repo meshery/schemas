@@ -1,0 +1,121 @@
+openapi: 3.0.0
+info:
+  title: Features Construct Schema
+  description: OpenAPI schema for the Features construct with entitlement-related properties
+  version: v1beta1
+
+tags:
+  - name: Features
+    description: Operations related to features and entitlements
+
+paths:
+  /api/entitlement/features:
+    get:
+      operationId: getFeatures
+      tags:
+        - Features
+      summary: Get all features associated with plans
+      responses:
+        "200":
+          description: Features fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeaturesPage"
+        "400":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
+  /api/entitlement/subscriptions/organizations/{organizationId}/features:
+    get:
+      operationId: getFeaturesByOrganization
+      tags:
+        - Features
+      summary: Get all features associated with plans
+      parameters:
+        - name: organizationId
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/organization_id"
+
+      responses:
+        "200":
+          description: Features fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeaturesPage"
+
+        "400":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
+components:
+  schemas:
+    FeaturesPage:
+      type: "array"
+      items:
+        $ref: "#/components/schemas/Feature"
+        x-go-type: Feature
+
+    FeatureName:
+      type: string
+
+      enum:
+        - ComponentsInDesign
+        - RelationshipsInDesign
+        - DesignsInWorkspace
+        - WorkspacesInOrganization
+        - ImageSizeInDesign
+        - SizePerDesign
+      description: Enumeration of possible feature types
+
+    Feature:
+      type: object
+      required:
+        - id
+        - plan_id
+        - quantity
+        - feature
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        plan_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "plan_id"
+        plan:
+          $ref: "../plan/openapi.yml#/components/schemas/Plan"
+          x-go-type: plan.Plan
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/plan
+          x-oapi-codegen-extra-tags:
+            belongs_to: "plans"
+            fk_id: "PlanId"
+            yaml: "plan,omitempty"
+            json: "plan,omitempty"
+        name:
+          $ref: "#/components/schemas/FeatureName"
+          x-go-type: FeatureName
+          x-oapi-codegen-extra-tags:
+            db: "name"
+        quantity:
+          type: number
+          description: Quantity of the feature allowed, use 9999999999 for unlimited
+          x-oapi-codegen-extra-tags:
+            db: "quantity"
+        created_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+        updated_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+      additionalProperties: false
