@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
   title: Features Construct Schema
   description: OpenAPI schema for the Features construct with entitlement-related properties
@@ -21,9 +21,32 @@ paths:
           content:
             application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Features"
+                $ref: "#/components/schemas/FeaturesPage"
+        "400":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
+  /api/entitlement/subscriptions/organizations/{organizationId}/features:
+    get:
+      operationId: getFeaturesByOrganization
+      tags:
+        - Features
+      summary: Get all features associated with plans
+      parameters:
+        - name: organizationId
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/organization_id"
+
+      responses:
+        "200":
+          description: Features fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeaturesPage"
+
         "400":
           $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
         "401":
@@ -34,42 +57,29 @@ paths:
 components:
   schemas:
     FeaturesPage:
-      type: object
-      required:
-        - page
-        - page_size
-        - total_count
-        - features
-      properties:
-        page:
-          type: integer
-        page_size:
-          type: integer
-        total_count:
-          type: integer
-        features:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/Features"
-            x-go-type: Features
+      type: "array"
+      items:
+        $ref: "#/components/schemas/Feature"
+        x-go-type: Feature
+
+    FeatureName:
+      type: string
+
+      enum:
+        - ComponentsInDesign
+        - RelationshipsInDesign
+        - DesignsInWorkspace
+        - WorkspacesInOrganization
+        - ImageSizeInDesign
+        - SizePerDesign
+      description: Enumeration of possible feature types
 
     Feature:
-      type: string
-      enum:
-        - MESH_NODES
-        - USER_SEATS
-        - API_CALLS
-        - ENVIRONMENTS
-        - DESIGNS
-        - APPLICATIONS
-      description: Enumeration of possible feature types
-      x-go-type: Feature
-
-    Features:
       type: object
       required:
         - id
         - plan_id
+        - quantity
         - feature
       properties:
         id:
@@ -90,15 +100,14 @@ components:
             fk_id: "PlanId"
             yaml: "plan,omitempty"
             json: "plan,omitempty"
-        feature:
-          $ref: "#/components/schemas/Feature"
-          x-go-type: Feature
+        name:
+          $ref: "#/components/schemas/FeatureName"
+          x-go-type: FeatureName
           x-oapi-codegen-extra-tags:
-            db: "feature"
+            db: "name"
         quantity:
           type: number
-          nullable: true
-          description: Quantity of the feature allowed, null for unlimited
+          description: Quantity of the feature allowed, use 9999999999 for unlimited
           x-oapi-codegen-extra-tags:
             db: "quantity"
         created_at:
