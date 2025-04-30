@@ -2810,6 +2810,7 @@
               "from"
             ],
             "properties": {
+             
               "from": {
                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                 "type": "array",
@@ -2822,6 +2823,17 @@
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "kind",
                         "json": "kind"
+                      }
+                    },
+
+                   "match_strategy_matrix" : {
+                      "description": "Strategy criterion for determing how to match the values at mutator/mutated paths",
+                      "type":"array",
+                      "items":{
+                        "type":"array",
+                        "items":{
+                          "type":"string"
+                        }
                       }
                     },
                     "model": {
