@@ -39,10 +39,10 @@ tags:
     description: APIs for roles
     x-displayName: roles
   - name: smp_profile
-    description: APIs for Service Mesh Performace profile
+    description: APIs for Performance profile
     x-displayName: smp_profile
-  - name: service mesh performance
-    x-displayName: service mesh performance
+  - name: cloud native performance
+    x-displayName: cloud native performance
   - name: tokens
     description: APIs for tokens
     x-displayName: tokens
@@ -880,7 +880,7 @@ paths:
   /api/performance/smp/profiles:
     get:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: SMPDashboardPerfProfiles
       summary: Performance Profiles
       description: Get Performance Profiles for SMP Dashboard
@@ -902,7 +902,7 @@ paths:
   /api/performance/smp/profiles/{id}/results:
     get:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: SMPDashboardTestResults
       summary: Performance Profiles Results by ID
       description: Get Performance Profiles results by ID for SMP Dashboard
@@ -931,7 +931,7 @@ paths:
   /api/performance/profiles:
     post:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: UpsertPerformanceProfile
       summary: Upsert Performance Profiles
       description: >-
@@ -959,7 +959,7 @@ paths:
         - jwt: []
     get:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: GetPerformanceProfiles
       summary: Get Performance Profiles
       description: Get performance profiles
@@ -984,7 +984,7 @@ paths:
   /api/performance/profiles/{id}:
     get:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: GetPerformanceProfile
       summary: Performance Profile by Id
       description: Get Performance Profile by ID
@@ -1007,7 +1007,7 @@ paths:
         - jwt: []
     delete:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: DeletePerformanceProfile
       summary: Delete Performance Profiles
       description: Delete performance profiles by ID
@@ -1031,7 +1031,7 @@ paths:
   /api/performance/profiles/{id}/results:
     get:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: GetPerformanceProfileResults
       summary: Performance Profiles result
       description: Get paginated Performance Profiles result
@@ -1056,7 +1056,7 @@ paths:
         - jwt: []
     post:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: AddPerformanceProfileResult
       summary: Add performance profiles result
       description: Add performance profile result in given performance profile id
@@ -1087,7 +1087,7 @@ paths:
   /api/performance/profiles/{id}/results/{resultID}:
     get:
       tags:
-        - service mesh performance
+        - cloud native performance
       operationId: GetPerformanceProfileResult
       summary: Performance Profiles result
       description: >-
@@ -3327,7 +3327,7 @@ x-tagGroups:
       - filters
       - roles
       - smp_profile
-      - service mesh performance
+      - cloud native performance
       - tokens
       - user tokens
       - users
