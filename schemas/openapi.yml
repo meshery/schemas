@@ -39,7 +39,7 @@ tags:
     description: APIs for roles
     x-displayName: roles
   - name: smp_profile
-    description: APIs for Performance profile
+    description: APIs for Service Mesh Performace profile
     x-displayName: smp_profile
   - name: cloud native performance
     x-displayName: cloud native performance
