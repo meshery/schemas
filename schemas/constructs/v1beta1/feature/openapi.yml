@@ -66,11 +66,13 @@ components:
       type: string
 
       enum:
-        - COMPONENTS-PER-DESIGN
-        - USERS-PER-ORG
-        - DESIGNS-PER-ORG
-      description: Enumeration of possible features
-      x-go-type: Feature
+        - ComponentsInDesign
+        - RelationshipsInDesign
+        - DesignsInWorkspace
+        - WorkspacesInOrganization
+        - ImageSizeInDesign
+        - SizePerDesign
+      description: Enumeration of possible feature types
 
     Feature:
       type: object
