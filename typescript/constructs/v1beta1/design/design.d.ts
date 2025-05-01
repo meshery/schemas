@@ -1310,6 +1310,10 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
        */
       from: {
         kind?: string;
+        /**
+         * Strategy criterion for determing how to match the values at mutator/mutated paths
+         */
+        match_strategy_matrix?: string[][];
         model?: HttpsSchemasMesheryIoModelJson4;
         /**
          * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.

@@ -73,8 +73,8 @@ const schema = {
       "x-displayName": "smp_profile"
     },
     {
-      "name": "service mesh performance",
-      "x-displayName": "service mesh performance"
+      "name": "cloud native performance",
+      "x-displayName": "cloud native performance"
     },
     {
       "name": "tokens",
@@ -5148,7 +5148,7 @@ const schema = {
     "/api/performance/smp/profiles": {
       "get": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "SMPDashboardPerfProfiles",
         "summary": "Performance Profiles",
@@ -5328,7 +5328,7 @@ const schema = {
     "/api/performance/smp/profiles/{id}/results": {
       "get": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "SMPDashboardTestResults",
         "summary": "Performance Profiles Results by ID",
@@ -5515,7 +5515,7 @@ const schema = {
     "/api/performance/profiles": {
       "post": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "UpsertPerformanceProfile",
         "summary": "Upsert Performance Profiles",
@@ -5725,7 +5725,7 @@ const schema = {
       },
       "get": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "GetPerformanceProfiles",
         "summary": "Get Performance Profiles",
@@ -5919,7 +5919,7 @@ const schema = {
     "/api/performance/profiles/{id}": {
       "get": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "GetPerformanceProfile",
         "summary": "Performance Profile by Id",
@@ -6062,7 +6062,7 @@ const schema = {
       },
       "delete": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "DeletePerformanceProfile",
         "summary": "Delete Performance Profiles",
@@ -6207,7 +6207,7 @@ const schema = {
     "/api/performance/profiles/{id}/results": {
       "get": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "GetPerformanceProfileResults",
         "summary": "Performance Profiles result",
@@ -6396,7 +6396,7 @@ const schema = {
       },
       "post": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "AddPerformanceProfileResult",
         "summary": "Add performance profiles result",
@@ -6534,7 +6534,7 @@ const schema = {
     "/api/performance/profiles/{id}/results/{resultID}": {
       "get": {
         "tags": [
-          "service mesh performance"
+          "cloud native performance"
         ],
         "operationId": "GetPerformanceProfileResult",
         "summary": "Performance Profiles result",
@@ -15203,7 +15203,7 @@ const schema = {
         "filters",
         "roles",
         "smp_profile",
-        "service mesh performance",
+        "cloud native performance",
         "tokens",
         "user tokens",
         "users"
