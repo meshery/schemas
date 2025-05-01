@@ -36,8 +36,8 @@ const schema = {
         "tags": [
           "subscription"
         ],
-        "description": "Returns all subscriptions of a user",
-        "operationId": "getSubscriptions",
+        "description": "Returns all subscriptions for the organization",
+        "operationId": "getSubscription",
         "summary": "Read subscriptions",
         "parameters": [
           {

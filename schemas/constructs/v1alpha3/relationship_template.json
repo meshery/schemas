@@ -335,6 +335,9 @@
         "from": {
           "items": {
             "kind": "",
+            "match_strategy_matrix": {
+              "items": {}
+            },
             "model": {
               "id": "",
               "schemaVersion": "",
