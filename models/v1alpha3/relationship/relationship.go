@@ -137,12 +137,15 @@ type SelectorItem struct {
 	Kind  *string       `json:"kind" yaml:"kind"`
 	Match MatchSelector `json:"match,omitempty" yaml:"match,omitempty"`
 
+	MatchStrategyMatrix [][]string `json:"match_strategy_matrix" yaml:"match_strategy_matrix"`
+
 	// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
 	Model *model.ModelDefinition                  `json:"model,omitempty" yaml:"model"`
 	Patch *RelationshipDefinition_Selectors_Patch `json:"patch" yaml:"patch"`
 }
 
 type Selector struct {
+
 	// From Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
 	From []SelectorItem `json:"from" yaml:"from"`
 
