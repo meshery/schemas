@@ -28,7 +28,7 @@ const schema = {
                 "properties": {
                   "file": {
                     "type": "string",
-                    "format": "binary",
+                    "format": "file",
                     "description": "Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
                   },
                   "file_name": {
@@ -25742,7 +25742,7 @@ const schema = {
         "properties": {
           "file": {
             "type": "string",
-            "format": "binary",
+            "format": "file",
             "description": "Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
           },
           "file_name": {
