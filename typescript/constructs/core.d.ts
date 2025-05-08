@@ -8,40 +8,40 @@
 /**
  * A string starting with an alphanumeric character. Spaces and hyphens allowed.
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "inputString".
  */
 export type InputString = string;
 /**
  * API version of the object
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "versionString".
  */
 export type VersionString = string;
 /**
  * A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "semverString".
  */
 export type SemverString = string;
 /**
  * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "uuid".
  */
 export type Uuid = string;
 /**
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "time".
  */
 export type Time = string;
 /**
  * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "shape".
  */
 export type Shape =
@@ -74,7 +74,7 @@ export type Shape =
 /**
  * Visualization styles for a relationship
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "edgeStyles".
  */
 export type EdgeStyles = Styles & {
@@ -167,7 +167,7 @@ export type EdgeStyles = Styles & {
 /**
  * Visualization styles for a component
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "componentStyles".
  */
 export type ComponentStyles = Styles & {
@@ -368,14 +368,14 @@ export type ComponentStyles = Styles & {
   [k: string]: unknown;
 };
 /**
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "relationshipStyles".
  */
 export type RelationshipStyles = EdgeStyles | Styles1;
 /**
  * An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "ResolvedAlias".
  */
 export type ResolvedAlias = NonResolvedAlias & {
@@ -387,13 +387,13 @@ export type ResolvedAlias = NonResolvedAlias & {
 /**
  * Reusable core schema elements
  */
-export interface CoreJson {
+export interface HttpsSchemasMesheryIoCoreJson {
   [k: string]: unknown;
 }
 /**
  * Common styles for all entities
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "styles".
  */
 export interface Styles {
@@ -540,7 +540,7 @@ export interface Styles1 {
 /**
  * An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents
  *
- * This interface was referenced by `CoreJson`'s JSON-Schema
+ * This interface was referenced by `HttpsSchemasMesheryIoCoreJson`'s JSON-Schema
  * via the `definition` "NonResolvedAlias".
  */
 export interface NonResolvedAlias {

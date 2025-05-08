@@ -13,7 +13,7 @@ const schema = {
   "components": {
     "schemas": {
       "SubCategoryDefinition": {
-        "$id": "https://schemas.meshery.io/category.json",
+        "$id": "https://schemas.meshery.io/v1beta1/subcategory/subcategory.json",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "string",
         "title": "SubCategory",

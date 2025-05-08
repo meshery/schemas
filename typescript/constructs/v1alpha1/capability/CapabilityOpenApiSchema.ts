@@ -13,7 +13,7 @@ const schema = {
   "components": {
     "schemas": {
       "Capability": {
-        "$id": "https://schemas.meshery.io/capability.json",
+        "$id": "https://schemas.meshery.io/v1alpha1/capability/capability.json",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
         "additionalProperties": false,

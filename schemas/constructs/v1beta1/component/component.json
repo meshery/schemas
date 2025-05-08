@@ -1,5 +1,5 @@
 {
-  "$id": "https://schemas.meshery.io/component.json",
+  "$id": "https://schemas.meshery.io/v1beta1/component/component.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components",
   "additionalProperties": false,
