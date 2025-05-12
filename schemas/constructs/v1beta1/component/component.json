@@ -108,8 +108,14 @@
         "x-go-type": "capability.Capability",
         "x-go-type-import": {
           "path": "github.com/meshery/schemas/models/v1alpha1/capability"
-        },
-        "default":  [
+        } 
+      },
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "type:bytes;serializer:json",
+        "yaml": "capabilities",
+        "json": "capabilities"
+      },
+      "default": [
         {
           "schemaVersion": "capability.meshery.io/v1alpha1",
           "version": "0.7.0",
@@ -215,12 +221,6 @@
           "metadata": null
         }
       ]
-      },
-      "x-oapi-codegen-extra-tags": {
-        "gorm": "type:bytes;serializer:json",
-        "yaml": "capabilities",
-        "json": "capabilities"
-      }
     },
     "status": {
       "x-order": 10,
