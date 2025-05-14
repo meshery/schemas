@@ -6,7 +6,7 @@
 const schema = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Plans Api",
+    "title": "plan",
     "version": "1.0.0"
   },
   "tags": [
@@ -18,6 +18,9 @@ const schema = {
   "paths": {
     "/api/entitlement/plans": {
       "get": {
+        "x-internal": [
+          "cloud"
+        ],
         "operationId": "getPlans",
         "tags": [
           "Plans"

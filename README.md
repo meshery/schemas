@@ -195,6 +195,68 @@ generate_schema_models "catalog" "v1alpha2"
 ✅ Generated: models/v1alpha2/catalog/catalog.go
 ```
 
+### Rtk query generation
+
+add the path to the openapi.yml file in generate.sh file in the rtk generation step . like :
+
+```bash
+
+# generate bundle for layer5 cloud
+npx @redocly/cli join schemas/base_cloud.yml \
+     "${v1beta1}/pattern/${merged_construct}" \
+     "${v1beta1}/component/${merged_construct}" \
+     "${v1beta1}/model/${merged_construct}" \
+     "${v1beta1}/subscription/${merged_construct}" \
+     "${v1beta1}/plan/${merged_construct}" \
+     "${v1beta1}/feature/${merged_construct}" \
+     "${v1beta1}/workspace/${merged_construct}" \
+     "${v1beta1}/environment/${merged_construct}" \
+     "${v1alpha2}/catalog/${merged_construct}" \
+     "${v1beta1}/evaluation/${merged_construct}" \
+ -o schemas/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
+ 
+```
+
+### Bundled Schemas
+
+the build step generates the bundled schemas . it genereates three sets of bundled schemas
+- **merged_schema.yml** - contains all the schemas in a single file. This is used for generating the openapi spec for the meshery and cloud client.
+- **meshery_schema.yml** - contains all the schemas specific to meshery. This is used for generating the openapi spec for the meshery client.
+- **cloud_schema.yml** - contains all the schemas specific to layer5 cloud. This is used for generating the openapi spec for the layer5 cloud client.
+
+to annotate a path in opeanpi to be specific for a particular client , add x-internal annotation to the path in the openapi.yml file. This will ensure that the path is not included in the generated openapi spec for the other clients.
+
+example:
+```yaml
+
+paths:
+  /api/entitlement/plans:
+    get:
+      x-internal: ["cloud"]
+      operationId: getPlans
+      tags:
+        - Plans
+      summary: Get all plans supported by the system
+      responses:
+        "200":
+          description: Plans fetched successfully
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Plan"
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
+```
+absence of the x-internal annotation will ensure that the path is included in the generated openapi spec for all clients.
+
+
+
+
+
 This ensures that schemas remain the **single source of truth**, making development **efficient, consistent, and scalable**.  
 
 ### License

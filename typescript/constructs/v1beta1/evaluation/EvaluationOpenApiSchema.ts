@@ -6,13 +6,16 @@
 const schema = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Meshery Relationship Evaluation API",
+    "title": "evaluation",
     "version": "1.0.0",
     "description": "API for evaluating relationships in Meshery designs"
   },
   "paths": {
     "/evaluate": {
       "post": {
+        "x-internal": [
+          "meshery"
+        ],
         "summary": "Evaluate relationships in a design",
         "description": "Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed.",
         "requestBody": {

@@ -6,7 +6,7 @@
 const schema = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Payment Processor Subscription Management API",
+    "title": "subscription",
     "description": "API for managing subscriptions using various payment processors in a SaaS application.",
     "version": "1.0.0"
   },
@@ -33,6 +33,9 @@ const schema = {
   "paths": {
     "/api/entitlement/subscriptions": {
       "get": {
+        "x-internal": [
+          "cloud"
+        ],
         "tags": [
           "subscription"
         ],
@@ -353,6 +356,9 @@ const schema = {
     },
     "/api/entitlement/subscriptions/{subscriptionId}/cancel": {
       "post": {
+        "x-internal": [
+          "cloud"
+        ],
         "summary": "Cancel an existing subscription",
         "parameters": [
           {
@@ -615,6 +621,9 @@ const schema = {
     },
     "/api/entitlement/subscriptions/create": {
       "post": {
+        "x-internal": [
+          "cloud"
+        ],
         "summary": "Create a new subscription for an organization",
         "requestBody": {
           "required": true,
@@ -684,6 +693,9 @@ const schema = {
     },
     "/api/entitlement/subscriptions/webhooks": {
       "post": {
+        "x-internal": [
+          "cloud"
+        ],
         "summary": "Handle webhook events from payment processors",
         "requestBody": {
           "required": true,
