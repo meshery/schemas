@@ -53,13 +53,6 @@ generate_schema_models() {
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
 }
 
-# generate e,pty schema for the merged openapi
-# touch schemas/merged_openapi.yml
-# echo "openapi: 3.0.0" > schemas/merged_openapi.yml
-# echo "info:" >> schemas/merged_openapi.yml
-# echo "  title: Merged API Spec" >> schemas/merged_openapi.yml
-# echo "  version: 1.0.0" >> schemas/merged_openapi.yml
-# echo "paths: {}" >> schemas/merged_openapi.yml
 
 
 
@@ -111,3 +104,8 @@ npx @redocly/cli join schemas/base_cloud.yml \
       "${v1beta1}/workspace/${merged_construct}" \
       "${v1beta1}/environment/${merged_construct}" \
   -o schemas/meshery_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
+
+
+# Generate rtk query api
+npx @rtk-query/codegen-openapi typescript/rtk/cloud-rtk-config.ts
+npx @rtk-query/codegen-openapi typescript/rtk/meshery-rtk-config.ts

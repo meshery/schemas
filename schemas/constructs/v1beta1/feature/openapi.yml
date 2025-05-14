@@ -36,8 +36,7 @@ paths:
         - Features
       summary: Get all features associated with plans
       parameters:
-        - name: organizationId
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/organization_id"
+        - $ref: "#/components/parameters/organization_id"
 
       responses:
         "200":
@@ -55,6 +54,19 @@ paths:
           $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
 
 components:
+  parameters:
+    organization_id:
+      name: organizationId
+      in: path
+      description: The ID of the organization
+      required: true
+      schema:
+        type: string
+        format: uuid
+        x-go-type: uuid.UUID
+        x-go-type-import:
+          path: github.com/gofrs/uuid
+
   schemas:
     FeaturesPage:
       type: "array"

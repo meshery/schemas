@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  title: Meshery Cloud
-  description: Documentation for Meshery Cloud REST APIs
+  title: Meshery Server
+  description: Documentation for Meshery Server REST APIs
   contact:
     email: support@layer5.io
   version: v0.6.394
 servers:
-  - url: https://cloud.layer5.io
-    description: Meshery Cloud production server URL
+  - url: https://playground.meshery.io
+    description: Meshery Playground server URL
   - url: https://staging-cloud.layer5.io
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
@@ -16,20 +16,3 @@ servers:
       variable)
   - url: http://localhost:8080
     description: Local development server
-
-paths:
-  /health:
-    get:
-      summary: Health check
-      description: Check if the Meshery Cloud server is running.
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "ok"

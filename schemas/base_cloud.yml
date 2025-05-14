@@ -16,20 +16,3 @@ servers:
       variable)
   - url: http://localhost:8080
     description: Local development server
-
-paths:
-  /health:
-    get:
-      summary: Health check
-      description: Check if the Meshery Cloud server is running.
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: "ok"

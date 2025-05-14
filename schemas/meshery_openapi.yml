@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  title: Meshery Cloud
-  description: Documentation for Meshery Cloud REST APIs
+  title: Meshery Server
+  description: Documentation for Meshery Server REST APIs
   contact:
     email: support@layer5.io
   version: v0.6.394
 servers:
-  - url: https://cloud.layer5.io
-    description: Meshery Cloud production server URL
+  - url: https://playground.meshery.io
+    description: Meshery Playground server URL
   - url: https://staging-cloud.layer5.io
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
@@ -16,9 +16,9 @@ servers:
       variable)
   - url: http://localhost:8080
     description: Local development server
+  - url: https://cloud.layer5.io
+    description: Meshery Cloud production server URL
 tags:
-  - name: Meshery_Cloud_other
-    x-displayName: other
   - name: evaluation_other
     x-displayName: other
   - name: design_other
@@ -37,23 +37,6 @@ tags:
     description: APIs for environments
     x-displayName: environments
 paths:
-  /health:
-    get:
-      summary: Health check
-      description: Check if the Meshery Cloud server is running.
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
-      tags:
-        - Meshery_Cloud_other
   /evaluate:
     post:
       summary: Evaluate relationships in a design
@@ -57956,9 +57939,6 @@ components:
         type: string
       required: true
 x-tagGroups:
-  - name: Meshery Cloud
-    tags:
-      - Meshery_Cloud_other
   - name: evaluation
     tags:
       - evaluation_other

@@ -17,8 +17,6 @@ servers:
   - url: http://localhost:8080
     description: Local development server
 tags:
-  - name: Meshery_Cloud_other
-    x-displayName: other
   - name: design_other
     x-displayName: other
   - name: model_other
@@ -54,23 +52,6 @@ tags:
     description: APIs for environments
     x-displayName: environments
 paths:
-  /health:
-    get:
-      summary: Health check
-      description: Check if the Meshery Cloud server is running.
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
-      tags:
-        - Meshery_Cloud_other
   /api/pattern/import:
     post:
       summary: Import Design
@@ -1075,16 +1056,15 @@ paths:
       summary: Get all features associated with plans
       parameters:
         - name: organizationId
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-          x-oapi-codegen-extra-tags:
-            db: org_id
-            json: org_id
-          x-go-type-name: OrganizationId
-          x-go-type-skip-optional-pointer: true
+          in: path
+          description: The ID of the organization
+          required: true
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
       responses:
         '200':
           description: Features fetched successfully
@@ -33060,6 +33040,17 @@ components:
       description: Get ordered responses
       schema:
         type: string
+    feature_organization_id:
+      name: organizationId
+      in: path
+      description: The ID of the organization
+      required: true
+      schema:
+        type: string
+        format: uuid
+        x-go-type: uuid.UUID
+        x-go-type-import:
+          path: github.com/gofrs/uuid
     environment_environmentId:
       name: environmentId
       in: path
@@ -33212,9 +33203,6 @@ components:
               - name
               - organizationID
 x-tagGroups:
-  - name: Meshery Cloud
-    tags:
-      - Meshery_Cloud_other
   - name: design
     tags:
       - design_other
