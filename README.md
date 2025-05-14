@@ -95,19 +95,27 @@ Please do! We're a warm and welcoming community of open source contributors. All
 <div>&nbsp;</div>
 
 
-# **Schema-Driven Development Guide**
+# 🧬 Schema-Driven Development Guide
 
-Meshery follows a **Schema-Driven Development (SDD)** approach. This means that the **structure of data** used in the application is defined using **schemas**, ensuring consistency, validation, and code generation across the project.  
+Meshery follows a **Schema-Driven Development (SDD)** approach. This means that the **structure of data** used throughout the system is centrally defined using **schemas**. These schemas power consistency, validation, and code generation across the Meshery platform.
 
-## **Schema Definition in Meshery**
-Meshery uses **OpenAPI v3** specification to define schemas. Given the complexity of the project, where multiple constructs and APIs exist, we adopt a structured approach to schema management:  
-- **Schemas are versioned** to maintain backward compatibility.  
-- **Schemas are modular** to support different components of Meshery independently.  
-- **Schemas are used for validation, API definition, and automatic code generation.**
--  NOTE: As you ref to model , etc or other existing constructs also add x-go-type and x-go-import-path so redudant structs are not generated , check existing implementation 
+---
 
-### **Schema Directory Structure**
-All schemas are stored in the **`schemas`** directory at the root of the project. The structure follows:  
+## 🧾 Schema Definition in Meshery
+
+Meshery uses the **OpenAPI v3** specification to define and manage schemas. Given the complexity of the platform, Meshery adopts a **modular, versioned, and extensible** schema strategy:
+
+* ✅ **Versioned schemas** for backward compatibility.
+* 🧩 **Modular constructs** for maintainability and reuse.
+* 🧪 **Schemas are used** for validation, API documentation, and automatic code generation.
+
+> 💡 **TIP**: When referencing models or other constructs in the schema, **always add `x-go-type` and `x-go-import-path`** to avoid generating redundant Go structs. Refer to existing patterns in the codebase.
+
+---
+
+## 📁 Schema Directory Structure
+
+All schemas are located in the `schemas/` directory at the root of the Meshery repository:
 
 ```
 schemas/
@@ -115,120 +123,80 @@ schemas/
     <schema-version>/               # e.g., v1beta1
       <construct>/                  # e.g., model, component
         <construct>.json            # Schema definition for the construct (noun)
-        subschemas/                 # Any subschemas used within the construct
-        openapi.yml                 # OpenAPI schema defining API operations (verbs like create, update, delete)
-        <construct>_template.json   # json template generated from schema
-        <construct>_template.yaml   # yaml template generated from schema
+        subschemas/                 # Reusable modular pieces
+        openapi.yml                 # API operations (verbs: create, update, delete)
+        <construct>_template.json   # Generated JSON template from schema
+        <construct>_template.yaml   # Generated YAML template from schema
 ```
 
-### **Explanation**
-- **`constructs/`** – Contains schemas for different versions.  
-- **`<schema-version>/`** – Each schema version (e.g., `v1beta1`, `v1alpha2`) is a separate directory.  
-- **`<construct>/`** – Each construct (e.g., `capability`, `category`) has its own folder.  
-- **`<construct>.json`** – Defines the **schema for the noun** (i.e., the entity).  
-- **`subschemas/`** – Contains reusable subschemas for modularity.  
-- **`openapi.yml`** – Defines **API operations** (verbs: `create`, `update`, `delete`) and serves as the **entry point** for the schema.  
-- **`<construct>_template.json`** - json template generated from schema. Valid json document generated from schema definition. Has all references resolved, contains default values.
-- **`<construct>_template.yaml`** - yaml template generated from schema. Valid yaml document generated from schema definition. Has all references resolved, contains default values.
+### 🧠 Explanation
 
-This approach ensures that **schemas are well-organized, reusable, and scalable** across different Meshery components.
+* **`constructs/`** – Holds schemas for various versions.
+* **`<schema-version>/`** – Represents a version (e.g., `v1alpha2`, `v1beta1`).
+* **`<construct>/`** – A specific construct like `pattern`, `component`, etc.
+* **`<construct>.json`** – Defines the **data model (noun)** for the construct.
+* **`subschemas/`** – Contains shared schema components for reuse.
+* **`openapi.yml`** – Defines **API operations** (verbs).
+* **Templates** – `*_template.json` and `*_template.yaml` are auto-generated examples with resolved references and defaults.
 
 ---
 
-## **Code Generation**
-Meshery supports **automatic code generation** for:
-- **Golang** (structs and types)
-- **TypeScript** (interfaces and types)
-- **JSON template** (json document with default values)
-- **YAML template** (yaml document with default values)
+## ⚙️ Code Generation
 
-### **Generating Code from Schemas**
-The schema-to-code mapping is defined in **`generate.sh`**, which automates the generation process.
+Meshery supports **automated code generation** from schemas for:
 
-#### **Generating Golang Models**
-To generate Go structs from schemas, use:  
-```bash
-make golang-generate
-```
+* **Go**: Strongly-typed models for backend.
+* **TypeScript**: Interfaces and types for frontend use.
+* **RTK Query**: Clients generated from OpenAPI for use with Redux.
+* **JSON/YAML**: Templates with defaults and resolved references.
 
-#### **Generating TypeScript Models, JSON and YAML templates**
-To generate
+---
 
-- TypeScript types
-- json templates
-- yaml templates 
+## 🚀 Unified Build: One Command for Everything
 
-from schemas, use:  
-```bash
-make generate-types
-```
-
-### **Schema-to-Code Mapping**
-Example mapping in **`generate.sh`**:
-```bash
-generate_schema_models <construct> <schema-version>
-generate_schema_models "capability" "v1alpha1"
-generate_schema_models "category" "v1beta1"
-generate_schema_models "component" "v1beta1"
-generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
-generate_schema_models "core" "v1alpha1"
-generate_schema_models "catalog" "v1alpha2"
-```
-- The **package name matches the construct name**.
-- Example: For the `capability` construct in `v1alpha1`, the generated Go code will be in:
-  ```
-  models/v1alpha1/capability/capability.go
-  ```
-
-### **Example Output**
-```bash
-./generate-golang.sh
-🔹 Processing: capability (v1alpha1)...
-✅ Generated: models/v1alpha1/capability/capability.go
-🔹 Processing: category (v1beta1)...
-✅ Generated: models/v1beta1/category/category.go
-🔹 Processing: pattern (v1beta1)...
-✅ Generated: models/v1beta1/pattern/pattern.go
-🔹 Processing: core (v1alpha1)...
-✅ Generated: models/v1alpha1/core/core.go
-🔹 Processing: catalog (v1alpha2)...
-✅ Generated: models/v1alpha2/catalog/catalog.go
-```
-
-### Rtk query generation
-
-add the path to the openapi.yml file in generate.sh file in the rtk generation step . like :
+Use the following command to perform the **entire schema-driven generation workflow**:
 
 ```bash
-
-# generate bundle for layer5 cloud
-npx @redocly/cli join schemas/base_cloud.yml \
-     "${v1beta1}/pattern/${merged_construct}" \
-     "${v1beta1}/component/${merged_construct}" \
-     "${v1beta1}/model/${merged_construct}" \
-     "${v1beta1}/subscription/${merged_construct}" \
-     "${v1beta1}/plan/${merged_construct}" \
-     "${v1beta1}/feature/${merged_construct}" \
-     "${v1beta1}/workspace/${merged_construct}" \
-     "${v1beta1}/environment/${merged_construct}" \
-     "${v1alpha2}/catalog/${merged_construct}" \
-     "${v1beta1}/evaluation/${merged_construct}" \
- -o schemas/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
- 
+make build
 ```
 
-### Bundled Schemas
+### 🔧 What `make build` does:
 
-the build step generates the bundled schemas . it genereates three sets of bundled schemas
-- **merged_schema.yml** - contains all the schemas in a single file. This is used for generating the openapi spec for the meshery and cloud client.
-- **meshery_schema.yml** - contains all the schemas specific to meshery. This is used for generating the openapi spec for the meshery client.
-- **cloud_schema.yml** - contains all the schemas specific to layer5 cloud. This is used for generating the openapi spec for the layer5 cloud client.
+1. **Bundles OpenAPI schemas** for:
 
-to annotate a path in opeanpi to be specific for a particular client , add x-internal annotation to the path in the openapi.yml file. This will ensure that the path is not included in the generated openapi spec for the other clients.
+   * Meshery
+   * Layer5 Cloud
+   * Combined (all constructs)
+2. **Generates:**
 
-example:
+   * Golang structs
+   * TypeScript types
+   * JSON & YAML templates
+   * RTK Query clients
+
+> ⚠️ This is the recommended way to stay in sync with schema changes.
+
+---
+
+## 🧱 Bundled Schema Outputs
+
+After running `make build`, three bundled schema files are created:
+
+| File                 | Purpose                                        |
+| -------------------- | ---------------------------------------------- |
+| `merged_schema.yml`  | All schemas combined (used by Meshery clients) |
+| `cloud_schema.yml`   | Cloud-specific APIs for Layer5 Cloud           |
+| `meshery_schema.yml` | Meshery-specific APIs                          |
+
+---
+
+## ✍️ Annotating OpenAPI Paths
+
+To control which schema paths are included in each bundled output, use the `x-internal` annotation inside the OpenAPI operations (`get`, `post`, etc.).
+
+### Example:
+
 ```yaml
-
 paths:
   /api/entitlement/plans:
     get:
@@ -243,21 +211,82 @@ paths:
           content:
             application/json:
               schema:
-                type: "array"
+                type: array
                 items:
                   $ref: "#/components/schemas/Plan"
-        "400":
-          description: Invalid request
-        "500":
-          description: Internal server error
 ```
-absence of the x-internal annotation will ensure that the path is included in the generated openapi spec for all clients.
 
+* **With `x-internal`**: Included only in the respective client (e.g., `cloud`).
+* **Without `x-internal`**: Included in **all** clients.
 
+---
 
+## 🛠️ Advanced Usage (Optional)
 
+### 📌 Custom Generation in `generate.sh`
 
-This ensures that schemas remain the **single source of truth**, making development **efficient, consistent, and scalable**.  
+Meshery uses a helper script (`generate.sh`) to map schema constructs to generated output:
+
+```bash
+generate_schema_models <construct> <schema-version> [<openapi-file>]
+
+generate_schema_models "capability" "v1alpha1"
+generate_schema_models "category" "v1beta1"
+generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
+```
+
+This maps to Go packages like:
+
+```
+models/v1alpha1/capability/capability.go
+```
+
+### 🧩 RTK Query Client Generation
+
+The OpenAPI bundle is passed to a codegen tool to generate RTK Query clients. Include relevant paths using `x-internal` annotations and define request/response schemas appropriately.
+
+You can control this in `generate.sh` like:
+
+```bash
+# Merge relevant constructs for RTK generation
+npx @redocly/cli join schemas/base_cloud.yml \
+     "${v1beta1}/pattern/${merged_construct}" \
+     "${v1beta1}/component/${merged_construct}" \
+     "${v1beta1}/model/${merged_construct}" \
+     ... \
+     -o schemas/merged_openapi.yml \
+     --prefix-tags-with-info-prop title \
+     --prefix-components-with-info-prop title
+```
+
+---
+
+## 🧪 Testing & Validating Schemas
+
+Validate your schema updates before committing by running:
+
+```bash
+make build
+```
+
+Or validate a single file:
+
+```bash
+npx @redocly/cli lint schemas/constructs/v1beta1/pattern/openapi.yml
+```
+
+---
+
+## ✅ Summary
+
+| Task                    | Command                 |
+| ----------------------- | ----------------------- |
+| Generate everything     | `make build`            |
+| Generate Go code only   | `make golang-generate`  |
+| Generate TS + templates | `make generate-types`   |
+| Lint OpenAPI            | `npx @redocly/cli lint` |
+
+---
 
 ### License
 
