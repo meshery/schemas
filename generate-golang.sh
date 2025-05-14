@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+merged_construct="merged-openapi.yml"
+
 generate_schema_models() {
     local package="$1"
     local version="$2"
@@ -18,7 +20,7 @@ generate_schema_models() {
     fi
 
     local input_schema="${input_override:-schemas/constructs/${version}/${package}/openapi.yml}"
-    local merged_output="schemas/constructs/${version}/${package}/merged-openapis.yml"
+    local merged_output="schemas/constructs/${version}/${package}/${merged_construct}"
     local output_go_file="models/${version}/${package}/${package}.go"
 
     mkdir -p "models/${version}/${package}"
@@ -45,19 +47,19 @@ generate_schema_models() {
     # same for db tags
     # sed -i 's/\(json:"\([^"]*\)"\)\( db:"[^"]*"\)\?/\1 db:"\2"/g' "$output_go_file"
 
-    npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml --without-x-tag-groups
+    # npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml --without-x-tag-groups
 
-    rm -f "$merged_output"
+    # rm -f "$merged_output"
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
 }
 
 # generate e,pty schema for the merged openapi
-touch schemas/merged_openapi.yml
-echo "openapi: 3.0.0" > schemas/merged_openapi.yml
-echo "info:" >> schemas/merged_openapi.yml
-echo "  title: Merged API Spec" >> schemas/merged_openapi.yml
-echo "  version: 1.0.0" >> schemas/merged_openapi.yml
-echo "paths: {}" >> schemas/merged_openapi.yml
+# touch schemas/merged_openapi.yml
+# echo "openapi: 3.0.0" > schemas/merged_openapi.yml
+# echo "info:" >> schemas/merged_openapi.yml
+# echo "  title: Merged API Spec" >> schemas/merged_openapi.yml
+# echo "  version: 1.0.0" >> schemas/merged_openapi.yml
+# echo "paths: {}" >> schemas/merged_openapi.yml
 
 
 
@@ -79,3 +81,33 @@ generate_schema_models "evaluation" "v1beta1"
 generate_schema_models "workspace" "v1beta1"
 generate_schema_models "environment" "v1beta1"
 
+
+v1beta1="schemas/constructs/v1beta1"
+v1alpha1="schemas/constructs/v1alpha1"
+v1alpha2="schemas/constructs/v1alpha2"
+
+# version,construct
+# returns the {version}+{construct}+{merged_construct}
+
+# generate bundle for layer5 cloud
+npx @redocly/cli join schemas/base_cloud.yml \
+     "${v1beta1}/pattern/${merged_construct}" \
+     "${v1beta1}/component/${merged_construct}" \
+     "${v1beta1}/model/${merged_construct}" \
+     "${v1beta1}/subscription/${merged_construct}" \
+     "${v1beta1}/plan/${merged_construct}" \
+     "${v1beta1}/feature/${merged_construct}" \
+     "${v1beta1}/workspace/${merged_construct}" \
+     "${v1beta1}/environment/${merged_construct}" \
+     "${v1alpha2}/catalog/${merged_construct}" \
+ -o schemas/cloud_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
+
+ # generate bundle for meshery
+ npx @redocly/cli join schemas/base_meshery.yml \
+      "${v1beta1}/evaluation/${merged_construct}" \
+      "${v1beta1}/pattern/${merged_construct}" \
+      "${v1beta1}/component/${merged_construct}" \
+      "${v1beta1}/model/${merged_construct}" \
+      "${v1beta1}/workspace/${merged_construct}" \
+      "${v1beta1}/environment/${merged_construct}" \
+  -o schemas/meshery_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
