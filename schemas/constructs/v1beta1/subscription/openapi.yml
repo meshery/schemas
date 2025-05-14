@@ -1,302 +1,302 @@
 openapi: 3.0.0
 info:
-    title: Payment Processor Subscription Management API
-    description: API for managing subscriptions using various payment processors in a SaaS application.
-    version: 1.0.0
+  title: subscription
+  description: API for managing subscriptions using various payment processors in a SaaS application.
+  version: 1.0.0
 servers:
-    - url: http://localhost:8080
-      description: Local development server
+  - url: http://localhost:8080
+    description: Local development server
 
 tags:
-    - name: Subscriptions
-      description: Operations related to subscriptions
+  - name: Subscriptions
+    description: Operations related to subscriptions
 
-    - name: Plans
-      description: Operations related to plans
+  - name: Plans
+    description: Operations related to plans
 
-    - name: Payment Processors
-      description: Operations related to payment processors
+  - name: Payment Processors
+    description: Operations related to payment processors
 
 paths:
-    /api/entitlement/subscriptions:
-        get:
-            tags:
-                - subscription
-            description: Returns all subscriptions for the organization
-            operationId: getSubscription
-            summary: Read subscriptions
-            parameters:
-                - $ref: "#/components/parameters/page"
-                - $ref: "#/components/parameters/pagesize"
-                - $ref: "#/components/parameters/order"
-                - name: status
-                  in: query
-                  description: Filter subscriptions by status
-                  required: false
-                  schema:
-                      type: array
-                      items:
-                          type: string
-                  style: form
-                  explode: true
+  /api/entitlement/subscriptions:
+    get:
+      tags:
+        - subscription
+      description: Returns all subscriptions for the organization
+      operationId: getSubscription
+      summary: Read subscriptions
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/order"
+        - name: status
+          in: query
+          description: Filter subscriptions by status
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
 
-            responses:
-                "200":
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/SubscriptionPage"
-                    description: Get subscription response
-                "400":
-                    $ref: "#/components/responses/400"
-                "401":
-                    $ref: "#/components/responses/401"
-                "500":
-                    $ref: "#/components/responses/500"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionPage"
+          description: Get subscription response
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 
-    /api/entitlement/subscriptions/{subscriptionId}/cancel:
-        post:
-            summary: Cancel an existing subscription
-            
-            parameters:
-              - $ref: "#/components/parameters/subscriptionId"
-            responses:
-                "200":
-                    description: Subscription created successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/SubscriptionPage"
-                "400":
-                    description: Invalid request
-                "500":
-                    description: Internal server error
-    /api/entitlement/subscriptions/create:
-        post:
-            summary: Create a new subscription for an organization
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/CreateSubscriptionRequest"
-            responses:
-                "200":
-                    description: Subscription created successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/CreateSubscriptionResponse"
-                "400":
-                    description: Invalid request
-                "500":
-                    description: Internal server error
+  /api/entitlement/subscriptions/{subscriptionId}/cancel:
+    post:
+      summary: Cancel an existing subscription
 
-    /api/entitlement/subscriptions/webhooks:
-        post:
-            summary: Handle webhook events from payment processors
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/WebhookEvent"
-            responses:
-                "200":
-                    description: Webhook processed successfully
-                "400":
-                    description: Invalid webhook event
+      parameters:
+        - $ref: "#/components/parameters/subscriptionId"
+      responses:
+        "200":
+          description: Subscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionPage"
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
+  /api/entitlement/subscriptions/create:
+    post:
+      summary: Create a new subscription for an organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionRequest"
+      responses:
+        "200":
+          description: Subscription created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateSubscriptionResponse"
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
+
+  /api/entitlement/subscriptions/webhooks:
+    post:
+      summary: Handle webhook events from payment processors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookEvent"
+      responses:
+        "200":
+          description: Webhook processed successfully
+        "400":
+          description: Invalid webhook event
 
 components:
-    responses:
-        400:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
 
-        401:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+    401:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
 
-        500:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+    500:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
 
-    parameters:
-        subscriptionId:
-            name: subscriptionId
-            in: path
-            required: true
-            description: Subscription ID
-            schema:
-                type: string
+  parameters:
+    subscriptionId:
+      name: subscriptionId
+      in: path
+      required: true
+      description: Subscription ID
+      schema:
+        type: string
 
+    page:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesize"
+
+    pagesizeWithAll:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesizeWithAll"
+    order:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/order"
+
+  schemas:
+    PaymentProcessor:
+      type: string
+      enum:
+        - stripe
+        - paypal
+        - braintree
+      description: Supported payment processors
+
+    CreateSubscriptionRequest:
+      type: object
+      properties:
+        org_id:
+          type: string
+          description: Organization ID
+        plan_id:
+          type: string
+          description: Price ID from the payment processor
+        user_count:
+          type: integer
+          description: Number of users in the organization
+        email:
+          type: string
+          format: email
+          description: Email of the customer
+        payment_processor:
+          $ref: "#/components/schemas/PaymentProcessor"
+
+    CreateSubscriptionResponse:
+      type: object
+      properties:
+        subscription_id:
+          type: string
+        clientSecret:
+          type: string
+
+    UpdateUsersRequest:
+      type: object
+      properties:
+        payment_processor:
+          $ref: "#/components/schemas/PaymentProcessor"
+
+    CancelSubscriptionRequest:
+      type: object
+      properties:
+        subscription_id:
+          type: string
+          description: Subscription ID from the payment processor
+        payment_processor:
+          $ref: "#/components/schemas/PaymentProcessor"
+
+    WebhookEvent:
+      type: object
+      description: Payload for webhook events from payment processors
+
+    SubscriptionPage:
+      type: object
+      required:
+        - page
+        - page_size
+        - total_count
+        - subscriptions
+      properties:
         page:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/page"
-        pagesize:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesize"
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        subscriptions:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Subscription"
+            x-go-type: Subscription
+    Subscription:
+      type: object
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        org_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "org_id"
+        plan_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "plan_id"
+        plan:
+          $ref: "../plan/openapi.yml#/components/schemas/Plan"
+          x-go-type: plan.Plan
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/plan
+          x-oapi-codegen-extra-tags:
+            belongs_to: "plans"
+            fk_id: "PlanId"
+            yaml: "plan,omitempty"
+            json: "plan,omitempty"
 
-        pagesizeWithAll:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesizeWithAll"
-        order:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/order"
+        quantity:
+          decscription: "number of units subscribed (eg number of users)"
+          type: "integer"
+          x-oapi-codegen-extra-tags:
+            db: "quantity"
+        start_date:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "start_date"
+        end_date:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "end_date"
+        status:
+          $ref: "#/components/schemas/SubscriptionStatus"
+          x-go-type: SubscriptionStatus
+          x-oapi-codegen-extra-tags:
+            db: "status"
+        created_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+        updated_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+        deleted_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/SqlNullTime"
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+        billing_id:
+          type: string
+          description: "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe"
+          x-oapi-codegen-extra-tags:
+            db: "billing_id"
 
-    schemas:
-        PaymentProcessor:
-            type: string
-            enum:
-                - stripe
-                - paypal
-                - braintree
-            description: Supported payment processors
+      required:
+        - ID
+        - org_id
+        - plan_id
+        - billing_id
+        - status
+        - quantity
 
-        CreateSubscriptionRequest:
-            type: object
-            properties:
-                org_id:
-                    type: string
-                    description: Organization ID
-                plan_id:
-                    type: string
-                    description: Price ID from the payment processor
-                user_count:
-                    type: integer
-                    description: Number of users in the organization
-                email:
-                    type: string
-                    format: email
-                    description: Email of the customer
-                payment_processor:
-                    $ref: "#/components/schemas/PaymentProcessor"
-
-        CreateSubscriptionResponse:
-            type: object
-            properties:
-                subscription_id:
-                    type: string
-                clientSecret:
-                    type: string
-
-        UpdateUsersRequest:
-            type: object
-            properties:
-                payment_processor:
-                    $ref: "#/components/schemas/PaymentProcessor"
-
-        CancelSubscriptionRequest:
-            type: object
-            properties:
-                subscription_id:
-                    type: string
-                    description: Subscription ID from the payment processor
-                payment_processor:
-                    $ref: "#/components/schemas/PaymentProcessor"
-
-        WebhookEvent:
-            type: object
-            description: Payload for webhook events from payment processors
-
-        SubscriptionPage:
-            type: object
-            required:
-                - page
-                - page_size
-                - total_count
-                - subscriptions
-            properties:
-                page:
-                    type: integer
-                page_size:
-                    type: integer
-                total_count:
-                    type: integer
-                subscriptions:
-                    type: "array"
-                    items:
-                        $ref: "#/components/schemas/Subscription"
-                        x-go-type: Subscription
-        Subscription:
-            type: object
-            properties:
-                ID:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
-                    x-oapi-codegen-extra-tags:
-                        db: "id"
-                org_id:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
-                    x-oapi-codegen-extra-tags:
-                        db: "org_id"
-                plan_id:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
-                    x-oapi-codegen-extra-tags:
-                        db: "plan_id"
-                plan:
-                    $ref: "../plan/openapi.yml#/components/schemas/Plan"
-                    x-go-type: plan.Plan
-                    x-go-type-import:
-                        path: github.com/meshery/schemas/models/v1beta1/plan
-                    x-oapi-codegen-extra-tags:
-                        belongs_to: "plans"
-                        fk_id: "PlanId"
-                        yaml: "plan,omitempty"
-                        json: "plan,omitempty"
-
-                quantity:
-                    decscription: "number of units subscribed (eg number of users)"
-                    type: "integer"
-                    x-oapi-codegen-extra-tags:
-                        db: "quantity"
-                start_date:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
-                    x-oapi-codegen-extra-tags:
-                        db: "start_date"
-                end_date:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
-                    x-oapi-codegen-extra-tags:
-                        db: "end_date"
-                status:
-                    $ref: "#/components/schemas/SubscriptionStatus"
-                    x-go-type: SubscriptionStatus
-                    x-oapi-codegen-extra-tags:
-                        db: "status"
-                created_at:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
-                    x-oapi-codegen-extra-tags:
-                        db: "created_at"
-                updated_at:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
-                    x-oapi-codegen-extra-tags:
-                        db: "updated_at"
-                deleted_at:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/SqlNullTime"
-                    x-oapi-codegen-extra-tags:
-                        db: "deleted_at"
-                billing_id:
-                    type: string
-                    description: "Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe"
-                    x-oapi-codegen-extra-tags:
-                        db: "billing_id"
-
-            required:
-                - ID
-                - org_id
-                - plan_id
-                - billing_id
-                - status
-                - quantity
-
-        SubscriptionStatus:
-            type: string
-            description: Possible statuses of a Stripe subscription.
-            enum:
-                - incomplete
-                - incomplete_expired
-                - trialing
-                - active
-                - past_due
-                - canceled
-                - unpaid
-            x-enumDescriptions:
-                incomplete: "The subscription has been created, but the initial payment is pending. It may transition to 'active' or 'incomplete_expired'."
-                incomplete_expired: "The subscription was created but never activated due to failed initial payment. It is now expired."
-                trialing: "The subscription is currently in a trial period before the first payment is due."
-                active: "The subscription is active, and billing is functioning normally."
-                past_due: "The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge."
-                canceled: "The subscription has been canceled and will no longer generate invoices."
-                unpaid: "The subscription is still technically active but has unpaid invoices and is no longer generating new invoices."
+    SubscriptionStatus:
+      type: string
+      description: Possible statuses of a Stripe subscription.
+      enum:
+        - incomplete
+        - incomplete_expired
+        - trialing
+        - active
+        - past_due
+        - canceled
+        - unpaid
+      x-enumDescriptions:
+        incomplete: "The subscription has been created, but the initial payment is pending. It may transition to 'active' or 'incomplete_expired'."
+        incomplete_expired: "The subscription was created but never activated due to failed initial payment. It is now expired."
+        trialing: "The subscription is currently in a trial period before the first payment is due."
+        active: "The subscription is active, and billing is functioning normally."
+        past_due: "The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge."
+        canceled: "The subscription has been canceled and will no longer generate invoices."
+        unpaid: "The subscription is still technically active but has unpaid invoices and is no longer generating new invoices."

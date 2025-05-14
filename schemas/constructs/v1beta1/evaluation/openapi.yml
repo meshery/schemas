@@ -1,7 +1,6 @@
-
 openapi: 3.0.0
 info:
-  title: Meshery Relationship Evaluation API
+  title: evaluation
   version: 1.0.0
   description: API for evaluating relationships in Meshery designs
 
@@ -37,11 +36,11 @@ components:
       properties:
         design:
           $ref: ../design/design.json
-          
+
           "x-go-type": "pattern.PatternFile"
-          "x-go-type-import": 
+          "x-go-type-import":
             "path": "github.com/meshery/schemas/models/v1beta1/pattern"
-                
+
         options:
           type: object
           properties:
@@ -68,9 +67,9 @@ components:
           $ref: ../design/design.json
 
           "x-go-type": "pattern.PatternFile"
-          "x-go-type-import": 
+          "x-go-type-import":
             "path": "github.com/meshery/schemas/models/v1beta1/pattern"
-                
+
           description: The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed.
 
         evaluationHash:
@@ -93,13 +92,22 @@ components:
       required:
         - op
         - value
-      properties :
-         op:
-            type: string
-            enum: ["update_component","update_component_configuration", "add_component","delete_component","add_relationship","update_relationship","delete_relationship"]
-         value:
-            type: object
-          
+      properties:
+        op:
+          type: string
+          enum:
+            [
+              "update_component",
+              "update_component_configuration",
+              "add_component",
+              "delete_component",
+              "add_relationship",
+              "update_relationship",
+              "delete_relationship",
+            ]
+        value:
+          type: object
+
     UpdateComponentOp:
       type: object
       properties:
@@ -168,7 +176,7 @@ components:
           required: [item]
           properties:
             item:
-              $ref: '#/components/schemas/ComponentDeclaration'
+              $ref: "#/components/schemas/ComponentDeclaration"
 
     UpdateRelationshipOp:
       type: object
@@ -212,7 +220,7 @@ components:
           required: [item]
           properties:
             item:
-              $ref: '#/components/schemas/RelationshipDeclaration'
+              $ref: "#/components/schemas/RelationshipDeclaration"
 
     ComponentDeclaration:
       type: object
@@ -261,9 +269,9 @@ components:
     #       items:
     #         $ref: ../v1beta1/component.json
 
-      # required:
-      #   - policyActions
-      #   - relationshipsAdded
-      #   - relationshipsRemoved
-      #   - componentsAdded
-      #   - componentsRemoved
+    # required:
+    #   - policyActions
+    #   - relationshipsAdded
+    #   - relationshipsRemoved
+    #   - componentsAdded
+    #   - componentsRemoved

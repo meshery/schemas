@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Features Construct Schema
+  title: feature
   description: OpenAPI schema for the Features construct with entitlement-related properties
   version: v1beta1
 

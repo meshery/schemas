@@ -1,115 +1,115 @@
 openapi: 3.0.0
 info:
-    title: Plans Api
-    version: 1.0.0
+  title: plan
+  version: 1.0.0
 tags:
-    - name: Plans
-      description: Operations related to plans
+  - name: Plans
+    description: Operations related to plans
 
 paths:
-    /api/entitlement/plans:
-        get:
-            operationId: getPlans
-            tags:
-                - Plans
-            summary: Get all plans supported by the system
-            responses:
-                "200":
-                    description: Plans fetched successfully
-                    content:
-                        application/json:
-                            schema:
-                                type: "array"
-                                items:
-                                    $ref: "#/components/schemas/Plan"
-                "400":
-                    description: Invalid request
-                "500":
-                    description: Internal server error
+  /api/entitlement/plans:
+    get:
+      operationId: getPlans
+      tags:
+        - Plans
+      summary: Get all plans supported by the system
+      responses:
+        "200":
+          description: Plans fetched successfully
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Plan"
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
 
 components:
-    schemas:
-        PlanPage:
-            type: object
-            required:
-                - page
-                - page_size
-                - total_count
-                - plans
-            properties:
-                page:
-                    type: integer
-                page_size:
-                    type: integer
-                total_count:
-                    type: integer
-                plans:
-                    type: "array"
-                    items:
-                        $ref: "#/components/schemas/Plan"
-                        x-go-type: Plan
+  schemas:
+    PlanPage:
+      type: object
+      required:
+        - page
+        - page_size
+        - total_count
+        - plans
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        plans:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Plan"
+            x-go-type: Plan
 
-        Plan:
-            type: object
-            properties:
-                id:
-                    $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
-                name:
-                    type: "string"
-                    $ref: "#/components/schemas/PlanName"
-                    x-go-type: PlanName
-                cadence:
-                    $ref: "#/components/schemas/PlanCadence"
-                    x-go-type: PlanCadence
+    Plan:
+      type: object
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+        name:
+          type: "string"
+          $ref: "#/components/schemas/PlanName"
+          x-go-type: PlanName
+        cadence:
+          $ref: "#/components/schemas/PlanCadence"
+          x-go-type: PlanCadence
 
-                unit:
-                    $ref: "#/components/schemas/PlanUnit"
-                    x-go-type: PlanUnit
+        unit:
+          $ref: "#/components/schemas/PlanUnit"
+          x-go-type: PlanUnit
 
-                price_per_unit:
-                    type: "number"
-                    description: "Price per unit of the plan"
-                    x-oapi-codegen-extra-tags:
-                        db: "price_per_unit"
+        price_per_unit:
+          type: "number"
+          description: "Price per unit of the plan"
+          x-oapi-codegen-extra-tags:
+            db: "price_per_unit"
 
-                # price_id:
-                #     type: "string"
-                #     description: "Id of price associated with the plan in a billing provider like stripe"
+        # price_id:
+        #     type: "string"
+        #     description: "Id of price associated with the plan in a billing provider like stripe"
 
-                currency:
-                    $ref: "#/components/schemas/Currency"
-                    x-go-type: Currency
+        currency:
+          $ref: "#/components/schemas/Currency"
+          x-go-type: Currency
 
-            required:
-                - id
-                - name
-                - cadence
-                - unit
-                - price_per_unit
-                - price_id
-                - currency
-        PlanName:
-            type: string
-            description: "Name of the plan"
-            enum:
-                - "Free"
-                - "Team Designer"
-                - "Team Operator"
-                - "Enterprise"
+      required:
+        - id
+        - name
+        - cadence
+        - unit
+        - price_per_unit
+        - price_id
+        - currency
+    PlanName:
+      type: string
+      description: "Name of the plan"
+      enum:
+        - "Free"
+        - "Team Designer"
+        - "Team Operator"
+        - "Enterprise"
 
-        PlanCadence:
-            type: string
-            enum:
-                - monthly
-                - yearly
+    PlanCadence:
+      type: string
+      enum:
+        - monthly
+        - yearly
 
-        PlanUnit:
-            type: string
-            enum:
-                - user
-                - free
+    PlanUnit:
+      type: string
+      enum:
+        - user
+        - free
 
-        Currency:
-            type: string
-            enum:
-                - usd
+    Currency:
+      type: string
+      enum:
+        - usd
