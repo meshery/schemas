@@ -9,6 +9,7 @@ tags:
 paths:
   /api/entitlement/plans:
     get:
+      x-internal: ["cloud"]
       operationId: getPlans
       tags:
         - Plans

@@ -20,6 +20,7 @@ tags:
 paths:
   /api/entitlement/subscriptions:
     get:
+      x-internal: ["cloud"]
       tags:
         - subscription
       description: Returns all subscriptions for the organization
@@ -56,6 +57,7 @@ paths:
 
   /api/entitlement/subscriptions/{subscriptionId}/cancel:
     post:
+      x-internal: ["cloud"]
       summary: Cancel an existing subscription
 
       parameters:
@@ -73,6 +75,7 @@ paths:
           description: Internal server error
   /api/entitlement/subscriptions/create:
     post:
+      x-internal: ["cloud"]
       summary: Create a new subscription for an organization
       requestBody:
         required: true
@@ -94,6 +97,7 @@ paths:
 
   /api/entitlement/subscriptions/webhooks:
     post:
+      x-internal: ["cloud"]
       summary: Handle webhook events from payment processors
       requestBody:
         required: true

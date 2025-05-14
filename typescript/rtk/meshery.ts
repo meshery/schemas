@@ -1,9 +1,6 @@
 import { mesheryBaseApi as api } from "./api";
 const injectedRtkApi = api.injectEndpoints({
   endpoints: (build) => ({
-    postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
-      query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
-    }),
     importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
       query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
     }),
@@ -40,10 +37,191 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
+      query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
+    }),
   }),
   overrideExisting: false,
 });
 export { injectedRtkApi as mesheryApi };
+export type ImportDesignApiResponse = /** status 200 Successful Import */ {
+  message?: string;
+};
+export type ImportDesignApiArg = {
+  body: {
+    /** Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
+    file?: string;
+    /** The name of the pattern file being imported. */
+    file_name?: string;
+    /** Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it. */
+    name?: string;
+    /** Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
+    url?: string;
+  };
+};
+export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
+  message?: string;
+};
+export type RegisterMeshmodelsApiArg = {
+  body: {
+    importBody:
+      | {
+          /** Name of the file being uploaded. */
+          fileName: string;
+          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          modelFile: string;
+        }
+      | {
+          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          url: string;
+        }
+      | {
+          /** Upload a CSV file containing model definitions */
+          modelCsv: Blob;
+          /** Upload a CSV file containing component definitions */
+          componentCsv: Blob;
+          /** Upload a CSV file containing relationship definitions */
+          relationshipCsv: Blob;
+        }
+      | {
+          /** URI to the source code or package of the model. */
+          url: string | string;
+        };
+    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
+    uploadType: "file" | "urlImport" | "csv" | "url";
+    register: boolean;
+  };
+};
+export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  workspaces?: {
+    ID?: string;
+    name?: string;
+    description?: string;
+    organization_id?: string;
+    owner?: string;
+    created_at?: string;
+    updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetApiWorkspacesApiArg = void;
+export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type PostApiWorkspacesApiArg = {
+  /** Body for creating workspace */
+  body: {
+    /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
+    name: string;
+    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
+    description?: string;
+    /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
+    organization_id: string;
+  };
+};
+export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type GetApiWorkspacesByIdApiArg = {
+  id: string;
+};
+export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type PutApiWorkspacesByIdApiArg = {
+  id: string;
+  /** Body for updating workspace */
+  body: {
+    /** Name of workspace */
+    name?: string;
+    /** Environment description */
+    description?: string;
+    /** Organization ID */
+    organization_id: string;
+  };
+};
+export type DeleteApiWorkspacesByIdApiResponse = unknown;
+export type DeleteApiWorkspacesByIdApiArg = {
+  id: string;
+};
+export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type CreateEnvironmentApiArg = {
+  /** Body for creating environment */
+  body: {
+    /** An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+    name: string;
+    /** An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+    description?: string;
+    /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+    OrganizationID?: string;
+  };
+};
+export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  environments?: {
+    ID?: string;
+    name?: string;
+    description?: string;
+    organization_id?: string;
+    owner?: string;
+    created_at?: string;
+    updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetEnvironmentsApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** User's organization ID */
+  orgId: string;
+};
 export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
   /** Specifies the version of the schema to which the evaluation response conforms. */
   schemaVersion: string;
@@ -2959,186 +3137,7 @@ export type PostEvaluateApiArg = {
     };
   };
 };
-export type ImportDesignApiResponse = /** status 200 Successful Import */ {
-  message?: string;
-};
-export type ImportDesignApiArg = {
-  body: {
-    /** Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    file?: string;
-    /** The name of the pattern file being imported. */
-    file_name?: string;
-    /** Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it. */
-    name?: string;
-    /** Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    url?: string;
-  };
-};
-export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
-  message?: string;
-};
-export type RegisterMeshmodelsApiArg = {
-  body: {
-    importBody:
-      | {
-          /** Name of the file being uploaded. */
-          fileName: string;
-          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          modelFile: string;
-        }
-      | {
-          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          url: string;
-        }
-      | {
-          /** Upload a CSV file containing model definitions */
-          modelCsv: Blob;
-          /** Upload a CSV file containing component definitions */
-          componentCsv: Blob;
-          /** Upload a CSV file containing relationship definitions */
-          relationshipCsv: Blob;
-        }
-      | {
-          /** URI to the source code or package of the model. */
-          url: string | string;
-        };
-    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
-    uploadType: "file" | "urlImport" | "csv" | "url";
-    register: boolean;
-  };
-};
-export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  workspaces?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
-    owner?: string;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
-  }[];
-};
-export type GetApiWorkspacesApiArg = void;
-export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PostApiWorkspacesApiArg = {
-  /** Body for creating workspace */
-  body: {
-    /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
-    name: string;
-    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
-    description?: string;
-    /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
-    organization_id: string;
-  };
-};
-export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type GetApiWorkspacesByIdApiArg = {
-  id: string;
-};
-export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PutApiWorkspacesByIdApiArg = {
-  id: string;
-  /** Body for updating workspace */
-  body: {
-    /** Name of workspace */
-    name?: string;
-    /** Environment description */
-    description?: string;
-    /** Organization ID */
-    organization_id: string;
-  };
-};
-export type DeleteApiWorkspacesByIdApiResponse = unknown;
-export type DeleteApiWorkspacesByIdApiArg = {
-  id: string;
-};
-export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type CreateEnvironmentApiArg = {
-  /** Body for creating environment */
-  body: {
-    /** An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-    name: string;
-    /** An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
-    description?: string;
-    /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-    OrganizationID?: string;
-  };
-};
-export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  environments?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
-    owner?: string;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
-  }[];
-};
-export type GetEnvironmentsApiArg = {
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** User's organization ID */
-  orgId: string;
-};
 export const {
-  usePostEvaluateMutation,
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
   useGetApiWorkspacesQuery,
@@ -3148,4 +3147,5 @@ export const {
   useDeleteApiWorkspacesByIdMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  usePostEvaluateMutation,
 } = injectedRtkApi;

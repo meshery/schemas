@@ -11,6 +11,7 @@ tags:
 paths:
   /api/entitlement/features:
     get:
+      x-internal: ["cloud"]
       operationId: getFeatures
       tags:
         - Features
@@ -31,6 +32,7 @@ paths:
 
   /api/entitlement/subscriptions/organizations/{organizationId}/features:
     get:
+      x-internal: ["cloud"]
       operationId: getFeaturesByOrganization
       tags:
         - Features

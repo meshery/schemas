@@ -14,6 +14,9 @@
   "paths": {
     "/api/entitlement/features": {
       "get": {
+        "x-internal": [
+          "cloud"
+        ],
         "operationId": "getFeatures",
         "tags": [
           "Features"
@@ -215,6 +218,9 @@
     },
     "/api/entitlement/subscriptions/organizations/{organizationId}/features": {
       "get": {
+        "x-internal": [
+          "cloud"
+        ],
         "operationId": "getFeaturesByOrganization",
         "tags": [
           "Features"

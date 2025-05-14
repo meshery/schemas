@@ -93,17 +93,21 @@ npx @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/workspace/${merged_construct}" \
      "${v1beta1}/environment/${merged_construct}" \
      "${v1alpha2}/catalog/${merged_construct}" \
- -o schemas/cloud_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
+     "${v1beta1}/evaluation/${merged_construct}" \
+ -o schemas/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
 
- # generate bundle for meshery
- npx @redocly/cli join schemas/base_meshery.yml \
-      "${v1beta1}/evaluation/${merged_construct}" \
-      "${v1beta1}/pattern/${merged_construct}" \
-      "${v1beta1}/component/${merged_construct}" \
-      "${v1beta1}/model/${merged_construct}" \
-      "${v1beta1}/workspace/${merged_construct}" \
-      "${v1beta1}/environment/${merged_construct}" \
-  -o schemas/meshery_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
+node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/cloud_openapi.yml cloud
+node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/meshery_openapi.yml  meshery
+
+ # # generate bundle for meshery
+ # npx @redocly/cli join schemas/base_meshery.yml \
+ #      "${v1beta1}/evaluation/${merged_construct}" \
+ #      "${v1beta1}/pattern/${merged_construct}" \
+ #      "${v1beta1}/component/${merged_construct}" \
+ #      "${v1beta1}/model/${merged_construct}" \
+ #      "${v1beta1}/workspace/${merged_construct}" \
+ #      "${v1beta1}/environment/${merged_construct}" \
+ #  -o schemas/meshery_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
 
 
 # Generate rtk query api
