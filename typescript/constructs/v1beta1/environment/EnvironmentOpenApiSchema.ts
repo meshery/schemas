@@ -6,7 +6,7 @@
 const schema = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Meshery Cloud",
+    "title": "environment",
     "description": "Documentation for meshery Cloud REST APIs",
     "contact": {
       "email": "support@layer5.io"

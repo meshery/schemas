@@ -6,7 +6,7 @@
 const schema = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Features Construct Schema",
+    "title": "feature",
     "description": "OpenAPI schema for the Features construct with entitlement-related properties",
     "version": "v1beta1"
   },
@@ -19,6 +19,9 @@ const schema = {
   "paths": {
     "/api/entitlement/features": {
       "get": {
+        "x-internal": [
+          "cloud"
+        ],
         "operationId": "getFeatures",
         "tags": [
           "Features"
@@ -220,6 +223,9 @@ const schema = {
     },
     "/api/entitlement/subscriptions/organizations/{organizationId}/features": {
       "get": {
+        "x-internal": [
+          "cloud"
+        ],
         "operationId": "getFeaturesByOrganization",
         "tags": [
           "Features"
@@ -228,18 +234,17 @@ const schema = {
         "parameters": [
           {
             "name": "organizationId",
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "org_id",
-              "json": "org_id"
-            },
-            "x-go-type-name": "OrganizationId",
-            "x-go-type-skip-optional-pointer": true
+            "in": "path",
+            "description": "The ID of the organization",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              }
+            }
           }
         ],
         "responses": {
@@ -438,6 +443,22 @@ const schema = {
     }
   },
   "components": {
+    "parameters": {
+      "organization_id": {
+        "name": "organizationId",
+        "in": "path",
+        "description": "The ID of the organization",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          }
+        }
+      }
+    },
     "schemas": {
       "FeaturesPage": {
         "type": "array",

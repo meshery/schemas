@@ -44,3 +44,6 @@ type FeatureName string
 
 // FeaturesPage defines model for FeaturesPage.
 type FeaturesPage = []Feature
+
+// OrganizationId defines model for organization_id.
+type OrganizationId = uuid.UUID

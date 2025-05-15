@@ -13,7 +13,6 @@ import (
 	"github.com/meshery/schemas/models/v1alpha2/catalog"
 	"github.com/meshery/schemas/models/v1alpha3/relationship"
 	"github.com/meshery/schemas/models/v1beta1/component"
-	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // DeletePatternModel defines model for DeletePatternModel.
@@ -45,7 +44,7 @@ type MesheryPatternDeleteRequestBody struct {
 // MesheryPatternImportRequestBody Choose the method you prefer to upload your  design file. Select 'File Upload' if you have the file on your local system, or 'URL Import' if you have the file hosted online.
 type MesheryPatternImportRequestBody struct {
 	// File Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details
-	File *openapi_types.File `json:"file,omitempty" yaml:"file,omitempty"`
+	File *string `json:"file,omitempty" yaml:"file,omitempty"`
 
 	// FileName The name of the pattern file being imported.
 	FileName *string `json:"file_name,omitempty" yaml:"file_name,omitempty"`
