@@ -7,7 +7,7 @@ const injectedRtkApi = api.injectEndpoints({
     registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
       query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
     }),
-    getSubscription: build.query<GetSubscriptionApiResponse, GetSubscriptionApiArg>({
+    getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
       query: (queryArg) => ({
         url: `/api/entitlement/subscriptions`,
         params: {
@@ -132,7 +132,7 @@ export type RegisterMeshmodelsApiArg = {
     register: boolean;
   };
 };
-export type GetSubscriptionApiResponse = /** status 200 Get subscription response */ {
+export type GetSubscriptionsApiResponse = /** status 200 Get subscription response */ {
   page: number;
   page_size: number;
   total_count: number;
@@ -166,7 +166,7 @@ export type GetSubscriptionApiResponse = /** status 200 Get subscription respons
     billing_id: string;
   }[];
 };
-export type GetSubscriptionApiArg = {
+export type GetSubscriptionsApiArg = {
   /** Get responses by page */
   page?: string;
   /** Get responses by pagesize */
@@ -445,7 +445,7 @@ export type GetEnvironmentsApiArg = {
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
-  useGetSubscriptionQuery,
+  useGetSubscriptionsQuery,
   usePostApiEntitlementSubscriptionsBySubscriptionIdCancelMutation,
   usePostApiEntitlementSubscriptionsCreateMutation,
   usePostApiEntitlementSubscriptionsWebhooksMutation,

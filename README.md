@@ -259,7 +259,178 @@ npx @redocly/cli join schemas/base_cloud.yml \
      --prefix-components-with-info-prop title
 ```
 
----
+# Using Generated RTK Query Clients
+
+
+## Prerequisites
+
+Before using the generated RTK clients, ensure you have:
+
+1. Installed the required dependencies:
+   - `@reduxjs/toolkit`
+   - `@layer5/schemas`
+
+2. Set up environment variables:
+   - `RTK_CLOUD_ENDPOINT_PREFIX`: Base URL for Cloud API endpoints
+   - `RTK_MESHERY_ENDPOINT_PREFIX`: Base URL for Meshery API endpoints
+
+## Store Configuration
+
+### Import API Slices Correctly
+
+To avoid cyclical imports that can break your application, import API slices from their specific exports:
+
+```javascript
+// ✅ Correct: Import from specific API exports
+import { cloudApi as cloudBaseApi } from "@layer5/schemas/dist/cloudApi";
+import { mesheryApi } from "@layer5/schemas/dist/mesheryApi";
+
+// ❌ Incorrect: Do not import directly from generic API file
+// import { api } from "@layer5/schemas/dist/api"; // Can cause cyclical imports
+```
+
+### Configure Redux Store
+
+Add the API reducers and middleware to your Redux store configuration:
+
+```javascript
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { cloudApi as cloudBaseApi } from "@layer5/schemas/dist/cloudApi";
+import catalogReducer from "./slices/catalog";
+import connectionReducer from "./slices/connection";
+import organizationReducer from "./slices/organization";
+import chartReducer from "./slices/charts";
+import themeReducer from "./slices/theme";
+// Optional: If you have locally defined APIs
+import { cloudApi } from "../api";
+
+// Combine reducers
+const rootReducer = combineReducers({
+  catalog: catalogReducer,
+  charts: chartReducer,
+  organization: organizationReducer,
+  connection: connectionReducer,
+  theme: themeReducer,
+  // Add generated API reducers
+  [cloudBaseApi.reducerPath]: cloudBaseApi.reducer,
+  // Optional: Add locally defined API reducers
+  [cloudApi.reducerPath]: cloudApi.reducer
+});
+
+// Configure store with middleware
+export const store = configureStore({
+  reducer: reduxPersist.createPersistEnhancedReducer(rootReducer),
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware()
+      // Add generated API middleware
+      .concat(cloudBaseApi.middleware)
+      // Optional: Add locally defined API middleware
+      .concat(cloudApi.middleware)
+      // Add persistence middleware if needed
+      .concat(reduxPersist.persistMiddleware)
+});
+
+// Set up listeners for RTK Query cache behaviors like refetchOnFocus/refetchOnReconnect
+setupListeners(store.dispatch);
+```
+
+## Using API Hooks
+
+After configuring your store, you can import and use the generated hooks:
+
+### Cloud API Hooks
+
+```javascript
+import { 
+  useGetPlansQuery, 
+  useCreateDesignMutation,
+  useGetDesignsQuery,
+  // Other cloud API hooks...
+} from "@layer5/schemas/dist/cloudApi";
+
+function MyComponent() {
+  // Use hooks directly in your components
+  const { data: plans, isLoading, error } = useGetPlansQuery();
+  
+  // Handle loading states
+  if (isLoading) return <div>Loading plans...</div>;
+  
+  // Handle errors
+  if (error) return <div>Error loading plans</div>;
+  
+  // Use data
+  return (
+    <div>
+      {plans.map(plan => (
+        <div key={plan.id}>{plan.name}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Meshery API Hooks
+
+```javascript
+import {
+  useGetMeshModelsQuery,
+  useSubmitMeshConfigMutation,
+  // Other Meshery API hooks...
+} from "@layer5/schemas/dist/mesheryApi";
+
+function MesheryComponent() {
+  const { data: meshModels } = useGetMeshModelsQuery();
+  // ...
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Stuck Loading States**:
+   - Verify environment variables are correctly set
+   - Check for CORS issues
+   - Ensure proper authentication headers are included
+
+2. **Cyclical Imports**:
+   - Always import from specific API files (`cloudApi.ts`, `mesheryApi.ts`)
+   - Avoid importing from generic `api.ts` files
+
+3. **Multiple RTK Instances**:
+   - Ensure proper reducer and middleware registration
+   - Check for naming conflicts in reducerPaths
+
+### Redux DevTools
+
+For better debugging, use Redux DevTools to monitor:
+- API request lifecycles
+- State changes
+- Caching behavior
+
+## Best Practices
+
+1. **Handle Loading States**:
+   ```javascript
+   const { data, isLoading, isFetching, error } = useGetDataQuery();
+   ```
+
+2. **Leverage Cache Options**:
+   ```javascript
+   const { data } = useGetDataQuery(null, {
+     pollingInterval: 30000, // Re-fetch every 30 seconds
+     refetchOnMountOrArgChange: true,
+     skip: !isReady // Skip query when not ready
+   });
+   ```
+
+3. **Use Transformations When Needed**:
+   ```javascript
+   const transformedData = data?.map(item => ({
+     ...item,
+     formattedValue: formatValue(item.value)
+   }));
+   ```
 
 ## 🧪 Testing & Validating Schemas
 

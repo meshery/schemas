@@ -8,7 +8,14 @@ export default defineConfig({
     api: "typescript/rtk/api.ts",
   },
   format: ["cjs", "esm"],
-  dts: true,
+
+  external: [
+    'react',
+    'react-dom',
+    'react-redux',
+    '@reduxjs/toolkit'
+  ],
+    dts: true,
   splitting: false,
   sourcemap: false,
   treeshake: true,

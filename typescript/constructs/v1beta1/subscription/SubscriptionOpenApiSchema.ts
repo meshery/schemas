@@ -40,7 +40,7 @@ const schema = {
           "subscription"
         ],
         "description": "Returns all subscriptions for the organization",
-        "operationId": "getSubscription",
+        "operationId": "getSubscriptions",
         "summary": "Read subscriptions",
         "parameters": [
           {

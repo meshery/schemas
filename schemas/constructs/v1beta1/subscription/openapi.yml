@@ -24,7 +24,7 @@ paths:
       tags:
         - subscription
       description: Returns all subscriptions for the organization
-      operationId: getSubscription
+      operationId: getSubscriptions
       summary: Read subscriptions
       parameters:
         - $ref: "#/components/parameters/page"
