@@ -12,7 +12,7 @@ alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 <a href="https://github.com/meshery/meshery/blob/master/LICENSE" alt="LICENSE">
   <img src="https://img.shields.io/github/license/meshery/meshery?color=brightgreen" /></a>
 <a href="https://artifacthub.io/packages/helm/meshery/meshery" alt="Artifact Hub Meshery">
-  <img src="https://img.shields.io/endpoint?color=brightgreen&label=Helm%20Chart&style=plastic&url=https%3A%2F%2Fartifacthub.io%2Fbadge%2Frepository%2Fartifact-hub" /></a>  
+  <img src="https://img.shields.io/endpoint?color=brightgreen&label=Helm%20Chart&style=plastic&url=https%3A%2F%2Fartifacthub.io%2Fbadge%2Frepository%2Fartifact-hub" /></a>
 <a href="https://goreportcard.com/report/github.com/meshery/meshery" alt="Go Report Card">
   <img src="https://goreportcard.com/badge/github.com/meshery/meshery" /></a>
 <a href="https://github.com/meshery/meshery/actions" alt="Build Status">
@@ -26,9 +26,9 @@ alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 <a href="https://twitter.com/intent/follow?screen_name=mesheryio" alt="Twitter Follow">
   <img src="https://img.shields.io/twitter/follow/mesheryio.svg?label=Follow+Meshery&style=social" /></a>
 <a href="https://github.com/meshery/meshery/releases" alt="Meshery Downloads">
-  <img src="https://img.shields.io/github/downloads/meshery/meshery/total" /></a>  
+  <img src="https://img.shields.io/github/downloads/meshery/meshery/total" /></a>
 <!-- <a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fmeshery%2Fmeshery?ref=badge_shield" alt="License Scan Report">
-  <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmeshery%2Fmeshery.svg?type=shield"/></a>  
+  <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmeshery%2Fmeshery.svg?type=shield"/></a>
   -->
 </p>
 
@@ -49,9 +49,9 @@ Meshery schemas offer a powerful system designed for:
 
 For an explanation of Meshery's terminology regarding schemas, definitions, declarations, and instances, please see [Contributor's Guide to Models](https://docs.meshery.io/project/contributing/contributing-models).
 
-## Contributing 
+## Contributing
 --> **For an explanation of the directory structure of this repository and how to contribute changes to Meshery's schemas, see [Contributor's Guide to Schema-Driven Development](https://docs.meshery.io/project/contributing/contributing-schemas).**
- 
+
 <p style="clear:both;">&nbsp;</p>
 
 ## Join the Meshery community!
@@ -81,6 +81,9 @@ Find out more on the <a href="https://meshery.io/community#meshmates">Meshery co
 <br />
 ✔️ <em><strong>Discuss</strong></em> in the <a href="https://meshery.io/community#discussion-forums">Community Forum</a>.<br />
 ✔️ <em><strong>Explore more</strong></em> in the <a href="https://meshery.io/community#handbook">Community Handbook</a>.<br />
+</p>
+<p align="center">
+<i>Not sure where to start?</i> Grab an open issue with the <a href="https://github.com/issues?q=is%3Aopen+is%3Aissue+archived%3Afalse+org%3Alayer5io+org%3Ameshery+org%3Ameshery-extensions+org%3Aservice-mesh-performance+org%3Aservice-mesh-patterns+label%3A%22help+wanted%22+">help-wanted label</a>.
 </p>
 </div>
 <div>&nbsp;</div>
@@ -341,8 +344,8 @@ After configuring your store, you can import and use the generated hooks:
 ### Cloud API Hooks
 
 ```javascript
-import { 
-  useGetPlansQuery, 
+import {
+  useGetPlansQuery,
   useCreateDesignMutation,
   useGetDesignsQuery,
   // Other cloud API hooks...
@@ -351,13 +354,13 @@ import {
 function MyComponent() {
   // Use hooks directly in your components
   const { data: plans, isLoading, error } = useGetPlansQuery();
-  
+
   // Handle loading states
   if (isLoading) return <div>Loading plans...</div>;
-  
+
   // Handle errors
   if (error) return <div>Error loading plans</div>;
-  
+
   // Use data
   return (
     <div>
