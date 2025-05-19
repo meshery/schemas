@@ -165,8 +165,9 @@ make build
 1. **Bundles OpenAPI schemas** for:
 
    * Meshery
-   * Layer5 Cloud
+   * Remote Providers (e.g. Layer5 Cloud)
    * Combined (all constructs)
+   
 2. **Generates:**
 
    * Golang structs
@@ -185,7 +186,7 @@ After running `make build`, three bundled schema files are created:
 | File                 | Purpose                                        |
 | -------------------- | ---------------------------------------------- |
 | `merged_schema.yml`  | All schemas combined (used by Meshery clients) |
-| `cloud_schema.yml`   | Cloud-specific APIs for Layer5 Cloud           |
+| `cloud_schema.yml`   | Cloud-specific APIs for Remote Providers (e.g. Layer5 Cloud) |
 | `meshery_schema.yml` | Meshery-specific APIs                          |
 
 ---
