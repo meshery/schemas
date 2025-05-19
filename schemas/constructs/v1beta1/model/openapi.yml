@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Model API
+  title: model
   version: 1.0.0
 paths:
   /api/meshmodels/register:
@@ -101,7 +101,7 @@ components:
             modelCsv:
               type: string
               format: binary
-              description: Upload a CSV file containing model definitions 
+              description: Upload a CSV file containing model definitions
             componentCsv:
               type: string
               format: binary
@@ -136,4 +136,3 @@ components:
                   x-metadata:
                     uiType: "url"
                     validationHint: "Enter an Artifact Hub URL (e.g., https://artifacthub.io/packages/search?ts_query_web={meshery-operator})"
-

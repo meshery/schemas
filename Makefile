@@ -73,6 +73,10 @@ golang-generate:
 setup:
 	go mod tidy
 	npm install
+
+# depends on order , golang-generate generates some artifacts that are used in the next step ( TODO: promote golang-generate to a parent build script)
+build:  golang-generate generate-ts  build-ts
+
 #-----------------------------------------------------------------------------
 # Dependencies
 #-----------------------------------------------------------------------------

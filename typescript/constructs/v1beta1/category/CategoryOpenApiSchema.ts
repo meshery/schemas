@@ -6,7 +6,7 @@
 const schema = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Category API",
+    "title": "category",
     "version": "1.0.0"
   },
   "paths": {},
