@@ -14,6 +14,16 @@ const schema = {
     "schemas": {
       "Preference": {
         "type": "object",
+        "required": [
+          "anonymousUsageStats",
+          "anonymousPerfResults",
+          "updatedAt",
+          "dashboardPreferences",
+          "selectedOrganizationID",
+          "selectedWorkspaceForOrganizations",
+          "usersExtensionPreferences",
+          "RemoteProviderPreferences"
+        ],
         "properties": {
           "meshAdapters": {
             "type": "array",
