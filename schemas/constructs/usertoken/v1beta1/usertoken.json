@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "id": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/id"
+    },
+    "user_id": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/id"
+    },
+    "provider": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/provider"
+    },
+    "access_token": {
+      "type": "string"
+    },
+    "refresh_token": {
+      "type": "string"
+    },
+    "name": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/text"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "is_oauth": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/time"
+    },
+    "updated_at": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/time"
+    }
+  }
+}

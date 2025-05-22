@@ -1,0 +1,30 @@
+{
+  "$id": "https://schemas.meshery.io/constructs/role/v1beta1/role.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Role",
+  "description": "Defines a role within the system, specifying permissions and access levels.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../../../core.json#/definitions/uuid",
+      "description": "Unique identifier for the role."
+    },
+    "role_name": {
+      "type": "string",
+      "description": "The name of the role."
+    },
+    "description": {
+      "type": "string",
+      "description": "A detailed description of the role and its purpose."
+    },
+    "created_at": {
+      "$ref": "../../../core.json#/definitions/time",
+      "description": "Timestamp indicating when the role was created."
+    },
+    "updated_at": {
+      "$ref": "../../../core.json#/definitions/time",
+      "description": "Timestamp indicating when the role was last updated."
+    }
+  },
+  "additionalProperties": false
+}

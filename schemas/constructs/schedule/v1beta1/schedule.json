@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/id"
+    },
+    "cron_expression": {
+      "type": "string"
+    },
+    "user_id": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/id"
+    },
+    "created_at": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/time"
+    },
+    "updated_at": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/time"
+    }
+  }
+}

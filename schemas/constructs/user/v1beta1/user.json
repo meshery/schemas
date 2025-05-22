@@ -1,0 +1,146 @@
+{
+  "$id": "https://schemas.meshery.io/constructs/user/v1beta1/user.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User",
+  "description": "Represents a user account and profile information.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../../../core.json#/definitions/uuid",
+      "description": "Unique identifier for the user."
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User's email address or username, serving as a login identifier."
+    },
+    "provider": {
+      "type": "string",
+      "description": "Identity provider used for authentication.",
+      "enum": ["meshery-cloud", "github", "google"]
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Primary email address of the user."
+    },
+    "first_name": {
+      "type": "string",
+      "description": "User's first name."
+    },
+    "last_name": {
+      "type": "string",
+      "description": "User's last name."
+    },
+    "avatar_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the user's profile picture."
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the user account.",
+      "enum": ["active", "pending", "inactive"]
+    },
+    "bio": {
+      "type": "string",
+      "description": "A short biography or description provided by the user."
+    },
+    "preferences": {
+      "type": "object",
+      "description": "User-specific preferences and settings.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "accepted_terms_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp indicating when the user accepted the terms of service."
+    },
+    "first_login_time": {
+      "$ref": "../../../core.json#/definitions/time",
+      "description": "Timestamp of the user's first login."
+    },
+    "last_login_time": {
+      "$ref": "../../../core.json#/definitions/time",
+      "description": "Timestamp of the user's most recent login."
+    },
+    "role_names": {
+      "type": "array",
+      "description": "List of roles assigned to the user.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "teams": {
+      "type": "object",
+      "description": "Team affiliations and related information for the user.",
+      "properties": {
+        "total_count": {
+          "type": "integer",
+          "description": "Total number of teams the user is a member of."
+        },
+        "teams_with_roles": {
+          "type": "array",
+          "description": "Detailed list of teams the user belongs to, including roles within those teams.",
+          "items": {
+            "$ref": "#/definitions/team"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "provider",
+    "email",
+    "first_name",
+    "last_name",
+    "status",
+    "last_login_time"
+  ],
+  "definitions": {
+    "team": {
+      "type": "object",
+      "description": "Represents a team within the system.",
+      "properties": {
+        "ID": {
+          "$ref": "../../../core.json#/definitions/uuid",
+          "description": "Unique identifier for the team."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the team."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the team."
+        },
+        "owner": {
+          "$ref": "../../../core.json#/definitions/uuid",
+          "description": "User ID of the team owner."
+        },
+        "created_at": {
+          "$ref": "../../../core.json#/definitions/time",
+          "description": "Timestamp when the team was created."
+        },
+        "updated_at": {
+          "$ref": "../../../core.json#/definitions/time",
+          "description": "Timestamp when the team was last updated."
+        },
+        "deleted_at": {
+          "$ref": "../../../core.json#/definitions/time",
+          "description": "Timestamp when the team was soft-deleted."
+        }
+      },
+      "required": [
+        "ID",
+        "name"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

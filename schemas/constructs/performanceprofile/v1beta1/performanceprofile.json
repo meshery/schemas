@@ -1,0 +1,58 @@
+{
+  "properties": {
+    "id": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/id"
+    },
+    "name": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/text"
+    },
+    "user_id": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/id"
+    },
+    "schedule": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/id"
+    },
+    "load_generators": {
+      "type": "string"
+    },
+    "endpoints": {
+      "type": "string"
+    },
+    "service_mesh": {
+      "type": "string"
+    },
+    "concurrent_request": {
+      "type": "integer"
+    },
+    "qps": {
+      "type": "integer"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "last_run": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/time"
+    },
+    "total_results": {
+      "type": "integer"
+    },
+    "request_headers": {
+      "type": "string"
+    },
+    "request_cookies": {
+      "type": "string"
+    },
+    "request_body": {
+      "type": "string"
+    },
+    "metadata": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/map_object"
+    },
+    "created_at": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/time"
+    },
+    "updated_at": {
+      "$ref": "../../../v1alpha1/core/openapi.yml#/components/schemas/time"
+    }
+  }
+}
