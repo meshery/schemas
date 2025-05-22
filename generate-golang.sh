@@ -73,6 +73,7 @@ generate_schema_models "feature" "v1beta1"
 generate_schema_models "evaluation" "v1beta1"
 generate_schema_models "workspace" "v1beta1"
 generate_schema_models "environment" "v1beta1"
+generate_schema_models "user" "v1beta1"
 
 
 v1beta1="schemas/constructs/v1beta1"
@@ -94,6 +95,7 @@ npx @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/environment/${merged_construct}" \
      "${v1alpha2}/catalog/${merged_construct}" \
      "${v1beta1}/evaluation/${merged_construct}" \
+     "${v1beta1}/user/${merged_construct}" \
  -o schemas/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
 
 node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/cloud_openapi.yml cloud
