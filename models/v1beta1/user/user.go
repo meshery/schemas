@@ -45,18 +45,18 @@ type Panel = map[string]interface{}
 
 // Preference defines model for Preference.
 type Preference struct {
-	AnonymousPerfResults              *bool                   `json:"anonymousPerfResults,omitempty" yaml:"anonymousPerfResults,omitempty"`
-	AnonymousUsageStats               *bool                   `json:"anonymousUsageStats,omitempty" yaml:"anonymousUsageStats,omitempty"`
-	DashboardPreferences              *map[string]interface{} `json:"dashboardPreferences,omitempty" yaml:"dashboardPreferences,omitempty"`
+	AnonymousPerfResults              bool                    `json:"anonymousPerfResults" yaml:"anonymousPerfResults"`
+	AnonymousUsageStats               bool                    `json:"anonymousUsageStats" yaml:"anonymousUsageStats"`
+	DashboardPreferences              map[string]interface{}  `json:"dashboardPreferences" yaml:"dashboardPreferences"`
 	Grafana                           *Grafana                `json:"grafana,omitempty" yaml:"grafana,omitempty"`
 	LoadTestPrefs                     *LoadTestPreferences    `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
 	MeshAdapters                      *[]Adapter              `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
 	Prometheus                        *Prometheus             `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
 	RemoteProviderPreferences         *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
-	SelectedOrganizationID            *string                 `json:"selectedOrganizationID,omitempty" yaml:"selectedOrganizationID,omitempty"`
-	SelectedWorkspaceForOrganizations *map[string]string      `json:"selectedWorkspaceForOrganizations,omitempty" yaml:"selectedWorkspaceForOrganizations,omitempty"`
+	SelectedOrganizationID            string                  `json:"selectedOrganizationID" yaml:"selectedOrganizationID"`
+	SelectedWorkspaceForOrganizations map[string]string       `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`
 	UpdatedAt                         *time.Time              `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	UsersExtensionPreferences         *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`
+	UsersExtensionPreferences         map[string]interface{}  `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
 }
 
 // Prometheus defines model for Prometheus.
