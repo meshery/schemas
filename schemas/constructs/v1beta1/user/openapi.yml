@@ -1,0 +1,110 @@
+openapi: 3.0.3
+info:
+  title: Preference Schema
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    Preference:
+      type: object
+      properties:
+        meshAdapters:
+          type: array
+          items:
+            x-go-type: Adapter
+            $ref: "#/components/schemas/Adapter"
+        grafana:
+          x-go-type: Grafana
+          $ref: "#/components/schemas/Grafana"
+        prometheus:
+          x-go-type: Prometheus
+          $ref: "#/components/schemas/Prometheus"
+        loadTestPrefs:
+          x-go-type: LoadTestPreferences
+          $ref: "#/components/schemas/LoadTestPreferences"
+        anonymousUsageStats:
+          type: boolean
+        anonymousPerfResults:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+        dashboardPreferences:
+          type: object
+          additionalProperties: true
+        selectedOrganizationID:
+          type: string
+        selectedWorkspaceForOrganizations:
+          type: object
+          additionalProperties:
+            type: string
+        usersExtensionPreferences:
+          type: object
+          additionalProperties: true
+        remoteProviderPreferences:
+          type: object
+          additionalProperties: true
+
+    Adapter:
+      type: object
+      description: Placeholder for Adapter struct definition.
+
+    Grafana:
+      type: object
+      properties:
+        grafanaURL:
+          type: string
+        grafanaAPIKey:
+          type: string
+        selectedBoardsConfigs:
+          type: array
+          items:
+            $ref: "#/components/schemas/SelectedGrafanaConfig"
+
+    SelectedGrafanaConfig:
+      type: object
+      properties:
+        board:
+          $ref: "#/components/schemas/GrafanaBoard"
+        panels:
+          type: array
+          items:
+            $ref: "#/components/schemas/Panel"
+        templateVars:
+          type: array
+          items:
+            type: string
+
+    GrafanaBoard:
+      type: object
+      description: Placeholder for GrafanaBoard definition (define fields as needed)
+
+    Panel:
+      type: object
+      description: Grafana panel structure imported from github.com/grafana-tools/sdk
+
+    Prometheus:
+      type: object
+      properties:
+        prometheusURL:
+          type: string
+        selectedPrometheusBoardsConfigs:
+          type: array
+          items:
+            $ref: "#/components/schemas/SelectedGrafanaConfig"
+
+    LoadTestPreferences:
+      type: object
+      properties:
+        c:
+          type: integer
+          description: Concurrent requests
+        qps:
+          type: integer
+          description: Queries per second
+        t:
+          type: string
+          description: Duration
+        gen:
+          type: string
+          description: Load generator
