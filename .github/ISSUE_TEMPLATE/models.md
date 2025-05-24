@@ -23,7 +23,7 @@ assignees: ''
 
 - 📚 [Models](https://docs.meshery.io/concepts/logical/models)
   - 📚 [Components](https://docs.meshery.io/concepts/logical/components)
-  - 📚 [Relationships](https://docs.meshery.io/concepts/logical/components)
+  - 📚 [Relationships](https://docs.meshery.io/concepts/logical/relationships)
 - 👨‍💻[Models Repository](https://github.com/meshery/meshery/tree/master/server/meshmodel)
 
  ### Contributing to Meshery Models
