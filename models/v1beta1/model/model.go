@@ -61,6 +61,9 @@ const (
 	Vee                  ModelDefinitionMetadataShape = "vee"
 )
 
+// PlatformVersion Version of the platform for which the model is intended (e.g., Kubernetes v1.31).
+type PlatformVersion = string
+
 // ImportBody defines model for ImportBody.
 type ImportBody struct {
 	union json.RawMessage
@@ -151,7 +154,7 @@ type ImportRequestUploadType string
 
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {
-	// Version Version of the model as defined by the registrant.
+	// Version Version of the platform for which the model is intended (e.g., Kubernetes v1.31).
 	Version string `json:"version" yaml:"version"`
 }
 
@@ -163,7 +166,7 @@ type ModelDefinition struct {
 	// SchemaVersion Specifies the version of the schema used for the definition.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
 
-	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+	// Version Version of the model definition.
 	Version string `json:"version" yaml:"version"`
 
 	// Name The unique name for the model within the scope of a registrant.
@@ -202,7 +205,7 @@ type ModelDefinition struct {
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 	Model struct {
-		// Version Version of the model as defined by the registrant.
+		// Version Version of the platform for which the model is intended (e.g., Kubernetes v1.31).
 		Version string `json:"version" yaml:"version"`
 	} `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
 
@@ -251,6 +254,18 @@ type ModelDefinition_Metadata struct {
 	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
 	Shape                *ModelDefinitionMetadataShape `json:"shape,omitempty" yaml:"shape,omitempty"`
 	AdditionalProperties map[string]interface{}        `json:"-" yaml:"-"`
+}
+
+// ModelIdentifier Identifier for the model, used to uniquely identify a model in the system.
+type ModelIdentifier struct {
+	// PlatformVersion Version of the platform for which the model is intended (e.g., Kubernetes v1.31).
+	PlatformVersion *string `json:"version" yaml:"version"`
+
+	// Name The unique name for the model within the scope of a registrant.
+	Name string `json:"name" yaml:"name"`
+
+	// Version Version of the model definition.
+	Version string `json:"version" yaml:"version"`
 }
 
 // Getter for additional properties for ModelDefinition_Metadata. Returns the specified
