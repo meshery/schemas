@@ -123,8 +123,8 @@ type ComponentDefinition struct {
 	// Format Format specifies the format used in the `component.schema` field. JSON is the default.
 	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
 
-	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	Model model.ModelDefinition `gorm:"foreignKey:ModelId;references:Id" json:"model" yaml:"model"`
+	// Model Identifier for the model, used to uniquely identify a model in the system.
+	Model model.ModelIdentifier `gorm:"foreignKey:ModelId;references:Id" json:"model" yaml:"model"`
 
 	// Styles Visualization styles for a component
 	Styles *ComponentDefinition_Styles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`

@@ -4,6 +4,27 @@
   "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
   "additionalProperties": false,
   "type": "object",
+  
+  "definitions": {
+      "name": {
+        "type": "string",
+        "description": "The unique name for the model within the scope of a registrant.",
+        "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+        "pattern": "^[a-z0-9-]+$",
+        "examples": [
+          "cert-manager"
+        ],
+        "default": "untitled-model"
+      },
+      
+      "version": {
+        "type": "string",
+        "description": "Version of the model definition.",
+        "$ref": "../../core.json#/definitions/semverString",
+        "default": "v1.0.0"
+      }
+  }, 
+  
   "properties": {
     "id": {
       "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
@@ -25,9 +46,8 @@
       "default": "v1beta1"
     },
     "version": {
-      "description": "Version of the model definition.",
-      "type": "string",
-      "$ref": "../../core.json#/definitions/semverString",
+      
+      "$ref": "#/definitions/version",
       "x-order": 3,
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
@@ -35,13 +55,7 @@
       }
     },
     "name": {
-      "type": "string",
-      "description": "The unique name for the model within the scope of a registrant.",
-      "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
-      "pattern": "^[a-z0-9-]+$",
-      "examples": [
-        "cert-manager"
-      ],
+      "$ref": "#/definitions/name", 
       "x-order": 4,
       "x-oapi-codegen-extra-tags": {
         "yaml": "name",
