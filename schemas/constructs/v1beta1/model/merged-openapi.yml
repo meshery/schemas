@@ -176,6 +176,60 @@
   },
   "components": {
     "schemas": {
+      "ModelIdentifier": {
+        "type": "object",
+        "description": "Identifier for the model, used to uniquely identify a model in the system.",
+        "required": [
+          "name",
+          "version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The unique name for the model within the scope of a registrant.",
+            "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+            "pattern": "^[a-z0-9-]+$",
+            "examples": [
+              "cert-manager"
+            ],
+            "default": "untitled-model"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version of the model definition.",
+            "default": "v1.0.0",
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+          },
+          "platform_version": {
+            "type": "string",
+            "description": "Version of the platform for which the model is intended (e.g., Kubernetes v1.31).",
+            "x-oapi-codegen-extra-tags": {
+              "yaml": "version",
+              "json": "version"
+            },
+            "x-order": 2,
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+            "default": "v0.0.1"
+          }
+        }
+      },
+      "PlatformVersion": {
+        "type": "string",
+        "description": "Version of the platform for which the model is intended (e.g., Kubernetes v1.31).",
+        "x-oapi-codegen-extra-tags": {
+          "yaml": "version",
+          "json": "version"
+        },
+        "x-order": 2,
+        "minLength": 5,
+        "maxLength": 100,
+        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+        "default": "v0.0.1"
+      },
       "Model": {
         "type": "object",
         "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
@@ -184,22 +238,17 @@
         ],
         "properties": {
           "version": {
-            "description": "Version of the model as defined by the registrant.",
-            "allOf": [
-              {
-                "type": "string",
-                "minLength": 5,
-                "maxLength": 100,
-                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                "default": "v0.0.1"
-              }
-            ],
+            "type": "string",
+            "description": "Version of the platform for which the model is intended (e.g., Kubernetes v1.31).",
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",
               "json": "version"
             },
-            "x-order": 1
+            "x-order": 2,
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+            "default": "v0.0.1"
           }
         }
       },
@@ -209,6 +258,26 @@
         "description": "Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.",
         "additionalProperties": false,
         "type": "object",
+        "definitions": {
+          "name": {
+            "type": "string",
+            "description": "The unique name for the model within the scope of a registrant.",
+            "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+            "pattern": "^[a-z0-9-]+$",
+            "examples": [
+              "cert-manager"
+            ],
+            "default": "untitled-model"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version of the model definition.",
+            "default": "v1.0.0",
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+          }
+        },
         "properties": {
           "id": {
             "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
@@ -246,11 +315,11 @@
           },
           "version": {
             "type": "string",
+            "description": "Version of the model definition.",
+            "default": "v1.0.0",
             "minLength": 5,
             "maxLength": 100,
             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-            "default": "v0.0.1",
             "x-order": 3,
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",
@@ -265,12 +334,12 @@
             "examples": [
               "cert-manager"
             ],
+            "default": "untitled-model",
             "x-order": 4,
             "x-oapi-codegen-extra-tags": {
               "yaml": "name",
               "json": "name"
-            },
-            "default": "untitled-model"
+            }
           },
           "displayName": {
             "description": "Human-readable name for the model.",
@@ -699,11 +768,11 @@
                       ]
                     },
                     "version": {
+                      "description": "Version of the capability definition.",
                       "type": "string",
                       "minLength": 5,
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
                       "default": "v0.0.1"
                     },
                     "displayName": {
@@ -964,22 +1033,17 @@
             ],
             "properties": {
               "version": {
-                "description": "Version of the model as defined by the registrant.",
-                "allOf": [
-                  {
-                    "type": "string",
-                    "minLength": 5,
-                    "maxLength": 100,
-                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                    "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                    "default": "v0.0.1"
-                  }
-                ],
+                "type": "string",
+                "description": "Version of the platform for which the model is intended (e.g., Kubernetes v1.31).",
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "version",
                   "json": "version"
                 },
-                "x-order": 1
+                "x-order": 2,
+                "minLength": 5,
+                "maxLength": 100,
+                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                "default": "v0.0.1"
               }
             }
           },
