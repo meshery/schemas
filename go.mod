@@ -9,7 +9,7 @@ require (
 	github.com/meshery/meshkit v0.8.31
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
-	gorm.io/gorm v1.25.12
+	gorm.io/gorm v1.30.0
 )
 
 require (
