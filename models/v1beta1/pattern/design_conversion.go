@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid"
-	"github.com/layer5io/meshkit/utils"
+	"github.com/meshery/meshkit/utils"
 	"github.com/meshery/schemas/models/conversion"
 	"github.com/meshery/schemas/models/v1alpha2"
 	"github.com/meshery/schemas/models/v1alpha3/relationship"
