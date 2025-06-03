@@ -83,7 +83,7 @@ v1alpha2="schemas/constructs/v1alpha2"
 # version,construct
 # returns the {version}+{construct}+{merged_construct}
 
-# generate bundle for layer5 cloud
+# generate bundle for meshery cloud
 npx @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/pattern/${merged_construct}" \
      "${v1beta1}/component/${merged_construct}" \

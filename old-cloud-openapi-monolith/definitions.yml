@@ -210,7 +210,7 @@ components:
           description: |
             A summary/receipt of event that occured.
           type: string
-          example: “Prometheus” pattern deployed in K8s ctx “Layer5 Cloud”.
+          example: “Prometheus” pattern deployed in K8s ctx “Meshery Cloud”.
           x-oapi-codegen-extra-tags:
             db: description
 
@@ -1102,7 +1102,7 @@ components:
           description: |
             A summary/receipt of event that occured.
           type: string
-          example: “Prometheus” pattern deployed in K8s ctx “Layer5 Cloud”.
+          example: “Prometheus” pattern deployed in K8s ctx "Meshery Cloud”.
           x-oapi-codegen-extra-tags:
             db: description
         first_name:

@@ -9,17 +9,17 @@ const schema = {
     "title": "workspace",
     "description": "Documentation for meshery Cloud REST APIs",
     "contact": {
-      "email": "support@layer5.io"
+      "email": "maintainers@meshery.io"
     },
     "version": "v0.6.394"
   },
   "servers": [
     {
-      "url": "https://cloud.layer5.io",
+      "url": "https://cloud.meshery.io",
       "description": "Meshery Cloud production server URL"
     },
     {
-      "url": "https://staging-cloud.layer5.io",
+      "url": "https://staging-cloud.meshery.io",
       "description": "Meshery Cloud staging server URL"
     },
     {

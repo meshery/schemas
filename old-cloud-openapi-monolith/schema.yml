@@ -1,17 +1,17 @@
 openapi: 3.1.0
 info:
-  title: Layer5 Cloud
-  description: Documentation for Layer5 Cloud REST APIs
+  title: Meshery Playground
+  description: Documentation for Meshery Cloud REST APIs
   contact:
-    email: support@layer5.io
+    email: support@meshery.io
   version: v0.8.219
 servers:
-  - url: https://cloud.layer5.io
-    description: Layer5 Cloud production server URL
-  - url: https://staging-cloud.layer5.io
-    description: Layer5 Cloud staging server URL
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-playground.meshery.io
+    description: Meshery Cloud staging server URL
   - url: http://localhost:9876
-    description: Layer5 Cloud development server URL (controlled via PORT environment variable)
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
 tags:
   - name: users
     description: User Management
@@ -1076,21 +1076,21 @@ components:
           schema:
             $ref: ./definitions.yml#/components/schemas/signupData
     connectionPayload:
-      description: Body for registering with Layer5 Cloud
+      description: Body for registering with Meshery Cloud
       required: true
       content:
         application/json:
           schema:
             $ref: ./definitions.yml#/components/schemas/connectionPayload
     mesheryInstance:
-      description: Body for updating connection of kind Meshery with Layer5 Cloud
+      description: Body for updating connection of kind Meshery with Meshery Cloud
       required: true
       content:
         application/json:
           schema:
             $ref: ./definitions.yml#/components/schemas/mesheryInstance
     plan:
-      description: Body for upserting plan of kind Meshery with Layer5 Cloud
+      description: Body for upserting plan of kind Meshery with Meshery Cloud
       required: true
       content:
         application/json:
@@ -2682,7 +2682,7 @@ paths:
       description: Meshery Git version and CommitSHA
       responses:
         '200':
-          description: Layer5 Cloud Version
+          description: Meshery Cloud Version
           content:
             application/json:
               schema:
@@ -3772,7 +3772,7 @@ paths:
         - integrations
       operationId: RegisterConnection
       summary: Register Connection
-      description: Register with Layer5 Cloud
+      description: Register with Meshery Cloud
       requestBody:
         $ref: '#/components/requestBodies/connectionPayload'
       responses:

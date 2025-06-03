@@ -15,6 +15,6 @@ links:
   - name: website
     url: https://meshery.io/
   - name: support
-    url: https://discuss.layer5.io/
+    url: https://discuss.meshery.io/
 provider:
   name: meshery-maintainers

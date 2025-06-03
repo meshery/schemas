@@ -5,10 +5,10 @@
 <img src="https://raw.githubusercontent.com/meshery/meshery/master/.github/assets/images/readme/meshery-logo-dark-text-side.svg"
 alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 <p align="center">
-<a href="https://hub.docker.com/r/layer5/meshery" alt="Docker pulls">
-  <img src="https://img.shields.io/docker/pulls/layer5/meshery.svg" /></a>
-<a href="https://github.com/issues?q=is%3Aopen+is%3Aissue+archived%3Afalse+org%3Alayer5io+org%3Ameshery+org%3Aservice-mesh-performance+org%3Aservice-mesh-patterns+org%3A+label%3A%22help+wanted%22+" alt="GitHub issues by-label">
-  <img src="https://img.shields.io/github/issues/layer5io/meshery/help%20wanted.svg?color=informational" /></a>
+<a href="https://hub.docker.com/r/meshery/meshery" alt="Docker pulls">
+  <img src="https://img.shields.io/docker/pulls/meshery/meshery.svg" /></a>
+<a href="https://github.com/issues?q=is%3Aopen+is%3Aissue+archived%3Afalse+org%meshery+org%3Ameshery+org%3Aservice-mesh-performance+org%3Aservice-mesh-patterns+org%3A+label%3A%22help+wanted%22+" alt="GitHub issues by-label">
+  <img src="https://img.shields.io/github/issues/meshery/meshery/help%20wanted.svg?color=informational" /></a>
 <a href="https://github.com/meshery/meshery/blob/master/LICENSE" alt="LICENSE">
   <img src="https://img.shields.io/github/license/meshery/meshery?color=brightgreen" /></a>
 <a href="https://artifacthub.io/packages/helm/meshery/meshery" alt="Artifact Hub Meshery">
@@ -20,9 +20,9 @@ alt="Meshery Logo" width="70%" /></picture></a><br /><br /></p>
 <a href="https://bestpractices.coreinfrastructure.org/projects/3564" alt="CLI Best Practices">
   <img src="https://bestpractices.coreinfrastructure.org/projects/3564/badge" /></a>
 <a href="http://discuss.meshery.io" alt="Discuss Users">
-  <img src="https://img.shields.io/discourse/users?label=discuss&logo=discourse&server=https%3A%2F%2Fdiscuss.layer5.io" /></a>
+  <img src="https://img.shields.io/discourse/users?label=discuss&logo=discourse&server=https%3A%2F%2Fdiscuss.meshery.io" /></a>
 <a href="https://slack.meshery.io" alt="Join Slack">
-  <img src="https://img.shields.io/badge/Slack-@layer5.svg?logo=slack" /></a>
+  <img src="https://img.shields.io/badge/Slack-@meshery.svg?logo=slack" /></a>
 <a href="https://twitter.com/intent/follow?screen_name=mesheryio" alt="Twitter Follow">
   <img src="https://img.shields.io/twitter/follow/mesheryio.svg?label=Follow+Meshery&style=social" /></a>
 <a href="https://github.com/meshery/meshery/releases" alt="Meshery Downloads">
@@ -57,10 +57,9 @@ For an explanation of Meshery's terminology regarding schemas, definitions, decl
 ## Join the Meshery community!
 
 <a name="contributing"></a><a name="community"></a>
-Our projects are community-built and welcome collaboration. 👍 Be sure to see the <a href="https://docs.meshery.io/project/contributing#not-sure-where-to-start">Contributor Welcome Guide</a> and <a href="https://meshery.io/community#handbook">Community Handbook</a> for a tour of resources available to you and the <a href="https://layer5.io/community/handbook/repository-overview">Repository Overview</a> for a cursory description of repository by technology and programming language. Jump into community <a href="https://slack.meshery.io">Slack</a> or <a href="https://meshery.io/community#discussion-forums">discussion forum</a> to participate.
+Our projects are community-built and welcome collaboration. 👍 Be sure to see the <a href="https://docs.meshery.io/project/contributing#not-sure-where-to-start">Contributor Welcome Guide</a> and <a href="https://meshery.io/community#handbook">Community Handbook</a> for a tour of resources available to you. Jump into community <a href="https://slack.meshery.io">Slack</a> or <a href="https://meshery.io/community#discussion-forums">discussion forum</a> to participate.
 
 <p style="clear:both;">
-<a href ="https://meshery.io/community"><img alt="MeshMates" src=".github/assets/images/readme/layer5-community-sign.png" style="margin-right:36px; margin-bottom:7px;" width="140px" align="left" /></a>
 <h3>Find your MeshMate</h3>
 
 <p>MeshMates are experienced community members, who will help you learn your way around, discover live projects, and expand your community network. Connect with a Meshmate today!</p>
@@ -77,13 +76,13 @@ Find out more on the <a href="https://meshery.io/community#meshmates">Meshery co
 <p>
 ✔️ <em><strong>Join</strong></em> any or all of the weekly meetings on <a href="https://meshery.io/calendar">community calendar</a>.<br />
 ✔️ <em><strong>Watch</strong></em> community <a href="https://www.youtube.com/@mesheryio?sub_confirmation=1">meeting recordings</a>.<br />
-✔️ <em><strong>Fill-in</strong></em> a <a href="https://layer5.io/newcomers">community member form</a> to gain access to community resources.
+✔️ <em><strong>Fill-in</strong></em> a <a href="https://meshery.io/newcomers">community member form</a> to gain access to community resources.
 <br />
 ✔️ <em><strong>Discuss</strong></em> in the <a href="https://meshery.io/community#discussion-forums">Community Forum</a>.<br />
 ✔️ <em><strong>Explore more</strong></em> in the <a href="https://meshery.io/community#handbook">Community Handbook</a>.<br />
 </p>
 <p align="center">
-<i>Not sure where to start?</i> Grab an open issue with the <a href="https://github.com/issues?q=is%3Aopen+is%3Aissue+archived%3Afalse+org%3Alayer5io+org%3Ameshery+org%3Ameshery-extensions+org%3Aservice-mesh-performance+org%3Aservice-mesh-patterns+label%3A%22help+wanted%22">help-wanted label</a>.
+<i>Not sure where to start?</i> Grab an open issue with the <a href="https://github.com/issues?q=is%3Aopen+is%3Aissue+archived%3Afalse+org%meshery+org%3Ameshery+org%3Ameshery-extensions+org%3Aservice-mesh-performance+org%3Aservice-mesh-patterns+label%3A%22help+wanted%22">help-wanted label</a>.
 </p>
 </div>
 <div>&nbsp;</div>
@@ -168,7 +167,7 @@ make build
 1. **Bundles OpenAPI schemas** for:
 
    * Meshery
-   * Remote Providers (e.g. Layer5 Cloud)
+   * Remote Providers (e.g. Meshery Cloud)
    * Combined (all constructs)
    
 2. **Generates:**
@@ -189,7 +188,7 @@ After running `make build`, three bundled schema files are created:
 | File                 | Purpose                                        |
 | -------------------- | ---------------------------------------------- |
 | `merged_schema.yml`  | All schemas combined (used by Meshery clients) |
-| `cloud_schema.yml`   | Cloud-specific APIs for Remote Providers (e.g. Layer5 Cloud) |
+| `cloud_schema.yml`   | Cloud-specific APIs for Remote Providers (e.g. Meshery Cloud) |
 | `meshery_schema.yml` | Meshery-specific APIs                          |
 
 ---
@@ -272,7 +271,7 @@ Before using the generated RTK clients, ensure you have:
 
 1. Installed the required dependencies:
    - `@reduxjs/toolkit`
-   - `@layer5/schemas`
+   - `@meshery/schemas`
 
 2. Set up environment variables:
    - `RTK_CLOUD_ENDPOINT_PREFIX`: Base URL for Cloud API endpoints
@@ -286,11 +285,11 @@ To avoid cyclical imports that can break your application, import API slices fro
 
 ```javascript
 // ✅ Correct: Import from specific API exports
-import { cloudApi as cloudBaseApi } from "@layer5/schemas/dist/cloudApi";
-import { mesheryApi } from "@layer5/schemas/dist/mesheryApi";
+import { cloudApi as cloudBaseApi } from "@meshery/schemas/dist/cloudApi";
+import { mesheryApi } from "@meshery/schemas/dist/mesheryApi";
 
 // ❌ Incorrect: Do not import directly from generic API file
-// import { api } from "@layer5/schemas/dist/api"; // Can cause cyclical imports
+// import { api } from "@meshery/schemas/dist/api"; // Can cause cyclical imports
 ```
 
 ### Configure Redux Store
@@ -299,7 +298,7 @@ Add the API reducers and middleware to your Redux store configuration:
 
 ```javascript
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { cloudApi as cloudBaseApi } from "@layer5/schemas/dist/cloudApi";
+import { cloudApi as cloudBaseApi } from "@meshery/schemas/dist/cloudApi";
 import catalogReducer from "./slices/catalog";
 import connectionReducer from "./slices/connection";
 import organizationReducer from "./slices/organization";
@@ -350,7 +349,7 @@ import {
   useCreateDesignMutation,
   useGetDesignsQuery,
   // Other cloud API hooks...
-} from "@layer5/schemas/dist/cloudApi";
+} from "@meshery/schemas/dist/cloudApi";
 
 function MyComponent() {
   // Use hooks directly in your components
@@ -380,7 +379,7 @@ import {
   useGetMeshModelsQuery,
   useSubmitMeshConfigMutation,
   // Other Meshery API hooks...
-} from "@layer5/schemas/dist/mesheryApi";
+} from "@meshery/schemas/dist/mesheryApi";
 
 function MesheryComponent() {
   const { data: meshModels } = useGetMeshModelsQuery();

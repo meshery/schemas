@@ -3,12 +3,12 @@ info:
   title: Meshery Server
   description: Documentation for Meshery Server REST APIs
   contact:
-    email: support@layer5.io
+    email: maintainers@meshery.io
   version: v0.6.394
 servers:
   - url: https://playground.meshery.io
     description: Meshery Playground server URL
-  - url: https://staging-cloud.layer5.io
+  - url: https://staging-cloud.meshery.io
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
     description: >
