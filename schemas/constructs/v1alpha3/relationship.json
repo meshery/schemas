@@ -2,14 +2,7 @@
   "$id": "https://schemas.meshery.io/relationship.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
-  "required": [
-    "schemaVersion",
-    "version",
-    "model",
-    "kind",
-    "type",
-    "subType"
-  ],
+  "required": ["schemaVersion", "version", "model", "kind", "type", "subType"],
   "additionalProperties": false,
   "type": "object",
   "properties": {
@@ -32,12 +25,7 @@
       "minLength": 2,
       "maxLength": 100,
       "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-      "example": [
-        "v1",
-        "v1alpha1",
-        "v2beta3",
-        "v1.custom-suffix"
-      ],
+      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
@@ -85,12 +73,7 @@
           "minLength": 2,
           "maxLength": 100,
           "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-          "example": [
-            "v1",
-            "v1alpha1",
-            "v2beta3",
-            "v1.custom-suffix"
-          ]
+          "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
         },
         "version": {
           "description": "Version of the model definition.",
@@ -136,11 +119,7 @@
         "status": {
           "type": "string",
           "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-          "enum": [
-            "ignored",
-            "enabled",
-            "duplicate"
-          ],
+          "enum": ["ignored", "enabled", "duplicate"],
           "x-oapi-codegen-extra-tags": {
             "yaml": "status",
             "json": "status"
@@ -157,11 +136,7 @@
           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
           "additionalProperties": false,
           "type": "object",
-          "required": [
-            "kind",
-            "type",
-            "status"
-          ],
+          "required": ["kind", "type", "status"],
           "properties": {
             "id": {
               "description": "ID",
@@ -360,15 +335,7 @@
                 "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                 "additionalProperties": false,
                 "type": "object",
-                "required": [
-                  "schemaVersion",
-                  "version",
-                  "displayName",
-                  "kind",
-                  "type",
-                  "entityState",
-                  "status"
-                ],
+                "required": ["schemaVersion", "version", "displayName", "kind", "type", "entityState", "status"],
                 "x-oapi-codegen-extra-tags": {
                   "gorm": "type:bytes;serializer:json"
                 },
@@ -379,12 +346,7 @@
                     "minLength": 2,
                     "maxLength": 100,
                     "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                    "example": [
-                      "v1",
-                      "v1alpha1",
-                      "v2beta3",
-                      "v1.custom-suffix"
-                    ],
+                    "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "schemaVersion",
                       "json": "schemaVersion"
@@ -512,10 +474,7 @@
                     "type": "array",
                     "items": {
                       "type": "string",
-                      "enum": [
-                        "declaration",
-                        "instance"
-                      ],
+                      "enum": ["declaration", "instance"],
                       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                       "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
                       "x-oapi-codegen-extra-tags": {
@@ -528,10 +487,7 @@
                     "type": "string",
                     "description": "Status of the capability",
                     "default": "enabled",
-                    "enum": [
-                      "enabled",
-                      "disabled"
-                    ],
+                    "enum": ["enabled", "disabled"],
                     "x-oapi-codegen-extra-tags": {
                       "yaml": "status",
                       "json": "status"
@@ -613,9 +569,7 @@
         "model": {
           "type": "object",
           "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-          "required": [
-            "version"
-          ],
+          "required": ["version"],
           "properties": {
             "version": {
               "description": "Version of the model as defined by the registrant.",
@@ -634,20 +588,11 @@
           }
         }
       },
-      "required": [
-        "name",
-        "version",
-        "registrant",
-        "category"
-      ]
+      "required": ["name", "version", "registrant", "category"]
     },
     "kind": {
       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
-      "enum": [
-        "hierarchical",
-        "edge",
-        "sibling"
-      ],
+      "enum": ["hierarchical", "edge", "sibling"],
       "type": "string",
       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
       "x-oapi-codegen-extra-tags": {
@@ -679,13 +624,7 @@
       "type": "string",
       "description": "Status of the relationship.",
       "default": "enabled",
-      "enum": [
-        "pending",
-        "approved",
-        "ignored",
-        "enabled",
-        "deleted"
-      ],
+      "enum": ["pending", "approved", "ignored", "enabled", "deleted"],
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
         "json": "status"
@@ -709,15 +648,7 @@
         "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "schemaVersion",
-          "version",
-          "displayName",
-          "kind",
-          "type",
-          "entityState",
-          "status"
-        ],
+        "required": ["schemaVersion", "version", "displayName", "kind", "type", "entityState", "status"],
         "x-oapi-codegen-extra-tags": {
           "gorm": "type:bytes;serializer:json"
         },
@@ -728,12 +659,7 @@
             "minLength": 2,
             "maxLength": 100,
             "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-            "example": [
-              "v1",
-              "v1alpha1",
-              "v2beta3",
-              "v1.custom-suffix"
-            ],
+            "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
             "x-oapi-codegen-extra-tags": {
               "yaml": "schemaVersion",
               "json": "schemaVersion"
@@ -827,10 +753,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": [
-                "declaration",
-                "instance"
-              ],
+              "enum": ["declaration", "instance"],
               "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
               "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
               "x-oapi-codegen-extra-tags": {
@@ -843,10 +766,7 @@
             "type": "string",
             "description": "Status of the capability",
             "default": "enabled",
-            "enum": [
-              "enabled",
-              "disabled"
-            ],
+            "enum": ["enabled", "disabled"],
             "x-oapi-codegen-extra-tags": {
               "yaml": "status",
               "json": "status"
@@ -870,7 +790,7 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
-      "additionalProperties" : true ,
+      "additionalProperties": true,
       "x-oapi-codegen-extra-tags": {
         "gorm": "foreignKey:ModelId;references:Id"
       },
@@ -886,14 +806,14 @@
         },
 
         "isAnnotation": {
-              "type": "boolean",
-              "description": "Indicates whether the relationship should be treated as a logical representation only",
-              "x-oapi-codegen-extra-tags": {
-                "yaml": "isAnnotation",
-                "json": "isAnnotation"
-              },
-              "default": false
-            },    
+          "type": "boolean",
+          "description": "Indicates whether the relationship should be treated as a logical representation only",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "isAnnotation",
+            "json": "isAnnotation"
+          },
+          "default": false
+        },
         "styles": {
           "anyOf": [
             {
@@ -904,11 +824,7 @@
                   "type": "object",
                   "description": "Common styles for all entities",
                   "additionalProperties": false,
-                  "required": [
-                    "primaryColor",
-                    "svgColor",
-                    "svgWhite"
-                  ],
+                  "required": ["primaryColor", "svgColor", "svgWhite"],
                   "properties": {
                     "primaryColor": {
                       "type": "string",
@@ -959,11 +875,7 @@
                     "text-transform": {
                       "type": "string",
                       "description": "A transformation to apply to the label text",
-                      "enum": [
-                        "none",
-                        "uppercase",
-                        "lowercase"
-                      ]
+                      "enum": ["none", "uppercase", "lowercase"]
                     },
                     "opacity": {
                       "type": "number",
@@ -991,14 +903,7 @@
                       "type": "string",
                       "description": "The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.",
                       "default": "straight",
-                      "enum": [
-                        "straight",
-                        "haystack",
-                        "bezier",
-                        "unbundled-bezier",
-                        "segments",
-                        "taxi"
-                      ]
+                      "enum": ["straight", "haystack", "bezier", "unbundled-bezier", "segments", "taxi"]
                     },
                     "line-color": {
                       "type": "string",
@@ -1007,20 +912,12 @@
                     "line-style": {
                       "type": "string",
                       "description": "The style of the edge’s line.",
-                      "enum": [
-                        "solid",
-                        "dotted",
-                        "dashed"
-                      ]
+                      "enum": ["solid", "dotted", "dashed"]
                     },
                     "line-cap": {
                       "type": "string",
                       "description": "The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
-                      "enum": [
-                        "butt",
-                        "round",
-                        "square"
-                      ],
+                      "enum": ["butt", "round", "square"],
                       "default": "butt"
                     },
                     "line-opacity": {
@@ -1055,10 +952,7 @@
                     "target-arrow-fill": {
                       "type": "string",
                       "description": "The fill state of the edge’s source arrow",
-                      "enum": [
-                        "filled",
-                        "hollow"
-                      ]
+                      "enum": ["filled", "hollow"]
                     },
                     "mid-target-arrow-color": {
                       "type": "string",
@@ -1085,10 +979,7 @@
                     "mid-target-arrow-fill": {
                       "type": "string",
                       "description": "The fill state of the edge’s source arrow",
-                      "enum": [
-                        "filled",
-                        "hollow"
-                      ]
+                      "enum": ["filled", "hollow"]
                     },
                     "arrow-scale": {
                       "type": "number",
@@ -1111,11 +1002,7 @@
               "type": "object",
               "description": "Common styles for all entities",
               "additionalProperties": false,
-              "required": [
-                "primaryColor",
-                "svgColor",
-                "svgWhite"
-              ],
+              "required": ["primaryColor", "svgColor", "svgWhite"],
               "properties": {
                 "primaryColor": {
                   "type": "string",
@@ -1166,11 +1053,7 @@
                 "text-transform": {
                   "type": "string",
                   "description": "A transformation to apply to the label text",
-                  "enum": [
-                    "none",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["none", "uppercase", "lowercase"]
                 },
                 "opacity": {
                   "type": "number",
@@ -1208,17 +1091,12 @@
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
-        "required": [
-          "allow"
-        ],
+        "required": ["allow"],
         "properties": {
           "deny": {
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
             "type": "object",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
@@ -1264,12 +1142,7 @@
                           "minLength": 2,
                           "maxLength": 100,
                           "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                          "example": [
-                            "v1",
-                            "v1alpha1",
-                            "v2beta3",
-                            "v1.custom-suffix"
-                          ]
+                          "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -1315,11 +1188,7 @@
                         "status": {
                           "type": "string",
                           "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-                          "enum": [
-                            "ignored",
-                            "enabled",
-                            "duplicate"
-                          ],
+                          "enum": ["ignored", "enabled", "duplicate"],
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
@@ -1336,11 +1205,7 @@
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                           "additionalProperties": false,
                           "type": "object",
-                          "required": [
-                            "kind",
-                            "type",
-                            "status"
-                          ],
+                          "required": ["kind", "type", "status"],
                           "properties": {
                             "id": {
                               "description": "ID",
@@ -1558,12 +1423,7 @@
                                     "minLength": 2,
                                     "maxLength": 100,
                                     "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                                    "example": [
-                                      "v1",
-                                      "v1alpha1",
-                                      "v2beta3",
-                                      "v1.custom-suffix"
-                                    ],
+                                    "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
@@ -1657,10 +1517,7 @@
                                     "type": "array",
                                     "items": {
                                       "type": "string",
-                                      "enum": [
-                                        "declaration",
-                                        "instance"
-                                      ],
+                                      "enum": ["declaration", "instance"],
                                       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                       "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
                                       "x-oapi-codegen-extra-tags": {
@@ -1673,10 +1530,7 @@
                                     "type": "string",
                                     "description": "Status of the capability",
                                     "default": "enabled",
-                                    "enum": [
-                                      "enabled",
-                                      "disabled"
-                                    ],
+                                    "enum": ["enabled", "disabled"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
@@ -1758,9 +1612,7 @@
                         "model": {
                           "type": "object",
                           "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-                          "required": [
-                            "version"
-                          ],
+                          "required": ["version"],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
@@ -1779,12 +1631,7 @@
                           }
                         }
                       },
-                      "required": [
-                        "name",
-                        "version",
-                        "registrant",
-                        "category"
-                      ]
+                      "required": ["name", "version", "registrant", "category"]
                     },
                     "id": {
                       "type": "string",
@@ -1954,15 +1801,7 @@
                               "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902). \n\nadd: Inserts a value into an array or adds a member to an object.\nreplace: Replaces a value.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.",
                               "$comment": "Array Indexing: When working with arrays, be aware that Kubernetes uses zero-based indexing in JSON patch paths.\nMerge Patch vs. JSON Patch: Merge patches are less flexible than JSON patches and do not support all the same operations.\nStrategic Merge Patch: For some Kubernetes resources, you can also use the strategic type for a strategic merge patch, which understands the structure of Kubernetes objects and can handle complex operations.",
                               "type": "string",
-                              "enum": [
-                                "merge",
-                                "strategic",
-                                "add",
-                                "remove",
-                                "copy",
-                                "move",
-                                "test"
-                              ],
+                              "enum": ["merge", "strategic", "add", "remove", "copy", "move", "test"],
                               "default": "copy"
                             }
                           }
@@ -2054,12 +1893,7 @@
                           "minLength": 2,
                           "maxLength": 100,
                           "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                          "example": [
-                            "v1",
-                            "v1alpha1",
-                            "v2beta3",
-                            "v1.custom-suffix"
-                          ]
+                          "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -2105,11 +1939,7 @@
                         "status": {
                           "type": "string",
                           "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-                          "enum": [
-                            "ignored",
-                            "enabled",
-                            "duplicate"
-                          ],
+                          "enum": ["ignored", "enabled", "duplicate"],
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
@@ -2126,11 +1956,7 @@
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                           "additionalProperties": false,
                           "type": "object",
-                          "required": [
-                            "kind",
-                            "type",
-                            "status"
-                          ],
+                          "required": ["kind", "type", "status"],
                           "properties": {
                             "id": {
                               "description": "ID",
@@ -2348,12 +2174,7 @@
                                     "minLength": 2,
                                     "maxLength": 100,
                                     "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                                    "example": [
-                                      "v1",
-                                      "v1alpha1",
-                                      "v2beta3",
-                                      "v1.custom-suffix"
-                                    ],
+                                    "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
@@ -2447,10 +2268,7 @@
                                     "type": "array",
                                     "items": {
                                       "type": "string",
-                                      "enum": [
-                                        "declaration",
-                                        "instance"
-                                      ],
+                                      "enum": ["declaration", "instance"],
                                       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                       "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
                                       "x-oapi-codegen-extra-tags": {
@@ -2463,10 +2281,7 @@
                                     "type": "string",
                                     "description": "Status of the capability",
                                     "default": "enabled",
-                                    "enum": [
-                                      "enabled",
-                                      "disabled"
-                                    ],
+                                    "enum": ["enabled", "disabled"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
@@ -2548,9 +2363,7 @@
                         "model": {
                           "type": "object",
                           "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-                          "required": [
-                            "version"
-                          ],
+                          "required": ["version"],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
@@ -2569,12 +2382,7 @@
                           }
                         }
                       },
-                      "required": [
-                        "name",
-                        "version",
-                        "registrant",
-                        "category"
-                      ]
+                      "required": ["name", "version", "registrant", "category"]
                     },
                     "id": {
                       "type": "string",
@@ -2744,15 +2552,7 @@
                               "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902). \n\nadd: Inserts a value into an array or adds a member to an object.\nreplace: Replaces a value.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.",
                               "$comment": "Array Indexing: When working with arrays, be aware that Kubernetes uses zero-based indexing in JSON patch paths.\nMerge Patch vs. JSON Patch: Merge patches are less flexible than JSON patches and do not support all the same operations.\nStrategic Merge Patch: For some Kubernetes resources, you can also use the strategic type for a strategic merge patch, which understands the structure of Kubernetes objects and can handle complex operations.",
                               "type": "string",
-                              "enum": [
-                                "merge",
-                                "strategic",
-                                "add",
-                                "remove",
-                                "copy",
-                                "move",
-                                "test"
-                              ],
+                              "enum": ["merge", "strategic", "add", "remove", "copy", "move", "test"],
                               "default": "copy"
                             }
                           }
@@ -2805,12 +2605,8 @@
           "allow": {
             "description": "Selectors used to define relationships which are allowed.",
             "type": "object",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
-             
               "from": {
                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                 "type": "array",
@@ -2826,13 +2622,13 @@
                       }
                     },
 
-                   "match_strategy_matrix" : {
+                    "match_strategy_matrix": {
                       "description": "Strategy criterion for determing how to match the values at mutator/mutated paths",
-                      "type":"array",
-                      "items":{
-                        "type":"array",
-                        "items":{
-                          "type":"string"
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
                         }
                       }
                     },
@@ -2866,12 +2662,7 @@
                           "minLength": 2,
                           "maxLength": 100,
                           "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                          "example": [
-                            "v1",
-                            "v1alpha1",
-                            "v2beta3",
-                            "v1.custom-suffix"
-                          ]
+                          "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -2917,11 +2708,7 @@
                         "status": {
                           "type": "string",
                           "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-                          "enum": [
-                            "ignored",
-                            "enabled",
-                            "duplicate"
-                          ],
+                          "enum": ["ignored", "enabled", "duplicate"],
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
@@ -2938,11 +2725,7 @@
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                           "additionalProperties": false,
                           "type": "object",
-                          "required": [
-                            "kind",
-                            "type",
-                            "status"
-                          ],
+                          "required": ["kind", "type", "status"],
                           "properties": {
                             "id": {
                               "description": "ID",
@@ -3160,12 +2943,7 @@
                                     "minLength": 2,
                                     "maxLength": 100,
                                     "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                                    "example": [
-                                      "v1",
-                                      "v1alpha1",
-                                      "v2beta3",
-                                      "v1.custom-suffix"
-                                    ],
+                                    "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
@@ -3259,10 +3037,7 @@
                                     "type": "array",
                                     "items": {
                                       "type": "string",
-                                      "enum": [
-                                        "declaration",
-                                        "instance"
-                                      ],
+                                      "enum": ["declaration", "instance"],
                                       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                       "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
                                       "x-oapi-codegen-extra-tags": {
@@ -3275,10 +3050,7 @@
                                     "type": "string",
                                     "description": "Status of the capability",
                                     "default": "enabled",
-                                    "enum": [
-                                      "enabled",
-                                      "disabled"
-                                    ],
+                                    "enum": ["enabled", "disabled"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
@@ -3360,9 +3132,7 @@
                         "model": {
                           "type": "object",
                           "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-                          "required": [
-                            "version"
-                          ],
+                          "required": ["version"],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
@@ -3381,12 +3151,7 @@
                           }
                         }
                       },
-                      "required": [
-                        "name",
-                        "version",
-                        "registrant",
-                        "category"
-                      ]
+                      "required": ["name", "version", "registrant", "category"]
                     },
                     "id": {
                       "type": "string",
@@ -3556,15 +3321,7 @@
                               "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902). \n\nadd: Inserts a value into an array or adds a member to an object.\nreplace: Replaces a value.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.",
                               "$comment": "Array Indexing: When working with arrays, be aware that Kubernetes uses zero-based indexing in JSON patch paths.\nMerge Patch vs. JSON Patch: Merge patches are less flexible than JSON patches and do not support all the same operations.\nStrategic Merge Patch: For some Kubernetes resources, you can also use the strategic type for a strategic merge patch, which understands the structure of Kubernetes objects and can handle complex operations.",
                               "type": "string",
-                              "enum": [
-                                "merge",
-                                "strategic",
-                                "add",
-                                "remove",
-                                "copy",
-                                "move",
-                                "test"
-                              ],
+                              "enum": ["merge", "strategic", "add", "remove", "copy", "move", "test"],
                               "default": "copy"
                             }
                           }
@@ -3656,12 +3413,7 @@
                           "minLength": 2,
                           "maxLength": 100,
                           "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                          "example": [
-                            "v1",
-                            "v1alpha1",
-                            "v2beta3",
-                            "v1.custom-suffix"
-                          ]
+                          "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
                         },
                         "version": {
                           "description": "Version of the model definition.",
@@ -3707,11 +3459,7 @@
                         "status": {
                           "type": "string",
                           "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-                          "enum": [
-                            "ignored",
-                            "enabled",
-                            "duplicate"
-                          ],
+                          "enum": ["ignored", "enabled", "duplicate"],
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "status",
                             "json": "status"
@@ -3728,11 +3476,7 @@
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                           "additionalProperties": false,
                           "type": "object",
-                          "required": [
-                            "kind",
-                            "type",
-                            "status"
-                          ],
+                          "required": ["kind", "type", "status"],
                           "properties": {
                             "id": {
                               "description": "ID",
@@ -3950,12 +3694,7 @@
                                     "minLength": 2,
                                     "maxLength": 100,
                                     "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-                                    "example": [
-                                      "v1",
-                                      "v1alpha1",
-                                      "v2beta3",
-                                      "v1.custom-suffix"
-                                    ],
+                                    "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "schemaVersion",
                                       "json": "schemaVersion"
@@ -4049,10 +3788,7 @@
                                     "type": "array",
                                     "items": {
                                       "type": "string",
-                                      "enum": [
-                                        "declaration",
-                                        "instance"
-                                      ],
+                                      "enum": ["declaration", "instance"],
                                       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                       "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
                                       "x-oapi-codegen-extra-tags": {
@@ -4065,10 +3801,7 @@
                                     "type": "string",
                                     "description": "Status of the capability",
                                     "default": "enabled",
-                                    "enum": [
-                                      "enabled",
-                                      "disabled"
-                                    ],
+                                    "enum": ["enabled", "disabled"],
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "status",
                                       "json": "status"
@@ -4150,9 +3883,7 @@
                         "model": {
                           "type": "object",
                           "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)",
-                          "required": [
-                            "version"
-                          ],
+                          "required": ["version"],
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
@@ -4171,12 +3902,7 @@
                           }
                         }
                       },
-                      "required": [
-                        "name",
-                        "version",
-                        "registrant",
-                        "category"
-                      ]
+                      "required": ["name", "version", "registrant", "category"]
                     },
                     "id": {
                       "type": "string",
@@ -4346,15 +4072,7 @@
                               "description": "patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902). \n\nadd: Inserts a value into an array or adds a member to an object.\nreplace: Replaces a value.\nmerge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.\nstrategic:specific to Kubernetes and understands the structure of Kubernetes objects. It can handle complex changes like updating lists and maps, as well as preserving default values. However, it's not supported for custom resources. For custom resources, only JSON Patch and Merge Patch are typically supported.\nremove: Removes a value.\ncopy: Copies a value from one location to another.\nmove: Moves a value from one location to another.\ntest: Tests that a value at the target location is equal to a specified value.",
                               "$comment": "Array Indexing: When working with arrays, be aware that Kubernetes uses zero-based indexing in JSON patch paths.\nMerge Patch vs. JSON Patch: Merge patches are less flexible than JSON patches and do not support all the same operations.\nStrategic Merge Patch: For some Kubernetes resources, you can also use the strategic type for a strategic merge patch, which understands the structure of Kubernetes objects and can handle complex operations.",
                               "type": "string",
-                              "enum": [
-                                "merge",
-                                "strategic",
-                                "add",
-                                "remove",
-                                "copy",
-                                "move",
-                                "test"
-                              ],
+                              "enum": ["merge", "strategic", "add", "remove", "copy", "move", "test"],
                               "default": "copy"
                             }
                           }
@@ -4409,3 +4127,4 @@
     }
   }
 }
+
