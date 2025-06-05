@@ -39,6 +39,7 @@ import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./const
 // import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
 // import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
 import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
+import RelationshipDefinitionV1Alpha3OpenApiSchema from "./constructs/v1alpha3/relationship/RelationshipOpenApiSchema";
 // import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
 import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
 import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
@@ -63,6 +64,7 @@ export {
   ModelDefinitionV1Beta1OpenApiSchema,
   CategoryDefinitionV1Beta1OpenApiSchema,
   SubCategoryDefinitionV1Beta1OpenApiSchema,
+  RelationshipDefinitionV1Alpha3OpenApiSchema,
 };
 
 // Contructs
@@ -94,4 +96,13 @@ export namespace api {
   export type Components = components;
   export type Paths = paths;
 }
+
+
+
+
+
+
+
+
+
 

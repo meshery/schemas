@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Relationship API
+  version: 1.0.0
+paths:
+  /api/meshery/relationships:
+    post:
+      summary: Create a relationship
+      operationId: CreateRelationship
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Relationship"
+      responses:
+        "200":
+          description: Relationship created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Relationship"
+        "400":
+          description: Invalid request format
+        "500":
+          description: Internal server error
+    get:
+      summary: Get all relationships
+      operationId: GetAllRelationships
+      responses:
+        "200":
+          description: Relationships retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Relationship"
+        "500":
+          description: Internal server error
+  /api/meshery/relationships/{id}:
+    get:
+      summary: Get a relationship by ID
+      operationId: GetRelationshipById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Relationship retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Relationship"
+        "404":
+          description: Relationship not found
+        "500":
+          description: Internal server error
+    put:
+      summary: Update a relationship
+      operationId: UpdateRelationship
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Relationship"
+      responses:
+        "200":
+          description: Relationship updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Relationship"
+        "404":
+          description: Relationship not found
+        "500":
+          description: Internal server error
+    delete:
+      summary: Delete a relationship
+      operationId: DeleteRelationship
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Relationship deleted successfully
+        "404":
+          description: Relationship not found
+        "500":
+          description: Internal server error
+components:
+  schemas:
+    Relationship:
+      $ref: "./relationship.json"
