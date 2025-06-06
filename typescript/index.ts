@@ -51,6 +51,8 @@ import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/Mode
 import EnvironmentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/environment/EnvironmentOpenApiSchema";
 import WorkspaceDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/workspace/WorkspaceOpenApiSchema";
 
+import RelationshipDefinitionV1Alpha3OpenApiSchema from "./constructs/v1alpha3/V1alpha3OpenApiSchema";
+
 import { components, paths } from "./openapi";
 import type * as core from "./constructs/core";
 
@@ -63,6 +65,7 @@ export {
   ModelDefinitionV1Beta1OpenApiSchema,
   CategoryDefinitionV1Beta1OpenApiSchema,
   SubCategoryDefinitionV1Beta1OpenApiSchema,
+  RelationshipDefinitionV1Alpha3OpenApiSchema,
 };
 
 // Contructs
