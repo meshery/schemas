@@ -4,6 +4,7 @@
 package connection
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -24,32 +25,32 @@ const (
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// ID ID
-	ID *uuid.UUID `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// Name Connection Name
-	Name *string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `db:"name" json:"name" yaml:"name"`
 
-	// CredentialId Credential ID
-	CredentialId *uuid.UUID `db:"credential_id" json:"credential_id,omitempty" yaml:"credential_id,omitempty"`
+	// CredentialID Credential ID
+	CredentialID uuid.UUID `db:"credential_id" json:"credential_id" yaml:"credential_id"`
 
 	// Type Connection Type
 	Type string `db:"type" json:"type" yaml:"type"`
 
 	// SubType Connection Subtype
-	SubType *string `db:"sub_type" json:"sub_type,omitempty" yaml:"sub_type,omitempty"`
+	SubType string `db:"sub_type" json:"sub_type" yaml:"sub_type"`
 
 	// Kind Connection Kind
-	Kind     string                  `db:"kind" json:"kind" yaml:"kind"`
-	Metadata *map[string]interface{} `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Kind     string                 `db:"kind" json:"kind" yaml:"kind"`
+	Metadata map[string]interface{} `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// Status Connection Status
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
 
 	// UserID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	UserID    *uuid.UUID `json:"user_id" yaml:"user_id"`
-	CreatedAt time.Time  `json:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at" yaml:"updated_at"`
-	DeletedAt time.Time  `json:"deleted_at" yaml:"deleted_at"`
+	UserID    *uuid.UUID   `json:"user_id" yaml:"user_id"`
+	CreatedAt time.Time    `json:"created_at" yaml:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at" yaml:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at" yaml:"deleted_at"`
 }
 
 // ConnectionStatus Connection Status

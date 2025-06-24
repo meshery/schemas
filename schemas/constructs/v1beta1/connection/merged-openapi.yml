@@ -14,8 +14,13 @@
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "kind",
+          "id",
+          "name",
+          "credential_id",
           "type",
+          "sub_type",
+          "kind",
+          "metadata",
           "status"
         ],
         "properties": {
@@ -45,7 +50,7 @@
             "description": "Connection Name"
           },
           "credential_id": {
-            "x-go-name": "CredentialId",
+            "x-go-name": "CredentialID",
             "x-oapi-codegen-extra-tags": {
               "db": "credential_id",
               "yaml": "credential_id"
@@ -155,6 +160,8 @@
               "yaml": "deleted_at",
               "json": "deleted_at"
             },
+            "x-go-type": "sql.NullTime",
+            "x-go-import": "database/sql",
             "x-order": 12,
             "type": "string",
             "format": "date-time",
