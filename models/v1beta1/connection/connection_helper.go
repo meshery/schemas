@@ -41,14 +41,14 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 
 	// if not exists then create a new host and return the id
 	if err == gorm.ErrRecordNotFound {
-		h.Id = hID
+		h.ID = &hID // TODO make field non-nil
 		err = db.Create(&h).Error
 		if err != nil {
 			return uuid.UUID{}, err
 		}
-		return h.Id, nil
+		return *h.ID, nil // TODO make field non-nil
 	}
 
 	// else return the id of the existing connection
-	return connection.Id, nil
+	return *connection.ID, nil // TODO make field non-nil
 }

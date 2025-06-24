@@ -50,6 +50,14 @@ generate_schema_models() {
     # npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml --without-x-tag-groups
 
     # rm -f "$merged_output"
+
+    if [ $(which gofmt) ]; then
+        echo "gofmt -w $output_go_file" 
+        gofmt -w $output_go_file
+    else
+        echo "gofmt is not installed"
+    fi
+
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
 }
 
@@ -76,7 +84,7 @@ generate_schema_models "environment" "v1beta1"
 generate_schema_models "user" "v1beta1"
 generate_schema_models "event" "v1beta1"
 generate_schema_models "organization" "v1beta1"
-
+generate_schema_models "connection" "v1beta1"
 
 v1beta1="schemas/constructs/v1beta1"
 v1alpha1="schemas/constructs/v1alpha1"
