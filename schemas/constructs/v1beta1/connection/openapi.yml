@@ -7,24 +7,3 @@ components:
   schemas:
     Connection:
       $ref: "./connection.json"
-
-    Component:
-      description: "data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an"
-      type: object
-      properties:
-        type:
-          type: string
-          description: "Connection Type"
-          x-order: 1
-        kind:
-          type: string
-          description: "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
-          x-order: 2
-        status:
-          type: string
-          description: "Connection Status"
-          x-order: 3
-      required:
-        - type
-        - kind
-        - status

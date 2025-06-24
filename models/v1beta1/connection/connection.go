@@ -21,18 +21,6 @@ const (
 	Registered   ConnectionStatus = "registered"
 )
 
-// Component data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an
-type Component struct {
-	// Type Connection Type
-	Type string `json:"type" yaml:"type"`
-
-	// Kind The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'.
-	Kind string `json:"kind" yaml:"kind"`
-
-	// Status Connection Status
-	Status string `json:"status" yaml:"status"`
-}
-
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// ID ID
