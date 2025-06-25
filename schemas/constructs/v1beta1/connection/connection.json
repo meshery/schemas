@@ -12,7 +12,8 @@
     "sub_type",
     "kind",
     "metadata",
-    "status"
+    "status",
+    "environments"
   ],
   "properties": {
     "id": {
@@ -110,28 +111,40 @@
     "created_at": {
       "$ref": "../../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "created_at",
-        "json": "created_at"
+        "db": "created_at",
+        "yaml": "created_at"
       },
       "x-order": 10
     },
     "updated_at": {
       "$ref": "../../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "updated_at",
-        "json": "updated_at"
+        "db": "updated_at",
+        "yaml": "updated_at"
       },
       "x-order": 11
     },
     "deleted_at": {
       "$ref": "../../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "deleted_at",
-        "json": "deleted_at"
+        "db": "deleted_at",
+        "yaml": "deleted_at"
       },
       "x-go-type": "sql.NullTime",
       "x-go-import": "database/sql",
       "x-order": 12
+    },
+    "environments": {
+      "type": "array",
+      "items": {
+        "$ref": "../environment/environment.json"
+      },
+      "x-oapi-codegen-extra-tags": {
+        "db": "environments",
+        "yaml": "environments",
+        "gorm": "-"
+      },
+      "x-order": 13
     }
   }
 }

@@ -47,10 +47,29 @@ type Connection struct {
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
 
 	// UserID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	UserID    *uuid.UUID   `json:"user_id" yaml:"user_id"`
-	CreatedAt time.Time    `json:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at" yaml:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at" yaml:"deleted_at"`
+	UserID       *uuid.UUID   `json:"user_id" yaml:"user_id"`
+	CreatedAt    time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	UpdatedAt    time.Time    `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	DeletedAt    sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Environments []struct {
+		// ID ID
+		ID uuid.UUID `db:"id" json:"id" yaml:"id"`
+
+		// Name Environment name
+		Name string `db:"name" json:"name" yaml:"name"`
+
+		// Description Environment description
+		Description string `db:"description" json:"description" yaml:"description"`
+
+		// OrganizationID Environment organization ID
+		OrganizationID uuid.UUID `db:"organization_id" json:"organization_id" yaml:"organization_id"`
+
+		// Owner Environment owner
+		Owner     string       `db:"owner" json:"owner" yaml:"owner"`
+		CreatedAt time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		UpdatedAt time.Time    `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+		DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	} `db:"environments" gorm:"-" json:"environments" yaml:"environments"`
 }
 
 // ConnectionStatus Connection Status
