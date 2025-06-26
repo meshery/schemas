@@ -251,61 +251,96 @@
         }
       },
       "environmentConnectionMapping": {
+        "$id": "https://schemas.meshery.io/environment_connection_mapping.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "",
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "connection_id",
+          "environment_id"
+        ],
+        "x-go-name": "EnvironmentConnectionMapping",
         "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
+          "id": {
+            "x-order": 1,
+            "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "db": "id",
-              "json": "id"
+              "yaml": "id"
             },
-            "x-go-type-name": "GeneralId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "environment_id": {
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "x-oapi-codegen-extra-tags": {
-              "db": "environment_id",
-              "json": "environment_id"
-            },
-            "x-go-type-skip-optional-pointer": true
+            "default": "00000000-00000000-00000000-00000000"
           },
           "connection_id": {
+            "x-go-name": "ConnectionID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "connection_id",
+              "yaml": "connection_id"
+            },
+            "x-order": 2,
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "default": "00000000-00000000-00000000-00000000"
+          },
+          "environment_id": {
+            "x-go-name": "EnvironmentID",
             "x-oapi-codegen-extra-tags": {
-              "db": "connection_id",
-              "json": "connection_id"
+              "db": "environment_id",
+              "yaml": "environment_id"
             },
-            "x-go-type-skip-optional-pointer": true
+            "x-order": 3,
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "default": "00000000-00000000-00000000-00000000"
           },
           "created_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
+            "x-order": 4,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "updated_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
+            "x-order": 5,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
-            "description": "SQL null Timestamp to handle null values of time.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at"
+            },
             "x-go-type": "sql.NullTime",
+            "x-go-import": "database/sql",
+            "x-order": 6,
             "type": "string",
+            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }

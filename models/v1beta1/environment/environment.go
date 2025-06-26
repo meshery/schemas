@@ -33,14 +33,17 @@ type EnvironmentData struct {
 
 // EnvironmentConnectionMapping defines model for environmentConnectionMapping.
 type EnvironmentConnectionMapping struct {
-	ID           uuid.UUID `db:"id" json:"id" yaml:"id"`
-	ConnectionId uuid.UUID `db:"connection_id" json:"connection_id" yaml:"connection_id"`
-	CreatedAt    time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	// ID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt     sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	EnvironmentId uuid.UUID    `db:"environment_id" json:"environment_id" yaml:"environment_id"`
-	UpdatedAt     time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	// ConnectionID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	ConnectionID uuid.UUID `db:"connection_id" json:"connection_id" yaml:"connection_id"`
+
+	// EnvironmentID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	EnvironmentID uuid.UUID    `db:"environment_id" json:"environment_id" yaml:"environment_id"`
+	CreatedAt     time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	UpdatedAt     time.Time    `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	DeletedAt     sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // EnvironmentPage defines model for environmentPage.
