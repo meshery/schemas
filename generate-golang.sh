@@ -50,7 +50,6 @@ generate_schema_models() {
     # npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml --without-x-tag-groups
 
     # rm -f "$merged_output"
-
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
 }
 
