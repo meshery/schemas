@@ -22,7 +22,7 @@ type EnvironmentData struct {
 	Description string `db:"description" json:"description" yaml:"description"`
 
 	// OrganizationID Environment organization ID
-	OrganizationID uuid.UUID `db:"organization_id" json:"organization_id" yaml:"organization_id"`
+	OrganizationID uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// Owner Environment owner
 	Owner     string       `db:"owner" json:"owner" yaml:"owner"`
@@ -59,7 +59,7 @@ type EnvironmentPage struct {
 		Description string `db:"description" json:"description" yaml:"description"`
 
 		// OrganizationID Environment organization ID
-		OrganizationID uuid.UUID `db:"organization_id" json:"organization_id" yaml:"organization_id"`
+		OrganizationID uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
 
 		// Owner Environment owner
 		Owner     string       `db:"owner" json:"owner" yaml:"owner"`
