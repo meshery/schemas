@@ -102,8 +102,8 @@
     "user_id": {
       "x-go-name": "UserID",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "user_id",
-        "json": "user_id"
+        "db": "user_id",
+        "yaml": "user_id"
       },
       "x-order": 9,
       "$ref": "../../core.json#/definitions/uuid"
