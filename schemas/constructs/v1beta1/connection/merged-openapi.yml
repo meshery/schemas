@@ -183,7 +183,6 @@
                 "organization_id",
                 "owner"
               ],
-              "x-go-name": "EnvironmentData",
               "properties": {
                 "id": {
                   "description": "ID",
