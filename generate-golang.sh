@@ -51,13 +51,6 @@ generate_schema_models() {
 
     # rm -f "$merged_output"
 
-    if [ $(which gofmt) ]; then
-        echo "gofmt -w $output_go_file" 
-        gofmt -w $output_go_file
-    else
-        echo "gofmt is not installed"
-    fi
-
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
 }
 
