@@ -171,6 +171,7 @@
           "environments": {
             "type": "array",
             "items": {
+              "x-go-type": "environment.Environment",
               "$id": "https://schemas.meshery.io/environment.json",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
