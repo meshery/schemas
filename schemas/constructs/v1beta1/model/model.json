@@ -97,7 +97,7 @@
       "x-oapi-codegen-extra-tags": {
         "yaml": "registrant",
         "json": "registrant",
-        "gorm": "foreignKey:RegistrantId;references:Id"
+        "gorm": "foreignKey:RegistrantId;references:ID"
       },
       "x-order": 8,
       "x-go-type": "connection.Connection",
