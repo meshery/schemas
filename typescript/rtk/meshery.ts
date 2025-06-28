@@ -173,14 +173,18 @@ export type DeleteApiWorkspacesByIdApiArg = {
   id: string;
 };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
+  /** ID */
+  id: string;
+  /** Environment name */
+  name: string;
+  /** Environment description */
+  description: string;
+  /** Environment organization ID */
+  organization_id: string;
+  /** Environment owner */
+  owner: string;
   created_at?: string;
   updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
 };
 export type CreateEnvironmentApiArg = {
@@ -199,14 +203,18 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
   page_size?: number;
   total_count?: number;
   environments?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
-    owner?: string;
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner: string;
     created_at?: string;
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
 };
@@ -291,18 +299,18 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
         /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
         registrant: {
           /** ID */
-          id?: string;
+          id: string;
           /** Connection Name */
-          name?: string;
+          name: string;
           /** Credential ID */
-          credential_id?: string;
+          credential_id: string;
           /** Connection Type */
           type: string;
           /** Connection Subtype */
-          sub_type?: string;
+          sub_type: string;
           /** Connection Kind */
           kind: string;
-          metadata?: object;
+          metadata: object;
           /** Connection Status */
           status:
             | "discovered"
@@ -314,10 +322,25 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             | "deleted"
             | "not found";
           /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-          user_id?: string;
+          user_id: string;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string;
+          environments: {
+            /** ID */
+            id: string;
+            /** Environment name */
+            name: string;
+            /** Environment description */
+            description: string;
+            /** Environment organization ID */
+            organization_id: string;
+            /** Environment owner */
+            owner: string;
+            created_at?: string;
+            updated_at?: string;
+            deleted_at?: string;
+          }[];
         };
         /** ID of the registrant. */
         registrantId: string;
@@ -1747,18 +1770,18 @@ export type PostEvaluateApiArg = {
           /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
           registrant: {
             /** ID */
-            id?: string;
+            id: string;
             /** Connection Name */
-            name?: string;
+            name: string;
             /** Credential ID */
-            credential_id?: string;
+            credential_id: string;
             /** Connection Type */
             type: string;
             /** Connection Subtype */
-            sub_type?: string;
+            sub_type: string;
             /** Connection Kind */
             kind: string;
-            metadata?: object;
+            metadata: object;
             /** Connection Status */
             status:
               | "discovered"
@@ -1770,10 +1793,25 @@ export type PostEvaluateApiArg = {
               | "deleted"
               | "not found";
             /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-            user_id?: string;
+            user_id: string;
             created_at?: string;
             updated_at?: string;
             deleted_at?: string;
+            environments: {
+              /** ID */
+              id: string;
+              /** Environment name */
+              name: string;
+              /** Environment description */
+              description: string;
+              /** Environment organization ID */
+              organization_id: string;
+              /** Environment owner */
+              owner: string;
+              created_at?: string;
+              updated_at?: string;
+              deleted_at?: string;
+            }[];
           };
           /** ID of the registrant. */
           registrantId: string;

@@ -393,14 +393,18 @@ export type DeleteApiWorkspacesByIdApiArg = {
   id: string;
 };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
+  /** ID */
+  id: string;
+  /** Environment name */
+  name: string;
+  /** Environment description */
+  description: string;
+  /** Environment organization ID */
+  organization_id: string;
+  /** Environment owner */
+  owner: string;
   created_at?: string;
   updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
 };
 export type CreateEnvironmentApiArg = {
@@ -419,14 +423,18 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
   page_size?: number;
   total_count?: number;
   environments?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
-    owner?: string;
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner: string;
     created_at?: string;
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
 };
