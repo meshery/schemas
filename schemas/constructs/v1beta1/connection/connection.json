@@ -13,6 +13,7 @@
     "kind",
     "metadata",
     "status",
+    "user_id",
     "environments"
   ],
   "properties": {
