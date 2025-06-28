@@ -1580,15 +1580,13 @@ paths:
             schema:
               properties:
                 name:
-                  type: string
-                  x-go-type-skip-optional-pointer: true
                   description: >-
                     An environment is a collection of resources. Provide a name
                     that meaningfully represents these resources. You can change
                     the name of the environment even after its creation.
-                description:
                   type: string
                   x-go-type-skip-optional-pointer: true
+                description:
                   description: >-
                     An environment is a collection of resources, such as
                     connections & credentail. Provide a detailed description to
@@ -1596,6 +1594,8 @@ paths:
                     resources it encompasses. You can modify the description at
                     any Time. Learn more about environments
                     [here](https://docs.meshery.io/concepts/logical/environments).
+                  type: string
+                  x-go-type-skip-optional-pointer: true
                 OrganizationID:
                   type: string
                   description: >-
@@ -1615,50 +1615,94 @@ paths:
           content:
             application/json:
               schema:
+                $id: https://schemas.meshery.io/environment.json
+                $schema: http://json-schema.org/draft-07/schema#
+                description: >-
+                  Meshery Environments allow you to logically group related
+                  Connections and their associated Credentials.. Learn more at
+                  https://docs.meshery.io/concepts/logical/environments
+                additionalProperties: false
+                type: object
+                required:
+                  - id
+                  - name
+                  - description
+                  - organization_id
+                  - owner
                 properties:
-                  ID:
-                    type: string
-                    format: uuid
-                    x-go-type: uuid.UUID
-                    x-go-type-import:
-                      path: github.com/gofrs/uuid
+                  id:
+                    description: ID
+                    x-order: 1
+                    x-go-name: ID
                     x-oapi-codegen-extra-tags:
                       db: id
-                      json: id
-                    x-go-type-name: GeneralId
-                    x-go-type-skip-optional-pointer: true
-                  name:
-                    type: string
-                    x-go-type-skip-optional-pointer: true
-                  description:
-                    type: string
-                    x-go-type-skip-optional-pointer: true
-                  organization_id:
+                      yaml: id
                     type: string
                     format: uuid
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
+                    default: 00000000-00000000-00000000-00000000
+                  name:
+                    x-oapi-codegen-extra-tags:
+                      db: name
+                      yaml: name
+                    x-order: 2
+                    type: string
+                    description: Environment name
+                  description:
+                    x-oapi-codegen-extra-tags:
+                      db: description
+                      yaml: description
+                    x-order: 3
+                    type: string
+                    description: Environment description
+                  organization_id:
+                    x-go-name: OrganizationID
                     x-oapi-codegen-extra-tags:
                       db: org_id
                       json: org_id
-                    x-go-type-name: OrganizationId
-                    x-go-type-skip-optional-pointer: true
-                  owner:
+                      yaml: org_id
+                    x-order: 4
+                    description: Environment organization ID
                     type: string
-                    x-go-type-skip-optional-pointer: true
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                    default: 00000000-00000000-00000000-00000000
+                  owner:
+                    x-oapi-codegen-extra-tags:
+                      db: owner
+                      yaml: owner
+                    x-order: 5
+                    type: string
+                    description: Environment owner
                   created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    x-order: 6
                     type: string
                     format: date-time
                     x-go-type-skip-optional-pointer: true
                   updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    x-order: 7
                     type: string
                     format: date-time
                     x-go-type-skip-optional-pointer: true
                   deleted_at:
-                    description: SQL null Timestamp to handle null values of time.
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      yaml: deleted_at
                     x-go-type: sql.NullTime
+                    x-go-import: database/sql
+                    x-order: 8
                     type: string
+                    format: date-time
                     x-go-type-skip-optional-pointer: true
         '400':
           description: Invalid request body or request param
@@ -1728,50 +1772,95 @@ paths:
                     x-go-type-skip-optional-pointer: true
                     items:
                       x-go-type: Environment
+                      $id: https://schemas.meshery.io/environment.json
+                      $schema: http://json-schema.org/draft-07/schema#
+                      description: >-
+                        Meshery Environments allow you to logically group
+                        related Connections and their associated Credentials..
+                        Learn more at
+                        https://docs.meshery.io/concepts/logical/environments
+                      additionalProperties: false
+                      type: object
+                      required:
+                        - id
+                        - name
+                        - description
+                        - organization_id
+                        - owner
                       properties:
-                        ID:
-                          type: string
-                          format: uuid
-                          x-go-type: uuid.UUID
-                          x-go-type-import:
-                            path: github.com/gofrs/uuid
+                        id:
+                          description: ID
+                          x-order: 1
+                          x-go-name: ID
                           x-oapi-codegen-extra-tags:
                             db: id
-                            json: id
-                          x-go-type-name: GeneralId
-                          x-go-type-skip-optional-pointer: true
-                        name:
-                          type: string
-                          x-go-type-skip-optional-pointer: true
-                        description:
-                          type: string
-                          x-go-type-skip-optional-pointer: true
-                        organization_id:
+                            yaml: id
                           type: string
                           format: uuid
                           x-go-type: uuid.UUID
                           x-go-type-import:
                             path: github.com/gofrs/uuid
+                          default: 00000000-00000000-00000000-00000000
+                        name:
+                          x-oapi-codegen-extra-tags:
+                            db: name
+                            yaml: name
+                          x-order: 2
+                          type: string
+                          description: Environment name
+                        description:
+                          x-oapi-codegen-extra-tags:
+                            db: description
+                            yaml: description
+                          x-order: 3
+                          type: string
+                          description: Environment description
+                        organization_id:
+                          x-go-name: OrganizationID
                           x-oapi-codegen-extra-tags:
                             db: org_id
                             json: org_id
-                          x-go-type-name: OrganizationId
-                          x-go-type-skip-optional-pointer: true
-                        owner:
+                            yaml: org_id
+                          x-order: 4
+                          description: Environment organization ID
                           type: string
-                          x-go-type-skip-optional-pointer: true
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                          default: 00000000-00000000-00000000-00000000
+                        owner:
+                          x-oapi-codegen-extra-tags:
+                            db: owner
+                            yaml: owner
+                          x-order: 5
+                          type: string
+                          description: Environment owner
                         created_at:
+                          x-oapi-codegen-extra-tags:
+                            db: created_at
+                            yaml: created_at
+                          x-order: 6
                           type: string
                           format: date-time
                           x-go-type-skip-optional-pointer: true
                         updated_at:
+                          x-oapi-codegen-extra-tags:
+                            db: updated_at
+                            yaml: updated_at
+                          x-order: 7
                           type: string
                           format: date-time
                           x-go-type-skip-optional-pointer: true
                         deleted_at:
-                          description: SQL null Timestamp to handle null values of time.
+                          x-oapi-codegen-extra-tags:
+                            db: deleted_at
+                            yaml: deleted_at
                           x-go-type: sql.NullTime
+                          x-go-import: database/sql
+                          x-order: 8
                           type: string
+                          format: date-time
                           x-go-type-skip-optional-pointer: true
         '401':
           description: Expired JWT token used or insufficient privilege
@@ -2158,7 +2247,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: registrant
                       json: registrant
-                      gorm: foreignKey:RegistrantId;references:Id
+                      gorm: foreignKey:RegistrantId;references:ID
                     x-order: 8
                     x-go-type: connection.Connection
                     x-go-type-import:
@@ -2173,13 +2262,24 @@ components:
                     additionalProperties: false
                     type: object
                     required:
-                      - kind
+                      - id
+                      - name
+                      - credential_id
                       - type
+                      - sub_type
+                      - kind
+                      - metadata
                       - status
+                      - user_id
+                      - environments
                     properties:
                       id:
-                        x-order: 1
                         description: ID
+                        x-order: 1
+                        x-go-name: ID
+                        x-oapi-codegen-extra-tags:
+                          db: id
+                          yaml: id
                         type: string
                         format: uuid
                         x-go-type: uuid.UUID
@@ -2194,7 +2294,7 @@ components:
                         type: string
                         description: Connection Name
                       credential_id:
-                        x-go-name: CredentialId
+                        x-go-name: CredentialID
                         x-oapi-codegen-extra-tags:
                           db: credential_id
                           yaml: credential_id
@@ -2232,6 +2332,7 @@ components:
                           db: metadata
                           yaml: metadata
                         x-order: 7
+                        x-go-type: JSONMap
                         type: object
                       status:
                         x-oapi-codegen-extra-tags:
@@ -2252,8 +2353,8 @@ components:
                       user_id:
                         x-go-name: UserID
                         x-oapi-codegen-extra-tags:
+                          db: user_id
                           yaml: user_id
-                          json: user_id
                         x-order: 9
                         type: string
                         format: uuid
@@ -2267,28 +2368,127 @@ components:
                         default: 00000000-00000000-00000000-00000000
                       created_at:
                         x-oapi-codegen-extra-tags:
+                          db: created_at
                           yaml: created_at
-                          json: created_at
                         x-order: 10
                         type: string
                         format: date-time
                         x-go-type-skip-optional-pointer: true
                       updated_at:
                         x-oapi-codegen-extra-tags:
+                          db: updated_at
                           yaml: updated_at
-                          json: updated_at
                         x-order: 11
                         type: string
                         format: date-time
                         x-go-type-skip-optional-pointer: true
                       deleted_at:
                         x-oapi-codegen-extra-tags:
+                          db: deleted_at
                           yaml: deleted_at
-                          json: deleted_at
                         x-order: 12
                         type: string
                         format: date-time
                         x-go-type-skip-optional-pointer: true
+                      environments:
+                        type: array
+                        items:
+                          x-go-type: environment.Environment
+                          $id: https://schemas.meshery.io/environment.json
+                          $schema: http://json-schema.org/draft-07/schema#
+                          description: >-
+                            Meshery Environments allow you to logically group
+                            related Connections and their associated
+                            Credentials.. Learn more at
+                            https://docs.meshery.io/concepts/logical/environments
+                          additionalProperties: false
+                          type: object
+                          required:
+                            - id
+                            - name
+                            - description
+                            - organization_id
+                            - owner
+                          properties:
+                            id:
+                              description: ID
+                              x-order: 1
+                              x-go-name: ID
+                              x-oapi-codegen-extra-tags:
+                                db: id
+                                yaml: id
+                              type: string
+                              format: uuid
+                              x-go-type: uuid.UUID
+                              x-go-type-import:
+                                path: github.com/gofrs/uuid
+                              default: 00000000-00000000-00000000-00000000
+                            name:
+                              x-oapi-codegen-extra-tags:
+                                db: name
+                                yaml: name
+                              x-order: 2
+                              type: string
+                              description: Environment name
+                            description:
+                              x-oapi-codegen-extra-tags:
+                                db: description
+                                yaml: description
+                              x-order: 3
+                              type: string
+                              description: Environment description
+                            organization_id:
+                              x-go-name: OrganizationID
+                              x-oapi-codegen-extra-tags:
+                                db: org_id
+                                json: org_id
+                                yaml: org_id
+                              x-order: 4
+                              description: Environment organization ID
+                              type: string
+                              format: uuid
+                              x-go-type: uuid.UUID
+                              x-go-type-import:
+                                path: github.com/gofrs/uuid
+                              default: 00000000-00000000-00000000-00000000
+                            owner:
+                              x-oapi-codegen-extra-tags:
+                                db: owner
+                                yaml: owner
+                              x-order: 5
+                              type: string
+                              description: Environment owner
+                            created_at:
+                              x-oapi-codegen-extra-tags:
+                                db: created_at
+                                yaml: created_at
+                              x-order: 6
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
+                            updated_at:
+                              x-oapi-codegen-extra-tags:
+                                db: updated_at
+                                yaml: updated_at
+                              x-order: 7
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
+                            deleted_at:
+                              x-oapi-codegen-extra-tags:
+                                db: deleted_at
+                                yaml: deleted_at
+                              x-go-type: sql.NullTime
+                              x-go-import: database/sql
+                              x-order: 8
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
+                        x-oapi-codegen-extra-tags:
+                          db: environments
+                          yaml: environments
+                          gorm: '-'
+                        x-order: 13
                   registrantId:
                     description: ID of the registrant.
                     x-oapi-codegen-extra-tags:
@@ -8735,7 +8935,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: registrant
                           json: registrant
-                          gorm: foreignKey:RegistrantId;references:Id
+                          gorm: foreignKey:RegistrantId;references:ID
                         x-order: 8
                         x-go-type: connection.Connection
                         x-go-type-import:
@@ -8750,13 +8950,24 @@ components:
                         additionalProperties: false
                         type: object
                         required:
-                          - kind
+                          - id
+                          - name
+                          - credential_id
                           - type
+                          - sub_type
+                          - kind
+                          - metadata
                           - status
+                          - user_id
+                          - environments
                         properties:
                           id:
-                            x-order: 1
                             description: ID
+                            x-order: 1
+                            x-go-name: ID
+                            x-oapi-codegen-extra-tags:
+                              db: id
+                              yaml: id
                             type: string
                             format: uuid
                             x-go-type: uuid.UUID
@@ -8771,7 +8982,7 @@ components:
                             type: string
                             description: Connection Name
                           credential_id:
-                            x-go-name: CredentialId
+                            x-go-name: CredentialID
                             x-oapi-codegen-extra-tags:
                               db: credential_id
                               yaml: credential_id
@@ -8809,6 +9020,7 @@ components:
                               db: metadata
                               yaml: metadata
                             x-order: 7
+                            x-go-type: JSONMap
                             type: object
                           status:
                             x-oapi-codegen-extra-tags:
@@ -8829,8 +9041,8 @@ components:
                           user_id:
                             x-go-name: UserID
                             x-oapi-codegen-extra-tags:
+                              db: user_id
                               yaml: user_id
-                              json: user_id
                             x-order: 9
                             type: string
                             format: uuid
@@ -8844,28 +9056,127 @@ components:
                             default: 00000000-00000000-00000000-00000000
                           created_at:
                             x-oapi-codegen-extra-tags:
+                              db: created_at
                               yaml: created_at
-                              json: created_at
                             x-order: 10
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
                           updated_at:
                             x-oapi-codegen-extra-tags:
+                              db: updated_at
                               yaml: updated_at
-                              json: updated_at
                             x-order: 11
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
                           deleted_at:
                             x-oapi-codegen-extra-tags:
+                              db: deleted_at
                               yaml: deleted_at
-                              json: deleted_at
                             x-order: 12
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
+                          environments:
+                            type: array
+                            items:
+                              x-go-type: environment.Environment
+                              $id: https://schemas.meshery.io/environment.json
+                              $schema: http://json-schema.org/draft-07/schema#
+                              description: >-
+                                Meshery Environments allow you to logically
+                                group related Connections and their associated
+                                Credentials.. Learn more at
+                                https://docs.meshery.io/concepts/logical/environments
+                              additionalProperties: false
+                              type: object
+                              required:
+                                - id
+                                - name
+                                - description
+                                - organization_id
+                                - owner
+                              properties:
+                                id:
+                                  description: ID
+                                  x-order: 1
+                                  x-go-name: ID
+                                  x-oapi-codegen-extra-tags:
+                                    db: id
+                                    yaml: id
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
+                                name:
+                                  x-oapi-codegen-extra-tags:
+                                    db: name
+                                    yaml: name
+                                  x-order: 2
+                                  type: string
+                                  description: Environment name
+                                description:
+                                  x-oapi-codegen-extra-tags:
+                                    db: description
+                                    yaml: description
+                                  x-order: 3
+                                  type: string
+                                  description: Environment description
+                                organization_id:
+                                  x-go-name: OrganizationID
+                                  x-oapi-codegen-extra-tags:
+                                    db: org_id
+                                    json: org_id
+                                    yaml: org_id
+                                  x-order: 4
+                                  description: Environment organization ID
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
+                                owner:
+                                  x-oapi-codegen-extra-tags:
+                                    db: owner
+                                    yaml: owner
+                                  x-order: 5
+                                  type: string
+                                  description: Environment owner
+                                created_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: created_at
+                                    yaml: created_at
+                                  x-order: 6
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                                updated_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: updated_at
+                                    yaml: updated_at
+                                  x-order: 7
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                                deleted_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: deleted_at
+                                    yaml: deleted_at
+                                  x-go-type: sql.NullTime
+                                  x-go-import: database/sql
+                                  x-order: 8
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                            x-oapi-codegen-extra-tags:
+                              db: environments
+                              yaml: environments
+                              gorm: '-'
+                            x-order: 13
                       registrantId:
                         description: ID of the registrant.
                         x-oapi-codegen-extra-tags:
@@ -15424,7 +15735,7 @@ components:
                               x-oapi-codegen-extra-tags:
                                 yaml: registrant
                                 json: registrant
-                                gorm: foreignKey:RegistrantId;references:Id
+                                gorm: foreignKey:RegistrantId;references:ID
                               x-order: 8
                               x-go-type: connection.Connection
                               x-go-type-import:
@@ -15441,13 +15752,24 @@ components:
                               additionalProperties: false
                               type: object
                               required:
-                                - kind
+                                - id
+                                - name
+                                - credential_id
                                 - type
+                                - sub_type
+                                - kind
+                                - metadata
                                 - status
+                                - user_id
+                                - environments
                               properties:
                                 id:
-                                  x-order: 1
                                   description: ID
+                                  x-order: 1
+                                  x-go-name: ID
+                                  x-oapi-codegen-extra-tags:
+                                    db: id
+                                    yaml: id
                                   type: string
                                   format: uuid
                                   x-go-type: uuid.UUID
@@ -15462,7 +15784,7 @@ components:
                                   type: string
                                   description: Connection Name
                                 credential_id:
-                                  x-go-name: CredentialId
+                                  x-go-name: CredentialID
                                   x-oapi-codegen-extra-tags:
                                     db: credential_id
                                     yaml: credential_id
@@ -15500,6 +15822,7 @@ components:
                                     db: metadata
                                     yaml: metadata
                                   x-order: 7
+                                  x-go-type: JSONMap
                                   type: object
                                 status:
                                   x-oapi-codegen-extra-tags:
@@ -15520,8 +15843,8 @@ components:
                                 user_id:
                                   x-go-name: UserID
                                   x-oapi-codegen-extra-tags:
+                                    db: user_id
                                     yaml: user_id
-                                    json: user_id
                                   x-order: 9
                                   type: string
                                   format: uuid
@@ -15536,28 +15859,129 @@ components:
                                   default: 00000000-00000000-00000000-00000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
+                                    db: created_at
                                     yaml: created_at
-                                    json: created_at
                                   x-order: 10
                                   type: string
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                                 updated_at:
                                   x-oapi-codegen-extra-tags:
+                                    db: updated_at
                                     yaml: updated_at
-                                    json: updated_at
                                   x-order: 11
                                   type: string
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                                 deleted_at:
                                   x-oapi-codegen-extra-tags:
+                                    db: deleted_at
                                     yaml: deleted_at
-                                    json: deleted_at
                                   x-order: 12
                                   type: string
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
+                                environments:
+                                  type: array
+                                  items:
+                                    x-go-type: environment.Environment
+                                    $id: >-
+                                      https://schemas.meshery.io/environment.json
+                                    $schema: http://json-schema.org/draft-07/schema#
+                                    description: >-
+                                      Meshery Environments allow you to
+                                      logically group related Connections and
+                                      their associated Credentials.. Learn more
+                                      at
+                                      https://docs.meshery.io/concepts/logical/environments
+                                    additionalProperties: false
+                                    type: object
+                                    required:
+                                      - id
+                                      - name
+                                      - description
+                                      - organization_id
+                                      - owner
+                                    properties:
+                                      id:
+                                        description: ID
+                                        x-order: 1
+                                        x-go-name: ID
+                                        x-oapi-codegen-extra-tags:
+                                          db: id
+                                          yaml: id
+                                        type: string
+                                        format: uuid
+                                        x-go-type: uuid.UUID
+                                        x-go-type-import:
+                                          path: github.com/gofrs/uuid
+                                        default: 00000000-00000000-00000000-00000000
+                                      name:
+                                        x-oapi-codegen-extra-tags:
+                                          db: name
+                                          yaml: name
+                                        x-order: 2
+                                        type: string
+                                        description: Environment name
+                                      description:
+                                        x-oapi-codegen-extra-tags:
+                                          db: description
+                                          yaml: description
+                                        x-order: 3
+                                        type: string
+                                        description: Environment description
+                                      organization_id:
+                                        x-go-name: OrganizationID
+                                        x-oapi-codegen-extra-tags:
+                                          db: org_id
+                                          json: org_id
+                                          yaml: org_id
+                                        x-order: 4
+                                        description: Environment organization ID
+                                        type: string
+                                        format: uuid
+                                        x-go-type: uuid.UUID
+                                        x-go-type-import:
+                                          path: github.com/gofrs/uuid
+                                        default: 00000000-00000000-00000000-00000000
+                                      owner:
+                                        x-oapi-codegen-extra-tags:
+                                          db: owner
+                                          yaml: owner
+                                        x-order: 5
+                                        type: string
+                                        description: Environment owner
+                                      created_at:
+                                        x-oapi-codegen-extra-tags:
+                                          db: created_at
+                                          yaml: created_at
+                                        x-order: 6
+                                        type: string
+                                        format: date-time
+                                        x-go-type-skip-optional-pointer: true
+                                      updated_at:
+                                        x-oapi-codegen-extra-tags:
+                                          db: updated_at
+                                          yaml: updated_at
+                                        x-order: 7
+                                        type: string
+                                        format: date-time
+                                        x-go-type-skip-optional-pointer: true
+                                      deleted_at:
+                                        x-oapi-codegen-extra-tags:
+                                          db: deleted_at
+                                          yaml: deleted_at
+                                        x-go-type: sql.NullTime
+                                        x-go-import: database/sql
+                                        x-order: 8
+                                        type: string
+                                        format: date-time
+                                        x-go-type-skip-optional-pointer: true
+                                  x-oapi-codegen-extra-tags:
+                                    db: environments
+                                    yaml: environments
+                                    gorm: '-'
+                                  x-order: 13
                             registrantId:
                               description: ID of the registrant.
                               x-oapi-codegen-extra-tags:
@@ -22248,7 +22672,7 @@ components:
                             x-oapi-codegen-extra-tags:
                               yaml: registrant
                               json: registrant
-                              gorm: foreignKey:RegistrantId;references:Id
+                              gorm: foreignKey:RegistrantId;references:ID
                             x-order: 8
                             x-go-type: connection.Connection
                             x-go-type-import:
@@ -22264,13 +22688,24 @@ components:
                             additionalProperties: false
                             type: object
                             required:
-                              - kind
+                              - id
+                              - name
+                              - credential_id
                               - type
+                              - sub_type
+                              - kind
+                              - metadata
                               - status
+                              - user_id
+                              - environments
                             properties:
                               id:
-                                x-order: 1
                                 description: ID
+                                x-order: 1
+                                x-go-name: ID
+                                x-oapi-codegen-extra-tags:
+                                  db: id
+                                  yaml: id
                                 type: string
                                 format: uuid
                                 x-go-type: uuid.UUID
@@ -22285,7 +22720,7 @@ components:
                                 type: string
                                 description: Connection Name
                               credential_id:
-                                x-go-name: CredentialId
+                                x-go-name: CredentialID
                                 x-oapi-codegen-extra-tags:
                                   db: credential_id
                                   yaml: credential_id
@@ -22323,6 +22758,7 @@ components:
                                   db: metadata
                                   yaml: metadata
                                 x-order: 7
+                                x-go-type: JSONMap
                                 type: object
                               status:
                                 x-oapi-codegen-extra-tags:
@@ -22343,8 +22779,8 @@ components:
                               user_id:
                                 x-go-name: UserID
                                 x-oapi-codegen-extra-tags:
+                                  db: user_id
                                   yaml: user_id
-                                  json: user_id
                                 x-order: 9
                                 type: string
                                 format: uuid
@@ -22359,28 +22795,127 @@ components:
                                 default: 00000000-00000000-00000000-00000000
                               created_at:
                                 x-oapi-codegen-extra-tags:
+                                  db: created_at
                                   yaml: created_at
-                                  json: created_at
                                 x-order: 10
                                 type: string
                                 format: date-time
                                 x-go-type-skip-optional-pointer: true
                               updated_at:
                                 x-oapi-codegen-extra-tags:
+                                  db: updated_at
                                   yaml: updated_at
-                                  json: updated_at
                                 x-order: 11
                                 type: string
                                 format: date-time
                                 x-go-type-skip-optional-pointer: true
                               deleted_at:
                                 x-oapi-codegen-extra-tags:
+                                  db: deleted_at
                                   yaml: deleted_at
-                                  json: deleted_at
                                 x-order: 12
                                 type: string
                                 format: date-time
                                 x-go-type-skip-optional-pointer: true
+                              environments:
+                                type: array
+                                items:
+                                  x-go-type: environment.Environment
+                                  $id: https://schemas.meshery.io/environment.json
+                                  $schema: http://json-schema.org/draft-07/schema#
+                                  description: >-
+                                    Meshery Environments allow you to logically
+                                    group related Connections and their
+                                    associated Credentials.. Learn more at
+                                    https://docs.meshery.io/concepts/logical/environments
+                                  additionalProperties: false
+                                  type: object
+                                  required:
+                                    - id
+                                    - name
+                                    - description
+                                    - organization_id
+                                    - owner
+                                  properties:
+                                    id:
+                                      description: ID
+                                      x-order: 1
+                                      x-go-name: ID
+                                      x-oapi-codegen-extra-tags:
+                                        db: id
+                                        yaml: id
+                                      type: string
+                                      format: uuid
+                                      x-go-type: uuid.UUID
+                                      x-go-type-import:
+                                        path: github.com/gofrs/uuid
+                                      default: 00000000-00000000-00000000-00000000
+                                    name:
+                                      x-oapi-codegen-extra-tags:
+                                        db: name
+                                        yaml: name
+                                      x-order: 2
+                                      type: string
+                                      description: Environment name
+                                    description:
+                                      x-oapi-codegen-extra-tags:
+                                        db: description
+                                        yaml: description
+                                      x-order: 3
+                                      type: string
+                                      description: Environment description
+                                    organization_id:
+                                      x-go-name: OrganizationID
+                                      x-oapi-codegen-extra-tags:
+                                        db: org_id
+                                        json: org_id
+                                        yaml: org_id
+                                      x-order: 4
+                                      description: Environment organization ID
+                                      type: string
+                                      format: uuid
+                                      x-go-type: uuid.UUID
+                                      x-go-type-import:
+                                        path: github.com/gofrs/uuid
+                                      default: 00000000-00000000-00000000-00000000
+                                    owner:
+                                      x-oapi-codegen-extra-tags:
+                                        db: owner
+                                        yaml: owner
+                                      x-order: 5
+                                      type: string
+                                      description: Environment owner
+                                    created_at:
+                                      x-oapi-codegen-extra-tags:
+                                        db: created_at
+                                        yaml: created_at
+                                      x-order: 6
+                                      type: string
+                                      format: date-time
+                                      x-go-type-skip-optional-pointer: true
+                                    updated_at:
+                                      x-oapi-codegen-extra-tags:
+                                        db: updated_at
+                                        yaml: updated_at
+                                      x-order: 7
+                                      type: string
+                                      format: date-time
+                                      x-go-type-skip-optional-pointer: true
+                                    deleted_at:
+                                      x-oapi-codegen-extra-tags:
+                                        db: deleted_at
+                                        yaml: deleted_at
+                                      x-go-type: sql.NullTime
+                                      x-go-import: database/sql
+                                      x-order: 8
+                                      type: string
+                                      format: date-time
+                                      x-go-type-skip-optional-pointer: true
+                                x-oapi-codegen-extra-tags:
+                                  db: environments
+                                  yaml: environments
+                                  gorm: '-'
+                                x-order: 13
                           registrantId:
                             description: ID of the registrant.
                             x-oapi-codegen-extra-tags:
@@ -28770,7 +29305,7 @@ components:
               x-oapi-codegen-extra-tags:
                 yaml: registrant
                 json: registrant
-                gorm: foreignKey:RegistrantId;references:Id
+                gorm: foreignKey:RegistrantId;references:ID
               x-order: 8
               x-go-type: connection.Connection
               x-go-type-import:
@@ -28785,13 +29320,24 @@ components:
               additionalProperties: false
               type: object
               required:
-                - kind
+                - id
+                - name
+                - credential_id
                 - type
+                - sub_type
+                - kind
+                - metadata
                 - status
+                - user_id
+                - environments
               properties:
                 id:
-                  x-order: 1
                   description: ID
+                  x-order: 1
+                  x-go-name: ID
+                  x-oapi-codegen-extra-tags:
+                    db: id
+                    yaml: id
                   type: string
                   format: uuid
                   x-go-type: uuid.UUID
@@ -28806,7 +29352,7 @@ components:
                   type: string
                   description: Connection Name
                 credential_id:
-                  x-go-name: CredentialId
+                  x-go-name: CredentialID
                   x-oapi-codegen-extra-tags:
                     db: credential_id
                     yaml: credential_id
@@ -28844,6 +29390,7 @@ components:
                     db: metadata
                     yaml: metadata
                   x-order: 7
+                  x-go-type: JSONMap
                   type: object
                 status:
                   x-oapi-codegen-extra-tags:
@@ -28864,8 +29411,8 @@ components:
                 user_id:
                   x-go-name: UserID
                   x-oapi-codegen-extra-tags:
+                    db: user_id
                     yaml: user_id
-                    json: user_id
                   x-order: 9
                   type: string
                   format: uuid
@@ -28879,28 +29426,126 @@ components:
                   default: 00000000-00000000-00000000-00000000
                 created_at:
                   x-oapi-codegen-extra-tags:
+                    db: created_at
                     yaml: created_at
-                    json: created_at
                   x-order: 10
                   type: string
                   format: date-time
                   x-go-type-skip-optional-pointer: true
                 updated_at:
                   x-oapi-codegen-extra-tags:
+                    db: updated_at
                     yaml: updated_at
-                    json: updated_at
                   x-order: 11
                   type: string
                   format: date-time
                   x-go-type-skip-optional-pointer: true
                 deleted_at:
                   x-oapi-codegen-extra-tags:
+                    db: deleted_at
                     yaml: deleted_at
-                    json: deleted_at
                   x-order: 12
                   type: string
                   format: date-time
                   x-go-type-skip-optional-pointer: true
+                environments:
+                  type: array
+                  items:
+                    x-go-type: environment.Environment
+                    $id: https://schemas.meshery.io/environment.json
+                    $schema: http://json-schema.org/draft-07/schema#
+                    description: >-
+                      Meshery Environments allow you to logically group related
+                      Connections and their associated Credentials.. Learn more
+                      at https://docs.meshery.io/concepts/logical/environments
+                    additionalProperties: false
+                    type: object
+                    required:
+                      - id
+                      - name
+                      - description
+                      - organization_id
+                      - owner
+                    properties:
+                      id:
+                        description: ID
+                        x-order: 1
+                        x-go-name: ID
+                        x-oapi-codegen-extra-tags:
+                          db: id
+                          yaml: id
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                        default: 00000000-00000000-00000000-00000000
+                      name:
+                        x-oapi-codegen-extra-tags:
+                          db: name
+                          yaml: name
+                        x-order: 2
+                        type: string
+                        description: Environment name
+                      description:
+                        x-oapi-codegen-extra-tags:
+                          db: description
+                          yaml: description
+                        x-order: 3
+                        type: string
+                        description: Environment description
+                      organization_id:
+                        x-go-name: OrganizationID
+                        x-oapi-codegen-extra-tags:
+                          db: org_id
+                          json: org_id
+                          yaml: org_id
+                        x-order: 4
+                        description: Environment organization ID
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                        default: 00000000-00000000-00000000-00000000
+                      owner:
+                        x-oapi-codegen-extra-tags:
+                          db: owner
+                          yaml: owner
+                        x-order: 5
+                        type: string
+                        description: Environment owner
+                      created_at:
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          yaml: created_at
+                        x-order: 6
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updated_at:
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          yaml: updated_at
+                        x-order: 7
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      deleted_at:
+                        x-oapi-codegen-extra-tags:
+                          db: deleted_at
+                          yaml: deleted_at
+                        x-go-type: sql.NullTime
+                        x-go-import: database/sql
+                        x-order: 8
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                  x-oapi-codegen-extra-tags:
+                    db: environments
+                    yaml: environments
+                    gorm: '-'
+                  x-order: 13
             registrantId:
               description: ID of the registrant.
               x-oapi-codegen-extra-tags:
@@ -30516,7 +31161,7 @@ components:
           x-oapi-codegen-extra-tags:
             yaml: registrant
             json: registrant
-            gorm: foreignKey:RegistrantId;references:Id
+            gorm: foreignKey:RegistrantId;references:ID
           x-order: 8
           x-go-type: connection.Connection
           x-go-type-import:
@@ -30530,13 +31175,24 @@ components:
           additionalProperties: false
           type: object
           required:
-            - kind
+            - id
+            - name
+            - credential_id
             - type
+            - sub_type
+            - kind
+            - metadata
             - status
+            - user_id
+            - environments
           properties:
             id:
-              x-order: 1
               description: ID
+              x-order: 1
+              x-go-name: ID
+              x-oapi-codegen-extra-tags:
+                db: id
+                yaml: id
               type: string
               format: uuid
               x-go-type: uuid.UUID
@@ -30551,7 +31207,7 @@ components:
               type: string
               description: Connection Name
             credential_id:
-              x-go-name: CredentialId
+              x-go-name: CredentialID
               x-oapi-codegen-extra-tags:
                 db: credential_id
                 yaml: credential_id
@@ -30589,6 +31245,7 @@ components:
                 db: metadata
                 yaml: metadata
               x-order: 7
+              x-go-type: JSONMap
               type: object
             status:
               x-oapi-codegen-extra-tags:
@@ -30609,8 +31266,8 @@ components:
             user_id:
               x-go-name: UserID
               x-oapi-codegen-extra-tags:
+                db: user_id
                 yaml: user_id
-                json: user_id
               x-order: 9
               type: string
               format: uuid
@@ -30624,28 +31281,126 @@ components:
               default: 00000000-00000000-00000000-00000000
             created_at:
               x-oapi-codegen-extra-tags:
+                db: created_at
                 yaml: created_at
-                json: created_at
               x-order: 10
               type: string
               format: date-time
               x-go-type-skip-optional-pointer: true
             updated_at:
               x-oapi-codegen-extra-tags:
+                db: updated_at
                 yaml: updated_at
-                json: updated_at
               x-order: 11
               type: string
               format: date-time
               x-go-type-skip-optional-pointer: true
             deleted_at:
               x-oapi-codegen-extra-tags:
+                db: deleted_at
                 yaml: deleted_at
-                json: deleted_at
               x-order: 12
               type: string
               format: date-time
               x-go-type-skip-optional-pointer: true
+            environments:
+              type: array
+              items:
+                x-go-type: environment.Environment
+                $id: https://schemas.meshery.io/environment.json
+                $schema: http://json-schema.org/draft-07/schema#
+                description: >-
+                  Meshery Environments allow you to logically group related
+                  Connections and their associated Credentials.. Learn more at
+                  https://docs.meshery.io/concepts/logical/environments
+                additionalProperties: false
+                type: object
+                required:
+                  - id
+                  - name
+                  - description
+                  - organization_id
+                  - owner
+                properties:
+                  id:
+                    description: ID
+                    x-order: 1
+                    x-go-name: ID
+                    x-oapi-codegen-extra-tags:
+                      db: id
+                      yaml: id
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                    default: 00000000-00000000-00000000-00000000
+                  name:
+                    x-oapi-codegen-extra-tags:
+                      db: name
+                      yaml: name
+                    x-order: 2
+                    type: string
+                    description: Environment name
+                  description:
+                    x-oapi-codegen-extra-tags:
+                      db: description
+                      yaml: description
+                    x-order: 3
+                    type: string
+                    description: Environment description
+                  organization_id:
+                    x-go-name: OrganizationID
+                    x-oapi-codegen-extra-tags:
+                      db: org_id
+                      json: org_id
+                      yaml: org_id
+                    x-order: 4
+                    description: Environment organization ID
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                    default: 00000000-00000000-00000000-00000000
+                  owner:
+                    x-oapi-codegen-extra-tags:
+                      db: owner
+                      yaml: owner
+                    x-order: 5
+                    type: string
+                    description: Environment owner
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    x-order: 6
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    x-order: 7
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  deleted_at:
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      yaml: deleted_at
+                    x-go-type: sql.NullTime
+                    x-go-import: database/sql
+                    x-order: 8
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+              x-oapi-codegen-extra-tags:
+                db: environments
+                yaml: environments
+                gorm: '-'
+              x-order: 13
         registrantId:
           description: ID of the registrant.
           x-oapi-codegen-extra-tags:
@@ -32697,50 +33452,94 @@ components:
                 type: string
                 x-go-type-skip-optional-pointer: true
     environment_environment:
+      $id: https://schemas.meshery.io/environment.json
+      $schema: http://json-schema.org/draft-07/schema#
+      description: >-
+        Meshery Environments allow you to logically group related Connections
+        and their associated Credentials.. Learn more at
+        https://docs.meshery.io/concepts/logical/environments
+      additionalProperties: false
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - organization_id
+        - owner
       properties:
-        ID:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
+        id:
+          description: ID
+          x-order: 1
+          x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: id
-            json: id
-          x-go-type-name: GeneralId
-          x-go-type-skip-optional-pointer: true
-        name:
-          type: string
-          x-go-type-skip-optional-pointer: true
-        description:
-          type: string
-          x-go-type-skip-optional-pointer: true
-        organization_id:
+            yaml: id
           type: string
           format: uuid
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
+          default: 00000000-00000000-00000000-00000000
+        name:
+          x-oapi-codegen-extra-tags:
+            db: name
+            yaml: name
+          x-order: 2
+          type: string
+          description: Environment name
+        description:
+          x-oapi-codegen-extra-tags:
+            db: description
+            yaml: description
+          x-order: 3
+          type: string
+          description: Environment description
+        organization_id:
+          x-go-name: OrganizationID
           x-oapi-codegen-extra-tags:
             db: org_id
             json: org_id
-          x-go-type-name: OrganizationId
-          x-go-type-skip-optional-pointer: true
-        owner:
+            yaml: org_id
+          x-order: 4
+          description: Environment organization ID
           type: string
-          x-go-type-skip-optional-pointer: true
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          default: 00000000-00000000-00000000-00000000
+        owner:
+          x-oapi-codegen-extra-tags:
+            db: owner
+            yaml: owner
+          x-order: 5
+          type: string
+          description: Environment owner
         created_at:
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            yaml: created_at
+          x-order: 6
           type: string
           format: date-time
           x-go-type-skip-optional-pointer: true
         updated_at:
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            yaml: updated_at
+          x-order: 7
           type: string
           format: date-time
           x-go-type-skip-optional-pointer: true
         deleted_at:
-          description: SQL null Timestamp to handle null values of time.
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            yaml: deleted_at
           x-go-type: sql.NullTime
+          x-go-import: database/sql
+          x-order: 8
           type: string
+          format: date-time
           x-go-type-skip-optional-pointer: true
     environment_environmentConnectionMapping:
       properties:
@@ -32791,21 +33590,21 @@ components:
     environment_environmentPayload:
       properties:
         name:
-          type: string
-          x-go-type-skip-optional-pointer: true
           description: >-
             An environment is a collection of resources. Provide a name that
             meaningfully represents these resources. You can change the name of
             the environment even after its creation.
-        description:
           type: string
           x-go-type-skip-optional-pointer: true
+        description:
           description: >-
             An environment is a collection of resources, such as connections &
             credentail. Provide a detailed description to clarify the purpose of
             this environment and the types of resources it encompasses. You can
             modify the description at any Time. Learn more about environments
             [here](https://docs.meshery.io/concepts/logical/environments).
+          type: string
+          x-go-type-skip-optional-pointer: true
         OrganizationID:
           type: string
           description: >-
@@ -32835,50 +33634,94 @@ components:
           x-go-type-skip-optional-pointer: true
           items:
             x-go-type: Environment
+            $id: https://schemas.meshery.io/environment.json
+            $schema: http://json-schema.org/draft-07/schema#
+            description: >-
+              Meshery Environments allow you to logically group related
+              Connections and their associated Credentials.. Learn more at
+              https://docs.meshery.io/concepts/logical/environments
+            additionalProperties: false
+            type: object
+            required:
+              - id
+              - name
+              - description
+              - organization_id
+              - owner
             properties:
-              ID:
-                type: string
-                format: uuid
-                x-go-type: uuid.UUID
-                x-go-type-import:
-                  path: github.com/gofrs/uuid
+              id:
+                description: ID
+                x-order: 1
+                x-go-name: ID
                 x-oapi-codegen-extra-tags:
                   db: id
-                  json: id
-                x-go-type-name: GeneralId
-                x-go-type-skip-optional-pointer: true
-              name:
-                type: string
-                x-go-type-skip-optional-pointer: true
-              description:
-                type: string
-                x-go-type-skip-optional-pointer: true
-              organization_id:
+                  yaml: id
                 type: string
                 format: uuid
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
+                default: 00000000-00000000-00000000-00000000
+              name:
+                x-oapi-codegen-extra-tags:
+                  db: name
+                  yaml: name
+                x-order: 2
+                type: string
+                description: Environment name
+              description:
+                x-oapi-codegen-extra-tags:
+                  db: description
+                  yaml: description
+                x-order: 3
+                type: string
+                description: Environment description
+              organization_id:
+                x-go-name: OrganizationID
                 x-oapi-codegen-extra-tags:
                   db: org_id
                   json: org_id
-                x-go-type-name: OrganizationId
-                x-go-type-skip-optional-pointer: true
-              owner:
+                  yaml: org_id
+                x-order: 4
+                description: Environment organization ID
                 type: string
-                x-go-type-skip-optional-pointer: true
+                format: uuid
+                x-go-type: uuid.UUID
+                x-go-type-import:
+                  path: github.com/gofrs/uuid
+                default: 00000000-00000000-00000000-00000000
+              owner:
+                x-oapi-codegen-extra-tags:
+                  db: owner
+                  yaml: owner
+                x-order: 5
+                type: string
+                description: Environment owner
               created_at:
+                x-oapi-codegen-extra-tags:
+                  db: created_at
+                  yaml: created_at
+                x-order: 6
                 type: string
                 format: date-time
                 x-go-type-skip-optional-pointer: true
               updated_at:
+                x-oapi-codegen-extra-tags:
+                  db: updated_at
+                  yaml: updated_at
+                x-order: 7
                 type: string
                 format: date-time
                 x-go-type-skip-optional-pointer: true
               deleted_at:
-                description: SQL null Timestamp to handle null values of time.
+                x-oapi-codegen-extra-tags:
+                  db: deleted_at
+                  yaml: deleted_at
                 x-go-type: sql.NullTime
+                x-go-import: database/sql
+                x-order: 8
                 type: string
+                format: date-time
                 x-go-type-skip-optional-pointer: true
     Catalog_API_CatalogData:
       type: object
@@ -33351,7 +34194,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: registrant
                           json: registrant
-                          gorm: foreignKey:RegistrantId;references:Id
+                          gorm: foreignKey:RegistrantId;references:ID
                         x-order: 8
                         x-go-type: connection.Connection
                         x-go-type-import:
@@ -33366,13 +34209,24 @@ components:
                         additionalProperties: false
                         type: object
                         required:
-                          - kind
+                          - id
+                          - name
+                          - credential_id
                           - type
+                          - sub_type
+                          - kind
+                          - metadata
                           - status
+                          - user_id
+                          - environments
                         properties:
                           id:
-                            x-order: 1
                             description: ID
+                            x-order: 1
+                            x-go-name: ID
+                            x-oapi-codegen-extra-tags:
+                              db: id
+                              yaml: id
                             type: string
                             format: uuid
                             x-go-type: uuid.UUID
@@ -33387,7 +34241,7 @@ components:
                             type: string
                             description: Connection Name
                           credential_id:
-                            x-go-name: CredentialId
+                            x-go-name: CredentialID
                             x-oapi-codegen-extra-tags:
                               db: credential_id
                               yaml: credential_id
@@ -33425,6 +34279,7 @@ components:
                               db: metadata
                               yaml: metadata
                             x-order: 7
+                            x-go-type: JSONMap
                             type: object
                           status:
                             x-oapi-codegen-extra-tags:
@@ -33445,8 +34300,8 @@ components:
                           user_id:
                             x-go-name: UserID
                             x-oapi-codegen-extra-tags:
+                              db: user_id
                               yaml: user_id
-                              json: user_id
                             x-order: 9
                             type: string
                             format: uuid
@@ -33460,28 +34315,127 @@ components:
                             default: 00000000-00000000-00000000-00000000
                           created_at:
                             x-oapi-codegen-extra-tags:
+                              db: created_at
                               yaml: created_at
-                              json: created_at
                             x-order: 10
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
                           updated_at:
                             x-oapi-codegen-extra-tags:
+                              db: updated_at
                               yaml: updated_at
-                              json: updated_at
                             x-order: 11
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
                           deleted_at:
                             x-oapi-codegen-extra-tags:
+                              db: deleted_at
                               yaml: deleted_at
-                              json: deleted_at
                             x-order: 12
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
+                          environments:
+                            type: array
+                            items:
+                              x-go-type: environment.Environment
+                              $id: https://schemas.meshery.io/environment.json
+                              $schema: http://json-schema.org/draft-07/schema#
+                              description: >-
+                                Meshery Environments allow you to logically
+                                group related Connections and their associated
+                                Credentials.. Learn more at
+                                https://docs.meshery.io/concepts/logical/environments
+                              additionalProperties: false
+                              type: object
+                              required:
+                                - id
+                                - name
+                                - description
+                                - organization_id
+                                - owner
+                              properties:
+                                id:
+                                  description: ID
+                                  x-order: 1
+                                  x-go-name: ID
+                                  x-oapi-codegen-extra-tags:
+                                    db: id
+                                    yaml: id
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
+                                name:
+                                  x-oapi-codegen-extra-tags:
+                                    db: name
+                                    yaml: name
+                                  x-order: 2
+                                  type: string
+                                  description: Environment name
+                                description:
+                                  x-oapi-codegen-extra-tags:
+                                    db: description
+                                    yaml: description
+                                  x-order: 3
+                                  type: string
+                                  description: Environment description
+                                organization_id:
+                                  x-go-name: OrganizationID
+                                  x-oapi-codegen-extra-tags:
+                                    db: org_id
+                                    json: org_id
+                                    yaml: org_id
+                                  x-order: 4
+                                  description: Environment organization ID
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
+                                owner:
+                                  x-oapi-codegen-extra-tags:
+                                    db: owner
+                                    yaml: owner
+                                  x-order: 5
+                                  type: string
+                                  description: Environment owner
+                                created_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: created_at
+                                    yaml: created_at
+                                  x-order: 6
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                                updated_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: updated_at
+                                    yaml: updated_at
+                                  x-order: 7
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                                deleted_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: deleted_at
+                                    yaml: deleted_at
+                                  x-go-type: sql.NullTime
+                                  x-go-import: database/sql
+                                  x-order: 8
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                            x-oapi-codegen-extra-tags:
+                              db: environments
+                              yaml: environments
+                              gorm: '-'
+                            x-order: 13
                       registrantId:
                         description: ID of the registrant.
                         x-oapi-codegen-extra-tags:
@@ -39906,7 +40860,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: registrant
                           json: registrant
-                          gorm: foreignKey:RegistrantId;references:Id
+                          gorm: foreignKey:RegistrantId;references:ID
                         x-order: 8
                         x-go-type: connection.Connection
                         x-go-type-import:
@@ -39921,13 +40875,24 @@ components:
                         additionalProperties: false
                         type: object
                         required:
-                          - kind
+                          - id
+                          - name
+                          - credential_id
                           - type
+                          - sub_type
+                          - kind
+                          - metadata
                           - status
+                          - user_id
+                          - environments
                         properties:
                           id:
-                            x-order: 1
                             description: ID
+                            x-order: 1
+                            x-go-name: ID
+                            x-oapi-codegen-extra-tags:
+                              db: id
+                              yaml: id
                             type: string
                             format: uuid
                             x-go-type: uuid.UUID
@@ -39942,7 +40907,7 @@ components:
                             type: string
                             description: Connection Name
                           credential_id:
-                            x-go-name: CredentialId
+                            x-go-name: CredentialID
                             x-oapi-codegen-extra-tags:
                               db: credential_id
                               yaml: credential_id
@@ -39980,6 +40945,7 @@ components:
                               db: metadata
                               yaml: metadata
                             x-order: 7
+                            x-go-type: JSONMap
                             type: object
                           status:
                             x-oapi-codegen-extra-tags:
@@ -40000,8 +40966,8 @@ components:
                           user_id:
                             x-go-name: UserID
                             x-oapi-codegen-extra-tags:
+                              db: user_id
                               yaml: user_id
-                              json: user_id
                             x-order: 9
                             type: string
                             format: uuid
@@ -40015,28 +40981,127 @@ components:
                             default: 00000000-00000000-00000000-00000000
                           created_at:
                             x-oapi-codegen-extra-tags:
+                              db: created_at
                               yaml: created_at
-                              json: created_at
                             x-order: 10
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
                           updated_at:
                             x-oapi-codegen-extra-tags:
+                              db: updated_at
                               yaml: updated_at
-                              json: updated_at
                             x-order: 11
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
                           deleted_at:
                             x-oapi-codegen-extra-tags:
+                              db: deleted_at
                               yaml: deleted_at
-                              json: deleted_at
                             x-order: 12
                             type: string
                             format: date-time
                             x-go-type-skip-optional-pointer: true
+                          environments:
+                            type: array
+                            items:
+                              x-go-type: environment.Environment
+                              $id: https://schemas.meshery.io/environment.json
+                              $schema: http://json-schema.org/draft-07/schema#
+                              description: >-
+                                Meshery Environments allow you to logically
+                                group related Connections and their associated
+                                Credentials.. Learn more at
+                                https://docs.meshery.io/concepts/logical/environments
+                              additionalProperties: false
+                              type: object
+                              required:
+                                - id
+                                - name
+                                - description
+                                - organization_id
+                                - owner
+                              properties:
+                                id:
+                                  description: ID
+                                  x-order: 1
+                                  x-go-name: ID
+                                  x-oapi-codegen-extra-tags:
+                                    db: id
+                                    yaml: id
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
+                                name:
+                                  x-oapi-codegen-extra-tags:
+                                    db: name
+                                    yaml: name
+                                  x-order: 2
+                                  type: string
+                                  description: Environment name
+                                description:
+                                  x-oapi-codegen-extra-tags:
+                                    db: description
+                                    yaml: description
+                                  x-order: 3
+                                  type: string
+                                  description: Environment description
+                                organization_id:
+                                  x-go-name: OrganizationID
+                                  x-oapi-codegen-extra-tags:
+                                    db: org_id
+                                    json: org_id
+                                    yaml: org_id
+                                  x-order: 4
+                                  description: Environment organization ID
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
+                                owner:
+                                  x-oapi-codegen-extra-tags:
+                                    db: owner
+                                    yaml: owner
+                                  x-order: 5
+                                  type: string
+                                  description: Environment owner
+                                created_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: created_at
+                                    yaml: created_at
+                                  x-order: 6
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                                updated_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: updated_at
+                                    yaml: updated_at
+                                  x-order: 7
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                                deleted_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: deleted_at
+                                    yaml: deleted_at
+                                  x-go-type: sql.NullTime
+                                  x-go-import: database/sql
+                                  x-order: 8
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                            x-oapi-codegen-extra-tags:
+                              db: environments
+                              yaml: environments
+                              gorm: '-'
+                            x-order: 13
                       registrantId:
                         description: ID of the registrant.
                         x-oapi-codegen-extra-tags:
@@ -46668,15 +47733,13 @@ components:
           schema:
             properties:
               name:
-                type: string
-                x-go-type-skip-optional-pointer: true
                 description: >-
                   An environment is a collection of resources. Provide a name
                   that meaningfully represents these resources. You can change
                   the name of the environment even after its creation.
-              description:
                 type: string
                 x-go-type-skip-optional-pointer: true
+              description:
                 description: >-
                   An environment is a collection of resources, such as
                   connections & credentail. Provide a detailed description to
@@ -46684,6 +47747,8 @@ components:
                   resources it encompasses. You can modify the description at
                   any Time. Learn more about environments
                   [here](https://docs.meshery.io/concepts/logical/environments).
+                type: string
+                x-go-type-skip-optional-pointer: true
               OrganizationID:
                 type: string
                 description: >-
