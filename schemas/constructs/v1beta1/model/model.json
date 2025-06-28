@@ -104,7 +104,7 @@
       "x-go-type-import": {
         "path": "github.com/meshery/schemas/models/v1beta1/connection"
       },
-      "$ref": "../connection.json"
+      "$ref": "../connection/connection.json"
     },
     "registrantId": {
       "description": "ID of the registrant.",
