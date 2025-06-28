@@ -4,7 +4,6 @@
 package connection
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -51,7 +50,7 @@ type Connection struct {
 	UserID       uuid.UUID                 `db:"user_id" json:"user_id" yaml:"user_id"`
 	CreatedAt    time.Time                 `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt    time.Time                 `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	DeletedAt    sql.NullTime              `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt    time.Time                 `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	Environments []environment.Environment `db:"environments" gorm:"-" json:"environments" yaml:"environments"`
 }
 

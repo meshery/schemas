@@ -163,8 +163,6 @@
               "db": "deleted_at",
               "yaml": "deleted_at"
             },
-            "x-go-type": "sql.NullTime",
-            "x-go-import": "database/sql",
             "x-order": 12,
             "type": "string",
             "format": "date-time",
