@@ -78,6 +78,7 @@
         "yaml": "metadata"
       },
       "x-order": 7,
+      "x-go-type": "JSONMap",
       "type": "object"
     },
     "status": {

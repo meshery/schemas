@@ -4,8 +4,10 @@ package connection
 
 import (
 	"crypto/md5"
+	"database/sql/driver"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"sync"
 
 	"github.com/gofrs/uuid"
@@ -51,4 +53,25 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 
 	// else return the id of the existing connection
 	return connection.ID, nil
+}
+
+// TODO: this probably, could be promoted to meshkit,
+//
+// JSONMap is required here, because if field is map[string]any
+// gorm does not know how to work with it and returns
+// [error] unsupported data type: &map[]
+type JSONMap map[string]any
+
+// Value converts the JSON map to a database value.
+func (j JSONMap) Value() (driver.Value, error) {
+	return json.Marshal(j)
+}
+
+// Scan converts the database value to a JSON map.
+func (j *JSONMap) Scan(value any) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+	return json.Unmarshal(bytes, j)
 }

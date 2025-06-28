@@ -41,8 +41,8 @@ type Connection struct {
 	SubType string `db:"sub_type" json:"sub_type" yaml:"sub_type"`
 
 	// Kind Connection Kind
-	Kind     string                 `db:"kind" json:"kind" yaml:"kind"`
-	Metadata map[string]interface{} `db:"metadata" json:"metadata" yaml:"metadata"`
+	Kind     string  `db:"kind" json:"kind" yaml:"kind"`
+	Metadata JSONMap `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// Status Connection Status
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
