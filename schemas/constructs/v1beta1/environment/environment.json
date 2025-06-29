@@ -1,0 +1,90 @@
+{
+  "$id": "https://schemas.meshery.io/environment.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+  "additionalProperties": false,
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "description",
+    "organization_id",
+    "owner"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "../../core.json#/definitions/uuid",
+      "description": "ID",
+      "x-order": 1,
+      "x-go-name": "ID",
+      "x-oapi-codegen-extra-tags": {
+        "db": "id",
+        "yaml": "id"
+      }
+    },
+    "name": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "name",
+        "yaml": "name"
+      },
+      "x-order": 2,
+      "type": "string",
+      "description": "Environment name"
+    },
+    "description": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "description",
+        "yaml": "description"
+      },
+      "x-order": 3,
+      "type": "string",
+      "description": "Environment description"
+    },
+    "organization_id": {
+      "x-go-name": "OrganizationID",
+      "x-oapi-codegen-extra-tags": {
+        "db": "org_id",
+        "json": "org_id",
+        "yaml": "org_id"
+      },
+      "x-order": 4,
+      "$ref": "../../core.json#/definitions/uuid",
+      "description": "Environment organization ID"
+    },
+    "owner": {
+      "x-oapi-codegen-extra-tags": {
+        "db": "owner",
+        "yaml": "owner"
+      },
+      "x-order": 5,
+      "type": "string",
+      "description": "Environment owner"
+    },
+    "created_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
+        "db": "created_at",
+        "yaml": "created_at"
+      },
+      "x-order": 6
+    },
+    "updated_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
+        "db": "updated_at",
+        "yaml": "updated_at"
+      },
+      "x-order": 7
+    },
+    "deleted_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
+        "db": "deleted_at",
+        "yaml": "deleted_at"
+      },
+      "x-go-type": "sql.NullTime",
+      "x-go-import": "database/sql",
+      "x-order": 8
+    }
+  }
+}

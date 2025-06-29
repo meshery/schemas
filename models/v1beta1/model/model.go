@@ -186,7 +186,7 @@ type ModelDefinition struct {
 	CategoryId uuid.UUID `gorm:"categoryID" json:"-" yaml:"-"`
 
 	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
-	Registrant connection.Connection `gorm:"foreignKey:RegistrantId;references:Id" json:"registrant" yaml:"registrant"`
+	Registrant connection.Connection `gorm:"foreignKey:RegistrantId;references:ID" json:"registrant" yaml:"registrant"`
 
 	// RegistrantId ID of the registrant.
 	RegistrantId uuid.UUID `gorm:"column:connection_id" json:"connection_id" yaml:"connection_id"`

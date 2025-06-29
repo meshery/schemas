@@ -10,18 +10,25 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// Environment defines model for environment.
+// Environment Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments
 type Environment struct {
-	ID        uuid.UUID `db:"id" json:"id" yaml:"id"`
-	CreatedAt time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	// ID ID
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt      sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Description    string       `json:"description,omitempty" yaml:"description,omitempty"`
-	Name           string       `json:"name,omitempty" yaml:"name,omitempty"`
-	OrganizationId uuid.UUID    `db:"org_id" json:"org_id" yaml:"org_id"`
-	Owner          string       `json:"owner,omitempty" yaml:"owner,omitempty"`
-	UpdatedAt      time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	// Name Environment name
+	Name string `db:"name" json:"name" yaml:"name"`
+
+	// Description Environment description
+	Description string `db:"description" json:"description" yaml:"description"`
+
+	// OrganizationID Environment organization ID
+	OrganizationID uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// Owner Environment owner
+	Owner     string       `db:"owner" json:"owner" yaml:"owner"`
+	CreatedAt time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	UpdatedAt time.Time    `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // EnvironmentConnectionMapping defines model for environmentConnectionMapping.
