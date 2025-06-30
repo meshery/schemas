@@ -303,14 +303,14 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Connection Name */
           name: string;
           /** Credential ID */
-          credential_id: string;
+          credential_id?: string;
           /** Connection Type */
           type: string;
           /** Connection Subtype */
           sub_type: string;
           /** Connection Kind */
           kind: string;
-          metadata: object;
+          metadata?: object;
           /** Connection Status */
           status:
             | "discovered"
@@ -322,11 +322,11 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             | "deleted"
             | "not found";
           /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-          user_id: string;
+          user_id?: string;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string;
-          environments: {
+          environments?: {
             /** ID */
             id: string;
             /** Environment name */
@@ -1775,14 +1775,14 @@ export type PostEvaluateApiArg = {
             /** Connection Name */
             name: string;
             /** Credential ID */
-            credential_id: string;
+            credential_id?: string;
             /** Connection Type */
             type: string;
             /** Connection Subtype */
             sub_type: string;
             /** Connection Kind */
             kind: string;
-            metadata: object;
+            metadata?: object;
             /** Connection Status */
             status:
               | "discovered"
@@ -1794,11 +1794,11 @@ export type PostEvaluateApiArg = {
               | "deleted"
               | "not found";
             /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-            user_id: string;
+            user_id?: string;
             created_at?: string;
             updated_at?: string;
             deleted_at?: string;
-            environments: {
+            environments?: {
               /** ID */
               id: string;
               /** Environment name */

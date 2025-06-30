@@ -397,14 +397,10 @@
                                   "required": [
                                     "id",
                                     "name",
-                                    "credential_id",
                                     "type",
                                     "sub_type",
                                     "kind",
-                                    "metadata",
-                                    "status",
-                                    "user_id",
-                                    "environments"
+                                    "status"
                                   ],
                                   "properties": {
                                     "id": {
@@ -482,6 +478,7 @@
                                       },
                                       "x-order": 7,
                                       "x-go-type": "core.Map",
+                                      "x-go-type-skip-optional-pointer": true,
                                       "type": "object"
                                     },
                                     "status": {
@@ -666,6 +663,7 @@
                                         "yaml": "environments",
                                         "gorm": "-"
                                       },
+                                      "x-go-type-skip-optional-pointer": true,
                                       "x-order": 13
                                     }
                                   }
@@ -6931,14 +6929,10 @@
                                     "required": [
                                       "id",
                                       "name",
-                                      "credential_id",
                                       "type",
                                       "sub_type",
                                       "kind",
-                                      "metadata",
-                                      "status",
-                                      "user_id",
-                                      "environments"
+                                      "status"
                                     ],
                                     "properties": {
                                       "id": {
@@ -7016,6 +7010,7 @@
                                         },
                                         "x-order": 7,
                                         "x-go-type": "core.Map",
+                                        "x-go-type-skip-optional-pointer": true,
                                         "type": "object"
                                       },
                                       "status": {
@@ -7200,6 +7195,7 @@
                                           "yaml": "environments",
                                           "gorm": "-"
                                         },
+                                        "x-go-type-skip-optional-pointer": true,
                                         "x-order": 13
                                       }
                                     }
@@ -13489,14 +13485,10 @@
                           "required": [
                             "id",
                             "name",
-                            "credential_id",
                             "type",
                             "sub_type",
                             "kind",
-                            "metadata",
-                            "status",
-                            "user_id",
-                            "environments"
+                            "status"
                           ],
                           "properties": {
                             "id": {
@@ -13574,6 +13566,7 @@
                               },
                               "x-order": 7,
                               "x-go-type": "core.Map",
+                              "x-go-type-skip-optional-pointer": true,
                               "type": "object"
                             },
                             "status": {
@@ -13758,6 +13751,7 @@
                                 "yaml": "environments",
                                 "gorm": "-"
                               },
+                              "x-go-type-skip-optional-pointer": true,
                               "x-order": 13
                             }
                           }
@@ -20015,14 +20009,10 @@
                           "required": [
                             "id",
                             "name",
-                            "credential_id",
                             "type",
                             "sub_type",
                             "kind",
-                            "metadata",
-                            "status",
-                            "user_id",
-                            "environments"
+                            "status"
                           ],
                           "properties": {
                             "id": {
@@ -20100,6 +20090,7 @@
                               },
                               "x-order": 7,
                               "x-go-type": "core.Map",
+                              "x-go-type-skip-optional-pointer": true,
                               "type": "object"
                             },
                             "status": {
@@ -20284,6 +20275,7 @@
                                 "yaml": "environments",
                                 "gorm": "-"
                               },
+                              "x-go-type-skip-optional-pointer": true,
                               "x-order": 13
                             }
                           }

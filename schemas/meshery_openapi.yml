@@ -1324,14 +1324,10 @@ paths:
                                 required:
                                   - id
                                   - name
-                                  - credential_id
                                   - type
                                   - sub_type
                                   - kind
-                                  - metadata
                                   - status
-                                  - user_id
-                                  - environments
                                 properties:
                                   id:
                                     description: ID
@@ -1393,6 +1389,7 @@ paths:
                                       yaml: metadata
                                     x-order: 7
                                     x-go-type: core.Map
+                                    x-go-type-skip-optional-pointer: true
                                     type: object
                                   status:
                                     x-oapi-codegen-extra-tags:
@@ -1552,6 +1549,7 @@ paths:
                                       db: environments
                                       yaml: environments
                                       gorm: '-'
+                                    x-go-type-skip-optional-pointer: true
                                     x-order: 13
                               registrantId:
                                 description: ID of the registrant.
@@ -8163,14 +8161,10 @@ paths:
                                   required:
                                     - id
                                     - name
-                                    - credential_id
                                     - type
                                     - sub_type
                                     - kind
-                                    - metadata
                                     - status
-                                    - user_id
-                                    - environments
                                   properties:
                                     id:
                                       description: ID
@@ -8232,6 +8226,7 @@ paths:
                                         yaml: metadata
                                       x-order: 7
                                       x-go-type: core.Map
+                                      x-go-type-skip-optional-pointer: true
                                       type: object
                                     status:
                                       x-oapi-codegen-extra-tags:
@@ -8391,6 +8386,7 @@ paths:
                                         db: environments
                                         yaml: environments
                                         gorm: '-'
+                                      x-go-type-skip-optional-pointer: true
                                       x-order: 13
                                 registrantId:
                                   description: ID of the registrant.
@@ -15018,14 +15014,10 @@ components:
                     required:
                       - id
                       - name
-                      - credential_id
                       - type
                       - sub_type
                       - kind
-                      - metadata
                       - status
-                      - user_id
-                      - environments
                     properties:
                       id:
                         description: ID
@@ -15087,6 +15079,7 @@ components:
                           yaml: metadata
                         x-order: 7
                         x-go-type: core.Map
+                        x-go-type-skip-optional-pointer: true
                         type: object
                       status:
                         x-oapi-codegen-extra-tags:
@@ -15243,6 +15236,7 @@ components:
                           db: environments
                           yaml: environments
                           gorm: '-'
+                        x-go-type-skip-optional-pointer: true
                         x-order: 13
                   registrantId:
                     description: ID of the registrant.
@@ -21714,14 +21708,10 @@ components:
                         required:
                           - id
                           - name
-                          - credential_id
                           - type
                           - sub_type
                           - kind
-                          - metadata
                           - status
-                          - user_id
-                          - environments
                         properties:
                           id:
                             description: ID
@@ -21783,6 +21773,7 @@ components:
                               yaml: metadata
                             x-order: 7
                             x-go-type: core.Map
+                            x-go-type-skip-optional-pointer: true
                             type: object
                           status:
                             x-oapi-codegen-extra-tags:
@@ -21939,6 +21930,7 @@ components:
                               db: environments
                               yaml: environments
                               gorm: '-'
+                            x-go-type-skip-optional-pointer: true
                             x-order: 13
                       registrantId:
                         description: ID of the registrant.
@@ -28524,14 +28516,10 @@ components:
                               required:
                                 - id
                                 - name
-                                - credential_id
                                 - type
                                 - sub_type
                                 - kind
-                                - metadata
                                 - status
-                                - user_id
-                                - environments
                               properties:
                                 id:
                                   description: ID
@@ -28593,6 +28581,7 @@ components:
                                     yaml: metadata
                                   x-order: 7
                                   x-go-type: core.Map
+                                  x-go-type-skip-optional-pointer: true
                                   type: object
                                 status:
                                   x-oapi-codegen-extra-tags:
@@ -28752,6 +28741,7 @@ components:
                                     db: environments
                                     yaml: environments
                                     gorm: '-'
+                                  x-go-type-skip-optional-pointer: true
                                   x-order: 13
                             registrantId:
                               description: ID of the registrant.
@@ -35468,14 +35458,10 @@ components:
                             required:
                               - id
                               - name
-                              - credential_id
                               - type
                               - sub_type
                               - kind
-                              - metadata
                               - status
-                              - user_id
-                              - environments
                             properties:
                               id:
                                 description: ID
@@ -35537,6 +35523,7 @@ components:
                                   yaml: metadata
                                 x-order: 7
                                 x-go-type: core.Map
+                                x-go-type-skip-optional-pointer: true
                                 type: object
                               status:
                                 x-oapi-codegen-extra-tags:
@@ -35694,6 +35681,7 @@ components:
                                   db: environments
                                   yaml: environments
                                   gorm: '-'
+                                x-go-type-skip-optional-pointer: true
                                 x-order: 13
                           registrantId:
                             description: ID of the registrant.
@@ -42108,14 +42096,10 @@ components:
               required:
                 - id
                 - name
-                - credential_id
                 - type
                 - sub_type
                 - kind
-                - metadata
                 - status
-                - user_id
-                - environments
               properties:
                 id:
                   description: ID
@@ -42177,6 +42161,7 @@ components:
                     yaml: metadata
                   x-order: 7
                   x-go-type: core.Map
+                  x-go-type-skip-optional-pointer: true
                   type: object
                 status:
                   x-oapi-codegen-extra-tags:
@@ -42332,6 +42317,7 @@ components:
                     db: environments
                     yaml: environments
                     gorm: '-'
+                  x-go-type-skip-optional-pointer: true
                   x-order: 13
             registrantId:
               description: ID of the registrant.
@@ -43964,14 +43950,10 @@ components:
           required:
             - id
             - name
-            - credential_id
             - type
             - sub_type
             - kind
-            - metadata
             - status
-            - user_id
-            - environments
           properties:
             id:
               description: ID
@@ -44033,6 +44015,7 @@ components:
                 yaml: metadata
               x-order: 7
               x-go-type: core.Map
+              x-go-type-skip-optional-pointer: true
               type: object
             status:
               x-oapi-codegen-extra-tags:
@@ -44188,6 +44171,7 @@ components:
                 db: environments
                 yaml: environments
                 gorm: '-'
+              x-go-type-skip-optional-pointer: true
               x-order: 13
         registrantId:
           description: ID of the registrant.
@@ -46999,14 +46983,10 @@ components:
                         required:
                           - id
                           - name
-                          - credential_id
                           - type
                           - sub_type
                           - kind
-                          - metadata
                           - status
-                          - user_id
-                          - environments
                         properties:
                           id:
                             description: ID
@@ -47068,6 +47048,7 @@ components:
                               yaml: metadata
                             x-order: 7
                             x-go-type: core.Map
+                            x-go-type-skip-optional-pointer: true
                             type: object
                           status:
                             x-oapi-codegen-extra-tags:
@@ -47224,6 +47205,7 @@ components:
                               db: environments
                               yaml: environments
                               gorm: '-'
+                            x-go-type-skip-optional-pointer: true
                             x-order: 13
                       registrantId:
                         description: ID of the registrant.
@@ -53673,14 +53655,10 @@ components:
                         required:
                           - id
                           - name
-                          - credential_id
                           - type
                           - sub_type
                           - kind
-                          - metadata
                           - status
-                          - user_id
-                          - environments
                         properties:
                           id:
                             description: ID
@@ -53742,6 +53720,7 @@ components:
                               yaml: metadata
                             x-order: 7
                             x-go-type: core.Map
+                            x-go-type-skip-optional-pointer: true
                             type: object
                           status:
                             x-oapi-codegen-extra-tags:
@@ -53898,6 +53877,7 @@ components:
                               db: environments
                               yaml: environments
                               gorm: '-'
+                            x-go-type-skip-optional-pointer: true
                             x-order: 13
                       registrantId:
                         description: ID of the registrant.
