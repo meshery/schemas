@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1beta1/environment"
 )
 
@@ -40,8 +41,8 @@ type Connection struct {
 	SubType string `db:"sub_type" json:"sub_type" yaml:"sub_type"`
 
 	// Kind Connection Kind
-	Kind     string  `db:"kind" json:"kind" yaml:"kind"`
-	Metadata JSONMap `db:"metadata" json:"metadata" yaml:"metadata"`
+	Kind     string   `db:"kind" json:"kind" yaml:"kind"`
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// Status Connection Status
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
@@ -50,7 +51,7 @@ type Connection struct {
 	UserID       uuid.UUID                 `db:"user_id" json:"user_id" yaml:"user_id"`
 	CreatedAt    time.Time                 `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt    time.Time                 `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	DeletedAt    time.Time                 `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt    core.NullTime             `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	Environments []environment.Environment `db:"environments" gorm:"-" json:"environments" yaml:"environments"`
 }
 

@@ -481,7 +481,7 @@
                                         "yaml": "metadata"
                                       },
                                       "x-order": 7,
-                                      "x-go-type": "JSONMap",
+                                      "x-go-type": "core.Map",
                                       "type": "object"
                                     },
                                     "status": {
@@ -544,6 +544,7 @@
                                         "db": "deleted_at",
                                         "yaml": "deleted_at"
                                       },
+                                      "x-go-type": "core.NullTime",
                                       "x-order": 12,
                                       "type": "string",
                                       "format": "date-time",
@@ -651,7 +652,7 @@
                                               "db": "deleted_at",
                                               "yaml": "deleted_at"
                                             },
-                                            "x-go-type": "sql.NullTime",
+                                            "x-go-type": "core.NullTime",
                                             "x-go-import": "database/sql",
                                             "x-order": 8,
                                             "type": "string",
@@ -2555,7 +2556,7 @@
                                             }
                                           },
                                           "subType": {
-                                            "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                            "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship.",
                                             "type": "string",
                                             "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                             "oneOf": [
@@ -2590,6 +2591,10 @@
                                               {
                                                 "const": "annotation",
                                                 "description": "A relationship that provide valuable context for users, controllers, and third-party tools within the Meshery ecosystem."
+                                              },
+                                              {
+                                                "const": "reference",
+                                                "description": "A reference relationship  is a declarative linkage where one resource identifies or depends on another resource by referencing its name, kind, API version, or some other property"
                                               }
                                             ],
                                             "x-oapi-codegen-extra-tags": {
@@ -7010,7 +7015,7 @@
                                           "yaml": "metadata"
                                         },
                                         "x-order": 7,
-                                        "x-go-type": "JSONMap",
+                                        "x-go-type": "core.Map",
                                         "type": "object"
                                       },
                                       "status": {
@@ -7073,6 +7078,7 @@
                                           "db": "deleted_at",
                                           "yaml": "deleted_at"
                                         },
+                                        "x-go-type": "core.NullTime",
                                         "x-order": 12,
                                         "type": "string",
                                         "format": "date-time",
@@ -7180,7 +7186,7 @@
                                                 "db": "deleted_at",
                                                 "yaml": "deleted_at"
                                               },
-                                              "x-go-type": "sql.NullTime",
+                                              "x-go-type": "core.NullTime",
                                               "x-go-import": "database/sql",
                                               "x-order": 8,
                                               "type": "string",
@@ -9084,7 +9090,7 @@
                                               }
                                             },
                                             "subType": {
-                                              "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                              "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship.",
                                               "type": "string",
                                               "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                               "oneOf": [
@@ -9119,6 +9125,10 @@
                                                 {
                                                   "const": "annotation",
                                                   "description": "A relationship that provide valuable context for users, controllers, and third-party tools within the Meshery ecosystem."
+                                                },
+                                                {
+                                                  "const": "reference",
+                                                  "description": "A reference relationship  is a declarative linkage where one resource identifies or depends on another resource by referencing its name, kind, API version, or some other property"
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -13563,7 +13573,7 @@
                                 "yaml": "metadata"
                               },
                               "x-order": 7,
-                              "x-go-type": "JSONMap",
+                              "x-go-type": "core.Map",
                               "type": "object"
                             },
                             "status": {
@@ -13626,6 +13636,7 @@
                                 "db": "deleted_at",
                                 "yaml": "deleted_at"
                               },
+                              "x-go-type": "core.NullTime",
                               "x-order": 12,
                               "type": "string",
                               "format": "date-time",
@@ -13733,7 +13744,7 @@
                                       "db": "deleted_at",
                                       "yaml": "deleted_at"
                                     },
-                                    "x-go-type": "sql.NullTime",
+                                    "x-go-type": "core.NullTime",
                                     "x-go-import": "database/sql",
                                     "x-order": 8,
                                     "type": "string",
@@ -15637,7 +15648,7 @@
                                     }
                                   },
                                   "subType": {
-                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship.",
                                     "type": "string",
                                     "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                     "oneOf": [
@@ -15672,6 +15683,10 @@
                                       {
                                         "const": "annotation",
                                         "description": "A relationship that provide valuable context for users, controllers, and third-party tools within the Meshery ecosystem."
+                                      },
+                                      {
+                                        "const": "reference",
+                                        "description": "A reference relationship  is a declarative linkage where one resource identifies or depends on another resource by referencing its name, kind, API version, or some other property"
                                       }
                                     ],
                                     "x-oapi-codegen-extra-tags": {
@@ -20084,7 +20099,7 @@
                                 "yaml": "metadata"
                               },
                               "x-order": 7,
-                              "x-go-type": "JSONMap",
+                              "x-go-type": "core.Map",
                               "type": "object"
                             },
                             "status": {
@@ -20147,6 +20162,7 @@
                                 "db": "deleted_at",
                                 "yaml": "deleted_at"
                               },
+                              "x-go-type": "core.NullTime",
                               "x-order": 12,
                               "type": "string",
                               "format": "date-time",
@@ -20254,7 +20270,7 @@
                                       "db": "deleted_at",
                                       "yaml": "deleted_at"
                                     },
-                                    "x-go-type": "sql.NullTime",
+                                    "x-go-type": "core.NullTime",
                                     "x-go-import": "database/sql",
                                     "x-order": 8,
                                     "type": "string",
@@ -22158,7 +22174,7 @@
                                     }
                                   },
                                   "subType": {
-                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.",
+                                    "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship.",
                                     "type": "string",
                                     "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
                                     "oneOf": [
@@ -22193,6 +22209,10 @@
                                       {
                                         "const": "annotation",
                                         "description": "A relationship that provide valuable context for users, controllers, and third-party tools within the Meshery ecosystem."
+                                      },
+                                      {
+                                        "const": "reference",
+                                        "description": "A reference relationship  is a declarative linkage where one resource identifies or depends on another resource by referencing its name, kind, API version, or some other property"
                                       }
                                     ],
                                     "x-oapi-codegen-extra-tags": {

@@ -241,7 +241,7 @@
               "db": "deleted_at",
               "yaml": "deleted_at"
             },
-            "x-go-type": "sql.NullTime",
+            "x-go-type": "core.NullTime",
             "x-go-import": "database/sql",
             "x-order": 8,
             "type": "string",
@@ -454,7 +454,7 @@
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
-                  "x-go-type": "sql.NullTime",
+                  "x-go-type": "core.NullTime",
                   "x-go-import": "database/sql",
                   "x-order": 8,
                   "type": "string",
@@ -653,7 +653,7 @@
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "core.NullTime",
                       "x-go-import": "database/sql",
                       "x-order": 8,
                       "type": "string",
@@ -859,7 +859,7 @@
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "sql.NullTime",
+                            "x-go-type": "core.NullTime",
                             "x-go-import": "database/sql",
                             "x-order": 8,
                             "type": "string",

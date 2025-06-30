@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 )
 
 // Environment Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments
@@ -25,10 +26,10 @@ type Environment struct {
 	OrganizationID uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// Owner Environment owner
-	Owner     string       `db:"owner" json:"owner" yaml:"owner"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	UpdatedAt time.Time    `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Owner     string        `db:"owner" json:"owner" yaml:"owner"`
+	CreatedAt time.Time     `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	UpdatedAt time.Time     `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 }
 
 // EnvironmentConnectionMapping defines model for environmentConnectionMapping.

@@ -813,7 +813,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             kind: "action" | "mutate" | "view" | "interaction";
             /** Classification of capabilities. Used to group capabilities similar in nature. */
             type: string;
-            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship. */
             subType?:
               | "inventory"
               | "matchLabels"
@@ -822,7 +822,8 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
               | "firewall"
               | "mount"
               | "alias"
-              | "annotation";
+              | "annotation"
+              | "reference";
             /** Key that backs the capability. */
             key?: string;
             /** State of the entity in which the capability is applicable. */
@@ -2284,7 +2285,7 @@ export type PostEvaluateApiArg = {
               kind: "action" | "mutate" | "view" | "interaction";
               /** Classification of capabilities. Used to group capabilities similar in nature. */
               type: string;
-              /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+              /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship. */
               subType?:
                 | "inventory"
                 | "matchLabels"
@@ -2293,7 +2294,8 @@ export type PostEvaluateApiArg = {
                 | "firewall"
                 | "mount"
                 | "alias"
-                | "annotation";
+                | "annotation"
+                | "reference";
               /** Key that backs the capability. */
               key?: string;
               /** State of the entity in which the capability is applicable. */
