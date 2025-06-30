@@ -22,7 +22,13 @@ func NewTime(t time.Time) NullTime {
 
 // Scan implements the Scanner interface.
 func (nt *NullTime) Scan(value interface{}) error {
-	nt.Time, nt.Valid = value.(time.Time)
+	if value == nil {
+		nt.Time, nt.Valid = time.Time{}, false
+		return nil
+	}
+	t, ok := value.(time.Time)
+	nt.Time = t
+	nt.Valid = ok
 	return nil
 }
 
