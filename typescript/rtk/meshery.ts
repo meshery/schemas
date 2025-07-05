@@ -303,14 +303,14 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Connection Name */
           name: string;
           /** Credential ID */
-          credential_id: string;
+          credential_id?: string;
           /** Connection Type */
           type: string;
           /** Connection Subtype */
           sub_type: string;
           /** Connection Kind */
           kind: string;
-          metadata: object;
+          metadata?: object;
           /** Connection Status */
           status:
             | "discovered"
@@ -322,11 +322,11 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             | "deleted"
             | "not found";
           /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-          user_id: string;
+          user_id?: string;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string;
-          environments: {
+          environments?: {
             /** ID */
             id: string;
             /** Environment name */
@@ -813,7 +813,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             kind: "action" | "mutate" | "view" | "interaction";
             /** Classification of capabilities. Used to group capabilities similar in nature. */
             type: string;
-            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship. */
             subType?:
               | "inventory"
               | "matchLabels"
@@ -822,7 +822,8 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
               | "firewall"
               | "mount"
               | "alias"
-              | "annotation";
+              | "annotation"
+              | "reference";
             /** Key that backs the capability. */
             key?: string;
             /** State of the entity in which the capability is applicable. */
@@ -1774,14 +1775,14 @@ export type PostEvaluateApiArg = {
             /** Connection Name */
             name: string;
             /** Credential ID */
-            credential_id: string;
+            credential_id?: string;
             /** Connection Type */
             type: string;
             /** Connection Subtype */
             sub_type: string;
             /** Connection Kind */
             kind: string;
-            metadata: object;
+            metadata?: object;
             /** Connection Status */
             status:
               | "discovered"
@@ -1793,11 +1794,11 @@ export type PostEvaluateApiArg = {
               | "deleted"
               | "not found";
             /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-            user_id: string;
+            user_id?: string;
             created_at?: string;
             updated_at?: string;
             deleted_at?: string;
-            environments: {
+            environments?: {
               /** ID */
               id: string;
               /** Environment name */
@@ -2284,7 +2285,7 @@ export type PostEvaluateApiArg = {
               kind: "action" | "mutate" | "view" | "interaction";
               /** Classification of capabilities. Used to group capabilities similar in nature. */
               type: string;
-              /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
+              /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship. */
               subType?:
                 | "inventory"
                 | "matchLabels"
@@ -2293,7 +2294,8 @@ export type PostEvaluateApiArg = {
                 | "firewall"
                 | "mount"
                 | "alias"
-                | "annotation";
+                | "annotation"
+                | "reference";
               /** Key that backs the capability. */
               key?: string;
               /** State of the entity in which the capability is applicable. */

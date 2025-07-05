@@ -7,3 +7,5 @@ components:
   schemas:
     Connection:
       $ref: "./connection.json"
+    ConnectionPage:
+      $ref: "./connection_page.json"

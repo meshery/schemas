@@ -7,14 +7,10 @@
   "required": [
     "id",
     "name",
-    "credential_id",
     "type",
     "sub_type",
     "kind",
-    "metadata",
-    "status",
-    "user_id",
-    "environments"
+    "status"
   ],
   "properties": {
     "id": {
@@ -79,7 +75,8 @@
         "yaml": "metadata"
       },
       "x-order": 7,
-      "x-go-type": "JSONMap",
+      "x-go-type": "core.Map",
+      "x-go-type-skip-optional-pointer": true,
       "type": "object"
     },
     "status": {
@@ -132,6 +129,7 @@
         "db": "deleted_at",
         "yaml": "deleted_at"
       },
+      "x-go-type": "core.NullTime",
       "x-order": 12
     },
     "environments": {
@@ -145,6 +143,7 @@
         "yaml": "environments",
         "gorm": "-"
       },
+      "x-go-type-skip-optional-pointer": true,
       "x-order": 13
     }
   }
