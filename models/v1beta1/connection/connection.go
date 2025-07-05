@@ -57,3 +57,17 @@ type Connection struct {
 
 // ConnectionStatus Connection Status
 type ConnectionStatus string
+
+// ConnectionPage Represents a page of connections with a meta information about connections number
+type ConnectionPage struct {
+	Connections []*Connection `json:"connections" yaml:"connections"`
+
+	// TotalCount Total number of connections on all pages
+	TotalCount int `json:"total_count" yaml:"total_count"`
+
+	// Page Page number
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of elements per page
+	PageSize int `json:"page_size" yaml:"page_size"`
+}
