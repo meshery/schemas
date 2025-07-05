@@ -809,9 +809,19 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
    */
   type: string;
   /**
-   * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability.
+   * Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship.
    */
-  subType?: ("inventory" | "matchLabels" | "permission" | "network" | "firewall" | "mount" | "alias" | "annotation") &
+  subType?: (
+    | "inventory"
+    | "matchLabels"
+    | "permission"
+    | "network"
+    | "firewall"
+    | "mount"
+    | "alias"
+    | "annotation"
+    | "reference"
+  ) &
     string;
   /**
    * Key that backs the capability.

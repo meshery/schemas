@@ -17,6 +17,10 @@ model:
     id: 00000000-00000000-00000000-00000000
     credential_id: 00000000-00000000-00000000-00000000
     user_id: 00000000-00000000-00000000-00000000
+    environments:
+      items:
+        id: 00000000-00000000-00000000-00000000
+        organization_id: 00000000-00000000-00000000-00000000
   registrantId: 00000000-00000000-00000000-00000000
   categoryId: 00000000-00000000-00000000-00000000
   category:
@@ -137,6 +141,16 @@ selectors:
               created_at: ''
               updated_at: ''
               deleted_at: ''
+              environments:
+                items:
+                  id: 00000000-00000000-00000000-00000000
+                  name: ''
+                  description: ''
+                  organization_id: 00000000-00000000-00000000-00000000
+                  owner: ''
+                  created_at: ''
+                  updated_at: ''
+                  deleted_at: ''
             registrantId: 00000000-00000000-00000000-00000000
             categoryId: 00000000-00000000-00000000-00000000
             category:
@@ -277,6 +291,16 @@ selectors:
               created_at: ''
               updated_at: ''
               deleted_at: ''
+              environments:
+                items:
+                  id: 00000000-00000000-00000000-00000000
+                  name: ''
+                  description: ''
+                  organization_id: 00000000-00000000-00000000-00000000
+                  owner: ''
+                  created_at: ''
+                  updated_at: ''
+                  deleted_at: ''
             registrantId: 00000000-00000000-00000000-00000000
             categoryId: 00000000-00000000-00000000-00000000
             category:
@@ -417,6 +441,16 @@ selectors:
               created_at: ''
               updated_at: ''
               deleted_at: ''
+              environments:
+                items:
+                  id: 00000000-00000000-00000000-00000000
+                  name: ''
+                  description: ''
+                  organization_id: 00000000-00000000-00000000-00000000
+                  owner: ''
+                  created_at: ''
+                  updated_at: ''
+                  deleted_at: ''
             registrantId: 00000000-00000000-00000000-00000000
             categoryId: 00000000-00000000-00000000-00000000
             category:
@@ -557,6 +591,16 @@ selectors:
               created_at: ''
               updated_at: ''
               deleted_at: ''
+              environments:
+                items:
+                  id: 00000000-00000000-00000000-00000000
+                  name: ''
+                  description: ''
+                  organization_id: 00000000-00000000-00000000-00000000
+                  owner: ''
+                  created_at: ''
+                  updated_at: ''
+                  deleted_at: ''
             registrantId: 00000000-00000000-00000000-00000000
             categoryId: 00000000-00000000-00000000-00000000
             category:
