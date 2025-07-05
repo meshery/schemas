@@ -4,6 +4,7 @@ package core
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -51,19 +52,40 @@ func (nt NullTime) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON will unmarshal a JSON value into
 // the propert representation of that value.
+// --
+// This NullTime implementation supports unmarshaling from both:
+// - A JSON time string (e.g., "2023-07-05T15:04:05Z")
+// - A JSON object (e.g., {"Time":"0001-01-01T00:00:00Z","Valid":false})
+// - A JSON null value
+//
+// we need support for JSON object as provider is using sql.NullTime now for DeletedAt field
+// which is marshaled to json as such object
+// and is returned from api
 func (nt *NullTime) UnmarshalJSON(text []byte) error {
 	nt.Valid = false
-	txt := string(text)
-	if txt == "null" || txt == "" {
+
+	if string(text) == "null" || len(text) == 0 {
 		return nil
 	}
 
-	t := time.Time{}
-	err := t.UnmarshalJSON(text)
-	if err == nil {
-		nt.Time = t
-		nt.Valid = true
+	// we need this type to avoid stack overflow
+	type TmpNullTime NullTime
+	var obj TmpNullTime
+	errObj := json.Unmarshal(text, &obj)
+	if errObj == nil {
+		nt.Time = obj.Time
+		nt.Valid = obj.Valid
+		return nil
 	}
 
-	return err
+	var t time.Time
+	errTime := t.UnmarshalJSON(text)
+	if errTime == nil {
+		nt.Time = t
+		nt.Valid = true
+		return nil
+	}
+
+	// Both attempts failed — combine errors
+	return fmt.Errorf("failed to unmarshal NullTime: as object error: %v; as time string error: %v", errObj, errTime)
 }

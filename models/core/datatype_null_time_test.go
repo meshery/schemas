@@ -83,6 +83,20 @@ func TestNullTime(t *testing.T) {
 		err = json.Unmarshal([]byte(`"bad-time"`), &nt)
 		assert.Error(t, err)
 		assert.False(t, nt.Valid)
+
+		// JSON object with Time and Valid fields
+		objJSON := `{"Time":"2023-01-01T10:00:00Z","Valid":true}`
+		err = json.Unmarshal([]byte(objJSON), &nt)
+		assert.NoError(t, err)
+		assert.True(t, nt.Valid)
+		assert.Equal(t, time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC), nt.Time)
+
+		// JSON object with Time and Valid=false
+		objNullJSON := `{"Time":"0001-01-01T00:00:00Z","Valid":false}`
+		err = json.Unmarshal([]byte(objNullJSON), &nt)
+		assert.NoError(t, err)
+		assert.False(t, nt.Valid)
+		assert.Equal(t, time.Time{}, nt.Time)
 	})
 
 	t.Run("RoundTripJSON", func(t *testing.T) {
