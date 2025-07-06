@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
 )
 
 func TestNullTime(t *testing.T) {
@@ -111,4 +112,110 @@ func TestNullTime(t *testing.T) {
 		assert.True(t, decoded.Valid)
 		assert.Equal(t, original.Time, decoded.Time)
 	})
+
+	t.Run("MarshalYAML", func(t *testing.T) {
+		tests := []struct {
+			name     string
+			nullTime NullTime
+			wantYAML string
+		}{
+			{
+				name:     "Valid time",
+				nullTime: NewTime(time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC)),
+				wantYAML: "\"2023-01-01T10:00:00Z\"\n",
+			},
+			{
+				name:     "Invalid time",
+				nullTime: NullTime{Valid: false},
+				wantYAML: "null\n",
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				data, err := yaml.Marshal(tt.nullTime)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.wantYAML, string(data))
+			})
+		}
+	})
+
+	t.Run("UnmarshalYAML", func(t *testing.T) {
+		tests := []struct {
+			name      string
+			yamlInput string
+			wantTime  time.Time
+			wantValid bool
+			wantErr   bool
+		}{
+			{
+				name:      "Valid time string",
+				yamlInput: "2023-01-01T10:00:00Z",
+				wantTime:  time.Date(2023, 1, 1, 10, 0, 0, 0, time.UTC),
+				wantValid: true,
+				wantErr:   false,
+			},
+			{
+				name:      "Empty string",
+				yamlInput: `""`,
+				wantValid: false,
+				wantErr:   false,
+			},
+			{
+				name:      "Null value",
+				yamlInput: `null`,
+				wantValid: false,
+				wantErr:   false,
+			},
+			{
+				name:      "Invalid time string",
+				yamlInput: "not-a-time",
+				wantValid: false,
+				wantErr:   true,
+			},
+			{
+				name:      "Zero time",
+				yamlInput: "0001-01-01T00:00:00Z",
+				wantValid: true,
+				wantErr:   false,
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				var nt NullTime
+				err := yaml.Unmarshal([]byte(tt.yamlInput), &nt)
+
+				if tt.wantErr {
+					assert.Error(t, err)
+					return
+				}
+
+				assert.NoError(t, err)
+				assert.Equal(t, tt.wantValid, nt.Valid)
+
+				if tt.wantValid {
+					assert.Equal(t, tt.wantTime, nt.Time)
+				}
+			})
+		}
+	})
+
+	t.Run("Special case unmarshal zero timestamp", func(t *testing.T) {
+		data := []byte(`"0001-01-01T00:00:00Z"`)
+
+		unmarshalers := []func(data []byte, v any) error{
+			json.Unmarshal,
+			yaml.Unmarshal,
+		}
+
+		for _, unmarshal := range unmarshalers {
+			var decoded NullTime
+			err := unmarshal(data, &decoded)
+			assert.NoError(t, err)
+			assert.True(t, decoded.Valid)
+			assert.True(t, decoded.Time.IsZero())
+		}
+	})
+
 }
