@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
 // NullTime replaces sql.NullTime with an implementation
@@ -22,7 +24,7 @@ func NewTime(t time.Time) NullTime {
 }
 
 // Scan implements the Scanner interface.
-func (nt *NullTime) Scan(value interface{}) error {
+func (nt *NullTime) Scan(value any) error {
 	if value == nil {
 		nt.Time, nt.Valid = time.Time{}, false
 		return nil
@@ -88,4 +90,33 @@ func (nt *NullTime) UnmarshalJSON(text []byte) error {
 
 	// Both attempts failed — combine errors
 	return fmt.Errorf("failed to unmarshal NullTime: as object error: %v; as time string error: %v", errObj, errTime)
+}
+
+func (nt NullTime) MarshalYAML() (any, error) {
+	if !nt.Valid {
+		return nil, nil // YAML null
+	}
+	return nt.Time.Format(time.RFC3339), nil
+}
+
+func (nt *NullTime) UnmarshalYAML(value *yaml.Node) error {
+	nt.Valid = false
+
+	if value.Kind != yaml.ScalarNode {
+		return fmt.Errorf("expected scalar node for time string, got: %v", value.Kind)
+	}
+
+	if value.Tag == "!!null" || value.Value == "" {
+		// Optional: support YAML `null` or empty string as invalid time
+		return nil
+	}
+
+	var t time.Time
+	if err := value.Decode(&t); err != nil {
+		return fmt.Errorf("failed to parse time: %w", err)
+	}
+
+	nt.Time = t
+	nt.Valid = true
+	return nil
 }
