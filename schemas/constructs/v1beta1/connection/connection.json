@@ -135,7 +135,7 @@
     "environments": {
       "type": "array",
       "items": {
-        "x-go-type": "environment.Environment",
+        "x-go-type": "*environment.Environment",
         "$ref": "../environment/environment.json"
       },
       "x-oapi-codegen-extra-tags": {

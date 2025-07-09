@@ -48,11 +48,11 @@ type Connection struct {
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
 
 	// UserID A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
-	UserID       *uuid.UUID                `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	CreatedAt    time.Time                 `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	UpdatedAt    time.Time                 `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	DeletedAt    core.NullTime             `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Environments []environment.Environment `db:"environments" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
+	UserID       *uuid.UUID                 `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	CreatedAt    time.Time                  `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	UpdatedAt    time.Time                  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	DeletedAt    core.NullTime              `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Environments []*environment.Environment `db:"environments" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
 }
 
 // ConnectionStatus Connection Status

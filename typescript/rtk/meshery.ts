@@ -182,8 +182,9 @@ export type CreateEnvironmentApiResponse = /** status 201 Created environment */
   /** Environment organization ID */
   organization_id: string;
   /** Environment owner */
-  owner: string;
+  owner?: string;
   created_at?: string;
+  metadata?: object;
   updated_at?: string;
   deleted_at?: string;
 };
@@ -212,8 +213,9 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
     /** Environment organization ID */
     organization_id: string;
     /** Environment owner */
-    owner: string;
+    owner?: string;
     created_at?: string;
+    metadata?: object;
     updated_at?: string;
     deleted_at?: string;
   }[];
@@ -336,8 +338,9 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             /** Environment organization ID */
             organization_id: string;
             /** Environment owner */
-            owner: string;
+            owner?: string;
             created_at?: string;
+            metadata?: object;
             updated_at?: string;
             deleted_at?: string;
           }[];
@@ -1808,8 +1811,9 @@ export type PostEvaluateApiArg = {
               /** Environment organization ID */
               organization_id: string;
               /** Environment owner */
-              owner: string;
+              owner?: string;
               created_at?: string;
+              metadata?: object;
               updated_at?: string;
               deleted_at?: string;
             }[];
