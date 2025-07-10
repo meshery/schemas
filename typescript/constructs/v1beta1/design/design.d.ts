@@ -650,8 +650,11 @@ export interface HttpsSchemasMesheryIoEnvironmentJson {
   /**
    * Environment owner
    */
-  owner: string;
+  owner?: string;
   created_at?: string;
+  metadata?: {
+    [k: string]: unknown;
+  };
   updated_at?: string;
   deleted_at?: string;
 }

@@ -174,7 +174,7 @@ const schema = {
           "environments": {
             "type": "array",
             "items": {
-              "x-go-type": "environment.Environment",
+              "x-go-type": "*environment.Environment",
               "$id": "https://schemas.meshery.io/environment.json",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
@@ -184,8 +184,7 @@ const schema = {
                 "id",
                 "name",
                 "description",
-                "organization_id",
-                "owner"
+                "organization_id"
               ],
               "properties": {
                 "id": {
@@ -245,8 +244,14 @@ const schema = {
                     "yaml": "owner"
                   },
                   "x-order": 5,
+                  "description": "Environment owner",
                   "type": "string",
-                  "description": "Environment owner"
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "default": "00000000-00000000-00000000-00000000"
                 },
                 "created_at": {
                   "x-oapi-codegen-extra-tags": {
@@ -258,12 +263,22 @@ const schema = {
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
+                "metadata": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "metadata",
+                    "yaml": "metadata"
+                  },
+                  "x-order": 7,
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "type": "object"
+                },
                 "updated_at": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
                     "yaml": "updated_at"
                   },
-                  "x-order": 7,
+                  "x-order": 8,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -275,7 +290,7 @@ const schema = {
                   },
                   "x-go-type": "core.NullTime",
                   "x-go-import": "database/sql",
-                  "x-order": 8,
+                  "x-order": 9,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -469,7 +484,7 @@ const schema = {
                 "environments": {
                   "type": "array",
                   "items": {
-                    "x-go-type": "environment.Environment",
+                    "x-go-type": "*environment.Environment",
                     "$id": "https://schemas.meshery.io/environment.json",
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
@@ -479,8 +494,7 @@ const schema = {
                       "id",
                       "name",
                       "description",
-                      "organization_id",
-                      "owner"
+                      "organization_id"
                     ],
                     "properties": {
                       "id": {
@@ -540,8 +554,14 @@ const schema = {
                           "yaml": "owner"
                         },
                         "x-order": 5,
+                        "description": "Environment owner",
                         "type": "string",
-                        "description": "Environment owner"
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        },
+                        "default": "00000000-00000000-00000000-00000000"
                       },
                       "created_at": {
                         "x-oapi-codegen-extra-tags": {
@@ -553,12 +573,22 @@ const schema = {
                         "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
                       },
+                      "metadata": {
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "metadata",
+                          "yaml": "metadata"
+                        },
+                        "x-order": 7,
+                        "x-go-type": "core.Map",
+                        "x-go-type-skip-optional-pointer": true,
+                        "type": "object"
+                      },
                       "updated_at": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "updated_at",
                           "yaml": "updated_at"
                         },
-                        "x-order": 7,
+                        "x-order": 8,
                         "type": "string",
                         "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
@@ -570,7 +600,7 @@ const schema = {
                         },
                         "x-go-type": "core.NullTime",
                         "x-go-import": "database/sql",
-                        "x-order": 8,
+                        "x-order": 9,
                         "type": "string",
                         "format": "date-time",
                         "x-go-type-skip-optional-pointer": true

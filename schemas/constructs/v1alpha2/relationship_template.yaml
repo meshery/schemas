@@ -21,6 +21,7 @@ model:
       items:
         id: 00000000-00000000-00000000-00000000
         organization_id: 00000000-00000000-00000000-00000000
+        owner: 00000000-00000000-00000000-00000000
   registrantId: 00000000-00000000-00000000-00000000
   categoryId: 00000000-00000000-00000000-00000000
   category:
@@ -147,7 +148,7 @@ selectors:
                   name: ''
                   description: ''
                   organization_id: 00000000-00000000-00000000-00000000
-                  owner: ''
+                  owner: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
@@ -297,7 +298,7 @@ selectors:
                   name: ''
                   description: ''
                   organization_id: 00000000-00000000-00000000-00000000
-                  owner: ''
+                  owner: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
@@ -447,7 +448,7 @@ selectors:
                   name: ''
                   description: ''
                   organization_id: 00000000-00000000-00000000-00000000
-                  owner: ''
+                  owner: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
@@ -597,7 +598,7 @@ selectors:
                   name: ''
                   description: ''
                   organization_id: 00000000-00000000-00000000-00000000
-                  owner: ''
+                  owner: 00000000-00000000-00000000-00000000
                   created_at: ''
                   updated_at: ''
                   deleted_at: ''
