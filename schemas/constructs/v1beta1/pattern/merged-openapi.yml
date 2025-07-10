@@ -684,8 +684,14 @@
                                   "yaml": "owner"
                                 },
                                 "x-order": 5,
+                                "description": "Environment owner",
                                 "type": "string",
-                                "description": "Environment owner"
+                                "format": "uuid",
+                                "x-go-type": "uuid.UUID",
+                                "x-go-type-import": {
+                                  "path": "github.com/gofrs/uuid"
+                                },
+                                "default": "00000000-00000000-00000000-00000000"
                               },
                               "created_at": {
                                 "x-oapi-codegen-extra-tags": {
@@ -7300,8 +7306,14 @@
                                       "yaml": "owner"
                                     },
                                     "x-order": 5,
+                                    "description": "Environment owner",
                                     "type": "string",
-                                    "description": "Environment owner"
+                                    "format": "uuid",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    },
+                                    "default": "00000000-00000000-00000000-00000000"
                                   },
                                   "created_at": {
                                     "x-oapi-codegen-extra-tags": {
@@ -13948,8 +13960,14 @@
                                             "yaml": "owner"
                                           },
                                           "x-order": 5,
+                                          "description": "Environment owner",
                                           "type": "string",
-                                          "description": "Environment owner"
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          },
+                                          "default": "00000000-00000000-00000000-00000000"
                                         },
                                         "created_at": {
                                           "x-oapi-codegen-extra-tags": {
@@ -20628,8 +20646,14 @@
                                           "yaml": "owner"
                                         },
                                         "x-order": 5,
+                                        "description": "Environment owner",
                                         "type": "string",
-                                        "description": "Environment owner"
+                                        "format": "uuid",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        },
+                                        "default": "00000000-00000000-00000000-00000000"
                                       },
                                       "created_at": {
                                         "x-oapi-codegen-extra-tags": {

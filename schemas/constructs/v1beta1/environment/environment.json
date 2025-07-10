@@ -56,7 +56,7 @@
         "yaml": "owner"
       },
       "x-order": 5,
-      "type": "string",
+      "$ref": "../../core.json#/definitions/uuid",
       "description": "Environment owner"
     },
     "created_at": {
