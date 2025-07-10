@@ -1675,8 +1675,13 @@ paths:
                       db: owner
                       yaml: owner
                     x-order: 5
-                    type: string
                     description: Environment owner
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                    default: 00000000-00000000-00000000-00000000
                   created_at:
                     x-oapi-codegen-extra-tags:
                       db: created_at
@@ -1840,8 +1845,13 @@ paths:
                             db: owner
                             yaml: owner
                           x-order: 5
-                          type: string
                           description: Environment owner
+                          type: string
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                          default: 00000000-00000000-00000000-00000000
                         created_at:
                           x-oapi-codegen-extra-tags:
                             db: created_at
@@ -2494,8 +2504,13 @@ paths:
                                             db: owner
                                             yaml: owner
                                           x-order: 5
-                                          type: string
                                           description: Environment owner
+                                          type: string
+                                          format: uuid
+                                          x-go-type: uuid.UUID
+                                          x-go-type-import:
+                                            path: github.com/gofrs/uuid
+                                          default: 00000000-00000000-00000000-00000000
                                         created_at:
                                           x-oapi-codegen-extra-tags:
                                             db: created_at
@@ -9338,8 +9353,13 @@ paths:
                                               db: owner
                                               yaml: owner
                                             x-order: 5
-                                            type: string
                                             description: Environment owner
+                                            type: string
+                                            format: uuid
+                                            x-go-type: uuid.UUID
+                                            x-go-type-import:
+                                              path: github.com/gofrs/uuid
+                                            default: 00000000-00000000-00000000-00000000
                                           created_at:
                                             x-oapi-codegen-extra-tags:
                                               db: created_at
@@ -16195,8 +16215,13 @@ components:
                                 db: owner
                                 yaml: owner
                               x-order: 5
-                              type: string
                               description: Environment owner
+                              type: string
+                              format: uuid
+                              x-go-type: uuid.UUID
+                              x-go-type-import:
+                                path: github.com/gofrs/uuid
+                              default: 00000000-00000000-00000000-00000000
                             created_at:
                               x-oapi-codegen-extra-tags:
                                 db: created_at
@@ -22896,8 +22921,13 @@ components:
                                     db: owner
                                     yaml: owner
                                   x-order: 5
-                                  type: string
                                   description: Environment owner
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
                                     db: created_at
@@ -29714,8 +29744,13 @@ components:
                                           db: owner
                                           yaml: owner
                                         x-order: 5
-                                        type: string
                                         description: Environment owner
+                                        type: string
+                                        format: uuid
+                                        x-go-type: uuid.UUID
+                                        x-go-type-import:
+                                          path: github.com/gofrs/uuid
+                                        default: 00000000-00000000-00000000-00000000
                                       created_at:
                                         x-oapi-codegen-extra-tags:
                                           db: created_at
@@ -36661,8 +36696,13 @@ components:
                                         db: owner
                                         yaml: owner
                                       x-order: 5
-                                      type: string
                                       description: Environment owner
+                                      type: string
+                                      format: uuid
+                                      x-go-type: uuid.UUID
+                                      x-go-type-import:
+                                        path: github.com/gofrs/uuid
+                                      default: 00000000-00000000-00000000-00000000
                                     created_at:
                                       x-oapi-codegen-extra-tags:
                                         db: created_at
@@ -43304,8 +43344,13 @@ components:
                           db: owner
                           yaml: owner
                         x-order: 5
-                        type: string
                         description: Environment owner
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                        default: 00000000-00000000-00000000-00000000
                       created_at:
                         x-oapi-codegen-extra-tags:
                           db: created_at
@@ -45165,8 +45210,13 @@ components:
                       db: owner
                       yaml: owner
                     x-order: 5
-                    type: string
                     description: Environment owner
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                    default: 00000000-00000000-00000000-00000000
                   created_at:
                     x-oapi-codegen-extra-tags:
                       db: created_at
@@ -47318,8 +47368,13 @@ components:
             db: owner
             yaml: owner
           x-order: 5
-          type: string
           description: Environment owner
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          default: 00000000-00000000-00000000-00000000
         created_at:
           x-oapi-codegen-extra-tags:
             db: created_at
@@ -47507,8 +47562,13 @@ components:
                   db: owner
                   yaml: owner
                 x-order: 5
-                type: string
                 description: Environment owner
+                type: string
+                format: uuid
+                x-go-type: uuid.UUID
+                x-go-type-import:
+                  path: github.com/gofrs/uuid
+                default: 00000000-00000000-00000000-00000000
               created_at:
                 x-oapi-codegen-extra-tags:
                   db: created_at
@@ -48220,8 +48280,13 @@ components:
                                     db: owner
                                     yaml: owner
                                   x-order: 5
-                                  type: string
                                   description: Environment owner
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
                                     db: created_at
@@ -54899,8 +54964,13 @@ components:
                                     db: owner
                                     yaml: owner
                                   x-order: 5
-                                  type: string
                                   description: Environment owner
+                                  type: string
+                                  format: uuid
+                                  x-go-type: uuid.UUID
+                                  x-go-type-import:
+                                    path: github.com/gofrs/uuid
+                                  default: 00000000-00000000-00000000-00000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
                                     db: created_at

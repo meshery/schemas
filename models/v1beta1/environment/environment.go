@@ -26,7 +26,7 @@ type Environment struct {
 	OrganizationID uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// Owner Environment owner
-	Owner     *string       `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	Owner     *uuid.UUID    `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 	CreatedAt time.Time     `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	Metadata  core.Map      `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 	UpdatedAt time.Time     `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
