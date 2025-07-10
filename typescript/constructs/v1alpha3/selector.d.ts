@@ -358,10 +358,13 @@ export interface HttpsSchemasMesheryIoEnvironmentJson {
    */
   organization_id: string;
   /**
-   * Environment owner
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
-  owner: string;
+  owner?: string;
   created_at?: string;
+  metadata?: {
+    [k: string]: unknown;
+  };
   updated_at?: string;
   deleted_at?: string;
 }
