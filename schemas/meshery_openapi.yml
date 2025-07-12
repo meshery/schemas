@@ -695,9 +695,8 @@ paths:
                   organization_id:
                     x-go-name: OrganizationID
                     x-oapi-codegen-extra-tags:
-                      db: org_id
-                      json: org_id
-                      yaml: org_id
+                      db: organization_id
+                      yaml: organization_id
                     x-order: 4
                     description: Environment organization ID
                     type: string
@@ -865,9 +864,8 @@ paths:
                         organization_id:
                           x-go-name: OrganizationID
                           x-oapi-codegen-extra-tags:
-                            db: org_id
-                            json: org_id
-                            yaml: org_id
+                            db: organization_id
+                            yaml: organization_id
                           x-order: 4
                           description: Environment organization ID
                           type: string
@@ -1524,9 +1522,8 @@ paths:
                                         organization_id:
                                           x-go-name: OrganizationID
                                           x-oapi-codegen-extra-tags:
-                                            db: org_id
-                                            json: org_id
-                                            yaml: org_id
+                                            db: organization_id
+                                            yaml: organization_id
                                           x-order: 4
                                           description: Environment organization ID
                                           type: string
@@ -1582,7 +1579,7 @@ paths:
                                           format: date-time
                                           x-go-type-skip-optional-pointer: true
                                     x-oapi-codegen-extra-tags:
-                                      db: environments
+                                      db: '-'
                                       yaml: environments
                                       gorm: '-'
                                     x-go-type-skip-optional-pointer: true
@@ -8373,9 +8370,8 @@ paths:
                                           organization_id:
                                             x-go-name: OrganizationID
                                             x-oapi-codegen-extra-tags:
-                                              db: org_id
-                                              json: org_id
-                                              yaml: org_id
+                                              db: organization_id
+                                              yaml: organization_id
                                             x-order: 4
                                             description: Environment organization ID
                                             type: string
@@ -8431,7 +8427,7 @@ paths:
                                             format: date-time
                                             x-go-type-skip-optional-pointer: true
                                       x-oapi-codegen-extra-tags:
-                                        db: environments
+                                        db: '-'
                                         yaml: environments
                                         gorm: '-'
                                       x-go-type-skip-optional-pointer: true
@@ -15235,9 +15231,8 @@ components:
                             organization_id:
                               x-go-name: OrganizationID
                               x-oapi-codegen-extra-tags:
-                                db: org_id
-                                json: org_id
-                                yaml: org_id
+                                db: organization_id
+                                yaml: organization_id
                               x-order: 4
                               description: Environment organization ID
                               type: string
@@ -15293,7 +15288,7 @@ components:
                               format: date-time
                               x-go-type-skip-optional-pointer: true
                         x-oapi-codegen-extra-tags:
-                          db: environments
+                          db: '-'
                           yaml: environments
                           gorm: '-'
                         x-go-type-skip-optional-pointer: true
@@ -21941,9 +21936,8 @@ components:
                                 organization_id:
                                   x-go-name: OrganizationID
                                   x-oapi-codegen-extra-tags:
-                                    db: org_id
-                                    json: org_id
-                                    yaml: org_id
+                                    db: organization_id
+                                    yaml: organization_id
                                   x-order: 4
                                   description: Environment organization ID
                                   type: string
@@ -21999,7 +21993,7 @@ components:
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                             x-oapi-codegen-extra-tags:
-                              db: environments
+                              db: '-'
                               yaml: environments
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true
@@ -28764,9 +28758,8 @@ components:
                                       organization_id:
                                         x-go-name: OrganizationID
                                         x-oapi-codegen-extra-tags:
-                                          db: org_id
-                                          json: org_id
-                                          yaml: org_id
+                                          db: organization_id
+                                          yaml: organization_id
                                         x-order: 4
                                         description: Environment organization ID
                                         type: string
@@ -28822,7 +28815,7 @@ components:
                                         format: date-time
                                         x-go-type-skip-optional-pointer: true
                                   x-oapi-codegen-extra-tags:
-                                    db: environments
+                                    db: '-'
                                     yaml: environments
                                     gorm: '-'
                                   x-go-type-skip-optional-pointer: true
@@ -35716,9 +35709,8 @@ components:
                                     organization_id:
                                       x-go-name: OrganizationID
                                       x-oapi-codegen-extra-tags:
-                                        db: org_id
-                                        json: org_id
-                                        yaml: org_id
+                                        db: organization_id
+                                        yaml: organization_id
                                       x-order: 4
                                       description: Environment organization ID
                                       type: string
@@ -35774,7 +35766,7 @@ components:
                                       format: date-time
                                       x-go-type-skip-optional-pointer: true
                                 x-oapi-codegen-extra-tags:
-                                  db: environments
+                                  db: '-'
                                   yaml: environments
                                   gorm: '-'
                                 x-go-type-skip-optional-pointer: true
@@ -42364,9 +42356,8 @@ components:
                       organization_id:
                         x-go-name: OrganizationID
                         x-oapi-codegen-extra-tags:
-                          db: org_id
-                          json: org_id
-                          yaml: org_id
+                          db: organization_id
+                          yaml: organization_id
                         x-order: 4
                         description: Environment organization ID
                         type: string
@@ -42422,7 +42413,7 @@ components:
                         format: date-time
                         x-go-type-skip-optional-pointer: true
                   x-oapi-codegen-extra-tags:
-                    db: environments
+                    db: '-'
                     yaml: environments
                     gorm: '-'
                   x-go-type-skip-optional-pointer: true
@@ -44230,9 +44221,8 @@ components:
                   organization_id:
                     x-go-name: OrganizationID
                     x-oapi-codegen-extra-tags:
-                      db: org_id
-                      json: org_id
-                      yaml: org_id
+                      db: organization_id
+                      yaml: organization_id
                     x-order: 4
                     description: Environment organization ID
                     type: string
@@ -44288,7 +44278,7 @@ components:
                     format: date-time
                     x-go-type-skip-optional-pointer: true
               x-oapi-codegen-extra-tags:
-                db: environments
+                db: '-'
                 yaml: environments
                 gorm: '-'
               x-go-type-skip-optional-pointer: true
@@ -46388,9 +46378,8 @@ components:
         organization_id:
           x-go-name: OrganizationID
           x-oapi-codegen-extra-tags:
-            db: org_id
-            json: org_id
-            yaml: org_id
+            db: organization_id
+            yaml: organization_id
           x-order: 4
           description: Environment organization ID
           type: string
@@ -46582,9 +46571,8 @@ components:
               organization_id:
                 x-go-name: OrganizationID
                 x-oapi-codegen-extra-tags:
-                  db: org_id
-                  json: org_id
-                  yaml: org_id
+                  db: organization_id
+                  yaml: organization_id
                 x-order: 4
                 description: Environment organization ID
                 type: string
@@ -47300,9 +47288,8 @@ components:
                                 organization_id:
                                   x-go-name: OrganizationID
                                   x-oapi-codegen-extra-tags:
-                                    db: org_id
-                                    json: org_id
-                                    yaml: org_id
+                                    db: organization_id
+                                    yaml: organization_id
                                   x-order: 4
                                   description: Environment organization ID
                                   type: string
@@ -47358,7 +47345,7 @@ components:
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                             x-oapi-codegen-extra-tags:
-                              db: environments
+                              db: '-'
                               yaml: environments
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true
@@ -53984,9 +53971,8 @@ components:
                                 organization_id:
                                   x-go-name: OrganizationID
                                   x-oapi-codegen-extra-tags:
-                                    db: org_id
-                                    json: org_id
-                                    yaml: org_id
+                                    db: organization_id
+                                    yaml: organization_id
                                   x-order: 4
                                   description: Environment organization ID
                                   type: string
@@ -54042,7 +54028,7 @@ components:
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                             x-oapi-codegen-extra-tags:
-                              db: environments
+                              db: '-'
                               yaml: environments
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true

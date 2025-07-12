@@ -52,7 +52,7 @@ type Connection struct {
 	CreatedAt    time.Time                  `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 	UpdatedAt    time.Time                  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	DeletedAt    core.NullTime              `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Environments []*environment.Environment `db:"environments" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
+	Environments []*environment.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
 }
 
 // ConnectionStatus Connection Status
