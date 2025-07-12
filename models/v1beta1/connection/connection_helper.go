@@ -52,3 +52,7 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 	// else return the id of the existing connection
 	return connection.ID, nil
 }
+
+func (c *Connection) EventCategory() string {
+	return "connection"
+}
