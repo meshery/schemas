@@ -2519,7 +2519,7 @@ components:
                               format: date-time
                               x-go-type-skip-optional-pointer: true
                         x-oapi-codegen-extra-tags:
-                          db: environments
+                          db: '-'
                           yaml: environments
                           gorm: '-'
                         x-go-type-skip-optional-pointer: true
@@ -9225,7 +9225,7 @@ components:
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                             x-oapi-codegen-extra-tags:
-                              db: environments
+                              db: '-'
                               yaml: environments
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true
@@ -16048,7 +16048,7 @@ components:
                                         format: date-time
                                         x-go-type-skip-optional-pointer: true
                                   x-oapi-codegen-extra-tags:
-                                    db: environments
+                                    db: '-'
                                     yaml: environments
                                     gorm: '-'
                                   x-go-type-skip-optional-pointer: true
@@ -23000,7 +23000,7 @@ components:
                                       format: date-time
                                       x-go-type-skip-optional-pointer: true
                                 x-oapi-codegen-extra-tags:
-                                  db: environments
+                                  db: '-'
                                   yaml: environments
                                   gorm: '-'
                                 x-go-type-skip-optional-pointer: true
@@ -29648,7 +29648,7 @@ components:
                         format: date-time
                         x-go-type-skip-optional-pointer: true
                   x-oapi-codegen-extra-tags:
-                    db: environments
+                    db: '-'
                     yaml: environments
                     gorm: '-'
                   x-go-type-skip-optional-pointer: true
@@ -31514,7 +31514,7 @@ components:
                     format: date-time
                     x-go-type-skip-optional-pointer: true
               x-oapi-codegen-extra-tags:
-                db: environments
+                db: '-'
                 yaml: environments
                 gorm: '-'
               x-go-type-skip-optional-pointer: true
@@ -34584,7 +34584,7 @@ components:
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                             x-oapi-codegen-extra-tags:
-                              db: environments
+                              db: '-'
                               yaml: environments
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true
@@ -41268,7 +41268,7 @@ components:
                                   format: date-time
                                   x-go-type-skip-optional-pointer: true
                             x-oapi-codegen-extra-tags:
-                              db: environments
+                              db: '-'
                               yaml: environments
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true

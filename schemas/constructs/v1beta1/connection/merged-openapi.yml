@@ -293,7 +293,7 @@
               }
             },
             "x-oapi-codegen-extra-tags": {
-              "db": "environments",
+              "db": "-",
               "yaml": "environments",
               "gorm": "-"
             },
@@ -603,7 +603,7 @@
                     }
                   },
                   "x-oapi-codegen-extra-tags": {
-                    "db": "environments",
+                    "db": "-",
                     "yaml": "environments",
                     "gorm": "-"
                   },

@@ -139,7 +139,7 @@
         "$ref": "../environment/environment.json"
       },
       "x-oapi-codegen-extra-tags": {
-        "db": "environments",
+        "db": "-",
         "yaml": "environments",
         "gorm": "-"
       },
