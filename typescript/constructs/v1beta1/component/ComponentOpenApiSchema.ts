@@ -442,9 +442,8 @@ const schema = {
                         "organization_id": {
                           "x-go-name": "OrganizationID",
                           "x-oapi-codegen-extra-tags": {
-                            "db": "org_id",
-                            "json": "org_id",
-                            "yaml": "org_id"
+                            "db": "organization_id",
+                            "yaml": "organization_id"
                           },
                           "x-order": 4,
                           "description": "Environment organization ID",
@@ -516,7 +515,7 @@ const schema = {
                       }
                     },
                     "x-oapi-codegen-extra-tags": {
-                      "db": "environments",
+                      "db": "-",
                       "yaml": "environments",
                       "gorm": "-"
                     },
