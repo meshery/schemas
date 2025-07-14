@@ -1,35 +1,36 @@
 {
-  "id": "00000000-00000000-00000000-00000000",
-  "schemaVersion": "v1beta1",
+  "id": "00000000-0000-0000-0000-000000000000",
+  "schemaVersion": "models.meshery.io/v1beta1",
   "version": "v0.0.1",
   "name": "untitled-model",
   "displayName": "Untitled Model",
   "description": "A new Meshery model.",
   "status": "enabled",
   "registrant": {
-    "id": "00000000-00000000-00000000-00000000",
+    "id": "00000000-0000-0000-0000-000000000000",
     "name": "",
-    "credential_id": "00000000-00000000-00000000-00000000",
+    "credential_id": "00000000-0000-0000-0000-000000000000",
     "type": "",
     "sub_type": "",
     "kind": "",
     "status": "",
-    "user_id": "00000000-00000000-00000000-00000000",
+    "user_id": "00000000-0000-0000-0000-000000000000",
     "created_at": "",
     "updated_at": "",
     "deleted_at": "",
     "environments": {
       "items": {
-        "id": "00000000-00000000-00000000-00000000",
+        "id": "00000000-0000-0000-0000-000000000000",
         "name": "",
         "description": "",
-        "organization_id": "00000000-00000000-00000000-00000000",
-        "owner": "00000000-00000000-00000000-00000000",
+        "organization_id": "00000000-0000-0000-0000-000000000000",
+        "owner": "00000000-0000-0000-0000-000000000000",
         "created_at": "",
         "updated_at": "",
         "deleted_at": ""
       }
-    }
+    },
+    "schemaVersion": "components.meshery.io/v1beta1"
   },
   "metadata": {
     "capabilities": {
@@ -48,10 +49,10 @@
     "shape": "circle",
     "isAnnotation": false
   },
-  "registrantId": "00000000-00000000-00000000-00000000",
-  "categoryId": "00000000-00000000-00000000-00000000",
+  "registrantId": "00000000-0000-0000-0000-000000000000",
+  "categoryId": "00000000-0000-0000-0000-000000000000",
   "category": {
-    "id": "00000000-00000000-00000000-00000000",
+    "id": "00000000-0000-0000-0000-000000000000",
     "name": "Uncategorized"
   },
   "subCategory": "Uncategorized",

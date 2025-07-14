@@ -344,6 +344,8 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             updated_at?: string;
             deleted_at?: string;
           }[];
+          /** Specifies the version of the schema used for the definition. */
+          schemaVersion: string;
         };
         /** ID of the registrant. */
         registrantId: string;
@@ -1817,6 +1819,8 @@ export type PostEvaluateApiArg = {
               updated_at?: string;
               deleted_at?: string;
             }[];
+            /** Specifies the version of the schema used for the definition. */
+            schemaVersion: string;
           };
           /** ID of the registrant. */
           registrantId: string;
