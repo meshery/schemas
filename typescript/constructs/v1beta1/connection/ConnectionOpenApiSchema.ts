@@ -20,6 +20,7 @@ const schema = {
         "type": "object",
         "required": [
           "id",
+          "schemaVersion",
           "name",
           "type",
           "sub_type",
@@ -41,7 +42,7 @@ const schema = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-00000000-00000000-00000000"
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "name": {
             "x-oapi-codegen-extra-tags": {
@@ -66,7 +67,7 @@ const schema = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-00000000-00000000-00000000"
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "type": {
             "x-oapi-codegen-extra-tags": {
@@ -138,7 +139,7 @@ const schema = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-00000000-00000000-00000000"
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "created_at": {
             "x-oapi-codegen-extra-tags": {
@@ -201,7 +202,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
@@ -235,7 +236,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "owner": {
                   "x-oapi-codegen-extra-tags": {
@@ -250,7 +251,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "created_at": {
                   "x-oapi-codegen-extra-tags": {
@@ -303,6 +304,26 @@ const schema = {
             },
             "x-go-type-skip-optional-pointer": true,
             "x-order": 13
+          },
+          "schemaVersion": {
+            "description": "Specifies the version of the schema used for the definition.",
+            "x-order": 14,
+            "x-oapi-codegen-extra-tags": {
+              "yaml": "schemaVersion",
+              "db": "-",
+              "gorm": "-"
+            },
+            "default": "components.meshery.io/v1beta1",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+            "example": [
+              "v1",
+              "v1alpha1",
+              "v2beta3",
+              "v1.custom-suffix"
+            ]
           }
         }
       },
@@ -329,6 +350,7 @@ const schema = {
               "type": "object",
               "required": [
                 "id",
+                "schemaVersion",
                 "name",
                 "type",
                 "sub_type",
@@ -350,7 +372,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
@@ -375,7 +397,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "type": {
                   "x-oapi-codegen-extra-tags": {
@@ -447,7 +469,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "created_at": {
                   "x-oapi-codegen-extra-tags": {
@@ -510,7 +532,7 @@ const schema = {
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
                         },
-                        "default": "00000000-00000000-00000000-00000000"
+                        "default": "00000000-0000-0000-0000-000000000000"
                       },
                       "name": {
                         "x-oapi-codegen-extra-tags": {
@@ -544,7 +566,7 @@ const schema = {
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
                         },
-                        "default": "00000000-00000000-00000000-00000000"
+                        "default": "00000000-0000-0000-0000-000000000000"
                       },
                       "owner": {
                         "x-oapi-codegen-extra-tags": {
@@ -559,7 +581,7 @@ const schema = {
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
                         },
-                        "default": "00000000-00000000-00000000-00000000"
+                        "default": "00000000-0000-0000-0000-000000000000"
                       },
                       "created_at": {
                         "x-oapi-codegen-extra-tags": {
@@ -612,6 +634,26 @@ const schema = {
                   },
                   "x-go-type-skip-optional-pointer": true,
                   "x-order": 13
+                },
+                "schemaVersion": {
+                  "description": "Specifies the version of the schema used for the definition.",
+                  "x-order": 14,
+                  "x-oapi-codegen-extra-tags": {
+                    "yaml": "schemaVersion",
+                    "db": "-",
+                    "gorm": "-"
+                  },
+                  "default": "components.meshery.io/v1beta1",
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100,
+                  "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                  "example": [
+                    "v1",
+                    "v1alpha1",
+                    "v2beta3",
+                    "v1.custom-suffix"
+                  ]
                 }
               },
               "x-go-type": "*Connection"

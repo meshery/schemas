@@ -74,6 +74,10 @@ export interface HttpsSchemasMesheryIoComponentJson1 {
   updated_at?: string;
   deleted_at?: string;
   environments?: HttpsSchemasMesheryIoEnvironmentJson[];
+  /**
+   * Specifies the version of the schema used for the definition.
+   */
+  schemaVersion: string;
 }
 /**
  * Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments

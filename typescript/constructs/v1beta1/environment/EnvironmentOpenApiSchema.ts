@@ -174,7 +174,7 @@ const schema = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-00000000-00000000-00000000"
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "name": {
             "x-oapi-codegen-extra-tags": {
@@ -208,7 +208,7 @@ const schema = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-00000000-00000000-00000000"
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "owner": {
             "x-oapi-codegen-extra-tags": {
@@ -223,7 +223,7 @@ const schema = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-00000000-00000000-00000000"
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "created_at": {
             "x-oapi-codegen-extra-tags": {
@@ -401,7 +401,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
@@ -435,7 +435,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "owner": {
                   "x-oapi-codegen-extra-tags": {
@@ -450,7 +450,7 @@ const schema = {
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
-                  "default": "00000000-00000000-00000000-00000000"
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "created_at": {
                   "x-oapi-codegen-extra-tags": {
@@ -614,7 +614,7 @@ const schema = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "default": "00000000-00000000-00000000-00000000"
+                      "default": "00000000-0000-0000-0000-000000000000"
                     },
                     "name": {
                       "x-oapi-codegen-extra-tags": {
@@ -648,7 +648,7 @@ const schema = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "default": "00000000-00000000-00000000-00000000"
+                      "default": "00000000-0000-0000-0000-000000000000"
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -663,7 +663,7 @@ const schema = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "default": "00000000-00000000-00000000-00000000"
+                      "default": "00000000-0000-0000-0000-000000000000"
                     },
                     "created_at": {
                       "x-oapi-codegen-extra-tags": {
@@ -834,7 +834,7 @@ const schema = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "default": "00000000-00000000-00000000-00000000"
+                            "default": "00000000-0000-0000-0000-000000000000"
                           },
                           "name": {
                             "x-oapi-codegen-extra-tags": {
@@ -868,7 +868,7 @@ const schema = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "default": "00000000-00000000-00000000-00000000"
+                            "default": "00000000-0000-0000-0000-000000000000"
                           },
                           "owner": {
                             "x-oapi-codegen-extra-tags": {
@@ -883,7 +883,7 @@ const schema = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
-                            "default": "00000000-00000000-00000000-00000000"
+                            "default": "00000000-0000-0000-0000-000000000000"
                           },
                           "created_at": {
                             "x-oapi-codegen-extra-tags": {

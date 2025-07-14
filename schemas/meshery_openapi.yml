@@ -677,7 +677,7 @@ paths:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   name:
                     x-oapi-codegen-extra-tags:
                       db: name
@@ -704,7 +704,7 @@ paths:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   owner:
                     x-oapi-codegen-extra-tags:
                       db: owner
@@ -716,7 +716,7 @@ paths:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   created_at:
                     x-oapi-codegen-extra-tags:
                       db: created_at
@@ -846,7 +846,7 @@ paths:
                           x-go-type: uuid.UUID
                           x-go-type-import:
                             path: github.com/gofrs/uuid
-                          default: 00000000-00000000-00000000-00000000
+                          default: 00000000-0000-0000-0000-000000000000
                         name:
                           x-oapi-codegen-extra-tags:
                             db: name
@@ -873,7 +873,7 @@ paths:
                           x-go-type: uuid.UUID
                           x-go-type-import:
                             path: github.com/gofrs/uuid
-                          default: 00000000-00000000-00000000-00000000
+                          default: 00000000-0000-0000-0000-000000000000
                         owner:
                           x-oapi-codegen-extra-tags:
                             db: owner
@@ -885,7 +885,7 @@ paths:
                           x-go-type: uuid.UUID
                           x-go-type-import:
                             path: github.com/gofrs/uuid
-                          default: 00000000-00000000-00000000-00000000
+                          default: 00000000-0000-0000-0000-000000000000
                         created_at:
                           x-oapi-codegen-extra-tags:
                             db: created_at
@@ -973,7 +973,7 @@ paths:
                       x-go-type: uuid.UUID
                       x-go-type-import:
                         path: github.com/gofrs/uuid
-                      default: 00000000-00000000-00000000-00000000
+                      default: 00000000-0000-0000-0000-000000000000
                     name:
                       type: string
                       description: >-
@@ -1126,7 +1126,7 @@ paths:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           schemaVersion:
                             x-order: 2
                             description: >-
@@ -1135,7 +1135,7 @@ paths:
                             x-oapi-codegen-extra-tags:
                               yaml: schemaVersion
                               json: schemaVersion
-                            default: v1beta1
+                            default: components.meshery.io/v1beta1
                             type: string
                             minLength: 2
                             maxLength: 100
@@ -1220,7 +1220,7 @@ paths:
                                 x-go-type: uuid.UUID
                                 x-go-type-import:
                                   path: github.com/gofrs/uuid
-                                default: 00000000-00000000-00000000-00000000
+                                default: 00000000-0000-0000-0000-000000000000
                               schemaVersion:
                                 description: >-
                                   Specifies the version of the schema used for
@@ -1229,7 +1229,7 @@ paths:
                                 x-oapi-codegen-extra-tags:
                                   yaml: schemaVersion
                                   json: schemaVersion
-                                default: v1beta1
+                                default: models.meshery.io/v1beta1
                                 type: string
                                 minLength: 2
                                 maxLength: 100
@@ -1345,6 +1345,7 @@ paths:
                                 type: object
                                 required:
                                   - id
+                                  - schemaVersion
                                   - name
                                   - type
                                   - sub_type
@@ -1363,7 +1364,7 @@ paths:
                                     x-go-type: uuid.UUID
                                     x-go-type-import:
                                       path: github.com/gofrs/uuid
-                                    default: 00000000-00000000-00000000-00000000
+                                    default: 00000000-0000-0000-0000-000000000000
                                   name:
                                     x-oapi-codegen-extra-tags:
                                       db: name
@@ -1383,7 +1384,7 @@ paths:
                                     x-go-type: uuid.UUID
                                     x-go-type-import:
                                       path: github.com/gofrs/uuid
-                                    default: 00000000-00000000-00000000-00000000
+                                    default: 00000000-0000-0000-0000-000000000000
                                   type:
                                     x-oapi-codegen-extra-tags:
                                       db: type
@@ -1445,7 +1446,7 @@ paths:
                                     x-go-type: uuid.UUID
                                     x-go-type-import:
                                       path: github.com/gofrs/uuid
-                                    default: 00000000-00000000-00000000-00000000
+                                    default: 00000000-0000-0000-0000-000000000000
                                   created_at:
                                     x-oapi-codegen-extra-tags:
                                       db: created_at
@@ -1504,7 +1505,7 @@ paths:
                                           x-go-type: uuid.UUID
                                           x-go-type-import:
                                             path: github.com/gofrs/uuid
-                                          default: 00000000-00000000-00000000-00000000
+                                          default: 00000000-0000-0000-0000-000000000000
                                         name:
                                           x-oapi-codegen-extra-tags:
                                             db: name
@@ -1531,7 +1532,7 @@ paths:
                                           x-go-type: uuid.UUID
                                           x-go-type-import:
                                             path: github.com/gofrs/uuid
-                                          default: 00000000-00000000-00000000-00000000
+                                          default: 00000000-0000-0000-0000-000000000000
                                         owner:
                                           x-oapi-codegen-extra-tags:
                                             db: owner
@@ -1543,7 +1544,7 @@ paths:
                                           x-go-type: uuid.UUID
                                           x-go-type-import:
                                             path: github.com/gofrs/uuid
-                                          default: 00000000-00000000-00000000-00000000
+                                          default: 00000000-0000-0000-0000-000000000000
                                         created_at:
                                           x-oapi-codegen-extra-tags:
                                             db: created_at
@@ -1584,6 +1585,26 @@ paths:
                                       gorm: '-'
                                     x-go-type-skip-optional-pointer: true
                                     x-order: 13
+                                  schemaVersion:
+                                    description: >-
+                                      Specifies the version of the schema used
+                                      for the definition.
+                                    x-order: 14
+                                    x-oapi-codegen-extra-tags:
+                                      yaml: schemaVersion
+                                      db: '-'
+                                      gorm: '-'
+                                    default: components.meshery.io/v1beta1
+                                    type: string
+                                    minLength: 2
+                                    maxLength: 100
+                                    pattern: >-
+                                      ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                                    example:
+                                      - v1
+                                      - v1alpha1
+                                      - v2beta3
+                                      - v1.custom-suffix
                               registrantId:
                                 description: ID of the registrant.
                                 x-oapi-codegen-extra-tags:
@@ -1596,7 +1617,7 @@ paths:
                                 x-go-type: uuid.UUID
                                 x-go-type-import:
                                   path: github.com/gofrs/uuid
-                                default: 00000000-00000000-00000000-00000000
+                                default: 00000000-0000-0000-0000-000000000000
                               categoryId:
                                 description: ID of the category.
                                 x-oapi-codegen-extra-tags:
@@ -1609,7 +1630,7 @@ paths:
                                 x-go-type: uuid.UUID
                                 x-go-type-import:
                                   path: github.com/gofrs/uuid
-                                default: 00000000-00000000-00000000-00000000
+                                default: 00000000-0000-0000-0000-000000000000
                               category:
                                 x-order: 9
                                 x-oapi-codegen-extra-tags:
@@ -1641,7 +1662,7 @@ paths:
                                     x-go-type: uuid.UUID
                                     x-go-type-import:
                                       path: github.com/gofrs/uuid
-                                    default: 00000000-00000000-00000000-00000000
+                                    default: 00000000-0000-0000-0000-000000000000
                                   name:
                                     type: string
                                     minLength: 1
@@ -2274,7 +2295,7 @@ paths:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           styles:
                             x-oapi-codegen-extra-tags:
                               gorm: type:bytes;serializer:json
@@ -3267,7 +3288,7 @@ paths:
                             x-oapi-codegen-extra-tags:
                               yaml: schemaVersion
                               json: schemaVersion
-                            default: v1alpha3
+                            default: relationships.meshery.io/v1alpha3
                           version:
                             type: string
                             minLength: 5
@@ -7819,7 +7840,7 @@ paths:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       name:
                         type: string
                         description: >-
@@ -7973,7 +7994,7 @@ paths:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             schemaVersion:
                               x-order: 2
                               description: >-
@@ -7982,7 +8003,7 @@ paths:
                               x-oapi-codegen-extra-tags:
                                 yaml: schemaVersion
                                 json: schemaVersion
-                              default: v1beta1
+                              default: components.meshery.io/v1beta1
                               type: string
                               minLength: 2
                               maxLength: 100
@@ -8068,7 +8089,7 @@ paths:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 schemaVersion:
                                   description: >-
                                     Specifies the version of the schema used for
@@ -8077,7 +8098,7 @@ paths:
                                   x-oapi-codegen-extra-tags:
                                     yaml: schemaVersion
                                     json: schemaVersion
-                                  default: v1beta1
+                                  default: models.meshery.io/v1beta1
                                   type: string
                                   minLength: 2
                                   maxLength: 100
@@ -8193,6 +8214,7 @@ paths:
                                   type: object
                                   required:
                                     - id
+                                    - schemaVersion
                                     - name
                                     - type
                                     - sub_type
@@ -8211,7 +8233,7 @@ paths:
                                       x-go-type: uuid.UUID
                                       x-go-type-import:
                                         path: github.com/gofrs/uuid
-                                      default: 00000000-00000000-00000000-00000000
+                                      default: 00000000-0000-0000-0000-000000000000
                                     name:
                                       x-oapi-codegen-extra-tags:
                                         db: name
@@ -8231,7 +8253,7 @@ paths:
                                       x-go-type: uuid.UUID
                                       x-go-type-import:
                                         path: github.com/gofrs/uuid
-                                      default: 00000000-00000000-00000000-00000000
+                                      default: 00000000-0000-0000-0000-000000000000
                                     type:
                                       x-oapi-codegen-extra-tags:
                                         db: type
@@ -8293,7 +8315,7 @@ paths:
                                       x-go-type: uuid.UUID
                                       x-go-type-import:
                                         path: github.com/gofrs/uuid
-                                      default: 00000000-00000000-00000000-00000000
+                                      default: 00000000-0000-0000-0000-000000000000
                                     created_at:
                                       x-oapi-codegen-extra-tags:
                                         db: created_at
@@ -8352,7 +8374,7 @@ paths:
                                             x-go-type: uuid.UUID
                                             x-go-type-import:
                                               path: github.com/gofrs/uuid
-                                            default: 00000000-00000000-00000000-00000000
+                                            default: 00000000-0000-0000-0000-000000000000
                                           name:
                                             x-oapi-codegen-extra-tags:
                                               db: name
@@ -8379,7 +8401,7 @@ paths:
                                             x-go-type: uuid.UUID
                                             x-go-type-import:
                                               path: github.com/gofrs/uuid
-                                            default: 00000000-00000000-00000000-00000000
+                                            default: 00000000-0000-0000-0000-000000000000
                                           owner:
                                             x-oapi-codegen-extra-tags:
                                               db: owner
@@ -8391,7 +8413,7 @@ paths:
                                             x-go-type: uuid.UUID
                                             x-go-type-import:
                                               path: github.com/gofrs/uuid
-                                            default: 00000000-00000000-00000000-00000000
+                                            default: 00000000-0000-0000-0000-000000000000
                                           created_at:
                                             x-oapi-codegen-extra-tags:
                                               db: created_at
@@ -8432,6 +8454,26 @@ paths:
                                         gorm: '-'
                                       x-go-type-skip-optional-pointer: true
                                       x-order: 13
+                                    schemaVersion:
+                                      description: >-
+                                        Specifies the version of the schema used
+                                        for the definition.
+                                      x-order: 14
+                                      x-oapi-codegen-extra-tags:
+                                        yaml: schemaVersion
+                                        db: '-'
+                                        gorm: '-'
+                                      default: components.meshery.io/v1beta1
+                                      type: string
+                                      minLength: 2
+                                      maxLength: 100
+                                      pattern: >-
+                                        ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                                      example:
+                                        - v1
+                                        - v1alpha1
+                                        - v2beta3
+                                        - v1.custom-suffix
                                 registrantId:
                                   description: ID of the registrant.
                                   x-oapi-codegen-extra-tags:
@@ -8444,7 +8486,7 @@ paths:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 categoryId:
                                   description: ID of the category.
                                   x-oapi-codegen-extra-tags:
@@ -8457,7 +8499,7 @@ paths:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 category:
                                   x-order: 9
                                   x-oapi-codegen-extra-tags:
@@ -8489,7 +8531,7 @@ paths:
                                       x-go-type: uuid.UUID
                                       x-go-type-import:
                                         path: github.com/gofrs/uuid
-                                      default: 00000000-00000000-00000000-00000000
+                                      default: 00000000-0000-0000-0000-000000000000
                                     name:
                                       type: string
                                       minLength: 1
@@ -9129,7 +9171,7 @@ paths:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             styles:
                               x-oapi-codegen-extra-tags:
                                 gorm: type:bytes;serializer:json
@@ -10133,7 +10175,7 @@ paths:
                               x-oapi-codegen-extra-tags:
                                 yaml: schemaVersion
                                 json: schemaVersion
-                              default: v1alpha3
+                              default: relationships.meshery.io/v1alpha3
                             version:
                               type: string
                               minLength: 5
@@ -14703,7 +14745,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         name:
           type: string
           description: >-
@@ -14847,7 +14889,7 @@ components:
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
-                default: 00000000-00000000-00000000-00000000
+                default: 00000000-0000-0000-0000-000000000000
               schemaVersion:
                 x-order: 2
                 description: >-
@@ -14856,7 +14898,7 @@ components:
                 x-oapi-codegen-extra-tags:
                   yaml: schemaVersion
                   json: schemaVersion
-                default: v1beta1
+                default: components.meshery.io/v1beta1
                 type: string
                 minLength: 2
                 maxLength: 100
@@ -14938,7 +14980,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   schemaVersion:
                     description: >-
                       Specifies the version of the schema used for the
@@ -14947,7 +14989,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: schemaVersion
                       json: schemaVersion
-                    default: v1beta1
+                    default: models.meshery.io/v1beta1
                     type: string
                     minLength: 2
                     maxLength: 100
@@ -15057,6 +15099,7 @@ components:
                     type: object
                     required:
                       - id
+                      - schemaVersion
                       - name
                       - type
                       - sub_type
@@ -15075,7 +15118,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       name:
                         x-oapi-codegen-extra-tags:
                           db: name
@@ -15095,7 +15138,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       type:
                         x-oapi-codegen-extra-tags:
                           db: type
@@ -15156,7 +15199,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       created_at:
                         x-oapi-codegen-extra-tags:
                           db: created_at
@@ -15213,7 +15256,7 @@ components:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             name:
                               x-oapi-codegen-extra-tags:
                                 db: name
@@ -15240,7 +15283,7 @@ components:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             owner:
                               x-oapi-codegen-extra-tags:
                                 db: owner
@@ -15252,7 +15295,7 @@ components:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             created_at:
                               x-oapi-codegen-extra-tags:
                                 db: created_at
@@ -15293,6 +15336,25 @@ components:
                           gorm: '-'
                         x-go-type-skip-optional-pointer: true
                         x-order: 13
+                      schemaVersion:
+                        description: >-
+                          Specifies the version of the schema used for the
+                          definition.
+                        x-order: 14
+                        x-oapi-codegen-extra-tags:
+                          yaml: schemaVersion
+                          db: '-'
+                          gorm: '-'
+                        default: components.meshery.io/v1beta1
+                        type: string
+                        minLength: 2
+                        maxLength: 100
+                        pattern: ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                        example:
+                          - v1
+                          - v1alpha1
+                          - v2beta3
+                          - v1.custom-suffix
                   registrantId:
                     description: ID of the registrant.
                     x-oapi-codegen-extra-tags:
@@ -15305,7 +15367,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   categoryId:
                     description: ID of the category.
                     x-oapi-codegen-extra-tags:
@@ -15318,7 +15380,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   category:
                     x-order: 9
                     x-oapi-codegen-extra-tags:
@@ -15348,7 +15410,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       name:
                         type: string
                         minLength: 1
@@ -15930,7 +15992,7 @@ components:
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
-                default: 00000000-00000000-00000000-00000000
+                default: 00000000-0000-0000-0000-000000000000
               styles:
                 x-oapi-codegen-extra-tags:
                   gorm: type:bytes;serializer:json
@@ -16846,7 +16908,7 @@ components:
                 x-oapi-codegen-extra-tags:
                   yaml: schemaVersion
                   json: schemaVersion
-                default: v1alpha3
+                default: relationships.meshery.io/v1alpha3
               version:
                 type: string
                 minLength: 5
@@ -21403,7 +21465,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             name:
               type: string
               description: >-
@@ -21551,7 +21613,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   schemaVersion:
                     x-order: 2
                     description: >-
@@ -21560,7 +21622,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: schemaVersion
                       json: schemaVersion
-                    default: v1beta1
+                    default: components.meshery.io/v1beta1
                     type: string
                     minLength: 2
                     maxLength: 100
@@ -21642,7 +21704,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       schemaVersion:
                         description: >-
                           Specifies the version of the schema used for the
@@ -21651,7 +21713,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: schemaVersion
                           json: schemaVersion
-                        default: v1beta1
+                        default: models.meshery.io/v1beta1
                         type: string
                         minLength: 2
                         maxLength: 100
@@ -21762,6 +21824,7 @@ components:
                         type: object
                         required:
                           - id
+                          - schemaVersion
                           - name
                           - type
                           - sub_type
@@ -21780,7 +21843,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           name:
                             x-oapi-codegen-extra-tags:
                               db: name
@@ -21800,7 +21863,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           type:
                             x-oapi-codegen-extra-tags:
                               db: type
@@ -21861,7 +21924,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           created_at:
                             x-oapi-codegen-extra-tags:
                               db: created_at
@@ -21918,7 +21981,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 name:
                                   x-oapi-codegen-extra-tags:
                                     db: name
@@ -21945,7 +22008,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 owner:
                                   x-oapi-codegen-extra-tags:
                                     db: owner
@@ -21957,7 +22020,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
                                     db: created_at
@@ -21998,6 +22061,26 @@ components:
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true
                             x-order: 13
+                          schemaVersion:
+                            description: >-
+                              Specifies the version of the schema used for the
+                              definition.
+                            x-order: 14
+                            x-oapi-codegen-extra-tags:
+                              yaml: schemaVersion
+                              db: '-'
+                              gorm: '-'
+                            default: components.meshery.io/v1beta1
+                            type: string
+                            minLength: 2
+                            maxLength: 100
+                            pattern: >-
+                              ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                            example:
+                              - v1
+                              - v1alpha1
+                              - v2beta3
+                              - v1.custom-suffix
                       registrantId:
                         description: ID of the registrant.
                         x-oapi-codegen-extra-tags:
@@ -22010,7 +22093,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       categoryId:
                         description: ID of the category.
                         x-oapi-codegen-extra-tags:
@@ -22023,7 +22106,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       category:
                         x-order: 9
                         x-oapi-codegen-extra-tags:
@@ -22053,7 +22136,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           name:
                             type: string
                             minLength: 1
@@ -22652,7 +22735,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   styles:
                     x-oapi-codegen-extra-tags:
                       gorm: type:bytes;serializer:json
@@ -23591,7 +23674,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: schemaVersion
                       json: schemaVersion
-                    default: v1alpha3
+                    default: relationships.meshery.io/v1alpha3
                   version:
                     type: string
                     minLength: 5
@@ -28211,7 +28294,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   name:
                     type: string
                     description: >-
@@ -28364,7 +28447,7 @@ components:
                           x-go-type: uuid.UUID
                           x-go-type-import:
                             path: github.com/gofrs/uuid
-                          default: 00000000-00000000-00000000-00000000
+                          default: 00000000-0000-0000-0000-000000000000
                         schemaVersion:
                           x-order: 2
                           description: >-
@@ -28373,7 +28456,7 @@ components:
                           x-oapi-codegen-extra-tags:
                             yaml: schemaVersion
                             json: schemaVersion
-                          default: v1beta1
+                          default: components.meshery.io/v1beta1
                           type: string
                           minLength: 2
                           maxLength: 100
@@ -28457,7 +28540,7 @@ components:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             schemaVersion:
                               description: >-
                                 Specifies the version of the schema used for the
@@ -28466,7 +28549,7 @@ components:
                               x-oapi-codegen-extra-tags:
                                 yaml: schemaVersion
                                 json: schemaVersion
-                              default: v1beta1
+                              default: models.meshery.io/v1beta1
                               type: string
                               minLength: 2
                               maxLength: 100
@@ -28581,6 +28664,7 @@ components:
                               type: object
                               required:
                                 - id
+                                - schemaVersion
                                 - name
                                 - type
                                 - sub_type
@@ -28599,7 +28683,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 name:
                                   x-oapi-codegen-extra-tags:
                                     db: name
@@ -28619,7 +28703,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 type:
                                   x-oapi-codegen-extra-tags:
                                     db: type
@@ -28681,7 +28765,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
                                     db: created_at
@@ -28740,7 +28824,7 @@ components:
                                         x-go-type: uuid.UUID
                                         x-go-type-import:
                                           path: github.com/gofrs/uuid
-                                        default: 00000000-00000000-00000000-00000000
+                                        default: 00000000-0000-0000-0000-000000000000
                                       name:
                                         x-oapi-codegen-extra-tags:
                                           db: name
@@ -28767,7 +28851,7 @@ components:
                                         x-go-type: uuid.UUID
                                         x-go-type-import:
                                           path: github.com/gofrs/uuid
-                                        default: 00000000-00000000-00000000-00000000
+                                        default: 00000000-0000-0000-0000-000000000000
                                       owner:
                                         x-oapi-codegen-extra-tags:
                                           db: owner
@@ -28779,7 +28863,7 @@ components:
                                         x-go-type: uuid.UUID
                                         x-go-type-import:
                                           path: github.com/gofrs/uuid
-                                        default: 00000000-00000000-00000000-00000000
+                                        default: 00000000-0000-0000-0000-000000000000
                                       created_at:
                                         x-oapi-codegen-extra-tags:
                                           db: created_at
@@ -28820,6 +28904,26 @@ components:
                                     gorm: '-'
                                   x-go-type-skip-optional-pointer: true
                                   x-order: 13
+                                schemaVersion:
+                                  description: >-
+                                    Specifies the version of the schema used for
+                                    the definition.
+                                  x-order: 14
+                                  x-oapi-codegen-extra-tags:
+                                    yaml: schemaVersion
+                                    db: '-'
+                                    gorm: '-'
+                                  default: components.meshery.io/v1beta1
+                                  type: string
+                                  minLength: 2
+                                  maxLength: 100
+                                  pattern: >-
+                                    ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                                  example:
+                                    - v1
+                                    - v1alpha1
+                                    - v2beta3
+                                    - v1.custom-suffix
                             registrantId:
                               description: ID of the registrant.
                               x-oapi-codegen-extra-tags:
@@ -28832,7 +28936,7 @@ components:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             categoryId:
                               description: ID of the category.
                               x-oapi-codegen-extra-tags:
@@ -28845,7 +28949,7 @@ components:
                               x-go-type: uuid.UUID
                               x-go-type-import:
                                 path: github.com/gofrs/uuid
-                              default: 00000000-00000000-00000000-00000000
+                              default: 00000000-0000-0000-0000-000000000000
                             category:
                               x-order: 9
                               x-oapi-codegen-extra-tags:
@@ -28877,7 +28981,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 name:
                                   type: string
                                   minLength: 1
@@ -29502,7 +29606,7 @@ components:
                           x-go-type: uuid.UUID
                           x-go-type-import:
                             path: github.com/gofrs/uuid
-                          default: 00000000-00000000-00000000-00000000
+                          default: 00000000-0000-0000-0000-000000000000
                         styles:
                           x-oapi-codegen-extra-tags:
                             gorm: type:bytes;serializer:json
@@ -30485,7 +30589,7 @@ components:
                           x-oapi-codegen-extra-tags:
                             yaml: schemaVersion
                             json: schemaVersion
-                          default: v1alpha3
+                          default: relationships.meshery.io/v1alpha3
                         version:
                           type: string
                           minLength: 5
@@ -35167,7 +35271,7 @@ components:
                   x-go-type: uuid.UUID
                   x-go-type-import:
                     path: github.com/gofrs/uuid
-                  default: 00000000-00000000-00000000-00000000
+                  default: 00000000-0000-0000-0000-000000000000
                 name:
                   type: string
                   description: >-
@@ -35320,7 +35424,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       schemaVersion:
                         x-order: 2
                         description: >-
@@ -35329,7 +35433,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: schemaVersion
                           json: schemaVersion
-                        default: v1beta1
+                        default: components.meshery.io/v1beta1
                         type: string
                         minLength: 2
                         maxLength: 100
@@ -35411,7 +35515,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           schemaVersion:
                             description: >-
                               Specifies the version of the schema used for the
@@ -35420,7 +35524,7 @@ components:
                             x-oapi-codegen-extra-tags:
                               yaml: schemaVersion
                               json: schemaVersion
-                            default: v1beta1
+                            default: models.meshery.io/v1beta1
                             type: string
                             minLength: 2
                             maxLength: 100
@@ -35534,6 +35638,7 @@ components:
                             type: object
                             required:
                               - id
+                              - schemaVersion
                               - name
                               - type
                               - sub_type
@@ -35552,7 +35657,7 @@ components:
                                 x-go-type: uuid.UUID
                                 x-go-type-import:
                                   path: github.com/gofrs/uuid
-                                default: 00000000-00000000-00000000-00000000
+                                default: 00000000-0000-0000-0000-000000000000
                               name:
                                 x-oapi-codegen-extra-tags:
                                   db: name
@@ -35572,7 +35677,7 @@ components:
                                 x-go-type: uuid.UUID
                                 x-go-type-import:
                                   path: github.com/gofrs/uuid
-                                default: 00000000-00000000-00000000-00000000
+                                default: 00000000-0000-0000-0000-000000000000
                               type:
                                 x-oapi-codegen-extra-tags:
                                   db: type
@@ -35634,7 +35739,7 @@ components:
                                 x-go-type: uuid.UUID
                                 x-go-type-import:
                                   path: github.com/gofrs/uuid
-                                default: 00000000-00000000-00000000-00000000
+                                default: 00000000-0000-0000-0000-000000000000
                               created_at:
                                 x-oapi-codegen-extra-tags:
                                   db: created_at
@@ -35691,7 +35796,7 @@ components:
                                       x-go-type: uuid.UUID
                                       x-go-type-import:
                                         path: github.com/gofrs/uuid
-                                      default: 00000000-00000000-00000000-00000000
+                                      default: 00000000-0000-0000-0000-000000000000
                                     name:
                                       x-oapi-codegen-extra-tags:
                                         db: name
@@ -35718,7 +35823,7 @@ components:
                                       x-go-type: uuid.UUID
                                       x-go-type-import:
                                         path: github.com/gofrs/uuid
-                                      default: 00000000-00000000-00000000-00000000
+                                      default: 00000000-0000-0000-0000-000000000000
                                     owner:
                                       x-oapi-codegen-extra-tags:
                                         db: owner
@@ -35730,7 +35835,7 @@ components:
                                       x-go-type: uuid.UUID
                                       x-go-type-import:
                                         path: github.com/gofrs/uuid
-                                      default: 00000000-00000000-00000000-00000000
+                                      default: 00000000-0000-0000-0000-000000000000
                                     created_at:
                                       x-oapi-codegen-extra-tags:
                                         db: created_at
@@ -35771,6 +35876,26 @@ components:
                                   gorm: '-'
                                 x-go-type-skip-optional-pointer: true
                                 x-order: 13
+                              schemaVersion:
+                                description: >-
+                                  Specifies the version of the schema used for
+                                  the definition.
+                                x-order: 14
+                                x-oapi-codegen-extra-tags:
+                                  yaml: schemaVersion
+                                  db: '-'
+                                  gorm: '-'
+                                default: components.meshery.io/v1beta1
+                                type: string
+                                minLength: 2
+                                maxLength: 100
+                                pattern: >-
+                                  ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                                example:
+                                  - v1
+                                  - v1alpha1
+                                  - v2beta3
+                                  - v1.custom-suffix
                           registrantId:
                             description: ID of the registrant.
                             x-oapi-codegen-extra-tags:
@@ -35783,7 +35908,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           categoryId:
                             description: ID of the category.
                             x-oapi-codegen-extra-tags:
@@ -35796,7 +35921,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           category:
                             x-order: 9
                             x-oapi-codegen-extra-tags:
@@ -35828,7 +35953,7 @@ components:
                                 x-go-type: uuid.UUID
                                 x-go-type-import:
                                   path: github.com/gofrs/uuid
-                                default: 00000000-00000000-00000000-00000000
+                                default: 00000000-0000-0000-0000-000000000000
                               name:
                                 type: string
                                 minLength: 1
@@ -36448,7 +36573,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       styles:
                         x-oapi-codegen-extra-tags:
                           gorm: type:bytes;serializer:json
@@ -37414,7 +37539,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: schemaVersion
                           json: schemaVersion
-                        default: v1alpha3
+                        default: relationships.meshery.io/v1alpha3
                       version:
                         type: string
                         minLength: 5
@@ -41979,7 +42104,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         schemaVersion:
           x-order: 2
           description: >-
@@ -41988,7 +42113,7 @@ components:
           x-oapi-codegen-extra-tags:
             yaml: schemaVersion
             json: schemaVersion
-          default: v1beta1
+          default: components.meshery.io/v1beta1
           type: string
           minLength: 2
           maxLength: 100
@@ -42070,14 +42195,14 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             schemaVersion:
               description: Specifies the version of the schema used for the definition.
               x-order: 2
               x-oapi-codegen-extra-tags:
                 yaml: schemaVersion
                 json: schemaVersion
-              default: v1beta1
+              default: models.meshery.io/v1beta1
               type: string
               minLength: 2
               maxLength: 100
@@ -42183,6 +42308,7 @@ components:
               type: object
               required:
                 - id
+                - schemaVersion
                 - name
                 - type
                 - sub_type
@@ -42201,7 +42327,7 @@ components:
                   x-go-type: uuid.UUID
                   x-go-type-import:
                     path: github.com/gofrs/uuid
-                  default: 00000000-00000000-00000000-00000000
+                  default: 00000000-0000-0000-0000-000000000000
                 name:
                   x-oapi-codegen-extra-tags:
                     db: name
@@ -42221,7 +42347,7 @@ components:
                   x-go-type: uuid.UUID
                   x-go-type-import:
                     path: github.com/gofrs/uuid
-                  default: 00000000-00000000-00000000-00000000
+                  default: 00000000-0000-0000-0000-000000000000
                 type:
                   x-oapi-codegen-extra-tags:
                     db: type
@@ -42282,7 +42408,7 @@ components:
                   x-go-type: uuid.UUID
                   x-go-type-import:
                     path: github.com/gofrs/uuid
-                  default: 00000000-00000000-00000000-00000000
+                  default: 00000000-0000-0000-0000-000000000000
                 created_at:
                   x-oapi-codegen-extra-tags:
                     db: created_at
@@ -42338,7 +42464,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       name:
                         x-oapi-codegen-extra-tags:
                           db: name
@@ -42365,7 +42491,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       owner:
                         x-oapi-codegen-extra-tags:
                           db: owner
@@ -42377,7 +42503,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       created_at:
                         x-oapi-codegen-extra-tags:
                           db: created_at
@@ -42418,6 +42544,23 @@ components:
                     gorm: '-'
                   x-go-type-skip-optional-pointer: true
                   x-order: 13
+                schemaVersion:
+                  description: Specifies the version of the schema used for the definition.
+                  x-order: 14
+                  x-oapi-codegen-extra-tags:
+                    yaml: schemaVersion
+                    db: '-'
+                    gorm: '-'
+                  default: components.meshery.io/v1beta1
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  pattern: ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                  example:
+                    - v1
+                    - v1alpha1
+                    - v2beta3
+                    - v1.custom-suffix
             registrantId:
               description: ID of the registrant.
               x-oapi-codegen-extra-tags:
@@ -42430,7 +42573,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             categoryId:
               description: ID of the category.
               x-oapi-codegen-extra-tags:
@@ -42443,7 +42586,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             category:
               x-order: 9
               x-oapi-codegen-extra-tags:
@@ -42473,7 +42616,7 @@ components:
                   x-go-type: uuid.UUID
                   x-go-type-import:
                     path: github.com/gofrs/uuid
-                  default: 00000000-00000000-00000000-00000000
+                  default: 00000000-0000-0000-0000-000000000000
                 name:
                   type: string
                   minLength: 1
@@ -43035,7 +43178,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         styles:
           x-oapi-codegen-extra-tags:
             gorm: type:bytes;serializer:json
@@ -43933,14 +44076,14 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         schemaVersion:
           description: Specifies the version of the schema used for the definition.
           x-order: 2
           x-oapi-codegen-extra-tags:
             yaml: schemaVersion
             json: schemaVersion
-          default: v1beta1
+          default: models.meshery.io/v1beta1
           type: string
           minLength: 2
           maxLength: 100
@@ -44048,6 +44191,7 @@ components:
           type: object
           required:
             - id
+            - schemaVersion
             - name
             - type
             - sub_type
@@ -44066,7 +44210,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             name:
               x-oapi-codegen-extra-tags:
                 db: name
@@ -44086,7 +44230,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             type:
               x-oapi-codegen-extra-tags:
                 db: type
@@ -44147,7 +44291,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             created_at:
               x-oapi-codegen-extra-tags:
                 db: created_at
@@ -44203,7 +44347,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   name:
                     x-oapi-codegen-extra-tags:
                       db: name
@@ -44230,7 +44374,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   owner:
                     x-oapi-codegen-extra-tags:
                       db: owner
@@ -44242,7 +44386,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   created_at:
                     x-oapi-codegen-extra-tags:
                       db: created_at
@@ -44283,6 +44427,23 @@ components:
                 gorm: '-'
               x-go-type-skip-optional-pointer: true
               x-order: 13
+            schemaVersion:
+              description: Specifies the version of the schema used for the definition.
+              x-order: 14
+              x-oapi-codegen-extra-tags:
+                yaml: schemaVersion
+                db: '-'
+                gorm: '-'
+              default: components.meshery.io/v1beta1
+              type: string
+              minLength: 2
+              maxLength: 100
+              pattern: ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+              example:
+                - v1
+                - v1alpha1
+                - v2beta3
+                - v1.custom-suffix
         registrantId:
           description: ID of the registrant.
           x-oapi-codegen-extra-tags:
@@ -44295,7 +44456,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         categoryId:
           description: ID of the category.
           x-oapi-codegen-extra-tags:
@@ -44308,7 +44469,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         category:
           x-order: 9
           x-oapi-codegen-extra-tags:
@@ -44338,7 +44499,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             name:
               type: string
               minLength: 1
@@ -46360,7 +46521,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         name:
           x-oapi-codegen-extra-tags:
             db: name
@@ -46387,7 +46548,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         owner:
           x-oapi-codegen-extra-tags:
             db: owner
@@ -46399,7 +46560,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-          default: 00000000-00000000-00000000-00000000
+          default: 00000000-0000-0000-0000-000000000000
         created_at:
           x-oapi-codegen-extra-tags:
             db: created_at
@@ -46553,7 +46714,7 @@ components:
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
-                default: 00000000-00000000-00000000-00000000
+                default: 00000000-0000-0000-0000-000000000000
               name:
                 x-oapi-codegen-extra-tags:
                   db: name
@@ -46580,7 +46741,7 @@ components:
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
-                default: 00000000-00000000-00000000-00000000
+                default: 00000000-0000-0000-0000-000000000000
               owner:
                 x-oapi-codegen-extra-tags:
                   db: owner
@@ -46592,7 +46753,7 @@ components:
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
-                default: 00000000-00000000-00000000-00000000
+                default: 00000000-0000-0000-0000-000000000000
               created_at:
                 x-oapi-codegen-extra-tags:
                   db: created_at
@@ -46755,7 +46916,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             name:
               type: string
               description: >-
@@ -46903,7 +47064,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   schemaVersion:
                     x-order: 2
                     description: >-
@@ -46912,7 +47073,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: schemaVersion
                       json: schemaVersion
-                    default: v1beta1
+                    default: components.meshery.io/v1beta1
                     type: string
                     minLength: 2
                     maxLength: 100
@@ -46994,7 +47155,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       schemaVersion:
                         description: >-
                           Specifies the version of the schema used for the
@@ -47003,7 +47164,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: schemaVersion
                           json: schemaVersion
-                        default: v1beta1
+                        default: models.meshery.io/v1beta1
                         type: string
                         minLength: 2
                         maxLength: 100
@@ -47114,6 +47275,7 @@ components:
                         type: object
                         required:
                           - id
+                          - schemaVersion
                           - name
                           - type
                           - sub_type
@@ -47132,7 +47294,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           name:
                             x-oapi-codegen-extra-tags:
                               db: name
@@ -47152,7 +47314,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           type:
                             x-oapi-codegen-extra-tags:
                               db: type
@@ -47213,7 +47375,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           created_at:
                             x-oapi-codegen-extra-tags:
                               db: created_at
@@ -47270,7 +47432,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 name:
                                   x-oapi-codegen-extra-tags:
                                     db: name
@@ -47297,7 +47459,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 owner:
                                   x-oapi-codegen-extra-tags:
                                     db: owner
@@ -47309,7 +47471,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
                                     db: created_at
@@ -47350,6 +47512,26 @@ components:
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true
                             x-order: 13
+                          schemaVersion:
+                            description: >-
+                              Specifies the version of the schema used for the
+                              definition.
+                            x-order: 14
+                            x-oapi-codegen-extra-tags:
+                              yaml: schemaVersion
+                              db: '-'
+                              gorm: '-'
+                            default: components.meshery.io/v1beta1
+                            type: string
+                            minLength: 2
+                            maxLength: 100
+                            pattern: >-
+                              ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                            example:
+                              - v1
+                              - v1alpha1
+                              - v2beta3
+                              - v1.custom-suffix
                       registrantId:
                         description: ID of the registrant.
                         x-oapi-codegen-extra-tags:
@@ -47362,7 +47544,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       categoryId:
                         description: ID of the category.
                         x-oapi-codegen-extra-tags:
@@ -47375,7 +47557,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       category:
                         x-order: 9
                         x-oapi-codegen-extra-tags:
@@ -47405,7 +47587,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           name:
                             type: string
                             minLength: 1
@@ -48004,7 +48186,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   styles:
                     x-oapi-codegen-extra-tags:
                       gorm: type:bytes;serializer:json
@@ -48943,7 +49125,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: schemaVersion
                       json: schemaVersion
-                    default: v1alpha3
+                    default: relationships.meshery.io/v1alpha3
                   version:
                     type: string
                     minLength: 5
@@ -53438,7 +53620,7 @@ components:
               x-go-type: uuid.UUID
               x-go-type-import:
                 path: github.com/gofrs/uuid
-              default: 00000000-00000000-00000000-00000000
+              default: 00000000-0000-0000-0000-000000000000
             name:
               type: string
               description: >-
@@ -53586,7 +53768,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   schemaVersion:
                     x-order: 2
                     description: >-
@@ -53595,7 +53777,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: schemaVersion
                       json: schemaVersion
-                    default: v1beta1
+                    default: components.meshery.io/v1beta1
                     type: string
                     minLength: 2
                     maxLength: 100
@@ -53677,7 +53859,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       schemaVersion:
                         description: >-
                           Specifies the version of the schema used for the
@@ -53686,7 +53868,7 @@ components:
                         x-oapi-codegen-extra-tags:
                           yaml: schemaVersion
                           json: schemaVersion
-                        default: v1beta1
+                        default: models.meshery.io/v1beta1
                         type: string
                         minLength: 2
                         maxLength: 100
@@ -53797,6 +53979,7 @@ components:
                         type: object
                         required:
                           - id
+                          - schemaVersion
                           - name
                           - type
                           - sub_type
@@ -53815,7 +53998,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           name:
                             x-oapi-codegen-extra-tags:
                               db: name
@@ -53835,7 +54018,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           type:
                             x-oapi-codegen-extra-tags:
                               db: type
@@ -53896,7 +54079,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           created_at:
                             x-oapi-codegen-extra-tags:
                               db: created_at
@@ -53953,7 +54136,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 name:
                                   x-oapi-codegen-extra-tags:
                                     db: name
@@ -53980,7 +54163,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 owner:
                                   x-oapi-codegen-extra-tags:
                                     db: owner
@@ -53992,7 +54175,7 @@ components:
                                   x-go-type: uuid.UUID
                                   x-go-type-import:
                                     path: github.com/gofrs/uuid
-                                  default: 00000000-00000000-00000000-00000000
+                                  default: 00000000-0000-0000-0000-000000000000
                                 created_at:
                                   x-oapi-codegen-extra-tags:
                                     db: created_at
@@ -54033,6 +54216,26 @@ components:
                               gorm: '-'
                             x-go-type-skip-optional-pointer: true
                             x-order: 13
+                          schemaVersion:
+                            description: >-
+                              Specifies the version of the schema used for the
+                              definition.
+                            x-order: 14
+                            x-oapi-codegen-extra-tags:
+                              yaml: schemaVersion
+                              db: '-'
+                              gorm: '-'
+                            default: components.meshery.io/v1beta1
+                            type: string
+                            minLength: 2
+                            maxLength: 100
+                            pattern: >-
+                              ^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$
+                            example:
+                              - v1
+                              - v1alpha1
+                              - v2beta3
+                              - v1.custom-suffix
                       registrantId:
                         description: ID of the registrant.
                         x-oapi-codegen-extra-tags:
@@ -54045,7 +54248,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       categoryId:
                         description: ID of the category.
                         x-oapi-codegen-extra-tags:
@@ -54058,7 +54261,7 @@ components:
                         x-go-type: uuid.UUID
                         x-go-type-import:
                           path: github.com/gofrs/uuid
-                        default: 00000000-00000000-00000000-00000000
+                        default: 00000000-0000-0000-0000-000000000000
                       category:
                         x-order: 9
                         x-oapi-codegen-extra-tags:
@@ -54088,7 +54291,7 @@ components:
                             x-go-type: uuid.UUID
                             x-go-type-import:
                               path: github.com/gofrs/uuid
-                            default: 00000000-00000000-00000000-00000000
+                            default: 00000000-0000-0000-0000-000000000000
                           name:
                             type: string
                             minLength: 1
@@ -54687,7 +54890,7 @@ components:
                     x-go-type: uuid.UUID
                     x-go-type-import:
                       path: github.com/gofrs/uuid
-                    default: 00000000-00000000-00000000-00000000
+                    default: 00000000-0000-0000-0000-000000000000
                   styles:
                     x-oapi-codegen-extra-tags:
                       gorm: type:bytes;serializer:json
@@ -55626,7 +55829,7 @@ components:
                     x-oapi-codegen-extra-tags:
                       yaml: schemaVersion
                       json: schemaVersion
-                    default: v1alpha3
+                    default: relationships.meshery.io/v1alpha3
                   version:
                     type: string
                     minLength: 5

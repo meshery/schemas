@@ -53,6 +53,9 @@ type Connection struct {
 	UpdatedAt    time.Time                  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 	DeletedAt    core.NullTime              `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 	Environments []*environment.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
+
+	// SchemaVersion Specifies the version of the schema used for the definition.
+	SchemaVersion string `db:"-" gorm:"-" json:"schemaVersion" yaml:"schemaVersion"`
 }
 
 // ConnectionStatus Connection Status
