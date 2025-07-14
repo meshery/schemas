@@ -42,7 +42,7 @@
         "yaml": "schemaVersion",
         "json": "schemaVersion"
       },
-      "default": "v1alpha3"
+      "default": "relationships.meshery.io/v1alpha3"
     },
     "version": {
       "description": "Specifies the version of the relationship definition.",

@@ -22,7 +22,7 @@
         "yaml": "schemaVersion",
         "json": "schemaVersion"
       },
-      "default": "v1beta1"
+      "default": "models.meshery.io/v1beta1"
     },
     "version": {
       "description": "Version of the model definition.",
