@@ -6,6 +6,7 @@
   "type": "object",
   "required": [
     "id",
+    "schemaVersion",
     "name",
     "type",
     "sub_type",
@@ -145,6 +146,17 @@
       },
       "x-go-type-skip-optional-pointer": true,
       "x-order": 13
+    },
+    "schemaVersion": {
+      "description": "Specifies the version of the schema used for the definition.",
+      "$ref": "../../core.json#/definitions/versionString",
+      "x-order": 14,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "schemaVersion",
+        "db": "-",
+        "gorm": "-"
+      },
+      "default": "components.meshery.io/v1beta1"
     }
   }
 }
