@@ -80,6 +80,15 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getApiAcademyLearningPaths: build.query<GetApiAcademyLearningPathsApiResponse, GetApiAcademyLearningPathsApiArg>({
+      query: (queryArg) => ({
+        url: `/api/academy/learningPaths`,
+        params: {
+          org_id: queryArg.orgId,
+          search: queryArg.search,
+        },
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -452,6 +461,24 @@ export type GetEnvironmentsApiArg = {
   /** User's organization ID */
   orgId: string;
 };
+export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of learning paths */ {
+  /** Title of the learning path */
+  title: string;
+  /** Detailed description of the learning path */
+  description: string;
+  /** Optional banner image URL */
+  banner?: string | null;
+  /** Canonical URL to access the learning path */
+  permalink: string;
+  /** The organization ID that owns this learning path */
+  orgId: string;
+}[];
+export type GetApiAcademyLearningPathsApiArg = {
+  /** Filter learning paths by organization ID */
+  orgId?: string;
+  /** Search learning paths by title */
+  search?: string;
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -469,4 +496,5 @@ export const {
   useDeleteApiWorkspacesByIdMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useGetApiAcademyLearningPathsQuery,
 } = injectedRtkApi;

@@ -1,0 +1,146 @@
+/**
+ * This file was automatically generated from OpenAPI schema.
+ * Do not manually modify this file.
+ */
+
+const schema = {
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Academy",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/academy/learningPaths": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "summary": "Get all learning paths",
+        "description": "Returns a list of available learning paths with optional filters.",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "query",
+            "description": "Filter learning paths by organization ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search learning paths by title",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of learning paths",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Title of the learning path",
+                        "example": "Mastering Kubernetes for Engineers"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Detailed description of the learning path",
+                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                      },
+                      "banner": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true,
+                        "description": "Optional banner image URL",
+                        "example": null
+                      },
+                      "permalink": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Canonical URL to access the learning path",
+                        "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                      },
+                      "orgId": {
+                        "type": "string",
+                        "description": "The organization ID that owns this learning path",
+                        "example": "layer5"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "permalink",
+                      "orgId"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LearningPath": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the learning path",
+            "example": "Mastering Kubernetes for Engineers"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the learning path",
+            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+          },
+          "banner": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Optional banner image URL",
+            "example": null
+          },
+          "permalink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Canonical URL to access the learning path",
+            "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+          },
+          "orgId": {
+            "type": "string",
+            "description": "The organization ID that owns this learning path",
+            "example": "layer5"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "permalink",
+          "orgId"
+        ]
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-04/schema#"
+};
+
+export default schema;
