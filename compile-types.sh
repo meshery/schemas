@@ -70,7 +70,7 @@ is_template_file() {
 generate_type_definition() {
   local file="$1"
   if is_template_file "$file"; then
-    echo "Skipping template file: $file"
+    # echo "Skipping template file: $file"
     return
   fi
 
@@ -202,8 +202,8 @@ convert_openapi_yaml_to_json() {
 echo "Step 1: Generating TypeScript type definitions..."
 traverse_for_types "$INPUT_DIR"
 
-echo "Step 2: Generating templates..."
-traverse_for_templates "$INPUT_DIR"
+echo "Step 2:Skipping Generating templates..."
+# traverse_for_templates "$INPUT_DIR"
 
 echo "Step 3: Copying JSON and YAML files (excluding templates) to temporary directory..."
 rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' --exclude='*_template.yml' --include='*.json' --include='*.yml' --include='*.yaml' --exclude='*' "$INPUT_DIR/" "$TEMP_DIR/"
