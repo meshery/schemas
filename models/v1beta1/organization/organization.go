@@ -4,129 +4,73 @@
 package organization
 
 import (
+	"time"
+
+	"database/sql"
+
 	"github.com/gofrs/uuid"
-	externalRef1 "github.com/meshery/schemas/models/core"
 )
 
-// AvailableOrganization defines model for availableOrganization.
-type AvailableOrganization struct {
-	ID        externalRef1.GeneralId `db:"id" json:"id"`
-	Country   externalRef1.Text      `json:"country,omitempty"`
-	CreatedAt externalRef1.Time      `json:"created_at,omitempty"`
+// DashboardPrefs Preferences specific to dashboard behavior
+type DashboardPrefs map[string]interface{}
 
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt   externalRef1.NullTime `json:"deleted_at,omitempty"`
-	Description externalRef1.Text     `json:"description,omitempty"`
-	Metadata    *OrganizationMetadata `json:"metadata,omitempty"`
-	Name        externalRef1.Text     `json:"name,omitempty"`
-	Owner       externalRef1.Text     `json:"owner,omitempty"`
-	Region      externalRef1.Text     `json:"region,omitempty"`
-	UpdatedAt   externalRef1.Time     `json:"updated_at,omitempty"`
+// Location defines model for Location.
+type Location struct {
+	Location string `json:"location" yaml:"location"`
+	Svg      string `json:"svg" yaml:"svg"`
 }
 
-// Organization defines model for organization.
+// Logo defines model for Logo.
+type Logo struct {
+	DarkDesktopView Location `json:"dark_desktop_view" yaml:"dark_desktop_view"`
+	DarkMobileView  Location `json:"dark_mobile_view" yaml:"dark_mobile_view"`
+	DesktopView     Location `json:"desktop_view" yaml:"desktop_view"`
+	MobileView      Location `json:"mobile_view" yaml:"mobile_view"`
+}
+
+// NullableTime defines model for NullableTime.
+type NullableTime = sql.NullTime
+
+// OrgMetadata defines model for OrgMetadata.
+type OrgMetadata struct {
+	Preferences Preferences `json:"preferences" yaml:"preferences"`
+}
+
+// Organization defines model for Organization.
 type Organization struct {
-	ID        externalRef1.GeneralId `db:"id" json:"id"`
-	Country   externalRef1.Text      `json:"country,omitempty"`
-	CreatedAt externalRef1.Time      `json:"created_at,omitempty"`
+	Country     string       `db:"country" json:"country" yaml:"country"`
+	CreatedAt   time.Time    `db:"created_at" json:"created_at" yaml:"created_at"`
+	DeletedAt   sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description string       `db:"description" json:"description" yaml:"description"`
+	Domain      *string      `db:"domain" json:"domain" yaml:"domain"`
 
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt externalRef1.NullTime `json:"deleted_at,omitempty"`
-	Metadata  *OrganizationMetadata `json:"metadata,omitempty"`
-	Name      externalRef1.Text     `json:"name"`
-	Owner     uuid.UUID             `db:"owner" json:"owner"`
-	Region    externalRef1.Text     `json:"region,omitempty"`
-	UpdatedAt externalRef1.Time     `json:"updated_at,omitempty"`
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Id       uuid.UUID   `db:"id" json:"id" yaml:"id"`
+	Metadata OrgMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
+	Name     string      `db:"name" json:"name" yaml:"name"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner     uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
+	Region    string    `db:"region" json:"region" yaml:"region"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
 
-// OrganizationMetadata defines model for organizationMetadata.
-type OrganizationMetadata struct {
-	Preferences *OrganizationPreferences `json:"preferences,omitempty"`
+// Preferences defines model for Preferences.
+type Preferences struct {
+	// Dashboard Preferences specific to dashboard behavior
+	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
+	Theme     Theme          `json:"theme" yaml:"theme"`
 }
 
-// OrganizationPayload defines model for organizationPayload.
-type OrganizationPayload struct {
-	Country         externalRef1.Text        `json:"country,omitempty"`
-	Description     externalRef1.Text        `json:"description,omitempty"`
-	Name            externalRef1.Text        `json:"name,omitempty"`
-	NotifyOrgUpdate *bool                    `json:"notify_org_update,omitempty"`
-	Preferences     *OrganizationPreferences `json:"preferences,omitempty"`
-	Region          externalRef1.Text        `json:"region,omitempty"`
+// Theme defines model for Theme.
+type Theme struct {
+	Id   string                  `json:"id" yaml:"id"`
+	Logo Logo                    `json:"logo" yaml:"logo"`
+	Vars *map[string]interface{} `json:"vars,omitempty" yaml:"vars,omitempty"`
 }
 
-// OrganizationPreferences defines model for organizationPreferences.
-type OrganizationPreferences struct {
-	Dashboard *struct {
-		Layout *map[string]map[string]interface{} `json:"layout,omitempty"`
-	} `json:"dashboard,omitempty"`
-	Theme *struct {
-		Logo *struct {
-			// DesktopView Contains the location of the custom desktop view SVG.
-			DesktopView *string `json:"desktop_view,omitempty"`
+// Time defines model for Time.
+type Time = time.Time
 
-			// MobileView Contains the location of the custom mobile view SVG.
-			MobileView *string `json:"mobile_view,omitempty"`
-		} `json:"logo,omitempty"`
-
-		// ThemeId ID for the theme to load for the currently selected organization
-		ThemeId *string `json:"theme_id,omitempty"`
-	} `json:"theme,omitempty"`
-}
-
-// OrganizationWithRoles defines model for organizationWithRoles.
-type OrganizationWithRoles struct {
-	ID        externalRef1.GeneralId `db:"id" json:"id"`
-	Country   externalRef1.Text      `json:"country,omitempty"`
-	CreatedAt externalRef1.Time      `json:"created_at,omitempty"`
-
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt   externalRef1.NullTime  `json:"deleted_at,omitempty"`
-	Description externalRef1.Text      `json:"description,omitempty"`
-	Metadata    *OrganizationMetadata  `json:"metadata,omitempty"`
-	Name        externalRef1.Text      `json:"name,omitempty"`
-	Owner       uuid.UUID              `db:"owner" json:"owner"`
-	Region      externalRef1.Text      `json:"region,omitempty"`
-	RoleNames   externalRef1.RoleNames `json:"role_names,omitempty"`
-	UpdatedAt   externalRef1.Time      `json:"updated_at,omitempty"`
-}
-
-// OrganizationsPage defines model for organizationsPage.
-type OrganizationsPage struct {
-	Organizations *[]AvailableOrganization `json:"organizations,omitempty"`
-	Page          externalRef1.Number      `json:"page,omitempty"`
-	PageSize      externalRef1.Number      `json:"page_size,omitempty"`
-	TotalCount    externalRef1.Number      `json:"total_count,omitempty"`
-}
-
-// TeamsOrganizationsMapping defines model for teamsOrganizationsMapping.
-type TeamsOrganizationsMapping struct {
-	ID        externalRef1.GeneralId `db:"id" json:"id"`
-	CreatedAt externalRef1.Time      `json:"created_at,omitempty"`
-
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt externalRef1.NullTime `json:"deleted_at,omitempty"`
-	OrgId     uuid.UUID             `db:"org_id" json:"org_id"`
-	TeamId    uuid.UUID             `db:"team_id" json:"team_id"`
-	UpdatedAt externalRef1.Time     `json:"updated_at,omitempty"`
-}
-
-// TeamsOrganizationsMappingPage defines model for teamsOrganizationsMappingPage.
-type TeamsOrganizationsMappingPage struct {
-	Page                      externalRef1.Number          `json:"page,omitempty"`
-	PageSize                  externalRef1.Number          `json:"page_size,omitempty"`
-	TeamsOrganizationsMapping *[]TeamsOrganizationsMapping `json:"teams_organizations_mapping,omitempty"`
-	TotalCount                externalRef1.Number          `json:"total_count,omitempty"`
-}
-
-// UsersOrganizationsMapping defines model for usersOrganizationsMapping.
-type UsersOrganizationsMapping struct {
-	ID        externalRef1.GeneralId `db:"id" json:"id"`
-	CreatedAt externalRef1.Time      `json:"created_at,omitempty"`
-
-	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt      externalRef1.NullTime `json:"deleted_at,omitempty"`
-	OrganizationId uuid.UUID             `db:"organization_id" json:"organization_id"`
-	RoleId         *uuid.UUID            `db:"role_id" json:"role_id"`
-	UpdatedAt      externalRef1.Time     `json:"updated_at,omitempty"`
-	UserId         uuid.UUID             `db:"user_id" json:"user_id"`
-}
+// UUID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type UUID = uuid.UUID

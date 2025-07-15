@@ -75,6 +75,9 @@ generate_schema_models "workspace" "v1beta1"
 generate_schema_models "environment" "v1beta1"
 generate_schema_models "user" "v1beta1"
 generate_schema_models "academy" "v1beta1"
+generate_schema_models "event" "v1beta1"
+generate_schema_models "organization" "v1beta1"
+generate_schema_models "connection" "v1beta1"
 
 
 v1beta1="schemas/constructs/v1beta1"

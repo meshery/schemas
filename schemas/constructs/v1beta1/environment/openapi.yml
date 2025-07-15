@@ -61,23 +61,7 @@ components:
       bearerFormat: JWT
   schemas:
     environment:
-      properties:
-        ID:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
-        name:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
-        description:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
-        organization_id:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/organization_id
-        owner:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
-        created_at:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
-        updated_at:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
-        deleted_at:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/nullTime
+      $ref: "./environment.json"
     environmentConnectionMapping:
       properties:
         ID:

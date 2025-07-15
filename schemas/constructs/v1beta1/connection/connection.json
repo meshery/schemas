@@ -4,12 +4,25 @@
   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
   "additionalProperties": false,
   "type": "object",
-  "required": ["kind", "type", "status"],
+  "required": [
+    "id",
+    "schemaVersion",
+    "name",
+    "type",
+    "sub_type",
+    "kind",
+    "status"
+  ],
   "properties": {
     "id": {
-      "$ref": "../core.json#/definitions/uuid",
+      "$ref": "../../core.json#/definitions/uuid",
+      "description": "ID",
       "x-order": 1,
-      "description": "ID"
+      "x-go-name": "ID",
+      "x-oapi-codegen-extra-tags": {
+        "db": "id",
+        "yaml": "id"
+      }
     },
     "name": {
       "x-oapi-codegen-extra-tags": {
@@ -21,13 +34,13 @@
       "description": "Connection Name"
     },
     "credential_id": {
-      "x-go-name": "CredentialId",
+      "x-go-name": "CredentialID",
       "x-oapi-codegen-extra-tags": {
         "db": "credential_id",
         "yaml": "credential_id"
       },
       "x-order": 3,
-      "$ref": "../core.json#/definitions/uuid",
+      "$ref": "../../core.json#/definitions/uuid",
       "description": "Credential ID"
     },
     "type": {
@@ -63,6 +76,8 @@
         "yaml": "metadata"
       },
       "x-order": 7,
+      "x-go-type": "core.Map",
+      "x-go-type-skip-optional-pointer": true,
       "type": "object"
     },
     "status": {
@@ -87,35 +102,61 @@
     "user_id": {
       "x-go-name": "UserID",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "user_id",
-        "json": "user_id"
+        "db": "user_id",
+        "yaml": "user_id"
       },
       "x-order": 9,
-      "$ref": "../core.json#/definitions/uuid"
+      "$ref": "../../core.json#/definitions/uuid"
     },
     "created_at": {
-      "$ref": "../core.json#/definitions/time",
+      "$ref": "../../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "created_at",
-        "json": "created_at"
+        "db": "created_at",
+        "yaml": "created_at"
       },
       "x-order": 10
     },
     "updated_at": {
-      "$ref": "../core.json#/definitions/time",
+      "$ref": "../../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "updated_at",
-        "json": "updated_at"
+        "db": "updated_at",
+        "yaml": "updated_at"
       },
       "x-order": 11
     },
     "deleted_at": {
-      "$ref": "../core.json#/definitions/time",
+      "$ref": "../../core.json#/definitions/time",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "deleted_at",
-        "json": "deleted_at"
+        "db": "deleted_at",
+        "yaml": "deleted_at"
       },
+      "x-go-type": "core.NullTime",
       "x-order": 12
+    },
+    "environments": {
+      "type": "array",
+      "items": {
+        "x-go-type": "*environment.Environment",
+        "$ref": "../environment/environment.json"
+      },
+      "x-oapi-codegen-extra-tags": {
+        "db": "-",
+        "yaml": "environments",
+        "gorm": "-"
+      },
+      "x-go-type-skip-optional-pointer": true,
+      "x-order": 13
+    },
+    "schemaVersion": {
+      "description": "Specifies the version of the schema used for the definition.",
+      "$ref": "../../core.json#/definitions/versionString",
+      "x-order": 14,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "schemaVersion",
+        "db": "-",
+        "gorm": "-"
+      },
+      "default": "components.meshery.io/v1beta1"
     }
   }
 }

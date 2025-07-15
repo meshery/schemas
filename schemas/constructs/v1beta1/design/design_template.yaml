@@ -1,5 +1,5 @@
 '1': {}
-id: 00000000-00000000-00000000-00000000
+id: 00000000-0000-0000-0000-000000000000
 name: ''
 schemaVersion: ''
 version: v0.0.1
@@ -14,36 +14,47 @@ metadata:
 resolvedAliases: {}
 components:
   items:
-    id: 00000000-00000000-00000000-00000000
-    schemaVersion: v1beta1
+    id: 00000000-0000-0000-0000-000000000000
+    schemaVersion: components.meshery.io/v1beta1
     version: v0.0.1
     displayName: ''
     description: ''
     format: JSON
     model:
-      id: 00000000-00000000-00000000-00000000
-      schemaVersion: v1beta1
+      id: 00000000-0000-0000-0000-000000000000
+      schemaVersion: models.meshery.io/v1beta1
       version: v0.0.1
       name: untitled-model
       displayName: Untitled Model
       description: A new Meshery model.
       status: enabled
       registrant:
-        id: 00000000-00000000-00000000-00000000
+        id: 00000000-0000-0000-0000-000000000000
         name: ''
-        credential_id: 00000000-00000000-00000000-00000000
+        credential_id: 00000000-0000-0000-0000-000000000000
         type: ''
         sub_type: ''
         kind: ''
         status: ''
-        user_id: 00000000-00000000-00000000-00000000
+        user_id: 00000000-0000-0000-0000-000000000000
         created_at: ''
         updated_at: ''
         deleted_at: ''
-      registrantId: 00000000-00000000-00000000-00000000
-      categoryId: 00000000-00000000-00000000-00000000
+        environments:
+          items:
+            id: 00000000-0000-0000-0000-000000000000
+            name: ''
+            description: ''
+            organization_id: 00000000-0000-0000-0000-000000000000
+            owner: 00000000-0000-0000-0000-000000000000
+            created_at: ''
+            updated_at: ''
+            deleted_at: ''
+        schemaVersion: components.meshery.io/v1beta1
+      registrantId: 00000000-0000-0000-0000-000000000000
+      categoryId: 00000000-0000-0000-0000-000000000000
       category:
-        id: 00000000-00000000-00000000-00000000
+        id: 00000000-0000-0000-0000-000000000000
         name: Uncategorized
       subCategory: Uncategorized
       metadata:
@@ -142,7 +153,7 @@ components:
           '0': v0.0.1
       componentsCount: 0
       relationshipsCount: 0
-    modelId: 00000000-00000000-00000000-00000000
+    modelId: 00000000-0000-0000-0000-000000000000
     styles:
       allOf:
         '0':
@@ -317,7 +328,7 @@ layers: {}
 relationships:
   items:
     id: ''
-    schemaVersion: v1alpha3
+    schemaVersion: relationships.meshery.io/v1alpha3
     version: v0.0.1
     model:
       id: ''
