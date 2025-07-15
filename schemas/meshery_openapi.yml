@@ -53,6 +53,8 @@ tags:
     x-displayName: environments
   - name: evaluation_other
     x-displayName: other
+  - name: Academy_other
+    x-displayName: other
 paths:
   /api/pattern/import:
     post:
@@ -58972,6 +58974,40 @@ components:
         gen:
           type: string
           description: Load generator
+    Academy_LearningPath:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the learning path
+          example: Mastering Kubernetes for Engineers
+        description:
+          type: string
+          description: Detailed description of the learning path
+          example: >-
+            Learn how to configure your Kubernetes clusters and manage the
+            lifecycle of your workloads
+        banner:
+          type: string
+          format: uri
+          nullable: true
+          description: Optional banner image URL
+          example: null
+        permalink:
+          type: string
+          format: uri
+          description: Canonical URL to access the learning path
+          example: >-
+            http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+        orgId:
+          type: string
+          description: The organization ID that owns this learning path
+          example: layer5
+      required:
+        - title
+        - description
+        - permalink
+        - orgId
   responses:
     subscription_400:
       description: Invalid request body or request param
@@ -59238,3 +59274,6 @@ x-tagGroups:
   - name: evaluation
     tags:
       - evaluation_other
+  - name: Academy
+    tags:
+      - Academy_other
