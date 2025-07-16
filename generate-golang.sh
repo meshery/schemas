@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
+set -euo pipefail  # ✅ Exit on error, unset vars, and pipefail
 
 merged_construct="merged-openapi.yml"
 
 generate_schema_models() {
+
     local package="$1"
     local version="$2"
-    local input_override="$3"
+    local input_override="${3:-}"
 
     # ANSI color codes
     GREEN="\033[0;32m"
@@ -28,7 +30,7 @@ generate_schema_models() {
 
     if [[ ! -f "$input_schema" ]]; then
         echo -e "${RED}Error: Schema not found: $input_schema${NC}"
-        return 1
+        exit 1
     fi
 
     echo -e "${CYAN}🔹 Processing: $package ($version)...${NC}"
