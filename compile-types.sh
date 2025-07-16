@@ -86,7 +86,7 @@ generate_type_definition() {
   cd "$(dirname "$file")"
 
   # Generate TypeScript type definitions
-  if output=$(npx json2ts --unreachableDefinitions --input "$(basename "$file")" --output "$OUTPUT_DIR/$dir/$filename.d.ts" 2>&1); then
+  if output=$(npx --yes json2ts --unreachableDefinitions --input "$(basename "$file")" --output "$OUTPUT_DIR/$dir/$filename.d.ts" 2>&1); then
     echo "Generated types for: $file"
   else
     echo "Failed to generate types for: $file"
@@ -211,7 +211,7 @@ rsync -a --include='*/' --exclude='*_template.json' --exclude='*_template.yaml' 
 echo "Step 4: Generating OpenAPI types..."
 OPENAPI_FILE="$INPUT_DIR/openapi.yml"
 if [ -f "$OPENAPI_FILE" ]; then
-  npx openapi-typescript "$OPENAPI_FILE" --output "$OUTPUT_DIR/openapi.d.ts"
+  npx --yes openapi-typescript "$OPENAPI_FILE" --output "$OUTPUT_DIR/openapi.d.ts"
   echo "Processed: $OPENAPI_FILE"
 else
   echo "Error: OpenAPI file '$OPENAPI_FILE' does not exist."

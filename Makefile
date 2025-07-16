@@ -40,9 +40,7 @@ golangci: error dep-check
 api-validate:
 	openapi-generator validate -i schemas/openapi.yml
 
-schemas-join:
-	chmod +x scripts/merge-openapi-specs.sh
-	scripts/merge-openapi-specs.sh
+
 
 ## Building docs with redocly
 docs-build:
@@ -64,8 +62,6 @@ publish-ts: build-ts
 	npm run publish-ts-lib
 
 
-resolve-ref: setup
-	SCHEMA_PATH=$(path) node scripts/ref-resolver.js
 
 golang-generate:
 	./generate-golang.sh
