@@ -88,7 +88,7 @@ v1alpha2="schemas/constructs/v1alpha2"
 # returns the {version}+{construct}+{merged_construct}
 
 # generate bundle for meshery cloud
-npx @redocly/cli join schemas/base_cloud.yml \
+npx --yes @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/pattern/${merged_construct}" \
      "${v1beta1}/component/${merged_construct}" \
      "${v1beta1}/model/${merged_construct}" \
@@ -106,7 +106,7 @@ npx @redocly/cli join schemas/base_cloud.yml \
 node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/cloud_openapi.yml cloud
 node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/meshery_openapi.yml  meshery
 
- 
+
 # Generate rtk query api
-npx @rtk-query/codegen-openapi typescript/rtk/cloud-rtk-config.ts
-npx @rtk-query/codegen-openapi typescript/rtk/meshery-rtk-config.ts
+npx --yes @rtk-query/codegen-openapi typescript/rtk/cloud-rtk-config.ts
+npx --yes @rtk-query/codegen-openapi typescript/rtk/meshery-rtk-config.ts

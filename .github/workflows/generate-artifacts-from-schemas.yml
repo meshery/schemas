@@ -1,0 +1,41 @@
+name: Generate Artifacts from schemas
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '.github/**'
+      - README.md
+jobs:
+  build-artifacts:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          ref: 'master'
+      - name: Install Redocly
+        uses: actions/setup-node@v4
+      - run: |
+          npm i
+          npm i -g @redocly/cli@latest
+          go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+
+
+      - name: Run Make build
+        shell: bash
+        run: |
+          make build
+
+      - name: Pull changes from remote
+        run: git pull origin master
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update schema
+          commit_options: '--signoff'
+          branch: master
+          commit_user_name: meshery
+          commit_user_email: ci@meshery.io
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
