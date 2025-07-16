@@ -18,6 +18,11 @@ jobs:
       - name: Install Redocly
         uses: actions/setup-node@v4
       - run: npm i -g @redocly/cli@latest
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
       - name: Run Script
         shell: bash
         run: |
