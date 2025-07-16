@@ -105,10 +105,17 @@ const schema = {
                                   "description": "Course description",
                                   "example": "Learn the basics of Kubernetes"
                                 },
-                                "order": {
+                                "weight": {
                                   "type": "number",
                                   "description": "Order of the course in the list",
                                   "example": "eg 1 , 2"
+                                },
+                                "banner": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "nullable": true,
+                                  "description": "Optional banner image",
+                                  "example": null
                                 }
                               },
                               "required": [
@@ -239,10 +246,17 @@ const schema = {
                                   "description": "Course description",
                                   "example": "Learn the basics of Kubernetes"
                                 },
-                                "order": {
+                                "weight": {
                                   "type": "number",
                                   "description": "Order of the course in the list",
                                   "example": "eg 1 , 2"
+                                },
+                                "banner": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "nullable": true,
+                                  "description": "Optional banner image",
+                                  "example": null
                                 }
                               },
                               "required": [
@@ -334,10 +348,17 @@ const schema = {
                   "description": "Course description",
                   "example": "Learn the basics of Kubernetes"
                 },
-                "order": {
+                "weight": {
                   "type": "number",
                   "description": "Order of the course in the list",
                   "example": "eg 1 , 2"
+                },
+                "banner": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true,
+                  "description": "Optional banner image",
+                  "example": null
                 }
               },
               "required": [
@@ -373,10 +394,17 @@ const schema = {
             "description": "Course description",
             "example": "Learn the basics of Kubernetes"
           },
-          "order": {
+          "weight": {
             "type": "number",
             "description": "Order of the course in the list",
             "example": "eg 1 , 2"
+          },
+          "banner": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Optional banner image",
+            "example": null
           }
         },
         "required": [
@@ -447,10 +475,17 @@ const schema = {
                         "description": "Course description",
                         "example": "Learn the basics of Kubernetes"
                       },
-                      "order": {
+                      "weight": {
                         "type": "number",
                         "description": "Order of the course in the list",
                         "example": "eg 1 , 2"
+                      },
+                      "banner": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true,
+                        "description": "Optional banner image",
+                        "example": null
                       }
                     },
                     "required": [
