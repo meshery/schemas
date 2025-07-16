@@ -34,7 +34,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref_name }}
+          ref: 'master'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -85,11 +85,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Commit and Push Version Changes
-        run: |
-          set -e
-          git add package.json package-lock.json
-          git commit -m "chore: bump version to ${NEW_VERSION}" || echo "No changes to commit"
-          git pull --rebase
-          git push --force
-          echo "Pushed Package Changes" >> $GITHUB_STEP_SUMMARY
+      - name: Pull changes from remote
+        run: git pull origin master
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update schema
+          commit_options: '--signoff'
+          branch: master
+          commit_user_name: meshery
+          commit_user_email: ci@meshery.io
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+
+
