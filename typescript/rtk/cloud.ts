@@ -493,7 +493,9 @@ export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of lea
       /** Course description */
       description?: string;
       /** Order of the course in the list */
-      order?: number;
+      weight?: number;
+      /** Optional banner image */
+      banner?: string | null;
     }[];
   }[];
 };
@@ -526,7 +528,9 @@ export type GetApiAcademyChallengesApiResponse = /** status 200 A list of learni
       /** Course description */
       description?: string;
       /** Order of the course in the list */
-      order?: number;
+      weight?: number;
+      /** Optional banner image */
+      banner?: string | null;
     }[];
   }[];
 };
