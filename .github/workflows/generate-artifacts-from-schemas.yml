@@ -21,6 +21,7 @@ jobs:
           npm i
           npm i -g @redocly/cli@latest
           go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+          echo "$HOME/go/bin" >> $GITHUB_PATH  # ✅ Add oapi-codegen to PATH
 
 
       - name: Run Make build
@@ -33,7 +34,7 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Update schema
+          commit_message: Generate build artifacts from schemas
           commit_options: '--signoff'
           branch: master
           commit_user_name: meshery
