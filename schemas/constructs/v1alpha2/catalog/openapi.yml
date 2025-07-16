@@ -6,4 +6,6 @@ paths: {}
 components:
   schemas:
     CatalogData:
-      $ref: "./catalog.json"
+      $ref: '#/components/schemas/catalog'
+    catalog:
+      $ref: './catalog.json'
