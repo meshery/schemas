@@ -1,3 +1,4 @@
+// used right now but needs to be removed as we are already generating resolved merged api for each construct
 var parser = require("@apidevtools/json-schema-ref-parser");
 var fs = require("fs");
 var path = require("path");

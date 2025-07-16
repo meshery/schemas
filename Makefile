@@ -64,8 +64,6 @@ publish-ts: build-ts
 	npm run publish-ts-lib
 
 
-resolve-ref: setup
-	SCHEMA_PATH=$(path) node scripts/ref-resolver.js
 
 golang-generate:
 	./generate-golang.sh
