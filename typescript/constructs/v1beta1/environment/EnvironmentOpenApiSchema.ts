@@ -148,61 +148,123 @@ const schema = {
     },
     "schemas": {
       "environment": {
+        "$id": "https://schemas.meshery.io/environment.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "organization_id"
+        ],
         "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
+          "id": {
+            "description": "ID",
+            "x-order": 1,
+            "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "db": "id",
-              "json": "id"
+              "yaml": "id"
             },
-            "x-go-type-name": "GeneralId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "name": {
-            "type": "string",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "description": {
-            "type": "string",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "organization_id": {
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
+            "default": "00000000-0000-0000-0000-000000000000"
+          },
+          "name": {
             "x-oapi-codegen-extra-tags": {
-              "db": "org_id",
-              "json": "org_id"
+              "db": "name",
+              "yaml": "name"
             },
-            "x-go-type-name": "OrganizationId",
-            "x-go-type-skip-optional-pointer": true
+            "x-order": 2,
+            "type": "string",
+            "description": "Environment name"
+          },
+          "description": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "description",
+              "yaml": "description"
+            },
+            "x-order": 3,
+            "type": "string",
+            "description": "Environment description"
+          },
+          "organization_id": {
+            "x-go-name": "OrganizationID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "yaml": "organization_id"
+            },
+            "x-order": 4,
+            "description": "Environment organization ID",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "owner": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner",
+              "yaml": "owner"
+            },
+            "x-order": 5,
+            "description": "Environment owner",
             "type": "string",
-            "x-go-type-skip-optional-pointer": true
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "created_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
+            "x-order": 6,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
+          "metadata": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "metadata",
+              "yaml": "metadata"
+            },
+            "x-order": 7,
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "type": "object"
+          },
           "updated_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
+            "x-order": 8,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
-            "description": "SQL null Timestamp to handle null values of time.",
-            "x-go-type": "sql.NullTime",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at"
+            },
+            "x-go-type": "core.NullTime",
+            "x-go-import": "database/sql",
+            "x-order": 9,
             "type": "string",
+            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -270,14 +332,14 @@ const schema = {
       "environmentPayload": {
         "properties": {
           "name": {
+            "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
             "type": "string",
-            "x-go-type-skip-optional-pointer": true,
-            "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation."
+            "x-go-type-skip-optional-pointer": true
           },
           "description": {
+            "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments).",
             "type": "string",
-            "x-go-type-skip-optional-pointer": true,
-            "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
+            "x-go-type-skip-optional-pointer": true
           },
           "OrganizationID": {
             "type": "string",
@@ -313,61 +375,123 @@ const schema = {
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "x-go-type": "Environment",
+              "$id": "https://schemas.meshery.io/environment.json",
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+              "additionalProperties": false,
+              "type": "object",
+              "required": [
+                "id",
+                "name",
+                "description",
+                "organization_id"
+              ],
               "properties": {
-                "ID": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
+                "id": {
+                  "description": "ID",
+                  "x-order": 1,
+                  "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
-                    "json": "id"
+                    "yaml": "id"
                   },
-                  "x-go-type-name": "GeneralId",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "name": {
-                  "type": "string",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "description": {
-                  "type": "string",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "organization_id": {
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
                   },
+                  "default": "00000000-0000-0000-0000-000000000000"
+                },
+                "name": {
                   "x-oapi-codegen-extra-tags": {
-                    "db": "org_id",
-                    "json": "org_id"
+                    "db": "name",
+                    "yaml": "name"
                   },
-                  "x-go-type-name": "OrganizationId",
-                  "x-go-type-skip-optional-pointer": true
+                  "x-order": 2,
+                  "type": "string",
+                  "description": "Environment name"
+                },
+                "description": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "description",
+                    "yaml": "description"
+                  },
+                  "x-order": 3,
+                  "type": "string",
+                  "description": "Environment description"
+                },
+                "organization_id": {
+                  "x-go-name": "OrganizationID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "yaml": "organization_id"
+                  },
+                  "x-order": 4,
+                  "description": "Environment organization ID",
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "owner": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner",
+                    "yaml": "owner"
+                  },
+                  "x-order": 5,
+                  "description": "Environment owner",
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "default": "00000000-0000-0000-0000-000000000000"
                 },
                 "created_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
+                  "x-order": 6,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
+                "metadata": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "metadata",
+                    "yaml": "metadata"
+                  },
+                  "x-order": 7,
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "type": "object"
+                },
                 "updated_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
+                  "x-order": 8,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
-                  "description": "SQL null Timestamp to handle null values of time.",
-                  "x-go-type": "sql.NullTime",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "yaml": "deleted_at"
+                  },
+                  "x-go-type": "core.NullTime",
+                  "x-go-import": "database/sql",
+                  "x-order": 9,
                   "type": "string",
+                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
@@ -385,14 +509,14 @@ const schema = {
             "schema": {
               "properties": {
                 "name": {
+                  "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true,
-                  "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation."
+                  "x-go-type-skip-optional-pointer": true
                 },
                 "description": {
+                  "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments).",
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true,
-                  "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
+                  "x-go-type-skip-optional-pointer": true
                 },
                 "OrganizationID": {
                   "type": "string",
@@ -431,14 +555,14 @@ const schema = {
               "schema": {
                 "properties": {
                   "name": {
+                    "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.",
                     "type": "string",
-                    "x-go-type-skip-optional-pointer": true,
-                    "description": "An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation."
+                    "x-go-type-skip-optional-pointer": true
                   },
                   "description": {
+                    "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments).",
                     "type": "string",
-                    "x-go-type-skip-optional-pointer": true,
-                    "description": "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
+                    "x-go-type-skip-optional-pointer": true
                   },
                   "OrganizationID": {
                     "type": "string",
@@ -464,61 +588,123 @@ const schema = {
             "content": {
               "application/json": {
                 "schema": {
+                  "$id": "https://schemas.meshery.io/environment.json",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                  "additionalProperties": false,
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "organization_id"
+                  ],
                   "properties": {
-                    "ID": {
-                      "type": "string",
-                      "format": "uuid",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
+                    "id": {
+                      "description": "ID",
+                      "x-order": 1,
+                      "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
-                        "json": "id"
+                        "yaml": "id"
                       },
-                      "x-go-type-name": "GeneralId",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "name": {
-                      "type": "string",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "description": {
-                      "type": "string",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "organization_id": {
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
+                      "default": "00000000-0000-0000-0000-000000000000"
+                    },
+                    "name": {
                       "x-oapi-codegen-extra-tags": {
-                        "db": "org_id",
-                        "json": "org_id"
+                        "db": "name",
+                        "yaml": "name"
                       },
-                      "x-go-type-name": "OrganizationId",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-order": 2,
+                      "type": "string",
+                      "description": "Environment name"
+                    },
+                    "description": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "yaml": "description"
+                      },
+                      "x-order": 3,
+                      "type": "string",
+                      "description": "Environment description"
+                    },
+                    "organization_id": {
+                      "x-go-name": "OrganizationID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "organization_id",
+                        "yaml": "organization_id"
+                      },
+                      "x-order": 4,
+                      "description": "Environment organization ID",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "default": "00000000-0000-0000-0000-000000000000"
                     },
                     "owner": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "yaml": "owner"
+                      },
+                      "x-order": 5,
+                      "description": "Environment owner",
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "default": "00000000-0000-0000-0000-000000000000"
                     },
                     "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
+                      "x-order": 6,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
+                    "metadata": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata",
+                        "yaml": "metadata"
+                      },
+                      "x-order": 7,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "type": "object"
+                    },
                     "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
+                      "x-order": 8,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
-                      "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "yaml": "deleted_at"
+                      },
+                      "x-go-type": "core.NullTime",
+                      "x-go-import": "database/sql",
+                      "x-order": 9,
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -622,61 +808,123 @@ const schema = {
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "x-go-type": "Environment",
+                        "$id": "https://schemas.meshery.io/environment.json",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                        "additionalProperties": false,
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "description",
+                          "organization_id"
+                        ],
                         "properties": {
-                          "ID": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
+                          "id": {
+                            "description": "ID",
+                            "x-order": 1,
+                            "x-go-name": "ID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "id",
-                              "json": "id"
+                              "yaml": "id"
                             },
-                            "x-go-type-name": "GeneralId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "name": {
-                            "type": "string",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "description": {
-                            "type": "string",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "organization_id": {
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             },
+                            "default": "00000000-0000-0000-0000-000000000000"
+                          },
+                          "name": {
                             "x-oapi-codegen-extra-tags": {
-                              "db": "org_id",
-                              "json": "org_id"
+                              "db": "name",
+                              "yaml": "name"
                             },
-                            "x-go-type-name": "OrganizationId",
-                            "x-go-type-skip-optional-pointer": true
+                            "x-order": 2,
+                            "type": "string",
+                            "description": "Environment name"
+                          },
+                          "description": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "yaml": "description"
+                            },
+                            "x-order": 3,
+                            "type": "string",
+                            "description": "Environment description"
+                          },
+                          "organization_id": {
+                            "x-go-name": "OrganizationID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "yaml": "organization_id"
+                            },
+                            "x-order": 4,
+                            "description": "Environment organization ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "default": "00000000-0000-0000-0000-000000000000"
                           },
                           "owner": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "yaml": "owner"
+                            },
+                            "x-order": 5,
+                            "description": "Environment owner",
                             "type": "string",
-                            "x-go-type-skip-optional-pointer": true
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "default": "00000000-0000-0000-0000-000000000000"
                           },
                           "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "x-order": 6,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
+                          "metadata": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata",
+                              "yaml": "metadata"
+                            },
+                            "x-order": 7,
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "type": "object"
+                          },
                           "updated_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
+                            "x-order": 8,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
-                            "description": "SQL null Timestamp to handle null values of time.",
-                            "x-go-type": "sql.NullTime",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "yaml": "deleted_at"
+                            },
+                            "x-go-type": "core.NullTime",
+                            "x-go-import": "database/sql",
+                            "x-order": 9,
                             "type": "string",
+                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }

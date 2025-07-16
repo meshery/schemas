@@ -22,7 +22,7 @@
         "yaml": "schemaVersion",
         "json": "schemaVersion"
       },
-      "default": "v1beta1"
+      "default": "components.meshery.io/v1beta1"
     },
     "version": {
       "$ref": "../../core.json#/definitions/semverString",

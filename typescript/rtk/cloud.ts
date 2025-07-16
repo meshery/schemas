@@ -80,6 +80,24 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getApiAcademyLearningPaths: build.query<GetApiAcademyLearningPathsApiResponse, GetApiAcademyLearningPathsApiArg>({
+      query: (queryArg) => ({
+        url: `/api/academy/learning-paths`,
+        params: {
+          org_id: queryArg.orgId,
+          search: queryArg.search,
+        },
+      }),
+    }),
+    getApiAcademyChallenges: build.query<GetApiAcademyChallengesApiResponse, GetApiAcademyChallengesApiArg>({
+      query: (queryArg) => ({
+        url: `/api/academy/challenges`,
+        params: {
+          org_id: queryArg.orgId,
+          search: queryArg.search,
+        },
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -393,14 +411,19 @@ export type DeleteApiWorkspacesByIdApiArg = {
   id: string;
 };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
+  /** ID */
+  id: string;
+  /** Environment name */
+  name: string;
+  /** Environment description */
+  description: string;
+  /** Environment organization ID */
+  organization_id: string;
+  /** Environment owner */
   owner?: string;
   created_at?: string;
+  metadata?: object;
   updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
   deleted_at?: string;
 };
 export type CreateEnvironmentApiArg = {
@@ -419,14 +442,19 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
   page_size?: number;
   total_count?: number;
   environments?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
     owner?: string;
     created_at?: string;
+    metadata?: object;
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
     deleted_at?: string;
   }[];
 };
@@ -441,6 +469,72 @@ export type GetEnvironmentsApiArg = {
   pagesize?: string;
   /** User's organization ID */
   orgId: string;
+};
+export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of learning paths with total count */ {
+  /** Total number of learning paths */
+  total: number;
+  data: {
+    /** Title of the learning path */
+    title: string;
+    /** Description of the learning path */
+    description: string;
+    /** Optional banner image */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** List of courses in this learning path */
+    courses?: {
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description?: string;
+      /** Order of the course in the list */
+      order?: number;
+    }[];
+  }[];
+};
+export type GetApiAcademyLearningPathsApiArg = {
+  /** Filter learning paths by organization ID */
+  orgId?: string;
+  /** Search learning paths by title */
+  search?: string;
+};
+export type GetApiAcademyChallengesApiResponse = /** status 200 A list of learning paths with total count */ {
+  /** Total number of learning paths */
+  total: number;
+  data: {
+    /** Title of the learning path */
+    title: string;
+    /** Description of the learning path */
+    description: string;
+    /** Optional banner image */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    /** Organization ID that owns this learning path */
+    orgId: string;
+    /** List of courses in this learning path */
+    courses?: {
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description?: string;
+      /** Order of the course in the list */
+      order?: number;
+    }[];
+  }[];
+};
+export type GetApiAcademyChallengesApiArg = {
+  /** Filter learning paths by organization ID */
+  orgId?: string;
+  /** Search learning paths by title */
+  search?: string;
 };
 export const {
   useImportDesignMutation,
@@ -459,4 +553,6 @@ export const {
   useDeleteApiWorkspacesByIdMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useGetApiAcademyLearningPathsQuery,
+  useGetApiAcademyChallengesQuery,
 } = injectedRtkApi;

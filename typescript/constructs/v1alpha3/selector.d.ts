@@ -292,11 +292,11 @@ export interface HttpsSchemasMesheryIoComponentJson {
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
-  id?: string;
+  id: string;
   /**
    * Connection Name
    */
-  name?: string;
+  name: string;
   /**
    * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
@@ -308,7 +308,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
   /**
    * Connection Subtype
    */
-  sub_type?: string;
+  sub_type: string;
   /**
    * Connection Kind
    */
@@ -333,6 +333,42 @@ export interface HttpsSchemasMesheryIoComponentJson {
    */
   user_id?: string;
   created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  environments?: HttpsSchemasMesheryIoEnvironmentJson[];
+  /**
+   * Specifies the version of the schema used for the definition.
+   */
+  schemaVersion: string;
+}
+/**
+ * Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments
+ */
+export interface HttpsSchemasMesheryIoEnvironmentJson {
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id: string;
+  /**
+   * Environment name
+   */
+  name: string;
+  /**
+   * Environment description
+   */
+  description: string;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  organization_id: string;
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  owner?: string;
+  created_at?: string;
+  metadata?: {
+    [k: string]: unknown;
+  };
   updated_at?: string;
   deleted_at?: string;
 }

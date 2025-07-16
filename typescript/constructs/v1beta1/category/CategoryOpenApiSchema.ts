@@ -32,7 +32,7 @@ const schema = {
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-00000000-00000000-00000000"
+            "default": "00000000-0000-0000-0000-000000000000"
           },
           "name": {
             "type": "string",
