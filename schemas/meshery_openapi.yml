@@ -1596,7 +1596,7 @@ paths:
                                       yaml: schemaVersion
                                       db: '-'
                                       gorm: '-'
-                                    default: components.meshery.io/v1beta1
+                                    default: connections.meshery.io/v1beta1
                                     type: string
                                     minLength: 2
                                     maxLength: 100
@@ -8465,7 +8465,7 @@ paths:
                                         yaml: schemaVersion
                                         db: '-'
                                         gorm: '-'
-                                      default: components.meshery.io/v1beta1
+                                      default: connections.meshery.io/v1beta1
                                       type: string
                                       minLength: 2
                                       maxLength: 100
@@ -15347,7 +15347,7 @@ components:
                           yaml: schemaVersion
                           db: '-'
                           gorm: '-'
-                        default: components.meshery.io/v1beta1
+                        default: connections.meshery.io/v1beta1
                         type: string
                         minLength: 2
                         maxLength: 100
@@ -22072,7 +22072,7 @@ components:
                               yaml: schemaVersion
                               db: '-'
                               gorm: '-'
-                            default: components.meshery.io/v1beta1
+                            default: connections.meshery.io/v1beta1
                             type: string
                             minLength: 2
                             maxLength: 100
@@ -28915,7 +28915,7 @@ components:
                                     yaml: schemaVersion
                                     db: '-'
                                     gorm: '-'
-                                  default: components.meshery.io/v1beta1
+                                  default: connections.meshery.io/v1beta1
                                   type: string
                                   minLength: 2
                                   maxLength: 100
@@ -35887,7 +35887,7 @@ components:
                                   yaml: schemaVersion
                                   db: '-'
                                   gorm: '-'
-                                default: components.meshery.io/v1beta1
+                                default: connections.meshery.io/v1beta1
                                 type: string
                                 minLength: 2
                                 maxLength: 100
@@ -42553,7 +42553,7 @@ components:
                     yaml: schemaVersion
                     db: '-'
                     gorm: '-'
-                  default: components.meshery.io/v1beta1
+                  default: connections.meshery.io/v1beta1
                   type: string
                   minLength: 2
                   maxLength: 100
@@ -44436,7 +44436,7 @@ components:
                 yaml: schemaVersion
                 db: '-'
                 gorm: '-'
-              default: components.meshery.io/v1beta1
+              default: connections.meshery.io/v1beta1
               type: string
               minLength: 2
               maxLength: 100
@@ -47523,7 +47523,7 @@ components:
                               yaml: schemaVersion
                               db: '-'
                               gorm: '-'
-                            default: components.meshery.io/v1beta1
+                            default: connections.meshery.io/v1beta1
                             type: string
                             minLength: 2
                             maxLength: 100
@@ -54227,7 +54227,7 @@ components:
                               yaml: schemaVersion
                               db: '-'
                               gorm: '-'
-                            default: components.meshery.io/v1beta1
+                            default: connections.meshery.io/v1beta1
                             type: string
                             minLength: 2
                             maxLength: 100

@@ -313,7 +313,7 @@ const schema = {
               "db": "-",
               "gorm": "-"
             },
-            "default": "components.meshery.io/v1beta1",
+            "default": "connections.meshery.io/v1beta1",
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
@@ -643,7 +643,7 @@ const schema = {
                     "db": "-",
                     "gorm": "-"
                   },
-                  "default": "components.meshery.io/v1beta1",
+                  "default": "connections.meshery.io/v1beta1",
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
