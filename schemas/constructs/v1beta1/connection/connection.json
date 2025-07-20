@@ -157,6 +157,21 @@
         "gorm": "-"
       },
       "default": "connections.meshery.io/v1beta1"
+    },
+    "meshsync_deployment_mode": {
+      "type": "string",
+      "description": "Determine how to deploy meshsync for connection: as a separate deployment through operator, or embedded as a library",
+      "enum": [
+        "operator",
+        "embedded"
+      ],
+      "default": "operator",
+      "x-order": 15,
+      "x-oapi-codegen-extra-tags": {
+        "yaml": "meshsync_deployment_mode",
+        "db": "meshsync_deployment_mode"
+      },
+      "x-go-type-skip-optional-pointer": true
     }
   }
 }
