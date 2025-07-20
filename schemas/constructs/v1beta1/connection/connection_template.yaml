@@ -20,5 +20,5 @@ environments:
     created_at: ''
     updated_at: ''
     deleted_at: ''
-schemaVersion: components.meshery.io/v1beta1
+schemaVersion: connections.meshery.io/v1beta1
 
