@@ -172,6 +172,13 @@ components:
       enum:
         - learning-path
         - challenge
+        
+    Level:
+      type: string
+      enum:
+        - introductory
+        - intermediate
+        - advanced
 
     LearningPath:
       type: object
@@ -190,6 +197,12 @@ components:
           type: string
           description: Title of the learning path
           example: Mastering Kubernetes for Engineers
+          
+        level:
+           $ref: "#/components/schemas/Level"
+           "x-go-type-name":"Level"
+          example: "introductory"
+          
         description:
           type: string
           description: Description of the learning path
@@ -317,6 +330,12 @@ components:
           type: string
           description: Title of the course
           example: Kubernetes Basics
+          
+        level:
+           $ref: "#/components/schemas/Level"
+           "x-go-type-name":"Level"
+          example: "introductory"
+          
         permalink:
           type: string
           format: uri
