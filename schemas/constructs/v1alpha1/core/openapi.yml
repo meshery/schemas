@@ -57,6 +57,8 @@ components:
             format: date-time
             x-go-type-skip-optional-pointer: true
 
+    
+ 
         SqlNullTime:
             type: string
             format: date-time
