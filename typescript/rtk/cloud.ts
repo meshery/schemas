@@ -89,6 +89,12 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getApiAcademyByTypeAndOrgIdSlug: build.query<
+      GetApiAcademyByTypeAndOrgIdSlugApiResponse,
+      GetApiAcademyByTypeAndOrgIdSlugApiArg
+    >({
+      query: (queryArg) => ({ url: `/api/academy/${queryArg["type"]}/${queryArg.orgId}/${queryArg.slug}` }),
+    }),
     getApiAcademyChallenges: build.query<GetApiAcademyChallengesApiResponse, GetApiAcademyChallengesApiArg>({
       query: (queryArg) => ({
         url: `/api/academy/challenges`,
@@ -97,6 +103,17 @@ const injectedRtkApi = api.injectEndpoints({
           search: queryArg.search,
         },
       }),
+    }),
+    getAcademyRegistrations: build.query<GetAcademyRegistrationsApiResponse, GetAcademyRegistrationsApiArg>({
+      query: (queryArg) => ({
+        url: `/api/academy/registrations/hello`,
+        params: {
+          status: queryArg.status,
+        },
+      }),
+    }),
+    registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
+      query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
     }),
   }),
   overrideExisting: false,
@@ -474,6 +491,10 @@ export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of lea
   /** Total number of learning paths */
   total: number;
   data: {
+    /** Id of the learning path */
+    id: string;
+    /** slug of the learning path */
+    slug: string;
     /** Title of the learning path */
     title: string;
     /** Description of the learning path */
@@ -505,10 +526,48 @@ export type GetApiAcademyLearningPathsApiArg = {
   /** Search learning paths by title */
   search?: string;
 };
+export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single academy content */ {
+  /** Id of the learning path */
+  id: string;
+  /** slug of the learning path */
+  slug: string;
+  /** Title of the learning path */
+  title: string;
+  /** Description of the learning path */
+  description: string;
+  /** Optional banner image */
+  banner?: string | null;
+  /** Canonical URL for the learning path */
+  permalink: string;
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** List of courses in this learning path */
+  courses?: {
+    /** Title of the course */
+    title: string;
+    /** URL to the course content */
+    permalink: string;
+    /** Course description */
+    description?: string;
+    /** Order of the course in the list */
+    weight?: number;
+    /** Optional banner image */
+    banner?: string | null;
+  }[];
+};
+export type GetApiAcademyByTypeAndOrgIdSlugApiArg = {
+  type: string;
+  orgId: string;
+  slug: string;
+};
 export type GetApiAcademyChallengesApiResponse = /** status 200 A list of learning paths with total count */ {
   /** Total number of learning paths */
   total: number;
   data: {
+    /** Id of the learning path */
+    id: string;
+    /** slug of the learning path */
+    slug: string;
     /** Title of the learning path */
     title: string;
     /** Description of the learning path */
@@ -540,6 +599,65 @@ export type GetApiAcademyChallengesApiArg = {
   /** Search learning paths by title */
   search?: string;
 };
+export type GetAcademyRegistrationsApiResponse = /** status 200 A list of registrations with total count */ {
+  /** Total number of learning paths */
+  total: number;
+  data: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    ID: string;
+    /** ID of the organization */
+    org_id: string;
+    /** ID of the course content */
+    content_id: string;
+    /** ID of the user (foreign key to User) */
+    user_id: string;
+    /** Status of the user's course registration */
+    status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+    /** When the registration was updated */
+    updated_at: string;
+    /** When the registration was created */
+    created_at: string;
+    /** Timestamp when the resource was deleted. */
+    deleted_at?: string;
+    /** Additional metadata about the registration */
+    metadata: {
+      [key: string]: any;
+    };
+  }[];
+};
+export type GetAcademyRegistrationsApiArg = {
+  /** filter by status */
+  status: string;
+};
+export type RegisterToAcademyContentApiResponse = /** status 200 registered content */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  ID: string;
+  /** ID of the organization */
+  org_id: string;
+  /** ID of the course content */
+  content_id: string;
+  /** ID of the user (foreign key to User) */
+  user_id: string;
+  /** Status of the user's course registration */
+  status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+  /** When the registration was updated */
+  updated_at: string;
+  /** When the registration was created */
+  created_at: string;
+  /** Timestamp when the resource was deleted. */
+  deleted_at?: string;
+  /** Additional metadata about the registration */
+  metadata: {
+    [key: string]: any;
+  };
+};
+export type RegisterToAcademyContentApiArg = {
+  body: {
+    /** ID of the academy content to register for */
+    content_id: string;
+    content_type?: "learning-path" | "challenge";
+  };
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -558,5 +676,8 @@ export const {
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
   useGetApiAcademyLearningPathsQuery,
+  useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useGetApiAcademyChallengesQuery,
+  useGetAcademyRegistrationsQuery,
+  useRegisterToAcademyContentMutation,
 } = injectedRtkApi;

@@ -40,6 +40,9 @@ const injectedRtkApi = api.injectEndpoints({
     postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
       query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
     }),
+    registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
+      query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -3185,6 +3188,35 @@ export type PostEvaluateApiArg = {
     };
   };
 };
+export type RegisterToAcademyContentApiResponse = /** status 200 registered content */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  ID: string;
+  /** ID of the organization */
+  org_id: string;
+  /** ID of the course content */
+  content_id: string;
+  /** ID of the user (foreign key to User) */
+  user_id: string;
+  /** Status of the user's course registration */
+  status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+  /** When the registration was updated */
+  updated_at: string;
+  /** When the registration was created */
+  created_at: string;
+  /** Timestamp when the resource was deleted. */
+  deleted_at?: string;
+  /** Additional metadata about the registration */
+  metadata: {
+    [key: string]: any;
+  };
+};
+export type RegisterToAcademyContentApiArg = {
+  body: {
+    /** ID of the academy content to register for */
+    content_id: string;
+    content_type?: "learning-path" | "challenge";
+  };
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -3196,4 +3228,5 @@ export const {
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
   usePostEvaluateMutation,
+  useRegisterToAcademyContentMutation,
 } = injectedRtkApi;
