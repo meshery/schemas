@@ -186,6 +186,9 @@ components:
           description: slug of the learning path
           example: 923458-3490394-934893
 
+        type :
+           $ref: "#/components/schemas/ContentType"
+
         title:
           type: string
           description: Title of the learning path
