@@ -80,6 +80,18 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getApiAcademyContent: build.query<GetApiAcademyContentApiResponse, GetApiAcademyContentApiArg>({
+      query: (queryArg) => ({
+        url: `/api/academy/content`,
+        params: {
+          contentType: queryArg.contentType,
+          orgsId: queryArg.orgsId,
+          category: queryArg.category,
+          status: queryArg.status,
+          search: queryArg.search,
+        },
+      }),
+    }),
     getApiAcademyLearningPaths: build.query<GetApiAcademyLearningPathsApiResponse, GetApiAcademyLearningPathsApiArg>({
       query: (queryArg) => ({
         url: `/api/academy/learning-paths`,
@@ -114,6 +126,17 @@ const injectedRtkApi = api.injectEndpoints({
     }),
     registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
       query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
+    }),
+    getApiAcademyRegistrationsByContentId: build.query<
+      GetApiAcademyRegistrationsByContentIdApiResponse,
+      GetApiAcademyRegistrationsByContentIdApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/academy/registrations/${queryArg.contentId}`,
+        params: {
+          status: queryArg.status,
+        },
+      }),
     }),
   }),
   overrideExisting: false,
@@ -487,6 +510,19 @@ export type GetEnvironmentsApiArg = {
   /** User's organization ID */
   orgId: string;
 };
+export type GetApiAcademyContentApiResponse = unknown;
+export type GetApiAcademyContentApiArg = {
+  /** Filter content by content types */
+  contentType?: string[];
+  /** Filter content by organization IDs */
+  orgsId?: string[];
+  /** Filter content by categories */
+  category?: string[];
+  /** Filter by registration status */
+  status?: string[];
+  /** Search content by title */
+  search?: string;
+};
 export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of learning paths with total count */ {
   /** Total number of learning paths */
   total: number;
@@ -661,6 +697,35 @@ export type RegisterToAcademyContentApiArg = {
     content_type?: "learning-path" | "challenge";
   };
 };
+export type GetApiAcademyRegistrationsByContentIdApiResponse =
+  /** status 200 Registration data for the specified content */ {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    ID: string;
+    /** ID of the organization */
+    org_id: string;
+    /** ID of the course content */
+    content_id: string;
+    /** ID of the user (foreign key to User) */
+    user_id: string;
+    /** Status of the user's course registration */
+    status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+    /** When the registration was updated */
+    updated_at: string;
+    /** When the registration was created */
+    created_at: string;
+    /** Timestamp when the resource was deleted. */
+    deleted_at?: string;
+    /** Additional metadata about the registration */
+    metadata: {
+      [key: string]: any;
+    };
+  };
+export type GetApiAcademyRegistrationsByContentIdApiArg = {
+  /** The ID of the content to retrieve registration data for */
+  contentId: string;
+  /** Filter registrations by status (e.g., registered, completed) */
+  status?: string;
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -678,9 +743,11 @@ export const {
   useDeleteApiWorkspacesByIdMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useGetApiAcademyContentQuery,
   useGetApiAcademyLearningPathsQuery,
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useGetApiAcademyChallengesQuery,
   useGetAcademyRegistrationsQuery,
   useRegisterToAcademyContentMutation,
+  useGetApiAcademyRegistrationsByContentIdQuery,
 } = injectedRtkApi;
