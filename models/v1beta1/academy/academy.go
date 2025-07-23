@@ -25,6 +25,12 @@ const (
 	ContentTypeLearningPath ContentType = "learning-path"
 )
 
+// Defines values for LearningPathType.
+const (
+	LearningPathTypeChallenge    LearningPathType = "challenge"
+	LearningPathTypeLearningPath LearningPathType = "learning-path"
+)
+
 // Defines values for RegisterToAcademyContentRequestContentType.
 const (
 	RegisterToAcademyContentRequestContentTypeChallenge    RegisterToAcademyContentRequestContentType = "challenge"
@@ -117,8 +123,12 @@ type LearningPath struct {
 	Slug string `json:"slug" yaml:"slug"`
 
 	// Title Title of the learning path
-	Title string `json:"title" yaml:"title"`
+	Title string            `json:"title" yaml:"title"`
+	Type  *LearningPathType `json:"type,omitempty" yaml:"type,omitempty"`
 }
+
+// LearningPathType defines model for LearningPath.Type.
+type LearningPathType string
 
 // LearningPathListResponse defines model for LearningPathListResponse.
 type LearningPathListResponse struct {

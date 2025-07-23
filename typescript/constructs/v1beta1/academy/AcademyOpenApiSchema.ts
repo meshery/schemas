@@ -66,6 +66,13 @@ const schema = {
                             "description": "slug of the learning path",
                             "example": "923458-3490394-934893"
                           },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "learning-path",
+                              "challenge"
+                            ]
+                          },
                           "title": {
                             "type": "string",
                             "description": "Title of the learning path",
@@ -216,6 +223,13 @@ const schema = {
                       "description": "slug of the learning path",
                       "example": "923458-3490394-934893"
                     },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "learning-path",
+                        "challenge"
+                      ]
+                    },
                     "title": {
                       "type": "string",
                       "description": "Title of the learning path",
@@ -363,6 +377,13 @@ const schema = {
                             "type": "string",
                             "description": "slug of the learning path",
                             "example": "923458-3490394-934893"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "learning-path",
+                              "challenge"
+                            ]
                           },
                           "title": {
                             "type": "string",
@@ -837,6 +858,13 @@ const schema = {
             "description": "slug of the learning path",
             "example": "923458-3490394-934893"
           },
+          "type": {
+            "type": "string",
+            "enum": [
+              "learning-path",
+              "challenge"
+            ]
+          },
           "title": {
             "type": "string",
             "description": "Title of the learning path",
@@ -1090,6 +1118,13 @@ const schema = {
                   "type": "string",
                   "description": "slug of the learning path",
                   "example": "923458-3490394-934893"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "learning-path",
+                    "challenge"
+                  ]
                 },
                 "title": {
                   "type": "string",

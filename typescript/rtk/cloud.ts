@@ -495,6 +495,7 @@ export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of lea
     id: string;
     /** slug of the learning path */
     slug: string;
+    type?: "learning-path" | "challenge";
     /** Title of the learning path */
     title: string;
     /** Description of the learning path */
@@ -531,6 +532,7 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
   id: string;
   /** slug of the learning path */
   slug: string;
+  type?: "learning-path" | "challenge";
   /** Title of the learning path */
   title: string;
   /** Description of the learning path */
@@ -568,6 +570,7 @@ export type GetApiAcademyChallengesApiResponse = /** status 200 A list of learni
     id: string;
     /** slug of the learning path */
     slug: string;
+    type?: "learning-path" | "challenge";
     /** Title of the learning path */
     title: string;
     /** Description of the learning path */
