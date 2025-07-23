@@ -21,7 +21,7 @@ paths:
             style: form
             explode: true
 
-        - name: orgsId
+        - name: orgId
           in: query
           description: Filter content by organization IDs
           required: false
@@ -297,6 +297,7 @@ components:
 
         type :
            $ref: "#/components/schemas/ContentType"
+           x-go-type: "ContentType"
 
         title:
           type: string
@@ -336,6 +337,7 @@ components:
         - description
         - permalink
         - orgId
+        - type
         - id
         - slug
 
