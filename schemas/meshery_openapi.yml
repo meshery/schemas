@@ -60825,6 +60825,7 @@ components:
           description: slug of the learning path
           example: 923458-3490394-934893
         type:
+          x-go-type: ContentType
           type: string
           enum:
             - learning-path
@@ -60894,6 +60895,7 @@ components:
         - description
         - permalink
         - orgId
+        - type
         - id
         - slug
     Academy_API_AcademyRegistration:
@@ -61039,6 +61041,7 @@ components:
                 description: slug of the learning path
                 example: 923458-3490394-934893
               type:
+                x-go-type: ContentType
                 type: string
                 enum:
                   - learning-path
@@ -61108,6 +61111,7 @@ components:
               - description
               - permalink
               - orgId
+              - type
               - id
               - slug
       required:

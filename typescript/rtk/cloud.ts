@@ -85,7 +85,7 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/api/academy/content`,
         params: {
           contentType: queryArg.contentType,
-          orgsId: queryArg.orgsId,
+          orgId: queryArg.orgId,
           category: queryArg.category,
           status: queryArg.status,
           search: queryArg.search,
@@ -515,7 +515,7 @@ export type GetApiAcademyContentApiArg = {
   /** Filter content by content types */
   contentType?: string[];
   /** Filter content by organization IDs */
-  orgsId?: string[];
+  orgId?: string[];
   /** Filter content by categories */
   category?: string[];
   /** Filter by registration status */
@@ -531,7 +531,7 @@ export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of lea
     id: string;
     /** slug of the learning path */
     slug: string;
-    type?: "learning-path" | "challenge";
+    type: "learning-path" | "challenge";
     /** Title of the learning path */
     title: string;
     /** Description of the learning path */
@@ -568,7 +568,7 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
   id: string;
   /** slug of the learning path */
   slug: string;
-  type?: "learning-path" | "challenge";
+  type: "learning-path" | "challenge";
   /** Title of the learning path */
   title: string;
   /** Description of the learning path */
@@ -606,7 +606,7 @@ export type GetApiAcademyChallengesApiResponse = /** status 200 A list of learni
     id: string;
     /** slug of the learning path */
     slug: string;
-    type?: "learning-path" | "challenge";
+    type: "learning-path" | "challenge";
     /** Title of the learning path */
     title: string;
     /** Description of the learning path */

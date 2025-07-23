@@ -33,7 +33,7 @@ const schema = {
             }
           },
           {
-            "name": "orgsId",
+            "name": "orgId",
             "in": "query",
             "description": "Filter content by organization IDs",
             "required": false,
@@ -115,6 +115,7 @@ const schema = {
                           "example": "923458-3490394-934893"
                         },
                         "type": {
+                          "x-go-type": "ContentType",
                           "type": "string",
                           "enum": [
                             "learning-path",
@@ -197,6 +198,7 @@ const schema = {
                         "description",
                         "permalink",
                         "orgId",
+                        "type",
                         "id",
                         "slug"
                       ]
@@ -276,6 +278,7 @@ const schema = {
                             "example": "923458-3490394-934893"
                           },
                           "type": {
+                            "x-go-type": "ContentType",
                             "type": "string",
                             "enum": [
                               "learning-path",
@@ -358,6 +361,7 @@ const schema = {
                           "description",
                           "permalink",
                           "orgId",
+                          "type",
                           "id",
                           "slug"
                         ]
@@ -433,6 +437,7 @@ const schema = {
                       "example": "923458-3490394-934893"
                     },
                     "type": {
+                      "x-go-type": "ContentType",
                       "type": "string",
                       "enum": [
                         "learning-path",
@@ -515,6 +520,7 @@ const schema = {
                     "description",
                     "permalink",
                     "orgId",
+                    "type",
                     "id",
                     "slug"
                   ]
@@ -588,6 +594,7 @@ const schema = {
                             "example": "923458-3490394-934893"
                           },
                           "type": {
+                            "x-go-type": "ContentType",
                             "type": "string",
                             "enum": [
                               "learning-path",
@@ -670,6 +677,7 @@ const schema = {
                           "description",
                           "permalink",
                           "orgId",
+                          "type",
                           "id",
                           "slug"
                         ]
@@ -1231,6 +1239,7 @@ const schema = {
             "example": "923458-3490394-934893"
           },
           "type": {
+            "x-go-type": "ContentType",
             "type": "string",
             "enum": [
               "learning-path",
@@ -1313,6 +1322,7 @@ const schema = {
           "description",
           "permalink",
           "orgId",
+          "type",
           "id",
           "slug"
         ]
@@ -1492,6 +1502,7 @@ const schema = {
                   "example": "923458-3490394-934893"
                 },
                 "type": {
+                  "x-go-type": "ContentType",
                   "type": "string",
                   "enum": [
                     "learning-path",
@@ -1574,6 +1585,7 @@ const schema = {
                 "description",
                 "permalink",
                 "orgId",
+                "type",
                 "id",
                 "slug"
               ]

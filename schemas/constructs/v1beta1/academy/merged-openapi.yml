@@ -28,7 +28,7 @@
             }
           },
           {
-            "name": "orgsId",
+            "name": "orgId",
             "in": "query",
             "description": "Filter content by organization IDs",
             "required": false,
@@ -110,6 +110,7 @@
                           "example": "923458-3490394-934893"
                         },
                         "type": {
+                          "x-go-type": "ContentType",
                           "type": "string",
                           "enum": [
                             "learning-path",
@@ -192,6 +193,7 @@
                         "description",
                         "permalink",
                         "orgId",
+                        "type",
                         "id",
                         "slug"
                       ]
@@ -271,6 +273,7 @@
                             "example": "923458-3490394-934893"
                           },
                           "type": {
+                            "x-go-type": "ContentType",
                             "type": "string",
                             "enum": [
                               "learning-path",
@@ -353,6 +356,7 @@
                           "description",
                           "permalink",
                           "orgId",
+                          "type",
                           "id",
                           "slug"
                         ]
@@ -428,6 +432,7 @@
                       "example": "923458-3490394-934893"
                     },
                     "type": {
+                      "x-go-type": "ContentType",
                       "type": "string",
                       "enum": [
                         "learning-path",
@@ -510,6 +515,7 @@
                     "description",
                     "permalink",
                     "orgId",
+                    "type",
                     "id",
                     "slug"
                   ]
@@ -583,6 +589,7 @@
                             "example": "923458-3490394-934893"
                           },
                           "type": {
+                            "x-go-type": "ContentType",
                             "type": "string",
                             "enum": [
                               "learning-path",
@@ -665,6 +672,7 @@
                           "description",
                           "permalink",
                           "orgId",
+                          "type",
                           "id",
                           "slug"
                         ]
@@ -1226,6 +1234,7 @@
             "example": "923458-3490394-934893"
           },
           "type": {
+            "x-go-type": "ContentType",
             "type": "string",
             "enum": [
               "learning-path",
@@ -1308,6 +1317,7 @@
           "description",
           "permalink",
           "orgId",
+          "type",
           "id",
           "slug"
         ]
@@ -1487,6 +1497,7 @@
                   "example": "923458-3490394-934893"
                 },
                 "type": {
+                  "x-go-type": "ContentType",
                   "type": "string",
                   "enum": [
                     "learning-path",
@@ -1569,6 +1580,7 @@
                 "description",
                 "permalink",
                 "orgId",
+                "type",
                 "id",
                 "slug"
               ]

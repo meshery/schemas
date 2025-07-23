@@ -1919,7 +1919,7 @@ paths:
               type: string
             style: form
             explode: true
-        - name: orgsId
+        - name: orgId
           in: query
           description: Filter content by organization IDs
           required: false
@@ -2003,6 +2003,7 @@ paths:
                           description: slug of the learning path
                           example: 923458-3490394-934893
                         type:
+                          x-go-type: ContentType
                           type: string
                           enum:
                             - learning-path
@@ -2072,6 +2073,7 @@ paths:
                         - description
                         - permalink
                         - orgId
+                        - type
                         - id
                         - slug
                 required:
@@ -2122,6 +2124,7 @@ paths:
                     description: slug of the learning path
                     example: 923458-3490394-934893
                   type:
+                    x-go-type: ContentType
                     type: string
                     enum:
                       - learning-path
@@ -2191,6 +2194,7 @@ paths:
                   - description
                   - permalink
                   - orgId
+                  - type
                   - id
                   - slug
         '400':
@@ -2245,6 +2249,7 @@ paths:
                           description: slug of the learning path
                           example: 923458-3490394-934893
                         type:
+                          x-go-type: ContentType
                           type: string
                           enum:
                             - learning-path
@@ -2314,6 +2319,7 @@ paths:
                         - description
                         - permalink
                         - orgId
+                        - type
                         - id
                         - slug
                 required:
@@ -48688,6 +48694,7 @@ components:
           description: slug of the learning path
           example: 923458-3490394-934893
         type:
+          x-go-type: ContentType
           type: string
           enum:
             - learning-path
@@ -48757,6 +48764,7 @@ components:
         - description
         - permalink
         - orgId
+        - type
         - id
         - slug
     Academy_API_AcademyRegistration:
@@ -48902,6 +48910,7 @@ components:
                 description: slug of the learning path
                 example: 923458-3490394-934893
               type:
+                x-go-type: ContentType
                 type: string
                 enum:
                   - learning-path
@@ -48971,6 +48980,7 @@ components:
               - description
               - permalink
               - orgId
+              - type
               - id
               - slug
       required:
