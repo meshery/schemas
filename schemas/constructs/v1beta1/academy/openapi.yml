@@ -4,6 +4,76 @@ info:
   version: 1.0.0
 
 paths:
+  /api/academy/content:
+    get:
+      x-internal: ["cloud"]
+      summary: Get academy content
+      description: Returns a list of academy content with optional filtering.
+      parameters:
+        - name: contentType
+          in: query
+          description: Filter content by content types
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+
+        - name: orgsId
+          in: query
+          description: Filter content by organization IDs
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+
+        - name: category
+          in: query
+          description: Filter content by categories
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+
+  
+        - name: status
+          in: query
+          description: Filter by registration status
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+
+        - name: search
+          in: query
+          description: Search content by title
+          required: false
+          schema:
+            type: string
+
+    responses:
+      '200':
+        description: A list of content with total count
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearningPathListResponse'
+      '400':
+        description: Invalid request parameters
+      '500':
+        description: Server error
+  
   /api/academy/learning-paths:
     get:
       x-internal: ["cloud"]
@@ -150,6 +220,45 @@ paths:
 
       tags:
         - Academy
+
+
+  /api/academy/registrations/{contentId}:
+    get:
+
+      tags:
+        - Academy
+
+      x-internal: ["cloud"]
+      summary: Get registration information for academy content
+      description: Returns registration data for a specific content item, optionally filtered by status.
+      parameters:
+        - name: contentId
+          in: path
+          required: true
+          description: The ID of the content to retrieve registration data for
+          schema:
+            type: string
+
+        - name: status
+          in: query
+          required: false
+          description: Filter registrations by status (e.g., registered, completed)
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Registration data for the specified content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademyRegistration'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Content not found
+        '500':
+          description: Server error
 
 components:
   schemas:
