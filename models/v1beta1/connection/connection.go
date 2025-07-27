@@ -23,6 +23,12 @@ const (
 	Registered   ConnectionStatus = "registered"
 )
 
+// Defines values for ConnectionMeshsyncDeploymentMode.
+const (
+	MeshsyncDeploymentModeEmbedded ConnectionMeshsyncDeploymentMode = "embedded"
+	MeshsyncDeploymentModeOperator ConnectionMeshsyncDeploymentMode = "operator"
+)
+
 // Connection Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 type Connection struct {
 	// ID ID
@@ -56,10 +62,16 @@ type Connection struct {
 
 	// SchemaVersion Specifies the version of the schema used for the definition.
 	SchemaVersion string `db:"-" gorm:"-" json:"schemaVersion" yaml:"schemaVersion"`
+
+	// MeshsyncDeploymentMode Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library).
+	MeshsyncDeploymentMode ConnectionMeshsyncDeploymentMode `db:"-" gorm:"-" json:"meshsync_deployment_mode,omitempty" yaml:"meshsync_deployment_mode,omitempty"`
 }
 
 // ConnectionStatus Connection Status
 type ConnectionStatus string
+
+// ConnectionMeshsyncDeploymentMode Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library).
+type ConnectionMeshsyncDeploymentMode string
 
 // ConnectionPage Represents a page of connections with a meta information about connections number
 type ConnectionPage struct {

@@ -643,6 +643,26 @@ const schema = {
                   "v2beta3",
                   "v1.custom-suffix"
                 ]
+              },
+              "meshsync_deployment_mode": {
+                "type": "string",
+                "description": "Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library).",
+                "enum": [
+                  "operator",
+                  "embedded"
+                ],
+                "x-enum-varnames": [
+                  "MeshsyncDeploymentModeOperator",
+                  "MeshsyncDeploymentModeEmbedded"
+                ],
+                "default": "operator",
+                "x-order": 15,
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "meshsync_deployment_mode",
+                  "db": "-",
+                  "gorm": "-"
+                },
+                "x-go-type-skip-optional-pointer": true
               }
             }
           },
