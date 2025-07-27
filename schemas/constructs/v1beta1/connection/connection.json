@@ -160,7 +160,7 @@
     },
     "meshsync_deployment_mode": {
       "type": "string",
-      "description": "Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library).",,
+      "description": "Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library).",
       "enum": [
         "operator",
         "embedded"
