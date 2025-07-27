@@ -160,7 +160,7 @@
     },
     "meshsync_deployment_mode": {
       "type": "string",
-      "description": "Determine how to deploy meshsync for connection: as a separate deployment through operator, or embedded as a library",
+      "description": "Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library).",,
       "enum": [
         "operator",
         "embedded"
@@ -169,7 +169,8 @@
       "x-order": 15,
       "x-oapi-codegen-extra-tags": {
         "yaml": "meshsync_deployment_mode",
-        "db": "-"
+        "db": "-",
+        "gorm": "-"
       },
       "x-go-type-skip-optional-pointer": true
     }
