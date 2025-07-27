@@ -61,19 +61,14 @@ func (c *Connection) EventCategory() string {
 }
 
 func MeshsyncDeploymentModeFromString(value string) ConnectionMeshsyncDeploymentMode {
-	var mode ConnectionMeshsyncDeploymentMode
 	switch value {
-	// if empty value, default to operator mode
 	case "":
-		mode = MeshsyncDeploymentModeDefault
+		return MeshsyncDeploymentModeDefault
 	case string(MeshsyncDeploymentModeOperator):
-		mode = MeshsyncDeploymentModeOperator
+		return MeshsyncDeploymentModeOperator
 	case string(MeshsyncDeploymentModeEmbedded):
-		mode = MeshsyncDeploymentModeEmbedded
-	// if some random string, undefined mode
+		return MeshsyncDeploymentModeEmbedded
 	default:
-		mode = MeshsyncDeploymentModeUndefined
+		return MeshsyncDeploymentModeUndefined
 	}
-
-	return mode
 }
