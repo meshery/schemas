@@ -169,7 +169,7 @@
       "x-order": 15,
       "x-oapi-codegen-extra-tags": {
         "yaml": "meshsync_deployment_mode",
-        "db": "meshsync_deployment_mode"
+        "db": "-"
       },
       "x-go-type-skip-optional-pointer": true
     }
