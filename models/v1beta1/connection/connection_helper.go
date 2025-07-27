@@ -13,6 +13,9 @@ import (
 	"gorm.io/gorm"
 )
 
+const MeshsyncDeploymentModeDefault ConnectionMeshsyncDeploymentMode = MeshsyncDeploymentModeOperator
+const MeshsyncDeploymentModeUndefined ConnectionMeshsyncDeploymentMode = "undefined"
+
 var connectionCreation sync.Mutex //Each entity will perform a check and if the connection already doesn't exist, it will create a connection. This lock will make sure that there are no race conditions.
 
 func (h *Connection) GenerateID() (uuid.UUID, error) {
@@ -55,4 +58,17 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 
 func (c *Connection) EventCategory() string {
 	return "connection"
+}
+
+func MeshsyncDeploymentModeFromString(value string) ConnectionMeshsyncDeploymentMode {
+	switch value {
+	case "":
+		return MeshsyncDeploymentModeDefault
+	case string(MeshsyncDeploymentModeOperator):
+		return MeshsyncDeploymentModeOperator
+	case string(MeshsyncDeploymentModeEmbedded):
+		return MeshsyncDeploymentModeEmbedded
+	default:
+		return MeshsyncDeploymentModeUndefined
+	}
 }
