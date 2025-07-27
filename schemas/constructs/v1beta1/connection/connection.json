@@ -165,6 +165,7 @@
         "operator",
         "embedded"
       ],
+      "x-enum-varnames": ["MeshsyncDeploymentModeOperator", "MeshsyncDeploymentModeEmbedded"],
       "default": "operator",
       "x-order": 15,
       "x-oapi-codegen-extra-tags": {
