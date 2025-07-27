@@ -56,3 +56,16 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 func (c *Connection) EventCategory() string {
 	return "connection"
 }
+
+func MeshsyncDeploymentModeFromString(value string) ConnectionMeshsyncDeploymentMode {
+	switch value {
+	// if empty value, default to operator mode
+	case "", string(MeshsyncDeploymentModeOperator):
+		return MeshsyncDeploymentModeOperator
+	case string(MeshsyncDeploymentModeEmbedded):
+		return MeshsyncDeploymentModeEmbedded
+	// if some random string, undefined mode
+	default:
+		return ConnectionMeshsyncDeploymentMode("undefined")
+	}
+}
