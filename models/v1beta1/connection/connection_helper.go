@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
+const MeshsyncDeploymentModeDefault ConnectionMeshsyncDeploymentMode = MeshsyncDeploymentModeOperator
 const MeshsyncDeploymentModeUndefined ConnectionMeshsyncDeploymentMode = "undefined"
 
 var connectionCreation sync.Mutex //Each entity will perform a check and if the connection already doesn't exist, it will create a connection. This lock will make sure that there are no race conditions.
@@ -60,14 +61,19 @@ func (c *Connection) EventCategory() string {
 }
 
 func MeshsyncDeploymentModeFromString(value string) ConnectionMeshsyncDeploymentMode {
+	var mode ConnectionMeshsyncDeploymentMode
 	switch value {
 	// if empty value, default to operator mode
-	case "", string(MeshsyncDeploymentModeOperator):
-		return MeshsyncDeploymentModeOperator
+	case "":
+		mode = MeshsyncDeploymentModeDefault
+	case string(MeshsyncDeploymentModeOperator):
+		mode = MeshsyncDeploymentModeOperator
 	case string(MeshsyncDeploymentModeEmbedded):
-		return MeshsyncDeploymentModeEmbedded
+		mode = MeshsyncDeploymentModeEmbedded
 	// if some random string, undefined mode
 	default:
-		return MeshsyncDeploymentModeUndefined
+		mode = MeshsyncDeploymentModeUndefined
 	}
+
+	return mode
 }
