@@ -33,6 +33,34 @@ const schema = {
             }
           },
           {
+            "name": "visibility",
+            "in": "query",
+            "description": "Filter content by visibility (public/private)",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "style": "form",
+              "explode": true
+            }
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "description": "Filter content by difficulty level",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "style": "form",
+              "explode": true
+            }
+          },
+          {
             "name": "orgId",
             "in": "query",
             "description": "Filter content by organization IDs",

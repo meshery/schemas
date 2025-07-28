@@ -85,6 +85,8 @@ const injectedRtkApi = api.injectEndpoints({
         url: `/api/academy/content`,
         params: {
           contentType: queryArg.contentType,
+          visibility: queryArg.visibility,
+          level: queryArg.level,
           orgId: queryArg.orgId,
           category: queryArg.category,
           status: queryArg.status,
@@ -488,6 +490,10 @@ export type GetApiAcademyContentApiResponse = unknown;
 export type GetApiAcademyContentApiArg = {
   /** Filter content by content types */
   contentType?: string[];
+  /** Filter content by visibility (public/private) */
+  visibility?: string[];
+  /** Filter content by difficulty level */
+  level?: string[];
   /** Filter content by organization IDs */
   orgId?: string[];
   /** Filter content by categories */
