@@ -3218,7 +3218,7 @@ export type RegisterToAcademyContentApiArg = {
   body: {
     /** ID of the academy content to register for */
     content_id: string;
-    content_type?: "learning-path" | "challenge";
+    content_type?: "learning-path" | "challenge" | "exam";
   };
 };
 export const {

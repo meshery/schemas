@@ -92,37 +92,11 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
-    getApiAcademyLearningPaths: build.query<GetApiAcademyLearningPathsApiResponse, GetApiAcademyLearningPathsApiArg>({
-      query: (queryArg) => ({
-        url: `/api/academy/learning-paths`,
-        params: {
-          org_id: queryArg.orgId,
-          search: queryArg.search,
-        },
-      }),
-    }),
     getApiAcademyByTypeAndOrgIdSlug: build.query<
       GetApiAcademyByTypeAndOrgIdSlugApiResponse,
       GetApiAcademyByTypeAndOrgIdSlugApiArg
     >({
       query: (queryArg) => ({ url: `/api/academy/${queryArg["type"]}/${queryArg.orgId}/${queryArg.slug}` }),
-    }),
-    getApiAcademyChallenges: build.query<GetApiAcademyChallengesApiResponse, GetApiAcademyChallengesApiArg>({
-      query: (queryArg) => ({
-        url: `/api/academy/challenges`,
-        params: {
-          org_id: queryArg.orgId,
-          search: queryArg.search,
-        },
-      }),
-    }),
-    getAcademyRegistrations: build.query<GetAcademyRegistrationsApiResponse, GetAcademyRegistrationsApiArg>({
-      query: (queryArg) => ({
-        url: `/api/academy/registrations/hello`,
-        params: {
-          status: queryArg.status,
-        },
-      }),
     }),
     registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
       query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
@@ -523,150 +497,35 @@ export type GetApiAcademyContentApiArg = {
   /** Search content by title */
   search?: string;
 };
-export type GetApiAcademyLearningPathsApiResponse = /** status 200 A list of learning paths with total count */ {
-  /** Total number of learning paths */
-  total: number;
-  data: {
-    /** Id of the learning path */
-    id: string;
-    /** slug of the learning path */
-    slug: string;
-    type: "learning-path" | "challenge";
-    /** Title of the learning path */
-    title: string;
-    /** Description of the learning path */
-    description: string;
-    /** Optional banner image */
-    banner?: string | null;
-    /** Canonical URL for the learning path */
-    permalink: string;
-    /** Organization ID that owns this learning path */
-    orgId: string;
-    /** List of courses in this learning path */
-    courses?: {
-      /** Title of the course */
-      title: string;
-      /** URL to the course content */
-      permalink: string;
-      /** Course description */
-      description?: string;
-      /** Order of the course in the list */
-      weight?: number;
-      /** Optional banner image */
-      banner?: string | null;
-    }[];
-  }[];
-};
-export type GetApiAcademyLearningPathsApiArg = {
-  /** Filter learning paths by organization ID */
-  orgId?: string;
-  /** Search learning paths by title */
-  search?: string;
-};
 export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single academy content */ {
-  /** Id of the learning path */
-  id: string;
-  /** slug of the learning path */
-  slug: string;
-  type: "learning-path" | "challenge";
-  /** Title of the learning path */
-  title: string;
-  /** Description of the learning path */
-  description: string;
-  /** Optional banner image */
-  banner?: string | null;
-  /** Canonical URL for the learning path */
-  permalink: string;
+  /** Id of the cirricula */
+  ID: string;
+  type: "learning-path" | "challenge" | "exam";
   /** Organization ID that owns this learning path */
   orgId: string;
-  /** List of courses in this learning path */
-  courses?: {
-    /** Title of the course */
-    title: string;
-    /** URL to the course content */
-    permalink: string;
-    /** Course description */
-    description?: string;
-    /** Order of the course in the list */
-    weight?: number;
-    /** Optional banner image */
-    banner?: string | null;
-  }[];
+  /** Visibility of the cirricula */
+  visibility: "public" | "private";
+  /** Status of the cirricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the cirricula */
+  slug: string;
+  /** Level of the cirricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** When the cirricula item was created */
+  createdAt: string;
+  /** When the cirricula was last updated */
+  updatedAt: string;
+  /** Timestamp when the resource was deleted. */
+  deletedAt: string;
+  /** Additional metadata about the cirricula */
+  metadata: {
+    [key: string]: any;
+  };
 };
 export type GetApiAcademyByTypeAndOrgIdSlugApiArg = {
   type: string;
   orgId: string;
   slug: string;
-};
-export type GetApiAcademyChallengesApiResponse = /** status 200 A list of learning paths with total count */ {
-  /** Total number of learning paths */
-  total: number;
-  data: {
-    /** Id of the learning path */
-    id: string;
-    /** slug of the learning path */
-    slug: string;
-    type: "learning-path" | "challenge";
-    /** Title of the learning path */
-    title: string;
-    /** Description of the learning path */
-    description: string;
-    /** Optional banner image */
-    banner?: string | null;
-    /** Canonical URL for the learning path */
-    permalink: string;
-    /** Organization ID that owns this learning path */
-    orgId: string;
-    /** List of courses in this learning path */
-    courses?: {
-      /** Title of the course */
-      title: string;
-      /** URL to the course content */
-      permalink: string;
-      /** Course description */
-      description?: string;
-      /** Order of the course in the list */
-      weight?: number;
-      /** Optional banner image */
-      banner?: string | null;
-    }[];
-  }[];
-};
-export type GetApiAcademyChallengesApiArg = {
-  /** Filter learning paths by organization ID */
-  orgId?: string;
-  /** Search learning paths by title */
-  search?: string;
-};
-export type GetAcademyRegistrationsApiResponse = /** status 200 A list of registrations with total count */ {
-  /** Total number of learning paths */
-  total: number;
-  data: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    ID: string;
-    /** ID of the organization */
-    org_id: string;
-    /** ID of the course content */
-    content_id: string;
-    /** ID of the user (foreign key to User) */
-    user_id: string;
-    /** Status of the user's course registration */
-    status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
-    /** When the registration was updated */
-    updated_at: string;
-    /** When the registration was created */
-    created_at: string;
-    /** Timestamp when the resource was deleted. */
-    deleted_at?: string;
-    /** Additional metadata about the registration */
-    metadata: {
-      [key: string]: any;
-    };
-  }[];
-};
-export type GetAcademyRegistrationsApiArg = {
-  /** filter by status */
-  status: string;
 };
 export type RegisterToAcademyContentApiResponse = /** status 200 registered content */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -694,7 +553,7 @@ export type RegisterToAcademyContentApiArg = {
   body: {
     /** ID of the academy content to register for */
     content_id: string;
-    content_type?: "learning-path" | "challenge";
+    content_type?: "learning-path" | "challenge" | "exam";
   };
 };
 export type GetApiAcademyRegistrationsByContentIdApiResponse =
@@ -744,10 +603,7 @@ export const {
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
   useGetApiAcademyContentQuery,
-  useGetApiAcademyLearningPathsQuery,
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
-  useGetApiAcademyChallengesQuery,
-  useGetAcademyRegistrationsQuery,
   useRegisterToAcademyContentMutation,
   useGetApiAcademyRegistrationsByContentIdQuery,
 } = injectedRtkApi;

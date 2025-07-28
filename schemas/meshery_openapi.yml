@@ -14776,6 +14776,7 @@ paths:
                   enum:
                     - learning-path
                     - challenge
+                    - exam
       responses:
         '200':
           description: registered content
@@ -60992,28 +60993,286 @@ components:
           enum:
             - learning-path
             - challenge
+            - exam
     Academy_API_ContentType:
       type: string
       enum:
         - learning-path
         - challenge
-    Academy_API_LearningPath:
+        - exam
+    Academy_API_Visibility:
+      type: string
+      enum:
+        - public
+        - private
+    Academy_API_Level:
+      type: string
+      enum:
+        - beginner
+        - intermediate
+        - advanced
+    Academy_API_Status:
+      type: string
+      enum:
+        - ready
+        - archived
+        - not_ready
+    Academy_API_AcademyCirricula:
       type: object
       properties:
-        id:
+        ID:
           type: string
-          description: Id of the learning path
+          description: Id of the cirricula
           example: 923458-3490394-934893
-        slug:
-          type: string
-          description: slug of the learning path
-          example: 923458-3490394-934893
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+            yaml: id
         type:
           x-go-type: ContentType
+          x-oapi-codegen-extra-tags:
+            db: type
           type: string
           enum:
             - learning-path
             - challenge
+            - exam
+        orgId:
+          type: string
+          description: Organization ID that owns this learning path
+          example: layer5
+          x-oapi-codegen-extra-tags:
+            db: org_id
+            json: org_id
+            yaml: org_id
+        visibility:
+          description: Visibility of the cirricula
+          x-go-type: Visibility
+          x-oapi-codegen-extra-tags:
+            db: visibility
+            json: visibility
+            yaml: visibility
+          type: string
+          enum:
+            - public
+            - private
+        status:
+          example: ready
+          description: Status of the cirricula
+          x-go-type: Status
+          x-oapi-codegen-extra-tags:
+            db: status
+            json: status
+            yaml: status
+          type: string
+          enum:
+            - ready
+            - archived
+            - not_ready
+        slug:
+          type: string
+          description: slug of the cirricula
+          example: intro-kubernetes-course
+        level:
+          description: Level of the cirricula
+          x-go-type: Level
+          x-oapi-codegen-extra-tags:
+            db: level
+            json: level
+            yaml: level
+          type: string
+          enum:
+            - beginner
+            - intermediate
+            - advanced
+        createdAt:
+          description: When the cirricula item was created
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: created_at
+            yaml: created_at
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+        updatedAt:
+          description: When the cirricula was last updated
+          x-go-type: core.Time
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: updated_at
+            yaml: updated_at
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+        deletedAt:
+          x-go-type: core.NullTime
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
+            yaml: deleted_at
+          description: Timestamp when the resource was deleted.
+          type: string
+          format: date-time
+          x-go-name: DeletedAt
+          x-go-type-skip-optional-pointer: true
+        metadata:
+          type: object
+          description: Additional metadata about the cirricula
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: metadata
+            json: metadata
+            yaml: metadata
+      required:
+        - ID
+        - type
+        - orgId
+        - visibility
+        - status
+        - slug
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - metadata
+        - level
+    Academy_API_AcademyCirriculaListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of cirricula
+          example: 7
+        data:
+          type: array
+          items:
+            x-go-type: AcademyCirricula
+            type: object
+            properties:
+              ID:
+                type: string
+                description: Id of the cirricula
+                example: 923458-3490394-934893
+                x-oapi-codegen-extra-tags:
+                  db: id
+                  json: id
+                  yaml: id
+              type:
+                x-go-type: ContentType
+                x-oapi-codegen-extra-tags:
+                  db: type
+                type: string
+                enum:
+                  - learning-path
+                  - challenge
+                  - exam
+              orgId:
+                type: string
+                description: Organization ID that owns this learning path
+                example: layer5
+                x-oapi-codegen-extra-tags:
+                  db: org_id
+                  json: org_id
+                  yaml: org_id
+              visibility:
+                description: Visibility of the cirricula
+                x-go-type: Visibility
+                x-oapi-codegen-extra-tags:
+                  db: visibility
+                  json: visibility
+                  yaml: visibility
+                type: string
+                enum:
+                  - public
+                  - private
+              status:
+                example: ready
+                description: Status of the cirricula
+                x-go-type: Status
+                x-oapi-codegen-extra-tags:
+                  db: status
+                  json: status
+                  yaml: status
+                type: string
+                enum:
+                  - ready
+                  - archived
+                  - not_ready
+              slug:
+                type: string
+                description: slug of the cirricula
+                example: intro-kubernetes-course
+              level:
+                description: Level of the cirricula
+                x-go-type: Level
+                x-oapi-codegen-extra-tags:
+                  db: level
+                  json: level
+                  yaml: level
+                type: string
+                enum:
+                  - beginner
+                  - intermediate
+                  - advanced
+              createdAt:
+                description: When the cirricula item was created
+                x-oapi-codegen-extra-tags:
+                  db: created_at
+                  json: created_at
+                  yaml: created_at
+                type: string
+                format: date-time
+                x-go-type-skip-optional-pointer: true
+              updatedAt:
+                description: When the cirricula was last updated
+                x-go-type: core.Time
+                x-oapi-codegen-extra-tags:
+                  db: updated_at
+                  json: updated_at
+                  yaml: updated_at
+                type: string
+                format: date-time
+                x-go-type-skip-optional-pointer: true
+              deletedAt:
+                x-go-type: core.NullTime
+                x-oapi-codegen-extra-tags:
+                  db: deleted_at
+                  json: deleted_at
+                  yaml: deleted_at
+                description: Timestamp when the resource was deleted.
+                type: string
+                format: date-time
+                x-go-name: DeletedAt
+                x-go-type-skip-optional-pointer: true
+              metadata:
+                type: object
+                description: Additional metadata about the cirricula
+                additionalProperties: true
+                x-go-type: core.Map
+                x-go-type-skip-optional-pointer: true
+                x-oapi-codegen-extra-tags:
+                  db: metadata
+                  json: metadata
+                  yaml: metadata
+            required:
+              - ID
+              - type
+              - orgId
+              - visibility
+              - status
+              - slug
+              - createdAt
+              - updatedAt
+              - deletedAt
+              - metadata
+              - level
+      required:
+        - total
+        - data
+    Academy_API_ChallengeMetadata:
+      type: object
+      properties:
         title:
           type: string
           description: Title of the learning path
@@ -61036,10 +61295,6 @@ components:
           description: Canonical URL for the learning path
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-        orgId:
-          type: string
-          description: Organization ID that owns this learning path
-          example: layer5
         courses:
           type: array
           description: List of courses in this learning path
@@ -61078,10 +61333,69 @@ components:
         - title
         - description
         - permalink
-        - orgId
-        - type
-        - id
-        - slug
+    Academy_API_LearningPathMetadata:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the learning path
+          example: Mastering Kubernetes for Engineers
+        description:
+          type: string
+          description: Description of the learning path
+          example: >-
+            Learn how to configure your Kubernetes clusters and manage the
+            lifecycle of your workloads
+        banner:
+          type: string
+          format: uri
+          nullable: true
+          description: Optional banner image
+          example: null
+        permalink:
+          type: string
+          format: uri
+          description: Canonical URL for the learning path
+          example: >-
+            http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+        courses:
+          type: array
+          description: List of courses in this learning path
+          items:
+            x-go-type: Course
+            type: object
+            properties:
+              title:
+                type: string
+                description: Title of the course
+                example: Kubernetes Basics
+              permalink:
+                type: string
+                format: uri
+                description: URL to the course content
+                example: >-
+                  http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+              description:
+                type: string
+                description: Course description
+                example: Learn the basics of Kubernetes
+              weight:
+                type: number
+                description: Order of the course in the list
+                example: eg 1 , 2
+              banner:
+                type: string
+                format: uri
+                nullable: true
+                description: Optional banner image
+                example: null
+            required:
+              - title
+              - permalink
+      required:
+        - title
+        - description
+        - permalink
     Academy_API_AcademyRegistration:
       type: object
       required:
@@ -61203,104 +61517,6 @@ components:
       required:
         - title
         - permalink
-    Academy_API_LearningPathListResponse:
-      type: object
-      properties:
-        total:
-          type: integer
-          description: Total number of learning paths
-          example: 7
-        data:
-          type: array
-          items:
-            x-go-type: LearningPath
-            type: object
-            properties:
-              id:
-                type: string
-                description: Id of the learning path
-                example: 923458-3490394-934893
-              slug:
-                type: string
-                description: slug of the learning path
-                example: 923458-3490394-934893
-              type:
-                x-go-type: ContentType
-                type: string
-                enum:
-                  - learning-path
-                  - challenge
-              title:
-                type: string
-                description: Title of the learning path
-                example: Mastering Kubernetes for Engineers
-              description:
-                type: string
-                description: Description of the learning path
-                example: >-
-                  Learn how to configure your Kubernetes clusters and manage the
-                  lifecycle of your workloads
-              banner:
-                type: string
-                format: uri
-                nullable: true
-                description: Optional banner image
-                example: null
-              permalink:
-                type: string
-                format: uri
-                description: Canonical URL for the learning path
-                example: >-
-                  http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-              orgId:
-                type: string
-                description: Organization ID that owns this learning path
-                example: layer5
-              courses:
-                type: array
-                description: List of courses in this learning path
-                items:
-                  x-go-type: Course
-                  type: object
-                  properties:
-                    title:
-                      type: string
-                      description: Title of the course
-                      example: Kubernetes Basics
-                    permalink:
-                      type: string
-                      format: uri
-                      description: URL to the course content
-                      example: >-
-                        http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
-                    description:
-                      type: string
-                      description: Course description
-                      example: Learn the basics of Kubernetes
-                    weight:
-                      type: number
-                      description: Order of the course in the list
-                      example: eg 1 , 2
-                    banner:
-                      type: string
-                      format: uri
-                      nullable: true
-                      description: Optional banner image
-                      example: null
-                  required:
-                    - title
-                    - permalink
-            required:
-              - title
-              - description
-              - permalink
-              - orgId
-              - type
-              - id
-              - slug
-      required:
-        - total
-        - data
     Academy_API_AcademyRegistrationsListResponse:
       type: object
       properties:
@@ -61311,7 +61527,6 @@ components:
         data:
           type: array
           items:
-            x-go-type: AcademyRegistration
             type: object
             required:
               - ID
@@ -61402,6 +61617,7 @@ components:
                 x-go-type-skip-optional-pointer: true
                 x-oapi-codegen-extra-tags:
                   db: metadata
+            x-go-type: AcademyRegistration
       required:
         - total
         - data

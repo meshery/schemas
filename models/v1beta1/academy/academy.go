@@ -22,14 +22,78 @@ const (
 // Defines values for ContentType.
 const (
 	ContentTypeChallenge    ContentType = "challenge"
+	ContentTypeExam         ContentType = "exam"
 	ContentTypeLearningPath ContentType = "learning-path"
+)
+
+// Defines values for Level.
+const (
+	Advanced     Level = "advanced"
+	Beginner     Level = "beginner"
+	Intermediate Level = "intermediate"
 )
 
 // Defines values for RegisterToAcademyContentRequestContentType.
 const (
 	RegisterToAcademyContentRequestContentTypeChallenge    RegisterToAcademyContentRequestContentType = "challenge"
+	RegisterToAcademyContentRequestContentTypeExam         RegisterToAcademyContentRequestContentType = "exam"
 	RegisterToAcademyContentRequestContentTypeLearningPath RegisterToAcademyContentRequestContentType = "learning-path"
 )
+
+// Defines values for Status.
+const (
+	Archived Status = "archived"
+	NotReady Status = "not_ready"
+	Ready    Status = "ready"
+)
+
+// Defines values for Visibility.
+const (
+	Private Visibility = "private"
+	Public  Visibility = "public"
+)
+
+// AcademyCirricula defines model for AcademyCirricula.
+type AcademyCirricula struct {
+	// ID Id of the cirricula
+	ID string `db:"id" json:"id" yaml:"id"`
+
+	// CreatedAt When the cirricula item was created
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+	// DeletedAt Timestamp when the resource was deleted.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+
+	// Level Level of the cirricula
+	Level Level `db:"level" json:"level" yaml:"level"`
+
+	// Metadata Additional metadata about the cirricula
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+	// OrgId Organization ID that owns this learning path
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// Slug slug of the cirricula
+	Slug string `json:"slug" yaml:"slug"`
+
+	// Status Status of the cirricula
+	Status Status      `db:"status" json:"status" yaml:"status"`
+	Type   ContentType `db:"type" json:"type" yaml:"type"`
+
+	// UpdatedAt When the cirricula was last updated
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+
+	// Visibility Visibility of the cirricula
+	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+}
+
+// AcademyCirriculaListResponse defines model for AcademyCirriculaListResponse.
+type AcademyCirriculaListResponse struct {
+	Data []AcademyCirricula `json:"data" yaml:"data"`
+
+	// Total Total number of cirricula
+	Total int `json:"total" yaml:"total"`
+}
 
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
@@ -72,6 +136,24 @@ type AcademyRegistrationsListResponse struct {
 	Total int `json:"total" yaml:"total"`
 }
 
+// ChallengeMetadata defines model for ChallengeMetadata.
+type ChallengeMetadata struct {
+	// Banner Optional banner image
+	Banner *string `json:"banner" yaml:"banner"`
+
+	// Courses List of courses in this learning path
+	Courses *[]Course `json:"courses,omitempty" yaml:"courses,omitempty"`
+
+	// Description Description of the learning path
+	Description string `json:"description" yaml:"description"`
+
+	// Permalink Canonical URL for the learning path
+	Permalink string `json:"permalink" yaml:"permalink"`
+
+	// Title Title of the learning path
+	Title string `json:"title" yaml:"title"`
+}
+
 // ContentType defines model for ContentType.
 type ContentType string
 
@@ -93,8 +175,8 @@ type Course struct {
 	Weight *float32 `json:"weight,omitempty" yaml:"weight,omitempty"`
 }
 
-// LearningPath defines model for LearningPath.
-type LearningPath struct {
+// LearningPathMetadata defines model for LearningPathMetadata.
+type LearningPathMetadata struct {
 	// Banner Optional banner image
 	Banner *string `json:"banner" yaml:"banner"`
 
@@ -104,30 +186,15 @@ type LearningPath struct {
 	// Description Description of the learning path
 	Description string `json:"description" yaml:"description"`
 
-	// Id Id of the learning path
-	Id string `json:"id" yaml:"id"`
-
-	// OrgId Organization ID that owns this learning path
-	OrgId string `json:"orgId" yaml:"orgId"`
-
 	// Permalink Canonical URL for the learning path
 	Permalink string `json:"permalink" yaml:"permalink"`
 
-	// Slug slug of the learning path
-	Slug string `json:"slug" yaml:"slug"`
-
 	// Title Title of the learning path
-	Title string      `json:"title" yaml:"title"`
-	Type  ContentType `json:"type" yaml:"type"`
+	Title string `json:"title" yaml:"title"`
 }
 
-// LearningPathListResponse defines model for LearningPathListResponse.
-type LearningPathListResponse struct {
-	Data []LearningPath `json:"data" yaml:"data"`
-
-	// Total Total number of learning paths
-	Total int `json:"total" yaml:"total"`
-}
+// Level defines model for Level.
+type Level string
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
 type RegisterToAcademyContentRequest struct {
@@ -138,3 +205,9 @@ type RegisterToAcademyContentRequest struct {
 
 // RegisterToAcademyContentRequestContentType defines model for RegisterToAcademyContentRequest.ContentType.
 type RegisterToAcademyContentRequestContentType string
+
+// Status defines model for Status.
+type Status string
+
+// Visibility defines model for Visibility.
+type Visibility string
