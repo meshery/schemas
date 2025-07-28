@@ -518,9 +518,55 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
   /** Timestamp when the resource was deleted. */
   deletedAt: string;
   /** Additional metadata about the cirricula */
-  metadata: {
-    [key: string]: any;
-  };
+  metadata:
+    | {
+        /** Title of the learning path */
+        title: string;
+        /** Description of the learning path */
+        description: string;
+        /** Optional banner image */
+        banner?: string | null;
+        /** Canonical URL for the learning path */
+        permalink: string;
+        /** List of courses in this learning path */
+        courses?: {
+          /** Title of the course */
+          title: string;
+          /** URL to the course content */
+          permalink: string;
+          /** Course description */
+          description?: string;
+          /** Order of the course in the list */
+          weight?: number;
+          /** Optional banner image */
+          banner?: string | null;
+        }[];
+        [key: string]: any;
+      }
+    | {
+        /** Title of the learning path */
+        title: string;
+        /** Description of the learning path */
+        description: string;
+        /** Optional banner image */
+        banner?: string | null;
+        /** Canonical URL for the learning path */
+        permalink: string;
+        /** List of courses in this learning path */
+        courses?: {
+          /** Title of the course */
+          title: string;
+          /** URL to the course content */
+          permalink: string;
+          /** Course description */
+          description?: string;
+          /** Order of the course in the list */
+          weight?: number;
+          /** Optional banner image */
+          banner?: string | null;
+        }[];
+        [key: string]: any;
+      };
 };
 export type GetApiAcademyByTypeAndOrgIdSlugApiArg = {
   type: string;

@@ -232,7 +232,159 @@ const schema = {
                             "db": "metadata",
                             "json": "metadata",
                             "yaml": "metadata"
-                          }
+                          },
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the learning path",
+                                  "example": "Mastering Kubernetes for Engineers"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the learning path",
+                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                },
+                                "banner": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "nullable": true,
+                                  "description": "Optional banner image",
+                                  "example": null
+                                },
+                                "permalink": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "Canonical URL for the learning path",
+                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                },
+                                "courses": {
+                                  "type": "array",
+                                  "description": "List of courses in this learning path",
+                                  "items": {
+                                    "x-go-type": "Course",
+                                    "type": "object",
+                                    "properties": {
+                                      "title": {
+                                        "type": "string",
+                                        "description": "Title of the course",
+                                        "example": "Kubernetes Basics"
+                                      },
+                                      "permalink": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL to the course content",
+                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                      },
+                                      "description": {
+                                        "type": "string",
+                                        "description": "Course description",
+                                        "example": "Learn the basics of Kubernetes"
+                                      },
+                                      "weight": {
+                                        "type": "number",
+                                        "description": "Order of the course in the list",
+                                        "example": "eg 1 , 2"
+                                      },
+                                      "banner": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "description": "Optional banner image",
+                                        "example": null
+                                      }
+                                    },
+                                    "required": [
+                                      "title",
+                                      "permalink"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "title",
+                                "description",
+                                "permalink"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the learning path",
+                                  "example": "Mastering Kubernetes for Engineers"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the learning path",
+                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                },
+                                "banner": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "nullable": true,
+                                  "description": "Optional banner image",
+                                  "example": null
+                                },
+                                "permalink": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "Canonical URL for the learning path",
+                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                },
+                                "courses": {
+                                  "type": "array",
+                                  "description": "List of courses in this learning path",
+                                  "items": {
+                                    "x-go-type": "Course",
+                                    "type": "object",
+                                    "properties": {
+                                      "title": {
+                                        "type": "string",
+                                        "description": "Title of the course",
+                                        "example": "Kubernetes Basics"
+                                      },
+                                      "permalink": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL to the course content",
+                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                      },
+                                      "description": {
+                                        "type": "string",
+                                        "description": "Course description",
+                                        "example": "Learn the basics of Kubernetes"
+                                      },
+                                      "weight": {
+                                        "type": "number",
+                                        "description": "Order of the course in the list",
+                                        "example": "eg 1 , 2"
+                                      },
+                                      "banner": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "description": "Optional banner image",
+                                        "example": null
+                                      }
+                                    },
+                                    "required": [
+                                      "title",
+                                      "permalink"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "title",
+                                "description",
+                                "permalink"
+                              ]
+                            }
+                          ]
                         }
                       },
                       "required": [
@@ -436,7 +588,159 @@ const schema = {
                         "db": "metadata",
                         "json": "metadata",
                         "yaml": "metadata"
-                      }
+                      },
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the learning path",
+                              "example": "Mastering Kubernetes for Engineers"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Description of the learning path",
+                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            },
+                            "banner": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true,
+                              "description": "Optional banner image",
+                              "example": null
+                            },
+                            "permalink": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "Canonical URL for the learning path",
+                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                            },
+                            "courses": {
+                              "type": "array",
+                              "description": "List of courses in this learning path",
+                              "items": {
+                                "x-go-type": "Course",
+                                "type": "object",
+                                "properties": {
+                                  "title": {
+                                    "type": "string",
+                                    "description": "Title of the course",
+                                    "example": "Kubernetes Basics"
+                                  },
+                                  "permalink": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "description": "URL to the course content",
+                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Course description",
+                                    "example": "Learn the basics of Kubernetes"
+                                  },
+                                  "weight": {
+                                    "type": "number",
+                                    "description": "Order of the course in the list",
+                                    "example": "eg 1 , 2"
+                                  },
+                                  "banner": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "nullable": true,
+                                    "description": "Optional banner image",
+                                    "example": null
+                                  }
+                                },
+                                "required": [
+                                  "title",
+                                  "permalink"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "title",
+                            "description",
+                            "permalink"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the learning path",
+                              "example": "Mastering Kubernetes for Engineers"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Description of the learning path",
+                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            },
+                            "banner": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true,
+                              "description": "Optional banner image",
+                              "example": null
+                            },
+                            "permalink": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "Canonical URL for the learning path",
+                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                            },
+                            "courses": {
+                              "type": "array",
+                              "description": "List of courses in this learning path",
+                              "items": {
+                                "x-go-type": "Course",
+                                "type": "object",
+                                "properties": {
+                                  "title": {
+                                    "type": "string",
+                                    "description": "Title of the course",
+                                    "example": "Kubernetes Basics"
+                                  },
+                                  "permalink": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "description": "URL to the course content",
+                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Course description",
+                                    "example": "Learn the basics of Kubernetes"
+                                  },
+                                  "weight": {
+                                    "type": "number",
+                                    "description": "Order of the course in the list",
+                                    "example": "eg 1 , 2"
+                                  },
+                                  "banner": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "nullable": true,
+                                    "description": "Optional banner image",
+                                    "example": null
+                                  }
+                                },
+                                "required": [
+                                  "title",
+                                  "permalink"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "title",
+                            "description",
+                            "permalink"
+                          ]
+                        }
+                      ]
                     }
                   },
                   "required": [
@@ -979,7 +1283,159 @@ const schema = {
               "db": "metadata",
               "json": "metadata",
               "yaml": "metadata"
-            }
+            },
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the learning path",
+                    "example": "Mastering Kubernetes for Engineers"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the learning path",
+                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                  },
+                  "banner": {
+                    "type": "string",
+                    "format": "uri",
+                    "nullable": true,
+                    "description": "Optional banner image",
+                    "example": null
+                  },
+                  "permalink": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Canonical URL for the learning path",
+                    "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                  },
+                  "courses": {
+                    "type": "array",
+                    "description": "List of courses in this learning path",
+                    "items": {
+                      "x-go-type": "Course",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "Title of the course",
+                          "example": "Kubernetes Basics"
+                        },
+                        "permalink": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "URL to the course content",
+                          "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Course description",
+                          "example": "Learn the basics of Kubernetes"
+                        },
+                        "weight": {
+                          "type": "number",
+                          "description": "Order of the course in the list",
+                          "example": "eg 1 , 2"
+                        },
+                        "banner": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true,
+                          "description": "Optional banner image",
+                          "example": null
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "permalink"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "permalink"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the learning path",
+                    "example": "Mastering Kubernetes for Engineers"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the learning path",
+                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                  },
+                  "banner": {
+                    "type": "string",
+                    "format": "uri",
+                    "nullable": true,
+                    "description": "Optional banner image",
+                    "example": null
+                  },
+                  "permalink": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Canonical URL for the learning path",
+                    "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                  },
+                  "courses": {
+                    "type": "array",
+                    "description": "List of courses in this learning path",
+                    "items": {
+                      "x-go-type": "Course",
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "Title of the course",
+                          "example": "Kubernetes Basics"
+                        },
+                        "permalink": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "URL to the course content",
+                          "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Course description",
+                          "example": "Learn the basics of Kubernetes"
+                        },
+                        "weight": {
+                          "type": "number",
+                          "description": "Order of the course in the list",
+                          "example": "eg 1 , 2"
+                        },
+                        "banner": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true,
+                          "description": "Optional banner image",
+                          "example": null
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "permalink"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "permalink"
+                ]
+              }
+            ]
           }
         },
         "required": [
@@ -1138,7 +1594,159 @@ const schema = {
                     "db": "metadata",
                     "json": "metadata",
                     "yaml": "metadata"
-                  }
+                  },
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "Title of the learning path",
+                          "example": "Mastering Kubernetes for Engineers"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the learning path",
+                          "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                        },
+                        "banner": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true,
+                          "description": "Optional banner image",
+                          "example": null
+                        },
+                        "permalink": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Canonical URL for the learning path",
+                          "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                        },
+                        "courses": {
+                          "type": "array",
+                          "description": "List of courses in this learning path",
+                          "items": {
+                            "x-go-type": "Course",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string",
+                                "description": "Title of the course",
+                                "example": "Kubernetes Basics"
+                              },
+                              "permalink": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL to the course content",
+                                "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Course description",
+                                "example": "Learn the basics of Kubernetes"
+                              },
+                              "weight": {
+                                "type": "number",
+                                "description": "Order of the course in the list",
+                                "example": "eg 1 , 2"
+                              },
+                              "banner": {
+                                "type": "string",
+                                "format": "uri",
+                                "nullable": true,
+                                "description": "Optional banner image",
+                                "example": null
+                              }
+                            },
+                            "required": [
+                              "title",
+                              "permalink"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "description",
+                        "permalink"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "Title of the learning path",
+                          "example": "Mastering Kubernetes for Engineers"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the learning path",
+                          "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                        },
+                        "banner": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true,
+                          "description": "Optional banner image",
+                          "example": null
+                        },
+                        "permalink": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "Canonical URL for the learning path",
+                          "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                        },
+                        "courses": {
+                          "type": "array",
+                          "description": "List of courses in this learning path",
+                          "items": {
+                            "x-go-type": "Course",
+                            "type": "object",
+                            "properties": {
+                              "title": {
+                                "type": "string",
+                                "description": "Title of the course",
+                                "example": "Kubernetes Basics"
+                              },
+                              "permalink": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL to the course content",
+                                "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                              },
+                              "description": {
+                                "type": "string",
+                                "description": "Course description",
+                                "example": "Learn the basics of Kubernetes"
+                              },
+                              "weight": {
+                                "type": "number",
+                                "description": "Order of the course in the list",
+                                "example": "eg 1 , 2"
+                              },
+                              "banner": {
+                                "type": "string",
+                                "format": "uri",
+                                "nullable": true,
+                                "description": "Optional banner image",
+                                "example": null
+                              }
+                            },
+                            "required": [
+                              "title",
+                              "permalink"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "description",
+                        "permalink"
+                      ]
+                    }
+                  ]
                 }
               },
               "required": [
