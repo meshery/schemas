@@ -104,10 +104,11 @@ const schema = {
                       "x-go-type": "AcademyCirricula",
                       "type": "object",
                       "properties": {
-                        "ID": {
+                        "id": {
                           "type": "string",
                           "description": "Id of the cirricula",
                           "example": "923458-3490394-934893",
+                          "x-go-name": "ID",
                           "x-oapi-codegen-extra-tags": {
                             "db": "id",
                             "json": "id",
@@ -388,7 +389,7 @@ const schema = {
                         }
                       },
                       "required": [
-                        "ID",
+                        "id",
                         "type",
                         "orgId",
                         "visibility",
@@ -460,10 +461,11 @@ const schema = {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "ID": {
+                    "id": {
                       "type": "string",
                       "description": "Id of the cirricula",
                       "example": "923458-3490394-934893",
+                      "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id",
@@ -744,7 +746,7 @@ const schema = {
                     }
                   },
                   "required": [
-                    "ID",
+                    "id",
                     "type",
                     "orgId",
                     "visibility",
@@ -1155,10 +1157,11 @@ const schema = {
       "AcademyCirricula": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "description": "Id of the cirricula",
             "example": "923458-3490394-934893",
+            "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "db": "id",
               "json": "id",
@@ -1439,7 +1442,7 @@ const schema = {
           }
         },
         "required": [
-          "ID",
+          "id",
           "type",
           "orgId",
           "visibility",
@@ -1466,10 +1469,11 @@ const schema = {
               "x-go-type": "AcademyCirricula",
               "type": "object",
               "properties": {
-                "ID": {
+                "id": {
                   "type": "string",
                   "description": "Id of the cirricula",
                   "example": "923458-3490394-934893",
+                  "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
                     "json": "id",
@@ -1750,7 +1754,7 @@ const schema = {
                 }
               },
               "required": [
-                "ID",
+                "id",
                 "type",
                 "orgId",
                 "visibility",

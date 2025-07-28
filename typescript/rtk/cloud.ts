@@ -499,7 +499,7 @@ export type GetApiAcademyContentApiArg = {
 };
 export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single academy content */ {
   /** Id of the cirricula */
-  ID: string;
+  id: string;
   type: "learning-path" | "challenge" | "exam";
   /** Organization ID that owns this learning path */
   orgId: string;

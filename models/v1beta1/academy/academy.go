@@ -55,14 +55,14 @@ const (
 
 // AcademyCirricula defines model for AcademyCirricula.
 type AcademyCirricula struct {
-	// ID Id of the cirricula
-	ID string `db:"id" json:"id" yaml:"id"`
-
 	// CreatedAt When the cirricula item was created
 	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+
+	// ID Id of the cirricula
+	ID string `db:"id" json:"id" yaml:"id"`
 
 	// Level Level of the cirricula
 	Level Level `db:"level" json:"level" yaml:"level"`
