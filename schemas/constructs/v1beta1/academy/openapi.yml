@@ -43,7 +43,7 @@ paths:
             style: form
             explode: true
 
-  
+
         - name: status
           in: query
           description: Filter by registration status
@@ -68,42 +68,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LearningPathListResponse'
+              $ref: '#/components/schemas/AcademyCirriculaListResponse'
       '400':
         description: Invalid request parameters
       '500':
         description: Server error
-  
-  /api/academy/learning-paths:
-    get:
-      x-internal: ["cloud"]
-      summary: Get all learning paths
-      description: Returns a list of learning paths with optional filtering.
-      parameters:
-        - name: org_id
-          in: query
-          description: Filter learning paths by organization ID
-          required: false
-          schema:
-            type: string
-        - name: search
-          in: query
-          description: Search learning paths by title
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A list of learning paths with total count
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LearningPathListResponse'
-        '400':
-          description: Invalid request parameters
-        '500':
-          description: Server error
-
 
   /api/academy/{type}/{orgId}/{slug}:
     get:
@@ -133,67 +102,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LearningPath'
-        '400':
-          description: Invalid request parameters
-        '500':
-          description: Server error
-  /api/academy/challenges:
-    get:
-      x-internal: ["cloud"]
-      summary: Get all challenges
-      description: Returns a list of challenges with optional filtering.
-      parameters:
-        - name: org_id
-          in: query
-          description: Filter learning paths by organization ID
-          required: false
-          schema:
-            type: string
-        - name: search
-          in: query
-          description: Search learning paths by title
-          required: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: A list of learning paths with total count
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LearningPathListResponse'
+                $ref: '#/components/schemas/AcademyCirricula'
         '400':
           description: Invalid request parameters
         '500':
           description: Server error
 
-  /api/academy/registrations/hello:
-    get:
-      x-internal: ["cloud"]
-      summary: Get all registered content
-      description: Returns a list of registered content
-
-      operationId: getAcademyRegistrations
-      parameters:
-        - name: status
-          in: query
-          description: filter by status
-          required: true
-          schema:
-            type: string
-
-      responses:
-        '200':
-          description: A list of registrations with total count
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AcademyRegistrationsListResponse'
-        '400':
-          description: Invalid request parameters
-        '500':
-          description: Server error
 
   /api/academy/register:
     post:
@@ -281,24 +195,156 @@ components:
       enum:
         - learning-path
         - challenge
+        - exam
 
-    LearningPath:
+    Visibility:
+      type: string
+      enum:
+        - public
+        - private
+    Level :
+      type: string
+      enum:
+        - beginner
+        - intermediate
+        - advanced
+
+    Status:
+      type: string
+      enum:
+        - ready
+        - archived
+        - not_ready
+
+    AcademyCirricula:
       type: object
       properties:
-        id :
+        ID :
           type: string
-          description: Id of the learning path
+          description: Id of the cirricula
           example: 923458-3490394-934893
-
-        slug :
-          type: string
-          description: slug of the learning path
-          example: 923458-3490394-934893
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+            yaml: "id"
 
         type :
            $ref: "#/components/schemas/ContentType"
            x-go-type: "ContentType"
+           x-oapi-codegen-extra-tags:
+             db: "type"
+        orgId:
+          type: string
+          description: Organization ID that owns this learning path
+          example: layer5
+          x-oapi-codegen-extra-tags:
+            db: "org_id"
+            json: "org_id"
+            yaml: "org_id"
+        visibility:
+          $ref: "#/components/schemas/Visibility"
+          description: Visibility of the cirricula
+          x-go-type: "Visibility"
+          x-oapi-codegen-extra-tags:
+            db: "visibility"
+            json: "visibility"
+            yaml: "visibility"
+        status:
+          $ref: "#/components/schemas/Status"
+          example: ready
+          description: Status of the cirricula
+          x-go-type: "Status"
+          x-oapi-codegen-extra-tags:
+            db: "status"
+            json: "status"
+            yaml: "status"
 
+        slug :
+          type: string
+          description: slug of the cirricula
+          example: intro-kubernetes-course
+
+        level:
+          $ref: "#/components/schemas/Level"
+          description: Level of the cirricula
+          x-go-type: "Level"
+          x-oapi-codegen-extra-tags:
+            db: "level"
+            json: "level"
+            yaml: "level"
+
+
+
+        createdAt:
+          description: When the cirricula item was created
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "created_at"
+            yaml: "created_at"
+
+
+        updatedAt:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          description: When the cirricula was last updated
+          x-go-type: "core.Time"
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updated_at"
+            yaml: "updated_at"
+        deletedAt:
+          x-go-type : "core.NullTime"
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/deleted_at"
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deleted_at"
+            yaml: "deleted_at"
+        metadata:
+          type: object
+          description: Additional metadata about the cirricula
+          additionalProperties: true
+          x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "metadata"
+            json: "metadata"
+            yaml: "metadata"
+
+      required:
+        - ID
+        - type
+        - orgId
+        - visibility
+        - status
+        - slug
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - metadata
+        - level
+
+    AcademyCirriculaListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of cirricula
+          example: 7
+        data:
+          type: array
+          items:
+            x-go-type: "AcademyCirricula"
+            $ref: '#/components/schemas/AcademyCirricula'
+      required:
+        - total
+        - data
+
+    ChallengeMetadata:
+      $ref: "#/components/schemas/LearningPathMetadata"
+
+    LearningPathMetadata:
+      type: object
+      properties:
         title:
           type: string
           description: Title of the learning path
@@ -318,10 +364,6 @@ components:
           format: uri
           description: Canonical URL for the learning path
           example: http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-        orgId:
-          type: string
-          description: Organization ID that owns this learning path
-          example: layer5
         courses:
           type: array
           description: List of courses in this learning path
@@ -329,17 +371,11 @@ components:
             x-go-type: "Course"
             $ref: '#/components/schemas/Course'
 
-        # registration_info":
-        #   $ref: "#/components/schemas/AcademyRegistration"
 
       required:
         - title
         - description
         - permalink
-        - orgId
-        - type
-        - id
-        - slug
 
     AcademyRegistration:
       type: object
@@ -412,14 +448,14 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
 
-          
+
         metadata:
           type: object
           description: Additional metadata about the registration
           additionalProperties: true
           x-go-type: "core.Map"
           x-go-type-skip-optional-pointer: true
-         
+
           x-oapi-codegen-extra-tags:
             db: "metadata"
 
@@ -439,7 +475,7 @@ components:
         description:
           type: string
           description: Course description
-          example: Learn the basics of Kubernetes  
+          example: Learn the basics of Kubernetes
         weight:
           type: number
           description: Order of the course in the list
@@ -454,23 +490,7 @@ components:
         - title
         - permalink
 
-    LearningPathListResponse:
-      type: object
-      properties:
-        total:
-          type: integer
-          description: Total number of learning paths
-          example: 7
-        data:
-          type: array
-          items:
-            x-go-type: "LearningPath"
-            $ref: '#/components/schemas/LearningPath'
-      required:
-        - total
-        - data
 
-    
     AcademyRegistrationsListResponse:
       type: object
       properties:
