@@ -8,22 +8,8 @@ on:
       release_version:
         description: "Release Version"
         required: true
-        default: "prerelease"
-        type: choice
-        options:
-          - "prerelease"
-          - "patch"
-          - "minor"
-          - "major"
-      release_variant:
-        description: "Type of release"
-        required: true
-        default: "stable"
-        type: choice
-        options:
-          - "stable"
-          - "alpha"
-          - "beta"
+        default: "v1.0.0"
+        type: string
 
 jobs:
   publish-gpr:
@@ -53,20 +39,11 @@ jobs:
 
       - name: Update Release Version
         env:
-          RELEASE_VERSION: ${{ inputs.release_version || 'prerelease' }}
-          RELEASE_VARIANT: ${{ inputs.release_variant || 'stable' }}
+          RELEASE_VERSION: ${{ inputs.release_version || github.event.release.tag_name }}
         run: |
           set -e
           OLD_VERSION=$(node -e "console.log(require('./package.json').version)")
-          if [ "$RELEASE_VERSION" == "prerelease" ] && [ "$RELEASE_VARIANT" != "stable" ]; then
-            npm version "${RELEASE_VERSION}" --preid "${RELEASE_VARIANT}";
-          elif [ "$RELEASE_VERSION" == "prerelease" ] && [ "$RELEASE_VARIANT" == "stable" ]; then
-            npm version "${RELEASE_VERSION}";
-          elif [ "$RELEASE_VERSION" != "prerelease" ] && [ "$RELEASE_VARIANT" != "stable" ]; then
-            npm version "pre${RELEASE_VERSION}" --preid "${RELEASE_VARIANT}";
-          else
-            npm version "${RELEASE_VERSION}";
-          fi
+          npm version "${RELEASE_VERSION}" --no-git-tag-version
           NEW_VERSION=$(node -e "console.log(require('./package.json').version)")
           echo "Updated Package Version" >> $GITHUB_STEP_SUMMARY
           echo "info Old Version: ${OLD_VERSION}" >> $GITHUB_STEP_SUMMARY
@@ -96,5 +73,4 @@ jobs:
           commit_user_name: meshery
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-
 
