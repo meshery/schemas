@@ -309,6 +309,9 @@ components:
             db: "metadata"
             json: "metadata"
             yaml: "metadata"
+          oneOf:
+            - $ref: "#/components/schemas/LearningPathMetadata"
+            - $ref: "#/components/schemas/ChallengeMetadata"
 
       required:
         - ID
