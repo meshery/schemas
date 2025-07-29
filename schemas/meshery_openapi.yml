@@ -53,10 +53,10 @@ tags:
     x-displayName: environments
   - name: evaluation_other
     x-displayName: other
-  - name: Academy_API_other
-    x-displayName: other
   - name: Academy_API_Academy
     x-displayName: Academy
+  - name: Academy_API_other
+    x-displayName: other
 paths:
   /api/pattern/import:
     post:
@@ -61592,7 +61592,7 @@ components:
     Academy_API_AcademyRegistration:
       type: object
       required:
-        - ID
+        - id
         - org_id
         - user_id
         - status
@@ -61601,7 +61601,8 @@ components:
         - content_id
         - metadata
       properties:
-        ID:
+        id:
+          x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: id
             json: id
@@ -61733,7 +61734,7 @@ components:
           items:
             type: object
             required:
-              - ID
+              - id
               - org_id
               - user_id
               - status
@@ -61742,7 +61743,8 @@ components:
               - content_id
               - metadata
             properties:
-              ID:
+              id:
+                x-go-name: ID
                 x-oapi-codegen-extra-tags:
                   db: id
                   json: id
@@ -62224,5 +62226,5 @@ x-tagGroups:
       - evaluation_other
   - name: Academy API
     tags:
-      - Academy_API_other
       - Academy_API_Academy
+      - Academy_API_other

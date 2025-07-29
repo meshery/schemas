@@ -10,11 +10,418 @@ const schema = {
     "version": "1.0.0"
   },
   "paths": {
-    "/api/academy/content": {
+    "/api/academy/cirricula/registered": {
       "get": {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Academy"
+        ],
+        "operationId": "getMyAcademyCirricula",
+        "summary": "Get academy content",
+        "description": "Returns a list of academy content registered by the user with optional filtering.",
+        "parameters": [
+          {
+            "name": "contentType",
+            "in": "query",
+            "description": "Filter content by content types",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "style": "form",
+              "explode": true
+            }
+          },
+          {
+            "name": "orgId",
+            "in": "query",
+            "description": "Filter content by organization IDs",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "style": "form",
+              "explode": true
+            }
+          }
+        ]
+      },
+      "responses": {
+        "200": {
+          "description": "A list of content with total count",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "total": {
+                    "type": "integer",
+                    "description": "Total number of cirricula",
+                    "example": 7
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "AcademyCirricula",
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Id of the cirricula",
+                          "example": "923458-3490394-934893",
+                          "x-go-name": "ID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id",
+                            "yaml": "id"
+                          }
+                        },
+                        "type": {
+                          "x-go-type": "ContentType",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "type"
+                          },
+                          "type": "string",
+                          "enum": [
+                            "learning-path",
+                            "challenge",
+                            "exam"
+                          ]
+                        },
+                        "orgId": {
+                          "type": "string",
+                          "description": "Organization ID that owns this learning path",
+                          "example": "layer5",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "org_id",
+                            "json": "org_id",
+                            "yaml": "org_id"
+                          }
+                        },
+                        "visibility": {
+                          "description": "Visibility of the cirricula",
+                          "x-go-type": "Visibility",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "visibility",
+                            "json": "visibility",
+                            "yaml": "visibility"
+                          },
+                          "type": "string",
+                          "enum": [
+                            "public",
+                            "private"
+                          ]
+                        },
+                        "status": {
+                          "example": "ready",
+                          "description": "Status of the cirricula",
+                          "x-go-type": "Status",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "status",
+                            "json": "status",
+                            "yaml": "status"
+                          },
+                          "type": "string",
+                          "enum": [
+                            "ready",
+                            "archived",
+                            "not_ready"
+                          ]
+                        },
+                        "slug": {
+                          "type": "string",
+                          "description": "slug of the cirricula",
+                          "example": "intro-kubernetes-course"
+                        },
+                        "level": {
+                          "description": "Level of the cirricula",
+                          "x-go-type": "Level",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "level",
+                            "json": "level",
+                            "yaml": "level"
+                          },
+                          "type": "string",
+                          "enum": [
+                            "beginner",
+                            "intermediate",
+                            "advanced"
+                          ]
+                        },
+                        "createdAt": {
+                          "description": "When the cirricula item was created",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "json": "created_at",
+                            "yaml": "created_at"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updatedAt": {
+                          "description": "When the cirricula was last updated",
+                          "x-go-type": "core.Time",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "json": "updated_at",
+                            "yaml": "updated_at"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "deletedAt": {
+                          "x-go-type": "core.NullTime",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "deleted_at",
+                            "json": "deleted_at",
+                            "yaml": "deleted_at"
+                          },
+                          "description": "Timestamp when the resource was deleted.",
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-name": "DeletedAt",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "description": "Additional metadata about the cirricula",
+                          "additionalProperties": true,
+                          "x-go-type": "core.Map",
+                          "x-go-type-skip-optional-pointer": true,
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "metadata",
+                            "json": "metadata",
+                            "yaml": "metadata"
+                          },
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the learning path",
+                                  "example": "Mastering Kubernetes for Engineers"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the learning path",
+                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                },
+                                "banner": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "nullable": true,
+                                  "description": "Optional banner image",
+                                  "example": null
+                                },
+                                "permalink": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "Canonical URL for the learning path",
+                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                },
+                                "courses": {
+                                  "type": "array",
+                                  "description": "List of courses in this learning path",
+                                  "items": {
+                                    "x-go-type": "Course",
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Unique identifier for the course",
+                                        "example": "1234567890abcdef",
+                                        "x-go-name": "ID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "id",
+                                          "json": "id",
+                                          "yaml": "id"
+                                        }
+                                      },
+                                      "title": {
+                                        "type": "string",
+                                        "description": "Title of the course",
+                                        "example": "Kubernetes Basics"
+                                      },
+                                      "permalink": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL to the course content",
+                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                      },
+                                      "description": {
+                                        "type": "string",
+                                        "description": "Course description",
+                                        "example": "Learn the basics of Kubernetes"
+                                      },
+                                      "weight": {
+                                        "type": "number",
+                                        "description": "Order of the course in the list",
+                                        "example": "eg 1 , 2"
+                                      },
+                                      "banner": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "description": "Optional banner image",
+                                        "example": null
+                                      }
+                                    },
+                                    "required": [
+                                      "title",
+                                      "description",
+                                      "id",
+                                      "permalink"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "title",
+                                "description",
+                                "permalink"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the learning path",
+                                  "example": "Mastering Kubernetes for Engineers"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the learning path",
+                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                },
+                                "banner": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "nullable": true,
+                                  "description": "Optional banner image",
+                                  "example": null
+                                },
+                                "permalink": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "Canonical URL for the learning path",
+                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                },
+                                "courses": {
+                                  "type": "array",
+                                  "description": "List of courses in this learning path",
+                                  "items": {
+                                    "x-go-type": "Course",
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Unique identifier for the course",
+                                        "example": "1234567890abcdef",
+                                        "x-go-name": "ID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "id",
+                                          "json": "id",
+                                          "yaml": "id"
+                                        }
+                                      },
+                                      "title": {
+                                        "type": "string",
+                                        "description": "Title of the course",
+                                        "example": "Kubernetes Basics"
+                                      },
+                                      "permalink": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL to the course content",
+                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                      },
+                                      "description": {
+                                        "type": "string",
+                                        "description": "Course description",
+                                        "example": "Learn the basics of Kubernetes"
+                                      },
+                                      "weight": {
+                                        "type": "number",
+                                        "description": "Order of the course in the list",
+                                        "example": "eg 1 , 2"
+                                      },
+                                      "banner": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "nullable": true,
+                                        "description": "Optional banner image",
+                                        "example": null
+                                      }
+                                    },
+                                    "required": [
+                                      "title",
+                                      "description",
+                                      "id",
+                                      "permalink"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "title",
+                                "description",
+                                "permalink"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "type",
+                        "orgId",
+                        "visibility",
+                        "status",
+                        "slug",
+                        "createdAt",
+                        "updatedAt",
+                        "deletedAt",
+                        "metadata",
+                        "level"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "total",
+                  "data"
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid request parameters"
+        },
+        "500": {
+          "description": "Server error"
+        }
+      }
+    },
+    "/api/academy/cirricula": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Academy"
+        ],
+        "operationId": "getAcademyCirricula",
         "summary": "Get academy content",
         "description": "Returns a list of academy content with optional filtering.",
         "parameters": [
@@ -897,7 +1304,7 @@ const schema = {
                 "schema": {
                   "type": "object",
                   "required": [
-                    "ID",
+                    "id",
                     "org_id",
                     "user_id",
                     "status",
@@ -907,7 +1314,8 @@ const schema = {
                     "metadata"
                   ],
                   "properties": {
-                    "ID": {
+                    "id": {
+                      "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id",
@@ -1057,7 +1465,7 @@ const schema = {
                 "schema": {
                   "type": "object",
                   "required": [
-                    "ID",
+                    "id",
                     "org_id",
                     "user_id",
                     "status",
@@ -1067,7 +1475,8 @@ const schema = {
                     "metadata"
                   ],
                   "properties": {
-                    "ID": {
+                    "id": {
+                      "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id",
                         "json": "id",
@@ -2330,7 +2739,7 @@ const schema = {
       "AcademyRegistration": {
         "type": "object",
         "required": [
-          "ID",
+          "id",
           "org_id",
           "user_id",
           "status",
@@ -2340,7 +2749,8 @@ const schema = {
           "metadata"
         ],
         "properties": {
-          "ID": {
+          "id": {
+            "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "db": "id",
               "json": "id",
@@ -2503,7 +2913,7 @@ const schema = {
             "items": {
               "type": "object",
               "required": [
-                "ID",
+                "id",
                 "org_id",
                 "user_id",
                 "status",
@@ -2513,7 +2923,8 @@ const schema = {
                 "metadata"
               ],
               "properties": {
-                "ID": {
+                "id": {
+                  "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "id",
                     "json": "id",

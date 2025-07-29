@@ -97,9 +97,6 @@ type AcademyCirriculaListResponse struct {
 
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
-	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
-
 	// ContentId ID of the course content
 	ContentId string `db:"content_id" json:"content_id" yaml:"content_id"`
 
@@ -108,6 +105,9 @@ type AcademyRegistration struct {
 
 	// DeletedAt Timestamp when the resource was deleted.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// Metadata Additional metadata about the registration
 	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`

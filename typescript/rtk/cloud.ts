@@ -80,9 +80,18 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
-    getApiAcademyContent: build.query<GetApiAcademyContentApiResponse, GetApiAcademyContentApiArg>({
+    getMyAcademyCirricula: build.query<GetMyAcademyCirriculaApiResponse, GetMyAcademyCirriculaApiArg>({
       query: (queryArg) => ({
-        url: `/api/academy/content`,
+        url: `/api/academy/cirricula/registered`,
+        params: {
+          contentType: queryArg.contentType,
+          orgId: queryArg.orgId,
+        },
+      }),
+    }),
+    getAcademyCirricula: build.query<GetAcademyCirriculaApiResponse, GetAcademyCirriculaApiArg>({
+      query: (queryArg) => ({
+        url: `/api/academy/cirricula`,
         params: {
           contentType: queryArg.contentType,
           visibility: queryArg.visibility,
@@ -496,8 +505,15 @@ export type GetEnvironmentsApiArg = {
   /** User's organization ID */
   orgId: string;
 };
-export type GetApiAcademyContentApiResponse = unknown;
-export type GetApiAcademyContentApiArg = {
+export type GetMyAcademyCirriculaApiResponse = unknown;
+export type GetMyAcademyCirriculaApiArg = {
+  /** Filter content by content types */
+  contentType?: string[];
+  /** Filter content by organization IDs */
+  orgId?: string[];
+};
+export type GetAcademyCirriculaApiResponse = unknown;
+export type GetAcademyCirriculaApiArg = {
   /** Filter content by content types */
   contentType?: string[];
   /** Filter content by visibility (public/private) */
@@ -595,7 +611,7 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiArg = {
 };
 export type RegisterToAcademyContentApiResponse = /** status 200 registered content */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  ID: string;
+  id: string;
   /** ID of the organization */
   org_id: string;
   /** ID of the course content */
@@ -625,7 +641,7 @@ export type RegisterToAcademyContentApiArg = {
 export type GetApiAcademyRegistrationsByContentIdApiResponse =
   /** status 200 Registration data for the specified content */ {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    ID: string;
+    id: string;
     /** ID of the organization */
     org_id: string;
     /** ID of the course content */
@@ -711,7 +727,8 @@ export const {
   useDeleteApiWorkspacesByIdMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
-  useGetApiAcademyContentQuery,
+  useGetMyAcademyCirriculaQuery,
+  useGetAcademyCirriculaQuery,
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useRegisterToAcademyContentMutation,
   useGetApiAcademyRegistrationsByContentIdQuery,

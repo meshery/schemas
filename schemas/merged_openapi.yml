@@ -53,10 +53,10 @@ tags:
     x-displayName: environments
   - name: evaluation_other
     x-displayName: other
-  - name: Academy_API_other
-    x-displayName: other
   - name: Academy_API_Academy
     x-displayName: Academy
+  - name: Academy_API_other
+    x-displayName: other
 paths:
   /api/pattern/import:
     post:
@@ -15718,10 +15718,45 @@ paths:
           description: Internal server error
       tags:
         - evaluation_other
-  /api/academy/content:
+  /api/academy/cirricula/registered:
     get:
       x-internal:
         - cloud
+      tags:
+        - Academy_API_Academy
+      operationId: getMyAcademyCirricula
+      summary: Get academy content
+      description: >-
+        Returns a list of academy content registered by the user with optional
+        filtering.
+      parameters:
+        - name: contentType
+          in: query
+          description: Filter content by content types
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+        - name: orgId
+          in: query
+          description: Filter content by organization IDs
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+  /api/academy/cirricula:
+    get:
+      x-internal:
+        - cloud
+      tags:
+        - Academy_API_Academy
+      operationId: getAcademyCirricula
       summary: Get academy content
       description: Returns a list of academy content with optional filtering.
       parameters:
@@ -15791,8 +15826,6 @@ paths:
           required: false
           schema:
             type: string
-      tags:
-        - Academy_API_other
   /api/academy/{type}/{orgId}/{slug}:
     get:
       x-internal:
@@ -16129,7 +16162,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - ID
+                  - id
                   - org_id
                   - user_id
                   - status
@@ -16138,7 +16171,8 @@ paths:
                   - content_id
                   - metadata
                 properties:
-                  ID:
+                  id:
+                    x-go-name: ID
                     x-oapi-codegen-extra-tags:
                       db: id
                       json: id
@@ -16252,7 +16286,7 @@ paths:
               schema:
                 type: object
                 required:
-                  - ID
+                  - id
                   - org_id
                   - user_id
                   - status
@@ -16261,7 +16295,8 @@ paths:
                   - content_id
                   - metadata
                 properties:
-                  ID:
+                  id:
+                    x-go-name: ID
                     x-oapi-codegen-extra-tags:
                       db: id
                       json: id
@@ -63351,7 +63386,7 @@ components:
     Academy_API_AcademyRegistration:
       type: object
       required:
-        - ID
+        - id
         - org_id
         - user_id
         - status
@@ -63360,7 +63395,8 @@ components:
         - content_id
         - metadata
       properties:
-        ID:
+        id:
+          x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: id
             json: id
@@ -63492,7 +63528,7 @@ components:
           items:
             type: object
             required:
-              - ID
+              - id
               - org_id
               - user_id
               - status
@@ -63501,7 +63537,8 @@ components:
               - content_id
               - metadata
             properties:
-              ID:
+              id:
+                x-go-name: ID
                 x-oapi-codegen-extra-tags:
                   db: id
                   json: id
@@ -63983,5 +64020,5 @@ x-tagGroups:
       - evaluation_other
   - name: Academy API
     tags:
-      - Academy_API_other
       - Academy_API_Academy
+      - Academy_API_other
