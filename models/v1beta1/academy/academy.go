@@ -154,6 +154,31 @@ type ChallengeMetadata struct {
 	Title string `json:"title" yaml:"title"`
 }
 
+// CirriculaCurrentItemData defines model for CirriculaCurrentItemData.
+type CirriculaCurrentItemData struct {
+	ContentType ContentType `json:"content_type" yaml:"content_type"`
+	Id          string      `json:"id" yaml:"id"`
+	LastOpened  time.Time   `json:"last_opened" yaml:"last_opened"`
+}
+
+// CirriculaGrade defines model for CirriculaGrade.
+type CirriculaGrade struct {
+	Attempts int    `json:"attempts" yaml:"attempts"`
+	Grade    string `json:"grade" yaml:"grade"`
+	ModuleId string `json:"module_id" yaml:"module_id"`
+	Passed   bool   `json:"passed" yaml:"passed"`
+}
+
+// CirriculaProgressTracker defines model for CirriculaProgressTracker.
+type CirriculaProgressTracker struct {
+	Completed   core.NullTime                       `json:"completed" yaml:"completed"`
+	CurrentItem map[string]CirriculaCurrentItemData `json:"current_item" yaml:"current_item"`
+	Grades      map[string]CirriculaGrade           `json:"grades" yaml:"grades"`
+
+	// TimeSpent Total time spent in seconds
+	TimeSpent int `json:"time_spent" yaml:"time_spent"`
+}
+
 // ContentType defines model for ContentType.
 type ContentType string
 
@@ -163,7 +188,10 @@ type Course struct {
 	Banner *string `json:"banner" yaml:"banner"`
 
 	// Description Course description
-	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description" yaml:"description"`
+
+	// ID Unique identifier for the course
+	ID string `db:"id" json:"id" yaml:"id"`
 
 	// Permalink URL to the course content
 	Permalink string `json:"permalink" yaml:"permalink"`
@@ -173,6 +201,12 @@ type Course struct {
 
 	// Weight Order of the course in the list
 	Weight *float32 `json:"weight,omitempty" yaml:"weight,omitempty"`
+}
+
+// ErrorResponse defines model for ErrorResponse.
+type ErrorResponse struct {
+	Details *string `json:"details,omitempty" yaml:"details,omitempty"`
+	Error   *string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
 // LearningPathMetadata defines model for LearningPathMetadata.
@@ -208,6 +242,12 @@ type RegisterToAcademyContentRequestContentType string
 
 // Status defines model for Status.
 type Status string
+
+// UpdateCurrentItemRequest defines model for UpdateCurrentItemRequest.
+type UpdateCurrentItemRequest struct {
+	ContentType ContentType              `json:"content_type" yaml:"content_type"`
+	ItemData    CirriculaCurrentItemData `json:"item_data" yaml:"item_data"`
+}
 
 // Visibility defines model for Visibility.
 type Visibility string

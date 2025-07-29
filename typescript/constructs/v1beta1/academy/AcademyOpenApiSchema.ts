@@ -296,6 +296,17 @@ const schema = {
                                     "x-go-type": "Course",
                                     "type": "object",
                                     "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Unique identifier for the course",
+                                        "example": "1234567890abcdef",
+                                        "x-go-name": "ID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "id",
+                                          "json": "id",
+                                          "yaml": "id"
+                                        }
+                                      },
                                       "title": {
                                         "type": "string",
                                         "description": "Title of the course",
@@ -327,6 +338,8 @@ const schema = {
                                     },
                                     "required": [
                                       "title",
+                                      "description",
+                                      "id",
                                       "permalink"
                                     ]
                                   }
@@ -371,6 +384,17 @@ const schema = {
                                     "x-go-type": "Course",
                                     "type": "object",
                                     "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Unique identifier for the course",
+                                        "example": "1234567890abcdef",
+                                        "x-go-name": "ID",
+                                        "x-oapi-codegen-extra-tags": {
+                                          "db": "id",
+                                          "json": "id",
+                                          "yaml": "id"
+                                        }
+                                      },
                                       "title": {
                                         "type": "string",
                                         "description": "Title of the course",
@@ -402,6 +426,8 @@ const schema = {
                                     },
                                     "required": [
                                       "title",
+                                      "description",
+                                      "id",
                                       "permalink"
                                     ]
                                   }
@@ -653,6 +679,17 @@ const schema = {
                                 "x-go-type": "Course",
                                 "type": "object",
                                 "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Unique identifier for the course",
+                                    "example": "1234567890abcdef",
+                                    "x-go-name": "ID",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id",
+                                      "yaml": "id"
+                                    }
+                                  },
                                   "title": {
                                     "type": "string",
                                     "description": "Title of the course",
@@ -684,6 +721,8 @@ const schema = {
                                 },
                                 "required": [
                                   "title",
+                                  "description",
+                                  "id",
                                   "permalink"
                                 ]
                               }
@@ -728,6 +767,17 @@ const schema = {
                                 "x-go-type": "Course",
                                 "type": "object",
                                 "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Unique identifier for the course",
+                                    "example": "1234567890abcdef",
+                                    "x-go-name": "ID",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id",
+                                      "yaml": "id"
+                                    }
+                                  },
                                   "title": {
                                     "type": "string",
                                     "description": "Title of the course",
@@ -759,6 +809,8 @@ const schema = {
                                 },
                                 "required": [
                                   "title",
+                                  "description",
+                                  "id",
                                   "permalink"
                                 ]
                               }
@@ -801,6 +853,12 @@ const schema = {
     },
     "/api/academy/register": {
       "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Academy"
+        ],
         "summary": "Register a user to academy content",
         "operationId": "registerToAcademyContent",
         "requestBody": {
@@ -958,10 +1016,7 @@ const schema = {
           "500": {
             "description": "Server error"
           }
-        },
-        "tags": [
-          "Academy"
-        ]
+        }
       }
     },
     "/api/academy/registrations/{contentId}": {
@@ -1123,6 +1178,248 @@ const schema = {
           },
           "500": {
             "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/academy/registrations/{registrationId}/progress-tracker/update-current-item": {
+      "post": {
+        "tags": [
+          "Academy"
+        ],
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "updateCurrentItemInProgressTracker",
+        "summary": "Update the current item in the progress tracker",
+        "parameters": [
+          {
+            "name": "registrationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the registration"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content_type": {
+                    "type": "string",
+                    "enum": [
+                      "learning-path",
+                      "challenge",
+                      "exam"
+                    ],
+                    "x-go-type": "ContentType"
+                  },
+                  "item_data": {
+                    "x-go-type": "CirriculaCurrentItemData",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "last_opened",
+                      "content_type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "last_opened": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "content_type": {
+                        "type": "string",
+                        "enum": [
+                          "learning-path",
+                          "challenge",
+                          "exam"
+                        ],
+                        "x-go-type": "ContentType"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "content_type",
+                  "item_data"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated the progress tracker",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "progress_tracker": {
+                      "type": "object",
+                      "required": [
+                        "current_item",
+                        "grades",
+                        "time_spent",
+                        "completed"
+                      ],
+                      "properties": {
+                        "current_item": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "x-go-type": "CirriculaCurrentItemData",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "last_opened",
+                              "content_type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "last_opened": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "content_type": {
+                                "type": "string",
+                                "enum": [
+                                  "learning-path",
+                                  "challenge",
+                                  "exam"
+                                ],
+                                "x-go-type": "ContentType"
+                              }
+                            }
+                          }
+                        },
+                        "grades": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "x-go-type": "CirriculaGrade",
+                            "type": "object",
+                            "required": [
+                              "module_id",
+                              "grade",
+                              "attempts",
+                              "passed"
+                            ],
+                            "properties": {
+                              "module_id": {
+                                "type": "string"
+                              },
+                              "grade": {
+                                "type": "string"
+                              },
+                              "attempts": {
+                                "type": "integer"
+                              },
+                              "passed": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        },
+                        "time_spent": {
+                          "type": "integer",
+                          "description": "Total time spent in seconds"
+                        },
+                        "completed": {
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type": "core.NullTime"
+                        }
+                      }
+                    },
+                    "registration_id": {
+                      "type": "string"
+                    },
+                    "content_type": {
+                      "type": "string",
+                      "enum": [
+                        "learning-path",
+                        "challenge",
+                        "exam"
+                      ]
+                    },
+                    "item_data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "last_opened",
+                        "content_type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "last_opened": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "content_type": {
+                          "type": "string",
+                          "enum": [
+                            "learning-path",
+                            "challenge",
+                            "exam"
+                          ],
+                          "x-go-type": "ContentType"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1349,6 +1646,17 @@ const schema = {
                       "x-go-type": "Course",
                       "type": "object",
                       "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier for the course",
+                          "example": "1234567890abcdef",
+                          "x-go-name": "ID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id",
+                            "yaml": "id"
+                          }
+                        },
                         "title": {
                           "type": "string",
                           "description": "Title of the course",
@@ -1380,6 +1688,8 @@ const schema = {
                       },
                       "required": [
                         "title",
+                        "description",
+                        "id",
                         "permalink"
                       ]
                     }
@@ -1424,6 +1734,17 @@ const schema = {
                       "x-go-type": "Course",
                       "type": "object",
                       "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier for the course",
+                          "example": "1234567890abcdef",
+                          "x-go-name": "ID",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "id",
+                            "json": "id",
+                            "yaml": "id"
+                          }
+                        },
                         "title": {
                           "type": "string",
                           "description": "Title of the course",
@@ -1455,6 +1776,8 @@ const schema = {
                       },
                       "required": [
                         "title",
+                        "description",
+                        "id",
                         "permalink"
                       ]
                     }
@@ -1661,6 +1984,17 @@ const schema = {
                             "x-go-type": "Course",
                             "type": "object",
                             "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Unique identifier for the course",
+                                "example": "1234567890abcdef",
+                                "x-go-name": "ID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id",
+                                  "yaml": "id"
+                                }
+                              },
                               "title": {
                                 "type": "string",
                                 "description": "Title of the course",
@@ -1692,6 +2026,8 @@ const schema = {
                             },
                             "required": [
                               "title",
+                              "description",
+                              "id",
                               "permalink"
                             ]
                           }
@@ -1736,6 +2072,17 @@ const schema = {
                             "x-go-type": "Course",
                             "type": "object",
                             "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Unique identifier for the course",
+                                "example": "1234567890abcdef",
+                                "x-go-name": "ID",
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "id",
+                                  "json": "id",
+                                  "yaml": "id"
+                                }
+                              },
                               "title": {
                                 "type": "string",
                                 "description": "Title of the course",
@@ -1767,6 +2114,8 @@ const schema = {
                             },
                             "required": [
                               "title",
+                              "description",
+                              "id",
                               "permalink"
                             ]
                           }
@@ -1835,6 +2184,17 @@ const schema = {
               "x-go-type": "Course",
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the course",
+                  "example": "1234567890abcdef",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id",
+                    "yaml": "id"
+                  }
+                },
                 "title": {
                   "type": "string",
                   "description": "Title of the course",
@@ -1866,6 +2226,8 @@ const schema = {
               },
               "required": [
                 "title",
+                "description",
+                "id",
                 "permalink"
               ]
             }
@@ -1910,6 +2272,17 @@ const schema = {
               "x-go-type": "Course",
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the course",
+                  "example": "1234567890abcdef",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id",
+                    "yaml": "id"
+                  }
+                },
                 "title": {
                   "type": "string",
                   "description": "Title of the course",
@@ -1941,6 +2314,8 @@ const schema = {
               },
               "required": [
                 "title",
+                "description",
+                "id",
                 "permalink"
               ]
             }
@@ -2068,6 +2443,17 @@ const schema = {
       "Course": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the course",
+            "example": "1234567890abcdef",
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id",
+              "yaml": "id"
+            }
+          },
           "title": {
             "type": "string",
             "description": "Title of the course",
@@ -2099,6 +2485,8 @@ const schema = {
         },
         "required": [
           "title",
+          "description",
+          "id",
           "permalink"
         ]
       },
@@ -2232,6 +2620,188 @@ const schema = {
           "total",
           "data"
         ]
+      },
+      "CirriculaGrade": {
+        "type": "object",
+        "required": [
+          "module_id",
+          "grade",
+          "attempts",
+          "passed"
+        ],
+        "properties": {
+          "module_id": {
+            "type": "string"
+          },
+          "grade": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "integer"
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CirriculaCurrentItemData": {
+        "type": "object",
+        "required": [
+          "id",
+          "last_opened",
+          "content_type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "last_opened": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "content_type": {
+            "type": "string",
+            "enum": [
+              "learning-path",
+              "challenge",
+              "exam"
+            ],
+            "x-go-type": "ContentType"
+          }
+        }
+      },
+      "CirriculaProgressTracker": {
+        "type": "object",
+        "required": [
+          "current_item",
+          "grades",
+          "time_spent",
+          "completed"
+        ],
+        "properties": {
+          "current_item": {
+            "type": "object",
+            "additionalProperties": {
+              "x-go-type": "CirriculaCurrentItemData",
+              "type": "object",
+              "required": [
+                "id",
+                "last_opened",
+                "content_type"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "last_opened": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "content_type": {
+                  "type": "string",
+                  "enum": [
+                    "learning-path",
+                    "challenge",
+                    "exam"
+                  ],
+                  "x-go-type": "ContentType"
+                }
+              }
+            }
+          },
+          "grades": {
+            "type": "object",
+            "additionalProperties": {
+              "x-go-type": "CirriculaGrade",
+              "type": "object",
+              "required": [
+                "module_id",
+                "grade",
+                "attempts",
+                "passed"
+              ],
+              "properties": {
+                "module_id": {
+                  "type": "string"
+                },
+                "grade": {
+                  "type": "string"
+                },
+                "attempts": {
+                  "type": "integer"
+                },
+                "passed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "time_spent": {
+            "type": "integer",
+            "description": "Total time spent in seconds"
+          },
+          "completed": {
+            "type": "string",
+            "format": "date-time",
+            "x-go-type": "core.NullTime"
+          }
+        }
+      },
+      "UpdateCurrentItemRequest": {
+        "type": "object",
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "enum": [
+              "learning-path",
+              "challenge",
+              "exam"
+            ],
+            "x-go-type": "ContentType"
+          },
+          "item_data": {
+            "x-go-type": "CirriculaCurrentItemData",
+            "type": "object",
+            "required": [
+              "id",
+              "last_opened",
+              "content_type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "last_opened": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "content_type": {
+                "type": "string",
+                "enum": [
+                  "learning-path",
+                  "challenge",
+                  "exam"
+                ],
+                "x-go-type": "ContentType"
+              }
+            }
+          }
+        },
+        "required": [
+          "content_type",
+          "item_data"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          }
+        }
       }
     }
   },

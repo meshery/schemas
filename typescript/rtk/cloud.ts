@@ -114,6 +114,16 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    updateCurrentItemInProgressTracker: build.mutation<
+      UpdateCurrentItemInProgressTrackerApiResponse,
+      UpdateCurrentItemInProgressTrackerApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/academy/registrations/${queryArg.registrationId}/progress-tracker/update-current-item`,
+        method: "POST",
+        body: queryArg.body,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -536,12 +546,14 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
         permalink: string;
         /** List of courses in this learning path */
         courses?: {
+          /** Unique identifier for the course */
+          id: string;
           /** Title of the course */
           title: string;
           /** URL to the course content */
           permalink: string;
           /** Course description */
-          description?: string;
+          description: string;
           /** Order of the course in the list */
           weight?: number;
           /** Optional banner image */
@@ -560,12 +572,14 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
         permalink: string;
         /** List of courses in this learning path */
         courses?: {
+          /** Unique identifier for the course */
+          id: string;
           /** Title of the course */
           title: string;
           /** URL to the course content */
           permalink: string;
           /** Course description */
-          description?: string;
+          description: string;
           /** Order of the course in the list */
           weight?: number;
           /** Optional banner image */
@@ -637,6 +651,49 @@ export type GetApiAcademyRegistrationsByContentIdApiArg = {
   /** Filter registrations by status (e.g., registered, completed) */
   status?: string;
 };
+export type UpdateCurrentItemInProgressTrackerApiResponse =
+  /** status 200 Successfully updated the progress tracker */ {
+    message?: string;
+    progress_tracker?: {
+      current_item: {
+        [key: string]: {
+          id: string;
+          last_opened: string;
+          content_type: "learning-path" | "challenge" | "exam";
+        };
+      };
+      grades: {
+        [key: string]: {
+          module_id: string;
+          grade: string;
+          attempts: number;
+          passed: boolean;
+        };
+      };
+      /** Total time spent in seconds */
+      time_spent: number;
+      completed: string;
+    };
+    registration_id?: string;
+    content_type?: "learning-path" | "challenge" | "exam";
+    item_data?: {
+      id: string;
+      last_opened: string;
+      content_type: "learning-path" | "challenge" | "exam";
+    };
+  };
+export type UpdateCurrentItemInProgressTrackerApiArg = {
+  /** The ID of the registration */
+  registrationId: string;
+  body: {
+    content_type: "learning-path" | "challenge" | "exam";
+    item_data: {
+      id: string;
+      last_opened: string;
+      content_type: "learning-path" | "challenge" | "exam";
+    };
+  };
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -658,4 +715,5 @@ export const {
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useRegisterToAcademyContentMutation,
   useGetApiAcademyRegistrationsByContentIdQuery,
+  useUpdateCurrentItemInProgressTrackerMutation,
 } = injectedRtkApi;
