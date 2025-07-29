@@ -4,9 +4,55 @@ info:
   version: 1.0.0
 
 paths:
-  /api/academy/content:
+
+  /api/academy/cirricula/registered:
     get:
       x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: getMyAcademyCirricula
+      summary: Get academy content
+      description: Returns a list of academy content registered by the user with optional filtering.
+      parameters:
+        - name: contentType
+          in: query
+          description: Filter content by content types
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+        - name: orgId
+          in: query
+          description: Filter content by organization IDs
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+
+    responses:
+      '200':
+        description: A list of content with total count
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcademyCirriculaListResponse'
+      '400':
+        description: Invalid request parameters
+      '500':
+        description: Server error
+
+  /api/academy/cirricula:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: getAcademyCirricula
       summary: Get academy content
       description: Returns a list of academy content with optional filtering.
       parameters:
@@ -457,7 +503,7 @@ components:
     AcademyRegistration:
       type: object
       required:
-        - ID
+        - id
         - org_id
         - user_id
         - status
@@ -466,8 +512,9 @@ components:
         - content_id
         - metadata
       properties:
-        ID:
+        id:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: "id"
             json: "id"
