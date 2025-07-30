@@ -691,8 +691,8 @@ components:
         grades:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/CirriculaGrade'
-            x-go-type: "CirriculaGrade"
+            type: object
+            x-go-type: "interface{}"
         time_spent:
           type: integer
           description: Total time spent in seconds
