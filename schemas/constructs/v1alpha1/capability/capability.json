@@ -4,7 +4,6 @@
   "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
   "additionalProperties": false,
   "type": "object",
-
   "required": [
     "description",
     "schemaVersion",
@@ -37,7 +36,6 @@
       "type": "string",
       "description": "A written representation of the purpose and characteristics of the capability."
     },
-
     "kind": {
       "$ref": "../../core.json#/definitions/inputString",
       "description": "Top-level categorization of the capability",
@@ -51,113 +49,53 @@
           "const": "mutate",
           "description": "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
         },
-
         {
           "const": "view",
           "description": "For capabilities related to viewing an entity. Example: the ability to view a components configuration."
         },
-
         {
           "const": "interaction",
           "description": "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
         }
       ]
     },
-
     "type": {
       "$ref": "../../core.json#/definitions/inputString",
       "description": "Classification of capabilities. Used to group capabilities similar in nature."
     },
-
     "subType": {
       "$ref": "../../core.json#/definitions/inputString",
       "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability."
     },
-
     "key": {
       "$ref": "../../core.json#/definitions/inputString",
       "description": "Key that backs the capability."
     },
-
     "entityState": {
       "description": "State of the entity in which the capability is applicable.",
       "type": "array",
       "items": {
         "$ref": "../../core.json#/definitions/inputString",
         "type": "string",
-        "enum": ["declaration", "instance"]
+        "enum": [
+          "declaration",
+          "instance"
+        ]
       }
     },
-
     "status": {
       "type": "string",
       "description": "Status of the capability",
       "default": "enabled",
-      "enum": ["enabled", "disabled"]
+      "enum": [
+        "enabled",
+        "disabled"
+      ]
     },
-
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the capability. Extension point.",
       "additionalProperties": true
     }
-  },
-  "default": [
-    {
-      "description": "Configure the visual styles for the component",
-      "displayName": "Styling",
-      "entityState": [
-        "declaration"
-      ],
-      "key": "",
-      "kind": "mutate",
-      "schemaVersion": "capability.meshery.io/v1alpha1",
-      "status": "enabled",
-      "subType": "",
-      "type": "style",
-      "version": "0.7.0"
-    },
-    {
-      "description": "Change the shape of the component",
-      "displayName": "Change Shape",
-      "entityState": [
-        "declaration"
-      ],
-      "key": "",
-      "kind": "mutate",
-      "schemaVersion": "capability.meshery.io/v1alpha1",
-      "status": "enabled",
-      "subType": "shape",
-      "type": "style",
-      "version": "0.7.0"
-    },
-    {
-      "description": "Drag and Drop a component into a parent component in graph view",
-      "displayName": "Compound Drag And Drop",
-      "entityState": [
-        "declaration"
-      ],
-      "key": "",
-      "kind": "interaction",
-      "schemaVersion": "capability.meshery.io/v1alpha1",
-      "status": "enabled",
-      "subType": "compoundDnd",
-      "type": "graph",
-      "version": "0.7.0"
-    },
-    {
-      "description": "Add text to nodes body",
-      "displayName": "Body Text",
-      "entityState": [
-        "declaration"
-      ],
-      "key": "",
-      "kind": "mutate",
-      "schemaVersion": "capability.meshery.io/v1alpha1",
-      "status": "enabled",
-      "subType": "body-text",
-      "type": "style",
-      "version": "0.7.0"
-    }
-  ]
+  }
 }
