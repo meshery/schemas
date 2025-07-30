@@ -173,7 +173,7 @@ type CirriculaGrade struct {
 type CirriculaProgressTracker struct {
 	Completed   core.NullTime                       `json:"completed" yaml:"completed"`
 	CurrentItem map[string]CirriculaCurrentItemData `json:"current_item" yaml:"current_item"`
-	Grades      map[string]CirriculaGrade           `json:"grades" yaml:"grades"`
+	Grades      map[string]interface{}              `json:"grades" yaml:"grades"`
 
 	// TimeSpent Total time spent in seconds
 	TimeSpent int `json:"time_spent" yaml:"time_spent"`

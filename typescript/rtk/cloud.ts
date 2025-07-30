@@ -679,12 +679,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
         };
       };
       grades: {
-        [key: string]: {
-          module_id: string;
-          grade: string;
-          attempts: number;
-          passed: boolean;
-        };
+        [key: string]: object;
       };
       /** Total time spent in seconds */
       time_spent: number;

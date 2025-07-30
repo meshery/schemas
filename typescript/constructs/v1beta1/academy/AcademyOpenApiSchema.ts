@@ -1717,28 +1717,8 @@ const schema = {
                         "grades": {
                           "type": "object",
                           "additionalProperties": {
-                            "x-go-type": "CirriculaGrade",
                             "type": "object",
-                            "required": [
-                              "module_id",
-                              "grade",
-                              "attempts",
-                              "passed"
-                            ],
-                            "properties": {
-                              "module_id": {
-                                "type": "string"
-                              },
-                              "grade": {
-                                "type": "string"
-                              },
-                              "attempts": {
-                                "type": "integer"
-                              },
-                              "passed": {
-                                "type": "boolean"
-                              }
-                            }
+                            "x-go-type": "interface{}"
                           }
                         },
                         "time_spent": {
@@ -3123,28 +3103,8 @@ const schema = {
           "grades": {
             "type": "object",
             "additionalProperties": {
-              "x-go-type": "CirriculaGrade",
               "type": "object",
-              "required": [
-                "module_id",
-                "grade",
-                "attempts",
-                "passed"
-              ],
-              "properties": {
-                "module_id": {
-                  "type": "string"
-                },
-                "grade": {
-                  "type": "string"
-                },
-                "attempts": {
-                  "type": "integer"
-                },
-                "passed": {
-                  "type": "boolean"
-                }
-              }
+              "x-go-type": "interface{}"
             }
           },
           "time_spent": {
