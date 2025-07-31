@@ -43,7 +43,7 @@
       "type": "string",
       "minLength": 5,
       "maxLength": 100,
-      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "pattern": "^[a-z0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
       "default": "v0.0.1",
       "x-order": 2,
       "x-oapi-codegen-extra-tags": {
@@ -138,8 +138,7 @@
           "declaration",
           "instance"
         ],
-        "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
-        "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
+        "description": "The state of the entity, either 'declaration' or 'instance'.",
         "x-oapi-codegen-extra-tags": {
           "yaml": "entityState",
           "json": "entityState"
