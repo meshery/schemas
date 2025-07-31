@@ -133,6 +133,9 @@ const injectedRtkApi = api.injectEndpoints({
         body: queryArg.body,
       }),
     }),
+    submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
+      query: (queryArg) => ({ url: `/api/academy/quiz/submit`, method: "POST", body: queryArg.body }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -679,7 +682,56 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
         };
       };
       grades: {
-        [key: string]: object;
+        [key: string]: {
+          score: number;
+          passed: boolean;
+          percentage_scored: number;
+          total_marks: number;
+          pass_percentage: number;
+          correct_submissions: {
+            [key: string]: boolean;
+          };
+          quiz: {
+            id: string;
+            title: string;
+            description: string;
+            slug: string;
+            relPermalink: string;
+            permalink: string;
+            type: string;
+            section: string;
+            layout: string;
+            date: string;
+            lastmod: string;
+            draft: boolean;
+            file_path: string;
+            pass_percentage: number;
+            time_limit: string;
+            questions: {
+              id: string;
+              text: string;
+              type: "mcq" | "short_answer" | "essay";
+              marks: number;
+              multiple_answers: boolean;
+              options: {
+                id: string;
+                text: string;
+                is_correct: boolean;
+              }[];
+              correct_answer: string;
+            }[];
+            total_questions: number;
+            total_marks: number;
+            parent?: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            };
+          };
+          attempted_at: string;
+          attempts: number;
+        };
       };
       /** Total time spent in seconds */
       time_spent: number;
@@ -705,6 +757,70 @@ export type UpdateCurrentItemInProgressTrackerApiArg = {
     };
   };
 };
+export type SubmitQuizApiResponse = /** status 200 Successfully updated the progress tracker */ {
+  score: number;
+  passed: boolean;
+  percentage_scored: number;
+  total_marks: number;
+  pass_percentage: number;
+  correct_submissions: {
+    [key: string]: boolean;
+  };
+  quiz: {
+    id: string;
+    title: string;
+    description: string;
+    slug: string;
+    relPermalink: string;
+    permalink: string;
+    type: string;
+    section: string;
+    layout: string;
+    date: string;
+    lastmod: string;
+    draft: boolean;
+    file_path: string;
+    pass_percentage: number;
+    time_limit: string;
+    questions: {
+      id: string;
+      text: string;
+      type: "mcq" | "short_answer" | "essay";
+      marks: number;
+      multiple_answers: boolean;
+      options: {
+        id: string;
+        text: string;
+        is_correct: boolean;
+      }[];
+      correct_answer: string;
+    }[];
+    total_questions: number;
+    total_marks: number;
+    parent?: {
+      id: string;
+      title: string;
+      relPermalink: string;
+      type: string;
+    };
+  };
+  attempted_at: string;
+  attempts: number;
+};
+export type SubmitQuizApiArg = {
+  body: {
+    quiz_abs_path: string;
+    registration_id: string;
+    user_id: string;
+    answers: {
+      question_id: string;
+      selected_option_id: {
+        [key: string]: boolean;
+      };
+      answer_text: string;
+    }[];
+  };
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -728,4 +844,5 @@ export const {
   useRegisterToAcademyContentMutation,
   useGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
+  useSubmitQuizMutation,
 } = injectedRtkApi;

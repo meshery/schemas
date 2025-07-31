@@ -2660,8 +2660,171 @@ paths:
                       grades:
                         type: object
                         additionalProperties:
+                          x-go-type: QuizEvaluationResult
                           type: object
-                          x-go-type: interface{}
+                          required:
+                            - score
+                            - passed
+                            - total_marks
+                            - pass_percentage
+                            - quiz
+                            - attempted_at
+                            - attempts
+                            - percentage_scored
+                            - correct_submissions
+                          properties:
+                            score:
+                              type: integer
+                            passed:
+                              type: boolean
+                            percentage_scored:
+                              type: number
+                              format: float
+                            total_marks:
+                              type: integer
+                            pass_percentage:
+                              type: number
+                              format: float
+                            correct_submissions:
+                              type: object
+                              additionalProperties:
+                                type: boolean
+                            quiz:
+                              x-go-type: Quiz
+                              type: object
+                              required:
+                                - id
+                                - title
+                                - description
+                                - slug
+                                - relPermalink
+                                - permalink
+                                - type
+                                - section
+                                - layout
+                                - date
+                                - lastmod
+                                - draft
+                                - file_path
+                                - pass_percentage
+                                - time_limit
+                                - questions
+                                - total_questions
+                                - total_marks
+                              properties:
+                                id:
+                                  type: string
+                                  x-go-name: ID
+                                  x-oapi-codegen-extra-tags:
+                                    json: id
+                                title:
+                                  type: string
+                                description:
+                                  type: string
+                                slug:
+                                  type: string
+                                relPermalink:
+                                  type: string
+                                permalink:
+                                  type: string
+                                type:
+                                  type: string
+                                section:
+                                  type: string
+                                layout:
+                                  type: string
+                                date:
+                                  type: string
+                                  format: date
+                                lastmod:
+                                  type: string
+                                  format: date
+                                draft:
+                                  type: boolean
+                                file_path:
+                                  type: string
+                                pass_percentage:
+                                  type: number
+                                  format: float
+                                time_limit:
+                                  type: string
+                                questions:
+                                  type: array
+                                  items:
+                                    x-go-type: Question
+                                    type: object
+                                    required:
+                                      - id
+                                      - text
+                                      - type
+                                      - marks
+                                      - multiple_answers
+                                      - options
+                                      - correct_answer
+                                    properties:
+                                      id:
+                                        type: string
+                                      text:
+                                        type: string
+                                      type:
+                                        x-go-type: QuestionType
+                                        type: string
+                                        x-enum-varnames:
+                                          - QuestionTypeMCQ
+                                          - QuestionTypeShortAnswer
+                                          - QuestionTypeEssay
+                                        enum:
+                                          - mcq
+                                          - short_answer
+                                          - essay
+                                      marks:
+                                        type: integer
+                                      multiple_answers:
+                                        type: boolean
+                                      options:
+                                        type: array
+                                        items:
+                                          x-go-type: QuestionOption
+                                          type: object
+                                          required:
+                                            - id
+                                            - text
+                                            - is_correct
+                                          properties:
+                                            id:
+                                              type: string
+                                            text:
+                                              type: string
+                                            is_correct:
+                                              type: boolean
+                                      correct_answer:
+                                        type: string
+                                total_questions:
+                                  type: integer
+                                total_marks:
+                                  type: integer
+                                parent:
+                                  x-go-type: Parent
+                                  type: object
+                                  required:
+                                    - id
+                                    - title
+                                    - relPermalink
+                                    - type
+                                  properties:
+                                    id:
+                                      type: string
+                                    title:
+                                      type: string
+                                    relPermalink:
+                                      type: string
+                                    type:
+                                      type: string
+                            attempted_at:
+                              type: string
+                              format: date-time
+                            attempts:
+                              type: integer
                       time_spent:
                         type: integer
                         description: Total time spent in seconds
@@ -2696,6 +2859,242 @@ paths:
                           - challenge
                           - exam
                         x-go-type: ContentType
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  details:
+                    type: string
+  /api/academy/quiz/submit:
+    post:
+      tags:
+        - Academy_API_Academy
+      x-internal:
+        - cloud
+      operationId: submitQuiz
+      summary: Submit a quiz for evaluation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quiz_abs_path
+                - registration_id
+                - user_id
+                - answers
+              properties:
+                quiz_abs_path:
+                  type: string
+                registration_id:
+                  type: string
+                user_id:
+                  type: string
+                answers:
+                  type: array
+                  items:
+                    x-go-type: SubmittedAnswer
+                    type: object
+                    required:
+                      - question_id
+                      - selected_option_id
+                      - answer_text
+                    properties:
+                      question_id:
+                        type: string
+                      selected_option_id:
+                        type: object
+                        additionalProperties:
+                          type: boolean
+                      answer_text:
+                        type: string
+      responses:
+        '200':
+          description: Successfully updated the progress tracker
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - score
+                  - passed
+                  - total_marks
+                  - pass_percentage
+                  - quiz
+                  - attempted_at
+                  - attempts
+                  - percentage_scored
+                  - correct_submissions
+                properties:
+                  score:
+                    type: integer
+                  passed:
+                    type: boolean
+                  percentage_scored:
+                    type: number
+                    format: float
+                  total_marks:
+                    type: integer
+                  pass_percentage:
+                    type: number
+                    format: float
+                  correct_submissions:
+                    type: object
+                    additionalProperties:
+                      type: boolean
+                  quiz:
+                    x-go-type: Quiz
+                    type: object
+                    required:
+                      - id
+                      - title
+                      - description
+                      - slug
+                      - relPermalink
+                      - permalink
+                      - type
+                      - section
+                      - layout
+                      - date
+                      - lastmod
+                      - draft
+                      - file_path
+                      - pass_percentage
+                      - time_limit
+                      - questions
+                      - total_questions
+                      - total_marks
+                    properties:
+                      id:
+                        type: string
+                        x-go-name: ID
+                        x-oapi-codegen-extra-tags:
+                          json: id
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      slug:
+                        type: string
+                      relPermalink:
+                        type: string
+                      permalink:
+                        type: string
+                      type:
+                        type: string
+                      section:
+                        type: string
+                      layout:
+                        type: string
+                      date:
+                        type: string
+                        format: date
+                      lastmod:
+                        type: string
+                        format: date
+                      draft:
+                        type: boolean
+                      file_path:
+                        type: string
+                      pass_percentage:
+                        type: number
+                        format: float
+                      time_limit:
+                        type: string
+                      questions:
+                        type: array
+                        items:
+                          x-go-type: Question
+                          type: object
+                          required:
+                            - id
+                            - text
+                            - type
+                            - marks
+                            - multiple_answers
+                            - options
+                            - correct_answer
+                          properties:
+                            id:
+                              type: string
+                            text:
+                              type: string
+                            type:
+                              x-go-type: QuestionType
+                              type: string
+                              x-enum-varnames:
+                                - QuestionTypeMCQ
+                                - QuestionTypeShortAnswer
+                                - QuestionTypeEssay
+                              enum:
+                                - mcq
+                                - short_answer
+                                - essay
+                            marks:
+                              type: integer
+                            multiple_answers:
+                              type: boolean
+                            options:
+                              type: array
+                              items:
+                                x-go-type: QuestionOption
+                                type: object
+                                required:
+                                  - id
+                                  - text
+                                  - is_correct
+                                properties:
+                                  id:
+                                    type: string
+                                  text:
+                                    type: string
+                                  is_correct:
+                                    type: boolean
+                            correct_answer:
+                              type: string
+                      total_questions:
+                        type: integer
+                      total_marks:
+                        type: integer
+                      parent:
+                        x-go-type: Parent
+                        type: object
+                        required:
+                          - id
+                          - title
+                          - relPermalink
+                          - type
+                        properties:
+                          id:
+                            type: string
+                          title:
+                            type: string
+                          relPermalink:
+                            type: string
+                          type:
+                            type: string
+                  attempted_at:
+                    type: string
+                    format: date-time
+                  attempts:
+                    type: integer
         '400':
           description: Bad request
           content:
@@ -49791,22 +50190,6 @@ components:
       required:
         - total
         - data
-    Academy_API_CirriculaGrade:
-      type: object
-      required:
-        - module_id
-        - grade
-        - attempts
-        - passed
-      properties:
-        module_id:
-          type: string
-        grade:
-          type: string
-        attempts:
-          type: integer
-        passed:
-          type: boolean
     Academy_API_CirriculaCurrentItemData:
       type: object
       required:
@@ -49859,8 +50242,171 @@ components:
         grades:
           type: object
           additionalProperties:
+            x-go-type: QuizEvaluationResult
             type: object
-            x-go-type: interface{}
+            required:
+              - score
+              - passed
+              - total_marks
+              - pass_percentage
+              - quiz
+              - attempted_at
+              - attempts
+              - percentage_scored
+              - correct_submissions
+            properties:
+              score:
+                type: integer
+              passed:
+                type: boolean
+              percentage_scored:
+                type: number
+                format: float
+              total_marks:
+                type: integer
+              pass_percentage:
+                type: number
+                format: float
+              correct_submissions:
+                type: object
+                additionalProperties:
+                  type: boolean
+              quiz:
+                x-go-type: Quiz
+                type: object
+                required:
+                  - id
+                  - title
+                  - description
+                  - slug
+                  - relPermalink
+                  - permalink
+                  - type
+                  - section
+                  - layout
+                  - date
+                  - lastmod
+                  - draft
+                  - file_path
+                  - pass_percentage
+                  - time_limit
+                  - questions
+                  - total_questions
+                  - total_marks
+                properties:
+                  id:
+                    type: string
+                    x-go-name: ID
+                    x-oapi-codegen-extra-tags:
+                      json: id
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  slug:
+                    type: string
+                  relPermalink:
+                    type: string
+                  permalink:
+                    type: string
+                  type:
+                    type: string
+                  section:
+                    type: string
+                  layout:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                  lastmod:
+                    type: string
+                    format: date
+                  draft:
+                    type: boolean
+                  file_path:
+                    type: string
+                  pass_percentage:
+                    type: number
+                    format: float
+                  time_limit:
+                    type: string
+                  questions:
+                    type: array
+                    items:
+                      x-go-type: Question
+                      type: object
+                      required:
+                        - id
+                        - text
+                        - type
+                        - marks
+                        - multiple_answers
+                        - options
+                        - correct_answer
+                      properties:
+                        id:
+                          type: string
+                        text:
+                          type: string
+                        type:
+                          x-go-type: QuestionType
+                          type: string
+                          x-enum-varnames:
+                            - QuestionTypeMCQ
+                            - QuestionTypeShortAnswer
+                            - QuestionTypeEssay
+                          enum:
+                            - mcq
+                            - short_answer
+                            - essay
+                        marks:
+                          type: integer
+                        multiple_answers:
+                          type: boolean
+                        options:
+                          type: array
+                          items:
+                            x-go-type: QuestionOption
+                            type: object
+                            required:
+                              - id
+                              - text
+                              - is_correct
+                            properties:
+                              id:
+                                type: string
+                              text:
+                                type: string
+                              is_correct:
+                                type: boolean
+                        correct_answer:
+                          type: string
+                  total_questions:
+                    type: integer
+                  total_marks:
+                    type: integer
+                  parent:
+                    x-go-type: Parent
+                    type: object
+                    required:
+                      - id
+                      - title
+                      - relPermalink
+                      - type
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      relPermalink:
+                        type: string
+                      type:
+                        type: string
+              attempted_at:
+                type: string
+                format: date-time
+              attempts:
+                type: integer
         time_spent:
           type: integer
           description: Total time spent in seconds
@@ -49908,6 +50454,435 @@ components:
           type: string
         details:
           type: string
+    Academy_API_Quiz:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - slug
+        - relPermalink
+        - permalink
+        - type
+        - section
+        - layout
+        - date
+        - lastmod
+        - draft
+        - file_path
+        - pass_percentage
+        - time_limit
+        - questions
+        - total_questions
+        - total_marks
+      properties:
+        id:
+          type: string
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            json: id
+        title:
+          type: string
+        description:
+          type: string
+        slug:
+          type: string
+        relPermalink:
+          type: string
+        permalink:
+          type: string
+        type:
+          type: string
+        section:
+          type: string
+        layout:
+          type: string
+        date:
+          type: string
+          format: date
+        lastmod:
+          type: string
+          format: date
+        draft:
+          type: boolean
+        file_path:
+          type: string
+        pass_percentage:
+          type: number
+          format: float
+        time_limit:
+          type: string
+        questions:
+          type: array
+          items:
+            x-go-type: Question
+            type: object
+            required:
+              - id
+              - text
+              - type
+              - marks
+              - multiple_answers
+              - options
+              - correct_answer
+            properties:
+              id:
+                type: string
+              text:
+                type: string
+              type:
+                x-go-type: QuestionType
+                type: string
+                x-enum-varnames:
+                  - QuestionTypeMCQ
+                  - QuestionTypeShortAnswer
+                  - QuestionTypeEssay
+                enum:
+                  - mcq
+                  - short_answer
+                  - essay
+              marks:
+                type: integer
+              multiple_answers:
+                type: boolean
+              options:
+                type: array
+                items:
+                  x-go-type: QuestionOption
+                  type: object
+                  required:
+                    - id
+                    - text
+                    - is_correct
+                  properties:
+                    id:
+                      type: string
+                    text:
+                      type: string
+                    is_correct:
+                      type: boolean
+              correct_answer:
+                type: string
+        total_questions:
+          type: integer
+        total_marks:
+          type: integer
+        parent:
+          x-go-type: Parent
+          type: object
+          required:
+            - id
+            - title
+            - relPermalink
+            - type
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            relPermalink:
+              type: string
+            type:
+              type: string
+    Academy_API_Parent:
+      type: object
+      required:
+        - id
+        - title
+        - relPermalink
+        - type
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        relPermalink:
+          type: string
+        type:
+          type: string
+    Academy_API_QuestionType:
+      type: string
+      x-enum-varnames:
+        - QuestionTypeMCQ
+        - QuestionTypeShortAnswer
+        - QuestionTypeEssay
+      enum:
+        - mcq
+        - short_answer
+        - essay
+    Academy_API_Question:
+      type: object
+      required:
+        - id
+        - text
+        - type
+        - marks
+        - multiple_answers
+        - options
+        - correct_answer
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        type:
+          x-go-type: QuestionType
+          type: string
+          x-enum-varnames:
+            - QuestionTypeMCQ
+            - QuestionTypeShortAnswer
+            - QuestionTypeEssay
+          enum:
+            - mcq
+            - short_answer
+            - essay
+        marks:
+          type: integer
+        multiple_answers:
+          type: boolean
+        options:
+          type: array
+          items:
+            x-go-type: QuestionOption
+            type: object
+            required:
+              - id
+              - text
+              - is_correct
+            properties:
+              id:
+                type: string
+              text:
+                type: string
+              is_correct:
+                type: boolean
+        correct_answer:
+          type: string
+    Academy_API_QuestionOption:
+      type: object
+      required:
+        - id
+        - text
+        - is_correct
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        is_correct:
+          type: boolean
+    Academy_API_QuizSubmission:
+      type: object
+      required:
+        - quiz_abs_path
+        - registration_id
+        - user_id
+        - answers
+      properties:
+        quiz_abs_path:
+          type: string
+        registration_id:
+          type: string
+        user_id:
+          type: string
+        answers:
+          type: array
+          items:
+            x-go-type: SubmittedAnswer
+            type: object
+            required:
+              - question_id
+              - selected_option_id
+              - answer_text
+            properties:
+              question_id:
+                type: string
+              selected_option_id:
+                type: object
+                additionalProperties:
+                  type: boolean
+              answer_text:
+                type: string
+    Academy_API_SubmittedAnswer:
+      type: object
+      required:
+        - question_id
+        - selected_option_id
+        - answer_text
+      properties:
+        question_id:
+          type: string
+        selected_option_id:
+          type: object
+          additionalProperties:
+            type: boolean
+        answer_text:
+          type: string
+    Academy_API_QuizEvaluationResult:
+      type: object
+      required:
+        - score
+        - passed
+        - total_marks
+        - pass_percentage
+        - quiz
+        - attempted_at
+        - attempts
+        - percentage_scored
+        - correct_submissions
+      properties:
+        score:
+          type: integer
+        passed:
+          type: boolean
+        percentage_scored:
+          type: number
+          format: float
+        total_marks:
+          type: integer
+        pass_percentage:
+          type: number
+          format: float
+        correct_submissions:
+          type: object
+          additionalProperties:
+            type: boolean
+        quiz:
+          x-go-type: Quiz
+          type: object
+          required:
+            - id
+            - title
+            - description
+            - slug
+            - relPermalink
+            - permalink
+            - type
+            - section
+            - layout
+            - date
+            - lastmod
+            - draft
+            - file_path
+            - pass_percentage
+            - time_limit
+            - questions
+            - total_questions
+            - total_marks
+          properties:
+            id:
+              type: string
+              x-go-name: ID
+              x-oapi-codegen-extra-tags:
+                json: id
+            title:
+              type: string
+            description:
+              type: string
+            slug:
+              type: string
+            relPermalink:
+              type: string
+            permalink:
+              type: string
+            type:
+              type: string
+            section:
+              type: string
+            layout:
+              type: string
+            date:
+              type: string
+              format: date
+            lastmod:
+              type: string
+              format: date
+            draft:
+              type: boolean
+            file_path:
+              type: string
+            pass_percentage:
+              type: number
+              format: float
+            time_limit:
+              type: string
+            questions:
+              type: array
+              items:
+                x-go-type: Question
+                type: object
+                required:
+                  - id
+                  - text
+                  - type
+                  - marks
+                  - multiple_answers
+                  - options
+                  - correct_answer
+                properties:
+                  id:
+                    type: string
+                  text:
+                    type: string
+                  type:
+                    x-go-type: QuestionType
+                    type: string
+                    x-enum-varnames:
+                      - QuestionTypeMCQ
+                      - QuestionTypeShortAnswer
+                      - QuestionTypeEssay
+                    enum:
+                      - mcq
+                      - short_answer
+                      - essay
+                  marks:
+                    type: integer
+                  multiple_answers:
+                    type: boolean
+                  options:
+                    type: array
+                    items:
+                      x-go-type: QuestionOption
+                      type: object
+                      required:
+                        - id
+                        - text
+                        - is_correct
+                      properties:
+                        id:
+                          type: string
+                        text:
+                          type: string
+                        is_correct:
+                          type: boolean
+                  correct_answer:
+                    type: string
+            total_questions:
+              type: integer
+            total_marks:
+              type: integer
+            parent:
+              x-go-type: Parent
+              type: object
+              required:
+                - id
+                - title
+                - relPermalink
+                - type
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                relPermalink:
+                  type: string
+                type:
+                  type: string
+        attempted_at:
+          type: string
+          format: date-time
+        attempts:
+          type: integer
   responses:
     subscription_400:
       description: Invalid request body or request param

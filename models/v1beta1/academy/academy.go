@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for AcademyRegistrationStatus.
@@ -31,6 +32,13 @@ const (
 	Advanced     Level = "advanced"
 	Beginner     Level = "beginner"
 	Intermediate Level = "intermediate"
+)
+
+// Defines values for QuestionType.
+const (
+	QuestionTypeEssay       QuestionType = "essay"
+	QuestionTypeMCQ         QuestionType = "mcq"
+	QuestionTypeShortAnswer QuestionType = "short_answer"
 )
 
 // Defines values for RegisterToAcademyContentRequestContentType.
@@ -161,19 +169,11 @@ type CirriculaCurrentItemData struct {
 	LastOpened  time.Time   `json:"last_opened" yaml:"last_opened"`
 }
 
-// CirriculaGrade defines model for CirriculaGrade.
-type CirriculaGrade struct {
-	Attempts int    `json:"attempts" yaml:"attempts"`
-	Grade    string `json:"grade" yaml:"grade"`
-	ModuleId string `json:"module_id" yaml:"module_id"`
-	Passed   bool   `json:"passed" yaml:"passed"`
-}
-
 // CirriculaProgressTracker defines model for CirriculaProgressTracker.
 type CirriculaProgressTracker struct {
 	Completed   core.NullTime                       `json:"completed" yaml:"completed"`
 	CurrentItem map[string]CirriculaCurrentItemData `json:"current_item" yaml:"current_item"`
-	Grades      map[string]interface{}              `json:"grades" yaml:"grades"`
+	Grades      map[string]QuizEvaluationResult     `json:"grades" yaml:"grades"`
 
 	// TimeSpent Total time spent in seconds
 	TimeSpent int `json:"time_spent" yaml:"time_spent"`
@@ -230,6 +230,79 @@ type LearningPathMetadata struct {
 // Level defines model for Level.
 type Level string
 
+// Parent defines model for Parent.
+type Parent struct {
+	Id           string `json:"id" yaml:"id"`
+	RelPermalink string `json:"relPermalink" yaml:"relPermalink"`
+	Title        string `json:"title" yaml:"title"`
+	Type         string `json:"type" yaml:"type"`
+}
+
+// Question defines model for Question.
+type Question struct {
+	CorrectAnswer   string           `json:"correct_answer" yaml:"correct_answer"`
+	Id              string           `json:"id" yaml:"id"`
+	Marks           int              `json:"marks" yaml:"marks"`
+	MultipleAnswers bool             `json:"multiple_answers" yaml:"multiple_answers"`
+	Options         []QuestionOption `json:"options" yaml:"options"`
+	Text            string           `json:"text" yaml:"text"`
+	Type            QuestionType     `json:"type" yaml:"type"`
+}
+
+// QuestionOption defines model for QuestionOption.
+type QuestionOption struct {
+	Id        string `json:"id" yaml:"id"`
+	IsCorrect bool   `json:"is_correct" yaml:"is_correct"`
+	Text      string `json:"text" yaml:"text"`
+}
+
+// QuestionType defines model for QuestionType.
+type QuestionType string
+
+// Quiz defines model for Quiz.
+type Quiz struct {
+	Date           openapi_types.Date `json:"date" yaml:"date"`
+	Description    string             `json:"description" yaml:"description"`
+	Draft          bool               `json:"draft" yaml:"draft"`
+	FilePath       string             `json:"file_path" yaml:"file_path"`
+	ID             string             `json:"id" yaml:"id"`
+	Lastmod        openapi_types.Date `json:"lastmod" yaml:"lastmod"`
+	Layout         string             `json:"layout" yaml:"layout"`
+	Parent         *Parent            `json:"parent,omitempty" yaml:"parent,omitempty"`
+	PassPercentage float32            `json:"pass_percentage" yaml:"pass_percentage"`
+	Permalink      string             `json:"permalink" yaml:"permalink"`
+	Questions      []Question         `json:"questions" yaml:"questions"`
+	RelPermalink   string             `json:"relPermalink" yaml:"relPermalink"`
+	Section        string             `json:"section" yaml:"section"`
+	Slug           string             `json:"slug" yaml:"slug"`
+	TimeLimit      string             `json:"time_limit" yaml:"time_limit"`
+	Title          string             `json:"title" yaml:"title"`
+	TotalMarks     int                `json:"total_marks" yaml:"total_marks"`
+	TotalQuestions int                `json:"total_questions" yaml:"total_questions"`
+	Type           string             `json:"type" yaml:"type"`
+}
+
+// QuizEvaluationResult defines model for QuizEvaluationResult.
+type QuizEvaluationResult struct {
+	AttemptedAt        time.Time       `json:"attempted_at" yaml:"attempted_at"`
+	Attempts           int             `json:"attempts" yaml:"attempts"`
+	CorrectSubmissions map[string]bool `json:"correct_submissions" yaml:"correct_submissions"`
+	PassPercentage     float32         `json:"pass_percentage" yaml:"pass_percentage"`
+	Passed             bool            `json:"passed" yaml:"passed"`
+	PercentageScored   float32         `json:"percentage_scored" yaml:"percentage_scored"`
+	Quiz               Quiz            `json:"quiz" yaml:"quiz"`
+	Score              int             `json:"score" yaml:"score"`
+	TotalMarks         int             `json:"total_marks" yaml:"total_marks"`
+}
+
+// QuizSubmission defines model for QuizSubmission.
+type QuizSubmission struct {
+	Answers        []SubmittedAnswer `json:"answers" yaml:"answers"`
+	QuizAbsPath    string            `json:"quiz_abs_path" yaml:"quiz_abs_path"`
+	RegistrationId string            `json:"registration_id" yaml:"registration_id"`
+	UserId         string            `json:"user_id" yaml:"user_id"`
+}
+
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
 type RegisterToAcademyContentRequest struct {
 	// ContentId ID of the academy content to register for
@@ -242,6 +315,13 @@ type RegisterToAcademyContentRequestContentType string
 
 // Status defines model for Status.
 type Status string
+
+// SubmittedAnswer defines model for SubmittedAnswer.
+type SubmittedAnswer struct {
+	AnswerText       string          `json:"answer_text" yaml:"answer_text"`
+	QuestionId       string          `json:"question_id" yaml:"question_id"`
+	SelectedOptionId map[string]bool `json:"selected_option_id" yaml:"selected_option_id"`
+}
 
 // UpdateCurrentItemRequest defines model for UpdateCurrentItemRequest.
 type UpdateCurrentItemRequest struct {
