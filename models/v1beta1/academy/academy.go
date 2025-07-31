@@ -171,9 +171,12 @@ type CirriculaCurrentItemData struct {
 
 // CirriculaProgressTracker defines model for CirriculaProgressTracker.
 type CirriculaProgressTracker struct {
-	Completed   core.NullTime                       `json:"completed" yaml:"completed"`
-	CurrentItem map[string]CirriculaCurrentItemData `json:"current_item" yaml:"current_item"`
-	Grades      map[string]QuizEvaluationResult     `json:"grades" yaml:"grades"`
+	Completed core.NullTime `json:"completed" yaml:"completed"`
+
+	// CompletedItems Items that have been completed (map of item IDs to item data)
+	CompletedItems map[string]ProgressItemCompleted    `json:"completed_items" yaml:"completed_items"`
+	CurrentItem    map[string]CirriculaCurrentItemData `json:"current_item" yaml:"current_item"`
+	Grades         map[string]QuizEvaluationResult     `json:"grades" yaml:"grades"`
 
 	// TimeSpent Total time spent in seconds
 	TimeSpent int `json:"time_spent" yaml:"time_spent"`
@@ -236,6 +239,13 @@ type Parent struct {
 	RelPermalink string `json:"relPermalink" yaml:"relPermalink"`
 	Title        string `json:"title" yaml:"title"`
 	Type         string `json:"type" yaml:"type"`
+}
+
+// ProgressItemCompleted defines model for ProgressItemCompleted.
+type ProgressItemCompleted struct {
+	// CompletedAt Timestamp when the item was completed
+	CompletedAt time.Time `json:"completed_at" yaml:"completed_at"`
+	ItemData    Parent    `json:"item_data" yaml:"item_data"`
 }
 
 // Question defines model for Question.

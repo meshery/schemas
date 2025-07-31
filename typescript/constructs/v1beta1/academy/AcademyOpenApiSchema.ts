@@ -1681,7 +1681,8 @@ const schema = {
                         "current_item",
                         "grades",
                         "time_spent",
-                        "completed"
+                        "completed",
+                        "completed_items"
                       ],
                       "properties": {
                         "current_item": {
@@ -1945,6 +1946,49 @@ const schema = {
                         "time_spent": {
                           "type": "integer",
                           "description": "Total time spent in seconds"
+                        },
+                        "completed_items": {
+                          "type": "object",
+                          "description": "Items that have been completed (map of item IDs to item data)",
+                          "additionalProperties": {
+                            "x-go-type": "ProgressItemCompleted",
+                            "type": "object",
+                            "required": [
+                              "completed_at",
+                              "item_data"
+                            ],
+                            "properties": {
+                              "completed_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Timestamp when the item was completed"
+                              },
+                              "item_data": {
+                                "x-go-type": "Parent",
+                                "type": "object",
+                                "required": [
+                                  "id",
+                                  "title",
+                                  "relPermalink",
+                                  "type"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "relPermalink": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
                         },
                         "completed": {
                           "type": "string",
@@ -3599,7 +3643,8 @@ const schema = {
           "current_item",
           "grades",
           "time_spent",
-          "completed"
+          "completed",
+          "completed_items"
         ],
         "properties": {
           "current_item": {
@@ -3864,10 +3909,91 @@ const schema = {
             "type": "integer",
             "description": "Total time spent in seconds"
           },
+          "completed_items": {
+            "type": "object",
+            "description": "Items that have been completed (map of item IDs to item data)",
+            "additionalProperties": {
+              "x-go-type": "ProgressItemCompleted",
+              "type": "object",
+              "required": [
+                "completed_at",
+                "item_data"
+              ],
+              "properties": {
+                "completed_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when the item was completed"
+                },
+                "item_data": {
+                  "x-go-type": "Parent",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "relPermalink",
+                    "type"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "relPermalink": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "completed": {
             "type": "string",
             "format": "date-time",
             "x-go-type": "core.NullTime"
+          }
+        }
+      },
+      "ProgressItemCompleted": {
+        "type": "object",
+        "required": [
+          "completed_at",
+          "item_data"
+        ],
+        "properties": {
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the item was completed"
+          },
+          "item_data": {
+            "x-go-type": "Parent",
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "relPermalink",
+              "type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "relPermalink": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
           }
         }
       },

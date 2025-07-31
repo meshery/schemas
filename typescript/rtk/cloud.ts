@@ -735,6 +735,19 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
       };
       /** Total time spent in seconds */
       time_spent: number;
+      /** Items that have been completed (map of item IDs to item data) */
+      completed_items: {
+        [key: string]: {
+          /** Timestamp when the item was completed */
+          completed_at: string;
+          item_data: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          };
+        };
+      };
       completed: string;
     };
     registration_id?: string;
