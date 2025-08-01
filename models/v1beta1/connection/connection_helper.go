@@ -60,9 +60,9 @@ func (c *Connection) EventCategory() string {
 
 type MeshsyncDeploymentMode string
 
-const (
-	MeshsyncDeploymentModeMetadataKey = "meshsync_deployment_mode"
+const MeshsyncDeploymentModeMetadataKey = "meshsync_deployment_mode"
 
+const (
 	MeshsyncDeploymentModeOperator  MeshsyncDeploymentMode = "operator"
 	MeshsyncDeploymentModeEmbedded  MeshsyncDeploymentMode = "embedded"
 	MeshsyncDeploymentModeUndefined MeshsyncDeploymentMode = "undefined"
