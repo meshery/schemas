@@ -10,6 +10,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/meshkit/database"
+	"github.com/meshery/schemas/models/core"
 	"gorm.io/gorm"
 )
 
@@ -60,6 +61,8 @@ func (c *Connection) EventCategory() string {
 type MeshsyncDeploymentMode string
 
 const (
+	MeshsyncDeploymentModeMetadataKey = "meshsync_deployment_mode"
+
 	MeshsyncDeploymentModeOperator  MeshsyncDeploymentMode = "operator"
 	MeshsyncDeploymentModeEmbedded  MeshsyncDeploymentMode = "embedded"
 	MeshsyncDeploymentModeUndefined MeshsyncDeploymentMode = "undefined"
@@ -77,4 +80,18 @@ func MeshsyncDeploymentModeFromString(value string) MeshsyncDeploymentMode {
 	default:
 		return MeshsyncDeploymentModeUndefined
 	}
+}
+
+func MeshsyncDeploymentModeFromMetadata(metadata core.Map) MeshsyncDeploymentMode {
+	raw, exists := metadata[MeshsyncDeploymentModeMetadataKey]
+	if !exists {
+		return MeshsyncDeploymentModeUndefined
+	}
+
+	value, ok := raw.(string)
+	if !ok {
+		return MeshsyncDeploymentModeUndefined
+	}
+
+	return MeshsyncDeploymentModeFromString(value)
 }
