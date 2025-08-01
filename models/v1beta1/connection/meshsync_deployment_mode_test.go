@@ -72,3 +72,24 @@ func TestMeshsyncDeploymentModeFromMetadata(t *testing.T) {
 		})
 	}
 }
+
+func TestAddMeshsyncDeploymentModeToMetadata(t *testing.T) {
+	t.Run("adds mode to empty metadata map", func(t *testing.T) {
+		metadata := make(map[string]any)
+		SetMeshsyncDeploymentModeToMetadata(metadata, MeshsyncDeploymentModeEmbedded)
+
+		assert := assert.New(t)
+		assert.Contains(metadata, MeshsyncDeploymentModeMetadataKey)
+		assert.Equal(MeshsyncDeploymentModeEmbedded, metadata[MeshsyncDeploymentModeMetadataKey])
+	})
+
+	t.Run("overwrites existing mode in metadata", func(t *testing.T) {
+		metadata := map[string]any{
+			MeshsyncDeploymentModeMetadataKey: MeshsyncDeploymentModeOperator,
+		}
+		SetMeshsyncDeploymentModeToMetadata(metadata, MeshsyncDeploymentModeEmbedded)
+
+		assert := assert.New(t)
+		assert.Equal(MeshsyncDeploymentModeEmbedded, metadata[MeshsyncDeploymentModeMetadataKey])
+	})
+}

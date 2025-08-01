@@ -95,3 +95,7 @@ func MeshsyncDeploymentModeFromMetadata(metadata core.Map) MeshsyncDeploymentMod
 
 	return MeshsyncDeploymentModeFromString(value)
 }
+
+func SetMeshsyncDeploymentModeToMetadata(metadata core.Map, value MeshsyncDeploymentMode) {
+	metadata[MeshsyncDeploymentModeMetadataKey] = value
+}
