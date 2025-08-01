@@ -10,7 +10,8 @@ require (
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.10.0
-	gorm.io/gorm v1.30.0
+	gopkg.in/yaml.v3 v3.0.1
+	gorm.io/gorm v1.30.1
 )
 
 require (
@@ -62,7 +63,6 @@ require (
 	google.golang.org/grpc v1.70.0 // indirect
 	google.golang.org/protobuf v1.36.4 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/postgres v1.5.11 // indirect
 	gorm.io/driver/sqlite v1.5.7 // indirect
 	k8s.io/apimachinery v0.32.1 // indirect
