@@ -271,16 +271,20 @@ type QuestionType string
 
 // Quiz defines model for Quiz.
 type Quiz struct {
-	Date           openapi_types.Date `json:"date" yaml:"date"`
-	Description    string             `json:"description" yaml:"description"`
-	Draft          bool               `json:"draft" yaml:"draft"`
-	FilePath       string             `json:"file_path" yaml:"file_path"`
+	Date        openapi_types.Date `json:"date" yaml:"date"`
+	Description string             `json:"description" yaml:"description"`
+	Draft       bool               `json:"draft" yaml:"draft"`
+	FilePath    string             `json:"file_path" yaml:"file_path"`
+
+	// Final Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+	Final          bool               `json:"final" yaml:"final"`
 	ID             string             `json:"id" yaml:"id"`
 	Lastmod        openapi_types.Date `json:"lastmod" yaml:"lastmod"`
 	Layout         string             `json:"layout" yaml:"layout"`
 	Parent         *Parent            `json:"parent,omitempty" yaml:"parent,omitempty"`
 	PassPercentage float32            `json:"pass_percentage" yaml:"pass_percentage"`
 	Permalink      string             `json:"permalink" yaml:"permalink"`
+	Prerequisites  []Parent           `json:"prerequisites" yaml:"prerequisites"`
 	Questions      []Question         `json:"questions" yaml:"questions"`
 	RelPermalink   string             `json:"relPermalink" yaml:"relPermalink"`
 	Section        string             `json:"section" yaml:"section"`

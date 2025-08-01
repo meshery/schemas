@@ -693,6 +693,8 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
           };
           quiz: {
             id: string;
+            /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+            final: boolean;
             title: string;
             description: string;
             slug: string;
@@ -722,6 +724,12 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
             }[];
             total_questions: number;
             total_marks: number;
+            prerequisites: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            }[];
             parent?: {
               id: string;
               title: string;
@@ -781,6 +789,8 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
   };
   quiz: {
     id: string;
+    /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+    final: boolean;
     title: string;
     description: string;
     slug: string;
@@ -810,6 +820,12 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
     }[];
     total_questions: number;
     total_marks: number;
+    prerequisites: {
+      id: string;
+      title: string;
+      relPermalink: string;
+      type: string;
+    }[];
     parent?: {
       id: string;
       title: string;

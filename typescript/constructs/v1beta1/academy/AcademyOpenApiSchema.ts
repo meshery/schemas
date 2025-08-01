@@ -1769,6 +1769,7 @@ const schema = {
                                   "section",
                                   "layout",
                                   "date",
+                                  "final",
                                   "lastmod",
                                   "draft",
                                   "file_path",
@@ -1776,7 +1777,8 @@ const schema = {
                                   "time_limit",
                                   "questions",
                                   "total_questions",
-                                  "total_marks"
+                                  "total_marks",
+                                  "prerequisites"
                                 ],
                                 "properties": {
                                   "id": {
@@ -1785,6 +1787,11 @@ const schema = {
                                     "x-oapi-codegen-extra-tags": {
                                       "json": "id"
                                     }
+                                  },
+                                  "final": {
+                                    "type": "boolean",
+                                    "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                                    "example": true
                                   },
                                   "title": {
                                     "type": "string"
@@ -1906,6 +1913,33 @@ const schema = {
                                   },
                                   "total_marks": {
                                     "type": "integer"
+                                  },
+                                  "prerequisites": {
+                                    "type": "array",
+                                    "items": {
+                                      "x-go-type": "Parent",
+                                      "type": "object",
+                                      "required": [
+                                        "id",
+                                        "title",
+                                        "relPermalink",
+                                        "type"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "title": {
+                                          "type": "string"
+                                        },
+                                        "relPermalink": {
+                                          "type": "string"
+                                        },
+                                        "type": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
                                   },
                                   "parent": {
                                     "x-go-type": "Parent",
@@ -2197,6 +2231,7 @@ const schema = {
                         "section",
                         "layout",
                         "date",
+                        "final",
                         "lastmod",
                         "draft",
                         "file_path",
@@ -2204,7 +2239,8 @@ const schema = {
                         "time_limit",
                         "questions",
                         "total_questions",
-                        "total_marks"
+                        "total_marks",
+                        "prerequisites"
                       ],
                       "properties": {
                         "id": {
@@ -2213,6 +2249,11 @@ const schema = {
                           "x-oapi-codegen-extra-tags": {
                             "json": "id"
                           }
+                        },
+                        "final": {
+                          "type": "boolean",
+                          "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                          "example": true
                         },
                         "title": {
                           "type": "string"
@@ -2334,6 +2375,33 @@ const schema = {
                         },
                         "total_marks": {
                           "type": "integer"
+                        },
+                        "prerequisites": {
+                          "type": "array",
+                          "items": {
+                            "x-go-type": "Parent",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "title",
+                              "relPermalink",
+                              "type"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "relPermalink": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              }
+                            }
+                          }
                         },
                         "parent": {
                           "x-go-type": "Parent",
@@ -3731,6 +3799,7 @@ const schema = {
                     "section",
                     "layout",
                     "date",
+                    "final",
                     "lastmod",
                     "draft",
                     "file_path",
@@ -3738,7 +3807,8 @@ const schema = {
                     "time_limit",
                     "questions",
                     "total_questions",
-                    "total_marks"
+                    "total_marks",
+                    "prerequisites"
                   ],
                   "properties": {
                     "id": {
@@ -3747,6 +3817,11 @@ const schema = {
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
                       }
+                    },
+                    "final": {
+                      "type": "boolean",
+                      "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                      "example": true
                     },
                     "title": {
                       "type": "string"
@@ -3868,6 +3943,33 @@ const schema = {
                     },
                     "total_marks": {
                       "type": "integer"
+                    },
+                    "prerequisites": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Parent",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "title",
+                          "relPermalink",
+                          "type"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "relPermalink": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        }
+                      }
                     },
                     "parent": {
                       "x-go-type": "Parent",
@@ -4066,6 +4168,7 @@ const schema = {
           "section",
           "layout",
           "date",
+          "final",
           "lastmod",
           "draft",
           "file_path",
@@ -4073,7 +4176,8 @@ const schema = {
           "time_limit",
           "questions",
           "total_questions",
-          "total_marks"
+          "total_marks",
+          "prerequisites"
         ],
         "properties": {
           "id": {
@@ -4082,6 +4186,11 @@ const schema = {
             "x-oapi-codegen-extra-tags": {
               "json": "id"
             }
+          },
+          "final": {
+            "type": "boolean",
+            "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+            "example": true
           },
           "title": {
             "type": "string"
@@ -4203,6 +4312,33 @@ const schema = {
           },
           "total_marks": {
             "type": "integer"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "x-go-type": "Parent",
+              "type": "object",
+              "required": [
+                "id",
+                "title",
+                "relPermalink",
+                "type"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "relPermalink": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "parent": {
             "x-go-type": "Parent",
@@ -4470,6 +4606,7 @@ const schema = {
               "section",
               "layout",
               "date",
+              "final",
               "lastmod",
               "draft",
               "file_path",
@@ -4477,7 +4614,8 @@ const schema = {
               "time_limit",
               "questions",
               "total_questions",
-              "total_marks"
+              "total_marks",
+              "prerequisites"
             ],
             "properties": {
               "id": {
@@ -4486,6 +4624,11 @@ const schema = {
                 "x-oapi-codegen-extra-tags": {
                   "json": "id"
                 }
+              },
+              "final": {
+                "type": "boolean",
+                "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                "example": true
               },
               "title": {
                 "type": "string"
@@ -4607,6 +4750,33 @@ const schema = {
               },
               "total_marks": {
                 "type": "integer"
+              },
+              "prerequisites": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "Parent",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "relPermalink",
+                    "type"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "relPermalink": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
               },
               "parent": {
                 "x-go-type": "Parent",
