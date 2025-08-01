@@ -346,8 +346,6 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           }[];
           /** Specifies the version of the schema used for the definition. */
           schemaVersion: string;
-          /** Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library). */
-          meshsync_deployment_mode?: "operator" | "embedded";
         };
         /** ID of the registrant. */
         registrantId: string;
@@ -1823,8 +1821,6 @@ export type PostEvaluateApiArg = {
             }[];
             /** Specifies the version of the schema used for the definition. */
             schemaVersion: string;
-            /** Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library). */
-            meshsync_deployment_mode?: "operator" | "embedded";
           };
           /** ID of the registrant. */
           registrantId: string;

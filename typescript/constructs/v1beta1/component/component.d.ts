@@ -548,10 +548,6 @@ export interface HttpsSchemasMesheryIoComponentJson1 {
    * Specifies the version of the schema used for the definition.
    */
   schemaVersion: string;
-  /**
-   * Specifies the MeshSync deployment mode: 'operator' (standalone deployment) or 'embedded' (library).
-   */
-  meshsync_deployment_mode?: "operator" | "embedded";
 }
 /**
  * Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments
