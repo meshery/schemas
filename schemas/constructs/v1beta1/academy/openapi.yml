@@ -777,6 +777,7 @@ components:
         - section
         - layout
         - date
+        - final
         - lastmod
         - draft
         - file_path
@@ -785,6 +786,7 @@ components:
         - questions
         - total_questions
         - total_marks
+        - prerequisites
 
       properties:
         id:
@@ -792,6 +794,10 @@ components:
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             json: "id"
+        final:
+          type: boolean
+          description: Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
+          example: true
         title:
           type: string
         description:
@@ -832,6 +838,13 @@ components:
           type: integer
         total_marks:
           type: integer
+
+        prerequisites:
+          type: array
+          items:
+            $ref: "#/components/schemas/Parent"
+            x-go-type: Parent
+
         parent:
           $ref: "#/components/schemas/Parent"
           x-go-type: Parent
