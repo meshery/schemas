@@ -59,10 +59,12 @@ func (c *Connection) EventCategory() string {
 
 type MeshsyncDeploymentMode string
 
-const MeshsyncDeploymentModeOperator MeshsyncDeploymentMode = "operator"
-const MeshsyncDeploymentModeEmbedded MeshsyncDeploymentMode = "embedded"
-const MeshsyncDeploymentModeUndefined MeshsyncDeploymentMode = "undefined"
-const MeshsyncDeploymentModeDefault MeshsyncDeploymentMode = MeshsyncDeploymentModeOperator
+const (
+	MeshsyncDeploymentModeOperator  MeshsyncDeploymentMode = "operator"
+	MeshsyncDeploymentModeEmbedded  MeshsyncDeploymentMode = "embedded"
+	MeshsyncDeploymentModeUndefined MeshsyncDeploymentMode = "undefined"
+	MeshsyncDeploymentModeDefault                          = MeshsyncDeploymentModeOperator
+)
 
 func MeshsyncDeploymentModeFromString(value string) MeshsyncDeploymentMode {
 	switch value {
