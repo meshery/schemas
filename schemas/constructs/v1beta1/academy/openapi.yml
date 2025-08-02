@@ -349,7 +349,7 @@ components:
       enum:
         - learning-path
         - challenge
-        - exam
+        - certification
 
     Visibility:
       type: string
@@ -465,8 +465,8 @@ components:
             json: "metadata"
             yaml: "metadata"
           oneOf:
-            - $ref: "#/components/schemas/LearningPathMetadata"
-            - $ref: "#/components/schemas/ChallengeMetadata"
+            - $ref: "#/components/schemas/CurriculaMetadata"
+              x-go-type: "CurriculaMetadata"
 
       required:
         - id
@@ -498,9 +498,14 @@ components:
         - data
 
     ChallengeMetadata:
-      $ref: "#/components/schemas/LearningPathMetadata"
+      $ref: "#/components/schemas/CurriculaMetadata"
+      x-go-type: "CurriculaMetadata"
 
     LearningPathMetadata:
+      $ref: "#/components/schemas/CurriculaMetadata"
+      x-go-type: "CurriculaMetadata"
+
+    CurriculaMetadata:
       type: object
       properties:
         title:
@@ -522,12 +527,12 @@ components:
           format: uri
           description: Canonical URL for the learning path
           example: http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-        courses:
+        children:
           type: array
-          description: List of courses in this learning path
+          description: List of children items in the top-level curricula
           items:
-            x-go-type: "Course"
-            $ref: '#/components/schemas/Course'
+            x-go-type: "ChildNode"
+            $ref: '#/components/schemas/ChildNode'
 
 
       required:
@@ -619,7 +624,7 @@ components:
             db: "metadata"
 
 
-    Course:
+    ChildNode:
       type: object
       properties:
         id:
@@ -654,6 +659,17 @@ components:
           nullable: true
           description: Optional banner image
           example: null
+        type:
+          $ref: '#/components/schemas/ContentType'
+          x-go-type: "ContentType"
+          description: Type of the content (e.g., learning-path, challenge, certification)
+        children:
+          type: array
+          description: List of child nodes (sub-courses or modules)
+          items:
+            type: object
+            x-go-type: "ChildNode"
+
       required:
         - title
         - description
