@@ -535,7 +535,7 @@ export type GetAcademyCirriculaApiArg = {
 export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single academy content */ {
   /** Id of the cirricula */
   id: string;
-  type: "learning-path" | "challenge" | "exam";
+  type: "learning-path" | "challenge" | "certification";
   /** Organization ID that owns this learning path */
   orgId: string;
   /** Visibility of the cirricula */
@@ -553,59 +553,36 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
   /** Timestamp when the resource was deleted. */
   deletedAt: string;
   /** Additional metadata about the cirricula */
-  metadata:
-    | {
-        /** Title of the learning path */
-        title: string;
-        /** Description of the learning path */
-        description: string;
-        /** Optional banner image */
-        banner?: string | null;
-        /** Canonical URL for the learning path */
-        permalink: string;
-        /** List of courses in this learning path */
-        courses?: {
-          /** Unique identifier for the course */
-          id: string;
-          /** Title of the course */
-          title: string;
-          /** URL to the course content */
-          permalink: string;
-          /** Course description */
-          description: string;
-          /** Order of the course in the list */
-          weight?: number;
-          /** Optional banner image */
-          banner?: string | null;
-        }[];
-        [key: string]: any;
-      }
-    | {
-        /** Title of the learning path */
-        title: string;
-        /** Description of the learning path */
-        description: string;
-        /** Optional banner image */
-        banner?: string | null;
-        /** Canonical URL for the learning path */
-        permalink: string;
-        /** List of courses in this learning path */
-        courses?: {
-          /** Unique identifier for the course */
-          id: string;
-          /** Title of the course */
-          title: string;
-          /** URL to the course content */
-          permalink: string;
-          /** Course description */
-          description: string;
-          /** Order of the course in the list */
-          weight?: number;
-          /** Optional banner image */
-          banner?: string | null;
-        }[];
-        [key: string]: any;
-      };
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Description of the learning path */
+    description: string;
+    /** Optional banner image */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** Order of the course in the list */
+      weight?: number;
+      /** Optional banner image */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
 };
 export type GetApiAcademyByTypeAndOrgIdSlugApiArg = {
   type: string;
@@ -638,7 +615,7 @@ export type RegisterToAcademyContentApiArg = {
   body: {
     /** ID of the academy content to register for */
     content_id: string;
-    content_type?: "learning-path" | "challenge" | "exam";
+    content_type?: "learning-path" | "challenge" | "certification";
   };
 };
 export type GetApiAcademyRegistrationsByContentIdApiResponse =
@@ -678,7 +655,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
         [key: string]: {
           id: string;
           last_opened: string;
-          content_type: "learning-path" | "challenge" | "exam";
+          content_type: "learning-path" | "challenge" | "certification";
         };
       };
       grades: {
@@ -759,22 +736,22 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
       completed: string;
     };
     registration_id?: string;
-    content_type?: "learning-path" | "challenge" | "exam";
+    content_type?: "learning-path" | "challenge" | "certification";
     item_data?: {
       id: string;
       last_opened: string;
-      content_type: "learning-path" | "challenge" | "exam";
+      content_type: "learning-path" | "challenge" | "certification";
     };
   };
 export type UpdateCurrentItemInProgressTrackerApiArg = {
   /** The ID of the registration */
   registrationId: string;
   body: {
-    content_type: "learning-path" | "challenge" | "exam";
+    content_type: "learning-path" | "challenge" | "certification";
     item_data: {
       id: string;
       last_opened: string;
-      content_type: "learning-path" | "challenge" | "exam";
+      content_type: "learning-path" | "challenge" | "certification";
     };
   };
 };

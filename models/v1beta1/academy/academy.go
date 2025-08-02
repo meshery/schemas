@@ -22,9 +22,9 @@ const (
 
 // Defines values for ContentType.
 const (
-	ContentTypeChallenge    ContentType = "challenge"
-	ContentTypeExam         ContentType = "exam"
-	ContentTypeLearningPath ContentType = "learning-path"
+	ContentTypeCertification ContentType = "certification"
+	ContentTypeChallenge     ContentType = "challenge"
+	ContentTypeLearningPath  ContentType = "learning-path"
 )
 
 // Defines values for Level.
@@ -43,9 +43,9 @@ const (
 
 // Defines values for RegisterToAcademyContentRequestContentType.
 const (
-	RegisterToAcademyContentRequestContentTypeChallenge    RegisterToAcademyContentRequestContentType = "challenge"
-	RegisterToAcademyContentRequestContentTypeExam         RegisterToAcademyContentRequestContentType = "exam"
-	RegisterToAcademyContentRequestContentTypeLearningPath RegisterToAcademyContentRequestContentType = "learning-path"
+	RegisterToAcademyContentRequestContentTypeCertification RegisterToAcademyContentRequestContentType = "certification"
+	RegisterToAcademyContentRequestContentTypeChallenge     RegisterToAcademyContentRequestContentType = "challenge"
+	RegisterToAcademyContentRequestContentTypeLearningPath  RegisterToAcademyContentRequestContentType = "learning-path"
 )
 
 // Defines values for Status.
@@ -145,21 +145,33 @@ type AcademyRegistrationsListResponse struct {
 }
 
 // ChallengeMetadata defines model for ChallengeMetadata.
-type ChallengeMetadata struct {
+type ChallengeMetadata = CurriculaMetadata
+
+// ChildNode defines model for ChildNode.
+type ChildNode struct {
 	// Banner Optional banner image
 	Banner *string `json:"banner" yaml:"banner"`
 
-	// Courses List of courses in this learning path
-	Courses *[]Course `json:"courses,omitempty" yaml:"courses,omitempty"`
+	// Children List of child nodes (sub-courses or modules)
+	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
 
-	// Description Description of the learning path
+	// Description Course description
 	Description string `json:"description" yaml:"description"`
 
-	// Permalink Canonical URL for the learning path
+	// ID Unique identifier for the course
+	ID string `db:"id" json:"id" yaml:"id"`
+
+	// Permalink URL to the course content
 	Permalink string `json:"permalink" yaml:"permalink"`
 
-	// Title Title of the learning path
+	// Title Title of the course
 	Title string `json:"title" yaml:"title"`
+
+	// Type Type of the content (e.g., learning-path, challenge, certification)
+	Type *ContentType `json:"type,omitempty" yaml:"type,omitempty"`
+
+	// Weight Order of the course in the list
+	Weight *float32 `json:"weight,omitempty" yaml:"weight,omitempty"`
 }
 
 // CirriculaCurrentItemData defines model for CirriculaCurrentItemData.
@@ -185,40 +197,13 @@ type CirriculaProgressTracker struct {
 // ContentType defines model for ContentType.
 type ContentType string
 
-// Course defines model for Course.
-type Course struct {
+// CurriculaMetadata defines model for CurriculaMetadata.
+type CurriculaMetadata struct {
 	// Banner Optional banner image
 	Banner *string `json:"banner" yaml:"banner"`
 
-	// Description Course description
-	Description string `json:"description" yaml:"description"`
-
-	// ID Unique identifier for the course
-	ID string `db:"id" json:"id" yaml:"id"`
-
-	// Permalink URL to the course content
-	Permalink string `json:"permalink" yaml:"permalink"`
-
-	// Title Title of the course
-	Title string `json:"title" yaml:"title"`
-
-	// Weight Order of the course in the list
-	Weight *float32 `json:"weight,omitempty" yaml:"weight,omitempty"`
-}
-
-// ErrorResponse defines model for ErrorResponse.
-type ErrorResponse struct {
-	Details *string `json:"details,omitempty" yaml:"details,omitempty"`
-	Error   *string `json:"error,omitempty" yaml:"error,omitempty"`
-}
-
-// LearningPathMetadata defines model for LearningPathMetadata.
-type LearningPathMetadata struct {
-	// Banner Optional banner image
-	Banner *string `json:"banner" yaml:"banner"`
-
-	// Courses List of courses in this learning path
-	Courses *[]Course `json:"courses,omitempty" yaml:"courses,omitempty"`
+	// Children List of children items in the top-level curricula
+	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
 
 	// Description Description of the learning path
 	Description string `json:"description" yaml:"description"`
@@ -229,6 +214,15 @@ type LearningPathMetadata struct {
 	// Title Title of the learning path
 	Title string `json:"title" yaml:"title"`
 }
+
+// ErrorResponse defines model for ErrorResponse.
+type ErrorResponse struct {
+	Details *string `json:"details,omitempty" yaml:"details,omitempty"`
+	Error   *string `json:"error,omitempty" yaml:"error,omitempty"`
+}
+
+// LearningPathMetadata defines model for LearningPathMetadata.
+type LearningPathMetadata = CurriculaMetadata
 
 // Level defines model for Level.
 type Level string

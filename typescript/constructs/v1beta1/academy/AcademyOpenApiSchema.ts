@@ -91,7 +91,7 @@ const schema = {
                           "enum": [
                             "learning-path",
                             "challenge",
-                            "exam"
+                            "certification"
                           ]
                         },
                         "orgId": {
@@ -203,6 +203,7 @@ const schema = {
                           },
                           "oneOf": [
                             {
+                              "x-go-type": "CurriculaMetadata",
                               "type": "object",
                               "properties": {
                                 "title": {
@@ -228,11 +229,11 @@ const schema = {
                                   "description": "Canonical URL for the learning path",
                                   "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                                 },
-                                "courses": {
+                                "children": {
                                   "type": "array",
-                                  "description": "List of courses in this learning path",
+                                  "description": "List of children items in the top-level curricula",
                                   "items": {
-                                    "x-go-type": "Course",
+                                    "x-go-type": "ChildNode",
                                     "type": "object",
                                     "properties": {
                                       "id": {
@@ -273,94 +274,24 @@ const schema = {
                                         "nullable": true,
                                         "description": "Optional banner image",
                                         "example": null
-                                      }
-                                    },
-                                    "required": [
-                                      "title",
-                                      "description",
-                                      "id",
-                                      "permalink"
-                                    ]
-                                  }
-                                }
-                              },
-                              "required": [
-                                "title",
-                                "description",
-                                "permalink"
-                              ]
-                            },
-                            {
-                              "type": "object",
-                              "properties": {
-                                "title": {
-                                  "type": "string",
-                                  "description": "Title of the learning path",
-                                  "example": "Mastering Kubernetes for Engineers"
-                                },
-                                "description": {
-                                  "type": "string",
-                                  "description": "Description of the learning path",
-                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
-                                },
-                                "banner": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "nullable": true,
-                                  "description": "Optional banner image",
-                                  "example": null
-                                },
-                                "permalink": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "description": "Canonical URL for the learning path",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
-                                },
-                                "courses": {
-                                  "type": "array",
-                                  "description": "List of courses in this learning path",
-                                  "items": {
-                                    "x-go-type": "Course",
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
+                                      },
+                                      "type": {
+                                        "x-go-type": "ContentType",
+                                        "description": "Type of the content (e.g., learning-path, challenge, certification)",
                                         "type": "string",
-                                        "description": "Unique identifier for the course",
-                                        "example": "1234567890abcdef",
-                                        "x-go-name": "ID",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "id",
-                                          "json": "id",
-                                          "yaml": "id"
+                                        "enum": [
+                                          "learning-path",
+                                          "challenge",
+                                          "certification"
+                                        ]
+                                      },
+                                      "children": {
+                                        "type": "array",
+                                        "description": "List of child nodes (sub-courses or modules)",
+                                        "items": {
+                                          "type": "object",
+                                          "x-go-type": "ChildNode"
                                         }
-                                      },
-                                      "title": {
-                                        "type": "string",
-                                        "description": "Title of the course",
-                                        "example": "Kubernetes Basics"
-                                      },
-                                      "permalink": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "description": "URL to the course content",
-                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
-                                      },
-                                      "description": {
-                                        "type": "string",
-                                        "description": "Course description",
-                                        "example": "Learn the basics of Kubernetes"
-                                      },
-                                      "weight": {
-                                        "type": "number",
-                                        "description": "Order of the course in the list",
-                                        "example": "eg 1 , 2"
-                                      },
-                                      "banner": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "nullable": true,
-                                        "description": "Optional banner image",
-                                        "example": null
                                       }
                                     },
                                     "required": [
@@ -559,7 +490,7 @@ const schema = {
                           "enum": [
                             "learning-path",
                             "challenge",
-                            "exam"
+                            "certification"
                           ]
                         },
                         "orgId": {
@@ -671,6 +602,7 @@ const schema = {
                           },
                           "oneOf": [
                             {
+                              "x-go-type": "CurriculaMetadata",
                               "type": "object",
                               "properties": {
                                 "title": {
@@ -696,11 +628,11 @@ const schema = {
                                   "description": "Canonical URL for the learning path",
                                   "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                                 },
-                                "courses": {
+                                "children": {
                                   "type": "array",
-                                  "description": "List of courses in this learning path",
+                                  "description": "List of children items in the top-level curricula",
                                   "items": {
-                                    "x-go-type": "Course",
+                                    "x-go-type": "ChildNode",
                                     "type": "object",
                                     "properties": {
                                       "id": {
@@ -741,94 +673,24 @@ const schema = {
                                         "nullable": true,
                                         "description": "Optional banner image",
                                         "example": null
-                                      }
-                                    },
-                                    "required": [
-                                      "title",
-                                      "description",
-                                      "id",
-                                      "permalink"
-                                    ]
-                                  }
-                                }
-                              },
-                              "required": [
-                                "title",
-                                "description",
-                                "permalink"
-                              ]
-                            },
-                            {
-                              "type": "object",
-                              "properties": {
-                                "title": {
-                                  "type": "string",
-                                  "description": "Title of the learning path",
-                                  "example": "Mastering Kubernetes for Engineers"
-                                },
-                                "description": {
-                                  "type": "string",
-                                  "description": "Description of the learning path",
-                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
-                                },
-                                "banner": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "nullable": true,
-                                  "description": "Optional banner image",
-                                  "example": null
-                                },
-                                "permalink": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "description": "Canonical URL for the learning path",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
-                                },
-                                "courses": {
-                                  "type": "array",
-                                  "description": "List of courses in this learning path",
-                                  "items": {
-                                    "x-go-type": "Course",
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
+                                      },
+                                      "type": {
+                                        "x-go-type": "ContentType",
+                                        "description": "Type of the content (e.g., learning-path, challenge, certification)",
                                         "type": "string",
-                                        "description": "Unique identifier for the course",
-                                        "example": "1234567890abcdef",
-                                        "x-go-name": "ID",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "id",
-                                          "json": "id",
-                                          "yaml": "id"
+                                        "enum": [
+                                          "learning-path",
+                                          "challenge",
+                                          "certification"
+                                        ]
+                                      },
+                                      "children": {
+                                        "type": "array",
+                                        "description": "List of child nodes (sub-courses or modules)",
+                                        "items": {
+                                          "type": "object",
+                                          "x-go-type": "ChildNode"
                                         }
-                                      },
-                                      "title": {
-                                        "type": "string",
-                                        "description": "Title of the course",
-                                        "example": "Kubernetes Basics"
-                                      },
-                                      "permalink": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "description": "URL to the course content",
-                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
-                                      },
-                                      "description": {
-                                        "type": "string",
-                                        "description": "Course description",
-                                        "example": "Learn the basics of Kubernetes"
-                                      },
-                                      "weight": {
-                                        "type": "number",
-                                        "description": "Order of the course in the list",
-                                        "example": "eg 1 , 2"
-                                      },
-                                      "banner": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "nullable": true,
-                                        "description": "Optional banner image",
-                                        "example": null
                                       }
                                     },
                                     "required": [
@@ -942,7 +804,7 @@ const schema = {
                       "enum": [
                         "learning-path",
                         "challenge",
-                        "exam"
+                        "certification"
                       ]
                     },
                     "orgId": {
@@ -1054,6 +916,7 @@ const schema = {
                       },
                       "oneOf": [
                         {
+                          "x-go-type": "CurriculaMetadata",
                           "type": "object",
                           "properties": {
                             "title": {
@@ -1079,11 +942,11 @@ const schema = {
                               "description": "Canonical URL for the learning path",
                               "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                             },
-                            "courses": {
+                            "children": {
                               "type": "array",
-                              "description": "List of courses in this learning path",
+                              "description": "List of children items in the top-level curricula",
                               "items": {
-                                "x-go-type": "Course",
+                                "x-go-type": "ChildNode",
                                 "type": "object",
                                 "properties": {
                                   "id": {
@@ -1124,94 +987,24 @@ const schema = {
                                     "nullable": true,
                                     "description": "Optional banner image",
                                     "example": null
-                                  }
-                                },
-                                "required": [
-                                  "title",
-                                  "description",
-                                  "id",
-                                  "permalink"
-                                ]
-                              }
-                            }
-                          },
-                          "required": [
-                            "title",
-                            "description",
-                            "permalink"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "title": {
-                              "type": "string",
-                              "description": "Title of the learning path",
-                              "example": "Mastering Kubernetes for Engineers"
-                            },
-                            "description": {
-                              "type": "string",
-                              "description": "Description of the learning path",
-                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
-                            },
-                            "banner": {
-                              "type": "string",
-                              "format": "uri",
-                              "nullable": true,
-                              "description": "Optional banner image",
-                              "example": null
-                            },
-                            "permalink": {
-                              "type": "string",
-                              "format": "uri",
-                              "description": "Canonical URL for the learning path",
-                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
-                            },
-                            "courses": {
-                              "type": "array",
-                              "description": "List of courses in this learning path",
-                              "items": {
-                                "x-go-type": "Course",
-                                "type": "object",
-                                "properties": {
-                                  "id": {
+                                  },
+                                  "type": {
+                                    "x-go-type": "ContentType",
+                                    "description": "Type of the content (e.g., learning-path, challenge, certification)",
                                     "type": "string",
-                                    "description": "Unique identifier for the course",
-                                    "example": "1234567890abcdef",
-                                    "x-go-name": "ID",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "db": "id",
-                                      "json": "id",
-                                      "yaml": "id"
+                                    "enum": [
+                                      "learning-path",
+                                      "challenge",
+                                      "certification"
+                                    ]
+                                  },
+                                  "children": {
+                                    "type": "array",
+                                    "description": "List of child nodes (sub-courses or modules)",
+                                    "items": {
+                                      "type": "object",
+                                      "x-go-type": "ChildNode"
                                     }
-                                  },
-                                  "title": {
-                                    "type": "string",
-                                    "description": "Title of the course",
-                                    "example": "Kubernetes Basics"
-                                  },
-                                  "permalink": {
-                                    "type": "string",
-                                    "format": "uri",
-                                    "description": "URL to the course content",
-                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
-                                  },
-                                  "description": {
-                                    "type": "string",
-                                    "description": "Course description",
-                                    "example": "Learn the basics of Kubernetes"
-                                  },
-                                  "weight": {
-                                    "type": "number",
-                                    "description": "Order of the course in the list",
-                                    "example": "eg 1 , 2"
-                                  },
-                                  "banner": {
-                                    "type": "string",
-                                    "format": "uri",
-                                    "nullable": true,
-                                    "description": "Optional banner image",
-                                    "example": null
                                   }
                                 },
                                 "required": [
@@ -1288,7 +1081,7 @@ const schema = {
                     "enum": [
                       "learning-path",
                       "challenge",
-                      "exam"
+                      "certification"
                     ]
                   }
                 }
@@ -1624,7 +1417,7 @@ const schema = {
                     "enum": [
                       "learning-path",
                       "challenge",
-                      "exam"
+                      "certification"
                     ],
                     "x-go-type": "ContentType"
                   },
@@ -1649,7 +1442,7 @@ const schema = {
                         "enum": [
                           "learning-path",
                           "challenge",
-                          "exam"
+                          "certification"
                         ],
                         "x-go-type": "ContentType"
                       }
@@ -1708,7 +1501,7 @@ const schema = {
                                 "enum": [
                                   "learning-path",
                                   "challenge",
-                                  "exam"
+                                  "certification"
                                 ],
                                 "x-go-type": "ContentType"
                               }
@@ -2039,7 +1832,7 @@ const schema = {
                       "enum": [
                         "learning-path",
                         "challenge",
-                        "exam"
+                        "certification"
                       ]
                     },
                     "item_data": {
@@ -2062,7 +1855,7 @@ const schema = {
                           "enum": [
                             "learning-path",
                             "challenge",
-                            "exam"
+                            "certification"
                           ],
                           "x-go-type": "ContentType"
                         }
@@ -2499,7 +2292,7 @@ const schema = {
             "enum": [
               "learning-path",
               "challenge",
-              "exam"
+              "certification"
             ]
           }
         }
@@ -2509,7 +2302,7 @@ const schema = {
         "enum": [
           "learning-path",
           "challenge",
-          "exam"
+          "certification"
         ]
       },
       "Visibility": {
@@ -2558,7 +2351,7 @@ const schema = {
             "enum": [
               "learning-path",
               "challenge",
-              "exam"
+              "certification"
             ]
           },
           "orgId": {
@@ -2670,6 +2463,7 @@ const schema = {
             },
             "oneOf": [
               {
+                "x-go-type": "CurriculaMetadata",
                 "type": "object",
                 "properties": {
                   "title": {
@@ -2695,11 +2489,11 @@ const schema = {
                     "description": "Canonical URL for the learning path",
                     "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                   },
-                  "courses": {
+                  "children": {
                     "type": "array",
-                    "description": "List of courses in this learning path",
+                    "description": "List of children items in the top-level curricula",
                     "items": {
-                      "x-go-type": "Course",
+                      "x-go-type": "ChildNode",
                       "type": "object",
                       "properties": {
                         "id": {
@@ -2740,94 +2534,24 @@ const schema = {
                           "nullable": true,
                           "description": "Optional banner image",
                           "example": null
-                        }
-                      },
-                      "required": [
-                        "title",
-                        "description",
-                        "id",
-                        "permalink"
-                      ]
-                    }
-                  }
-                },
-                "required": [
-                  "title",
-                  "description",
-                  "permalink"
-                ]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "description": "Title of the learning path",
-                    "example": "Mastering Kubernetes for Engineers"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "Description of the learning path",
-                    "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
-                  },
-                  "banner": {
-                    "type": "string",
-                    "format": "uri",
-                    "nullable": true,
-                    "description": "Optional banner image",
-                    "example": null
-                  },
-                  "permalink": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "Canonical URL for the learning path",
-                    "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
-                  },
-                  "courses": {
-                    "type": "array",
-                    "description": "List of courses in this learning path",
-                    "items": {
-                      "x-go-type": "Course",
-                      "type": "object",
-                      "properties": {
-                        "id": {
+                        },
+                        "type": {
+                          "x-go-type": "ContentType",
+                          "description": "Type of the content (e.g., learning-path, challenge, certification)",
                           "type": "string",
-                          "description": "Unique identifier for the course",
-                          "example": "1234567890abcdef",
-                          "x-go-name": "ID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "id",
-                            "json": "id",
-                            "yaml": "id"
+                          "enum": [
+                            "learning-path",
+                            "challenge",
+                            "certification"
+                          ]
+                        },
+                        "children": {
+                          "type": "array",
+                          "description": "List of child nodes (sub-courses or modules)",
+                          "items": {
+                            "type": "object",
+                            "x-go-type": "ChildNode"
                           }
-                        },
-                        "title": {
-                          "type": "string",
-                          "description": "Title of the course",
-                          "example": "Kubernetes Basics"
-                        },
-                        "permalink": {
-                          "type": "string",
-                          "format": "uri",
-                          "description": "URL to the course content",
-                          "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
-                        },
-                        "description": {
-                          "type": "string",
-                          "description": "Course description",
-                          "example": "Learn the basics of Kubernetes"
-                        },
-                        "weight": {
-                          "type": "number",
-                          "description": "Order of the course in the list",
-                          "example": "eg 1 , 2"
-                        },
-                        "banner": {
-                          "type": "string",
-                          "format": "uri",
-                          "nullable": true,
-                          "description": "Optional banner image",
-                          "example": null
                         }
                       },
                       "required": [
@@ -2896,7 +2620,7 @@ const schema = {
                   "enum": [
                     "learning-path",
                     "challenge",
-                    "exam"
+                    "certification"
                   ]
                 },
                 "orgId": {
@@ -3008,6 +2732,7 @@ const schema = {
                   },
                   "oneOf": [
                     {
+                      "x-go-type": "CurriculaMetadata",
                       "type": "object",
                       "properties": {
                         "title": {
@@ -3033,11 +2758,11 @@ const schema = {
                           "description": "Canonical URL for the learning path",
                           "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                         },
-                        "courses": {
+                        "children": {
                           "type": "array",
-                          "description": "List of courses in this learning path",
+                          "description": "List of children items in the top-level curricula",
                           "items": {
-                            "x-go-type": "Course",
+                            "x-go-type": "ChildNode",
                             "type": "object",
                             "properties": {
                               "id": {
@@ -3078,94 +2803,24 @@ const schema = {
                                 "nullable": true,
                                 "description": "Optional banner image",
                                 "example": null
-                              }
-                            },
-                            "required": [
-                              "title",
-                              "description",
-                              "id",
-                              "permalink"
-                            ]
-                          }
-                        }
-                      },
-                      "required": [
-                        "title",
-                        "description",
-                        "permalink"
-                      ]
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "title": {
-                          "type": "string",
-                          "description": "Title of the learning path",
-                          "example": "Mastering Kubernetes for Engineers"
-                        },
-                        "description": {
-                          "type": "string",
-                          "description": "Description of the learning path",
-                          "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
-                        },
-                        "banner": {
-                          "type": "string",
-                          "format": "uri",
-                          "nullable": true,
-                          "description": "Optional banner image",
-                          "example": null
-                        },
-                        "permalink": {
-                          "type": "string",
-                          "format": "uri",
-                          "description": "Canonical URL for the learning path",
-                          "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
-                        },
-                        "courses": {
-                          "type": "array",
-                          "description": "List of courses in this learning path",
-                          "items": {
-                            "x-go-type": "Course",
-                            "type": "object",
-                            "properties": {
-                              "id": {
+                              },
+                              "type": {
+                                "x-go-type": "ContentType",
+                                "description": "Type of the content (e.g., learning-path, challenge, certification)",
                                 "type": "string",
-                                "description": "Unique identifier for the course",
-                                "example": "1234567890abcdef",
-                                "x-go-name": "ID",
-                                "x-oapi-codegen-extra-tags": {
-                                  "db": "id",
-                                  "json": "id",
-                                  "yaml": "id"
+                                "enum": [
+                                  "learning-path",
+                                  "challenge",
+                                  "certification"
+                                ]
+                              },
+                              "children": {
+                                "type": "array",
+                                "description": "List of child nodes (sub-courses or modules)",
+                                "items": {
+                                  "type": "object",
+                                  "x-go-type": "ChildNode"
                                 }
-                              },
-                              "title": {
-                                "type": "string",
-                                "description": "Title of the course",
-                                "example": "Kubernetes Basics"
-                              },
-                              "permalink": {
-                                "type": "string",
-                                "format": "uri",
-                                "description": "URL to the course content",
-                                "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
-                              },
-                              "description": {
-                                "type": "string",
-                                "description": "Course description",
-                                "example": "Learn the basics of Kubernetes"
-                              },
-                              "weight": {
-                                "type": "number",
-                                "description": "Order of the course in the list",
-                                "example": "eg 1 , 2"
-                              },
-                              "banner": {
-                                "type": "string",
-                                "format": "uri",
-                                "nullable": true,
-                                "description": "Optional banner image",
-                                "example": null
                               }
                             },
                             "required": [
@@ -3208,6 +2863,7 @@ const schema = {
         ]
       },
       "ChallengeMetadata": {
+        "x-go-type": "CurriculaMetadata",
         "type": "object",
         "properties": {
           "title": {
@@ -3233,11 +2889,11 @@ const schema = {
             "description": "Canonical URL for the learning path",
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
           },
-          "courses": {
+          "children": {
             "type": "array",
-            "description": "List of courses in this learning path",
+            "description": "List of children items in the top-level curricula",
             "items": {
-              "x-go-type": "Course",
+              "x-go-type": "ChildNode",
               "type": "object",
               "properties": {
                 "id": {
@@ -3278,6 +2934,24 @@ const schema = {
                   "nullable": true,
                   "description": "Optional banner image",
                   "example": null
+                },
+                "type": {
+                  "x-go-type": "ContentType",
+                  "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                  "type": "string",
+                  "enum": [
+                    "learning-path",
+                    "challenge",
+                    "certification"
+                  ]
+                },
+                "children": {
+                  "type": "array",
+                  "description": "List of child nodes (sub-courses or modules)",
+                  "items": {
+                    "type": "object",
+                    "x-go-type": "ChildNode"
+                  }
                 }
               },
               "required": [
@@ -3296,6 +2970,7 @@ const schema = {
         ]
       },
       "LearningPathMetadata": {
+        "x-go-type": "CurriculaMetadata",
         "type": "object",
         "properties": {
           "title": {
@@ -3321,11 +2996,11 @@ const schema = {
             "description": "Canonical URL for the learning path",
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
           },
-          "courses": {
+          "children": {
             "type": "array",
-            "description": "List of courses in this learning path",
+            "description": "List of children items in the top-level curricula",
             "items": {
-              "x-go-type": "Course",
+              "x-go-type": "ChildNode",
               "type": "object",
               "properties": {
                 "id": {
@@ -3366,6 +3041,130 @@ const schema = {
                   "nullable": true,
                   "description": "Optional banner image",
                   "example": null
+                },
+                "type": {
+                  "x-go-type": "ContentType",
+                  "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                  "type": "string",
+                  "enum": [
+                    "learning-path",
+                    "challenge",
+                    "certification"
+                  ]
+                },
+                "children": {
+                  "type": "array",
+                  "description": "List of child nodes (sub-courses or modules)",
+                  "items": {
+                    "type": "object",
+                    "x-go-type": "ChildNode"
+                  }
+                }
+              },
+              "required": [
+                "title",
+                "description",
+                "id",
+                "permalink"
+              ]
+            }
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "permalink"
+        ]
+      },
+      "CurriculaMetadata": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the learning path",
+            "example": "Mastering Kubernetes for Engineers"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the learning path",
+            "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+          },
+          "banner": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Optional banner image",
+            "example": null
+          },
+          "permalink": {
+            "type": "string",
+            "format": "uri",
+            "description": "Canonical URL for the learning path",
+            "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+          },
+          "children": {
+            "type": "array",
+            "description": "List of children items in the top-level curricula",
+            "items": {
+              "x-go-type": "ChildNode",
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the course",
+                  "example": "1234567890abcdef",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id",
+                    "yaml": "id"
+                  }
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Title of the course",
+                  "example": "Kubernetes Basics"
+                },
+                "permalink": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL to the course content",
+                  "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Course description",
+                  "example": "Learn the basics of Kubernetes"
+                },
+                "weight": {
+                  "type": "number",
+                  "description": "Order of the course in the list",
+                  "example": "eg 1 , 2"
+                },
+                "banner": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true,
+                  "description": "Optional banner image",
+                  "example": null
+                },
+                "type": {
+                  "x-go-type": "ContentType",
+                  "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                  "type": "string",
+                  "enum": [
+                    "learning-path",
+                    "challenge",
+                    "certification"
+                  ]
+                },
+                "children": {
+                  "type": "array",
+                  "description": "List of child nodes (sub-courses or modules)",
+                  "items": {
+                    "type": "object",
+                    "x-go-type": "ChildNode"
+                  }
                 }
               },
               "required": [
@@ -3497,7 +3296,7 @@ const schema = {
           }
         }
       },
-      "Course": {
+      "ChildNode": {
         "type": "object",
         "properties": {
           "id": {
@@ -3538,6 +3337,24 @@ const schema = {
             "nullable": true,
             "description": "Optional banner image",
             "example": null
+          },
+          "type": {
+            "x-go-type": "ContentType",
+            "description": "Type of the content (e.g., learning-path, challenge, certification)",
+            "type": "string",
+            "enum": [
+              "learning-path",
+              "challenge",
+              "certification"
+            ]
+          },
+          "children": {
+            "type": "array",
+            "description": "List of child nodes (sub-courses or modules)",
+            "items": {
+              "type": "object",
+              "x-go-type": "ChildNode"
+            }
           }
         },
         "required": [
@@ -3699,7 +3516,7 @@ const schema = {
             "enum": [
               "learning-path",
               "challenge",
-              "exam"
+              "certification"
             ],
             "x-go-type": "ContentType"
           }
@@ -3738,7 +3555,7 @@ const schema = {
                   "enum": [
                     "learning-path",
                     "challenge",
-                    "exam"
+                    "certification"
                   ],
                   "x-go-type": "ContentType"
                 }
@@ -4107,7 +3924,7 @@ const schema = {
             "enum": [
               "learning-path",
               "challenge",
-              "exam"
+              "certification"
             ],
             "x-go-type": "ContentType"
           },
@@ -4132,7 +3949,7 @@ const schema = {
                 "enum": [
                   "learning-path",
                   "challenge",
-                  "exam"
+                  "certification"
                 ],
                 "x-go-type": "ContentType"
               }

@@ -15835,7 +15835,7 @@ paths:
                     enum:
                       - learning-path
                       - challenge
-                      - exam
+                      - certification
                   orgId:
                     type: string
                     description: Organization ID that owns this learning path
@@ -15925,7 +15925,8 @@ paths:
                       json: metadata
                       yaml: metadata
                     oneOf:
-                      - type: object
+                      - x-go-type: CurriculaMetadata
+                        type: object
                         properties:
                           title:
                             type: string
@@ -15949,11 +15950,11 @@ paths:
                             description: Canonical URL for the learning path
                             example: >-
                               http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-                          courses:
+                          children:
                             type: array
-                            description: List of courses in this learning path
+                            description: List of children items in the top-level curricula
                             items:
-                              x-go-type: Course
+                              x-go-type: ChildNode
                               type: object
                               properties:
                                 id:
@@ -15989,79 +15990,22 @@ paths:
                                   nullable: true
                                   description: Optional banner image
                                   example: null
-                              required:
-                                - title
-                                - description
-                                - id
-                                - permalink
-                        required:
-                          - title
-                          - description
-                          - permalink
-                      - type: object
-                        properties:
-                          title:
-                            type: string
-                            description: Title of the learning path
-                            example: Mastering Kubernetes for Engineers
-                          description:
-                            type: string
-                            description: Description of the learning path
-                            example: >-
-                              Learn how to configure your Kubernetes clusters
-                              and manage the lifecycle of your workloads
-                          banner:
-                            type: string
-                            format: uri
-                            nullable: true
-                            description: Optional banner image
-                            example: null
-                          permalink:
-                            type: string
-                            format: uri
-                            description: Canonical URL for the learning path
-                            example: >-
-                              http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-                          courses:
-                            type: array
-                            description: List of courses in this learning path
-                            items:
-                              x-go-type: Course
-                              type: object
-                              properties:
-                                id:
+                                type:
+                                  x-go-type: ContentType
+                                  description: >-
+                                    Type of the content (e.g., learning-path,
+                                    challenge, certification)
                                   type: string
-                                  description: Unique identifier for the course
-                                  example: 1234567890abcdef
-                                  x-go-name: ID
-                                  x-oapi-codegen-extra-tags:
-                                    db: id
-                                    json: id
-                                    yaml: id
-                                title:
-                                  type: string
-                                  description: Title of the course
-                                  example: Kubernetes Basics
-                                permalink:
-                                  type: string
-                                  format: uri
-                                  description: URL to the course content
-                                  example: >-
-                                    http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
-                                description:
-                                  type: string
-                                  description: Course description
-                                  example: Learn the basics of Kubernetes
-                                weight:
-                                  type: number
-                                  description: Order of the course in the list
-                                  example: eg 1 , 2
-                                banner:
-                                  type: string
-                                  format: uri
-                                  nullable: true
-                                  description: Optional banner image
-                                  example: null
+                                  enum:
+                                    - learning-path
+                                    - challenge
+                                    - certification
+                                children:
+                                  type: array
+                                  description: List of child nodes (sub-courses or modules)
+                                  items:
+                                    type: object
+                                    x-go-type: ChildNode
                               required:
                                 - title
                                 - description
@@ -16115,7 +16059,7 @@ paths:
                   enum:
                     - learning-path
                     - challenge
-                    - exam
+                    - certification
       responses:
         '200':
           description: registered content
@@ -16370,7 +16314,7 @@ paths:
                   enum:
                     - learning-path
                     - challenge
-                    - exam
+                    - certification
                   x-go-type: ContentType
                 item_data:
                   x-go-type: CirriculaCurrentItemData
@@ -16390,7 +16334,7 @@ paths:
                       enum:
                         - learning-path
                         - challenge
-                        - exam
+                        - certification
                       x-go-type: ContentType
               required:
                 - content_type
@@ -16434,7 +16378,7 @@ paths:
                               enum:
                                 - learning-path
                                 - challenge
-                                - exam
+                                - certification
                               x-go-type: ContentType
                       grades:
                         type: object
@@ -16680,7 +16624,7 @@ paths:
                     enum:
                       - learning-path
                       - challenge
-                      - exam
+                      - certification
                   item_data:
                     type: object
                     required:
@@ -16698,7 +16642,7 @@ paths:
                         enum:
                           - learning-path
                           - challenge
-                          - exam
+                          - certification
                         x-go-type: ContentType
         '400':
           description: Bad request
@@ -62954,13 +62898,13 @@ components:
           enum:
             - learning-path
             - challenge
-            - exam
+            - certification
     Academy_API_ContentType:
       type: string
       enum:
         - learning-path
         - challenge
-        - exam
+        - certification
     Academy_API_Visibility:
       type: string
       enum:
@@ -62998,7 +62942,7 @@ components:
           enum:
             - learning-path
             - challenge
-            - exam
+            - certification
         orgId:
           type: string
           description: Organization ID that owns this learning path
@@ -63088,7 +63032,8 @@ components:
             json: metadata
             yaml: metadata
           oneOf:
-            - type: object
+            - x-go-type: CurriculaMetadata
+              type: object
               properties:
                 title:
                   type: string
@@ -63112,11 +63057,11 @@ components:
                   description: Canonical URL for the learning path
                   example: >-
                     http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-                courses:
+                children:
                   type: array
-                  description: List of courses in this learning path
+                  description: List of children items in the top-level curricula
                   items:
-                    x-go-type: Course
+                    x-go-type: ChildNode
                     type: object
                     properties:
                       id:
@@ -63152,79 +63097,22 @@ components:
                         nullable: true
                         description: Optional banner image
                         example: null
-                    required:
-                      - title
-                      - description
-                      - id
-                      - permalink
-              required:
-                - title
-                - description
-                - permalink
-            - type: object
-              properties:
-                title:
-                  type: string
-                  description: Title of the learning path
-                  example: Mastering Kubernetes for Engineers
-                description:
-                  type: string
-                  description: Description of the learning path
-                  example: >-
-                    Learn how to configure your Kubernetes clusters and manage
-                    the lifecycle of your workloads
-                banner:
-                  type: string
-                  format: uri
-                  nullable: true
-                  description: Optional banner image
-                  example: null
-                permalink:
-                  type: string
-                  format: uri
-                  description: Canonical URL for the learning path
-                  example: >-
-                    http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-                courses:
-                  type: array
-                  description: List of courses in this learning path
-                  items:
-                    x-go-type: Course
-                    type: object
-                    properties:
-                      id:
+                      type:
+                        x-go-type: ContentType
+                        description: >-
+                          Type of the content (e.g., learning-path, challenge,
+                          certification)
                         type: string
-                        description: Unique identifier for the course
-                        example: 1234567890abcdef
-                        x-go-name: ID
-                        x-oapi-codegen-extra-tags:
-                          db: id
-                          json: id
-                          yaml: id
-                      title:
-                        type: string
-                        description: Title of the course
-                        example: Kubernetes Basics
-                      permalink:
-                        type: string
-                        format: uri
-                        description: URL to the course content
-                        example: >-
-                          http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
-                      description:
-                        type: string
-                        description: Course description
-                        example: Learn the basics of Kubernetes
-                      weight:
-                        type: number
-                        description: Order of the course in the list
-                        example: eg 1 , 2
-                      banner:
-                        type: string
-                        format: uri
-                        nullable: true
-                        description: Optional banner image
-                        example: null
+                        enum:
+                          - learning-path
+                          - challenge
+                          - certification
+                      children:
+                        type: array
+                        description: List of child nodes (sub-courses or modules)
+                        items:
+                          type: object
+                          x-go-type: ChildNode
                     required:
                       - title
                       - description
@@ -63276,7 +63164,7 @@ components:
                 enum:
                   - learning-path
                   - challenge
-                  - exam
+                  - certification
               orgId:
                 type: string
                 description: Organization ID that owns this learning path
@@ -63366,7 +63254,8 @@ components:
                   json: metadata
                   yaml: metadata
                 oneOf:
-                  - type: object
+                  - x-go-type: CurriculaMetadata
+                    type: object
                     properties:
                       title:
                         type: string
@@ -63390,11 +63279,11 @@ components:
                         description: Canonical URL for the learning path
                         example: >-
                           http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-                      courses:
+                      children:
                         type: array
-                        description: List of courses in this learning path
+                        description: List of children items in the top-level curricula
                         items:
-                          x-go-type: Course
+                          x-go-type: ChildNode
                           type: object
                           properties:
                             id:
@@ -63430,79 +63319,22 @@ components:
                               nullable: true
                               description: Optional banner image
                               example: null
-                          required:
-                            - title
-                            - description
-                            - id
-                            - permalink
-                    required:
-                      - title
-                      - description
-                      - permalink
-                  - type: object
-                    properties:
-                      title:
-                        type: string
-                        description: Title of the learning path
-                        example: Mastering Kubernetes for Engineers
-                      description:
-                        type: string
-                        description: Description of the learning path
-                        example: >-
-                          Learn how to configure your Kubernetes clusters and
-                          manage the lifecycle of your workloads
-                      banner:
-                        type: string
-                        format: uri
-                        nullable: true
-                        description: Optional banner image
-                        example: null
-                      permalink:
-                        type: string
-                        format: uri
-                        description: Canonical URL for the learning path
-                        example: >-
-                          http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-                      courses:
-                        type: array
-                        description: List of courses in this learning path
-                        items:
-                          x-go-type: Course
-                          type: object
-                          properties:
-                            id:
+                            type:
+                              x-go-type: ContentType
+                              description: >-
+                                Type of the content (e.g., learning-path,
+                                challenge, certification)
                               type: string
-                              description: Unique identifier for the course
-                              example: 1234567890abcdef
-                              x-go-name: ID
-                              x-oapi-codegen-extra-tags:
-                                db: id
-                                json: id
-                                yaml: id
-                            title:
-                              type: string
-                              description: Title of the course
-                              example: Kubernetes Basics
-                            permalink:
-                              type: string
-                              format: uri
-                              description: URL to the course content
-                              example: >-
-                                http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
-                            description:
-                              type: string
-                              description: Course description
-                              example: Learn the basics of Kubernetes
-                            weight:
-                              type: number
-                              description: Order of the course in the list
-                              example: eg 1 , 2
-                            banner:
-                              type: string
-                              format: uri
-                              nullable: true
-                              description: Optional banner image
-                              example: null
+                              enum:
+                                - learning-path
+                                - challenge
+                                - certification
+                            children:
+                              type: array
+                              description: List of child nodes (sub-courses or modules)
+                              items:
+                                type: object
+                                x-go-type: ChildNode
                           required:
                             - title
                             - description
@@ -63528,6 +63360,7 @@ components:
         - total
         - data
     Academy_API_ChallengeMetadata:
+      x-go-type: CurriculaMetadata
       type: object
       properties:
         title:
@@ -63552,11 +63385,11 @@ components:
           description: Canonical URL for the learning path
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-        courses:
+        children:
           type: array
-          description: List of courses in this learning path
+          description: List of children items in the top-level curricula
           items:
-            x-go-type: Course
+            x-go-type: ChildNode
             type: object
             properties:
               id:
@@ -63592,6 +63425,22 @@ components:
                 nullable: true
                 description: Optional banner image
                 example: null
+              type:
+                x-go-type: ContentType
+                description: >-
+                  Type of the content (e.g., learning-path, challenge,
+                  certification)
+                type: string
+                enum:
+                  - learning-path
+                  - challenge
+                  - certification
+              children:
+                type: array
+                description: List of child nodes (sub-courses or modules)
+                items:
+                  type: object
+                  x-go-type: ChildNode
             required:
               - title
               - description
@@ -63602,6 +63451,7 @@ components:
         - description
         - permalink
     Academy_API_LearningPathMetadata:
+      x-go-type: CurriculaMetadata
       type: object
       properties:
         title:
@@ -63626,11 +63476,11 @@ components:
           description: Canonical URL for the learning path
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
-        courses:
+        children:
           type: array
-          description: List of courses in this learning path
+          description: List of children items in the top-level curricula
           items:
-            x-go-type: Course
+            x-go-type: ChildNode
             type: object
             properties:
               id:
@@ -63666,6 +63516,112 @@ components:
                 nullable: true
                 description: Optional banner image
                 example: null
+              type:
+                x-go-type: ContentType
+                description: >-
+                  Type of the content (e.g., learning-path, challenge,
+                  certification)
+                type: string
+                enum:
+                  - learning-path
+                  - challenge
+                  - certification
+              children:
+                type: array
+                description: List of child nodes (sub-courses or modules)
+                items:
+                  type: object
+                  x-go-type: ChildNode
+            required:
+              - title
+              - description
+              - id
+              - permalink
+      required:
+        - title
+        - description
+        - permalink
+    Academy_API_CurriculaMetadata:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Title of the learning path
+          example: Mastering Kubernetes for Engineers
+        description:
+          type: string
+          description: Description of the learning path
+          example: >-
+            Learn how to configure your Kubernetes clusters and manage the
+            lifecycle of your workloads
+        banner:
+          type: string
+          format: uri
+          nullable: true
+          description: Optional banner image
+          example: null
+        permalink:
+          type: string
+          format: uri
+          description: Canonical URL for the learning path
+          example: >-
+            http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+        children:
+          type: array
+          description: List of children items in the top-level curricula
+          items:
+            x-go-type: ChildNode
+            type: object
+            properties:
+              id:
+                type: string
+                description: Unique identifier for the course
+                example: 1234567890abcdef
+                x-go-name: ID
+                x-oapi-codegen-extra-tags:
+                  db: id
+                  json: id
+                  yaml: id
+              title:
+                type: string
+                description: Title of the course
+                example: Kubernetes Basics
+              permalink:
+                type: string
+                format: uri
+                description: URL to the course content
+                example: >-
+                  http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+              description:
+                type: string
+                description: Course description
+                example: Learn the basics of Kubernetes
+              weight:
+                type: number
+                description: Order of the course in the list
+                example: eg 1 , 2
+              banner:
+                type: string
+                format: uri
+                nullable: true
+                description: Optional banner image
+                example: null
+              type:
+                x-go-type: ContentType
+                description: >-
+                  Type of the content (e.g., learning-path, challenge,
+                  certification)
+                type: string
+                enum:
+                  - learning-path
+                  - challenge
+                  - certification
+              children:
+                type: array
+                description: List of child nodes (sub-courses or modules)
+                items:
+                  type: object
+                  x-go-type: ChildNode
             required:
               - title
               - description
@@ -63767,7 +63723,7 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: metadata
-    Academy_API_Course:
+    Academy_API_ChildNode:
       type: object
       properties:
         id:
@@ -63803,6 +63759,20 @@ components:
           nullable: true
           description: Optional banner image
           example: null
+        type:
+          x-go-type: ContentType
+          description: Type of the content (e.g., learning-path, challenge, certification)
+          type: string
+          enum:
+            - learning-path
+            - challenge
+            - certification
+        children:
+          type: array
+          description: List of child nodes (sub-courses or modules)
+          items:
+            type: object
+            x-go-type: ChildNode
       required:
         - title
         - description
@@ -63930,7 +63900,7 @@ components:
           enum:
             - learning-path
             - challenge
-            - exam
+            - certification
           x-go-type: ContentType
     Academy_API_CirriculaProgressTracker:
       type: object
@@ -63961,7 +63931,7 @@ components:
                 enum:
                   - learning-path
                   - challenge
-                  - exam
+                  - certification
                 x-go-type: ContentType
         grades:
           type: object
@@ -64232,7 +64202,7 @@ components:
           enum:
             - learning-path
             - challenge
-            - exam
+            - certification
           x-go-type: ContentType
         item_data:
           x-go-type: CirriculaCurrentItemData
@@ -64252,7 +64222,7 @@ components:
               enum:
                 - learning-path
                 - challenge
-                - exam
+                - certification
               x-go-type: ContentType
       required:
         - content_type
