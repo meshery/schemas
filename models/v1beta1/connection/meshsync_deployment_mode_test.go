@@ -43,7 +43,7 @@ func TestMeshsyncDeploymentModeFromMetadata(t *testing.T) {
 			expected: MeshsyncDeploymentModeUndefined,
 		},
 		{
-			name:     "empty stringW",
+			name:     "empty string",
 			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: ""},
 			expected: MeshsyncDeploymentModeUndefined,
 		},
