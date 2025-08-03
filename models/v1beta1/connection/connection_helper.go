@@ -71,8 +71,6 @@ const (
 
 func MeshsyncDeploymentModeFromString(value string) MeshsyncDeploymentMode {
 	switch value {
-	case "":
-		return MeshsyncDeploymentModeDefault
 	case string(MeshsyncDeploymentModeOperator):
 		return MeshsyncDeploymentModeOperator
 	case string(MeshsyncDeploymentModeEmbedded):

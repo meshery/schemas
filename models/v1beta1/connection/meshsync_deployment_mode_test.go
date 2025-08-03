@@ -11,7 +11,7 @@ func TestMeshsyncDeploymentModeFromString(t *testing.T) {
 		input    string
 		expected MeshsyncDeploymentMode
 	}{
-		{"", MeshsyncDeploymentModeDefault},
+		{"", MeshsyncDeploymentModeUndefined},
 		{string(MeshsyncDeploymentModeOperator), MeshsyncDeploymentModeOperator},
 		{string(MeshsyncDeploymentModeEmbedded), MeshsyncDeploymentModeEmbedded},
 		{"unknown", MeshsyncDeploymentModeUndefined},
@@ -43,9 +43,9 @@ func TestMeshsyncDeploymentModeFromMetadata(t *testing.T) {
 			expected: MeshsyncDeploymentModeUndefined,
 		},
 		{
-			name:     "empty string (default)",
+			name:     "empty string",
 			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: ""},
-			expected: MeshsyncDeploymentModeDefault,
+			expected: MeshsyncDeploymentModeUndefined,
 		},
 		{
 			name:     "operator mode string",
