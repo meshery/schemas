@@ -88,12 +88,14 @@ func MeshsyncDeploymentModeFromMetadata(metadata core.Map) MeshsyncDeploymentMod
 		return MeshsyncDeploymentModeUndefined
 	}
 
-	value, ok := raw.(string)
-	if !ok {
+	switch v := raw.(type) {
+	case MeshsyncDeploymentMode:
+		return v
+	case string:
+		return MeshsyncDeploymentModeFromString(v)
+	default:
 		return MeshsyncDeploymentModeUndefined
 	}
-
-	return MeshsyncDeploymentModeFromString(value)
 }
 
 func SetMeshsyncDeploymentModeToMetadata(metadata core.Map, value MeshsyncDeploymentMode) {

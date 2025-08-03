@@ -29,38 +29,43 @@ func TestMeshsyncDeploymentModeFromString(t *testing.T) {
 func TestMeshsyncDeploymentModeFromMetadata(t *testing.T) {
 	tests := []struct {
 		name     string
-		metadata map[string]interface{}
+		metadata map[string]any
 		expected MeshsyncDeploymentMode
 	}{
 		{
 			name:     "no key",
-			metadata: map[string]interface{}{},
+			metadata: map[string]any{},
 			expected: MeshsyncDeploymentModeUndefined,
 		},
 		{
 			name:     "wrong type",
-			metadata: map[string]interface{}{MeshsyncDeploymentModeMetadataKey: 123},
+			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: 123},
 			expected: MeshsyncDeploymentModeUndefined,
 		},
 		{
 			name:     "empty string (default)",
-			metadata: map[string]interface{}{MeshsyncDeploymentModeMetadataKey: ""},
+			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: ""},
 			expected: MeshsyncDeploymentModeDefault,
 		},
 		{
-			name:     "operator mode",
-			metadata: map[string]interface{}{MeshsyncDeploymentModeMetadataKey: string(MeshsyncDeploymentModeOperator)},
+			name:     "operator mode string",
+			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: string(MeshsyncDeploymentModeOperator)},
 			expected: MeshsyncDeploymentModeOperator,
 		},
 		{
-			name:     "embedded mode",
-			metadata: map[string]interface{}{MeshsyncDeploymentModeMetadataKey: string(MeshsyncDeploymentModeEmbedded)},
+			name:     "embedded mode string",
+			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: string(MeshsyncDeploymentModeEmbedded)},
 			expected: MeshsyncDeploymentModeEmbedded,
 		},
 		{
 			name:     "unknown string",
-			metadata: map[string]interface{}{MeshsyncDeploymentModeMetadataKey: "something-else"},
+			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: "something-else"},
 			expected: MeshsyncDeploymentModeUndefined,
+		},
+		{
+			name:     "direct MeshsyncDeploymentMode type",
+			metadata: map[string]any{MeshsyncDeploymentModeMetadataKey: MeshsyncDeploymentModeOperator},
+			expected: MeshsyncDeploymentModeOperator,
 		},
 	}
 
