@@ -154,10 +154,10 @@ type Badge struct {
 	Label string `json:"label" yaml:"label"`
 
 	// Png URL to the badge image
-	Png *string `json:"png,omitempty" yaml:"png,omitempty"`
+	Png string `json:"png" yaml:"png"`
 
 	// Svg URL to the badge SVG image
-	Svg *string `json:"svg,omitempty" yaml:"svg,omitempty"`
+	Svg string `json:"svg" yaml:"svg"`
 
 	// Title Title of the badge
 	Title string `json:"title" yaml:"title"`

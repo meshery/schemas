@@ -570,9 +570,9 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       /** Description of the badge */
       description: string;
       /** URL to the badge image */
-      png?: string;
+      png: string;
       /** URL to the badge SVG image */
-      svg?: string;
+      svg: string;
     };
     certificate?: {
       /** Title of the certificate */

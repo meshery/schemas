@@ -60850,7 +60850,8 @@ components:
                     - label
                     - title
                     - description
-                    - image
+                    - png
+                    - svg
                   properties:
                     label:
                       type: string
@@ -61120,7 +61121,8 @@ components:
                           - label
                           - title
                           - description
-                          - image
+                          - png
+                          - svg
                         properties:
                           label:
                             type: string
@@ -61276,7 +61278,8 @@ components:
             - label
             - title
             - description
-            - image
+            - png
+            - svg
           properties:
             label:
               type: string
@@ -61413,7 +61416,8 @@ components:
             - label
             - title
             - description
-            - image
+            - png
+            - svg
           properties:
             label:
               type: string
@@ -61523,7 +61527,8 @@ components:
         - label
         - title
         - description
-        - image
+        - png
+        - svg
       properties:
         label:
           type: string
@@ -61593,7 +61598,8 @@ components:
             - label
             - title
             - description
-            - image
+            - png
+            - svg
           properties:
             label:
               type: string

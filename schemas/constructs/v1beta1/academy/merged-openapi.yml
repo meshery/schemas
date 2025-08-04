@@ -231,7 +231,8 @@
                                     "label",
                                     "title",
                                     "description",
-                                    "image"
+                                    "png",
+                                    "svg"
                                   ],
                                   "properties": {
                                     "label": {
@@ -689,7 +690,8 @@
                                     "label",
                                     "title",
                                     "description",
-                                    "image"
+                                    "png",
+                                    "svg"
                                   ],
                                   "properties": {
                                     "label": {
@@ -1062,7 +1064,8 @@
                                 "label",
                                 "title",
                                 "description",
-                                "image"
+                                "png",
+                                "svg"
                               ],
                               "properties": {
                                 "label": {
@@ -2672,7 +2675,8 @@
                       "label",
                       "title",
                       "description",
-                      "image"
+                      "png",
+                      "svg"
                     ],
                     "properties": {
                       "label": {
@@ -3000,7 +3004,8 @@
                             "label",
                             "title",
                             "description",
-                            "image"
+                            "png",
+                            "svg"
                           ],
                           "properties": {
                             "label": {
@@ -3190,7 +3195,8 @@
               "label",
               "title",
               "description",
-              "image"
+              "png",
+              "svg"
             ],
             "properties": {
               "label": {
@@ -3356,7 +3362,8 @@
               "label",
               "title",
               "description",
-              "image"
+              "png",
+              "svg"
             ],
             "properties": {
               "label": {
@@ -3494,7 +3501,8 @@
           "label",
           "title",
           "description",
-          "image"
+          "png",
+          "svg"
         ],
         "properties": {
           "label": {
@@ -3578,7 +3586,8 @@
               "label",
               "title",
               "description",
-              "image"
+              "png",
+              "svg"
             ],
             "properties": {
               "label": {

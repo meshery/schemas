@@ -236,7 +236,8 @@ const schema = {
                                     "label",
                                     "title",
                                     "description",
-                                    "image"
+                                    "png",
+                                    "svg"
                                   ],
                                   "properties": {
                                     "label": {
@@ -694,7 +695,8 @@ const schema = {
                                     "label",
                                     "title",
                                     "description",
-                                    "image"
+                                    "png",
+                                    "svg"
                                   ],
                                   "properties": {
                                     "label": {
@@ -1067,7 +1069,8 @@ const schema = {
                                 "label",
                                 "title",
                                 "description",
-                                "image"
+                                "png",
+                                "svg"
                               ],
                               "properties": {
                                 "label": {
@@ -2677,7 +2680,8 @@ const schema = {
                       "label",
                       "title",
                       "description",
-                      "image"
+                      "png",
+                      "svg"
                     ],
                     "properties": {
                       "label": {
@@ -3005,7 +3009,8 @@ const schema = {
                             "label",
                             "title",
                             "description",
-                            "image"
+                            "png",
+                            "svg"
                           ],
                           "properties": {
                             "label": {
@@ -3195,7 +3200,8 @@ const schema = {
               "label",
               "title",
               "description",
-              "image"
+              "png",
+              "svg"
             ],
             "properties": {
               "label": {
@@ -3361,7 +3367,8 @@ const schema = {
               "label",
               "title",
               "description",
-              "image"
+              "png",
+              "svg"
             ],
             "properties": {
               "label": {
@@ -3499,7 +3506,8 @@ const schema = {
           "label",
           "title",
           "description",
-          "image"
+          "png",
+          "svg"
         ],
         "properties": {
           "label": {
@@ -3583,7 +3591,8 @@ const schema = {
               "label",
               "title",
               "description",
-              "image"
+              "png",
+              "svg"
             ],
             "properties": {
               "label": {
