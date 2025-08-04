@@ -562,6 +562,24 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
     banner?: string | null;
     /** Canonical URL for the learning path */
     permalink: string;
+    badge?: {
+      /** unique identifier for the badge ( auto generated ) */
+      label: string;
+      /** Title of the badge */
+      title: string;
+      /** Description of the badge */
+      description: string;
+      /** URL to the badge image */
+      png?: string;
+      /** URL to the badge SVG image */
+      svg?: string;
+    };
+    certificate?: {
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+    };
     /** List of children items in the top-level curricula */
     children?: {
       /** Unique identifier for the course */
@@ -689,7 +707,7 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
             questions: {
               id: string;
               text: string;
-              type: "mcq" | "short_answer" | "essay";
+              type: "multiple_answers" | "single_answer" | "short_answer" | "essay";
               marks: number;
               multiple_answers: boolean;
               options: {
@@ -785,7 +803,7 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
     questions: {
       id: string;
       text: string;
-      type: "mcq" | "short_answer" | "essay";
+      type: "multiple_answers" | "single_answer" | "short_answer" | "essay";
       marks: number;
       multiple_answers: boolean;
       options: {

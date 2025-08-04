@@ -60843,6 +60843,54 @@ components:
                   description: Canonical URL for the learning path
                   example: >-
                     http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                badge:
+                  x-go-type: Badge
+                  type: object
+                  required:
+                    - label
+                    - title
+                    - description
+                    - image
+                  properties:
+                    label:
+                      type: string
+                      description: unique identifier for the badge ( auto generated )
+                      example: Kubernetes-Expert
+                    title:
+                      type: string
+                      description: Title of the badge
+                      example: Kubernetes Expert
+                    description:
+                      type: string
+                      description: Description of the badge
+                      example: Awarded for mastering Kubernetes concepts and practices
+                    png:
+                      type: string
+                      format: uri
+                      description: URL to the badge image
+                      example: http://localhost:9876/badges/kubernetes-expert.png
+                    svg:
+                      type: string
+                      format: uri
+                      description: URL to the badge SVG image
+                      example: http://localhost:9876/badges/kubernetes-expert.svg
+                certificate:
+                  x-go-type: Certificate
+                  type: object
+                  required:
+                    - title
+                    - description
+                  properties:
+                    title:
+                      type: string
+                      description: Title of the certificate
+                      example: Kubernetes Expert Certification
+                    description:
+                      type: string
+                      description: Description of the certificate
+                      example: >-
+                        Awarded for successfully completing the Kubernetes
+                        Expert course
                 children:
                   type: array
                   description: List of children items in the top-level curricula
@@ -61065,6 +61113,56 @@ components:
                         description: Canonical URL for the learning path
                         example: >-
                           http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                      badge:
+                        x-go-type: Badge
+                        type: object
+                        required:
+                          - label
+                          - title
+                          - description
+                          - image
+                        properties:
+                          label:
+                            type: string
+                            description: unique identifier for the badge ( auto generated )
+                            example: Kubernetes-Expert
+                          title:
+                            type: string
+                            description: Title of the badge
+                            example: Kubernetes Expert
+                          description:
+                            type: string
+                            description: Description of the badge
+                            example: >-
+                              Awarded for mastering Kubernetes concepts and
+                              practices
+                          png:
+                            type: string
+                            format: uri
+                            description: URL to the badge image
+                            example: http://localhost:9876/badges/kubernetes-expert.png
+                          svg:
+                            type: string
+                            format: uri
+                            description: URL to the badge SVG image
+                            example: http://localhost:9876/badges/kubernetes-expert.svg
+                      certificate:
+                        x-go-type: Certificate
+                        type: object
+                        required:
+                          - title
+                          - description
+                        properties:
+                          title:
+                            type: string
+                            description: Title of the certificate
+                            example: Kubernetes Expert Certification
+                          description:
+                            type: string
+                            description: Description of the certificate
+                            example: >-
+                              Awarded for successfully completing the Kubernetes
+                              Expert course
                       children:
                         type: array
                         description: List of children items in the top-level curricula
@@ -61171,6 +61269,52 @@ components:
           description: Canonical URL for the learning path
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+        badge:
+          x-go-type: Badge
+          type: object
+          required:
+            - label
+            - title
+            - description
+            - image
+          properties:
+            label:
+              type: string
+              description: unique identifier for the badge ( auto generated )
+              example: Kubernetes-Expert
+            title:
+              type: string
+              description: Title of the badge
+              example: Kubernetes Expert
+            description:
+              type: string
+              description: Description of the badge
+              example: Awarded for mastering Kubernetes concepts and practices
+            png:
+              type: string
+              format: uri
+              description: URL to the badge image
+              example: http://localhost:9876/badges/kubernetes-expert.png
+            svg:
+              type: string
+              format: uri
+              description: URL to the badge SVG image
+              example: http://localhost:9876/badges/kubernetes-expert.svg
+        certificate:
+          x-go-type: Certificate
+          type: object
+          required:
+            - title
+            - description
+          properties:
+            title:
+              type: string
+              description: Title of the certificate
+              example: Kubernetes Expert Certification
+            description:
+              type: string
+              description: Description of the certificate
+              example: Awarded for successfully completing the Kubernetes Expert course
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -61262,6 +61406,52 @@ components:
           description: Canonical URL for the learning path
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+        badge:
+          x-go-type: Badge
+          type: object
+          required:
+            - label
+            - title
+            - description
+            - image
+          properties:
+            label:
+              type: string
+              description: unique identifier for the badge ( auto generated )
+              example: Kubernetes-Expert
+            title:
+              type: string
+              description: Title of the badge
+              example: Kubernetes Expert
+            description:
+              type: string
+              description: Description of the badge
+              example: Awarded for mastering Kubernetes concepts and practices
+            png:
+              type: string
+              format: uri
+              description: URL to the badge image
+              example: http://localhost:9876/badges/kubernetes-expert.png
+            svg:
+              type: string
+              format: uri
+              description: URL to the badge SVG image
+              example: http://localhost:9876/badges/kubernetes-expert.svg
+        certificate:
+          x-go-type: Certificate
+          type: object
+          required:
+            - title
+            - description
+          properties:
+            title:
+              type: string
+              description: Title of the certificate
+              example: Kubernetes Expert Certification
+            description:
+              type: string
+              description: Description of the certificate
+              example: Awarded for successfully completing the Kubernetes Expert course
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -61327,6 +61517,50 @@ components:
         - title
         - description
         - permalink
+    Academy_API_Badge:
+      type: object
+      required:
+        - label
+        - title
+        - description
+        - image
+      properties:
+        label:
+          type: string
+          description: unique identifier for the badge ( auto generated )
+          example: Kubernetes-Expert
+        title:
+          type: string
+          description: Title of the badge
+          example: Kubernetes Expert
+        description:
+          type: string
+          description: Description of the badge
+          example: Awarded for mastering Kubernetes concepts and practices
+        png:
+          type: string
+          format: uri
+          description: URL to the badge image
+          example: http://localhost:9876/badges/kubernetes-expert.png
+        svg:
+          type: string
+          format: uri
+          description: URL to the badge SVG image
+          example: http://localhost:9876/badges/kubernetes-expert.svg
+    Academy_API_Certificate:
+      type: object
+      required:
+        - title
+        - description
+      properties:
+        title:
+          type: string
+          description: Title of the certificate
+          example: Kubernetes Expert Certification
+        description:
+          type: string
+          description: Description of the certificate
+          example: Awarded for successfully completing the Kubernetes Expert course
     Academy_API_CurriculaMetadata:
       type: object
       properties:
@@ -61352,6 +61586,52 @@ components:
           description: Canonical URL for the learning path
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+        badge:
+          x-go-type: Badge
+          type: object
+          required:
+            - label
+            - title
+            - description
+            - image
+          properties:
+            label:
+              type: string
+              description: unique identifier for the badge ( auto generated )
+              example: Kubernetes-Expert
+            title:
+              type: string
+              description: Title of the badge
+              example: Kubernetes Expert
+            description:
+              type: string
+              description: Description of the badge
+              example: Awarded for mastering Kubernetes concepts and practices
+            png:
+              type: string
+              format: uri
+              description: URL to the badge image
+              example: http://localhost:9876/badges/kubernetes-expert.png
+            svg:
+              type: string
+              format: uri
+              description: URL to the badge SVG image
+              example: http://localhost:9876/badges/kubernetes-expert.svg
+        certificate:
+          x-go-type: Certificate
+          type: object
+          required:
+            - title
+            - description
+          properties:
+            title:
+              type: string
+              description: Title of the certificate
+              example: Kubernetes Expert Certification
+            description:
+              type: string
+              description: Description of the certificate
+              example: Awarded for successfully completing the Kubernetes Expert course
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -61841,11 +62121,13 @@ components:
                           x-go-type: QuestionType
                           type: string
                           x-enum-varnames:
-                            - QuestionTypeMCQ
+                            - QuestionTypeMultipleAnswers
+                            - QuestionTypeSingleAnswer
                             - QuestionTypeShortAnswer
                             - QuestionTypeEssay
                           enum:
-                            - mcq
+                            - multiple_answers
+                            - single_answer
                             - short_answer
                             - essay
                         marks:
@@ -62108,11 +62390,13 @@ components:
                 x-go-type: QuestionType
                 type: string
                 x-enum-varnames:
-                  - QuestionTypeMCQ
+                  - QuestionTypeMultipleAnswers
+                  - QuestionTypeSingleAnswer
                   - QuestionTypeShortAnswer
                   - QuestionTypeEssay
                 enum:
-                  - mcq
+                  - multiple_answers
+                  - single_answer
                   - short_answer
                   - essay
               marks:
@@ -62196,11 +62480,13 @@ components:
     Academy_API_QuestionType:
       type: string
       x-enum-varnames:
-        - QuestionTypeMCQ
+        - QuestionTypeMultipleAnswers
+        - QuestionTypeSingleAnswer
         - QuestionTypeShortAnswer
         - QuestionTypeEssay
       enum:
-        - mcq
+        - multiple_answers
+        - single_answer
         - short_answer
         - essay
     Academy_API_Question:
@@ -62222,11 +62508,13 @@ components:
           x-go-type: QuestionType
           type: string
           x-enum-varnames:
-            - QuestionTypeMCQ
+            - QuestionTypeMultipleAnswers
+            - QuestionTypeSingleAnswer
             - QuestionTypeShortAnswer
             - QuestionTypeEssay
           enum:
-            - mcq
+            - multiple_answers
+            - single_answer
             - short_answer
             - essay
         marks:
@@ -62430,11 +62718,13 @@ components:
                     x-go-type: QuestionType
                     type: string
                     x-enum-varnames:
-                      - QuestionTypeMCQ
+                      - QuestionTypeMultipleAnswers
+                      - QuestionTypeSingleAnswer
                       - QuestionTypeShortAnswer
                       - QuestionTypeEssay
                     enum:
-                      - mcq
+                      - multiple_answers
+                      - single_answer
                       - short_answer
                       - essay
                   marks:

@@ -229,6 +229,65 @@ const schema = {
                                   "description": "Canonical URL for the learning path",
                                   "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                                 },
+                                "badge": {
+                                  "x-go-type": "Badge",
+                                  "type": "object",
+                                  "required": [
+                                    "label",
+                                    "title",
+                                    "description",
+                                    "image"
+                                  ],
+                                  "properties": {
+                                    "label": {
+                                      "type": "string",
+                                      "description": "unique identifier for the badge ( auto generated )",
+                                      "example": "Kubernetes-Expert"
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "description": "Title of the badge",
+                                      "example": "Kubernetes Expert"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Description of the badge",
+                                      "example": "Awarded for mastering Kubernetes concepts and practices"
+                                    },
+                                    "png": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "URL to the badge image",
+                                      "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                    },
+                                    "svg": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "URL to the badge SVG image",
+                                      "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                    }
+                                  }
+                                },
+                                "certificate": {
+                                  "x-go-type": "Certificate",
+                                  "type": "object",
+                                  "required": [
+                                    "title",
+                                    "description"
+                                  ],
+                                  "properties": {
+                                    "title": {
+                                      "type": "string",
+                                      "description": "Title of the certificate",
+                                      "example": "Kubernetes Expert Certification"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Description of the certificate",
+                                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                    }
+                                  }
+                                },
                                 "children": {
                                   "type": "array",
                                   "description": "List of children items in the top-level curricula",
@@ -628,6 +687,65 @@ const schema = {
                                   "description": "Canonical URL for the learning path",
                                   "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                                 },
+                                "badge": {
+                                  "x-go-type": "Badge",
+                                  "type": "object",
+                                  "required": [
+                                    "label",
+                                    "title",
+                                    "description",
+                                    "image"
+                                  ],
+                                  "properties": {
+                                    "label": {
+                                      "type": "string",
+                                      "description": "unique identifier for the badge ( auto generated )",
+                                      "example": "Kubernetes-Expert"
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "description": "Title of the badge",
+                                      "example": "Kubernetes Expert"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Description of the badge",
+                                      "example": "Awarded for mastering Kubernetes concepts and practices"
+                                    },
+                                    "png": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "URL to the badge image",
+                                      "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                    },
+                                    "svg": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "URL to the badge SVG image",
+                                      "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                    }
+                                  }
+                                },
+                                "certificate": {
+                                  "x-go-type": "Certificate",
+                                  "type": "object",
+                                  "required": [
+                                    "title",
+                                    "description"
+                                  ],
+                                  "properties": {
+                                    "title": {
+                                      "type": "string",
+                                      "description": "Title of the certificate",
+                                      "example": "Kubernetes Expert Certification"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "description": "Description of the certificate",
+                                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                    }
+                                  }
+                                },
                                 "children": {
                                   "type": "array",
                                   "description": "List of children items in the top-level curricula",
@@ -941,6 +1059,65 @@ const schema = {
                               "format": "uri",
                               "description": "Canonical URL for the learning path",
                               "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                            },
+                            "badge": {
+                              "x-go-type": "Badge",
+                              "type": "object",
+                              "required": [
+                                "label",
+                                "title",
+                                "description",
+                                "image"
+                              ],
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "description": "unique identifier for the badge ( auto generated )",
+                                  "example": "Kubernetes-Expert"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the badge",
+                                  "example": "Kubernetes Expert"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the badge",
+                                  "example": "Awarded for mastering Kubernetes concepts and practices"
+                                },
+                                "png": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "URL to the badge image",
+                                  "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                },
+                                "svg": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "URL to the badge SVG image",
+                                  "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                }
+                              }
+                            },
+                            "certificate": {
+                              "x-go-type": "Certificate",
+                              "type": "object",
+                              "required": [
+                                "title",
+                                "description"
+                              ],
+                              "properties": {
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the certificate",
+                                  "example": "Kubernetes Expert Certification"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the certificate",
+                                  "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                }
+                              }
                             },
                             "children": {
                               "type": "array",
@@ -1656,12 +1833,14 @@ const schema = {
                                           "x-go-type": "QuestionType",
                                           "type": "string",
                                           "x-enum-varnames": [
-                                            "QuestionTypeMCQ",
+                                            "QuestionTypeMultipleAnswers",
+                                            "QuestionTypeSingleAnswer",
                                             "QuestionTypeShortAnswer",
                                             "QuestionTypeEssay"
                                           ],
                                           "enum": [
-                                            "mcq",
+                                            "multiple_answers",
+                                            "single_answer",
                                             "short_answer",
                                             "essay"
                                           ]
@@ -2118,12 +2297,14 @@ const schema = {
                                 "x-go-type": "QuestionType",
                                 "type": "string",
                                 "x-enum-varnames": [
-                                  "QuestionTypeMCQ",
+                                  "QuestionTypeMultipleAnswers",
+                                  "QuestionTypeSingleAnswer",
                                   "QuestionTypeShortAnswer",
                                   "QuestionTypeEssay"
                                 ],
                                 "enum": [
-                                  "mcq",
+                                  "multiple_answers",
+                                  "single_answer",
                                   "short_answer",
                                   "essay"
                                 ]
@@ -2489,6 +2670,65 @@ const schema = {
                     "description": "Canonical URL for the learning path",
                     "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                   },
+                  "badge": {
+                    "x-go-type": "Badge",
+                    "type": "object",
+                    "required": [
+                      "label",
+                      "title",
+                      "description",
+                      "image"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "description": "unique identifier for the badge ( auto generated )",
+                        "example": "Kubernetes-Expert"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Title of the badge",
+                        "example": "Kubernetes Expert"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the badge",
+                        "example": "Awarded for mastering Kubernetes concepts and practices"
+                      },
+                      "png": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL to the badge image",
+                        "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                      },
+                      "svg": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL to the badge SVG image",
+                        "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                      }
+                    }
+                  },
+                  "certificate": {
+                    "x-go-type": "Certificate",
+                    "type": "object",
+                    "required": [
+                      "title",
+                      "description"
+                    ],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Title of the certificate",
+                        "example": "Kubernetes Expert Certification"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the certificate",
+                        "example": "Awarded for successfully completing the Kubernetes Expert course"
+                      }
+                    }
+                  },
                   "children": {
                     "type": "array",
                     "description": "List of children items in the top-level curricula",
@@ -2758,6 +2998,65 @@ const schema = {
                           "description": "Canonical URL for the learning path",
                           "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                         },
+                        "badge": {
+                          "x-go-type": "Badge",
+                          "type": "object",
+                          "required": [
+                            "label",
+                            "title",
+                            "description",
+                            "image"
+                          ],
+                          "properties": {
+                            "label": {
+                              "type": "string",
+                              "description": "unique identifier for the badge ( auto generated )",
+                              "example": "Kubernetes-Expert"
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the badge",
+                              "example": "Kubernetes Expert"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Description of the badge",
+                              "example": "Awarded for mastering Kubernetes concepts and practices"
+                            },
+                            "png": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "URL to the badge image",
+                              "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                            },
+                            "svg": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "URL to the badge SVG image",
+                              "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                            }
+                          }
+                        },
+                        "certificate": {
+                          "x-go-type": "Certificate",
+                          "type": "object",
+                          "required": [
+                            "title",
+                            "description"
+                          ],
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the certificate",
+                              "example": "Kubernetes Expert Certification"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Description of the certificate",
+                              "example": "Awarded for successfully completing the Kubernetes Expert course"
+                            }
+                          }
+                        },
                         "children": {
                           "type": "array",
                           "description": "List of children items in the top-level curricula",
@@ -2889,6 +3188,65 @@ const schema = {
             "description": "Canonical URL for the learning path",
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
           },
+          "badge": {
+            "x-go-type": "Badge",
+            "type": "object",
+            "required": [
+              "label",
+              "title",
+              "description",
+              "image"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "unique identifier for the badge ( auto generated )",
+                "example": "Kubernetes-Expert"
+              },
+              "title": {
+                "type": "string",
+                "description": "Title of the badge",
+                "example": "Kubernetes Expert"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the badge",
+                "example": "Awarded for mastering Kubernetes concepts and practices"
+              },
+              "png": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to the badge image",
+                "example": "http://localhost:9876/badges/kubernetes-expert.png"
+              },
+              "svg": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to the badge SVG image",
+                "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+              }
+            }
+          },
+          "certificate": {
+            "x-go-type": "Certificate",
+            "type": "object",
+            "required": [
+              "title",
+              "description"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Title of the certificate",
+                "example": "Kubernetes Expert Certification"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the certificate",
+                "example": "Awarded for successfully completing the Kubernetes Expert course"
+              }
+            }
+          },
           "children": {
             "type": "array",
             "description": "List of children items in the top-level curricula",
@@ -2996,6 +3354,65 @@ const schema = {
             "description": "Canonical URL for the learning path",
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
           },
+          "badge": {
+            "x-go-type": "Badge",
+            "type": "object",
+            "required": [
+              "label",
+              "title",
+              "description",
+              "image"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "unique identifier for the badge ( auto generated )",
+                "example": "Kubernetes-Expert"
+              },
+              "title": {
+                "type": "string",
+                "description": "Title of the badge",
+                "example": "Kubernetes Expert"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the badge",
+                "example": "Awarded for mastering Kubernetes concepts and practices"
+              },
+              "png": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to the badge image",
+                "example": "http://localhost:9876/badges/kubernetes-expert.png"
+              },
+              "svg": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to the badge SVG image",
+                "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+              }
+            }
+          },
+          "certificate": {
+            "x-go-type": "Certificate",
+            "type": "object",
+            "required": [
+              "title",
+              "description"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Title of the certificate",
+                "example": "Kubernetes Expert Certification"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the certificate",
+                "example": "Awarded for successfully completing the Kubernetes Expert course"
+              }
+            }
+          },
           "children": {
             "type": "array",
             "description": "List of children items in the top-level curricula",
@@ -3076,6 +3493,63 @@ const schema = {
           "permalink"
         ]
       },
+      "Badge": {
+        "type": "object",
+        "required": [
+          "label",
+          "title",
+          "description",
+          "image"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "unique identifier for the badge ( auto generated )",
+            "example": "Kubernetes-Expert"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the badge",
+            "example": "Kubernetes Expert"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the badge",
+            "example": "Awarded for mastering Kubernetes concepts and practices"
+          },
+          "png": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the badge image",
+            "example": "http://localhost:9876/badges/kubernetes-expert.png"
+          },
+          "svg": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the badge SVG image",
+            "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+          }
+        }
+      },
+      "Certificate": {
+        "type": "object",
+        "required": [
+          "title",
+          "description"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the certificate",
+            "example": "Kubernetes Expert Certification"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the certificate",
+            "example": "Awarded for successfully completing the Kubernetes Expert course"
+          }
+        }
+      },
       "CurriculaMetadata": {
         "type": "object",
         "properties": {
@@ -3101,6 +3575,65 @@ const schema = {
             "format": "uri",
             "description": "Canonical URL for the learning path",
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+          },
+          "badge": {
+            "x-go-type": "Badge",
+            "type": "object",
+            "required": [
+              "label",
+              "title",
+              "description",
+              "image"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "unique identifier for the badge ( auto generated )",
+                "example": "Kubernetes-Expert"
+              },
+              "title": {
+                "type": "string",
+                "description": "Title of the badge",
+                "example": "Kubernetes Expert"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the badge",
+                "example": "Awarded for mastering Kubernetes concepts and practices"
+              },
+              "png": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to the badge image",
+                "example": "http://localhost:9876/badges/kubernetes-expert.png"
+              },
+              "svg": {
+                "type": "string",
+                "format": "uri",
+                "description": "URL to the badge SVG image",
+                "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+              }
+            }
+          },
+          "certificate": {
+            "x-go-type": "Certificate",
+            "type": "object",
+            "required": [
+              "title",
+              "description"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Title of the certificate",
+                "example": "Kubernetes Expert Certification"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the certificate",
+                "example": "Awarded for successfully completing the Kubernetes Expert course"
+              }
+            }
           },
           "children": {
             "type": "array",
@@ -3710,12 +4243,14 @@ const schema = {
                             "x-go-type": "QuestionType",
                             "type": "string",
                             "x-enum-varnames": [
-                              "QuestionTypeMCQ",
+                              "QuestionTypeMultipleAnswers",
+                              "QuestionTypeSingleAnswer",
                               "QuestionTypeShortAnswer",
                               "QuestionTypeEssay"
                             ],
                             "enum": [
-                              "mcq",
+                              "multiple_answers",
+                              "single_answer",
                               "short_answer",
                               "essay"
                             ]
@@ -4079,12 +4614,14 @@ const schema = {
                   "x-go-type": "QuestionType",
                   "type": "string",
                   "x-enum-varnames": [
-                    "QuestionTypeMCQ",
+                    "QuestionTypeMultipleAnswers",
+                    "QuestionTypeSingleAnswer",
                     "QuestionTypeShortAnswer",
                     "QuestionTypeEssay"
                   ],
                   "enum": [
-                    "mcq",
+                    "multiple_answers",
+                    "single_answer",
                     "short_answer",
                     "essay"
                   ]
@@ -4209,12 +4746,14 @@ const schema = {
       "QuestionType": {
         "type": "string",
         "x-enum-varnames": [
-          "QuestionTypeMCQ",
+          "QuestionTypeMultipleAnswers",
+          "QuestionTypeSingleAnswer",
           "QuestionTypeShortAnswer",
           "QuestionTypeEssay"
         ],
         "enum": [
-          "mcq",
+          "multiple_answers",
+          "single_answer",
           "short_answer",
           "essay"
         ]
@@ -4241,12 +4780,14 @@ const schema = {
             "x-go-type": "QuestionType",
             "type": "string",
             "x-enum-varnames": [
-              "QuestionTypeMCQ",
+              "QuestionTypeMultipleAnswers",
+              "QuestionTypeSingleAnswer",
               "QuestionTypeShortAnswer",
               "QuestionTypeEssay"
             ],
             "enum": [
-              "mcq",
+              "multiple_answers",
+              "single_answer",
               "short_answer",
               "essay"
             ]
@@ -4517,12 +5058,14 @@ const schema = {
                       "x-go-type": "QuestionType",
                       "type": "string",
                       "x-enum-varnames": [
-                        "QuestionTypeMCQ",
+                        "QuestionTypeMultipleAnswers",
+                        "QuestionTypeSingleAnswer",
                         "QuestionTypeShortAnswer",
                         "QuestionTypeEssay"
                       ],
                       "enum": [
-                        "mcq",
+                        "multiple_answers",
+                        "single_answer",
                         "short_answer",
                         "essay"
                       ]

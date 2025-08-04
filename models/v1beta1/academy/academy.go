@@ -36,9 +36,10 @@ const (
 
 // Defines values for QuestionType.
 const (
-	QuestionTypeEssay       QuestionType = "essay"
-	QuestionTypeMCQ         QuestionType = "mcq"
-	QuestionTypeShortAnswer QuestionType = "short_answer"
+	QuestionTypeEssay           QuestionType = "essay"
+	QuestionTypeMultipleAnswers QuestionType = "multiple_answers"
+	QuestionTypeShortAnswer     QuestionType = "short_answer"
+	QuestionTypeSingleAnswer    QuestionType = "single_answer"
 )
 
 // Defines values for RegisterToAcademyContentRequestContentType.
@@ -144,6 +145,33 @@ type AcademyRegistrationsListResponse struct {
 	Total int `json:"total" yaml:"total"`
 }
 
+// Badge defines model for Badge.
+type Badge struct {
+	// Description Description of the badge
+	Description string `json:"description" yaml:"description"`
+
+	// Label unique identifier for the badge ( auto generated )
+	Label string `json:"label" yaml:"label"`
+
+	// Png URL to the badge image
+	Png *string `json:"png,omitempty" yaml:"png,omitempty"`
+
+	// Svg URL to the badge SVG image
+	Svg *string `json:"svg,omitempty" yaml:"svg,omitempty"`
+
+	// Title Title of the badge
+	Title string `json:"title" yaml:"title"`
+}
+
+// Certificate defines model for Certificate.
+type Certificate struct {
+	// Description Description of the certificate
+	Description string `json:"description" yaml:"description"`
+
+	// Title Title of the certificate
+	Title string `json:"title" yaml:"title"`
+}
+
 // ChallengeMetadata defines model for ChallengeMetadata.
 type ChallengeMetadata = CurriculaMetadata
 
@@ -199,8 +227,11 @@ type ContentType string
 
 // CurriculaMetadata defines model for CurriculaMetadata.
 type CurriculaMetadata struct {
+	Badge *Badge `json:"badge,omitempty" yaml:"badge,omitempty"`
+
 	// Banner Optional banner image
-	Banner *string `json:"banner" yaml:"banner"`
+	Banner      *string      `json:"banner" yaml:"banner"`
+	Certificate *Certificate `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 
 	// Children List of children items in the top-level curricula
 	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
