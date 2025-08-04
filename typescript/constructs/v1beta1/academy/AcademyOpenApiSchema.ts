@@ -1821,7 +1821,6 @@ const schema = {
                                         "text",
                                         "type",
                                         "marks",
-                                        "multiple_answers",
                                         "options",
                                         "correct_answer"
                                       ],
@@ -1842,9 +1841,9 @@ const schema = {
                                             "QuestionTypeEssay"
                                           ],
                                           "enum": [
-                                            "multiple_answers",
-                                            "single_answer",
-                                            "short_answer",
+                                            "multiple-answers",
+                                            "single-answer",
+                                            "short-answer",
                                             "essay"
                                           ]
                                         },
@@ -2285,7 +2284,6 @@ const schema = {
                               "text",
                               "type",
                               "marks",
-                              "multiple_answers",
                               "options",
                               "correct_answer"
                             ],
@@ -2306,9 +2304,9 @@ const schema = {
                                   "QuestionTypeEssay"
                                 ],
                                 "enum": [
-                                  "multiple_answers",
-                                  "single_answer",
-                                  "short_answer",
+                                  "multiple-answers",
+                                  "single-answer",
+                                  "short-answer",
                                   "essay"
                                 ]
                               },
@@ -4237,7 +4235,6 @@ const schema = {
                           "text",
                           "type",
                           "marks",
-                          "multiple_answers",
                           "options",
                           "correct_answer"
                         ],
@@ -4258,9 +4255,9 @@ const schema = {
                               "QuestionTypeEssay"
                             ],
                             "enum": [
-                              "multiple_answers",
-                              "single_answer",
-                              "short_answer",
+                              "multiple-answers",
+                              "single-answer",
+                              "short-answer",
                               "essay"
                             ]
                           },
@@ -4608,7 +4605,6 @@ const schema = {
                 "text",
                 "type",
                 "marks",
-                "multiple_answers",
                 "options",
                 "correct_answer"
               ],
@@ -4629,9 +4625,9 @@ const schema = {
                     "QuestionTypeEssay"
                   ],
                   "enum": [
-                    "multiple_answers",
-                    "single_answer",
-                    "short_answer",
+                    "multiple-answers",
+                    "single-answer",
+                    "short-answer",
                     "essay"
                   ]
                 },
@@ -4761,9 +4757,9 @@ const schema = {
           "QuestionTypeEssay"
         ],
         "enum": [
-          "multiple_answers",
-          "single_answer",
-          "short_answer",
+          "multiple-answers",
+          "single-answer",
+          "short-answer",
           "essay"
         ]
       },
@@ -4774,7 +4770,6 @@ const schema = {
           "text",
           "type",
           "marks",
-          "multiple_answers",
           "options",
           "correct_answer"
         ],
@@ -4795,9 +4790,9 @@ const schema = {
               "QuestionTypeEssay"
             ],
             "enum": [
-              "multiple_answers",
-              "single_answer",
-              "short_answer",
+              "multiple-answers",
+              "single-answer",
+              "short-answer",
               "essay"
             ]
           },
@@ -5052,7 +5047,6 @@ const schema = {
                     "text",
                     "type",
                     "marks",
-                    "multiple_answers",
                     "options",
                     "correct_answer"
                   ],
@@ -5073,9 +5067,9 @@ const schema = {
                         "QuestionTypeEssay"
                       ],
                       "enum": [
-                        "multiple_answers",
-                        "single_answer",
-                        "short_answer",
+                        "multiple-answers",
+                        "single-answer",
+                        "short-answer",
                         "essay"
                       ]
                     },

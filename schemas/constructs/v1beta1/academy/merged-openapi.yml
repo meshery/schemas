@@ -1816,7 +1816,6 @@
                                         "text",
                                         "type",
                                         "marks",
-                                        "multiple_answers",
                                         "options",
                                         "correct_answer"
                                       ],
@@ -1837,9 +1836,9 @@
                                             "QuestionTypeEssay"
                                           ],
                                           "enum": [
-                                            "multiple_answers",
-                                            "single_answer",
-                                            "short_answer",
+                                            "multiple-answers",
+                                            "single-answer",
+                                            "short-answer",
                                             "essay"
                                           ]
                                         },
@@ -2280,7 +2279,6 @@
                               "text",
                               "type",
                               "marks",
-                              "multiple_answers",
                               "options",
                               "correct_answer"
                             ],
@@ -2301,9 +2299,9 @@
                                   "QuestionTypeEssay"
                                 ],
                                 "enum": [
-                                  "multiple_answers",
-                                  "single_answer",
-                                  "short_answer",
+                                  "multiple-answers",
+                                  "single-answer",
+                                  "short-answer",
                                   "essay"
                                 ]
                               },
@@ -4232,7 +4230,6 @@
                           "text",
                           "type",
                           "marks",
-                          "multiple_answers",
                           "options",
                           "correct_answer"
                         ],
@@ -4253,9 +4250,9 @@
                               "QuestionTypeEssay"
                             ],
                             "enum": [
-                              "multiple_answers",
-                              "single_answer",
-                              "short_answer",
+                              "multiple-answers",
+                              "single-answer",
+                              "short-answer",
                               "essay"
                             ]
                           },
@@ -4603,7 +4600,6 @@
                 "text",
                 "type",
                 "marks",
-                "multiple_answers",
                 "options",
                 "correct_answer"
               ],
@@ -4624,9 +4620,9 @@
                     "QuestionTypeEssay"
                   ],
                   "enum": [
-                    "multiple_answers",
-                    "single_answer",
-                    "short_answer",
+                    "multiple-answers",
+                    "single-answer",
+                    "short-answer",
                     "essay"
                   ]
                 },
@@ -4756,9 +4752,9 @@
           "QuestionTypeEssay"
         ],
         "enum": [
-          "multiple_answers",
-          "single_answer",
-          "short_answer",
+          "multiple-answers",
+          "single-answer",
+          "short-answer",
           "essay"
         ]
       },
@@ -4769,7 +4765,6 @@
           "text",
           "type",
           "marks",
-          "multiple_answers",
           "options",
           "correct_answer"
         ],
@@ -4790,9 +4785,9 @@
               "QuestionTypeEssay"
             ],
             "enum": [
-              "multiple_answers",
-              "single_answer",
-              "short_answer",
+              "multiple-answers",
+              "single-answer",
+              "short-answer",
               "essay"
             ]
           },
@@ -5047,7 +5042,6 @@
                     "text",
                     "type",
                     "marks",
-                    "multiple_answers",
                     "options",
                     "correct_answer"
                   ],
@@ -5068,9 +5062,9 @@
                         "QuestionTypeEssay"
                       ],
                       "enum": [
-                        "multiple_answers",
-                        "single_answer",
-                        "short_answer",
+                        "multiple-answers",
+                        "single-answer",
+                        "short-answer",
                         "essay"
                       ]
                     },

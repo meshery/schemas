@@ -37,9 +37,9 @@ const (
 // Defines values for QuestionType.
 const (
 	QuestionTypeEssay           QuestionType = "essay"
-	QuestionTypeMultipleAnswers QuestionType = "multiple_answers"
-	QuestionTypeShortAnswer     QuestionType = "short_answer"
-	QuestionTypeSingleAnswer    QuestionType = "single_answer"
+	QuestionTypeMultipleAnswers QuestionType = "multiple-answers"
+	QuestionTypeShortAnswer     QuestionType = "short-answer"
+	QuestionTypeSingleAnswer    QuestionType = "single-answer"
 )
 
 // Defines values for RegisterToAcademyContentRequestContentType.
@@ -278,7 +278,7 @@ type Question struct {
 	CorrectAnswer   string           `json:"correct_answer" yaml:"correct_answer"`
 	Id              string           `json:"id" yaml:"id"`
 	Marks           int              `json:"marks" yaml:"marks"`
-	MultipleAnswers bool             `json:"multiple_answers" yaml:"multiple_answers"`
+	MultipleAnswers *bool            `json:"multiple_answers,omitempty" yaml:"multiple_answers,omitempty"`
 	Options         []QuestionOption `json:"options" yaml:"options"`
 	Text            string           `json:"text" yaml:"text"`
 	Type            QuestionType     `json:"type" yaml:"type"`

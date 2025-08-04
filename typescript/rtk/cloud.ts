@@ -707,9 +707,9 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
             questions: {
               id: string;
               text: string;
-              type: "multiple_answers" | "single_answer" | "short_answer" | "essay";
+              type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
               marks: number;
-              multiple_answers: boolean;
+              multiple_answers?: boolean;
               options: {
                 id: string;
                 text: string;
@@ -803,9 +803,9 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
     questions: {
       id: string;
       text: string;
-      type: "multiple_answers" | "single_answer" | "short_answer" | "essay";
+      type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
       marks: number;
-      multiple_answers: boolean;
+      multiple_answers?: boolean;
       options: {
         id: string;
         text: string;
