@@ -590,7 +590,7 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       permalink: string;
       /** Course description */
       description: string;
-      /** Order of the course in the list */
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
       weight?: number;
       /** Optional banner image */
       banner?: string | null;
