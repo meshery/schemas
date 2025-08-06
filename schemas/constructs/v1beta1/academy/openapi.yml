@@ -712,7 +712,6 @@ components:
         weight:
           type: number
           description: A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
-
           example: eg 1 , 2
         banner:
           type: string
@@ -1075,3 +1074,4 @@ components:
           format: date-time
         attempts:
           type: integer
+
