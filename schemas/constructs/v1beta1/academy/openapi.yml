@@ -711,7 +711,8 @@ components:
           example: Learn the basics of Kubernetes
         weight:
           type: number
-          description: A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title
+          description: A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
+
           example: eg 1 , 2
         banner:
           type: string
