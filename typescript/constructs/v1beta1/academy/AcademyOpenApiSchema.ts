@@ -325,7 +325,7 @@ const schema = {
                                       },
                                       "weight": {
                                         "type": "number",
-                                        "description": "Order of the course in the list",
+                                        "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                         "example": "eg 1 , 2"
                                       },
                                       "banner": {
@@ -784,7 +784,7 @@ const schema = {
                                       },
                                       "weight": {
                                         "type": "number",
-                                        "description": "Order of the course in the list",
+                                        "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                         "example": "eg 1 , 2"
                                       },
                                       "banner": {
@@ -1158,7 +1158,7 @@ const schema = {
                                   },
                                   "weight": {
                                     "type": "number",
-                                    "description": "Order of the course in the list",
+                                    "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                     "example": "eg 1 , 2"
                                   },
                                   "banner": {
@@ -2767,7 +2767,7 @@ const schema = {
                         },
                         "weight": {
                           "type": "number",
-                          "description": "Order of the course in the list",
+                          "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                           "example": "eg 1 , 2"
                         },
                         "banner": {
@@ -3096,7 +3096,7 @@ const schema = {
                               },
                               "weight": {
                                 "type": "number",
-                                "description": "Order of the course in the list",
+                                "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                 "example": "eg 1 , 2"
                               },
                               "banner": {
@@ -3287,7 +3287,7 @@ const schema = {
                 },
                 "weight": {
                   "type": "number",
-                  "description": "Order of the course in the list",
+                  "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                   "example": "eg 1 , 2"
                 },
                 "banner": {
@@ -3454,7 +3454,7 @@ const schema = {
                 },
                 "weight": {
                   "type": "number",
-                  "description": "Order of the course in the list",
+                  "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                   "example": "eg 1 , 2"
                 },
                 "banner": {
@@ -3678,7 +3678,7 @@ const schema = {
                 },
                 "weight": {
                   "type": "number",
-                  "description": "Order of the course in the list",
+                  "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                   "example": "eg 1 , 2"
                 },
                 "banner": {
@@ -3868,7 +3868,7 @@ const schema = {
           },
           "weight": {
             "type": "number",
-            "description": "Order of the course in the list",
+            "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
             "example": "eg 1 , 2"
           },
           "banner": {
