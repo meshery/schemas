@@ -1073,5 +1073,5 @@ components:
           type: string
           format: date-time
         attempts:
-
           type: integer
+
