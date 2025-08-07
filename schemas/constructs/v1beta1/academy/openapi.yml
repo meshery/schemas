@@ -328,8 +328,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-   # admininstration endpoints
-   /api/academy/admin/summary:
+  /api/academy/admin/summary:
      get:
       tags:
         - Academy
