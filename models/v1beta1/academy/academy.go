@@ -104,6 +104,83 @@ type AcademyCirriculaListResponse struct {
 	Total int `json:"total" yaml:"total"`
 }
 
+// AcademyCurriculaWithMetrics defines model for AcademyCurriculaWithMetrics.
+type AcademyCurriculaWithMetrics struct {
+	RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+
+	// CreatedAt When the cirricula item was created
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+	// DeletedAt Timestamp when the resource was deleted.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+
+	// ID Id of the cirricula
+	ID string `db:"id" json:"id" yaml:"id"`
+
+	// Level Level of the cirricula
+	Level Level `db:"level" json:"level" yaml:"level"`
+
+	// Metadata Additional metadata about the cirricula
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+	// OrgId Organization ID that owns this learning path
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// Slug slug of the cirricula
+	Slug string `json:"slug" yaml:"slug"`
+
+	// Status Status of the cirricula
+	Status Status      `db:"status" json:"status" yaml:"status"`
+	Type   ContentType `db:"type" json:"type" yaml:"type"`
+
+	// UpdatedAt When the cirricula was last updated
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+
+	// Visibility Visibility of the cirricula
+	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+}
+
+// AcademyCurriculaWithMetricsListResponse defines model for AcademyCurriculaWithMetricsListResponse.
+type AcademyCurriculaWithMetricsListResponse struct {
+	Data []struct {
+		RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+
+		// CreatedAt When the cirricula item was created
+		CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+		// DeletedAt Timestamp when the resource was deleted.
+		DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+
+		// ID Id of the cirricula
+		ID string `db:"id" json:"id" yaml:"id"`
+
+		// Level Level of the cirricula
+		Level Level `db:"level" json:"level" yaml:"level"`
+
+		// Metadata Additional metadata about the cirricula
+		Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+		// OrgId Organization ID that owns this learning path
+		OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+		// Slug slug of the cirricula
+		Slug string `json:"slug" yaml:"slug"`
+
+		// Status Status of the cirricula
+		Status Status      `db:"status" json:"status" yaml:"status"`
+		Type   ContentType `db:"type" json:"type" yaml:"type"`
+
+		// UpdatedAt When the cirricula was last updated
+		UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+
+		// Visibility Visibility of the cirricula
+		Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+	} `json:"data" yaml:"data"`
+
+	// Total Total number of cirricula
+	Total int `json:"total" yaml:"total"`
+}
+
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
 	// ContentId ID of the course content
@@ -302,23 +379,26 @@ type Quiz struct {
 	FilePath    string             `json:"file_path" yaml:"file_path"`
 
 	// Final Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-	Final          bool               `json:"final" yaml:"final"`
-	ID             string             `json:"id" yaml:"id"`
-	Lastmod        openapi_types.Date `json:"lastmod" yaml:"lastmod"`
-	Layout         string             `json:"layout" yaml:"layout"`
-	Parent         *Parent            `json:"parent,omitempty" yaml:"parent,omitempty"`
-	PassPercentage float32            `json:"pass_percentage" yaml:"pass_percentage"`
-	Permalink      string             `json:"permalink" yaml:"permalink"`
-	Prerequisites  []Parent           `json:"prerequisites" yaml:"prerequisites"`
-	Questions      []Question         `json:"questions" yaml:"questions"`
-	RelPermalink   string             `json:"relPermalink" yaml:"relPermalink"`
-	Section        string             `json:"section" yaml:"section"`
-	Slug           string             `json:"slug" yaml:"slug"`
-	TimeLimit      string             `json:"time_limit" yaml:"time_limit"`
-	Title          string             `json:"title" yaml:"title"`
-	TotalMarks     int                `json:"total_marks" yaml:"total_marks"`
-	TotalQuestions int                `json:"total_questions" yaml:"total_questions"`
-	Type           string             `json:"type" yaml:"type"`
+	Final   bool               `json:"final" yaml:"final"`
+	ID      string             `json:"id" yaml:"id"`
+	Lastmod openapi_types.Date `json:"lastmod" yaml:"lastmod"`
+	Layout  string             `json:"layout" yaml:"layout"`
+
+	// OrgId Organization ID that owns this quiz
+	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`
+	Parent         *Parent    `json:"parent,omitempty" yaml:"parent,omitempty"`
+	PassPercentage float32    `json:"pass_percentage" yaml:"pass_percentage"`
+	Permalink      string     `json:"permalink" yaml:"permalink"`
+	Prerequisites  []Parent   `json:"prerequisites" yaml:"prerequisites"`
+	Questions      []Question `json:"questions" yaml:"questions"`
+	RelPermalink   string     `json:"relPermalink" yaml:"relPermalink"`
+	Section        string     `json:"section" yaml:"section"`
+	Slug           string     `json:"slug" yaml:"slug"`
+	TimeLimit      string     `json:"time_limit" yaml:"time_limit"`
+	Title          string     `json:"title" yaml:"title"`
+	TotalMarks     int        `json:"total_marks" yaml:"total_marks"`
+	TotalQuestions int        `json:"total_questions" yaml:"total_questions"`
+	Type           string     `json:"type" yaml:"type"`
 }
 
 // QuizEvaluationResult defines model for QuizEvaluationResult.

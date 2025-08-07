@@ -522,322 +522,343 @@
                   "data": {
                     "type": "array",
                     "items": {
-                      "x-go-type": "AcademyCirricula",
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "Id of the cirricula",
-                          "example": "923458-3490394-934893",
-                          "x-go-name": "ID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "id",
-                            "json": "id",
-                            "yaml": "id"
-                          }
-                        },
-                        "type": {
-                          "x-go-type": "ContentType",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "type"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "learning-path",
-                            "challenge",
-                            "certification"
-                          ]
-                        },
-                        "orgId": {
-                          "type": "string",
-                          "description": "Organization ID that owns this learning path",
-                          "example": "layer5",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "org_id",
-                            "json": "org_id",
-                            "yaml": "org_id"
-                          }
-                        },
-                        "visibility": {
-                          "description": "Visibility of the cirricula",
-                          "x-go-type": "Visibility",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "visibility",
-                            "json": "visibility",
-                            "yaml": "visibility"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "public",
-                            "private"
-                          ]
-                        },
-                        "status": {
-                          "example": "ready",
-                          "description": "Status of the cirricula",
-                          "x-go-type": "Status",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "status",
-                            "json": "status",
-                            "yaml": "status"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "ready",
-                            "archived",
-                            "not_ready"
-                          ]
-                        },
-                        "slug": {
-                          "type": "string",
-                          "description": "slug of the cirricula",
-                          "example": "intro-kubernetes-course"
-                        },
-                        "level": {
-                          "description": "Level of the cirricula",
-                          "x-go-type": "Level",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "level",
-                            "json": "level",
-                            "yaml": "level"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "beginner",
-                            "intermediate",
-                            "advanced"
-                          ]
-                        },
-                        "createdAt": {
-                          "description": "When the cirricula item was created",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "json": "created_at",
-                            "yaml": "created_at"
-                          },
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "updatedAt": {
-                          "description": "When the cirricula was last updated",
-                          "x-go-type": "core.Time",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "json": "updated_at",
-                            "yaml": "updated_at"
-                          },
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "deletedAt": {
-                          "x-go-type": "core.NullTime",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "deleted_at",
-                            "json": "deleted_at",
-                            "yaml": "deleted_at"
-                          },
-                          "description": "Timestamp when the resource was deleted.",
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-name": "DeletedAt",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "metadata": {
+                      "x-go-type": "AcademyCurriculaWithMetrics",
+                      "x-go-type-skip-optional-pointer": true,
+                      "allOf": [
+                        {
                           "type": "object",
-                          "description": "Additional metadata about the cirricula",
-                          "additionalProperties": true,
-                          "x-go-type": "core.Map",
-                          "x-go-type-skip-optional-pointer": true,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "metadata",
-                            "json": "metadata",
-                            "yaml": "metadata"
-                          },
-                          "oneOf": [
-                            {
-                              "x-go-type": "CurriculaMetadata",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Id of the cirricula",
+                              "example": "923458-3490394-934893",
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "id",
+                                "json": "id",
+                                "yaml": "id"
+                              }
+                            },
+                            "type": {
+                              "x-go-type": "ContentType",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "type"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "learning-path",
+                                "challenge",
+                                "certification"
+                              ]
+                            },
+                            "orgId": {
+                              "type": "string",
+                              "description": "Organization ID that owns this learning path",
+                              "example": "layer5",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "org_id",
+                                "json": "org_id",
+                                "yaml": "org_id"
+                              }
+                            },
+                            "visibility": {
+                              "description": "Visibility of the cirricula",
+                              "x-go-type": "Visibility",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "visibility",
+                                "json": "visibility",
+                                "yaml": "visibility"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "public",
+                                "private"
+                              ]
+                            },
+                            "status": {
+                              "example": "ready",
+                              "description": "Status of the cirricula",
+                              "x-go-type": "Status",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "status",
+                                "json": "status",
+                                "yaml": "status"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "ready",
+                                "archived",
+                                "not_ready"
+                              ]
+                            },
+                            "slug": {
+                              "type": "string",
+                              "description": "slug of the cirricula",
+                              "example": "intro-kubernetes-course"
+                            },
+                            "level": {
+                              "description": "Level of the cirricula",
+                              "x-go-type": "Level",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "level",
+                                "json": "level",
+                                "yaml": "level"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "beginner",
+                                "intermediate",
+                                "advanced"
+                              ]
+                            },
+                            "createdAt": {
+                              "description": "When the cirricula item was created",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "json": "created_at",
+                                "yaml": "created_at"
+                              },
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updatedAt": {
+                              "description": "When the cirricula was last updated",
+                              "x-go-type": "core.Time",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "json": "updated_at",
+                                "yaml": "updated_at"
+                              },
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "deletedAt": {
+                              "x-go-type": "core.NullTime",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "deleted_at",
+                                "json": "deleted_at",
+                                "yaml": "deleted_at"
+                              },
+                              "description": "Timestamp when the resource was deleted.",
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-name": "DeletedAt",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "metadata": {
                               "type": "object",
-                              "properties": {
-                                "title": {
-                                  "type": "string",
-                                  "description": "Title of the learning path",
-                                  "example": "Mastering Kubernetes for Engineers"
-                                },
-                                "description": {
-                                  "type": "string",
-                                  "description": "Description of the learning path",
-                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
-                                },
-                                "banner": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "nullable": true,
-                                  "description": "Optional banner image",
-                                  "example": null
-                                },
-                                "permalink": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "description": "Canonical URL for the learning path",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
-                                },
-                                "badge": {
-                                  "x-go-type": "Badge",
+                              "description": "Additional metadata about the cirricula",
+                              "additionalProperties": true,
+                              "x-go-type": "core.Map",
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "metadata",
+                                "json": "metadata",
+                                "yaml": "metadata"
+                              },
+                              "oneOf": [
+                                {
+                                  "x-go-type": "CurriculaMetadata",
                                   "type": "object",
-                                  "required": [
-                                    "label",
-                                    "title",
-                                    "description",
-                                    "png",
-                                    "svg"
-                                  ],
-                                  "properties": {
-                                    "label": {
-                                      "type": "string",
-                                      "description": "unique identifier for the badge ( auto generated )",
-                                      "example": "Kubernetes-Expert"
-                                    },
-                                    "title": {
-                                      "type": "string",
-                                      "description": "Title of the badge",
-                                      "example": "Kubernetes Expert"
-                                    },
-                                    "description": {
-                                      "type": "string",
-                                      "description": "Description of the badge",
-                                      "example": "Awarded for mastering Kubernetes concepts and practices"
-                                    },
-                                    "png": {
-                                      "type": "string",
-                                      "format": "uri",
-                                      "description": "URL to the badge image",
-                                      "example": "http://localhost:9876/badges/kubernetes-expert.png"
-                                    },
-                                    "svg": {
-                                      "type": "string",
-                                      "format": "uri",
-                                      "description": "URL to the badge SVG image",
-                                      "example": "http://localhost:9876/badges/kubernetes-expert.svg"
-                                    }
-                                  }
-                                },
-                                "certificate": {
-                                  "x-go-type": "Certificate",
-                                  "type": "object",
-                                  "required": [
-                                    "title",
-                                    "description"
-                                  ],
                                   "properties": {
                                     "title": {
                                       "type": "string",
-                                      "description": "Title of the certificate",
-                                      "example": "Kubernetes Expert Certification"
+                                      "description": "Title of the learning path",
+                                      "example": "Mastering Kubernetes for Engineers"
                                     },
                                     "description": {
                                       "type": "string",
-                                      "description": "Description of the certificate",
-                                      "example": "Awarded for successfully completing the Kubernetes Expert course"
-                                    }
-                                  }
-                                },
-                                "children": {
-                                  "type": "array",
-                                  "description": "List of children items in the top-level curricula",
-                                  "items": {
-                                    "x-go-type": "ChildNode",
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "string",
-                                        "description": "Unique identifier for the course",
-                                        "example": "1234567890abcdef",
-                                        "x-go-name": "ID",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "id",
-                                          "json": "id",
-                                          "yaml": "id"
-                                        }
-                                      },
-                                      "title": {
-                                        "type": "string",
-                                        "description": "Title of the course",
-                                        "example": "Kubernetes Basics"
-                                      },
-                                      "permalink": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "description": "URL to the course content",
-                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
-                                      },
-                                      "description": {
-                                        "type": "string",
-                                        "description": "Course description",
-                                        "example": "Learn the basics of Kubernetes"
-                                      },
-                                      "weight": {
-                                        "type": "number",
-                                        "description": "Order of the course in the list",
-                                        "example": "eg 1 , 2"
-                                      },
-                                      "banner": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "nullable": true,
-                                        "description": "Optional banner image",
-                                        "example": null
-                                      },
-                                      "type": {
-                                        "x-go-type": "ContentType",
-                                        "description": "Type of the content (e.g., learning-path, challenge, certification)",
-                                        "type": "string",
-                                        "enum": [
-                                          "learning-path",
-                                          "challenge",
-                                          "certification"
-                                        ]
-                                      },
-                                      "children": {
-                                        "type": "array",
-                                        "description": "List of child nodes (sub-courses or modules)",
-                                        "items": {
-                                          "type": "object",
-                                          "x-go-type": "ChildNode"
+                                      "description": "Description of the learning path",
+                                      "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                    },
+                                    "banner": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "nullable": true,
+                                      "description": "Optional banner image",
+                                      "example": null
+                                    },
+                                    "permalink": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "Canonical URL for the learning path",
+                                      "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                    },
+                                    "badge": {
+                                      "x-go-type": "Badge",
+                                      "type": "object",
+                                      "required": [
+                                        "label",
+                                        "title",
+                                        "description",
+                                        "png",
+                                        "svg"
+                                      ],
+                                      "properties": {
+                                        "label": {
+                                          "type": "string",
+                                          "description": "unique identifier for the badge ( auto generated )",
+                                          "example": "Kubernetes-Expert"
+                                        },
+                                        "title": {
+                                          "type": "string",
+                                          "description": "Title of the badge",
+                                          "example": "Kubernetes Expert"
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Description of the badge",
+                                          "example": "Awarded for mastering Kubernetes concepts and practices"
+                                        },
+                                        "png": {
+                                          "type": "string",
+                                          "format": "uri",
+                                          "description": "URL to the badge image",
+                                          "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                        },
+                                        "svg": {
+                                          "type": "string",
+                                          "format": "uri",
+                                          "description": "URL to the badge SVG image",
+                                          "example": "http://localhost:9876/badges/kubernetes-expert.svg"
                                         }
                                       }
                                     },
-                                    "required": [
-                                      "title",
-                                      "description",
-                                      "id",
-                                      "permalink"
-                                    ]
-                                  }
+                                    "certificate": {
+                                      "x-go-type": "Certificate",
+                                      "type": "object",
+                                      "required": [
+                                        "title",
+                                        "description"
+                                      ],
+                                      "properties": {
+                                        "title": {
+                                          "type": "string",
+                                          "description": "Title of the certificate",
+                                          "example": "Kubernetes Expert Certification"
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Description of the certificate",
+                                          "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                        }
+                                      }
+                                    },
+                                    "children": {
+                                      "type": "array",
+                                      "description": "List of children items in the top-level curricula",
+                                      "items": {
+                                        "x-go-type": "ChildNode",
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "description": "Unique identifier for the course",
+                                            "example": "1234567890abcdef",
+                                            "x-go-name": "ID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "id",
+                                              "json": "id",
+                                              "yaml": "id"
+                                            }
+                                          },
+                                          "title": {
+                                            "type": "string",
+                                            "description": "Title of the course",
+                                            "example": "Kubernetes Basics"
+                                          },
+                                          "permalink": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "description": "URL to the course content",
+                                            "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                          },
+                                          "description": {
+                                            "type": "string",
+                                            "description": "Course description",
+                                            "example": "Learn the basics of Kubernetes"
+                                          },
+                                          "weight": {
+                                            "type": "number",
+                                            "description": "Order of the course in the list",
+                                            "example": "eg 1 , 2"
+                                          },
+                                          "banner": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "nullable": true,
+                                            "description": "Optional banner image",
+                                            "example": null
+                                          },
+                                          "type": {
+                                            "x-go-type": "ContentType",
+                                            "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                                            "type": "string",
+                                            "enum": [
+                                              "learning-path",
+                                              "challenge",
+                                              "certification"
+                                            ]
+                                          },
+                                          "children": {
+                                            "type": "array",
+                                            "description": "List of child nodes (sub-courses or modules)",
+                                            "items": {
+                                              "type": "object",
+                                              "x-go-type": "ChildNode"
+                                            }
+                                          }
+                                        },
+                                        "required": [
+                                          "title",
+                                          "description",
+                                          "id",
+                                          "permalink"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "title",
+                                    "description",
+                                    "permalink"
+                                  ]
                                 }
-                              },
-                              "required": [
-                                "title",
-                                "description",
-                                "permalink"
                               ]
                             }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "orgId",
+                            "visibility",
+                            "status",
+                            "slug",
+                            "createdAt",
+                            "updatedAt",
+                            "deletedAt",
+                            "metadata",
+                            "level"
                           ]
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "RegistrationCount"
+                          ],
+                          "properties": {
+                            "RegistrationCount": {
+                              "type": "number",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "registration_count,omitempty",
+                                "json": "registration_count,omitempty",
+                                "yaml": "registration_count,omitempty"
+                              }
+                            }
+                          }
                         }
-                      },
-                      "required": [
-                        "id",
-                        "type",
-                        "orgId",
-                        "visibility",
-                        "status",
-                        "slug",
-                        "createdAt",
-                        "updatedAt",
-                        "deletedAt",
-                        "metadata",
-                        "level"
                       ]
                     }
                   }
@@ -1729,6 +1750,7 @@
                                 "required": [
                                   "id",
                                   "title",
+                                  "orgId",
                                   "description",
                                   "slug",
                                   "relPermalink",
@@ -1754,6 +1776,16 @@
                                     "x-go-name": "ID",
                                     "x-oapi-codegen-extra-tags": {
                                       "json": "id"
+                                    }
+                                  },
+                                  "orgId": {
+                                    "type": "string",
+                                    "description": "Organization ID that owns this quiz",
+                                    "example": "layer5",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "org_id",
+                                      "json": "org_id",
+                                      "yaml": "org_id"
                                     }
                                   },
                                   "final": {
@@ -2192,6 +2224,7 @@
                       "required": [
                         "id",
                         "title",
+                        "orgId",
                         "description",
                         "slug",
                         "relPermalink",
@@ -2217,6 +2250,16 @@
                           "x-go-name": "ID",
                           "x-oapi-codegen-extra-tags": {
                             "json": "id"
+                          }
+                        },
+                        "orgId": {
+                          "type": "string",
+                          "description": "Organization ID that owns this quiz",
+                          "example": "layer5",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "org_id",
+                            "json": "org_id",
+                            "yaml": "org_id"
                           }
                         },
                         "final": {
@@ -2446,6 +2489,37 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/academy/admin/summary": {
+      "get": {
+        "tags": [
+          "Academy"
+        ],
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getAcademyAdminSummary",
+        "summary": "Get academy content summary",
+        "description": "Returns a summary of all academy content with  metrics.",
+        "responses": {
+          "200": {
+            "description": "A list of content with total count and registration metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
@@ -2823,6 +2897,344 @@
           "level"
         ]
       },
+      "AcademyCurriculaWithMetrics": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Id of the cirricula",
+                "example": "923458-3490394-934893",
+                "x-go-name": "ID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "id",
+                  "json": "id",
+                  "yaml": "id"
+                }
+              },
+              "type": {
+                "x-go-type": "ContentType",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "type"
+                },
+                "type": "string",
+                "enum": [
+                  "learning-path",
+                  "challenge",
+                  "certification"
+                ]
+              },
+              "orgId": {
+                "type": "string",
+                "description": "Organization ID that owns this learning path",
+                "example": "layer5",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id",
+                  "yaml": "org_id"
+                }
+              },
+              "visibility": {
+                "description": "Visibility of the cirricula",
+                "x-go-type": "Visibility",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "visibility",
+                  "json": "visibility",
+                  "yaml": "visibility"
+                },
+                "type": "string",
+                "enum": [
+                  "public",
+                  "private"
+                ]
+              },
+              "status": {
+                "example": "ready",
+                "description": "Status of the cirricula",
+                "x-go-type": "Status",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "status",
+                  "json": "status",
+                  "yaml": "status"
+                },
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "archived",
+                  "not_ready"
+                ]
+              },
+              "slug": {
+                "type": "string",
+                "description": "slug of the cirricula",
+                "example": "intro-kubernetes-course"
+              },
+              "level": {
+                "description": "Level of the cirricula",
+                "x-go-type": "Level",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "level",
+                  "json": "level",
+                  "yaml": "level"
+                },
+                "type": "string",
+                "enum": [
+                  "beginner",
+                  "intermediate",
+                  "advanced"
+                ]
+              },
+              "createdAt": {
+                "description": "When the cirricula item was created",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "json": "created_at",
+                  "yaml": "created_at"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "updatedAt": {
+                "description": "When the cirricula was last updated",
+                "x-go-type": "core.Time",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "json": "updated_at",
+                  "yaml": "updated_at"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "deletedAt": {
+                "x-go-type": "core.NullTime",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "json": "deleted_at",
+                  "yaml": "deleted_at"
+                },
+                "description": "Timestamp when the resource was deleted.",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "DeletedAt",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Additional metadata about the cirricula",
+                "additionalProperties": true,
+                "x-go-type": "core.Map",
+                "x-go-type-skip-optional-pointer": true,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "metadata",
+                  "json": "metadata",
+                  "yaml": "metadata"
+                },
+                "oneOf": [
+                  {
+                    "x-go-type": "CurriculaMetadata",
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Title of the learning path",
+                        "example": "Mastering Kubernetes for Engineers"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the learning path",
+                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                      },
+                      "banner": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true,
+                        "description": "Optional banner image",
+                        "example": null
+                      },
+                      "permalink": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Canonical URL for the learning path",
+                        "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                      },
+                      "badge": {
+                        "x-go-type": "Badge",
+                        "type": "object",
+                        "required": [
+                          "label",
+                          "title",
+                          "description",
+                          "png",
+                          "svg"
+                        ],
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "unique identifier for the badge ( auto generated )",
+                            "example": "Kubernetes-Expert"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Title of the badge",
+                            "example": "Kubernetes Expert"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the badge",
+                            "example": "Awarded for mastering Kubernetes concepts and practices"
+                          },
+                          "png": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the badge image",
+                            "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                          },
+                          "svg": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the badge SVG image",
+                            "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                          }
+                        }
+                      },
+                      "certificate": {
+                        "x-go-type": "Certificate",
+                        "type": "object",
+                        "required": [
+                          "title",
+                          "description"
+                        ],
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "description": "Title of the certificate",
+                            "example": "Kubernetes Expert Certification"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the certificate",
+                            "example": "Awarded for successfully completing the Kubernetes Expert course"
+                          }
+                        }
+                      },
+                      "children": {
+                        "type": "array",
+                        "description": "List of children items in the top-level curricula",
+                        "items": {
+                          "x-go-type": "ChildNode",
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Unique identifier for the course",
+                              "example": "1234567890abcdef",
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "id",
+                                "json": "id",
+                                "yaml": "id"
+                              }
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the course",
+                              "example": "Kubernetes Basics"
+                            },
+                            "permalink": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "URL to the course content",
+                              "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Course description",
+                              "example": "Learn the basics of Kubernetes"
+                            },
+                            "weight": {
+                              "type": "number",
+                              "description": "Order of the course in the list",
+                              "example": "eg 1 , 2"
+                            },
+                            "banner": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true,
+                              "description": "Optional banner image",
+                              "example": null
+                            },
+                            "type": {
+                              "x-go-type": "ContentType",
+                              "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                              "type": "string",
+                              "enum": [
+                                "learning-path",
+                                "challenge",
+                                "certification"
+                              ]
+                            },
+                            "children": {
+                              "type": "array",
+                              "description": "List of child nodes (sub-courses or modules)",
+                              "items": {
+                                "type": "object",
+                                "x-go-type": "ChildNode"
+                              }
+                            }
+                          },
+                          "required": [
+                            "title",
+                            "description",
+                            "id",
+                            "permalink"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "permalink"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "orgId",
+              "visibility",
+              "status",
+              "slug",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "metadata",
+              "level"
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "RegistrationCount"
+            ],
+            "properties": {
+              "RegistrationCount": {
+                "type": "number",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "registration_count,omitempty",
+                  "json": "registration_count,omitempty",
+                  "yaml": "registration_count,omitempty"
+                }
+              }
+            }
+          }
+        ]
+      },
       "AcademyCirriculaListResponse": {
         "type": "object",
         "properties": {
@@ -3150,6 +3562,363 @@
                 "deletedAt",
                 "metadata",
                 "level"
+              ]
+            }
+          }
+        },
+        "required": [
+          "total",
+          "data"
+        ]
+      },
+      "AcademyCurriculaWithMetricsListResponse": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of cirricula",
+            "example": 7
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "x-go-type": "AcademyCurriculaWithMetrics",
+              "x-go-type-skip-optional-pointer": true,
+              "allOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Id of the cirricula",
+                      "example": "923458-3490394-934893",
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "id",
+                        "yaml": "id"
+                      }
+                    },
+                    "type": {
+                      "x-go-type": "ContentType",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "type"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "learning-path",
+                        "challenge",
+                        "certification"
+                      ]
+                    },
+                    "orgId": {
+                      "type": "string",
+                      "description": "Organization ID that owns this learning path",
+                      "example": "layer5",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_id",
+                        "json": "org_id",
+                        "yaml": "org_id"
+                      }
+                    },
+                    "visibility": {
+                      "description": "Visibility of the cirricula",
+                      "x-go-type": "Visibility",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility",
+                        "json": "visibility",
+                        "yaml": "visibility"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "private"
+                      ]
+                    },
+                    "status": {
+                      "example": "ready",
+                      "description": "Status of the cirricula",
+                      "x-go-type": "Status",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status",
+                        "json": "status",
+                        "yaml": "status"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "ready",
+                        "archived",
+                        "not_ready"
+                      ]
+                    },
+                    "slug": {
+                      "type": "string",
+                      "description": "slug of the cirricula",
+                      "example": "intro-kubernetes-course"
+                    },
+                    "level": {
+                      "description": "Level of the cirricula",
+                      "x-go-type": "Level",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "level",
+                        "json": "level",
+                        "yaml": "level"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "beginner",
+                        "intermediate",
+                        "advanced"
+                      ]
+                    },
+                    "createdAt": {
+                      "description": "When the cirricula item was created",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at",
+                        "yaml": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "When the cirricula was last updated",
+                      "x-go-type": "core.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at",
+                        "yaml": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "deletedAt": {
+                      "x-go-type": "core.NullTime",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deleted_at",
+                        "yaml": "deleted_at"
+                      },
+                      "description": "Timestamp when the resource was deleted.",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "DeletedAt",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Additional metadata about the cirricula",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata",
+                        "json": "metadata",
+                        "yaml": "metadata"
+                      },
+                      "oneOf": [
+                        {
+                          "x-go-type": "CurriculaMetadata",
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the learning path",
+                              "example": "Mastering Kubernetes for Engineers"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Description of the learning path",
+                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            },
+                            "banner": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true,
+                              "description": "Optional banner image",
+                              "example": null
+                            },
+                            "permalink": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "Canonical URL for the learning path",
+                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                            },
+                            "badge": {
+                              "x-go-type": "Badge",
+                              "type": "object",
+                              "required": [
+                                "label",
+                                "title",
+                                "description",
+                                "png",
+                                "svg"
+                              ],
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "description": "unique identifier for the badge ( auto generated )",
+                                  "example": "Kubernetes-Expert"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the badge",
+                                  "example": "Kubernetes Expert"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the badge",
+                                  "example": "Awarded for mastering Kubernetes concepts and practices"
+                                },
+                                "png": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "URL to the badge image",
+                                  "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                },
+                                "svg": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "URL to the badge SVG image",
+                                  "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                }
+                              }
+                            },
+                            "certificate": {
+                              "x-go-type": "Certificate",
+                              "type": "object",
+                              "required": [
+                                "title",
+                                "description"
+                              ],
+                              "properties": {
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the certificate",
+                                  "example": "Kubernetes Expert Certification"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the certificate",
+                                  "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                }
+                              }
+                            },
+                            "children": {
+                              "type": "array",
+                              "description": "List of children items in the top-level curricula",
+                              "items": {
+                                "x-go-type": "ChildNode",
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Unique identifier for the course",
+                                    "example": "1234567890abcdef",
+                                    "x-go-name": "ID",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id",
+                                      "yaml": "id"
+                                    }
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "Title of the course",
+                                    "example": "Kubernetes Basics"
+                                  },
+                                  "permalink": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "description": "URL to the course content",
+                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Course description",
+                                    "example": "Learn the basics of Kubernetes"
+                                  },
+                                  "weight": {
+                                    "type": "number",
+                                    "description": "Order of the course in the list",
+                                    "example": "eg 1 , 2"
+                                  },
+                                  "banner": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "nullable": true,
+                                    "description": "Optional banner image",
+                                    "example": null
+                                  },
+                                  "type": {
+                                    "x-go-type": "ContentType",
+                                    "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                                    "type": "string",
+                                    "enum": [
+                                      "learning-path",
+                                      "challenge",
+                                      "certification"
+                                    ]
+                                  },
+                                  "children": {
+                                    "type": "array",
+                                    "description": "List of child nodes (sub-courses or modules)",
+                                    "items": {
+                                      "type": "object",
+                                      "x-go-type": "ChildNode"
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "title",
+                                  "description",
+                                  "id",
+                                  "permalink"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "title",
+                            "description",
+                            "permalink"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "orgId",
+                    "visibility",
+                    "status",
+                    "slug",
+                    "createdAt",
+                    "updatedAt",
+                    "deletedAt",
+                    "metadata",
+                    "level"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "RegistrationCount"
+                  ],
+                  "properties": {
+                    "RegistrationCount": {
+                      "type": "number",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "registration_count,omitempty",
+                        "json": "registration_count,omitempty",
+                        "yaml": "registration_count,omitempty"
+                      }
+                    }
+                  }
+                }
               ]
             }
           }
@@ -4143,6 +4912,7 @@
                   "required": [
                     "id",
                     "title",
+                    "orgId",
                     "description",
                     "slug",
                     "relPermalink",
@@ -4168,6 +4938,16 @@
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
+                      }
+                    },
+                    "orgId": {
+                      "type": "string",
+                      "description": "Organization ID that owns this quiz",
+                      "example": "layer5",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_id",
+                        "json": "org_id",
+                        "yaml": "org_id"
                       }
                     },
                     "final": {
@@ -4513,6 +5293,7 @@
         "required": [
           "id",
           "title",
+          "orgId",
           "description",
           "slug",
           "relPermalink",
@@ -4538,6 +5319,16 @@
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "json": "id"
+            }
+          },
+          "orgId": {
+            "type": "string",
+            "description": "Organization ID that owns this quiz",
+            "example": "layer5",
+            "x-oapi-codegen-extra-tags": {
+              "db": "org_id",
+              "json": "org_id",
+              "yaml": "org_id"
             }
           },
           "final": {
@@ -4955,6 +5746,7 @@
             "required": [
               "id",
               "title",
+              "orgId",
               "description",
               "slug",
               "relPermalink",
@@ -4980,6 +5772,16 @@
                 "x-go-name": "ID",
                 "x-oapi-codegen-extra-tags": {
                   "json": "id"
+                }
+              },
+              "orgId": {
+                "type": "string",
+                "description": "Organization ID that owns this quiz",
+                "example": "layer5",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id",
+                  "yaml": "org_id"
                 }
               },
               "final": {
