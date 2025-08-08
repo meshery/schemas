@@ -135,7 +135,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AcademyCirriculaListResponse'
+              $ref: '#/components/schemas/AcademyCurriculaWithMetricsListResponse'
       '400':
         description: Invalid request parameters
       '500':
@@ -328,6 +328,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/academy/admin/summary:
+     get:
+      tags:
+        - Academy
+      x-internal: ["cloud"]
+      operationId: getAcademyAdminSummary
+      summary: Get academy content summary
+      description: Returns a summary of all academy content with  metrics.
+      responses:
+        '200':
+          description: A list of content with total count and registration metrics
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Server error
+
 
 components:
   schemas:
@@ -468,6 +488,7 @@ components:
             - $ref: "#/components/schemas/CurriculaMetadata"
               x-go-type: "CurriculaMetadata"
 
+
       required:
         - id
         - type
@@ -481,6 +502,20 @@ components:
         - metadata
         - level
 
+    AcademyCurriculaWithMetrics:
+      allOf:
+        - $ref: "#/components/schemas/AcademyCirricula"
+        - type: object
+          required:
+            - RegistrationCount
+          properties:
+            RegistrationCount:
+              type: number
+              x-oapi-codegen-extra-tags:
+                db: "registration_count,omitempty"
+                json: "registration_count,omitempty"
+                yaml: "registration_count,omitempty"
+
     AcademyCirriculaListResponse:
       type: object
       properties:
@@ -493,6 +528,24 @@ components:
           items:
             x-go-type: "AcademyCirricula"
             $ref: '#/components/schemas/AcademyCirricula'
+      required:
+        - total
+        - data
+
+    AcademyCurriculaWithMetricsListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of cirricula
+          example: 7
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademyCurriculaWithMetrics'
+            x-go-type: "AcademyCurriculaWithMetrics"
+            x-go-type-skip-optional-pointer: true
+
       required:
         - total
         - data
@@ -845,6 +898,7 @@ components:
       required:
         - id
         - title
+        - orgId
         - description
         - slug
         - relPermalink
@@ -870,6 +924,14 @@ components:
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             json: "id"
+        orgId:
+          type: string
+          description: Organization ID that owns this quiz
+          example: layer5
+          x-oapi-codegen-extra-tags:
+            db: "org_id"
+            json: "org_id"
+            yaml: "org_id"
         final:
           type: boolean
           description: Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path

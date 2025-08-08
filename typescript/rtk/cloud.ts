@@ -136,6 +136,9 @@ const injectedRtkApi = api.injectEndpoints({
     submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
       query: (queryArg) => ({ url: `/api/academy/quiz/submit`, method: "POST", body: queryArg.body }),
     }),
+    getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
+      query: () => ({ url: `/api/academy/admin/summary` }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -688,6 +691,8 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
           };
           quiz: {
             id: string;
+            /** Organization ID that owns this quiz */
+            orgId: string;
             /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
             final: boolean;
             title: string;
@@ -784,6 +789,8 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
   };
   quiz: {
     id: string;
+    /** Organization ID that owns this quiz */
+    orgId: string;
     /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
     final: boolean;
     title: string;
@@ -845,6 +852,9 @@ export type SubmitQuizApiArg = {
     }[];
   };
 };
+export type GetAcademyAdminSummaryApiResponse =
+  /** status 200 A list of content with total count and registration metrics */ object;
+export type GetAcademyAdminSummaryApiArg = void;
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -869,4 +879,5 @@ export const {
   useGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
   useSubmitQuizMutation,
+  useGetAcademyAdminSummaryQuery,
 } = injectedRtkApi;
