@@ -569,6 +569,7 @@ components:
           example: Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
         banner:
           type: string
+          format: uri
           nullable: true
           description: Relative path to a banner image within the same content bundle
           example: kubernetes-icon.svg
@@ -714,6 +715,7 @@ components:
           example: eg 1 , 2
         banner:
           type: string
+          format: uri
           nullable: true
           description: Relative path to a banner image within the same content bundle
           example: kubernetes-icon.svg
