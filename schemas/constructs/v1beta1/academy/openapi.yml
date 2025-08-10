@@ -624,7 +624,7 @@ components:
           type: string
           format: uri
           nullable: true
-          description: Relative path to a banner image within the same content bundle
+          description: Filename of the banner image, which should be placed in the same directory as the _index.md file
           example: kubernetes-icon.svg
         permalink:
           type: string
@@ -770,7 +770,7 @@ components:
           type: string
           format: uri
           nullable: true
-          description: Relative path to a banner image within the same content bundle
+          description: Filename of the banner image, which should be placed in the same directory as the _index.md file
           example: kubernetes-icon.svg
         type:
           $ref: '#/components/schemas/ContentType'
