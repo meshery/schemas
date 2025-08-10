@@ -624,8 +624,8 @@ components:
           type: string
           format: uri
           nullable: true
-          description: Optional banner image
-          example: null
+          description: Filename of the banner image, which should be placed in the same directory as the _index.md file
+          example: kubernetes-icon.svg
         permalink:
           type: string
           format: uri
@@ -770,8 +770,8 @@ components:
           type: string
           format: uri
           nullable: true
-          description: Optional banner image
-          example: null
+          description: Filename of the banner image, which should be placed in the same directory as the _index.md file
+          example: kubernetes-icon.svg
         type:
           $ref: '#/components/schemas/ContentType'
           x-go-type: "ContentType"
