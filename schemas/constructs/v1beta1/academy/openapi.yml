@@ -348,6 +348,59 @@ paths:
         '500':
           description: Server error
 
+  /api/academy/admin/registrations:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: getAcademyAdminRegistrations
+      summary: Get academy registrations
+      description: Returns a list of academy registrations with user, curricula, and pagination details.
+      parameters:
+        - name: pagesize
+          in: query
+          required: false
+          description: Number of results per page
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: Page number
+          schema:
+            type: integer
+        - name: content_type
+          in: query
+          required: false
+          description: Filter by content types
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+        - name: status
+          in: query
+          required: false
+          description: Filter by registration status
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+      responses:
+        '200':
+          description: List of registrations with pagination info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurriculaRegistrationsResponse'
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Server error
+
 
 components:
   schemas:
@@ -653,6 +706,17 @@ components:
         - description
         - permalink
 
+    AcademyRegistrationStatus:
+          type: string
+          enum:
+            - registered
+            - completed
+            - failed
+            - withdrawn
+          description: Status of the user's course registration
+          x-oapi-codegen-extra-tags:
+            db: "status"
+
     AcademyRegistration:
       type: object
       required:
@@ -695,13 +759,8 @@ components:
             db: "user_id"
 
         status:
-          type: string
-          enum:
-            - registered
-            - in_progress
-            - completed
-            - failed
-            - withdrawn
+          $ref: "#/components/schemas/AcademyRegistrationStatus"
+          x-go-type: AcademyRegistrationStatus
           description: Status of the user's course registration
           x-oapi-codegen-extra-tags:
             db: "status"
@@ -1135,4 +1194,111 @@ components:
           type: string
           format: date-time
         attempts:
+          type: integer
+
+    UserRegistration:
+      type: object
+      properties:
+        curricula_title:
+          type: string
+          description: Title of the curricula
+          x-oapi-codegen-extra-tags:
+            db: "curricula_title"
+        curricula_type:
+          $ref: "#/components/schemas/ContentType"
+          description: Type of the curricula
+          x-go-type: "ContentType"
+          x-oapi-codegen-extra-tags:
+            db: "curricula_type"
+        curricula_permalink:
+          type: string
+          description: Permalink of the curricula
+          x-oapi-codegen-extra-tags:
+            db: "curricula_permalink"
+
+        registration_id:
+          type: string
+          format: uuid
+          description: Unique ID of the registration
+          x-oapi-codegen-extra-tags:
+            db: "registration_id"
+        status:
+          $ref: "#/components/schemas/AcademyRegistrationStatus"
+          description: Registration status
+          x-go-type: "AcademyRegistrationStatus"
+          x-oapi-codegen-extra-tags:
+            db: "status"
+        created_at:
+          type: string
+          format: date-time
+          description: When the registration was created
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user
+          x-oapi-codegen-extra-tags:
+            db: "user_id"
+        user_first_name:
+          type: string
+          description: First name of the user
+          x-oapi-codegen-extra-tags:
+            db: "user_first_name"
+        user_last_name:
+          type: string
+          description: Last name of the user
+          x-oapi-codegen-extra-tags:
+            db: "user_last_name"
+        user_email:
+          type: string
+          format: email
+          description: Email of the user
+          x-oapi-codegen-extra-tags:
+            db: "user_email"
+        user_avatar_url:
+          type: string
+          format: uri
+          description: Avatar URL of the user
+          x-oapi-codegen-extra-tags:
+            db: "user_avatar_url"
+
+        total_count:
+          type: integer
+          format: int64
+          description: Total count for pagination
+          x-oapi-codegen-extra-tags:
+            db: "total_count"
+
+    LearnersQuery:
+      type: object
+      properties:
+        pagesize:
+          type: integer
+        page:
+          type: integer
+        content_type:
+          type: array
+          items:
+            type: string
+        status:
+          type: array
+          items:
+            type: string
+
+    CurriculaRegistrationsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRegistration'
+            x-go-type: UserRegistration
+        total_count:
+          type: integer
+          format: int64
+        page_size:
+          type: integer
+        page:
           type: integer
