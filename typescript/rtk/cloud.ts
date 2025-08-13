@@ -870,35 +870,35 @@ export type GetAcademyAdminSummaryApiResponse =
   /** status 200 A list of content with total count and registration metrics */ object;
 export type GetAcademyAdminSummaryApiArg = void;
 export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of registrations with pagination info */ {
-  data?: {
+  data: {
     /** Title of the curricula */
-    curricula_title?: string;
+    curricula_title: string;
     /** Type of the curricula */
-    curricula_type?: "learning-path" | "challenge" | "certification";
+    curricula_type: "learning-path" | "challenge" | "certification";
     /** Permalink of the curricula */
-    curricula_permalink?: string;
+    curricula_permalink: string;
     /** Unique ID of the registration */
-    registration_id?: string;
+    registration_id: string;
     /** Registration status */
-    status?: "registered" | "completed" | "failed" | "withdrawn";
+    status: "registered" | "completed" | "failed" | "withdrawn";
     /** When the registration was created */
     created_at?: string;
     /** ID of the user */
-    user_id?: string;
+    user_id: string;
     /** First name of the user */
-    user_first_name?: string;
+    user_first_name: string;
     /** Last name of the user */
-    user_last_name?: string;
+    user_last_name: string;
     /** Email of the user */
-    user_email?: string;
+    user_email: string;
     /** Avatar URL of the user */
-    user_avatar_url?: string;
+    user_avatar_url: string;
     /** Total count for pagination */
-    total_count?: number;
+    total_count: number;
   }[];
-  total_count?: number;
-  page_size?: number;
-  page?: number;
+  total_count: number;
+  page_size: number;
+  page: number;
 };
 export type GetAcademyAdminRegistrationsApiArg = {
   /** Number of results per page */

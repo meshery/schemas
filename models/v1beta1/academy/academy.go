@@ -322,26 +322,26 @@ type CurriculaMetadata struct {
 	Title string `json:"title" yaml:"title"`
 }
 
+// CurriculaRegistrationsFilter defines model for CurriculaRegistrationsFilter.
+type CurriculaRegistrationsFilter struct {
+	ContentType []string `json:"content_type" yaml:"content_type"`
+	Page        int      `json:"page" yaml:"page"`
+	Pagesize    int      `json:"pagesize" yaml:"pagesize"`
+	Status      []string `json:"status" yaml:"status"`
+}
+
 // CurriculaRegistrationsResponse defines model for CurriculaRegistrationsResponse.
 type CurriculaRegistrationsResponse struct {
-	Data       *[]UserRegistration `json:"data,omitempty" yaml:"data,omitempty"`
-	Page       *int                `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   *int                `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount *int64              `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Data       []UserRegistration `json:"data" yaml:"data"`
+	Page       int                `json:"page" yaml:"page"`
+	PageSize   int                `json:"page_size" yaml:"page_size"`
+	TotalCount int64              `json:"total_count" yaml:"total_count"`
 }
 
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	Details *string `json:"details,omitempty" yaml:"details,omitempty"`
 	Error   *string `json:"error,omitempty" yaml:"error,omitempty"`
-}
-
-// LearnersQuery defines model for LearnersQuery.
-type LearnersQuery struct {
-	ContentType *[]string `json:"content_type,omitempty" yaml:"content_type,omitempty"`
-	Page        *int      `json:"page,omitempty" yaml:"page,omitempty"`
-	Pagesize    *int      `json:"pagesize,omitempty" yaml:"pagesize,omitempty"`
-	Status      *[]string `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 // LearningPathMetadata defines model for LearningPathMetadata.
@@ -469,37 +469,37 @@ type UserRegistration struct {
 	CreatedAt *time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// CurriculaPermalink Permalink of the curricula
-	CurriculaPermalink *string `db:"curricula_permalink" json:"curricula_permalink,omitempty" yaml:"curricula_permalink,omitempty"`
+	CurriculaPermalink string `db:"curricula_permalink" json:"curricula_permalink" yaml:"curricula_permalink"`
 
 	// CurriculaTitle Title of the curricula
-	CurriculaTitle *string `db:"curricula_title" json:"curricula_title,omitempty" yaml:"curricula_title,omitempty"`
+	CurriculaTitle string `db:"curricula_title" json:"curricula_title" yaml:"curricula_title"`
 
 	// CurriculaType Type of the curricula
-	CurriculaType *ContentType `db:"curricula_type" json:"curricula_type,omitempty" yaml:"curricula_type,omitempty"`
+	CurriculaType ContentType `db:"curricula_type" json:"curricula_type" yaml:"curricula_type"`
 
 	// RegistrationId Unique ID of the registration
-	RegistrationId *openapi_types.UUID `db:"registration_id" json:"registration_id,omitempty" yaml:"registration_id,omitempty"`
+	RegistrationId openapi_types.UUID `db:"registration_id" json:"registration_id" yaml:"registration_id"`
 
 	// Status Registration status
-	Status *AcademyRegistrationStatus `db:"status" json:"status,omitempty" yaml:"status,omitempty"`
+	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
 
 	// TotalCount Total count for pagination
-	TotalCount *int64 `db:"total_count" json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	TotalCount int64 `db:"total_count" json:"total_count" yaml:"total_count"`
 
 	// UserAvatarUrl Avatar URL of the user
-	UserAvatarUrl *string `db:"user_avatar_url" json:"user_avatar_url,omitempty" yaml:"user_avatar_url,omitempty"`
+	UserAvatarUrl string `db:"user_avatar_url" json:"user_avatar_url" yaml:"user_avatar_url"`
 
 	// UserEmail Email of the user
-	UserEmail *openapi_types.Email `db:"user_email" json:"user_email,omitempty" yaml:"user_email,omitempty"`
+	UserEmail openapi_types.Email `db:"user_email" json:"user_email" yaml:"user_email"`
 
 	// UserFirstName First name of the user
-	UserFirstName *string `db:"user_first_name" json:"user_first_name,omitempty" yaml:"user_first_name,omitempty"`
+	UserFirstName string `db:"user_first_name" json:"user_first_name" yaml:"user_first_name"`
 
 	// UserId ID of the user
-	UserId *openapi_types.UUID `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	UserId openapi_types.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
 
 	// UserLastName Last name of the user
-	UserLastName *string `db:"user_last_name" json:"user_last_name,omitempty" yaml:"user_last_name,omitempty"`
+	UserLastName string `db:"user_last_name" json:"user_last_name" yaml:"user_last_name"`
 }
 
 // Visibility defines model for Visibility.

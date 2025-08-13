@@ -2595,12 +2595,31 @@ const schema = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "data",
+                    "total_count",
+                    "page_size",
+                    "page"
+                  ],
                   "properties": {
                     "data": {
                       "type": "array",
                       "items": {
                         "x-go-type": "UserRegistration",
                         "type": "object",
+                        "required": [
+                          "curricula_title",
+                          "curricula_type",
+                          "curricula_permalink",
+                          "registration_id",
+                          "status",
+                          "user_id",
+                          "user_email",
+                          "user_last_name",
+                          "user_first_name",
+                          "user_avatar_url",
+                          "total_count"
+                        ],
                         "properties": {
                           "curricula_title": {
                             "type": "string",
@@ -6196,6 +6215,19 @@ const schema = {
       },
       "UserRegistration": {
         "type": "object",
+        "required": [
+          "curricula_title",
+          "curricula_type",
+          "curricula_permalink",
+          "registration_id",
+          "status",
+          "user_id",
+          "user_email",
+          "user_last_name",
+          "user_first_name",
+          "user_avatar_url",
+          "total_count"
+        ],
         "properties": {
           "curricula_title": {
             "type": "string",
@@ -6302,8 +6334,14 @@ const schema = {
           }
         }
       },
-      "LearnersQuery": {
+      "CurriculaRegistrationsFilter": {
         "type": "object",
+        "required": [
+          "pagesize",
+          "page",
+          "content_type",
+          "status"
+        ],
         "properties": {
           "pagesize": {
             "type": "integer"
@@ -6327,12 +6365,31 @@ const schema = {
       },
       "CurriculaRegistrationsResponse": {
         "type": "object",
+        "required": [
+          "data",
+          "total_count",
+          "page_size",
+          "page"
+        ],
         "properties": {
           "data": {
             "type": "array",
             "items": {
               "x-go-type": "UserRegistration",
               "type": "object",
+              "required": [
+                "curricula_title",
+                "curricula_type",
+                "curricula_permalink",
+                "registration_id",
+                "status",
+                "user_id",
+                "user_email",
+                "user_last_name",
+                "user_first_name",
+                "user_avatar_url",
+                "total_count"
+              ],
               "properties": {
                 "curricula_title": {
                   "type": "string",
