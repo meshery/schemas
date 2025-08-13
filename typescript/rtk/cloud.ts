@@ -139,6 +139,20 @@ const injectedRtkApi = api.injectEndpoints({
     getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
       query: () => ({ url: `/api/academy/admin/summary` }),
     }),
+    getAcademyAdminRegistrations: build.query<
+      GetAcademyAdminRegistrationsApiResponse,
+      GetAcademyAdminRegistrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/academy/admin/registrations`,
+        params: {
+          pagesize: queryArg.pagesize,
+          page: queryArg.page,
+          content_type: queryArg.contentType,
+          status: queryArg.status,
+        },
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -620,7 +634,7 @@ export type RegisterToAcademyContentApiResponse = /** status 200 registered cont
   /** ID of the user (foreign key to User) */
   user_id: string;
   /** Status of the user's course registration */
-  status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+  status: "registered" | "completed" | "failed" | "withdrawn";
   /** When the registration was updated */
   updated_at: string;
   /** When the registration was created */
@@ -650,7 +664,7 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
     /** ID of the user (foreign key to User) */
     user_id: string;
     /** Status of the user's course registration */
-    status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+    status: "registered" | "completed" | "failed" | "withdrawn";
     /** When the registration was updated */
     updated_at: string;
     /** When the registration was created */
@@ -855,6 +869,47 @@ export type SubmitQuizApiArg = {
 export type GetAcademyAdminSummaryApiResponse =
   /** status 200 A list of content with total count and registration metrics */ object;
 export type GetAcademyAdminSummaryApiArg = void;
+export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of registrations with pagination info */ {
+  data?: {
+    /** Title of the curricula */
+    curricula_title?: string;
+    /** Type of the curricula */
+    curricula_type?: "learning-path" | "challenge" | "certification";
+    /** Permalink of the curricula */
+    curricula_permalink?: string;
+    /** Unique ID of the registration */
+    registration_id?: string;
+    /** Registration status */
+    status?: "registered" | "completed" | "failed" | "withdrawn";
+    /** When the registration was created */
+    created_at?: string;
+    /** ID of the user */
+    user_id?: string;
+    /** First name of the user */
+    user_first_name?: string;
+    /** Last name of the user */
+    user_last_name?: string;
+    /** Email of the user */
+    user_email?: string;
+    /** Avatar URL of the user */
+    user_avatar_url?: string;
+    /** Total count for pagination */
+    total_count?: number;
+  }[];
+  total_count?: number;
+  page_size?: number;
+  page?: number;
+};
+export type GetAcademyAdminRegistrationsApiArg = {
+  /** Number of results per page */
+  pagesize?: number;
+  /** Page number */
+  page?: number;
+  /** Filter by content types */
+  contentType?: string[];
+  /** Filter by registration status */
+  status?: string[];
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -880,4 +935,5 @@ export const {
   useUpdateCurrentItemInProgressTrackerMutation,
   useSubmitQuizMutation,
   useGetAcademyAdminSummaryQuery,
+  useGetAcademyAdminRegistrationsQuery,
 } = injectedRtkApi;

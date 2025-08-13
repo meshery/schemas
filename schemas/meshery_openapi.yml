@@ -62269,6 +62269,16 @@ components:
         - title
         - description
         - permalink
+    Academy_API_AcademyRegistrationStatus:
+      type: string
+      enum:
+        - registered
+        - completed
+        - failed
+        - withdrawn
+      description: Status of the user's course registration
+      x-oapi-codegen-extra-tags:
+        db: status
     Academy_API_AcademyRegistration:
       type: object
       required:
@@ -62320,16 +62330,16 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
         status:
-          type: string
-          enum:
-            - registered
-            - in_progress
-            - completed
-            - failed
-            - withdrawn
+          x-go-type: AcademyRegistrationStatus
           description: Status of the user's course registration
           x-oapi-codegen-extra-tags:
             db: status
+          type: string
+          enum:
+            - registered
+            - completed
+            - failed
+            - withdrawn
         updated_at:
           description: When the registration was updated
           x-oapi-codegen-extra-tags:
@@ -62476,16 +62486,16 @@ components:
                 x-go-type-import:
                   path: github.com/gofrs/uuid
               status:
-                type: string
-                enum:
-                  - registered
-                  - in_progress
-                  - completed
-                  - failed
-                  - withdrawn
+                x-go-type: AcademyRegistrationStatus
                 description: Status of the user's course registration
                 x-oapi-codegen-extra-tags:
                   db: status
+                type: string
+                enum:
+                  - registered
+                  - completed
+                  - failed
+                  - withdrawn
               updated_at:
                 description: When the registration was updated
                 x-oapi-codegen-extra-tags:
@@ -63388,6 +63398,194 @@ components:
           type: string
           format: date-time
         attempts:
+          type: integer
+    Academy_API_UserRegistration:
+      type: object
+      properties:
+        curricula_title:
+          type: string
+          description: Title of the curricula
+          x-oapi-codegen-extra-tags:
+            db: curricula_title
+        curricula_type:
+          type: string
+          enum:
+            - learning-path
+            - challenge
+            - certification
+          description: Type of the curricula
+          x-go-type: ContentType
+          x-oapi-codegen-extra-tags:
+            db: curricula_type
+        curricula_permalink:
+          type: string
+          description: Permalink of the curricula
+          x-oapi-codegen-extra-tags:
+            db: curricula_permalink
+        registration_id:
+          type: string
+          format: uuid
+          description: Unique ID of the registration
+          x-oapi-codegen-extra-tags:
+            db: registration_id
+        status:
+          description: Registration status
+          x-go-type: AcademyRegistrationStatus
+          x-oapi-codegen-extra-tags:
+            db: status
+          type: string
+          enum:
+            - registered
+            - completed
+            - failed
+            - withdrawn
+        created_at:
+          type: string
+          format: date-time
+          description: When the registration was created
+          x-oapi-codegen-extra-tags:
+            db: created_at
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user
+          x-oapi-codegen-extra-tags:
+            db: user_id
+        user_first_name:
+          type: string
+          description: First name of the user
+          x-oapi-codegen-extra-tags:
+            db: user_first_name
+        user_last_name:
+          type: string
+          description: Last name of the user
+          x-oapi-codegen-extra-tags:
+            db: user_last_name
+        user_email:
+          type: string
+          format: email
+          description: Email of the user
+          x-oapi-codegen-extra-tags:
+            db: user_email
+        user_avatar_url:
+          type: string
+          format: uri
+          description: Avatar URL of the user
+          x-oapi-codegen-extra-tags:
+            db: user_avatar_url
+        total_count:
+          type: integer
+          format: int64
+          description: Total count for pagination
+          x-oapi-codegen-extra-tags:
+            db: total_count
+    Academy_API_LearnersQuery:
+      type: object
+      properties:
+        pagesize:
+          type: integer
+        page:
+          type: integer
+        content_type:
+          type: array
+          items:
+            type: string
+        status:
+          type: array
+          items:
+            type: string
+    Academy_API_CurriculaRegistrationsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            x-go-type: UserRegistration
+            type: object
+            properties:
+              curricula_title:
+                type: string
+                description: Title of the curricula
+                x-oapi-codegen-extra-tags:
+                  db: curricula_title
+              curricula_type:
+                type: string
+                enum:
+                  - learning-path
+                  - challenge
+                  - certification
+                description: Type of the curricula
+                x-go-type: ContentType
+                x-oapi-codegen-extra-tags:
+                  db: curricula_type
+              curricula_permalink:
+                type: string
+                description: Permalink of the curricula
+                x-oapi-codegen-extra-tags:
+                  db: curricula_permalink
+              registration_id:
+                type: string
+                format: uuid
+                description: Unique ID of the registration
+                x-oapi-codegen-extra-tags:
+                  db: registration_id
+              status:
+                description: Registration status
+                x-go-type: AcademyRegistrationStatus
+                x-oapi-codegen-extra-tags:
+                  db: status
+                type: string
+                enum:
+                  - registered
+                  - completed
+                  - failed
+                  - withdrawn
+              created_at:
+                type: string
+                format: date-time
+                description: When the registration was created
+                x-oapi-codegen-extra-tags:
+                  db: created_at
+              user_id:
+                type: string
+                format: uuid
+                description: ID of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_id
+              user_first_name:
+                type: string
+                description: First name of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_first_name
+              user_last_name:
+                type: string
+                description: Last name of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_last_name
+              user_email:
+                type: string
+                format: email
+                description: Email of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_email
+              user_avatar_url:
+                type: string
+                format: uri
+                description: Avatar URL of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_avatar_url
+              total_count:
+                type: integer
+                format: int64
+                description: Total count for pagination
+                x-oapi-codegen-extra-tags:
+                  db: total_count
+        total_count:
+          type: integer
+          format: int64
+        page_size:
+          type: integer
+        page:
           type: integer
   responses:
     subscription_400:

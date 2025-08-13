@@ -15,7 +15,6 @@ import (
 const (
 	Completed  AcademyRegistrationStatus = "completed"
 	Failed     AcademyRegistrationStatus = "failed"
-	InProgress AcademyRegistrationStatus = "in_progress"
 	Registered AcademyRegistrationStatus = "registered"
 	Withdrawn  AcademyRegistrationStatus = "withdrawn"
 )
@@ -323,10 +322,26 @@ type CurriculaMetadata struct {
 	Title string `json:"title" yaml:"title"`
 }
 
+// CurriculaRegistrationsResponse defines model for CurriculaRegistrationsResponse.
+type CurriculaRegistrationsResponse struct {
+	Data       *[]UserRegistration `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int                `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int                `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int64              `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	Details *string `json:"details,omitempty" yaml:"details,omitempty"`
 	Error   *string `json:"error,omitempty" yaml:"error,omitempty"`
+}
+
+// LearnersQuery defines model for LearnersQuery.
+type LearnersQuery struct {
+	ContentType *[]string `json:"content_type,omitempty" yaml:"content_type,omitempty"`
+	Page        *int      `json:"page,omitempty" yaml:"page,omitempty"`
+	Pagesize    *int      `json:"pagesize,omitempty" yaml:"pagesize,omitempty"`
+	Status      *[]string `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 // LearningPathMetadata defines model for LearningPathMetadata.
@@ -446,6 +461,45 @@ type SubmittedAnswer struct {
 type UpdateCurrentItemRequest struct {
 	ContentType ContentType              `json:"content_type" yaml:"content_type"`
 	ItemData    CirriculaCurrentItemData `json:"item_data" yaml:"item_data"`
+}
+
+// UserRegistration defines model for UserRegistration.
+type UserRegistration struct {
+	// CreatedAt When the registration was created
+	CreatedAt *time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// CurriculaPermalink Permalink of the curricula
+	CurriculaPermalink *string `db:"curricula_permalink" json:"curricula_permalink,omitempty" yaml:"curricula_permalink,omitempty"`
+
+	// CurriculaTitle Title of the curricula
+	CurriculaTitle *string `db:"curricula_title" json:"curricula_title,omitempty" yaml:"curricula_title,omitempty"`
+
+	// CurriculaType Type of the curricula
+	CurriculaType *ContentType `db:"curricula_type" json:"curricula_type,omitempty" yaml:"curricula_type,omitempty"`
+
+	// RegistrationId Unique ID of the registration
+	RegistrationId *openapi_types.UUID `db:"registration_id" json:"registration_id,omitempty" yaml:"registration_id,omitempty"`
+
+	// Status Registration status
+	Status *AcademyRegistrationStatus `db:"status" json:"status,omitempty" yaml:"status,omitempty"`
+
+	// TotalCount Total count for pagination
+	TotalCount *int64 `db:"total_count" json:"total_count,omitempty" yaml:"total_count,omitempty"`
+
+	// UserAvatarUrl Avatar URL of the user
+	UserAvatarUrl *string `db:"user_avatar_url" json:"user_avatar_url,omitempty" yaml:"user_avatar_url,omitempty"`
+
+	// UserEmail Email of the user
+	UserEmail *openapi_types.Email `db:"user_email" json:"user_email,omitempty" yaml:"user_email,omitempty"`
+
+	// UserFirstName First name of the user
+	UserFirstName *string `db:"user_first_name" json:"user_first_name,omitempty" yaml:"user_first_name,omitempty"`
+
+	// UserId ID of the user
+	UserId *openapi_types.UUID `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
+
+	// UserLastName Last name of the user
+	UserLastName *string `db:"user_last_name" json:"user_last_name,omitempty" yaml:"user_last_name,omitempty"`
 }
 
 // Visibility defines model for Visibility.
