@@ -182,6 +182,9 @@ type AcademyCurriculaWithMetricsListResponse struct {
 
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
+	// Certificate Issued certificate for completing the curricula under registration
+	Certificate core.Map `db:"certificate" json:"certificate" yaml:"certificate"`
+
 	// ContentId ID of the course content
 	ContentId string `db:"content_id" json:"content_id" yaml:"content_id"`
 

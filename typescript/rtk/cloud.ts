@@ -665,6 +665,34 @@ export type RegisterToAcademyContentApiResponse = /** status 200 registered cont
   created_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
+  /** Issued certificate for completing the curricula under registration */
+  certificate: {
+    /** Unique identifier for the certificate */
+    id: string;
+    /** UUID of the organization that issued the certificate */
+    org_id: string;
+    /** ID of the recipient (user) who received the certificate */
+    recipient_id: string;
+    /** Name of the recipient (user) who received the certificate */
+    recipient_name: string;
+    /** Title of the certificate */
+    title: string;
+    /** Description of the certificate */
+    description: string;
+    /** List of issuing authorities for the certificate */
+    issuing_authorities: {
+      /** Name of the issuing authority */
+      name: string;
+      /** Role of the issuing authority */
+      role?: string;
+      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+      signature_url?: string;
+    }[];
+    /** Date when the certificate was issued */
+    issued_date: string;
+    /** Date when the certificate expires (optional) */
+    expiration_date?: string;
+  };
   /** Additional metadata about the registration */
   metadata: {
     [key: string]: any;
@@ -695,6 +723,34 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
     created_at: string;
     /** Timestamp when the resource was deleted. */
     deleted_at?: string;
+    /** Issued certificate for completing the curricula under registration */
+    certificate: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** UUID of the organization that issued the certificate */
+      org_id: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipient_id: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipient_name: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuing_authorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signature_url?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issued_date: string;
+      /** Date when the certificate expires (optional) */
+      expiration_date?: string;
+    };
     /** Additional metadata about the registration */
     metadata: {
       [key: string]: any;
