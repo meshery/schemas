@@ -244,8 +244,41 @@ type Certificate struct {
 	// Description Description of the certificate
 	Description string `json:"description" yaml:"description"`
 
+	// ExpirationDate Date when the certificate expires (optional)
+	ExpirationDate *time.Time `json:"expiration_date,omitempty" yaml:"expiration_date,omitempty"`
+
+	// ID Unique identifier for the certificate
+	ID string `json:"id" yaml:"id"`
+
+	// IssuedDate Date when the certificate was issued
+	IssuedDate time.Time `json:"issued_date" yaml:"issued_date"`
+
+	// IssuingAuthorities List of issuing authorities for the certificate
+	IssuingAuthorities []CertificateIssuingAuthority `json:"issuing_authorities" yaml:"issuing_authorities"`
+
+	// OrgId UUID of the organization that issued the certificate
+	OrgId uuid.UUID `json:"org_id" yaml:"org_id"`
+
+	// RecipientId ID of the recipient (user) who received the certificate
+	RecipientId string `json:"recipient_id" yaml:"recipient_id"`
+
+	// RecipientName Name of the recipient (user) who received the certificate
+	RecipientName string `json:"recipient_name" yaml:"recipient_name"`
+
 	// Title Title of the certificate
 	Title string `json:"title" yaml:"title"`
+}
+
+// CertificateIssuingAuthority defines model for CertificateIssuingAuthority.
+type CertificateIssuingAuthority struct {
+	// Name Name of the issuing authority
+	Name string `json:"name" yaml:"name"`
+
+	// Role Role of the issuing authority
+	Role *string `json:"role,omitempty" yaml:"role,omitempty"`
+
+	// SignatureUrl URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+	SignatureUrl *string `json:"signature_url,omitempty" yaml:"signature_url,omitempty"`
 }
 
 // ChallengeMetadata defines model for ChallengeMetadata.

@@ -5,17 +5,6 @@ info:
   contact:
     email: maintainers@meshery.io
   version: v0.6.394
-servers:
-  - url: https://cloud.meshery.io
-    description: Meshery Cloud production server URL
-  - url: https://staging-cloud.meshery.io
-    description: Meshery Cloud staging server URL
-  - url: http://localhost:9876
-    description: >
-      Meshery Cloud development server URL (controlled via PORT environment
-      variable)
-  - url: http://localhost:8080
-    description: Local development server
 tags:
   - name: design_other
     x-displayName: other
@@ -59,6 +48,7 @@ tags:
     x-displayName: other
 paths:
   /api/pattern/import:
+    servers: []
     post:
       summary: Import Design
       operationId: ImportDesign
@@ -123,6 +113,7 @@ paths:
       tags:
         - design_other
   /api/meshmodels/register:
+    servers: []
     post:
       summary: Register mesh models
       operationId: RegisterMeshmodels
@@ -273,6 +264,9 @@ paths:
       tags:
         - model_other
   /api/entitlement/subscriptions:
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
     get:
       x-internal:
         - cloud
@@ -538,6 +532,9 @@ paths:
               schema:
                 type: string
   /api/entitlement/subscriptions/{subscriptionId}/cancel:
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
     post:
       x-internal:
         - cloud
@@ -768,6 +765,9 @@ paths:
       tags:
         - subscription_other
   /api/entitlement/subscriptions/create:
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
     post:
       x-internal:
         - cloud
@@ -818,6 +818,9 @@ paths:
       tags:
         - subscription_other
   /api/entitlement/subscriptions/webhooks:
+    servers:
+      - url: http://localhost:8080
+        description: Local development server
     post:
       x-internal:
         - cloud
@@ -837,6 +840,7 @@ paths:
       tags:
         - subscription_other
   /api/entitlement/plans:
+    servers: []
     get:
       x-internal:
         - cloud
@@ -908,6 +912,7 @@ paths:
         '500':
           description: Internal server error
   /api/entitlement/features:
+    servers: []
     get:
       x-internal:
         - cloud
@@ -1067,6 +1072,7 @@ paths:
               schema:
                 type: string
   /api/entitlement/subscriptions/organizations/{organizationId}/features:
+    servers: []
     get:
       x-internal:
         - cloud
@@ -1237,6 +1243,15 @@ paths:
               schema:
                 type: string
   /api/workspaces:
+    servers:
+      - url: https://cloud.meshery.io
+        description: Meshery Cloud production server URL
+      - url: https://staging-cloud.meshery.io
+        description: Meshery Cloud staging server URL
+      - url: http://localhost:9876
+        description: >-
+          Meshery Cloud development server URL (controlled via PORT environment
+          variable)
     get:
       summary: Get all workspaces
       tags:
@@ -1404,6 +1419,15 @@ paths:
       security:
         - workspace_jwt: []
   /api/workspaces/{id}:
+    servers:
+      - url: https://cloud.meshery.io
+        description: Meshery Cloud production server URL
+      - url: https://staging-cloud.meshery.io
+        description: Meshery Cloud staging server URL
+      - url: http://localhost:9876
+        description: >-
+          Meshery Cloud development server URL (controlled via PORT environment
+          variable)
     get:
       summary: Get workspace by ID
       tags:
@@ -1570,6 +1594,15 @@ paths:
       security:
         - workspace_jwt: []
   /api/environments:
+    servers:
+      - url: https://cloud.meshery.io
+        description: Meshery Cloud production server URL
+      - url: https://staging-cloud.meshery.io
+        description: Meshery Cloud staging server URL
+      - url: http://localhost:9876
+        description: >-
+          Meshery Cloud development server URL (controlled via PORT environment
+          variable)
     post:
       tags:
         - environment_environments
@@ -1903,6 +1936,7 @@ paths:
       security:
         - environment_jwt: []
   /evaluate:
+    servers: []
     post:
       x-internal:
         - meshery
@@ -15681,6 +15715,7 @@ paths:
       tags:
         - evaluation_other
   /api/academy/cirricula/registered:
+    servers: []
     get:
       x-internal:
         - cloud
@@ -15713,6 +15748,7 @@ paths:
             style: form
             explode: true
   /api/academy/cirricula:
+    servers: []
     get:
       x-internal:
         - cloud
@@ -15789,6 +15825,7 @@ paths:
           schema:
             type: string
   /api/academy/{type}/{orgId}/{slug}:
+    servers: []
     get:
       x-internal:
         - cloud
@@ -15992,9 +16029,41 @@ paths:
                             x-go-type: Certificate
                             type: object
                             required:
+                              - id
+                              - org_id
                               - title
                               - description
+                              - issuing_authorities
+                              - issued_date
+                              - recipient_id
+                              - recipient_name
                             properties:
+                              id:
+                                type: string
+                                description: Unique identifier for the certificate
+                                example: 1234567890abcdef
+                                x-go-name: ID
+                              org_id:
+                                description: >-
+                                  UUID of the organization that issued the
+                                  certificate
+                                type: string
+                                format: uuid
+                                x-go-type: uuid.UUID
+                                x-go-type-import:
+                                  path: github.com/gofrs/uuid
+                              recipient_id:
+                                type: string
+                                description: >-
+                                  ID of the recipient (user) who received the
+                                  certificate
+                                example: 1234567890abcdef
+                              recipient_name:
+                                type: string
+                                description: >-
+                                  Name of the recipient (user) who received the
+                                  certificate
+                                example: John Doe
                               title:
                                 type: string
                                 description: Title of the certificate
@@ -16005,6 +16074,46 @@ paths:
                                 example: >-
                                   Awarded for successfully completing the
                                   Kubernetes Expert course
+                              issuing_authorities:
+                                type: array
+                                items:
+                                  x-go-type: CertificateIssuingAuthority
+                                  type: object
+                                  required:
+                                    - name
+                                    - url
+                                  properties:
+                                    name:
+                                      type: string
+                                      description: Name of the issuing authority
+                                      example: Cloud Native Foundation
+                                    role:
+                                      type: string
+                                      description: Role of the issuing authority
+                                      example: COO
+                                    signature_url:
+                                      type: string
+                                      format: uri
+                                      description: >-
+                                        URL to the signature image of the
+                                        issuing authority should be a publicly
+                                        accessible URL and transparent PNG or
+                                        SVG format
+                                      example: >-
+                                        http://localhost:9876/signatures/cloud-native-foundation.png
+                                description: >-
+                                  List of issuing authorities for the
+                                  certificate
+                              issued_date:
+                                type: string
+                                format: date-time
+                                description: Date when the certificate was issued
+                                example: '2023-10-01T12:00:00Z'
+                              expiration_date:
+                                type: string
+                                format: date-time
+                                description: Date when the certificate expires (optional)
+                                example: '2025-10-01T12:00:00Z'
                           children:
                             type: array
                             description: List of children items in the top-level curricula
@@ -16089,6 +16198,7 @@ paths:
       tags:
         - Academy_API_other
   /api/academy/register:
+    servers: []
     post:
       x-internal:
         - cloud
@@ -16217,6 +16327,7 @@ paths:
         '500':
           description: Server error
   /api/academy/registrations/{contentId}:
+    servers: []
     get:
       tags:
         - Academy_API_Academy
@@ -16343,6 +16454,7 @@ paths:
         '500':
           description: Server error
   /api/academy/registrations/{registrationId}/progress-tracker/update-current-item:
+    servers: []
     post:
       tags:
         - Academy_API_Academy
@@ -16732,6 +16844,7 @@ paths:
                   details:
                     type: string
   /api/academy/quiz/submit:
+    servers: []
     post:
       tags:
         - Academy_API_Academy
@@ -17006,6 +17119,7 @@ paths:
                   details:
                     type: string
   /api/academy/admin/summary:
+    servers: []
     get:
       tags:
         - Academy_API_Academy
@@ -17026,6 +17140,7 @@ paths:
         '500':
           description: Server error
   /api/academy/admin/registrations:
+    servers: []
     get:
       x-internal:
         - cloud
@@ -17186,6 +17301,113 @@ paths:
                     type: integer
         '400':
           description: Invalid request parameters
+        '500':
+          description: Server error
+  /api/academy/certificates/{certificateId}:
+    servers: []
+    get:
+      x-internal:
+        - cloud
+      tags:
+        - Academy_API_Academy
+      operationId: getCertificateById
+      summary: Get a certificate by ID
+      description: Returns a certificate identified by its ID.
+      parameters:
+        - name: certificateId
+          in: path
+          required: true
+          description: The ID of the certificate to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single certificate
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - org_id
+                  - title
+                  - description
+                  - issuing_authorities
+                  - issued_date
+                  - recipient_id
+                  - recipient_name
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for the certificate
+                    example: 1234567890abcdef
+                    x-go-name: ID
+                  org_id:
+                    description: UUID of the organization that issued the certificate
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  recipient_id:
+                    type: string
+                    description: ID of the recipient (user) who received the certificate
+                    example: 1234567890abcdef
+                  recipient_name:
+                    type: string
+                    description: Name of the recipient (user) who received the certificate
+                    example: John Doe
+                  title:
+                    type: string
+                    description: Title of the certificate
+                    example: Kubernetes Expert Certification
+                  description:
+                    type: string
+                    description: Description of the certificate
+                    example: >-
+                      Awarded for successfully completing the Kubernetes Expert
+                      course
+                  issuing_authorities:
+                    type: array
+                    items:
+                      x-go-type: CertificateIssuingAuthority
+                      type: object
+                      required:
+                        - name
+                        - url
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the issuing authority
+                          example: Cloud Native Foundation
+                        role:
+                          type: string
+                          description: Role of the issuing authority
+                          example: COO
+                        signature_url:
+                          type: string
+                          format: uri
+                          description: >-
+                            URL to the signature image of the issuing authority
+                            should be a publicly accessible URL and transparent
+                            PNG or SVG format
+                          example: >-
+                            http://localhost:9876/signatures/cloud-native-foundation.png
+                    description: List of issuing authorities for the certificate
+                  issued_date:
+                    type: string
+                    format: date-time
+                    description: Date when the certificate was issued
+                    example: '2023-10-01T12:00:00Z'
+                  expiration_date:
+                    type: string
+                    format: date-time
+                    description: Date when the certificate expires (optional)
+                    example: '2025-10-01T12:00:00Z'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Certificate not found
         '500':
           description: Server error
 components:
@@ -63351,9 +63573,37 @@ components:
                   x-go-type: Certificate
                   type: object
                   required:
+                    - id
+                    - org_id
                     - title
                     - description
+                    - issuing_authorities
+                    - issued_date
+                    - recipient_id
+                    - recipient_name
                   properties:
+                    id:
+                      type: string
+                      description: Unique identifier for the certificate
+                      example: 1234567890abcdef
+                      x-go-name: ID
+                    org_id:
+                      description: UUID of the organization that issued the certificate
+                      type: string
+                      format: uuid
+                      x-go-type: uuid.UUID
+                      x-go-type-import:
+                        path: github.com/gofrs/uuid
+                    recipient_id:
+                      type: string
+                      description: ID of the recipient (user) who received the certificate
+                      example: 1234567890abcdef
+                    recipient_name:
+                      type: string
+                      description: >-
+                        Name of the recipient (user) who received the
+                        certificate
+                      example: John Doe
                     title:
                       type: string
                       description: Title of the certificate
@@ -63364,6 +63614,43 @@ components:
                       example: >-
                         Awarded for successfully completing the Kubernetes
                         Expert course
+                    issuing_authorities:
+                      type: array
+                      items:
+                        x-go-type: CertificateIssuingAuthority
+                        type: object
+                        required:
+                          - name
+                          - url
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the issuing authority
+                            example: Cloud Native Foundation
+                          role:
+                            type: string
+                            description: Role of the issuing authority
+                            example: COO
+                          signature_url:
+                            type: string
+                            format: uri
+                            description: >-
+                              URL to the signature image of the issuing
+                              authority should be a publicly accessible URL and
+                              transparent PNG or SVG format
+                            example: >-
+                              http://localhost:9876/signatures/cloud-native-foundation.png
+                      description: List of issuing authorities for the certificate
+                    issued_date:
+                      type: string
+                      format: date-time
+                      description: Date when the certificate was issued
+                      example: '2023-10-01T12:00:00Z'
+                    expiration_date:
+                      type: string
+                      format: date-time
+                      description: Date when the certificate expires (optional)
+                      example: '2025-10-01T12:00:00Z'
                 children:
                   type: array
                   description: List of children items in the top-level curricula
@@ -63615,9 +63902,39 @@ components:
                       x-go-type: Certificate
                       type: object
                       required:
+                        - id
+                        - org_id
                         - title
                         - description
+                        - issuing_authorities
+                        - issued_date
+                        - recipient_id
+                        - recipient_name
                       properties:
+                        id:
+                          type: string
+                          description: Unique identifier for the certificate
+                          example: 1234567890abcdef
+                          x-go-name: ID
+                        org_id:
+                          description: UUID of the organization that issued the certificate
+                          type: string
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                        recipient_id:
+                          type: string
+                          description: >-
+                            ID of the recipient (user) who received the
+                            certificate
+                          example: 1234567890abcdef
+                        recipient_name:
+                          type: string
+                          description: >-
+                            Name of the recipient (user) who received the
+                            certificate
+                          example: John Doe
                         title:
                           type: string
                           description: Title of the certificate
@@ -63628,6 +63945,43 @@ components:
                           example: >-
                             Awarded for successfully completing the Kubernetes
                             Expert course
+                        issuing_authorities:
+                          type: array
+                          items:
+                            x-go-type: CertificateIssuingAuthority
+                            type: object
+                            required:
+                              - name
+                              - url
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the issuing authority
+                                example: Cloud Native Foundation
+                              role:
+                                type: string
+                                description: Role of the issuing authority
+                                example: COO
+                              signature_url:
+                                type: string
+                                format: uri
+                                description: >-
+                                  URL to the signature image of the issuing
+                                  authority should be a publicly accessible URL
+                                  and transparent PNG or SVG format
+                                example: >-
+                                  http://localhost:9876/signatures/cloud-native-foundation.png
+                          description: List of issuing authorities for the certificate
+                        issued_date:
+                          type: string
+                          format: date-time
+                          description: Date when the certificate was issued
+                          example: '2023-10-01T12:00:00Z'
+                        expiration_date:
+                          type: string
+                          format: date-time
+                          description: Date when the certificate expires (optional)
+                          example: '2025-10-01T12:00:00Z'
                     children:
                       type: array
                       description: List of children items in the top-level curricula
@@ -63898,9 +64252,41 @@ components:
                         x-go-type: Certificate
                         type: object
                         required:
+                          - id
+                          - org_id
                           - title
                           - description
+                          - issuing_authorities
+                          - issued_date
+                          - recipient_id
+                          - recipient_name
                         properties:
+                          id:
+                            type: string
+                            description: Unique identifier for the certificate
+                            example: 1234567890abcdef
+                            x-go-name: ID
+                          org_id:
+                            description: >-
+                              UUID of the organization that issued the
+                              certificate
+                            type: string
+                            format: uuid
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
+                          recipient_id:
+                            type: string
+                            description: >-
+                              ID of the recipient (user) who received the
+                              certificate
+                            example: 1234567890abcdef
+                          recipient_name:
+                            type: string
+                            description: >-
+                              Name of the recipient (user) who received the
+                              certificate
+                            example: John Doe
                           title:
                             type: string
                             description: Title of the certificate
@@ -63911,6 +64297,43 @@ components:
                             example: >-
                               Awarded for successfully completing the Kubernetes
                               Expert course
+                          issuing_authorities:
+                            type: array
+                            items:
+                              x-go-type: CertificateIssuingAuthority
+                              type: object
+                              required:
+                                - name
+                                - url
+                              properties:
+                                name:
+                                  type: string
+                                  description: Name of the issuing authority
+                                  example: Cloud Native Foundation
+                                role:
+                                  type: string
+                                  description: Role of the issuing authority
+                                  example: COO
+                                signature_url:
+                                  type: string
+                                  format: uri
+                                  description: >-
+                                    URL to the signature image of the issuing
+                                    authority should be a publicly accessible
+                                    URL and transparent PNG or SVG format
+                                  example: >-
+                                    http://localhost:9876/signatures/cloud-native-foundation.png
+                            description: List of issuing authorities for the certificate
+                          issued_date:
+                            type: string
+                            format: date-time
+                            description: Date when the certificate was issued
+                            example: '2023-10-01T12:00:00Z'
+                          expiration_date:
+                            type: string
+                            format: date-time
+                            description: Date when the certificate expires (optional)
+                            example: '2025-10-01T12:00:00Z'
                       children:
                         type: array
                         description: List of children items in the top-level curricula
@@ -64180,9 +64603,41 @@ components:
                             x-go-type: Certificate
                             type: object
                             required:
+                              - id
+                              - org_id
                               - title
                               - description
+                              - issuing_authorities
+                              - issued_date
+                              - recipient_id
+                              - recipient_name
                             properties:
+                              id:
+                                type: string
+                                description: Unique identifier for the certificate
+                                example: 1234567890abcdef
+                                x-go-name: ID
+                              org_id:
+                                description: >-
+                                  UUID of the organization that issued the
+                                  certificate
+                                type: string
+                                format: uuid
+                                x-go-type: uuid.UUID
+                                x-go-type-import:
+                                  path: github.com/gofrs/uuid
+                              recipient_id:
+                                type: string
+                                description: >-
+                                  ID of the recipient (user) who received the
+                                  certificate
+                                example: 1234567890abcdef
+                              recipient_name:
+                                type: string
+                                description: >-
+                                  Name of the recipient (user) who received the
+                                  certificate
+                                example: John Doe
                               title:
                                 type: string
                                 description: Title of the certificate
@@ -64193,6 +64648,46 @@ components:
                                 example: >-
                                   Awarded for successfully completing the
                                   Kubernetes Expert course
+                              issuing_authorities:
+                                type: array
+                                items:
+                                  x-go-type: CertificateIssuingAuthority
+                                  type: object
+                                  required:
+                                    - name
+                                    - url
+                                  properties:
+                                    name:
+                                      type: string
+                                      description: Name of the issuing authority
+                                      example: Cloud Native Foundation
+                                    role:
+                                      type: string
+                                      description: Role of the issuing authority
+                                      example: COO
+                                    signature_url:
+                                      type: string
+                                      format: uri
+                                      description: >-
+                                        URL to the signature image of the
+                                        issuing authority should be a publicly
+                                        accessible URL and transparent PNG or
+                                        SVG format
+                                      example: >-
+                                        http://localhost:9876/signatures/cloud-native-foundation.png
+                                description: >-
+                                  List of issuing authorities for the
+                                  certificate
+                              issued_date:
+                                type: string
+                                format: date-time
+                                description: Date when the certificate was issued
+                                example: '2023-10-01T12:00:00Z'
+                              expiration_date:
+                                type: string
+                                format: date-time
+                                description: Date when the certificate expires (optional)
+                                example: '2025-10-01T12:00:00Z'
                           children:
                             type: array
                             description: List of children items in the top-level curricula
@@ -64345,9 +64840,35 @@ components:
           x-go-type: Certificate
           type: object
           required:
+            - id
+            - org_id
             - title
             - description
+            - issuing_authorities
+            - issued_date
+            - recipient_id
+            - recipient_name
           properties:
+            id:
+              type: string
+              description: Unique identifier for the certificate
+              example: 1234567890abcdef
+              x-go-name: ID
+            org_id:
+              description: UUID of the organization that issued the certificate
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            recipient_id:
+              type: string
+              description: ID of the recipient (user) who received the certificate
+              example: 1234567890abcdef
+            recipient_name:
+              type: string
+              description: Name of the recipient (user) who received the certificate
+              example: John Doe
             title:
               type: string
               description: Title of the certificate
@@ -64356,6 +64877,43 @@ components:
               type: string
               description: Description of the certificate
               example: Awarded for successfully completing the Kubernetes Expert course
+            issuing_authorities:
+              type: array
+              items:
+                x-go-type: CertificateIssuingAuthority
+                type: object
+                required:
+                  - name
+                  - url
+                properties:
+                  name:
+                    type: string
+                    description: Name of the issuing authority
+                    example: Cloud Native Foundation
+                  role:
+                    type: string
+                    description: Role of the issuing authority
+                    example: COO
+                  signature_url:
+                    type: string
+                    format: uri
+                    description: >-
+                      URL to the signature image of the issuing authority should
+                      be a publicly accessible URL and transparent PNG or SVG
+                      format
+                    example: >-
+                      http://localhost:9876/signatures/cloud-native-foundation.png
+              description: List of issuing authorities for the certificate
+            issued_date:
+              type: string
+              format: date-time
+              description: Date when the certificate was issued
+              example: '2023-10-01T12:00:00Z'
+            expiration_date:
+              type: string
+              format: date-time
+              description: Date when the certificate expires (optional)
+              example: '2025-10-01T12:00:00Z'
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -64483,9 +65041,35 @@ components:
           x-go-type: Certificate
           type: object
           required:
+            - id
+            - org_id
             - title
             - description
+            - issuing_authorities
+            - issued_date
+            - recipient_id
+            - recipient_name
           properties:
+            id:
+              type: string
+              description: Unique identifier for the certificate
+              example: 1234567890abcdef
+              x-go-name: ID
+            org_id:
+              description: UUID of the organization that issued the certificate
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            recipient_id:
+              type: string
+              description: ID of the recipient (user) who received the certificate
+              example: 1234567890abcdef
+            recipient_name:
+              type: string
+              description: Name of the recipient (user) who received the certificate
+              example: John Doe
             title:
               type: string
               description: Title of the certificate
@@ -64494,6 +65078,43 @@ components:
               type: string
               description: Description of the certificate
               example: Awarded for successfully completing the Kubernetes Expert course
+            issuing_authorities:
+              type: array
+              items:
+                x-go-type: CertificateIssuingAuthority
+                type: object
+                required:
+                  - name
+                  - url
+                properties:
+                  name:
+                    type: string
+                    description: Name of the issuing authority
+                    example: Cloud Native Foundation
+                  role:
+                    type: string
+                    description: Role of the issuing authority
+                    example: COO
+                  signature_url:
+                    type: string
+                    format: uri
+                    description: >-
+                      URL to the signature image of the issuing authority should
+                      be a publicly accessible URL and transparent PNG or SVG
+                      format
+                    example: >-
+                      http://localhost:9876/signatures/cloud-native-foundation.png
+              description: List of issuing authorities for the certificate
+            issued_date:
+              type: string
+              format: date-time
+              description: Date when the certificate was issued
+              example: '2023-10-01T12:00:00Z'
+            expiration_date:
+              type: string
+              format: date-time
+              description: Date when the certificate expires (optional)
+              example: '2025-10-01T12:00:00Z'
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -64590,12 +65211,59 @@ components:
           format: uri
           description: URL to the badge SVG image
           example: http://localhost:9876/badges/kubernetes-expert.svg
+    Academy_API_CertificateIssuingAuthority:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          description: Name of the issuing authority
+          example: Cloud Native Foundation
+        role:
+          type: string
+          description: Role of the issuing authority
+          example: COO
+        signature_url:
+          type: string
+          format: uri
+          description: >-
+            URL to the signature image of the issuing authority should be a
+            publicly accessible URL and transparent PNG or SVG format
+          example: http://localhost:9876/signatures/cloud-native-foundation.png
     Academy_API_Certificate:
       type: object
       required:
+        - id
+        - org_id
         - title
         - description
+        - issuing_authorities
+        - issued_date
+        - recipient_id
+        - recipient_name
       properties:
+        id:
+          type: string
+          description: Unique identifier for the certificate
+          example: 1234567890abcdef
+          x-go-name: ID
+        org_id:
+          description: UUID of the organization that issued the certificate
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        recipient_id:
+          type: string
+          description: ID of the recipient (user) who received the certificate
+          example: 1234567890abcdef
+        recipient_name:
+          type: string
+          description: Name of the recipient (user) who received the certificate
+          example: John Doe
         title:
           type: string
           description: Title of the certificate
@@ -64604,6 +65272,41 @@ components:
           type: string
           description: Description of the certificate
           example: Awarded for successfully completing the Kubernetes Expert course
+        issuing_authorities:
+          type: array
+          items:
+            x-go-type: CertificateIssuingAuthority
+            type: object
+            required:
+              - name
+              - url
+            properties:
+              name:
+                type: string
+                description: Name of the issuing authority
+                example: Cloud Native Foundation
+              role:
+                type: string
+                description: Role of the issuing authority
+                example: COO
+              signature_url:
+                type: string
+                format: uri
+                description: >-
+                  URL to the signature image of the issuing authority should be
+                  a publicly accessible URL and transparent PNG or SVG format
+                example: http://localhost:9876/signatures/cloud-native-foundation.png
+          description: List of issuing authorities for the certificate
+        issued_date:
+          type: string
+          format: date-time
+          description: Date when the certificate was issued
+          example: '2023-10-01T12:00:00Z'
+        expiration_date:
+          type: string
+          format: date-time
+          description: Date when the certificate expires (optional)
+          example: '2025-10-01T12:00:00Z'
     Academy_API_CurriculaMetadata:
       type: object
       properties:
@@ -64665,9 +65368,35 @@ components:
           x-go-type: Certificate
           type: object
           required:
+            - id
+            - org_id
             - title
             - description
+            - issuing_authorities
+            - issued_date
+            - recipient_id
+            - recipient_name
           properties:
+            id:
+              type: string
+              description: Unique identifier for the certificate
+              example: 1234567890abcdef
+              x-go-name: ID
+            org_id:
+              description: UUID of the organization that issued the certificate
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            recipient_id:
+              type: string
+              description: ID of the recipient (user) who received the certificate
+              example: 1234567890abcdef
+            recipient_name:
+              type: string
+              description: Name of the recipient (user) who received the certificate
+              example: John Doe
             title:
               type: string
               description: Title of the certificate
@@ -64676,6 +65405,43 @@ components:
               type: string
               description: Description of the certificate
               example: Awarded for successfully completing the Kubernetes Expert course
+            issuing_authorities:
+              type: array
+              items:
+                x-go-type: CertificateIssuingAuthority
+                type: object
+                required:
+                  - name
+                  - url
+                properties:
+                  name:
+                    type: string
+                    description: Name of the issuing authority
+                    example: Cloud Native Foundation
+                  role:
+                    type: string
+                    description: Role of the issuing authority
+                    example: COO
+                  signature_url:
+                    type: string
+                    format: uri
+                    description: >-
+                      URL to the signature image of the issuing authority should
+                      be a publicly accessible URL and transparent PNG or SVG
+                      format
+                    example: >-
+                      http://localhost:9876/signatures/cloud-native-foundation.png
+              description: List of issuing authorities for the certificate
+            issued_date:
+              type: string
+              format: date-time
+              description: Date when the certificate was issued
+              example: '2023-10-01T12:00:00Z'
+            expiration_date:
+              type: string
+              format: date-time
+              description: Date when the certificate expires (optional)
+              example: '2025-10-01T12:00:00Z'
         children:
           type: array
           description: List of children items in the top-level curricula

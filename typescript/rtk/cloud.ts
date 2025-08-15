@@ -153,6 +153,9 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    getCertificateById: build.query<GetCertificateByIdApiResponse, GetCertificateByIdApiArg>({
+      query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -592,10 +595,31 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       svg: string;
     };
     certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** UUID of the organization that issued the certificate */
+      org_id: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipient_id: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipient_name: string;
       /** Title of the certificate */
       title: string;
       /** Description of the certificate */
       description: string;
+      /** List of issuing authorities for the certificate */
+      issuing_authorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signature_url?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issued_date: string;
+      /** Date when the certificate expires (optional) */
+      expiration_date?: string;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -910,6 +934,37 @@ export type GetAcademyAdminRegistrationsApiArg = {
   /** Filter by registration status */
   status?: string[];
 };
+export type GetCertificateByIdApiResponse = /** status 200 A single certificate */ {
+  /** Unique identifier for the certificate */
+  id: string;
+  /** UUID of the organization that issued the certificate */
+  org_id: string;
+  /** ID of the recipient (user) who received the certificate */
+  recipient_id: string;
+  /** Name of the recipient (user) who received the certificate */
+  recipient_name: string;
+  /** Title of the certificate */
+  title: string;
+  /** Description of the certificate */
+  description: string;
+  /** List of issuing authorities for the certificate */
+  issuing_authorities: {
+    /** Name of the issuing authority */
+    name: string;
+    /** Role of the issuing authority */
+    role?: string;
+    /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+    signature_url?: string;
+  }[];
+  /** Date when the certificate was issued */
+  issued_date: string;
+  /** Date when the certificate expires (optional) */
+  expiration_date?: string;
+};
+export type GetCertificateByIdApiArg = {
+  /** The ID of the certificate to retrieve */
+  certificateId: string;
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -936,4 +991,5 @@ export const {
   useSubmitQuizMutation,
   useGetAcademyAdminSummaryQuery,
   useGetAcademyAdminRegistrationsQuery,
+  useGetCertificateByIdQuery,
 } = injectedRtkApi;
