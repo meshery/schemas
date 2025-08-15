@@ -824,6 +824,7 @@ components:
         - created_at
         - updated_at
         - content_id
+        - certificate
         - metadata
       properties:
         id:
@@ -881,6 +882,12 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
 
+        certificate:
+          $ref: "#/components/schemas/Certificate"
+          x-go-type: "core.Map"
+          description: Issued certificate for completing the curricula under registration
+          x-oapi-codegen-extra-tags:
+            db: "certificate"
 
         metadata:
           type: object
