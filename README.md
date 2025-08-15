@@ -49,10 +49,6 @@ Meshery schemas offer a powerful system designed for:
 
 For an explanation of Meshery's terminology regarding schemas, definitions, declarations, and instances, please see [Contributor's Guide to Models](https://docs.meshery.io/project/contributing/contributing-models).
 
-## Contributing
---> **For an explanation of the directory structure of this repository and how to contribute changes to Meshery's schemas, see [Contributor's Guide to Schema-Driven Development](https://docs.meshery.io/project/contributing/contributing-schemas).**
-
-<p style="clear:both;">&nbsp;</p>
 
 ## Join the Meshery community!
 
@@ -87,385 +83,41 @@ Find out more on the <a href="https://meshery.io/community#meshmates">Meshery co
 </div>
 <div>&nbsp;</div>
 
-## Contributing
 
-Please do! We're a warm and welcoming community of open source contributors. All types of contributions are welcome. Please read:
+## Contributing: Schema-Driven Development (Quick Start)
 
-- [General Contributor Guide](https://docs.meshery.io/project/contributing) - Overview of contribution processes
-- [Schema Contributor Guide](./CONTRIBUTING.md) - Schema-specific development workflows and guidelines
+**Definitions vs. Schemas vs. Utilities**
+- **Definitions** – reusable subschemas referenced by other schemas to stay consistent.
+- **Schemas** – JSON/OpenAPI specs that define Meshery objects and APIs (source of truth for validation and codegen).
+- **Utilities** – scripts/tools that generate types/SDKs, validate, or transform schemas (e.g., TS types, Go structs, examples).
 
-<div>&nbsp;</div>
+**Where to change things**
+- **Schemas & definitions (this repo):** `/schemas/constructs/...`
+- **Meshery app (server/CLI/UI):** https://github.com/meshery/meshery
+- **Shared helpers (MeshKit):** https://github.com/meshery/meshkit
+- **Website & docs site:** https://github.com/meshery/meshery.io
 
+**Process (super short)**
+1. Make a small change (docs or a single property).
+2. Generators run locally/CI to update types/templates.
+3. Open a PR with DCO and include `Fixes #167`.
 
-# 🧬 Schema-Driven Development Guide
+**MeshKit version bumps**
+If your change requires a MeshKit update, open a version-bump PR and reference **#166**.
 
-Meshery follows a **Schema-Driven Development (SDD)** approach. This means that the **structure of data** used throughout the system is centrally defined using **schemas**. These schemas power consistency, validation, and code generation across the Meshery platform.
+**OpenAPI code generation (Go)**
+OpenAPI generators keep Go/TS clients in sync. Example: https://github.com/ory/sdk
 
----
+**Architecture slides (77–78)**
+Placeholder for slides 77–78. _Maintainers: please provide official links/images and I’ll update._
 
-## 🧾 Schema Definition in Meshery
+**More resources**
+- Contributor Welcome Guide: https://docs.meshery.io/project/contributing
+- Community Handbook: https://meshery.io/community#handbook
+- Build & Release Strategy: https://docs.meshery.io/project/contributing/build-and-release
+- UI wireframes (Figma): https://meshery.io/community#design
+- Forum: https://discuss.meshery.io • Slack: https://slack.meshery.io
 
-Meshery uses the **OpenAPI v3** specification to define and manage schemas. Given the complexity of the platform, Meshery adopts a **modular, versioned, and extensible** schema strategy:
 
-* ✅ **Versioned schemas** for backward compatibility.
-* 🧩 **Modular constructs** for maintainability and reuse.
-* 🧪 **Schemas are used** for validation, API documentation, and automatic code generation.
 
-> 💡 **TIP**: When referencing models or other constructs in the schema, **always add `x-go-type` and `x-go-import-path`** to avoid generating redundant Go structs. Refer to existing patterns in the codebase.
 
----
-
-## 📁 Schema Directory Structure
-
-All schemas are located in the `schemas/` directory at the root of the Meshery repository:
-
-```
-schemas/
-  constructs/
-    <schema-version>/               # e.g., v1beta1
-      <construct>/                  # e.g., model, component
-        <construct>.json            # Schema definition for the construct (noun)
-        subschemas/                 # Reusable modular pieces
-        openapi.yml                 # API operations (verbs: create, update, delete)
-        <construct>_template.json   # Generated JSON template from schema
-        <construct>_template.yaml   # Generated YAML template from schema
-```
-
-### 🧠 Explanation
-
-* **`constructs/`** – Holds schemas for various versions.
-* **`<schema-version>/`** – Represents a version (e.g., `v1alpha2`, `v1beta1`).
-* **`<construct>/`** – A specific construct like `pattern`, `component`, etc.
-* **`<construct>.json`** – Defines the **data model (noun)** for the construct.
-* **`subschemas/`** – Contains shared schema components for reuse.
-* **`openapi.yml`** – Defines **API operations** (verbs).
-* **Templates** – `*_template.json` and `*_template.yaml` are auto-generated examples with resolved references and defaults.
-
----
-
-## ⚙️ Code Generation
-
-Meshery supports **automated code generation** from schemas for:
-
-* **Go**: Strongly-typed models for backend.
-* **TypeScript**: Interfaces and types for frontend use.
-* **RTK Query**: Clients generated from OpenAPI for use with Redux.
-* **JSON/YAML**: Templates with defaults and resolved references.
-
----
-
-## 🚀 Unified Build: One Command for Everything
-
-Use the following command to perform the **entire schema-driven generation workflow**:
-
-```bash
-make build
-```
-
-### 🔧 What `make build` does:
-
-1. **Bundles OpenAPI schemas** for:
-
-   * Meshery
-   * Remote Providers (e.g. Meshery Cloud)
-   * Combined (all constructs)
-   
-2. **Generates:**
-
-   * Golang structs
-   * TypeScript types
-   * JSON & YAML templates
-   * RTK Query clients
-
-> ⚠️ This is the recommended way to stay in sync with schema changes.
-
----
-
-## 🧱 Bundled Schema Outputs
-
-After running `make build`, three bundled schema files are created:
-
-| File                 | Purpose                                        |
-| -------------------- | ---------------------------------------------- |
-| `merged_schema.yml`  | All schemas combined (used by Meshery clients) |
-| `cloud_schema.yml`   | Cloud-specific APIs for Remote Providers (e.g. Meshery Cloud) |
-| `meshery_schema.yml` | Meshery-specific APIs                          |
-
----
-
-## ✍️ Annotating OpenAPI Paths
-
-To control which schema paths are included in each bundled output, use the `x-internal` annotation inside the OpenAPI operations (`get`, `post`, etc.).
-
-### Example:
-
-```yaml
-paths:
-  /api/entitlement/plans:
-    get:
-      x-internal: ["cloud"]
-      operationId: getPlans
-      tags:
-        - Plans
-      summary: Get all plans supported by the system
-      responses:
-        "200":
-          description: Plans fetched successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Plan"
-```
-
-* **With `x-internal`**: Included only in the respective client (e.g., `cloud`).
-* **Without `x-internal`**: Included in **all** clients.
-
----
-
-## 🛠️ Advanced Usage (Optional)
-
-### 📌 Custom Generation in `generate.sh`
-
-Meshery uses a helper script (`generate.sh`) to map schema constructs to generated output:
-
-```bash
-generate_schema_models <construct> <schema-version> [<openapi-file>]
-
-generate_schema_models "capability" "v1alpha1"
-generate_schema_models "category" "v1beta1"
-generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
-```
-
-This maps to Go packages like:
-
-```
-models/v1alpha1/capability/capability.go
-```
-
-### 🧩 RTK Query Client Generation
-
-The OpenAPI bundle is passed to a codegen tool to generate RTK Query clients. Include relevant paths using `x-internal` annotations and define request/response schemas appropriately.
-
-You can control this in `generate.sh` like:
-
-```bash
-# Merge relevant constructs for RTK generation
-npx @redocly/cli join schemas/base_cloud.yml \
-     "${v1beta1}/pattern/${merged_construct}" \
-     "${v1beta1}/component/${merged_construct}" \
-     "${v1beta1}/model/${merged_construct}" \
-     ... \
-     -o schemas/merged_openapi.yml \
-     --prefix-tags-with-info-prop title \
-     --prefix-components-with-info-prop title
-```
-
-# Using Generated RTK Query Clients
-
-
-## Prerequisites
-
-Before using the generated RTK clients, ensure you have:
-
-1. Installed the required dependencies:
-   - `@reduxjs/toolkit`
-   - `@meshery/schemas`
-
-2. Set up environment variables:
-   - `RTK_CLOUD_ENDPOINT_PREFIX`: Base URL for Cloud API endpoints
-   - `RTK_MESHERY_ENDPOINT_PREFIX`: Base URL for Meshery API endpoints
-
-## Store Configuration
-
-### Import API Slices Correctly
-
-To avoid cyclical imports that can break your application, import API slices from their specific exports:
-
-```javascript
-// ✅ Correct: Import from specific API exports
-import { cloudApi as cloudBaseApi } from "@meshery/schemas/dist/cloudApi";
-import { mesheryApi } from "@meshery/schemas/dist/mesheryApi";
-
-// ❌ Incorrect: Do not import directly from generic API file
-// import { api } from "@meshery/schemas/dist/api"; // Can cause cyclical imports
-```
-
-### Configure Redux Store
-
-Add the API reducers and middleware to your Redux store configuration:
-
-```javascript
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { cloudApi as cloudBaseApi } from "@meshery/schemas/dist/cloudApi";
-import catalogReducer from "./slices/catalog";
-import connectionReducer from "./slices/connection";
-import organizationReducer from "./slices/organization";
-import chartReducer from "./slices/charts";
-import themeReducer from "./slices/theme";
-// Optional: If you have locally defined APIs
-import { cloudApi } from "../api";
-
-// Combine reducers
-const rootReducer = combineReducers({
-  catalog: catalogReducer,
-  charts: chartReducer,
-  organization: organizationReducer,
-  connection: connectionReducer,
-  theme: themeReducer,
-  // Add generated API reducers
-  [cloudBaseApi.reducerPath]: cloudBaseApi.reducer,
-  // Optional: Add locally defined API reducers
-  [cloudApi.reducerPath]: cloudApi.reducer
-});
-
-// Configure store with middleware
-export const store = configureStore({
-  reducer: reduxPersist.createPersistEnhancedReducer(rootReducer),
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware()
-      // Add generated API middleware
-      .concat(cloudBaseApi.middleware)
-      // Optional: Add locally defined API middleware
-      .concat(cloudApi.middleware)
-      // Add persistence middleware if needed
-      .concat(reduxPersist.persistMiddleware)
-});
-
-// Set up listeners for RTK Query cache behaviors like refetchOnFocus/refetchOnReconnect
-setupListeners(store.dispatch);
-```
-
-## Using API Hooks
-
-After configuring your store, you can import and use the generated hooks:
-
-### Cloud API Hooks
-
-```javascript
-import {
-  useGetPlansQuery,
-  useCreateDesignMutation,
-  useGetDesignsQuery,
-  // Other cloud API hooks...
-} from "@meshery/schemas/dist/cloudApi";
-
-function MyComponent() {
-  // Use hooks directly in your components
-  const { data: plans, isLoading, error } = useGetPlansQuery();
-
-  // Handle loading states
-  if (isLoading) return <div>Loading plans...</div>;
-
-  // Handle errors
-  if (error) return <div>Error loading plans</div>;
-
-  // Use data
-  return (
-    <div>
-      {plans.map(plan => (
-        <div key={plan.id}>{plan.name}</div>
-      ))}
-    </div>
-  );
-}
-```
-
-### Meshery API Hooks
-
-```javascript
-import {
-  useGetMeshModelsQuery,
-  useSubmitMeshConfigMutation,
-  // Other Meshery API hooks...
-} from "@meshery/schemas/dist/mesheryApi";
-
-function MesheryComponent() {
-  const { data: meshModels } = useGetMeshModelsQuery();
-  // ...
-}
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Stuck Loading States**:
-   - Verify environment variables are correctly set
-   - Check for CORS issues
-   - Ensure proper authentication headers are included
-
-2. **Cyclical Imports**:
-   - Always import from specific API files (`cloudApi.ts`, `mesheryApi.ts`)
-   - Avoid importing from generic `api.ts` files
-
-3. **Multiple RTK Instances**:
-   - Ensure proper reducer and middleware registration
-   - Check for naming conflicts in reducerPaths
-
-### Redux DevTools
-
-For better debugging, use Redux DevTools to monitor:
-- API request lifecycles
-- State changes
-- Caching behavior
-
-## Best Practices
-
-1. **Handle Loading States**:
-   ```javascript
-   const { data, isLoading, isFetching, error } = useGetDataQuery();
-   ```
-
-2. **Leverage Cache Options**:
-   ```javascript
-   const { data } = useGetDataQuery(null, {
-     pollingInterval: 30000, // Re-fetch every 30 seconds
-     refetchOnMountOrArgChange: true,
-     skip: !isReady // Skip query when not ready
-   });
-   ```
-
-3. **Use Transformations When Needed**:
-   ```javascript
-   const transformedData = data?.map(item => ({
-     ...item,
-     formattedValue: formatValue(item.value)
-   }));
-   ```
-
-## 🧪 Testing & Validating Schemas
-
-Validate your schema updates before committing by running:
-
-```bash
-make build
-```
-
-Or validate a single file:
-
-```bash
-npx @redocly/cli lint schemas/constructs/v1beta1/pattern/openapi.yml
-```
-
----
-
-## ✅ Summary
-
-| Task                    | Command                 |
-| ----------------------- | ----------------------- |
-| Generate everything     | `make build`            |
-| Generate Go code only   | `make golang-generate`  |
-| Generate TS + templates | `make generate-types`   |
-| Lint OpenAPI            | `npx @redocly/cli lint` |
-
----
-
-### License
-
-This repository and site are available as open-source under the terms of the [Apache 2.0 License](https://opensource.org/licenses/Apache-2.0).
-
-<p align="center" >
-MESHERY IS A CLOUD NATIVE COMPUTING FOUNDATION PROJECT
-</p>
