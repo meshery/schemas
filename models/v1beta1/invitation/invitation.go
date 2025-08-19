@@ -19,26 +19,33 @@ const (
 
 // Invitation defines model for Invitation.
 type Invitation struct {
+	// AcceptedBy List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet
+	AcceptedBy []string `db:"accepted_by" json:"accepted_by" yaml:"accepted_by"`
+
 	// CreatedAt Timestamp when the invitation was created
-	CreatedAt time.Time `json:"createdAt" yaml:"createdAt"`
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the invitation was deleted, if applicable
-	DeletedAt core.NullTime `json:"deletedAt" yaml:"deletedAt"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
-	// Email Exact email address or the email address pattern for which the invitation is valid , null or empty string means the invitation is valid for all email addresses
-	Email openapi_types.Email `json:"email" yaml:"email"`
+	// Description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description
+	Description string                `json:"description" yaml:"description"`
+	Emails      []openapi_types.Email `json:"emails" yaml:"emails"`
 
 	// ExpiresAt Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
-	ExpiresAt time.Time `json:"expiresAt" yaml:"expiresAt"`
+	ExpiresAt time.Time `db:"expires_at" json:"expires_at" yaml:"expires_at"`
 
 	// ID Unique identifier for the invitation , is also used as the invitation code
 	ID interface{} `json:"id" yaml:"id"`
 
-	// IsDefault Indicates whether the invitation is a default invitation, which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation
-	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
+	// IsDefault Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation
+	IsDefault *bool `db:"is_default" json:"is_default" yaml:"is_default"`
+
+	// Name Name of the invitation, which can be used to identify the invitation, required and cant be empty string,
+	Name string `json:"name" yaml:"name"`
 
 	// OrgId ID of the organization to which the user is invited
-	OrgId string `json:"orgId" yaml:"orgId"`
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// Quota Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota
 	Quota int      `json:"quota" yaml:"quota"`
@@ -49,10 +56,7 @@ type Invitation struct {
 	Teams  []string         `json:"teams" yaml:"teams"`
 
 	// UpdatedAt Timestamp when the invitation was last updated
-	UpdatedAt time.Time `json:"updatedAt" yaml:"updatedAt"`
-
-	// UsedQuota Number of times the invitation has been used, null or empty string means the invitation has not been used yet
-	UsedQuota int `json:"usedQuota" yaml:"usedQuota"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
 
 // InvitationStatus Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -61,10 +65,10 @@ type InvitationStatus string
 // InvitationsPage defines model for InvitationsPage.
 type InvitationsPage struct {
 	// Data List of invitations
-	Data *[]Invitation `json:"data,omitempty" yaml:"data,omitempty"`
+	Data *[]Invitation `json:"data" yaml:"data"`
 
 	// TotalCount Total number of invitations available
-	TotalCount int `json:"totalCount" yaml:"totalCount"`
+	TotalCount *int `json:"total_count" yaml:"total_count"`
 }
 
 // Uuid A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.

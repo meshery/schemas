@@ -34,11 +34,11 @@ const schema = {
                 "schema": {
                   "type": "object",
                   "required": [
-                    "items",
+                    "data",
                     "totalCount"
                   ],
                   "properties": {
-                    "data": {
+                    "Data": {
                       "type": "array",
                       "items": {
                         "x-go-type": "Invitation",
@@ -46,11 +46,13 @@ const schema = {
                         "required": [
                           "id",
                           "default",
-                          "email",
+                          "name",
+                          "description",
+                          "emails",
                           "orgId",
                           "expiresAt",
                           "quota",
-                          "usedQuota",
+                          "acceptedBy",
                           "status",
                           "roles",
                           "teams",
@@ -64,31 +66,61 @@ const schema = {
                             "x-go-name": "ID",
                             "description": "Unique identifier for the invitation , is also used as the invitation code"
                           },
-                          "is_default": {
+                          "isDefault": {
                             "type": "boolean",
-                            "description": "Indicates whether the invitation is a default invitation, which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation"
+                            "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "is_default",
+                              "json": "is_default"
+                            }
                           },
-                          "email": {
+                          "name": {
                             "type": "string",
-                            "format": "email",
-                            "description": "Exact email address or the email address pattern for which the invitation is valid , null or empty string means the invitation is valid for all email addresses"
+                            "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                          },
+                          "emails": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "format": "email",
+                              "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
+                            }
                           },
                           "orgId": {
                             "type": "string",
-                            "description": "ID of the organization to which the user is invited"
+                            "description": "ID of the organization to which the user is invited",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_id",
+                              "json": "org_id"
+                            }
                           },
                           "expiresAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire"
+                            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "expires_at",
+                              "json": "expires_at"
+                            }
                           },
                           "quota": {
                             "type": "integer",
                             "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                           },
-                          "usedQuota": {
-                            "type": "integer",
-                            "description": "Number of times the invitation has been used, null or empty string means the invitation has not been used yet"
+                          "acceptedBy": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "accepted_by",
+                              "json": "accepted_by"
+                            }
                           },
                           "roles": {
                             "type": "array",
@@ -116,26 +148,44 @@ const schema = {
                           "createdAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Timestamp when the invitation was created"
+                            "description": "Timestamp when the invitation was created",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "json": "created_at"
+                            }
                           },
                           "updatedAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Timestamp when the invitation was last updated"
+                            "description": "Timestamp when the invitation was last updated",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "json": "updated_at"
+                            }
                           },
                           "deletedAt": {
                             "type": "string",
                             "format": "date-time",
                             "x-go-type": "core.NullTime",
-                            "description": "Timestamp when the invitation was deleted, if applicable"
+                            "description": "Timestamp when the invitation was deleted, if applicable",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "json": "deleted_at"
+                            }
                           }
                         }
                       },
-                      "description": "List of invitations"
+                      "description": "List of invitations",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "data"
+                      }
                     },
-                    "totalCount": {
+                    "TotalCount": {
                       "type": "integer",
-                      "description": "Total number of invitations available"
+                      "description": "Total number of invitations available",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "total_count"
+                      }
                     }
                   }
                 }
@@ -170,11 +220,13 @@ const schema = {
                 "required": [
                   "id",
                   "default",
-                  "email",
+                  "name",
+                  "description",
+                  "emails",
                   "orgId",
                   "expiresAt",
                   "quota",
-                  "usedQuota",
+                  "acceptedBy",
                   "status",
                   "roles",
                   "teams",
@@ -188,31 +240,61 @@ const schema = {
                     "x-go-name": "ID",
                     "description": "Unique identifier for the invitation , is also used as the invitation code"
                   },
-                  "is_default": {
+                  "isDefault": {
                     "type": "boolean",
-                    "description": "Indicates whether the invitation is a default invitation, which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation"
+                    "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "is_default",
+                      "json": "is_default"
+                    }
                   },
-                  "email": {
+                  "name": {
                     "type": "string",
-                    "format": "email",
-                    "description": "Exact email address or the email address pattern for which the invitation is valid , null or empty string means the invitation is valid for all email addresses"
+                    "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                  },
+                  "emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
+                    }
                   },
                   "orgId": {
                     "type": "string",
-                    "description": "ID of the organization to which the user is invited"
+                    "description": "ID of the organization to which the user is invited",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "org_id",
+                      "json": "org_id"
+                    }
                   },
                   "expiresAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire"
+                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "expires_at",
+                      "json": "expires_at"
+                    }
                   },
                   "quota": {
                     "type": "integer",
                     "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                   },
-                  "usedQuota": {
-                    "type": "integer",
-                    "description": "Number of times the invitation has been used, null or empty string means the invitation has not been used yet"
+                  "acceptedBy": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "accepted_by",
+                      "json": "accepted_by"
+                    }
                   },
                   "roles": {
                     "type": "array",
@@ -240,18 +322,30 @@ const schema = {
                   "createdAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation was created"
+                    "description": "Timestamp when the invitation was created",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "created_at",
+                      "json": "created_at"
+                    }
                   },
                   "updatedAt": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation was last updated"
+                    "description": "Timestamp when the invitation was last updated",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "updated_at",
+                      "json": "updated_at"
+                    }
                   },
                   "deletedAt": {
                     "type": "string",
                     "format": "date-time",
                     "x-go-type": "core.NullTime",
-                    "description": "Timestamp when the invitation was deleted, if applicable"
+                    "description": "Timestamp when the invitation was deleted, if applicable",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "deleted_at",
+                      "json": "deleted_at"
+                    }
                   }
                 }
               }
@@ -268,11 +362,13 @@ const schema = {
                   "required": [
                     "id",
                     "default",
-                    "email",
+                    "name",
+                    "description",
+                    "emails",
                     "orgId",
                     "expiresAt",
                     "quota",
-                    "usedQuota",
+                    "acceptedBy",
                     "status",
                     "roles",
                     "teams",
@@ -286,31 +382,61 @@ const schema = {
                       "x-go-name": "ID",
                       "description": "Unique identifier for the invitation , is also used as the invitation code"
                     },
-                    "is_default": {
+                    "isDefault": {
                       "type": "boolean",
-                      "description": "Indicates whether the invitation is a default invitation, which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation"
+                      "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "is_default",
+                        "json": "is_default"
+                      }
                     },
-                    "email": {
+                    "name": {
                       "type": "string",
-                      "format": "email",
-                      "description": "Exact email address or the email address pattern for which the invitation is valid , null or empty string means the invitation is valid for all email addresses"
+                      "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                    },
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
+                      }
                     },
                     "orgId": {
                       "type": "string",
-                      "description": "ID of the organization to which the user is invited"
+                      "description": "ID of the organization to which the user is invited",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_id",
+                        "json": "org_id"
+                      }
                     },
                     "expiresAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire"
+                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "expires_at",
+                        "json": "expires_at"
+                      }
                     },
                     "quota": {
                       "type": "integer",
                       "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                     },
-                    "usedQuota": {
-                      "type": "integer",
-                      "description": "Number of times the invitation has been used, null or empty string means the invitation has not been used yet"
+                    "acceptedBy": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "accepted_by",
+                        "json": "accepted_by"
+                      }
                     },
                     "roles": {
                       "type": "array",
@@ -338,18 +464,30 @@ const schema = {
                     "createdAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Timestamp when the invitation was created"
+                      "description": "Timestamp when the invitation was created",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at"
+                      }
                     },
                     "updatedAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Timestamp when the invitation was last updated"
+                      "description": "Timestamp when the invitation was last updated",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at"
+                      }
                     },
                     "deletedAt": {
                       "type": "string",
                       "format": "date-time",
                       "x-go-type": "core.NullTime",
-                      "description": "Timestamp when the invitation was deleted, if applicable"
+                      "description": "Timestamp when the invitation was deleted, if applicable",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deleted_at"
+                      }
                     }
                   }
                 }
@@ -405,11 +543,11 @@ const schema = {
       "InvitationsPage": {
         "type": "object",
         "required": [
-          "items",
+          "data",
           "totalCount"
         ],
         "properties": {
-          "data": {
+          "Data": {
             "type": "array",
             "items": {
               "x-go-type": "Invitation",
@@ -417,11 +555,13 @@ const schema = {
               "required": [
                 "id",
                 "default",
-                "email",
+                "name",
+                "description",
+                "emails",
                 "orgId",
                 "expiresAt",
                 "quota",
-                "usedQuota",
+                "acceptedBy",
                 "status",
                 "roles",
                 "teams",
@@ -435,31 +575,61 @@ const schema = {
                   "x-go-name": "ID",
                   "description": "Unique identifier for the invitation , is also used as the invitation code"
                 },
-                "is_default": {
+                "isDefault": {
                   "type": "boolean",
-                  "description": "Indicates whether the invitation is a default invitation, which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation"
+                  "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "is_default",
+                    "json": "is_default"
+                  }
                 },
-                "email": {
+                "name": {
                   "type": "string",
-                  "format": "email",
-                  "description": "Exact email address or the email address pattern for which the invitation is valid , null or empty string means the invitation is valid for all email addresses"
+                  "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                },
+                "emails": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
+                  }
                 },
                 "orgId": {
                   "type": "string",
-                  "description": "ID of the organization to which the user is invited"
+                  "description": "ID of the organization to which the user is invited",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "org_id",
+                    "json": "org_id"
+                  }
                 },
                 "expiresAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire"
+                  "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "expires_at",
+                    "json": "expires_at"
+                  }
                 },
                 "quota": {
                   "type": "integer",
                   "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                 },
-                "usedQuota": {
-                  "type": "integer",
-                  "description": "Number of times the invitation has been used, null or empty string means the invitation has not been used yet"
+                "acceptedBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "accepted_by",
+                    "json": "accepted_by"
+                  }
                 },
                 "roles": {
                   "type": "array",
@@ -487,26 +657,44 @@ const schema = {
                 "createdAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Timestamp when the invitation was created"
+                  "description": "Timestamp when the invitation was created",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "json": "created_at"
+                  }
                 },
                 "updatedAt": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Timestamp when the invitation was last updated"
+                  "description": "Timestamp when the invitation was last updated",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "json": "updated_at"
+                  }
                 },
                 "deletedAt": {
                   "type": "string",
                   "format": "date-time",
                   "x-go-type": "core.NullTime",
-                  "description": "Timestamp when the invitation was deleted, if applicable"
+                  "description": "Timestamp when the invitation was deleted, if applicable",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "json": "deleted_at"
+                  }
                 }
               }
             },
-            "description": "List of invitations"
+            "description": "List of invitations",
+            "x-oapi-codegen-extra-tags": {
+              "json": "data"
+            }
           },
-          "totalCount": {
+          "TotalCount": {
             "type": "integer",
-            "description": "Total number of invitations available"
+            "description": "Total number of invitations available",
+            "x-oapi-codegen-extra-tags": {
+              "json": "total_count"
+            }
           }
         }
       },
@@ -523,11 +711,13 @@ const schema = {
         "required": [
           "id",
           "default",
-          "email",
+          "name",
+          "description",
+          "emails",
           "orgId",
           "expiresAt",
           "quota",
-          "usedQuota",
+          "acceptedBy",
           "status",
           "roles",
           "teams",
@@ -541,31 +731,61 @@ const schema = {
             "x-go-name": "ID",
             "description": "Unique identifier for the invitation , is also used as the invitation code"
           },
-          "is_default": {
+          "isDefault": {
             "type": "boolean",
-            "description": "Indicates whether the invitation is a default invitation, which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation"
+            "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+            "x-oapi-codegen-extra-tags": {
+              "db": "is_default",
+              "json": "is_default"
+            }
           },
-          "email": {
+          "name": {
             "type": "string",
-            "format": "email",
-            "description": "Exact email address or the email address pattern for which the invitation is valid , null or empty string means the invitation is valid for all email addresses"
+            "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email",
+              "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
+            }
           },
           "orgId": {
             "type": "string",
-            "description": "ID of the organization to which the user is invited"
+            "description": "ID of the organization to which the user is invited",
+            "x-oapi-codegen-extra-tags": {
+              "db": "org_id",
+              "json": "org_id"
+            }
           },
           "expiresAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire"
+            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+            "x-oapi-codegen-extra-tags": {
+              "db": "expires_at",
+              "json": "expires_at"
+            }
           },
           "quota": {
             "type": "integer",
             "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
           },
-          "usedQuota": {
-            "type": "integer",
-            "description": "Number of times the invitation has been used, null or empty string means the invitation has not been used yet"
+          "acceptedBy": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
+            "x-oapi-codegen-extra-tags": {
+              "db": "accepted_by",
+              "json": "accepted_by"
+            }
           },
           "roles": {
             "type": "array",
@@ -593,18 +813,30 @@ const schema = {
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp when the invitation was created"
+            "description": "Timestamp when the invitation was created",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "json": "created_at"
+            }
           },
           "updatedAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp when the invitation was last updated"
+            "description": "Timestamp when the invitation was last updated",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "json": "updated_at"
+            }
           },
           "deletedAt": {
             "type": "string",
             "format": "date-time",
             "x-go-type": "core.NullTime",
-            "description": "Timestamp when the invitation was deleted, if applicable"
+            "description": "Timestamp when the invitation was deleted, if applicable",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "json": "deleted_at"
+            }
           }
         }
       }
