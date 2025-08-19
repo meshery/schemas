@@ -104,6 +104,7 @@ npx --yes @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/evaluation/${merged_construct}" \
      "${v1beta1}/user/${merged_construct}" \
      "${v1beta1}/academy/${merged_construct}" \
+     "${v1beta1}/invitation/${merged_construct}" \
  -o schemas/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
 
 node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/cloud_openapi.yml cloud
