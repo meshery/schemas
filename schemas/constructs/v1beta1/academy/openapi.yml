@@ -1491,7 +1491,7 @@ components:
           type: array
           description: "This list ranks your academy content by the total number of registrations. Use this data to quickly identify your most engaging content."
           items:
-            $ref: '#/components/schemas/ContentMetricItem'
+            type: object
         test_stats:
           type: object
           description: "This panel provides a high-level summary of all test activities across your academy."
@@ -1505,16 +1505,16 @@ components:
                 failed_count:
                   type: integer
             most_difficult_test:
-              $ref: '#/components/schemas/TestSummaryItem'
+              type: object
               description: "This is the test with the lowest pass-to-fail ratio, helping you quickly identify the most challenging content for your learners."
             easiest_test:
-              $ref: '#/components/schemas/TestSummaryItem'
+              type: object
               description: "This is the test with the highest pass-to-fail ratio, showing which content your learners are mastering most easily."
             most_attempted_test:
-              $ref: '#/components/schemas/TestSummaryItem'
+              type: object
               description: "This is the test that learners have attempted the most times, regardless of the outcome. High attempts could indicate either popularity or significant difficulty."
         test_metrics:
           type: array
           description: "This list provides a detailed performance breakdown for each individual test. Each test title is a clickable link that navigates directly to that assessment."
           items:
-            $ref: '#/components/schemas/TestMetricItem'
+            type: object
