@@ -1464,7 +1464,7 @@ components:
               description: "Total number of available challenges."
         learner_registration:
           type: object
-          description: "This chart shows the distribution of learners by their current status. A high ratio of non-completed statuses (i.e., Registered, Failed, and Withdrawn) relative to the 'Completed' status may indicate that your content is challenging or has engagement issues."
+          description: "This data shows the distribution of learners by their current status. A high ratio of non-completed statuses (i.e., Registered, Failed, and Withdrawn) relative to the 'Completed' status may indicate that your content is challenging or has engagement issues."
           properties:
             registered:
               type: integer
@@ -1474,7 +1474,7 @@ components:
               description: "Learners who have successfully finished the content."
             withdrawn:
               type: integer
-              description: "Learner who have unenrolled from the content."
+              description: "Learners who have unenrolled from the content."
             failed:
               type: integer
               description: "Learners who have failed the content."
@@ -1489,7 +1489,7 @@ components:
           properties:
             pass_fail_summary:
               type: object
-              description: "This chart shows a comparison of the total number of passed vs. failed attempts across all tests. This counts all attempts, including retakes by the same user."
+              description: "This data shows a comparison of the total number of passed vs. failed attempts across all tests. This counts all attempts, including retakes by the same user."
               properties:
                 passed_count:
                   type: integer
