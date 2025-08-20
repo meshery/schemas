@@ -1428,5 +1428,4 @@ components:
         page_size:
           type: integer
         page:
-
           type: integer
