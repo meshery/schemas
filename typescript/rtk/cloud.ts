@@ -136,6 +136,32 @@ const injectedRtkApi = api.injectEndpoints({
     submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
       query: (queryArg) => ({ url: `/api/academy/quiz/submit`, method: "POST", body: queryArg.body }),
     }),
+    getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
+      query: () => ({ url: `/api/academy/admin/summary` }),
+    }),
+    getAcademyAdminRegistrations: build.query<
+      GetAcademyAdminRegistrationsApiResponse,
+      GetAcademyAdminRegistrationsApiArg
+    >({
+      query: (queryArg) => ({
+        url: `/api/academy/admin/registrations`,
+        params: {
+          pagesize: queryArg.pagesize,
+          page: queryArg.page,
+          content_type: queryArg.contentType,
+          status: queryArg.status,
+        },
+      }),
+    }),
+    getCertificateById: build.query<GetCertificateByIdApiResponse, GetCertificateByIdApiArg>({
+      query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
+    }),
+    getInvitations: build.query<GetInvitationsApiResponse, GetInvitationsApiArg>({
+      query: () => ({ url: `/api/organizations/invitations` }),
+    }),
+    createInvitation: build.mutation<CreateInvitationApiResponse, CreateInvitationApiArg>({
+      query: (queryArg) => ({ url: `/api/organizations/invitations`, method: "POST", body: queryArg.body }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -575,10 +601,31 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       svg: string;
     };
     certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** UUID of the organization that issued the certificate */
+      org_id: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipient_id: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipient_name: string;
       /** Title of the certificate */
       title: string;
       /** Description of the certificate */
       description: string;
+      /** List of issuing authorities for the certificate */
+      issuing_authorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signature_url?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issued_date: string;
+      /** Date when the certificate expires (optional) */
+      expiration_date?: string;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -617,13 +664,41 @@ export type RegisterToAcademyContentApiResponse = /** status 200 registered cont
   /** ID of the user (foreign key to User) */
   user_id: string;
   /** Status of the user's course registration */
-  status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+  status: "registered" | "completed" | "failed" | "withdrawn";
   /** When the registration was updated */
   updated_at: string;
   /** When the registration was created */
   created_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
+  /** Issued certificate for completing the curricula under registration */
+  certificate: {
+    /** Unique identifier for the certificate */
+    id: string;
+    /** UUID of the organization that issued the certificate */
+    org_id: string;
+    /** ID of the recipient (user) who received the certificate */
+    recipient_id: string;
+    /** Name of the recipient (user) who received the certificate */
+    recipient_name: string;
+    /** Title of the certificate */
+    title: string;
+    /** Description of the certificate */
+    description: string;
+    /** List of issuing authorities for the certificate */
+    issuing_authorities: {
+      /** Name of the issuing authority */
+      name: string;
+      /** Role of the issuing authority */
+      role?: string;
+      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+      signature_url?: string;
+    }[];
+    /** Date when the certificate was issued */
+    issued_date: string;
+    /** Date when the certificate expires (optional) */
+    expiration_date?: string;
+  };
   /** Additional metadata about the registration */
   metadata: {
     [key: string]: any;
@@ -647,13 +722,41 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
     /** ID of the user (foreign key to User) */
     user_id: string;
     /** Status of the user's course registration */
-    status: "registered" | "in_progress" | "completed" | "failed" | "withdrawn";
+    status: "registered" | "completed" | "failed" | "withdrawn";
     /** When the registration was updated */
     updated_at: string;
     /** When the registration was created */
     created_at: string;
     /** Timestamp when the resource was deleted. */
     deleted_at?: string;
+    /** Issued certificate for completing the curricula under registration */
+    certificate: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** UUID of the organization that issued the certificate */
+      org_id: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipient_id: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipient_name: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuing_authorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signature_url?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issued_date: string;
+      /** Date when the certificate expires (optional) */
+      expiration_date?: string;
+    };
     /** Additional metadata about the registration */
     metadata: {
       [key: string]: any;
@@ -688,6 +791,8 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
           };
           quiz: {
             id: string;
+            /** Organization ID that owns this quiz */
+            orgId: string;
             /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
             final: boolean;
             title: string;
@@ -784,6 +889,8 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
   };
   quiz: {
     id: string;
+    /** Organization ID that owns this quiz */
+    orgId: string;
     /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
     final: boolean;
     title: string;
@@ -845,6 +952,176 @@ export type SubmitQuizApiArg = {
     }[];
   };
 };
+export type GetAcademyAdminSummaryApiResponse =
+  /** status 200 A list of content with total count and registration metrics */ object;
+export type GetAcademyAdminSummaryApiArg = void;
+export type GetAcademyAdminRegistrationsApiResponse = /** status 200 List of registrations with pagination info */ {
+  data: {
+    /** Title of the curricula */
+    curricula_title: string;
+    /** Type of the curricula */
+    curricula_type: "learning-path" | "challenge" | "certification";
+    /** Permalink of the curricula */
+    curricula_permalink: string;
+    /** Unique ID of the registration */
+    registration_id: string;
+    /** Registration status */
+    status: "registered" | "completed" | "failed" | "withdrawn";
+    /** When the registration was created */
+    created_at?: string;
+    /** ID of the user */
+    user_id: string;
+    /** First name of the user */
+    user_first_name: string;
+    /** Last name of the user */
+    user_last_name: string;
+    /** Email of the user */
+    user_email: string;
+    /** Avatar URL of the user */
+    user_avatar_url: string;
+    /** Total count for pagination */
+    total_count: number;
+  }[];
+  total_count: number;
+  page_size: number;
+  page: number;
+};
+export type GetAcademyAdminRegistrationsApiArg = {
+  /** Number of results per page */
+  pagesize?: number;
+  /** Page number */
+  page?: number;
+  /** Filter by content types */
+  contentType?: string[];
+  /** Filter by registration status */
+  status?: string[];
+};
+export type GetCertificateByIdApiResponse = /** status 200 A single certificate */ {
+  /** Unique identifier for the certificate */
+  id: string;
+  /** UUID of the organization that issued the certificate */
+  org_id: string;
+  /** ID of the recipient (user) who received the certificate */
+  recipient_id: string;
+  /** Name of the recipient (user) who received the certificate */
+  recipient_name: string;
+  /** Title of the certificate */
+  title: string;
+  /** Description of the certificate */
+  description: string;
+  /** List of issuing authorities for the certificate */
+  issuing_authorities: {
+    /** Name of the issuing authority */
+    name: string;
+    /** Role of the issuing authority */
+    role?: string;
+    /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+    signature_url?: string;
+  }[];
+  /** Date when the certificate was issued */
+  issued_date: string;
+  /** Date when the certificate expires (optional) */
+  expiration_date?: string;
+};
+export type GetCertificateByIdApiArg = {
+  /** The ID of the certificate to retrieve */
+  certificateId: string;
+};
+export type GetInvitationsApiResponse = /** status 200 undefined */ {
+  /** List of invitations */
+  Data?: {
+    /** Unique identifier for the invitation , is also used as the invitation code */
+    id: any;
+    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+    isDefault?: boolean;
+    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+    name: string;
+    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+    description: string;
+    emails: string[];
+    /** ID of the organization to which the user is invited */
+    orgId: string;
+    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    expiresAt: string;
+    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+    quota: number;
+    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+    acceptedBy: string[];
+    roles: string[];
+    teams: string[];
+    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+    status: "enabled" | "disabled";
+    /** Timestamp when the invitation was created */
+    createdAt: string;
+    /** Timestamp when the invitation was last updated */
+    updatedAt: string;
+    /** Timestamp when the invitation was deleted, if applicable */
+    deletedAt: string;
+  }[];
+  /** Total number of invitations available */
+  TotalCount?: number;
+};
+export type GetInvitationsApiArg = void;
+export type CreateInvitationApiResponse = /** status 201 undefined */ {
+  /** Unique identifier for the invitation , is also used as the invitation code */
+  id: any;
+  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+  isDefault?: boolean;
+  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+  name: string;
+  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+  description: string;
+  emails: string[];
+  /** ID of the organization to which the user is invited */
+  orgId: string;
+  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  expiresAt: string;
+  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+  quota: number;
+  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+  acceptedBy: string[];
+  roles: string[];
+  teams: string[];
+  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+  status: "enabled" | "disabled";
+  /** Timestamp when the invitation was created */
+  createdAt: string;
+  /** Timestamp when the invitation was last updated */
+  updatedAt: string;
+  /** Timestamp when the invitation was deleted, if applicable */
+  deletedAt: string;
+};
+export type CreateInvitationApiArg = {
+  body: {
+    /** Unique identifier for the invitation , is also used as the invitation code */
+    id: any;
+    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+    isDefault?: boolean;
+    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+    name: string;
+    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+    description: string;
+    emails: string[];
+    /** ID of the organization to which the user is invited */
+    orgId: string;
+    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    expiresAt: string;
+    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+    quota: number;
+    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+    acceptedBy: string[];
+    roles: string[];
+    teams: string[];
+    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+    status: "enabled" | "disabled";
+    /** Timestamp when the invitation was created */
+    createdAt: string;
+    /** Timestamp when the invitation was last updated */
+    updatedAt: string;
+    /** Timestamp when the invitation was deleted, if applicable */
+    deletedAt: string;
+  };
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -869,4 +1146,9 @@ export const {
   useGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
   useSubmitQuizMutation,
+  useGetAcademyAdminSummaryQuery,
+  useGetAcademyAdminRegistrationsQuery,
+  useGetCertificateByIdQuery,
+  useGetInvitationsQuery,
+  useCreateInvitationMutation,
 } = injectedRtkApi;

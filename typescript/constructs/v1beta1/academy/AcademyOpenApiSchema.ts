@@ -273,10 +273,41 @@ const schema = {
                                   "x-go-type": "Certificate",
                                   "type": "object",
                                   "required": [
+                                    "id",
+                                    "org_id",
                                     "title",
-                                    "description"
+                                    "description",
+                                    "issuing_authorities",
+                                    "issued_date",
+                                    "recipient_id",
+                                    "recipient_name"
                                   ],
                                   "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Unique identifier for the certificate",
+                                      "example": "1234567890abcdef",
+                                      "x-go-name": "ID"
+                                    },
+                                    "org_id": {
+                                      "description": "UUID of the organization that issued the certificate",
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "recipient_id": {
+                                      "type": "string",
+                                      "description": "ID of the recipient (user) who received the certificate",
+                                      "example": "1234567890abcdef"
+                                    },
+                                    "recipient_name": {
+                                      "type": "string",
+                                      "description": "Name of the recipient (user) who received the certificate",
+                                      "example": "John Doe"
+                                    },
                                     "title": {
                                       "type": "string",
                                       "description": "Title of the certificate",
@@ -286,6 +317,48 @@ const schema = {
                                       "type": "string",
                                       "description": "Description of the certificate",
                                       "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                    },
+                                    "issuing_authorities": {
+                                      "type": "array",
+                                      "items": {
+                                        "x-go-type": "CertificateIssuingAuthority",
+                                        "type": "object",
+                                        "required": [
+                                          "name",
+                                          "url"
+                                        ],
+                                        "properties": {
+                                          "name": {
+                                            "type": "string",
+                                            "description": "Name of the issuing authority",
+                                            "example": "Cloud Native Foundation"
+                                          },
+                                          "role": {
+                                            "type": "string",
+                                            "description": "Role of the issuing authority",
+                                            "example": "COO"
+                                          },
+                                          "signature_url": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                            "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                                          }
+                                        }
+                                      },
+                                      "description": "List of issuing authorities for the certificate"
+                                    },
+                                    "issued_date": {
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "description": "Date when the certificate was issued",
+                                      "example": "2023-10-01T12:00:00Z"
+                                    },
+                                    "expiration_date": {
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "description": "Date when the certificate expires (optional)",
+                                      "example": "2025-10-01T12:00:00Z"
                                     }
                                   }
                                 },
@@ -527,322 +600,416 @@ const schema = {
                   "data": {
                     "type": "array",
                     "items": {
-                      "x-go-type": "AcademyCirricula",
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "Id of the cirricula",
-                          "example": "923458-3490394-934893",
-                          "x-go-name": "ID",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "id",
-                            "json": "id",
-                            "yaml": "id"
-                          }
-                        },
-                        "type": {
-                          "x-go-type": "ContentType",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "type"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "learning-path",
-                            "challenge",
-                            "certification"
-                          ]
-                        },
-                        "orgId": {
-                          "type": "string",
-                          "description": "Organization ID that owns this learning path",
-                          "example": "layer5",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "org_id",
-                            "json": "org_id",
-                            "yaml": "org_id"
-                          }
-                        },
-                        "visibility": {
-                          "description": "Visibility of the cirricula",
-                          "x-go-type": "Visibility",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "visibility",
-                            "json": "visibility",
-                            "yaml": "visibility"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "public",
-                            "private"
-                          ]
-                        },
-                        "status": {
-                          "example": "ready",
-                          "description": "Status of the cirricula",
-                          "x-go-type": "Status",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "status",
-                            "json": "status",
-                            "yaml": "status"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "ready",
-                            "archived",
-                            "not_ready"
-                          ]
-                        },
-                        "slug": {
-                          "type": "string",
-                          "description": "slug of the cirricula",
-                          "example": "intro-kubernetes-course"
-                        },
-                        "level": {
-                          "description": "Level of the cirricula",
-                          "x-go-type": "Level",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "level",
-                            "json": "level",
-                            "yaml": "level"
-                          },
-                          "type": "string",
-                          "enum": [
-                            "beginner",
-                            "intermediate",
-                            "advanced"
-                          ]
-                        },
-                        "createdAt": {
-                          "description": "When the cirricula item was created",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "created_at",
-                            "json": "created_at",
-                            "yaml": "created_at"
-                          },
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "updatedAt": {
-                          "description": "When the cirricula was last updated",
-                          "x-go-type": "core.Time",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "updated_at",
-                            "json": "updated_at",
-                            "yaml": "updated_at"
-                          },
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "deletedAt": {
-                          "x-go-type": "core.NullTime",
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "deleted_at",
-                            "json": "deleted_at",
-                            "yaml": "deleted_at"
-                          },
-                          "description": "Timestamp when the resource was deleted.",
-                          "type": "string",
-                          "format": "date-time",
-                          "x-go-name": "DeletedAt",
-                          "x-go-type-skip-optional-pointer": true
-                        },
-                        "metadata": {
+                      "x-go-type": "AcademyCurriculaWithMetrics",
+                      "x-go-type-skip-optional-pointer": true,
+                      "allOf": [
+                        {
                           "type": "object",
-                          "description": "Additional metadata about the cirricula",
-                          "additionalProperties": true,
-                          "x-go-type": "core.Map",
-                          "x-go-type-skip-optional-pointer": true,
-                          "x-oapi-codegen-extra-tags": {
-                            "db": "metadata",
-                            "json": "metadata",
-                            "yaml": "metadata"
-                          },
-                          "oneOf": [
-                            {
-                              "x-go-type": "CurriculaMetadata",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Id of the cirricula",
+                              "example": "923458-3490394-934893",
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "id",
+                                "json": "id",
+                                "yaml": "id"
+                              }
+                            },
+                            "type": {
+                              "x-go-type": "ContentType",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "type"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "learning-path",
+                                "challenge",
+                                "certification"
+                              ]
+                            },
+                            "orgId": {
+                              "type": "string",
+                              "description": "Organization ID that owns this learning path",
+                              "example": "layer5",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "org_id",
+                                "json": "org_id",
+                                "yaml": "org_id"
+                              }
+                            },
+                            "visibility": {
+                              "description": "Visibility of the cirricula",
+                              "x-go-type": "Visibility",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "visibility",
+                                "json": "visibility",
+                                "yaml": "visibility"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "public",
+                                "private"
+                              ]
+                            },
+                            "status": {
+                              "example": "ready",
+                              "description": "Status of the cirricula",
+                              "x-go-type": "Status",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "status",
+                                "json": "status",
+                                "yaml": "status"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "ready",
+                                "archived",
+                                "not_ready"
+                              ]
+                            },
+                            "slug": {
+                              "type": "string",
+                              "description": "slug of the cirricula",
+                              "example": "intro-kubernetes-course"
+                            },
+                            "level": {
+                              "description": "Level of the cirricula",
+                              "x-go-type": "Level",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "level",
+                                "json": "level",
+                                "yaml": "level"
+                              },
+                              "type": "string",
+                              "enum": [
+                                "beginner",
+                                "intermediate",
+                                "advanced"
+                              ]
+                            },
+                            "createdAt": {
+                              "description": "When the cirricula item was created",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "json": "created_at",
+                                "yaml": "created_at"
+                              },
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updatedAt": {
+                              "description": "When the cirricula was last updated",
+                              "x-go-type": "core.Time",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "json": "updated_at",
+                                "yaml": "updated_at"
+                              },
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "deletedAt": {
+                              "x-go-type": "core.NullTime",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "deleted_at",
+                                "json": "deleted_at",
+                                "yaml": "deleted_at"
+                              },
+                              "description": "Timestamp when the resource was deleted.",
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-name": "DeletedAt",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "metadata": {
                               "type": "object",
-                              "properties": {
-                                "title": {
-                                  "type": "string",
-                                  "description": "Title of the learning path",
-                                  "example": "Mastering Kubernetes for Engineers"
-                                },
-                                "description": {
-                                  "type": "string",
-                                  "description": "Description of the learning path",
-                                  "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
-                                },
-                                "banner": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "nullable": true,
-                                  "description": "Optional banner image",
-                                  "example": null
-                                },
-                                "permalink": {
-                                  "type": "string",
-                                  "format": "uri",
-                                  "description": "Canonical URL for the learning path",
-                                  "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
-                                },
-                                "badge": {
-                                  "x-go-type": "Badge",
+                              "description": "Additional metadata about the cirricula",
+                              "additionalProperties": true,
+                              "x-go-type": "core.Map",
+                              "x-go-type-skip-optional-pointer": true,
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "metadata",
+                                "json": "metadata",
+                                "yaml": "metadata"
+                              },
+                              "oneOf": [
+                                {
+                                  "x-go-type": "CurriculaMetadata",
                                   "type": "object",
-                                  "required": [
-                                    "label",
-                                    "title",
-                                    "description",
-                                    "png",
-                                    "svg"
-                                  ],
-                                  "properties": {
-                                    "label": {
-                                      "type": "string",
-                                      "description": "unique identifier for the badge ( auto generated )",
-                                      "example": "Kubernetes-Expert"
-                                    },
-                                    "title": {
-                                      "type": "string",
-                                      "description": "Title of the badge",
-                                      "example": "Kubernetes Expert"
-                                    },
-                                    "description": {
-                                      "type": "string",
-                                      "description": "Description of the badge",
-                                      "example": "Awarded for mastering Kubernetes concepts and practices"
-                                    },
-                                    "png": {
-                                      "type": "string",
-                                      "format": "uri",
-                                      "description": "URL to the badge image",
-                                      "example": "http://localhost:9876/badges/kubernetes-expert.png"
-                                    },
-                                    "svg": {
-                                      "type": "string",
-                                      "format": "uri",
-                                      "description": "URL to the badge SVG image",
-                                      "example": "http://localhost:9876/badges/kubernetes-expert.svg"
-                                    }
-                                  }
-                                },
-                                "certificate": {
-                                  "x-go-type": "Certificate",
-                                  "type": "object",
-                                  "required": [
-                                    "title",
-                                    "description"
-                                  ],
                                   "properties": {
                                     "title": {
                                       "type": "string",
-                                      "description": "Title of the certificate",
-                                      "example": "Kubernetes Expert Certification"
+                                      "description": "Title of the learning path",
+                                      "example": "Mastering Kubernetes for Engineers"
                                     },
                                     "description": {
                                       "type": "string",
-                                      "description": "Description of the certificate",
-                                      "example": "Awarded for successfully completing the Kubernetes Expert course"
-                                    }
-                                  }
-                                },
-                                "children": {
-                                  "type": "array",
-                                  "description": "List of children items in the top-level curricula",
-                                  "items": {
-                                    "x-go-type": "ChildNode",
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "string",
-                                        "description": "Unique identifier for the course",
-                                        "example": "1234567890abcdef",
-                                        "x-go-name": "ID",
-                                        "x-oapi-codegen-extra-tags": {
-                                          "db": "id",
-                                          "json": "id",
-                                          "yaml": "id"
-                                        }
-                                      },
-                                      "title": {
-                                        "type": "string",
-                                        "description": "Title of the course",
-                                        "example": "Kubernetes Basics"
-                                      },
-                                      "permalink": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "description": "URL to the course content",
-                                        "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
-                                      },
-                                      "description": {
-                                        "type": "string",
-                                        "description": "Course description",
-                                        "example": "Learn the basics of Kubernetes"
-                                      },
-                                      "weight": {
-                                        "type": "number",
-                                        "description": "Order of the course in the list",
-                                        "example": "eg 1 , 2"
-                                      },
-                                      "banner": {
-                                        "type": "string",
-                                        "format": "uri",
-                                        "nullable": true,
-                                        "description": "Optional banner image",
-                                        "example": null
-                                      },
-                                      "type": {
-                                        "x-go-type": "ContentType",
-                                        "description": "Type of the content (e.g., learning-path, challenge, certification)",
-                                        "type": "string",
-                                        "enum": [
-                                          "learning-path",
-                                          "challenge",
-                                          "certification"
-                                        ]
-                                      },
-                                      "children": {
-                                        "type": "array",
-                                        "description": "List of child nodes (sub-courses or modules)",
-                                        "items": {
-                                          "type": "object",
-                                          "x-go-type": "ChildNode"
+                                      "description": "Description of the learning path",
+                                      "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                    },
+                                    "banner": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "nullable": true,
+                                      "description": "Optional banner image",
+                                      "example": null
+                                    },
+                                    "permalink": {
+                                      "type": "string",
+                                      "format": "uri",
+                                      "description": "Canonical URL for the learning path",
+                                      "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                                    },
+                                    "badge": {
+                                      "x-go-type": "Badge",
+                                      "type": "object",
+                                      "required": [
+                                        "label",
+                                        "title",
+                                        "description",
+                                        "png",
+                                        "svg"
+                                      ],
+                                      "properties": {
+                                        "label": {
+                                          "type": "string",
+                                          "description": "unique identifier for the badge ( auto generated )",
+                                          "example": "Kubernetes-Expert"
+                                        },
+                                        "title": {
+                                          "type": "string",
+                                          "description": "Title of the badge",
+                                          "example": "Kubernetes Expert"
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Description of the badge",
+                                          "example": "Awarded for mastering Kubernetes concepts and practices"
+                                        },
+                                        "png": {
+                                          "type": "string",
+                                          "format": "uri",
+                                          "description": "URL to the badge image",
+                                          "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                        },
+                                        "svg": {
+                                          "type": "string",
+                                          "format": "uri",
+                                          "description": "URL to the badge SVG image",
+                                          "example": "http://localhost:9876/badges/kubernetes-expert.svg"
                                         }
                                       }
                                     },
-                                    "required": [
-                                      "title",
-                                      "description",
-                                      "id",
-                                      "permalink"
-                                    ]
-                                  }
+                                    "certificate": {
+                                      "x-go-type": "Certificate",
+                                      "type": "object",
+                                      "required": [
+                                        "id",
+                                        "org_id",
+                                        "title",
+                                        "description",
+                                        "issuing_authorities",
+                                        "issued_date",
+                                        "recipient_id",
+                                        "recipient_name"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "type": "string",
+                                          "description": "Unique identifier for the certificate",
+                                          "example": "1234567890abcdef",
+                                          "x-go-name": "ID"
+                                        },
+                                        "org_id": {
+                                          "description": "UUID of the organization that issued the certificate",
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "recipient_id": {
+                                          "type": "string",
+                                          "description": "ID of the recipient (user) who received the certificate",
+                                          "example": "1234567890abcdef"
+                                        },
+                                        "recipient_name": {
+                                          "type": "string",
+                                          "description": "Name of the recipient (user) who received the certificate",
+                                          "example": "John Doe"
+                                        },
+                                        "title": {
+                                          "type": "string",
+                                          "description": "Title of the certificate",
+                                          "example": "Kubernetes Expert Certification"
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Description of the certificate",
+                                          "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                        },
+                                        "issuing_authorities": {
+                                          "type": "array",
+                                          "items": {
+                                            "x-go-type": "CertificateIssuingAuthority",
+                                            "type": "object",
+                                            "required": [
+                                              "name",
+                                              "url"
+                                            ],
+                                            "properties": {
+                                              "name": {
+                                                "type": "string",
+                                                "description": "Name of the issuing authority",
+                                                "example": "Cloud Native Foundation"
+                                              },
+                                              "role": {
+                                                "type": "string",
+                                                "description": "Role of the issuing authority",
+                                                "example": "COO"
+                                              },
+                                              "signature_url": {
+                                                "type": "string",
+                                                "format": "uri",
+                                                "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                                "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                                              }
+                                            }
+                                          },
+                                          "description": "List of issuing authorities for the certificate"
+                                        },
+                                        "issued_date": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "description": "Date when the certificate was issued",
+                                          "example": "2023-10-01T12:00:00Z"
+                                        },
+                                        "expiration_date": {
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "description": "Date when the certificate expires (optional)",
+                                          "example": "2025-10-01T12:00:00Z"
+                                        }
+                                      }
+                                    },
+                                    "children": {
+                                      "type": "array",
+                                      "description": "List of children items in the top-level curricula",
+                                      "items": {
+                                        "x-go-type": "ChildNode",
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "description": "Unique identifier for the course",
+                                            "example": "1234567890abcdef",
+                                            "x-go-name": "ID",
+                                            "x-oapi-codegen-extra-tags": {
+                                              "db": "id",
+                                              "json": "id",
+                                              "yaml": "id"
+                                            }
+                                          },
+                                          "title": {
+                                            "type": "string",
+                                            "description": "Title of the course",
+                                            "example": "Kubernetes Basics"
+                                          },
+                                          "permalink": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "description": "URL to the course content",
+                                            "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                          },
+                                          "description": {
+                                            "type": "string",
+                                            "description": "Course description",
+                                            "example": "Learn the basics of Kubernetes"
+                                          },
+                                          "weight": {
+                                            "type": "number",
+                                            "description": "Order of the course in the list",
+                                            "example": "eg 1 , 2"
+                                          },
+                                          "banner": {
+                                            "type": "string",
+                                            "format": "uri",
+                                            "nullable": true,
+                                            "description": "Optional banner image",
+                                            "example": null
+                                          },
+                                          "type": {
+                                            "x-go-type": "ContentType",
+                                            "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                                            "type": "string",
+                                            "enum": [
+                                              "learning-path",
+                                              "challenge",
+                                              "certification"
+                                            ]
+                                          },
+                                          "children": {
+                                            "type": "array",
+                                            "description": "List of child nodes (sub-courses or modules)",
+                                            "items": {
+                                              "type": "object",
+                                              "x-go-type": "ChildNode"
+                                            }
+                                          }
+                                        },
+                                        "required": [
+                                          "title",
+                                          "description",
+                                          "id",
+                                          "permalink"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "title",
+                                    "description",
+                                    "permalink"
+                                  ]
                                 }
-                              },
-                              "required": [
-                                "title",
-                                "description",
-                                "permalink"
                               ]
                             }
+                          },
+                          "required": [
+                            "id",
+                            "type",
+                            "orgId",
+                            "visibility",
+                            "status",
+                            "slug",
+                            "createdAt",
+                            "updatedAt",
+                            "deletedAt",
+                            "metadata",
+                            "level"
                           ]
+                        },
+                        {
+                          "type": "object",
+                          "required": [
+                            "RegistrationCount"
+                          ],
+                          "properties": {
+                            "RegistrationCount": {
+                              "type": "number",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "registration_count,omitempty",
+                                "json": "registration_count,omitempty",
+                                "yaml": "registration_count,omitempty"
+                              }
+                            }
+                          }
                         }
-                      },
-                      "required": [
-                        "id",
-                        "type",
-                        "orgId",
-                        "visibility",
-                        "status",
-                        "slug",
-                        "createdAt",
-                        "updatedAt",
-                        "deletedAt",
-                        "metadata",
-                        "level"
                       ]
                     }
                   }
@@ -1106,10 +1273,41 @@ const schema = {
                               "x-go-type": "Certificate",
                               "type": "object",
                               "required": [
+                                "id",
+                                "org_id",
                                 "title",
-                                "description"
+                                "description",
+                                "issuing_authorities",
+                                "issued_date",
+                                "recipient_id",
+                                "recipient_name"
                               ],
                               "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Unique identifier for the certificate",
+                                  "example": "1234567890abcdef",
+                                  "x-go-name": "ID"
+                                },
+                                "org_id": {
+                                  "description": "UUID of the organization that issued the certificate",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
+                                "recipient_id": {
+                                  "type": "string",
+                                  "description": "ID of the recipient (user) who received the certificate",
+                                  "example": "1234567890abcdef"
+                                },
+                                "recipient_name": {
+                                  "type": "string",
+                                  "description": "Name of the recipient (user) who received the certificate",
+                                  "example": "John Doe"
+                                },
                                 "title": {
                                   "type": "string",
                                   "description": "Title of the certificate",
@@ -1119,6 +1317,48 @@ const schema = {
                                   "type": "string",
                                   "description": "Description of the certificate",
                                   "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                },
+                                "issuing_authorities": {
+                                  "type": "array",
+                                  "items": {
+                                    "x-go-type": "CertificateIssuingAuthority",
+                                    "type": "object",
+                                    "required": [
+                                      "name",
+                                      "url"
+                                    ],
+                                    "properties": {
+                                      "name": {
+                                        "type": "string",
+                                        "description": "Name of the issuing authority",
+                                        "example": "Cloud Native Foundation"
+                                      },
+                                      "role": {
+                                        "type": "string",
+                                        "description": "Role of the issuing authority",
+                                        "example": "COO"
+                                      },
+                                      "signature_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                        "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                                      }
+                                    }
+                                  },
+                                  "description": "List of issuing authorities for the certificate"
+                                },
+                                "issued_date": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Date when the certificate was issued",
+                                  "example": "2023-10-01T12:00:00Z"
+                                },
+                                "expiration_date": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Date when the certificate expires (optional)",
+                                  "example": "2025-10-01T12:00:00Z"
                                 }
                               }
                             },
@@ -1284,6 +1524,7 @@ const schema = {
                     "created_at",
                     "updated_at",
                     "content_id",
+                    "certificate",
                     "metadata"
                   ],
                   "properties": {
@@ -1334,18 +1575,18 @@ const schema = {
                       }
                     },
                     "status": {
-                      "type": "string",
-                      "enum": [
-                        "registered",
-                        "in_progress",
-                        "completed",
-                        "failed",
-                        "withdrawn"
-                      ],
+                      "x-go-type": "AcademyRegistrationStatus",
                       "description": "Status of the user's course registration",
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
-                      }
+                      },
+                      "type": "string",
+                      "enum": [
+                        "registered",
+                        "completed",
+                        "failed",
+                        "withdrawn"
+                      ]
                     },
                     "updated_at": {
                       "description": "When the registration was updated",
@@ -1375,6 +1616,103 @@ const schema = {
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "certificate": {
+                      "x-go-type": "core.Map",
+                      "description": "Issued certificate for completing the curricula under registration",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "certificate"
+                      },
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "org_id",
+                        "title",
+                        "description",
+                        "issuing_authorities",
+                        "issued_date",
+                        "recipient_id",
+                        "recipient_name"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier for the certificate",
+                          "example": "1234567890abcdef",
+                          "x-go-name": "ID"
+                        },
+                        "org_id": {
+                          "description": "UUID of the organization that issued the certificate",
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "recipient_id": {
+                          "type": "string",
+                          "description": "ID of the recipient (user) who received the certificate",
+                          "example": "1234567890abcdef"
+                        },
+                        "recipient_name": {
+                          "type": "string",
+                          "description": "Name of the recipient (user) who received the certificate",
+                          "example": "John Doe"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Title of the certificate",
+                          "example": "Kubernetes Expert Certification"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the certificate",
+                          "example": "Awarded for successfully completing the Kubernetes Expert course"
+                        },
+                        "issuing_authorities": {
+                          "type": "array",
+                          "items": {
+                            "x-go-type": "CertificateIssuingAuthority",
+                            "type": "object",
+                            "required": [
+                              "name",
+                              "url"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the issuing authority",
+                                "example": "Cloud Native Foundation"
+                              },
+                              "role": {
+                                "type": "string",
+                                "description": "Role of the issuing authority",
+                                "example": "COO"
+                              },
+                              "signature_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                              }
+                            }
+                          },
+                          "description": "List of issuing authorities for the certificate"
+                        },
+                        "issued_date": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Date when the certificate was issued",
+                          "example": "2023-10-01T12:00:00Z"
+                        },
+                        "expiration_date": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Date when the certificate expires (optional)",
+                          "example": "2025-10-01T12:00:00Z"
+                        }
+                      }
                     },
                     "metadata": {
                       "type": "object",
@@ -1445,6 +1783,7 @@ const schema = {
                     "created_at",
                     "updated_at",
                     "content_id",
+                    "certificate",
                     "metadata"
                   ],
                   "properties": {
@@ -1495,18 +1834,18 @@ const schema = {
                       }
                     },
                     "status": {
-                      "type": "string",
-                      "enum": [
-                        "registered",
-                        "in_progress",
-                        "completed",
-                        "failed",
-                        "withdrawn"
-                      ],
+                      "x-go-type": "AcademyRegistrationStatus",
                       "description": "Status of the user's course registration",
                       "x-oapi-codegen-extra-tags": {
                         "db": "status"
-                      }
+                      },
+                      "type": "string",
+                      "enum": [
+                        "registered",
+                        "completed",
+                        "failed",
+                        "withdrawn"
+                      ]
                     },
                     "updated_at": {
                       "description": "When the registration was updated",
@@ -1536,6 +1875,103 @@ const schema = {
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
                       "x-go-type-skip-optional-pointer": true
+                    },
+                    "certificate": {
+                      "x-go-type": "core.Map",
+                      "description": "Issued certificate for completing the curricula under registration",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "certificate"
+                      },
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "org_id",
+                        "title",
+                        "description",
+                        "issuing_authorities",
+                        "issued_date",
+                        "recipient_id",
+                        "recipient_name"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Unique identifier for the certificate",
+                          "example": "1234567890abcdef",
+                          "x-go-name": "ID"
+                        },
+                        "org_id": {
+                          "description": "UUID of the organization that issued the certificate",
+                          "type": "string",
+                          "format": "uuid",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          }
+                        },
+                        "recipient_id": {
+                          "type": "string",
+                          "description": "ID of the recipient (user) who received the certificate",
+                          "example": "1234567890abcdef"
+                        },
+                        "recipient_name": {
+                          "type": "string",
+                          "description": "Name of the recipient (user) who received the certificate",
+                          "example": "John Doe"
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Title of the certificate",
+                          "example": "Kubernetes Expert Certification"
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the certificate",
+                          "example": "Awarded for successfully completing the Kubernetes Expert course"
+                        },
+                        "issuing_authorities": {
+                          "type": "array",
+                          "items": {
+                            "x-go-type": "CertificateIssuingAuthority",
+                            "type": "object",
+                            "required": [
+                              "name",
+                              "url"
+                            ],
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the issuing authority",
+                                "example": "Cloud Native Foundation"
+                              },
+                              "role": {
+                                "type": "string",
+                                "description": "Role of the issuing authority",
+                                "example": "COO"
+                              },
+                              "signature_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                              }
+                            }
+                          },
+                          "description": "List of issuing authorities for the certificate"
+                        },
+                        "issued_date": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Date when the certificate was issued",
+                          "example": "2023-10-01T12:00:00Z"
+                        },
+                        "expiration_date": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Date when the certificate expires (optional)",
+                          "example": "2025-10-01T12:00:00Z"
+                        }
+                      }
                     },
                     "metadata": {
                       "type": "object",
@@ -1734,6 +2170,7 @@ const schema = {
                                 "required": [
                                   "id",
                                   "title",
+                                  "orgId",
                                   "description",
                                   "slug",
                                   "relPermalink",
@@ -1759,6 +2196,16 @@ const schema = {
                                     "x-go-name": "ID",
                                     "x-oapi-codegen-extra-tags": {
                                       "json": "id"
+                                    }
+                                  },
+                                  "orgId": {
+                                    "type": "string",
+                                    "description": "Organization ID that owns this quiz",
+                                    "example": "layer5",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "org_id",
+                                      "json": "org_id",
+                                      "yaml": "org_id"
                                     }
                                   },
                                   "final": {
@@ -2197,6 +2644,7 @@ const schema = {
                       "required": [
                         "id",
                         "title",
+                        "orgId",
                         "description",
                         "slug",
                         "relPermalink",
@@ -2222,6 +2670,16 @@ const schema = {
                           "x-go-name": "ID",
                           "x-oapi-codegen-extra-tags": {
                             "json": "id"
+                          }
+                        },
+                        "orgId": {
+                          "type": "string",
+                          "description": "Organization ID that owns this quiz",
+                          "example": "layer5",
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "org_id",
+                            "json": "org_id",
+                            "yaml": "org_id"
                           }
                         },
                         "final": {
@@ -2451,6 +2909,393 @@ const schema = {
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/academy/admin/summary": {
+      "get": {
+        "tags": [
+          "Academy"
+        ],
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getAcademyAdminSummary",
+        "summary": "Get academy content summary",
+        "description": "Returns a summary of all academy content with  metrics.",
+        "responses": {
+          "200": {
+            "description": "A list of content with total count and registration metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/academy/admin/registrations": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Academy"
+        ],
+        "operationId": "getAcademyAdminRegistrations",
+        "summary": "Get academy registrations",
+        "description": "Returns a list of academy registrations with user, curricula, and pagination details.",
+        "parameters": [
+          {
+            "name": "pagesize",
+            "in": "query",
+            "required": false,
+            "description": "Number of results per page",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "content_type",
+            "in": "query",
+            "required": false,
+            "description": "Filter by content types",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "style": "form",
+              "explode": true
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Filter by registration status",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "style": "form",
+              "explode": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of registrations with pagination info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "total_count",
+                    "page_size",
+                    "page"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "UserRegistration",
+                        "type": "object",
+                        "required": [
+                          "curricula_title",
+                          "curricula_type",
+                          "curricula_permalink",
+                          "registration_id",
+                          "status",
+                          "user_id",
+                          "user_email",
+                          "user_last_name",
+                          "user_first_name",
+                          "user_avatar_url",
+                          "total_count"
+                        ],
+                        "properties": {
+                          "curricula_title": {
+                            "type": "string",
+                            "description": "Title of the curricula",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "curricula_title"
+                            }
+                          },
+                          "curricula_type": {
+                            "type": "string",
+                            "enum": [
+                              "learning-path",
+                              "challenge",
+                              "certification"
+                            ],
+                            "description": "Type of the curricula",
+                            "x-go-type": "ContentType",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "curricula_type"
+                            }
+                          },
+                          "curricula_permalink": {
+                            "type": "string",
+                            "description": "Permalink of the curricula",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "curricula_permalink"
+                            }
+                          },
+                          "registration_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "Unique ID of the registration",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "registration_id"
+                            }
+                          },
+                          "status": {
+                            "description": "Registration status",
+                            "x-go-type": "AcademyRegistrationStatus",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "status"
+                            },
+                            "type": "string",
+                            "enum": [
+                              "registered",
+                              "completed",
+                              "failed",
+                              "withdrawn"
+                            ]
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "When the registration was created",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at"
+                            }
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "ID of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id"
+                            }
+                          },
+                          "user_first_name": {
+                            "type": "string",
+                            "description": "First name of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_first_name"
+                            }
+                          },
+                          "user_last_name": {
+                            "type": "string",
+                            "description": "Last name of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_last_name"
+                            }
+                          },
+                          "user_email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_email"
+                            }
+                          },
+                          "user_avatar_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Avatar URL of the user",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_avatar_url"
+                            }
+                          },
+                          "total_count": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "Total count for pagination",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "total_count"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "page": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/academy/certificates/{certificateId}": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Academy"
+        ],
+        "operationId": "getCertificateById",
+        "summary": "Get a certificate by ID",
+        "description": "Returns a certificate identified by its ID.",
+        "parameters": [
+          {
+            "name": "certificateId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the certificate to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single certificate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "org_id",
+                    "title",
+                    "description",
+                    "issuing_authorities",
+                    "issued_date",
+                    "recipient_id",
+                    "recipient_name"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier for the certificate",
+                      "example": "1234567890abcdef",
+                      "x-go-name": "ID"
+                    },
+                    "org_id": {
+                      "description": "UUID of the organization that issued the certificate",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "recipient_id": {
+                      "type": "string",
+                      "description": "ID of the recipient (user) who received the certificate",
+                      "example": "1234567890abcdef"
+                    },
+                    "recipient_name": {
+                      "type": "string",
+                      "description": "Name of the recipient (user) who received the certificate",
+                      "example": "John Doe"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Title of the certificate",
+                      "example": "Kubernetes Expert Certification"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the certificate",
+                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                    },
+                    "issuing_authorities": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "CertificateIssuingAuthority",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "url"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the issuing authority",
+                            "example": "Cloud Native Foundation"
+                          },
+                          "role": {
+                            "type": "string",
+                            "description": "Role of the issuing authority",
+                            "example": "COO"
+                          },
+                          "signature_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                            "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                          }
+                        }
+                      },
+                      "description": "List of issuing authorities for the certificate"
+                    },
+                    "issued_date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Date when the certificate was issued",
+                      "example": "2023-10-01T12:00:00Z"
+                    },
+                    "expiration_date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Date when the certificate expires (optional)",
+                      "example": "2025-10-01T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Certificate not found"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
@@ -2715,10 +3560,41 @@ const schema = {
                     "x-go-type": "Certificate",
                     "type": "object",
                     "required": [
+                      "id",
+                      "org_id",
                       "title",
-                      "description"
+                      "description",
+                      "issuing_authorities",
+                      "issued_date",
+                      "recipient_id",
+                      "recipient_name"
                     ],
                     "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Unique identifier for the certificate",
+                        "example": "1234567890abcdef",
+                        "x-go-name": "ID"
+                      },
+                      "org_id": {
+                        "description": "UUID of the organization that issued the certificate",
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "recipient_id": {
+                        "type": "string",
+                        "description": "ID of the recipient (user) who received the certificate",
+                        "example": "1234567890abcdef"
+                      },
+                      "recipient_name": {
+                        "type": "string",
+                        "description": "Name of the recipient (user) who received the certificate",
+                        "example": "John Doe"
+                      },
                       "title": {
                         "type": "string",
                         "description": "Title of the certificate",
@@ -2728,6 +3604,48 @@ const schema = {
                         "type": "string",
                         "description": "Description of the certificate",
                         "example": "Awarded for successfully completing the Kubernetes Expert course"
+                      },
+                      "issuing_authorities": {
+                        "type": "array",
+                        "items": {
+                          "x-go-type": "CertificateIssuingAuthority",
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "url"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the issuing authority",
+                              "example": "Cloud Native Foundation"
+                            },
+                            "role": {
+                              "type": "string",
+                              "description": "Role of the issuing authority",
+                              "example": "COO"
+                            },
+                            "signature_url": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                              "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                            }
+                          }
+                        },
+                        "description": "List of issuing authorities for the certificate"
+                      },
+                      "issued_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date when the certificate was issued",
+                        "example": "2023-10-01T12:00:00Z"
+                      },
+                      "expiration_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Date when the certificate expires (optional)",
+                        "example": "2025-10-01T12:00:00Z"
                       }
                     }
                   },
@@ -2826,6 +3744,417 @@ const schema = {
           "deletedAt",
           "metadata",
           "level"
+        ]
+      },
+      "AcademyCurriculaWithMetrics": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Id of the cirricula",
+                "example": "923458-3490394-934893",
+                "x-go-name": "ID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "id",
+                  "json": "id",
+                  "yaml": "id"
+                }
+              },
+              "type": {
+                "x-go-type": "ContentType",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "type"
+                },
+                "type": "string",
+                "enum": [
+                  "learning-path",
+                  "challenge",
+                  "certification"
+                ]
+              },
+              "orgId": {
+                "type": "string",
+                "description": "Organization ID that owns this learning path",
+                "example": "layer5",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id",
+                  "yaml": "org_id"
+                }
+              },
+              "visibility": {
+                "description": "Visibility of the cirricula",
+                "x-go-type": "Visibility",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "visibility",
+                  "json": "visibility",
+                  "yaml": "visibility"
+                },
+                "type": "string",
+                "enum": [
+                  "public",
+                  "private"
+                ]
+              },
+              "status": {
+                "example": "ready",
+                "description": "Status of the cirricula",
+                "x-go-type": "Status",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "status",
+                  "json": "status",
+                  "yaml": "status"
+                },
+                "type": "string",
+                "enum": [
+                  "ready",
+                  "archived",
+                  "not_ready"
+                ]
+              },
+              "slug": {
+                "type": "string",
+                "description": "slug of the cirricula",
+                "example": "intro-kubernetes-course"
+              },
+              "level": {
+                "description": "Level of the cirricula",
+                "x-go-type": "Level",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "level",
+                  "json": "level",
+                  "yaml": "level"
+                },
+                "type": "string",
+                "enum": [
+                  "beginner",
+                  "intermediate",
+                  "advanced"
+                ]
+              },
+              "createdAt": {
+                "description": "When the cirricula item was created",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "json": "created_at",
+                  "yaml": "created_at"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "updatedAt": {
+                "description": "When the cirricula was last updated",
+                "x-go-type": "core.Time",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "json": "updated_at",
+                  "yaml": "updated_at"
+                },
+                "type": "string",
+                "format": "date-time",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "deletedAt": {
+                "x-go-type": "core.NullTime",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "json": "deleted_at",
+                  "yaml": "deleted_at"
+                },
+                "description": "Timestamp when the resource was deleted.",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "DeletedAt",
+                "x-go-type-skip-optional-pointer": true
+              },
+              "metadata": {
+                "type": "object",
+                "description": "Additional metadata about the cirricula",
+                "additionalProperties": true,
+                "x-go-type": "core.Map",
+                "x-go-type-skip-optional-pointer": true,
+                "x-oapi-codegen-extra-tags": {
+                  "db": "metadata",
+                  "json": "metadata",
+                  "yaml": "metadata"
+                },
+                "oneOf": [
+                  {
+                    "x-go-type": "CurriculaMetadata",
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Title of the learning path",
+                        "example": "Mastering Kubernetes for Engineers"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the learning path",
+                        "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                      },
+                      "banner": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true,
+                        "description": "Optional banner image",
+                        "example": null
+                      },
+                      "permalink": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Canonical URL for the learning path",
+                        "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                      },
+                      "badge": {
+                        "x-go-type": "Badge",
+                        "type": "object",
+                        "required": [
+                          "label",
+                          "title",
+                          "description",
+                          "png",
+                          "svg"
+                        ],
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "unique identifier for the badge ( auto generated )",
+                            "example": "Kubernetes-Expert"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Title of the badge",
+                            "example": "Kubernetes Expert"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the badge",
+                            "example": "Awarded for mastering Kubernetes concepts and practices"
+                          },
+                          "png": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the badge image",
+                            "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                          },
+                          "svg": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the badge SVG image",
+                            "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                          }
+                        }
+                      },
+                      "certificate": {
+                        "x-go-type": "Certificate",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "org_id",
+                          "title",
+                          "description",
+                          "issuing_authorities",
+                          "issued_date",
+                          "recipient_id",
+                          "recipient_name"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the certificate",
+                            "example": "1234567890abcdef",
+                            "x-go-name": "ID"
+                          },
+                          "org_id": {
+                            "description": "UUID of the organization that issued the certificate",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "recipient_id": {
+                            "type": "string",
+                            "description": "ID of the recipient (user) who received the certificate",
+                            "example": "1234567890abcdef"
+                          },
+                          "recipient_name": {
+                            "type": "string",
+                            "description": "Name of the recipient (user) who received the certificate",
+                            "example": "John Doe"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Title of the certificate",
+                            "example": "Kubernetes Expert Certification"
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Description of the certificate",
+                            "example": "Awarded for successfully completing the Kubernetes Expert course"
+                          },
+                          "issuing_authorities": {
+                            "type": "array",
+                            "items": {
+                              "x-go-type": "CertificateIssuingAuthority",
+                              "type": "object",
+                              "required": [
+                                "name",
+                                "url"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Name of the issuing authority",
+                                  "example": "Cloud Native Foundation"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "description": "Role of the issuing authority",
+                                  "example": "COO"
+                                },
+                                "signature_url": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                  "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                                }
+                              }
+                            },
+                            "description": "List of issuing authorities for the certificate"
+                          },
+                          "issued_date": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Date when the certificate was issued",
+                            "example": "2023-10-01T12:00:00Z"
+                          },
+                          "expiration_date": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Date when the certificate expires (optional)",
+                            "example": "2025-10-01T12:00:00Z"
+                          }
+                        }
+                      },
+                      "children": {
+                        "type": "array",
+                        "description": "List of children items in the top-level curricula",
+                        "items": {
+                          "x-go-type": "ChildNode",
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Unique identifier for the course",
+                              "example": "1234567890abcdef",
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "id",
+                                "json": "id",
+                                "yaml": "id"
+                              }
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the course",
+                              "example": "Kubernetes Basics"
+                            },
+                            "permalink": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "URL to the course content",
+                              "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Course description",
+                              "example": "Learn the basics of Kubernetes"
+                            },
+                            "weight": {
+                              "type": "number",
+                              "description": "Order of the course in the list",
+                              "example": "eg 1 , 2"
+                            },
+                            "banner": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true,
+                              "description": "Optional banner image",
+                              "example": null
+                            },
+                            "type": {
+                              "x-go-type": "ContentType",
+                              "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                              "type": "string",
+                              "enum": [
+                                "learning-path",
+                                "challenge",
+                                "certification"
+                              ]
+                            },
+                            "children": {
+                              "type": "array",
+                              "description": "List of child nodes (sub-courses or modules)",
+                              "items": {
+                                "type": "object",
+                                "x-go-type": "ChildNode"
+                              }
+                            }
+                          },
+                          "required": [
+                            "title",
+                            "description",
+                            "id",
+                            "permalink"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "description",
+                      "permalink"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "orgId",
+              "visibility",
+              "status",
+              "slug",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "metadata",
+              "level"
+            ]
+          },
+          {
+            "type": "object",
+            "required": [
+              "RegistrationCount"
+            ],
+            "properties": {
+              "RegistrationCount": {
+                "type": "number",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "registration_count,omitempty",
+                  "json": "registration_count,omitempty",
+                  "yaml": "registration_count,omitempty"
+                }
+              }
+            }
+          }
         ]
       },
       "AcademyCirriculaListResponse": {
@@ -3044,10 +4373,41 @@ const schema = {
                           "x-go-type": "Certificate",
                           "type": "object",
                           "required": [
+                            "id",
+                            "org_id",
                             "title",
-                            "description"
+                            "description",
+                            "issuing_authorities",
+                            "issued_date",
+                            "recipient_id",
+                            "recipient_name"
                           ],
                           "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Unique identifier for the certificate",
+                              "example": "1234567890abcdef",
+                              "x-go-name": "ID"
+                            },
+                            "org_id": {
+                              "description": "UUID of the organization that issued the certificate",
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "recipient_id": {
+                              "type": "string",
+                              "description": "ID of the recipient (user) who received the certificate",
+                              "example": "1234567890abcdef"
+                            },
+                            "recipient_name": {
+                              "type": "string",
+                              "description": "Name of the recipient (user) who received the certificate",
+                              "example": "John Doe"
+                            },
                             "title": {
                               "type": "string",
                               "description": "Title of the certificate",
@@ -3057,6 +4417,48 @@ const schema = {
                               "type": "string",
                               "description": "Description of the certificate",
                               "example": "Awarded for successfully completing the Kubernetes Expert course"
+                            },
+                            "issuing_authorities": {
+                              "type": "array",
+                              "items": {
+                                "x-go-type": "CertificateIssuingAuthority",
+                                "type": "object",
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name of the issuing authority",
+                                    "example": "Cloud Native Foundation"
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "description": "Role of the issuing authority",
+                                    "example": "COO"
+                                  },
+                                  "signature_url": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                    "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                                  }
+                                }
+                              },
+                              "description": "List of issuing authorities for the certificate"
+                            },
+                            "issued_date": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Date when the certificate was issued",
+                              "example": "2023-10-01T12:00:00Z"
+                            },
+                            "expiration_date": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Date when the certificate expires (optional)",
+                              "example": "2025-10-01T12:00:00Z"
                             }
                           }
                         },
@@ -3164,6 +4566,436 @@ const schema = {
           "data"
         ]
       },
+      "AcademyCurriculaWithMetricsListResponse": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "Total number of cirricula",
+            "example": 7
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "x-go-type": "AcademyCurriculaWithMetrics",
+              "x-go-type-skip-optional-pointer": true,
+              "allOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Id of the cirricula",
+                      "example": "923458-3490394-934893",
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "id",
+                        "yaml": "id"
+                      }
+                    },
+                    "type": {
+                      "x-go-type": "ContentType",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "type"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "learning-path",
+                        "challenge",
+                        "certification"
+                      ]
+                    },
+                    "orgId": {
+                      "type": "string",
+                      "description": "Organization ID that owns this learning path",
+                      "example": "layer5",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_id",
+                        "json": "org_id",
+                        "yaml": "org_id"
+                      }
+                    },
+                    "visibility": {
+                      "description": "Visibility of the cirricula",
+                      "x-go-type": "Visibility",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "visibility",
+                        "json": "visibility",
+                        "yaml": "visibility"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "public",
+                        "private"
+                      ]
+                    },
+                    "status": {
+                      "example": "ready",
+                      "description": "Status of the cirricula",
+                      "x-go-type": "Status",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "status",
+                        "json": "status",
+                        "yaml": "status"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "ready",
+                        "archived",
+                        "not_ready"
+                      ]
+                    },
+                    "slug": {
+                      "type": "string",
+                      "description": "slug of the cirricula",
+                      "example": "intro-kubernetes-course"
+                    },
+                    "level": {
+                      "description": "Level of the cirricula",
+                      "x-go-type": "Level",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "level",
+                        "json": "level",
+                        "yaml": "level"
+                      },
+                      "type": "string",
+                      "enum": [
+                        "beginner",
+                        "intermediate",
+                        "advanced"
+                      ]
+                    },
+                    "createdAt": {
+                      "description": "When the cirricula item was created",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "json": "created_at",
+                        "yaml": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updatedAt": {
+                      "description": "When the cirricula was last updated",
+                      "x-go-type": "core.Time",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "json": "updated_at",
+                        "yaml": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "deletedAt": {
+                      "x-go-type": "core.NullTime",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "json": "deleted_at",
+                        "yaml": "deleted_at"
+                      },
+                      "description": "Timestamp when the resource was deleted.",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "DeletedAt",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "description": "Additional metadata about the cirricula",
+                      "additionalProperties": true,
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata",
+                        "json": "metadata",
+                        "yaml": "metadata"
+                      },
+                      "oneOf": [
+                        {
+                          "x-go-type": "CurriculaMetadata",
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "description": "Title of the learning path",
+                              "example": "Mastering Kubernetes for Engineers"
+                            },
+                            "description": {
+                              "type": "string",
+                              "description": "Description of the learning path",
+                              "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            },
+                            "banner": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true,
+                              "description": "Optional banner image",
+                              "example": null
+                            },
+                            "permalink": {
+                              "type": "string",
+                              "format": "uri",
+                              "description": "Canonical URL for the learning path",
+                              "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
+                            },
+                            "badge": {
+                              "x-go-type": "Badge",
+                              "type": "object",
+                              "required": [
+                                "label",
+                                "title",
+                                "description",
+                                "png",
+                                "svg"
+                              ],
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "description": "unique identifier for the badge ( auto generated )",
+                                  "example": "Kubernetes-Expert"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the badge",
+                                  "example": "Kubernetes Expert"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the badge",
+                                  "example": "Awarded for mastering Kubernetes concepts and practices"
+                                },
+                                "png": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "URL to the badge image",
+                                  "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                },
+                                "svg": {
+                                  "type": "string",
+                                  "format": "uri",
+                                  "description": "URL to the badge SVG image",
+                                  "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                }
+                              }
+                            },
+                            "certificate": {
+                              "x-go-type": "Certificate",
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "org_id",
+                                "title",
+                                "description",
+                                "issuing_authorities",
+                                "issued_date",
+                                "recipient_id",
+                                "recipient_name"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Unique identifier for the certificate",
+                                  "example": "1234567890abcdef",
+                                  "x-go-name": "ID"
+                                },
+                                "org_id": {
+                                  "description": "UUID of the organization that issued the certificate",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
+                                "recipient_id": {
+                                  "type": "string",
+                                  "description": "ID of the recipient (user) who received the certificate",
+                                  "example": "1234567890abcdef"
+                                },
+                                "recipient_name": {
+                                  "type": "string",
+                                  "description": "Name of the recipient (user) who received the certificate",
+                                  "example": "John Doe"
+                                },
+                                "title": {
+                                  "type": "string",
+                                  "description": "Title of the certificate",
+                                  "example": "Kubernetes Expert Certification"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Description of the certificate",
+                                  "example": "Awarded for successfully completing the Kubernetes Expert course"
+                                },
+                                "issuing_authorities": {
+                                  "type": "array",
+                                  "items": {
+                                    "x-go-type": "CertificateIssuingAuthority",
+                                    "type": "object",
+                                    "required": [
+                                      "name",
+                                      "url"
+                                    ],
+                                    "properties": {
+                                      "name": {
+                                        "type": "string",
+                                        "description": "Name of the issuing authority",
+                                        "example": "Cloud Native Foundation"
+                                      },
+                                      "role": {
+                                        "type": "string",
+                                        "description": "Role of the issuing authority",
+                                        "example": "COO"
+                                      },
+                                      "signature_url": {
+                                        "type": "string",
+                                        "format": "uri",
+                                        "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                                        "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                                      }
+                                    }
+                                  },
+                                  "description": "List of issuing authorities for the certificate"
+                                },
+                                "issued_date": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Date when the certificate was issued",
+                                  "example": "2023-10-01T12:00:00Z"
+                                },
+                                "expiration_date": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "Date when the certificate expires (optional)",
+                                  "example": "2025-10-01T12:00:00Z"
+                                }
+                              }
+                            },
+                            "children": {
+                              "type": "array",
+                              "description": "List of children items in the top-level curricula",
+                              "items": {
+                                "x-go-type": "ChildNode",
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "Unique identifier for the course",
+                                    "example": "1234567890abcdef",
+                                    "x-go-name": "ID",
+                                    "x-oapi-codegen-extra-tags": {
+                                      "db": "id",
+                                      "json": "id",
+                                      "yaml": "id"
+                                    }
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "description": "Title of the course",
+                                    "example": "Kubernetes Basics"
+                                  },
+                                  "permalink": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "description": "URL to the course content",
+                                    "example": "http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/"
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "description": "Course description",
+                                    "example": "Learn the basics of Kubernetes"
+                                  },
+                                  "weight": {
+                                    "type": "number",
+                                    "description": "Order of the course in the list",
+                                    "example": "eg 1 , 2"
+                                  },
+                                  "banner": {
+                                    "type": "string",
+                                    "format": "uri",
+                                    "nullable": true,
+                                    "description": "Optional banner image",
+                                    "example": null
+                                  },
+                                  "type": {
+                                    "x-go-type": "ContentType",
+                                    "description": "Type of the content (e.g., learning-path, challenge, certification)",
+                                    "type": "string",
+                                    "enum": [
+                                      "learning-path",
+                                      "challenge",
+                                      "certification"
+                                    ]
+                                  },
+                                  "children": {
+                                    "type": "array",
+                                    "description": "List of child nodes (sub-courses or modules)",
+                                    "items": {
+                                      "type": "object",
+                                      "x-go-type": "ChildNode"
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "title",
+                                  "description",
+                                  "id",
+                                  "permalink"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "title",
+                            "description",
+                            "permalink"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "orgId",
+                    "visibility",
+                    "status",
+                    "slug",
+                    "createdAt",
+                    "updatedAt",
+                    "deletedAt",
+                    "metadata",
+                    "level"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "RegistrationCount"
+                  ],
+                  "properties": {
+                    "RegistrationCount": {
+                      "type": "number",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "registration_count,omitempty",
+                        "json": "registration_count,omitempty",
+                        "yaml": "registration_count,omitempty"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "total",
+          "data"
+        ]
+      },
       "ChallengeMetadata": {
         "x-go-type": "CurriculaMetadata",
         "type": "object",
@@ -3235,10 +5067,41 @@ const schema = {
             "x-go-type": "Certificate",
             "type": "object",
             "required": [
+              "id",
+              "org_id",
               "title",
-              "description"
+              "description",
+              "issuing_authorities",
+              "issued_date",
+              "recipient_id",
+              "recipient_name"
             ],
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the certificate",
+                "example": "1234567890abcdef",
+                "x-go-name": "ID"
+              },
+              "org_id": {
+                "description": "UUID of the organization that issued the certificate",
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "recipient_id": {
+                "type": "string",
+                "description": "ID of the recipient (user) who received the certificate",
+                "example": "1234567890abcdef"
+              },
+              "recipient_name": {
+                "type": "string",
+                "description": "Name of the recipient (user) who received the certificate",
+                "example": "John Doe"
+              },
               "title": {
                 "type": "string",
                 "description": "Title of the certificate",
@@ -3248,6 +5111,48 @@ const schema = {
                 "type": "string",
                 "description": "Description of the certificate",
                 "example": "Awarded for successfully completing the Kubernetes Expert course"
+              },
+              "issuing_authorities": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "CertificateIssuingAuthority",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "url"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the issuing authority",
+                      "example": "Cloud Native Foundation"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Role of the issuing authority",
+                      "example": "COO"
+                    },
+                    "signature_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                      "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                    }
+                  }
+                },
+                "description": "List of issuing authorities for the certificate"
+              },
+              "issued_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate was issued",
+                "example": "2023-10-01T12:00:00Z"
+              },
+              "expiration_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate expires (optional)",
+                "example": "2025-10-01T12:00:00Z"
               }
             }
           },
@@ -3402,10 +5307,41 @@ const schema = {
             "x-go-type": "Certificate",
             "type": "object",
             "required": [
+              "id",
+              "org_id",
               "title",
-              "description"
+              "description",
+              "issuing_authorities",
+              "issued_date",
+              "recipient_id",
+              "recipient_name"
             ],
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the certificate",
+                "example": "1234567890abcdef",
+                "x-go-name": "ID"
+              },
+              "org_id": {
+                "description": "UUID of the organization that issued the certificate",
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "recipient_id": {
+                "type": "string",
+                "description": "ID of the recipient (user) who received the certificate",
+                "example": "1234567890abcdef"
+              },
+              "recipient_name": {
+                "type": "string",
+                "description": "Name of the recipient (user) who received the certificate",
+                "example": "John Doe"
+              },
               "title": {
                 "type": "string",
                 "description": "Title of the certificate",
@@ -3415,6 +5351,48 @@ const schema = {
                 "type": "string",
                 "description": "Description of the certificate",
                 "example": "Awarded for successfully completing the Kubernetes Expert course"
+              },
+              "issuing_authorities": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "CertificateIssuingAuthority",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "url"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the issuing authority",
+                      "example": "Cloud Native Foundation"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Role of the issuing authority",
+                      "example": "COO"
+                    },
+                    "signature_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                      "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                    }
+                  }
+                },
+                "description": "List of issuing authorities for the certificate"
+              },
+              "issued_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate was issued",
+                "example": "2023-10-01T12:00:00Z"
+              },
+              "expiration_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate expires (optional)",
+                "example": "2025-10-01T12:00:00Z"
               }
             }
           },
@@ -3537,13 +5515,69 @@ const schema = {
           }
         }
       },
+      "CertificateIssuingAuthority": {
+        "type": "object",
+        "required": [
+          "name",
+          "url"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the issuing authority",
+            "example": "Cloud Native Foundation"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role of the issuing authority",
+            "example": "COO"
+          },
+          "signature_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+            "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+          }
+        }
+      },
       "Certificate": {
         "type": "object",
         "required": [
+          "id",
+          "org_id",
           "title",
-          "description"
+          "description",
+          "issuing_authorities",
+          "issued_date",
+          "recipient_id",
+          "recipient_name"
         ],
         "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the certificate",
+            "example": "1234567890abcdef",
+            "x-go-name": "ID"
+          },
+          "org_id": {
+            "description": "UUID of the organization that issued the certificate",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "recipient_id": {
+            "type": "string",
+            "description": "ID of the recipient (user) who received the certificate",
+            "example": "1234567890abcdef"
+          },
+          "recipient_name": {
+            "type": "string",
+            "description": "Name of the recipient (user) who received the certificate",
+            "example": "John Doe"
+          },
           "title": {
             "type": "string",
             "description": "Title of the certificate",
@@ -3553,6 +5587,48 @@ const schema = {
             "type": "string",
             "description": "Description of the certificate",
             "example": "Awarded for successfully completing the Kubernetes Expert course"
+          },
+          "issuing_authorities": {
+            "type": "array",
+            "items": {
+              "x-go-type": "CertificateIssuingAuthority",
+              "type": "object",
+              "required": [
+                "name",
+                "url"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the issuing authority",
+                  "example": "Cloud Native Foundation"
+                },
+                "role": {
+                  "type": "string",
+                  "description": "Role of the issuing authority",
+                  "example": "COO"
+                },
+                "signature_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                  "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                }
+              }
+            },
+            "description": "List of issuing authorities for the certificate"
+          },
+          "issued_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the certificate was issued",
+            "example": "2023-10-01T12:00:00Z"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the certificate expires (optional)",
+            "example": "2025-10-01T12:00:00Z"
           }
         }
       },
@@ -3626,10 +5702,41 @@ const schema = {
             "x-go-type": "Certificate",
             "type": "object",
             "required": [
+              "id",
+              "org_id",
               "title",
-              "description"
+              "description",
+              "issuing_authorities",
+              "issued_date",
+              "recipient_id",
+              "recipient_name"
             ],
             "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the certificate",
+                "example": "1234567890abcdef",
+                "x-go-name": "ID"
+              },
+              "org_id": {
+                "description": "UUID of the organization that issued the certificate",
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "recipient_id": {
+                "type": "string",
+                "description": "ID of the recipient (user) who received the certificate",
+                "example": "1234567890abcdef"
+              },
+              "recipient_name": {
+                "type": "string",
+                "description": "Name of the recipient (user) who received the certificate",
+                "example": "John Doe"
+              },
               "title": {
                 "type": "string",
                 "description": "Title of the certificate",
@@ -3639,6 +5746,48 @@ const schema = {
                 "type": "string",
                 "description": "Description of the certificate",
                 "example": "Awarded for successfully completing the Kubernetes Expert course"
+              },
+              "issuing_authorities": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "CertificateIssuingAuthority",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "url"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the issuing authority",
+                      "example": "Cloud Native Foundation"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Role of the issuing authority",
+                      "example": "COO"
+                    },
+                    "signature_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                      "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                    }
+                  }
+                },
+                "description": "List of issuing authorities for the certificate"
+              },
+              "issued_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate was issued",
+                "example": "2023-10-01T12:00:00Z"
+              },
+              "expiration_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate expires (optional)",
+                "example": "2025-10-01T12:00:00Z"
               }
             }
           },
@@ -3722,6 +5871,19 @@ const schema = {
           "permalink"
         ]
       },
+      "AcademyRegistrationStatus": {
+        "type": "string",
+        "enum": [
+          "registered",
+          "completed",
+          "failed",
+          "withdrawn"
+        ],
+        "description": "Status of the user's course registration",
+        "x-oapi-codegen-extra-tags": {
+          "db": "status"
+        }
+      },
       "AcademyRegistration": {
         "type": "object",
         "required": [
@@ -3732,6 +5894,7 @@ const schema = {
           "created_at",
           "updated_at",
           "content_id",
+          "certificate",
           "metadata"
         ],
         "properties": {
@@ -3782,18 +5945,18 @@ const schema = {
             }
           },
           "status": {
-            "type": "string",
-            "enum": [
-              "registered",
-              "in_progress",
-              "completed",
-              "failed",
-              "withdrawn"
-            ],
+            "x-go-type": "AcademyRegistrationStatus",
             "description": "Status of the user's course registration",
             "x-oapi-codegen-extra-tags": {
               "db": "status"
-            }
+            },
+            "type": "string",
+            "enum": [
+              "registered",
+              "completed",
+              "failed",
+              "withdrawn"
+            ]
           },
           "updated_at": {
             "description": "When the registration was updated",
@@ -3823,6 +5986,103 @@ const schema = {
             "format": "date-time",
             "x-go-name": "DeletedAt",
             "x-go-type-skip-optional-pointer": true
+          },
+          "certificate": {
+            "x-go-type": "core.Map",
+            "description": "Issued certificate for completing the curricula under registration",
+            "x-oapi-codegen-extra-tags": {
+              "db": "certificate"
+            },
+            "type": "object",
+            "required": [
+              "id",
+              "org_id",
+              "title",
+              "description",
+              "issuing_authorities",
+              "issued_date",
+              "recipient_id",
+              "recipient_name"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the certificate",
+                "example": "1234567890abcdef",
+                "x-go-name": "ID"
+              },
+              "org_id": {
+                "description": "UUID of the organization that issued the certificate",
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "recipient_id": {
+                "type": "string",
+                "description": "ID of the recipient (user) who received the certificate",
+                "example": "1234567890abcdef"
+              },
+              "recipient_name": {
+                "type": "string",
+                "description": "Name of the recipient (user) who received the certificate",
+                "example": "John Doe"
+              },
+              "title": {
+                "type": "string",
+                "description": "Title of the certificate",
+                "example": "Kubernetes Expert Certification"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the certificate",
+                "example": "Awarded for successfully completing the Kubernetes Expert course"
+              },
+              "issuing_authorities": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "CertificateIssuingAuthority",
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "url"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the issuing authority",
+                      "example": "Cloud Native Foundation"
+                    },
+                    "role": {
+                      "type": "string",
+                      "description": "Role of the issuing authority",
+                      "example": "COO"
+                    },
+                    "signature_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                      "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                    }
+                  }
+                },
+                "description": "List of issuing authorities for the certificate"
+              },
+              "issued_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate was issued",
+                "example": "2023-10-01T12:00:00Z"
+              },
+              "expiration_date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Date when the certificate expires (optional)",
+                "example": "2025-10-01T12:00:00Z"
+              }
+            }
           },
           "metadata": {
             "type": "object",
@@ -3924,6 +6184,7 @@ const schema = {
                 "created_at",
                 "updated_at",
                 "content_id",
+                "certificate",
                 "metadata"
               ],
               "properties": {
@@ -3974,18 +6235,18 @@ const schema = {
                   }
                 },
                 "status": {
-                  "type": "string",
-                  "enum": [
-                    "registered",
-                    "in_progress",
-                    "completed",
-                    "failed",
-                    "withdrawn"
-                  ],
+                  "x-go-type": "AcademyRegistrationStatus",
                   "description": "Status of the user's course registration",
                   "x-oapi-codegen-extra-tags": {
                     "db": "status"
-                  }
+                  },
+                  "type": "string",
+                  "enum": [
+                    "registered",
+                    "completed",
+                    "failed",
+                    "withdrawn"
+                  ]
                 },
                 "updated_at": {
                   "description": "When the registration was updated",
@@ -4015,6 +6276,103 @@ const schema = {
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
                   "x-go-type-skip-optional-pointer": true
+                },
+                "certificate": {
+                  "x-go-type": "core.Map",
+                  "description": "Issued certificate for completing the curricula under registration",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "certificate"
+                  },
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "org_id",
+                    "title",
+                    "description",
+                    "issuing_authorities",
+                    "issued_date",
+                    "recipient_id",
+                    "recipient_name"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique identifier for the certificate",
+                      "example": "1234567890abcdef",
+                      "x-go-name": "ID"
+                    },
+                    "org_id": {
+                      "description": "UUID of the organization that issued the certificate",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
+                    },
+                    "recipient_id": {
+                      "type": "string",
+                      "description": "ID of the recipient (user) who received the certificate",
+                      "example": "1234567890abcdef"
+                    },
+                    "recipient_name": {
+                      "type": "string",
+                      "description": "Name of the recipient (user) who received the certificate",
+                      "example": "John Doe"
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Title of the certificate",
+                      "example": "Kubernetes Expert Certification"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the certificate",
+                      "example": "Awarded for successfully completing the Kubernetes Expert course"
+                    },
+                    "issuing_authorities": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "CertificateIssuingAuthority",
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "url"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the issuing authority",
+                            "example": "Cloud Native Foundation"
+                          },
+                          "role": {
+                            "type": "string",
+                            "description": "Role of the issuing authority",
+                            "example": "COO"
+                          },
+                          "signature_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format",
+                            "example": "http://localhost:9876/signatures/cloud-native-foundation.png"
+                          }
+                        }
+                      },
+                      "description": "List of issuing authorities for the certificate"
+                    },
+                    "issued_date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Date when the certificate was issued",
+                      "example": "2023-10-01T12:00:00Z"
+                    },
+                    "expiration_date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Date when the certificate expires (optional)",
+                      "example": "2025-10-01T12:00:00Z"
+                    }
+                  }
                 },
                 "metadata": {
                   "type": "object",
@@ -4148,6 +6506,7 @@ const schema = {
                   "required": [
                     "id",
                     "title",
+                    "orgId",
                     "description",
                     "slug",
                     "relPermalink",
@@ -4173,6 +6532,16 @@ const schema = {
                       "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "json": "id"
+                      }
+                    },
+                    "orgId": {
+                      "type": "string",
+                      "description": "Organization ID that owns this quiz",
+                      "example": "layer5",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_id",
+                        "json": "org_id",
+                        "yaml": "org_id"
                       }
                     },
                     "final": {
@@ -4518,6 +6887,7 @@ const schema = {
         "required": [
           "id",
           "title",
+          "orgId",
           "description",
           "slug",
           "relPermalink",
@@ -4543,6 +6913,16 @@ const schema = {
             "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "json": "id"
+            }
+          },
+          "orgId": {
+            "type": "string",
+            "description": "Organization ID that owns this quiz",
+            "example": "layer5",
+            "x-oapi-codegen-extra-tags": {
+              "db": "org_id",
+              "json": "org_id",
+              "yaml": "org_id"
             }
           },
           "final": {
@@ -4960,6 +7340,7 @@ const schema = {
             "required": [
               "id",
               "title",
+              "orgId",
               "description",
               "slug",
               "relPermalink",
@@ -4985,6 +7366,16 @@ const schema = {
                 "x-go-name": "ID",
                 "x-oapi-codegen-extra-tags": {
                   "json": "id"
+                }
+              },
+              "orgId": {
+                "type": "string",
+                "description": "Organization ID that owns this quiz",
+                "example": "layer5",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id",
+                  "yaml": "org_id"
                 }
               },
               "final": {
@@ -5172,6 +7563,302 @@ const schema = {
             "format": "date-time"
           },
           "attempts": {
+            "type": "integer"
+          }
+        }
+      },
+      "UserRegistration": {
+        "type": "object",
+        "required": [
+          "curricula_title",
+          "curricula_type",
+          "curricula_permalink",
+          "registration_id",
+          "status",
+          "user_id",
+          "user_email",
+          "user_last_name",
+          "user_first_name",
+          "user_avatar_url",
+          "total_count"
+        ],
+        "properties": {
+          "curricula_title": {
+            "type": "string",
+            "description": "Title of the curricula",
+            "x-oapi-codegen-extra-tags": {
+              "db": "curricula_title"
+            }
+          },
+          "curricula_type": {
+            "type": "string",
+            "enum": [
+              "learning-path",
+              "challenge",
+              "certification"
+            ],
+            "description": "Type of the curricula",
+            "x-go-type": "ContentType",
+            "x-oapi-codegen-extra-tags": {
+              "db": "curricula_type"
+            }
+          },
+          "curricula_permalink": {
+            "type": "string",
+            "description": "Permalink of the curricula",
+            "x-oapi-codegen-extra-tags": {
+              "db": "curricula_permalink"
+            }
+          },
+          "registration_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique ID of the registration",
+            "x-oapi-codegen-extra-tags": {
+              "db": "registration_id"
+            }
+          },
+          "status": {
+            "description": "Registration status",
+            "x-go-type": "AcademyRegistrationStatus",
+            "x-oapi-codegen-extra-tags": {
+              "db": "status"
+            },
+            "type": "string",
+            "enum": [
+              "registered",
+              "completed",
+              "failed",
+              "withdrawn"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the registration was created",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at"
+            }
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the user",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id"
+            }
+          },
+          "user_first_name": {
+            "type": "string",
+            "description": "First name of the user",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_first_name"
+            }
+          },
+          "user_last_name": {
+            "type": "string",
+            "description": "Last name of the user",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_last_name"
+            }
+          },
+          "user_email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email of the user",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_email"
+            }
+          },
+          "user_avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Avatar URL of the user",
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_avatar_url"
+            }
+          },
+          "total_count": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total count for pagination",
+            "x-oapi-codegen-extra-tags": {
+              "db": "total_count"
+            }
+          }
+        }
+      },
+      "CurriculaRegistrationsFilter": {
+        "type": "object",
+        "required": [
+          "pagesize",
+          "page",
+          "content_type",
+          "status"
+        ],
+        "properties": {
+          "pagesize": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "content_type": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CurriculaRegistrationsResponse": {
+        "type": "object",
+        "required": [
+          "data",
+          "total_count",
+          "page_size",
+          "page"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "x-go-type": "UserRegistration",
+              "type": "object",
+              "required": [
+                "curricula_title",
+                "curricula_type",
+                "curricula_permalink",
+                "registration_id",
+                "status",
+                "user_id",
+                "user_email",
+                "user_last_name",
+                "user_first_name",
+                "user_avatar_url",
+                "total_count"
+              ],
+              "properties": {
+                "curricula_title": {
+                  "type": "string",
+                  "description": "Title of the curricula",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "curricula_title"
+                  }
+                },
+                "curricula_type": {
+                  "type": "string",
+                  "enum": [
+                    "learning-path",
+                    "challenge",
+                    "certification"
+                  ],
+                  "description": "Type of the curricula",
+                  "x-go-type": "ContentType",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "curricula_type"
+                  }
+                },
+                "curricula_permalink": {
+                  "type": "string",
+                  "description": "Permalink of the curricula",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "curricula_permalink"
+                  }
+                },
+                "registration_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "Unique ID of the registration",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "registration_id"
+                  }
+                },
+                "status": {
+                  "description": "Registration status",
+                  "x-go-type": "AcademyRegistrationStatus",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "status"
+                  },
+                  "type": "string",
+                  "enum": [
+                    "registered",
+                    "completed",
+                    "failed",
+                    "withdrawn"
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the registration was created",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at"
+                  }
+                },
+                "user_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "ID of the user",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_id"
+                  }
+                },
+                "user_first_name": {
+                  "type": "string",
+                  "description": "First name of the user",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_first_name"
+                  }
+                },
+                "user_last_name": {
+                  "type": "string",
+                  "description": "Last name of the user",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_last_name"
+                  }
+                },
+                "user_email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Email of the user",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_email"
+                  }
+                },
+                "user_avatar_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Avatar URL of the user",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_avatar_url"
+                  }
+                },
+                "total_count": {
+                  "type": "integer",
+                  "format": "int64",
+                  "description": "Total count for pagination",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "total_count"
+                  }
+                }
+              }
+            }
+          },
+          "total_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "page": {
             "type": "integer"
           }
         }

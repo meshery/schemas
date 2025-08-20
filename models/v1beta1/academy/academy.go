@@ -15,7 +15,6 @@ import (
 const (
 	Completed  AcademyRegistrationStatus = "completed"
 	Failed     AcademyRegistrationStatus = "failed"
-	InProgress AcademyRegistrationStatus = "in_progress"
 	Registered AcademyRegistrationStatus = "registered"
 	Withdrawn  AcademyRegistrationStatus = "withdrawn"
 )
@@ -104,8 +103,88 @@ type AcademyCirriculaListResponse struct {
 	Total int `json:"total" yaml:"total"`
 }
 
+// AcademyCurriculaWithMetrics defines model for AcademyCurriculaWithMetrics.
+type AcademyCurriculaWithMetrics struct {
+	RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+
+	// CreatedAt When the cirricula item was created
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+	// DeletedAt Timestamp when the resource was deleted.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+
+	// ID Id of the cirricula
+	ID string `db:"id" json:"id" yaml:"id"`
+
+	// Level Level of the cirricula
+	Level Level `db:"level" json:"level" yaml:"level"`
+
+	// Metadata Additional metadata about the cirricula
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+	// OrgId Organization ID that owns this learning path
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// Slug slug of the cirricula
+	Slug string `json:"slug" yaml:"slug"`
+
+	// Status Status of the cirricula
+	Status Status      `db:"status" json:"status" yaml:"status"`
+	Type   ContentType `db:"type" json:"type" yaml:"type"`
+
+	// UpdatedAt When the cirricula was last updated
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+
+	// Visibility Visibility of the cirricula
+	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+}
+
+// AcademyCurriculaWithMetricsListResponse defines model for AcademyCurriculaWithMetricsListResponse.
+type AcademyCurriculaWithMetricsListResponse struct {
+	Data []struct {
+		RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+
+		// CreatedAt When the cirricula item was created
+		CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+		// DeletedAt Timestamp when the resource was deleted.
+		DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+
+		// ID Id of the cirricula
+		ID string `db:"id" json:"id" yaml:"id"`
+
+		// Level Level of the cirricula
+		Level Level `db:"level" json:"level" yaml:"level"`
+
+		// Metadata Additional metadata about the cirricula
+		Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+		// OrgId Organization ID that owns this learning path
+		OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+		// Slug slug of the cirricula
+		Slug string `json:"slug" yaml:"slug"`
+
+		// Status Status of the cirricula
+		Status Status      `db:"status" json:"status" yaml:"status"`
+		Type   ContentType `db:"type" json:"type" yaml:"type"`
+
+		// UpdatedAt When the cirricula was last updated
+		UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+
+		// Visibility Visibility of the cirricula
+		Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+	} `json:"data" yaml:"data"`
+
+	// Total Total number of cirricula
+	Total int `json:"total" yaml:"total"`
+}
+
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
+	// Certificate Issued certificate for completing the curricula under registration
+	Certificate core.Map `db:"certificate" json:"certificate" yaml:"certificate"`
+
 	// ContentId ID of the course content
 	ContentId string `db:"content_id" json:"content_id" yaml:"content_id"`
 
@@ -168,8 +247,41 @@ type Certificate struct {
 	// Description Description of the certificate
 	Description string `json:"description" yaml:"description"`
 
+	// ExpirationDate Date when the certificate expires (optional)
+	ExpirationDate *time.Time `json:"expiration_date,omitempty" yaml:"expiration_date,omitempty"`
+
+	// ID Unique identifier for the certificate
+	ID string `json:"id" yaml:"id"`
+
+	// IssuedDate Date when the certificate was issued
+	IssuedDate time.Time `json:"issued_date" yaml:"issued_date"`
+
+	// IssuingAuthorities List of issuing authorities for the certificate
+	IssuingAuthorities []CertificateIssuingAuthority `json:"issuing_authorities" yaml:"issuing_authorities"`
+
+	// OrgId UUID of the organization that issued the certificate
+	OrgId uuid.UUID `json:"org_id" yaml:"org_id"`
+
+	// RecipientId ID of the recipient (user) who received the certificate
+	RecipientId string `json:"recipient_id" yaml:"recipient_id"`
+
+	// RecipientName Name of the recipient (user) who received the certificate
+	RecipientName string `json:"recipient_name" yaml:"recipient_name"`
+
 	// Title Title of the certificate
 	Title string `json:"title" yaml:"title"`
+}
+
+// CertificateIssuingAuthority defines model for CertificateIssuingAuthority.
+type CertificateIssuingAuthority struct {
+	// Name Name of the issuing authority
+	Name string `json:"name" yaml:"name"`
+
+	// Role Role of the issuing authority
+	Role *string `json:"role,omitempty" yaml:"role,omitempty"`
+
+	// SignatureUrl URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+	SignatureUrl *string `json:"signature_url,omitempty" yaml:"signature_url,omitempty"`
 }
 
 // ChallengeMetadata defines model for ChallengeMetadata.
@@ -246,6 +358,22 @@ type CurriculaMetadata struct {
 	Title string `json:"title" yaml:"title"`
 }
 
+// CurriculaRegistrationsFilter defines model for CurriculaRegistrationsFilter.
+type CurriculaRegistrationsFilter struct {
+	ContentType []string `json:"content_type" yaml:"content_type"`
+	Page        int      `json:"page" yaml:"page"`
+	Pagesize    int      `json:"pagesize" yaml:"pagesize"`
+	Status      []string `json:"status" yaml:"status"`
+}
+
+// CurriculaRegistrationsResponse defines model for CurriculaRegistrationsResponse.
+type CurriculaRegistrationsResponse struct {
+	Data       []UserRegistration `json:"data" yaml:"data"`
+	Page       int                `json:"page" yaml:"page"`
+	PageSize   int                `json:"page_size" yaml:"page_size"`
+	TotalCount int64              `json:"total_count" yaml:"total_count"`
+}
+
 // ErrorResponse defines model for ErrorResponse.
 type ErrorResponse struct {
 	Details *string `json:"details,omitempty" yaml:"details,omitempty"`
@@ -302,23 +430,26 @@ type Quiz struct {
 	FilePath    string             `json:"file_path" yaml:"file_path"`
 
 	// Final Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
-	Final          bool               `json:"final" yaml:"final"`
-	ID             string             `json:"id" yaml:"id"`
-	Lastmod        openapi_types.Date `json:"lastmod" yaml:"lastmod"`
-	Layout         string             `json:"layout" yaml:"layout"`
-	Parent         *Parent            `json:"parent,omitempty" yaml:"parent,omitempty"`
-	PassPercentage float32            `json:"pass_percentage" yaml:"pass_percentage"`
-	Permalink      string             `json:"permalink" yaml:"permalink"`
-	Prerequisites  []Parent           `json:"prerequisites" yaml:"prerequisites"`
-	Questions      []Question         `json:"questions" yaml:"questions"`
-	RelPermalink   string             `json:"relPermalink" yaml:"relPermalink"`
-	Section        string             `json:"section" yaml:"section"`
-	Slug           string             `json:"slug" yaml:"slug"`
-	TimeLimit      string             `json:"time_limit" yaml:"time_limit"`
-	Title          string             `json:"title" yaml:"title"`
-	TotalMarks     int                `json:"total_marks" yaml:"total_marks"`
-	TotalQuestions int                `json:"total_questions" yaml:"total_questions"`
-	Type           string             `json:"type" yaml:"type"`
+	Final   bool               `json:"final" yaml:"final"`
+	ID      string             `json:"id" yaml:"id"`
+	Lastmod openapi_types.Date `json:"lastmod" yaml:"lastmod"`
+	Layout  string             `json:"layout" yaml:"layout"`
+
+	// OrgId Organization ID that owns this quiz
+	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`
+	Parent         *Parent    `json:"parent,omitempty" yaml:"parent,omitempty"`
+	PassPercentage float32    `json:"pass_percentage" yaml:"pass_percentage"`
+	Permalink      string     `json:"permalink" yaml:"permalink"`
+	Prerequisites  []Parent   `json:"prerequisites" yaml:"prerequisites"`
+	Questions      []Question `json:"questions" yaml:"questions"`
+	RelPermalink   string     `json:"relPermalink" yaml:"relPermalink"`
+	Section        string     `json:"section" yaml:"section"`
+	Slug           string     `json:"slug" yaml:"slug"`
+	TimeLimit      string     `json:"time_limit" yaml:"time_limit"`
+	Title          string     `json:"title" yaml:"title"`
+	TotalMarks     int        `json:"total_marks" yaml:"total_marks"`
+	TotalQuestions int        `json:"total_questions" yaml:"total_questions"`
+	Type           string     `json:"type" yaml:"type"`
 }
 
 // QuizEvaluationResult defines model for QuizEvaluationResult.
@@ -366,6 +497,45 @@ type SubmittedAnswer struct {
 type UpdateCurrentItemRequest struct {
 	ContentType ContentType              `json:"content_type" yaml:"content_type"`
 	ItemData    CirriculaCurrentItemData `json:"item_data" yaml:"item_data"`
+}
+
+// UserRegistration defines model for UserRegistration.
+type UserRegistration struct {
+	// CreatedAt When the registration was created
+	CreatedAt *time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// CurriculaPermalink Permalink of the curricula
+	CurriculaPermalink string `db:"curricula_permalink" json:"curricula_permalink" yaml:"curricula_permalink"`
+
+	// CurriculaTitle Title of the curricula
+	CurriculaTitle string `db:"curricula_title" json:"curricula_title" yaml:"curricula_title"`
+
+	// CurriculaType Type of the curricula
+	CurriculaType ContentType `db:"curricula_type" json:"curricula_type" yaml:"curricula_type"`
+
+	// RegistrationId Unique ID of the registration
+	RegistrationId openapi_types.UUID `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+
+	// Status Registration status
+	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
+
+	// TotalCount Total count for pagination
+	TotalCount int64 `db:"total_count" json:"total_count" yaml:"total_count"`
+
+	// UserAvatarUrl Avatar URL of the user
+	UserAvatarUrl string `db:"user_avatar_url" json:"user_avatar_url" yaml:"user_avatar_url"`
+
+	// UserEmail Email of the user
+	UserEmail openapi_types.Email `db:"user_email" json:"user_email" yaml:"user_email"`
+
+	// UserFirstName First name of the user
+	UserFirstName string `db:"user_first_name" json:"user_first_name" yaml:"user_first_name"`
+
+	// UserId ID of the user
+	UserId openapi_types.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
+
+	// UserLastName Last name of the user
+	UserLastName string `db:"user_last_name" json:"user_last_name" yaml:"user_last_name"`
 }
 
 // Visibility defines model for Visibility.

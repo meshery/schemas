@@ -135,7 +135,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AcademyCirriculaListResponse'
+              $ref: '#/components/schemas/AcademyCurriculaWithMetricsListResponse'
       '400':
         description: Invalid request parameters
       '500':
@@ -328,6 +328,108 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/academy/admin/summary:
+     get:
+      tags:
+        - Academy
+      x-internal: ["cloud"]
+      operationId: getAcademyAdminSummary
+      summary: Get academy content summary
+      description: Returns a summary of all academy content with  metrics.
+      responses:
+        '200':
+          description: A list of content with total count and registration metrics
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Server error
+
+  /api/academy/admin/registrations:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: getAcademyAdminRegistrations
+      summary: Get academy registrations
+      description: Returns a list of academy registrations with user, curricula, and pagination details.
+      parameters:
+        - name: pagesize
+          in: query
+          required: false
+          description: Number of results per page
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: Page number
+          schema:
+            type: integer
+        - name: content_type
+          in: query
+          required: false
+          description: Filter by content types
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+        - name: status
+          in: query
+          required: false
+          description: Filter by registration status
+          schema:
+            type: array
+            items:
+              type: string
+            style: form
+            explode: true
+      responses:
+        '200':
+          description: List of registrations with pagination info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurriculaRegistrationsResponse'
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Server error
+
+  /api/academy/certificates/{certificateId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: getCertificateById
+      summary: Get a certificate by ID
+      description: Returns a certificate identified by its ID.
+      parameters:
+        - name: certificateId
+          in: path
+          required: true
+          description: The ID of the certificate to retrieve
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: A single certificate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificate'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Certificate not found
+        '500':
+          description: Server error
 
 components:
   schemas:
@@ -468,6 +570,7 @@ components:
             - $ref: "#/components/schemas/CurriculaMetadata"
               x-go-type: "CurriculaMetadata"
 
+
       required:
         - id
         - type
@@ -481,6 +584,20 @@ components:
         - metadata
         - level
 
+    AcademyCurriculaWithMetrics:
+      allOf:
+        - $ref: "#/components/schemas/AcademyCirricula"
+        - type: object
+          required:
+            - RegistrationCount
+          properties:
+            RegistrationCount:
+              type: number
+              x-oapi-codegen-extra-tags:
+                db: "registration_count,omitempty"
+                json: "registration_count,omitempty"
+                yaml: "registration_count,omitempty"
+
     AcademyCirriculaListResponse:
       type: object
       properties:
@@ -493,6 +610,24 @@ components:
           items:
             x-go-type: "AcademyCirricula"
             $ref: '#/components/schemas/AcademyCirricula'
+      required:
+        - total
+        - data
+
+    AcademyCurriculaWithMetricsListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of cirricula
+          example: 7
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcademyCurriculaWithMetrics'
+            x-go-type: "AcademyCurriculaWithMetrics"
+            x-go-type-skip-optional-pointer: true
+
       required:
         - total
         - data
@@ -539,21 +674,89 @@ components:
           description: URL to the badge SVG image
           example: http://localhost:9876/badges/kubernetes-expert.svg
 
+    CertificateIssuingAuthority:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          description: Name of the issuing authority
+          example: Cloud Native Foundation
+        role:
+          type: string
+          description: Role of the issuing authority
+          example: COO
+        signature_url:
+          type: string
+          format: uri
+          description: URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
+          example: http://localhost:9876/signatures/cloud-native-foundation.png
+
+
     Certificate:
       type: object
       required:
+        - id
+        - org_id
         - title
         - description
+        - issuing_authorities
+        - issued_date
+        - recipient_id
+        - recipient_name
 
       properties:
+
+        id:
+          type: string
+          description: Unique identifier for the certificate
+          example: 1234567890abcdef
+          x-go-name: ID
+
+        org_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: UUID of the organization that issued the certificate
+
+        recipient_id:
+          type: string
+          description: ID of the recipient (user) who received the certificate
+          example: 1234567890abcdef
+
+        recipient_name:
+          type: string
+          description: Name of the recipient (user) who received the certificate
+          example: John Doe
+
         title:
           type: string
           description: Title of the certificate
           example: Kubernetes Expert Certification
+
         description:
           type: string
           description: Description of the certificate
           example: Awarded for successfully completing the Kubernetes Expert course
+
+        issuing_authorities:
+          type: array
+          items:
+            $ref: "#/components/schemas/CertificateIssuingAuthority"
+            x-go-type: "CertificateIssuingAuthority"
+          description: List of issuing authorities for the certificate
+
+        issued_date:
+          type: string
+          format: date-time
+          description: Date when the certificate was issued
+          example: 2023-10-01T12:00:00Z
+
+        expiration_date:
+          type: string
+          format: date-time
+          description: Date when the certificate expires (optional)
+          example: 2025-10-01T12:00:00Z
 
 
     CurriculaMetadata:
@@ -600,6 +803,17 @@ components:
         - description
         - permalink
 
+    AcademyRegistrationStatus:
+          type: string
+          enum:
+            - registered
+            - completed
+            - failed
+            - withdrawn
+          description: Status of the user's course registration
+          x-oapi-codegen-extra-tags:
+            db: "status"
+
     AcademyRegistration:
       type: object
       required:
@@ -610,6 +824,7 @@ components:
         - created_at
         - updated_at
         - content_id
+        - certificate
         - metadata
       properties:
         id:
@@ -642,13 +857,8 @@ components:
             db: "user_id"
 
         status:
-          type: string
-          enum:
-            - registered
-            - in_progress
-            - completed
-            - failed
-            - withdrawn
+          $ref: "#/components/schemas/AcademyRegistrationStatus"
+          x-go-type: AcademyRegistrationStatus
           description: Status of the user's course registration
           x-oapi-codegen-extra-tags:
             db: "status"
@@ -672,6 +882,12 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
 
+        certificate:
+          $ref: "#/components/schemas/Certificate"
+          x-go-type: "core.Map"
+          description: Issued certificate for completing the curricula under registration
+          x-oapi-codegen-extra-tags:
+            db: "certificate"
 
         metadata:
           type: object
@@ -845,6 +1061,7 @@ components:
       required:
         - id
         - title
+        - orgId
         - description
         - slug
         - relPermalink
@@ -870,6 +1087,14 @@ components:
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             json: "id"
+        orgId:
+          type: string
+          description: Organization ID that owns this quiz
+          example: layer5
+          x-oapi-codegen-extra-tags:
+            db: "org_id"
+            json: "org_id"
+            yaml: "org_id"
         final:
           type: boolean
           description: Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
