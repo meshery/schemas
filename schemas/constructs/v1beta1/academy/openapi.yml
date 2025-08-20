@@ -342,7 +342,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AcademyAdminSummary'
+                type: object
+
         '400':
           description: Invalid request parameters
         '500':
