@@ -584,7 +584,7 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
     title: string;
     /** Description of the learning path */
     description: string;
-    /** Optional banner image */
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
     permalink: string;
@@ -637,9 +637,9 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       permalink: string;
       /** Course description */
       description: string;
-      /** Order of the course in the list */
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
       weight?: number;
-      /** Optional banner image */
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
       banner?: string | null;
       /** Type of the content (e.g., learning-path, challenge, certification) */
       type?: "learning-path" | "challenge" | "certification";

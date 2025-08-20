@@ -220,8 +220,8 @@ const schema = {
                                   "type": "string",
                                   "format": "uri",
                                   "nullable": true,
-                                  "description": "Optional banner image",
-                                  "example": null
+                                  "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                                  "example": "kubernetes-icon.svg"
                                 },
                                 "permalink": {
                                   "type": "string",
@@ -398,15 +398,15 @@ const schema = {
                                       },
                                       "weight": {
                                         "type": "number",
-                                        "description": "Order of the course in the list",
+                                        "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                         "example": "eg 1 , 2"
                                       },
                                       "banner": {
                                         "type": "string",
                                         "format": "uri",
                                         "nullable": true,
-                                        "description": "Optional banner image",
-                                        "example": null
+                                        "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                                        "example": "kubernetes-icon.svg"
                                       },
                                       "type": {
                                         "x-go-type": "ContentType",
@@ -755,8 +755,8 @@ const schema = {
                                       "type": "string",
                                       "format": "uri",
                                       "nullable": true,
-                                      "description": "Optional banner image",
-                                      "example": null
+                                      "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                                      "example": "kubernetes-icon.svg"
                                     },
                                     "permalink": {
                                       "type": "string",
@@ -933,15 +933,15 @@ const schema = {
                                           },
                                           "weight": {
                                             "type": "number",
-                                            "description": "Order of the course in the list",
+                                            "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                             "example": "eg 1 , 2"
                                           },
                                           "banner": {
                                             "type": "string",
                                             "format": "uri",
                                             "nullable": true,
-                                            "description": "Optional banner image",
-                                            "example": null
+                                            "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                                            "example": "kubernetes-icon.svg"
                                           },
                                           "type": {
                                             "x-go-type": "ContentType",
@@ -1220,8 +1220,8 @@ const schema = {
                               "type": "string",
                               "format": "uri",
                               "nullable": true,
-                              "description": "Optional banner image",
-                              "example": null
+                              "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                              "example": "kubernetes-icon.svg"
                             },
                             "permalink": {
                               "type": "string",
@@ -1398,15 +1398,15 @@ const schema = {
                                   },
                                   "weight": {
                                     "type": "number",
-                                    "description": "Order of the course in the list",
+                                    "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                     "example": "eg 1 , 2"
                                   },
                                   "banner": {
                                     "type": "string",
                                     "format": "uri",
                                     "nullable": true,
-                                    "description": "Optional banner image",
-                                    "example": null
+                                    "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                                    "example": "kubernetes-icon.svg"
                                   },
                                   "type": {
                                     "x-go-type": "ContentType",
@@ -3507,8 +3507,8 @@ const schema = {
                     "type": "string",
                     "format": "uri",
                     "nullable": true,
-                    "description": "Optional banner image",
-                    "example": null
+                    "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                    "example": "kubernetes-icon.svg"
                   },
                   "permalink": {
                     "type": "string",
@@ -3685,15 +3685,15 @@ const schema = {
                         },
                         "weight": {
                           "type": "number",
-                          "description": "Order of the course in the list",
+                          "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                           "example": "eg 1 , 2"
                         },
                         "banner": {
                           "type": "string",
                           "format": "uri",
                           "nullable": true,
-                          "description": "Optional banner image",
-                          "example": null
+                          "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                          "example": "kubernetes-icon.svg"
                         },
                         "type": {
                           "x-go-type": "ContentType",
@@ -3900,8 +3900,8 @@ const schema = {
                         "type": "string",
                         "format": "uri",
                         "nullable": true,
-                        "description": "Optional banner image",
-                        "example": null
+                        "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                        "example": "kubernetes-icon.svg"
                       },
                       "permalink": {
                         "type": "string",
@@ -4078,15 +4078,15 @@ const schema = {
                             },
                             "weight": {
                               "type": "number",
-                              "description": "Order of the course in the list",
+                              "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                               "example": "eg 1 , 2"
                             },
                             "banner": {
                               "type": "string",
                               "format": "uri",
                               "nullable": true,
-                              "description": "Optional banner image",
-                              "example": null
+                              "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                              "example": "kubernetes-icon.svg"
                             },
                             "type": {
                               "x-go-type": "ContentType",
@@ -4320,8 +4320,8 @@ const schema = {
                           "type": "string",
                           "format": "uri",
                           "nullable": true,
-                          "description": "Optional banner image",
-                          "example": null
+                          "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                          "example": "kubernetes-icon.svg"
                         },
                         "permalink": {
                           "type": "string",
@@ -4498,15 +4498,15 @@ const schema = {
                               },
                               "weight": {
                                 "type": "number",
-                                "description": "Order of the course in the list",
+                                "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                 "example": "eg 1 , 2"
                               },
                               "banner": {
                                 "type": "string",
                                 "format": "uri",
                                 "nullable": true,
-                                "description": "Optional banner image",
-                                "example": null
+                                "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                                "example": "kubernetes-icon.svg"
                               },
                               "type": {
                                 "x-go-type": "ContentType",
@@ -4732,8 +4732,8 @@ const schema = {
                               "type": "string",
                               "format": "uri",
                               "nullable": true,
-                              "description": "Optional banner image",
-                              "example": null
+                              "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                              "example": "kubernetes-icon.svg"
                             },
                             "permalink": {
                               "type": "string",
@@ -4910,15 +4910,15 @@ const schema = {
                                   },
                                   "weight": {
                                     "type": "number",
-                                    "description": "Order of the course in the list",
+                                    "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                                     "example": "eg 1 , 2"
                                   },
                                   "banner": {
                                     "type": "string",
                                     "format": "uri",
                                     "nullable": true,
-                                    "description": "Optional banner image",
-                                    "example": null
+                                    "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                                    "example": "kubernetes-icon.svg"
                                   },
                                   "type": {
                                     "x-go-type": "ContentType",
@@ -5014,8 +5014,8 @@ const schema = {
             "type": "string",
             "format": "uri",
             "nullable": true,
-            "description": "Optional banner image",
-            "example": null
+            "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+            "example": "kubernetes-icon.svg"
           },
           "permalink": {
             "type": "string",
@@ -5192,15 +5192,15 @@ const schema = {
                 },
                 "weight": {
                   "type": "number",
-                  "description": "Order of the course in the list",
+                  "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                   "example": "eg 1 , 2"
                 },
                 "banner": {
                   "type": "string",
                   "format": "uri",
                   "nullable": true,
-                  "description": "Optional banner image",
-                  "example": null
+                  "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                  "example": "kubernetes-icon.svg"
                 },
                 "type": {
                   "x-go-type": "ContentType",
@@ -5254,8 +5254,8 @@ const schema = {
             "type": "string",
             "format": "uri",
             "nullable": true,
-            "description": "Optional banner image",
-            "example": null
+            "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+            "example": "kubernetes-icon.svg"
           },
           "permalink": {
             "type": "string",
@@ -5432,15 +5432,15 @@ const schema = {
                 },
                 "weight": {
                   "type": "number",
-                  "description": "Order of the course in the list",
+                  "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                   "example": "eg 1 , 2"
                 },
                 "banner": {
                   "type": "string",
                   "format": "uri",
                   "nullable": true,
-                  "description": "Optional banner image",
-                  "example": null
+                  "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                  "example": "kubernetes-icon.svg"
                 },
                 "type": {
                   "x-go-type": "ContentType",
@@ -5649,8 +5649,8 @@ const schema = {
             "type": "string",
             "format": "uri",
             "nullable": true,
-            "description": "Optional banner image",
-            "example": null
+            "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+            "example": "kubernetes-icon.svg"
           },
           "permalink": {
             "type": "string",
@@ -5827,15 +5827,15 @@ const schema = {
                 },
                 "weight": {
                   "type": "number",
-                  "description": "Order of the course in the list",
+                  "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
                   "example": "eg 1 , 2"
                 },
                 "banner": {
                   "type": "string",
                   "format": "uri",
                   "nullable": true,
-                  "description": "Optional banner image",
-                  "example": null
+                  "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+                  "example": "kubernetes-icon.svg"
                 },
                 "type": {
                   "x-go-type": "ContentType",
@@ -6128,15 +6128,15 @@ const schema = {
           },
           "weight": {
             "type": "number",
-            "description": "Order of the course in the list",
+            "description": "A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.",
             "example": "eg 1 , 2"
           },
           "banner": {
             "type": "string",
             "format": "uri",
             "nullable": true,
-            "description": "Optional banner image",
-            "example": null
+            "description": "Filename of the banner image, which should be placed in the same directory as the _index.md file",
+            "example": "kubernetes-icon.svg"
           },
           "type": {
             "x-go-type": "ContentType",
