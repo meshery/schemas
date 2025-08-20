@@ -9,6 +9,66 @@ tags:
     description: Operations related to invitation
 paths:
 
+  /api/organizations/invitations/{id}:
+
+    get:
+      x-internal: ["cloud"]
+      operationId: getInvitation
+      tags:
+        - Invitation
+      summary: Get an invitation by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the invitation to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    put:
+      x-internal: ["cloud"]
+      operationId: updateInvitation
+      tags:
+        - Invitation
+      summary: Update an existing invitation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the invitation to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Invitation"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
   /api/organizations/invitations:
     get:
       x-internal: ["cloud"]
@@ -78,8 +138,8 @@ components:
     InvitationsPage:
       type: object
       required:
-        - data
-        - totalCount
+        - Data
+        - Total
       properties:
         Data:
           type: array
@@ -90,12 +150,12 @@ components:
           x-oapi-codegen-extra-tags:
             json: "data"
 
-        TotalCount:
+        Total:
           type: integer
           description: Total number of invitations available
 
           x-oapi-codegen-extra-tags:
-            json: "total_count"
+            json: "total"
 
 
     InvitationStatus:
@@ -112,6 +172,7 @@ components:
       required:
         - id
         - default
+        - ownerId
         - name
         - description
         - emails
@@ -127,9 +188,20 @@ components:
         - deletedAt
       properties:
         id:
-          ref: "#/components/schemas/uuid"
+
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
           x-go-name: ID
           description: Unique identifier for the invitation , is also used as the invitation code
+
+        ownerId:
+
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: "ID of the user who created the invitation,
+                        this is used to track who created the invitation and can be used for auditing purposes"
+
+          x-oapi-codegen-extra-tags:
+            db: "owner_id"
+            json: "owner_id"
 
         isDefault:
           type: boolean
@@ -152,9 +224,11 @@ components:
 
         emails:
           type: array
+          x-go-type: "pq.StringArray"
           items:
             type: string
             format: email
+            x-go-type: "string"
             description: "Exact email address or the email address pattern for which the invitation is valid ,
                           null means the invitation is valid for all email addresses"
 
@@ -180,6 +254,8 @@ components:
 
         acceptedBy:
           type: array
+
+          x-go-type: "pq.StringArray"
           items:
             type: string
           description: "List of user ids that have already accepted the invitation,
@@ -190,12 +266,16 @@ components:
 
         roles:
           type: array
+
+          x-go-type: "pq.StringArray"
           items:
             type: string
             description: "Roles that the user will have when accepting the invitation,
                           null or empty string means the invitation does not specify any roles"
         teams:
           type: array
+
+          x-go-type: "pq.StringArray"
           items:
             type: string
             description: "Teams that the user will be added to when accepting the invitation,
@@ -231,6 +311,4 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
             json: "deleted_at"
-
-
 
