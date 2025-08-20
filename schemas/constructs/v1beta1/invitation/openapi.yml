@@ -259,7 +259,8 @@ components:
         emails:
           type: array
           x-go-type: "pq.StringArray"
-          x-go-import: "github.com/lib/pq"
+          x-go-type-import:
+            path: "github.com/lib/pq"
           items:
             type: string
             format: email
@@ -291,6 +292,8 @@ components:
           type: array
 
           x-go-type: "pq.StringArray"
+          x-go-type-import:
+            path: "github.com/lib/pq"
           items:
             type: string
           description: "List of user ids that have already accepted the invitation,
@@ -303,6 +306,8 @@ components:
           type: array
 
           x-go-type: "pq.StringArray"
+          x-go-type-import:
+            path: "github.com/lib/pq"
           items:
             type: string
             description: "Roles that the user will have when accepting the invitation,
@@ -311,6 +316,8 @@ components:
           type: array
 
           x-go-type: "pq.StringArray"
+          x-go-type-import:
+            path: "github.com/lib/pq"
           items:
             type: string
             description: "Teams that the user will be added to when accepting the invitation,
@@ -346,4 +353,3 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
             json: "deleted_at"
-

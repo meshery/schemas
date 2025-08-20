@@ -5,6 +5,17 @@ info:
   contact:
     email: maintainers@meshery.io
   version: v0.6.394
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: >
+      Meshery Cloud development server URL (controlled via PORT environment
+      variable)
+  - url: http://localhost:8080
+    description: Local development server
 tags:
   - name: design_other
     x-displayName: other
@@ -3853,7 +3864,8 @@ paths:
                   emails:
                     type: array
                     x-go-type: pq.StringArray
-                    x-go-import: github.com/lib/pq
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       format: email
@@ -3886,6 +3898,8 @@ paths:
                   accepted_by:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                     description: >-
@@ -3898,6 +3912,8 @@ paths:
                   roles:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -3907,6 +3923,8 @@ paths:
                   teams:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -4056,7 +4074,8 @@ paths:
                 emails:
                   type: array
                   x-go-type: pq.StringArray
-                  x-go-import: github.com/lib/pq
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     format: email
@@ -4089,6 +4108,8 @@ paths:
                 accepted_by:
                   type: array
                   x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                   description: >-
@@ -4101,6 +4122,8 @@ paths:
                 roles:
                   type: array
                   x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     description: >-
@@ -4110,6 +4133,8 @@ paths:
                 teams:
                   type: array
                   x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     description: >-
@@ -4219,7 +4244,8 @@ paths:
                   emails:
                     type: array
                     x-go-type: pq.StringArray
-                    x-go-import: github.com/lib/pq
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       format: email
@@ -4252,6 +4278,8 @@ paths:
                   accepted_by:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                     description: >-
@@ -4264,6 +4292,8 @@ paths:
                   roles:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -4273,6 +4303,8 @@ paths:
                   teams:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -4405,7 +4437,8 @@ paths:
                         emails:
                           type: array
                           x-go-type: pq.StringArray
-                          x-go-import: github.com/lib/pq
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
                             format: email
@@ -4440,6 +4473,8 @@ paths:
                         accepted_by:
                           type: array
                           x-go-type: pq.StringArray
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
                           description: >-
@@ -4452,6 +4487,8 @@ paths:
                         roles:
                           type: array
                           x-go-type: pq.StringArray
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
                             description: >-
@@ -4461,6 +4498,8 @@ paths:
                         teams:
                           type: array
                           x-go-type: pq.StringArray
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
                             description: >-
@@ -4592,7 +4631,8 @@ paths:
                 emails:
                   type: array
                   x-go-type: pq.StringArray
-                  x-go-import: github.com/lib/pq
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     format: email
@@ -4625,6 +4665,8 @@ paths:
                 accepted_by:
                   type: array
                   x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                   description: >-
@@ -4637,6 +4679,8 @@ paths:
                 roles:
                   type: array
                   x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     description: >-
@@ -4646,6 +4690,8 @@ paths:
                 teams:
                   type: array
                   x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     description: >-
@@ -4755,7 +4801,8 @@ paths:
                   emails:
                     type: array
                     x-go-type: pq.StringArray
-                    x-go-import: github.com/lib/pq
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       format: email
@@ -4788,6 +4835,8 @@ paths:
                   accepted_by:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                     description: >-
@@ -4800,6 +4849,8 @@ paths:
                   roles:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -4809,6 +4860,8 @@ paths:
                   teams:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -4938,7 +4991,8 @@ paths:
                   emails:
                     type: array
                     x-go-type: pq.StringArray
-                    x-go-import: github.com/lib/pq
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       format: email
@@ -4971,6 +5025,8 @@ paths:
                   accepted_by:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                     description: >-
@@ -4983,6 +5039,8 @@ paths:
                   roles:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -4992,6 +5050,8 @@ paths:
                   teams:
                     type: array
                     x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -54793,7 +54853,8 @@ components:
               emails:
                 type: array
                 x-go-type: pq.StringArray
-                x-go-import: github.com/lib/pq
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
                   format: email
@@ -54826,6 +54887,8 @@ components:
               accepted_by:
                 type: array
                 x-go-type: pq.StringArray
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
                 description: >-
@@ -54838,6 +54901,8 @@ components:
               roles:
                 type: array
                 x-go-type: pq.StringArray
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
                   description: >-
@@ -54847,6 +54912,8 @@ components:
               teams:
                 type: array
                 x-go-type: pq.StringArray
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
                   description: >-
@@ -54967,7 +55034,8 @@ components:
         emails:
           type: array
           x-go-type: pq.StringArray
-          x-go-import: github.com/lib/pq
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
             format: email
@@ -55000,6 +55068,8 @@ components:
         accepted_by:
           type: array
           x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
           description: >-
@@ -55011,6 +55081,8 @@ components:
         roles:
           type: array
           x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
             description: >-
@@ -55019,6 +55091,8 @@ components:
         teams:
           type: array
           x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
             description: >-
