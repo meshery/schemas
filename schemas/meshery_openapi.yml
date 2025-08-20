@@ -64395,30 +64395,30 @@ components:
     invitation_InvitationsPage:
       type: object
       required:
-        - Data
-        - Total
+        - data
+        - total
       properties:
-        Data:
+        data:
           type: array
           items:
             type: object
             required:
               - id
               - default
-              - ownerId
+              - owner_id
               - name
               - description
               - emails
-              - orgId
-              - expiresAt
+              - org_id
+              - expires_at
               - quota
-              - acceptedBy
+              - accepted_by
               - status
               - roles
               - teams
-              - createdAt
-              - updatedAt
-              - deletedAt
+              - created_at
+              - updated_at
+              - deleted_at
             properties:
               id:
                 x-go-name: ID
@@ -64430,7 +64430,7 @@ components:
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
-              ownerId:
+              owner_id:
                 description: >-
                   ID of the user who created the invitation, this is used to
                   track who created the invitation and can be used for auditing
@@ -64443,7 +64443,7 @@ components:
                 x-go-type: uuid.UUID
                 x-go-type-import:
                   path: github.com/gofrs/uuid
-              isDefault:
+              is_default:
                 type: boolean
                 description: >-
                   Indicates whether the invitation is a default invitation (open
@@ -64475,13 +64475,13 @@ components:
                     Exact email address or the email address pattern for which
                     the invitation is valid , null means the invitation is valid
                     for all email addresses
-              orgId:
+              org_id:
                 type: string
                 description: ID of the organization to which the user is invited
                 x-oapi-codegen-extra-tags:
                   db: org_id
                   json: org_id
-              expiresAt:
+              expires_at:
                 type: string
                 format: date-time
                 description: >-
@@ -64496,7 +64496,7 @@ components:
                   Quota for the invitation, which can be used to limit the
                   number of users that can accept the invitation, null or empty
                   string means the invitation does not have a quota
-              acceptedBy:
+              accepted_by:
                 type: array
                 x-go-type: pq.StringArray
                 items:
@@ -64537,21 +64537,21 @@ components:
                   is active and can be used, disabled means the invitation is no
                   longer valid and is temporarily inactive, disabled invitations
                   can be re-enabled later.
-              createdAt:
+              created_at:
                 type: string
                 format: date-time
                 description: Timestamp when the invitation was created
                 x-oapi-codegen-extra-tags:
                   db: created_at
                   json: created_at
-              updatedAt:
+              updated_at:
                 type: string
                 format: date-time
                 description: Timestamp when the invitation was last updated
                 x-oapi-codegen-extra-tags:
                   db: updated_at
                   json: updated_at
-              deletedAt:
+              deleted_at:
                 type: string
                 format: date-time
                 x-go-type: core.NullTime
@@ -64563,7 +64563,7 @@ components:
           description: List of invitations
           x-oapi-codegen-extra-tags:
             json: data
-        Total:
+        total:
           type: integer
           description: Total number of invitations available
           x-oapi-codegen-extra-tags:
@@ -64582,20 +64582,20 @@ components:
       required:
         - id
         - default
-        - ownerId
+        - owner_id
         - name
         - description
         - emails
-        - orgId
-        - expiresAt
+        - org_id
+        - expires_at
         - quota
-        - acceptedBy
+        - accepted_by
         - status
         - roles
         - teams
-        - createdAt
-        - updatedAt
-        - deletedAt
+        - created_at
+        - updated_at
+        - deleted_at
       properties:
         id:
           x-go-name: ID
@@ -64607,7 +64607,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-        ownerId:
+        owner_id:
           description: >-
             ID of the user who created the invitation, this is used to track who
             created the invitation and can be used for auditing purposes
@@ -64619,7 +64619,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-        isDefault:
+        is_default:
           type: boolean
           description: >-
             Indicates whether the invitation is a default invitation (open
@@ -64651,13 +64651,13 @@ components:
               Exact email address or the email address pattern for which the
               invitation is valid , null means the invitation is valid for all
               email addresses
-        orgId:
+        org_id:
           type: string
           description: ID of the organization to which the user is invited
           x-oapi-codegen-extra-tags:
             db: org_id
             json: org_id
-        expiresAt:
+        expires_at:
           type: string
           format: date-time
           description: >-
@@ -64672,7 +64672,7 @@ components:
             Quota for the invitation, which can be used to limit the number of
             users that can accept the invitation, null or empty string means the
             invitation does not have a quota
-        acceptedBy:
+        accepted_by:
           type: array
           x-go-type: pq.StringArray
           items:
@@ -64711,21 +64711,21 @@ components:
             active and can be used, disabled means the invitation is no longer
             valid and is temporarily inactive, disabled invitations can be
             re-enabled later.
-        createdAt:
+        created_at:
           type: string
           format: date-time
           description: Timestamp when the invitation was created
           x-oapi-codegen-extra-tags:
             db: created_at
             json: created_at
-        updatedAt:
+        updated_at:
           type: string
           format: date-time
           description: Timestamp when the invitation was last updated
           x-oapi-codegen-extra-tags:
             db: updated_at
             json: updated_at
-        deletedAt:
+        deleted_at:
           type: string
           format: date-time
           x-go-type: core.NullTime
@@ -64873,6 +64873,13 @@ components:
       in: path
       required: true
       description: The ID of the organization
+      schema:
+        type: string
+    invitation_invitation_id:
+      name: invitationId
+      in: path
+      required: true
+      description: The ID of the invitation
       schema:
         type: string
   securitySchemes:

@@ -76,5 +76,8 @@ type InvitationsPage struct {
 // Uuid A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Uuid = uuid.UUID
 
+// InvitationId defines model for invitation_id.
+type InvitationId = string
+
 // OrganizationId defines model for organization_id.
 type OrganizationId = string

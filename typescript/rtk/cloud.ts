@@ -157,11 +157,14 @@ const injectedRtkApi = api.injectEndpoints({
       query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
     }),
     getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
-      query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.id}` }),
+      query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
+    }),
+    deleteInvitation: build.mutation<DeleteInvitationApiResponse, DeleteInvitationApiArg>({
+      query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}`, method: "DELETE" }),
     }),
     updateInvitation: build.mutation<UpdateInvitationApiResponse, UpdateInvitationApiArg>({
       query: (queryArg) => ({
-        url: `/api/organizations/invitations/${queryArg.id}`,
+        url: `/api/organizations/invitations/${queryArg.invitationId}`,
         method: "PUT",
         body: queryArg.body,
       }),
@@ -171,6 +174,9 @@ const injectedRtkApi = api.injectEndpoints({
     }),
     createInvitation: build.mutation<CreateInvitationApiResponse, CreateInvitationApiArg>({
       query: (queryArg) => ({ url: `/api/organizations/invitations`, method: "POST", body: queryArg.body }),
+    }),
+    acceptInvitation: build.mutation<AcceptInvitationApiResponse, AcceptInvitationApiArg>({
+      query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}/accept`, method: "POST" }),
     }),
   }),
   overrideExisting: false,
@@ -1041,203 +1047,243 @@ export type GetInvitationApiResponse = /** status 200 undefined */ {
   /** Unique identifier for the invitation , is also used as the invitation code */
   id: string;
   /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-  ownerId: string;
+  owner_id: string;
   /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-  isDefault?: boolean;
+  is_default?: boolean;
   /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
   name: string;
   /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
   description: string;
   emails: string[];
   /** ID of the organization to which the user is invited */
-  orgId: string;
+  org_id: string;
   /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expiresAt: string;
+  expires_at: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
   quota: number;
   /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-  acceptedBy: string[];
+  accepted_by: string[];
   roles: string[];
   teams: string[];
   /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created */
-  createdAt: string;
+  created_at: string;
   /** Timestamp when the invitation was last updated */
-  updatedAt: string;
+  updated_at: string;
   /** Timestamp when the invitation was deleted, if applicable */
-  deletedAt: string;
+  deleted_at: string;
 };
 export type GetInvitationApiArg = {
-  /** The ID of the invitation to retrieve */
-  id: string;
+  /** The ID of the invitation */
+  invitationId: string;
+};
+export type DeleteInvitationApiResponse = unknown;
+export type DeleteInvitationApiArg = {
+  /** The ID of the invitation */
+  invitationId: string;
 };
 export type UpdateInvitationApiResponse = /** status 200 undefined */ {
   /** Unique identifier for the invitation , is also used as the invitation code */
   id: string;
   /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-  ownerId: string;
+  owner_id: string;
   /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-  isDefault?: boolean;
+  is_default?: boolean;
   /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
   name: string;
   /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
   description: string;
   emails: string[];
   /** ID of the organization to which the user is invited */
-  orgId: string;
+  org_id: string;
   /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expiresAt: string;
+  expires_at: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
   quota: number;
   /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-  acceptedBy: string[];
+  accepted_by: string[];
   roles: string[];
   teams: string[];
   /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created */
-  createdAt: string;
+  created_at: string;
   /** Timestamp when the invitation was last updated */
-  updatedAt: string;
+  updated_at: string;
   /** Timestamp when the invitation was deleted, if applicable */
-  deletedAt: string;
+  deleted_at: string;
 };
 export type UpdateInvitationApiArg = {
-  /** The ID of the invitation to update */
-  id: string;
+  /** The ID of the invitation */
+  invitationId: string;
   body: {
     /** Unique identifier for the invitation , is also used as the invitation code */
     id: string;
     /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-    ownerId: string;
+    owner_id: string;
     /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-    isDefault?: boolean;
+    is_default?: boolean;
     /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
     name: string;
     /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
     description: string;
     emails: string[];
     /** ID of the organization to which the user is invited */
-    orgId: string;
+    org_id: string;
     /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expiresAt: string;
+    expires_at: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota: number;
     /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    acceptedBy: string[];
+    accepted_by: string[];
     roles: string[];
     teams: string[];
     /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created */
-    createdAt: string;
+    created_at: string;
     /** Timestamp when the invitation was last updated */
-    updatedAt: string;
+    updated_at: string;
     /** Timestamp when the invitation was deleted, if applicable */
-    deletedAt: string;
+    deleted_at: string;
   };
 };
 export type GetInvitationsApiResponse = /** status 200 undefined */ {
   /** List of invitations */
-  Data: {
+  data: {
     /** Unique identifier for the invitation , is also used as the invitation code */
     id: string;
     /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-    ownerId: string;
+    owner_id: string;
     /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-    isDefault?: boolean;
+    is_default?: boolean;
     /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
     name: string;
     /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
     description: string;
     emails: string[];
     /** ID of the organization to which the user is invited */
-    orgId: string;
+    org_id: string;
     /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expiresAt: string;
+    expires_at: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota: number;
     /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    acceptedBy: string[];
+    accepted_by: string[];
     roles: string[];
     teams: string[];
     /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created */
-    createdAt: string;
+    created_at: string;
     /** Timestamp when the invitation was last updated */
-    updatedAt: string;
+    updated_at: string;
     /** Timestamp when the invitation was deleted, if applicable */
-    deletedAt: string;
+    deleted_at: string;
   }[];
   /** Total number of invitations available */
-  Total: number;
+  total: number;
 };
 export type GetInvitationsApiArg = void;
 export type CreateInvitationApiResponse = /** status 201 undefined */ {
   /** Unique identifier for the invitation , is also used as the invitation code */
   id: string;
   /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-  ownerId: string;
+  owner_id: string;
   /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-  isDefault?: boolean;
+  is_default?: boolean;
   /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
   name: string;
   /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
   description: string;
   emails: string[];
   /** ID of the organization to which the user is invited */
-  orgId: string;
+  org_id: string;
   /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expiresAt: string;
+  expires_at: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
   quota: number;
   /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-  acceptedBy: string[];
+  accepted_by: string[];
   roles: string[];
   teams: string[];
   /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
   status: "enabled" | "disabled";
   /** Timestamp when the invitation was created */
-  createdAt: string;
+  created_at: string;
   /** Timestamp when the invitation was last updated */
-  updatedAt: string;
+  updated_at: string;
   /** Timestamp when the invitation was deleted, if applicable */
-  deletedAt: string;
+  deleted_at: string;
 };
 export type CreateInvitationApiArg = {
   body: {
     /** Unique identifier for the invitation , is also used as the invitation code */
     id: string;
     /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
-    ownerId: string;
+    owner_id: string;
     /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
-    isDefault?: boolean;
+    is_default?: boolean;
     /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
     name: string;
     /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
     description: string;
     emails: string[];
     /** ID of the organization to which the user is invited */
-    orgId: string;
+    org_id: string;
     /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expiresAt: string;
+    expires_at: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota: number;
     /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-    acceptedBy: string[];
+    accepted_by: string[];
     roles: string[];
     teams: string[];
     /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
     status: "enabled" | "disabled";
     /** Timestamp when the invitation was created */
-    createdAt: string;
+    created_at: string;
     /** Timestamp when the invitation was last updated */
-    updatedAt: string;
+    updated_at: string;
     /** Timestamp when the invitation was deleted, if applicable */
-    deletedAt: string;
+    deleted_at: string;
   };
+};
+export type AcceptInvitationApiResponse = /** status 200 undefined */ {
+  /** Unique identifier for the invitation , is also used as the invitation code */
+  id: string;
+  /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+  owner_id: string;
+  /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+  is_default?: boolean;
+  /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+  name: string;
+  /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+  description: string;
+  emails: string[];
+  /** ID of the organization to which the user is invited */
+  org_id: string;
+  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  expires_at: string;
+  /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+  quota: number;
+  /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+  accepted_by: string[];
+  roles: string[];
+  teams: string[];
+  /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+  status: "enabled" | "disabled";
+  /** Timestamp when the invitation was created */
+  created_at: string;
+  /** Timestamp when the invitation was last updated */
+  updated_at: string;
+  /** Timestamp when the invitation was deleted, if applicable */
+  deleted_at: string;
+};
+export type AcceptInvitationApiArg = {
+  /** The ID of the invitation */
+  invitationId: string;
 };
 export const {
   useImportDesignMutation,
@@ -1267,7 +1313,9 @@ export const {
   useGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
   useGetInvitationQuery,
+  useDeleteInvitationMutation,
   useUpdateInvitationMutation,
   useGetInvitationsQuery,
   useCreateInvitationMutation,
+  useAcceptInvitationMutation,
 } = injectedRtkApi;
