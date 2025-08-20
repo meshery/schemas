@@ -342,7 +342,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/AcademyAdminSummary'
         '400':
           description: Invalid request parameters
         '500':
@@ -430,6 +430,7 @@ paths:
           description: Certificate not found
         '500':
           description: Server error
+
 
 components:
   schemas:
@@ -1411,6 +1412,17 @@ components:
 
     CurriculaRegistrationsResponse:
       type: object
+      description: |
+        This report provides a detailed view of every content registration across your academy. Use it to track individual progress, analyze enrollment patterns, and manage your learner base. You can filter and customize the view using the icons on the top-right.
+        Displays the learner's name and email. Clicking on the user's avatar will navigate to their public profile page.
+        The specific content the user is enrolled in. Clicking the title will take you directly to that learning path or certification.
+        The date the user enrolled in the content. It is displayed as a relative time (e.g., '3 days ago'). Hover over the text to see the full, exact timestamp.
+        The learner's current progress. Possible values include:
+        - Registered: In-progress.
+        - Completed: Successfully finished.
+        - Failed: Failed attempts.
+        - Withdrawn: Unenrollments.
+
       required:
         - data
         - total_count
@@ -1429,3 +1441,80 @@ components:
           type: integer
         page:
           type: integer
+
+    AcademyAdminSummary:
+      type: object
+      description: "Core statistics data for displaying on the academy management dashboard."
+      properties:
+        total_learners:
+          type: integer
+          description: "This is the cumulative count of all unique learners who have ever enrolled in any of your academy content. A steady growth in this number indicates an expanding reach for your academy."
+        active_learners:
+          type: integer
+          description: "This metric counts all course registrations currently in the 'Registered' (in-progress) status. It's a key indicator of current student engagement and is used for billing purposes on Enterprise plans."
+        total_tests_taken:
+          type: integer
+          description: "This is the total number of all test attempts, including retakes by the same user. High numbers may suggest challenging content, while low numbers could indicate less engagement with assessments."
+        content_details:
+          type: object
+          description: "Overall statistics for academy content."
+          properties:
+            content_version:
+              type: string
+              description: "This version reflects your latest live academy content. Updates from your Git repository become visible here only after both a GitHub Release is created and the subsequent Layer5 Cloud deployment is complete."
+            learning_paths_count:
+              type: integer
+              description: "Total number of available learning paths."
+            certifications_count:
+              type: integer
+              description: "Total number of available certifications."
+            challenges_count:
+              type: integer
+              description: "Total number of available challenges."
+        learner_registration:
+          type: object
+          description: "This chart shows the distribution of learners by their current status. A high ratio of Registered/Failed/Withdrawn to Completed may indicate that your content is challenging or has engagement issues."
+          properties:
+            registered:
+              type: integer
+              description: "Learners who are 'in-progress' and have not yet finished the content."
+            completed:
+              type: integer
+              description: "Learners who have successfully finished the content."
+            withdrawn:
+              type: integer
+              description: "Learner who have unenrolled from the content."
+            failed:
+              type: integer
+              description: "Learners who have failed the content."
+        content_metrics:
+          type: array
+          description: "This list ranks your academy content by the total number of registrations. Use this data to quickly identify your most engaging content."
+          items:
+            $ref: '#/components/schemas/ContentMetricItem'
+        test_stats:
+          type: object
+          description: "This panel provides a high-level summary of all test activities across your academy."
+          properties:
+            pass_fail_summary:
+              type: object
+              description: "This chart shows a comparison of the total number of passed vs. failed attempts across all tests. This counts all attempts, including retakes by the same user."
+              properties:
+                passed_count:
+                  type: integer
+                failed_count:
+                  type: integer
+            most_difficult_test:
+              $ref: '#/components/schemas/TestSummaryItem'
+              description: "This is the test with the lowest pass-to-fail ratio, helping you quickly identify the most challenging content for your learners."
+            easiest_test:
+              $ref: '#/components/schemas/TestSummaryItem'
+              description: "This is the test with the highest pass-to-fail ratio, showing which content your learners are mastering most easily."
+            most_attempted_test:
+              $ref: '#/components/schemas/TestSummaryItem'
+              description: "This is the test that learners have attempted the most times, regardless of the outcome. High attempts could indicate either popularity or significant difficulty."
+        test_metrics:
+          type: array
+          description: "This list provides a detailed performance breakdown for each individual test. Each test title is a clickable link that navigates directly to that assessment."
+          items:
+            $ref: '#/components/schemas/TestMetricItem'
