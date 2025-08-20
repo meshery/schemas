@@ -64404,18 +64404,15 @@ components:
             type: object
             required:
               - id
-              - default
               - owner_id
               - name
               - description
-              - emails
               - org_id
-              - expires_at
-              - quota
               - accepted_by
-              - status
+              - emails
               - roles
               - teams
+              - status
               - created_at
               - updated_at
               - deleted_at
@@ -64581,18 +64578,15 @@ components:
       type: object
       required:
         - id
-        - default
         - owner_id
         - name
         - description
-        - emails
         - org_id
-        - expires_at
-        - quota
         - accepted_by
-        - status
+        - emails
         - roles
         - teams
+        - status
         - created_at
         - updated_at
         - deleted_at

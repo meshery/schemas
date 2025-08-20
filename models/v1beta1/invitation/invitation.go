@@ -32,7 +32,7 @@ type Invitation struct {
 	Emails      pq.StringArray `json:"emails" yaml:"emails"`
 
 	// ExpiresAt Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
-	ExpiresAt time.Time `db:"expires_at" json:"expires_at" yaml:"expires_at"`
+	ExpiresAt *time.Time `db:"expires_at" json:"expires_at" yaml:"expires_at"`
 
 	// ID Unique identifier for the invitation , is also used as the invitation code
 	ID uuid.UUID `json:"id" yaml:"id"`
@@ -50,7 +50,7 @@ type Invitation struct {
 	OwnerId uuid.UUID `db:"owner_id" json:"owner_id" yaml:"owner_id"`
 
 	// Quota Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota
-	Quota int            `json:"quota" yaml:"quota"`
+	Quota *int           `json:"quota,omitempty" yaml:"quota,omitempty"`
 	Roles pq.StringArray `json:"roles" yaml:"roles"`
 
 	// Status Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.

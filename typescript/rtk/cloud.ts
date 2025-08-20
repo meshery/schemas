@@ -1058,9 +1058,9 @@ export type GetInvitationApiResponse = /** status 200 undefined */ {
   /** ID of the organization to which the user is invited */
   org_id: string;
   /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at: string;
+  expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota: number;
+  quota?: number;
   /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
   accepted_by: string[];
   roles: string[];
@@ -1098,9 +1098,9 @@ export type UpdateInvitationApiResponse = /** status 200 undefined */ {
   /** ID of the organization to which the user is invited */
   org_id: string;
   /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at: string;
+  expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota: number;
+  quota?: number;
   /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
   accepted_by: string[];
   roles: string[];
@@ -1132,9 +1132,9 @@ export type UpdateInvitationApiArg = {
     /** ID of the organization to which the user is invited */
     org_id: string;
     /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expires_at: string;
+    expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-    quota: number;
+    quota?: number;
     /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
     accepted_by: string[];
     roles: string[];
@@ -1166,9 +1166,9 @@ export type GetInvitationsApiResponse = /** status 200 undefined */ {
     /** ID of the organization to which the user is invited */
     org_id: string;
     /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expires_at: string;
+    expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-    quota: number;
+    quota?: number;
     /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
     accepted_by: string[];
     roles: string[];
@@ -1201,9 +1201,9 @@ export type CreateInvitationApiResponse = /** status 201 undefined */ {
   /** ID of the organization to which the user is invited */
   org_id: string;
   /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at: string;
+  expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota: number;
+  quota?: number;
   /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
   accepted_by: string[];
   roles: string[];
@@ -1233,9 +1233,9 @@ export type CreateInvitationApiArg = {
     /** ID of the organization to which the user is invited */
     org_id: string;
     /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-    expires_at: string;
+    expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-    quota: number;
+    quota?: number;
     /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
     accepted_by: string[];
     roles: string[];
@@ -1265,9 +1265,9 @@ export type AcceptInvitationApiResponse = /** status 200 undefined */ {
   /** ID of the organization to which the user is invited */
   org_id: string;
   /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
-  expires_at: string;
+  expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
-  quota: number;
+  quota?: number;
   /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
   accepted_by: string[];
   roles: string[];
