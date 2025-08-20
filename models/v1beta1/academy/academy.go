@@ -289,7 +289,7 @@ type ChallengeMetadata = CurriculaMetadata
 
 // ChildNode defines model for ChildNode.
 type ChildNode struct {
-	// Banner Optional banner image
+	// Banner Filename of the banner image, which should be placed in the same directory as the _index.md file
 	Banner *string `json:"banner" yaml:"banner"`
 
 	// Children List of child nodes (sub-courses or modules)
@@ -310,7 +310,7 @@ type ChildNode struct {
 	// Type Type of the content (e.g., learning-path, challenge, certification)
 	Type *ContentType `json:"type,omitempty" yaml:"type,omitempty"`
 
-	// Weight Order of the course in the list
+	// Weight A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
 	Weight *float32 `json:"weight,omitempty" yaml:"weight,omitempty"`
 }
 
@@ -341,7 +341,7 @@ type ContentType string
 type CurriculaMetadata struct {
 	Badge *Badge `json:"badge,omitempty" yaml:"badge,omitempty"`
 
-	// Banner Optional banner image
+	// Banner Filename of the banner image, which should be placed in the same directory as the _index.md file
 	Banner      *string      `json:"banner" yaml:"banner"`
 	Certificate *Certificate `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 
