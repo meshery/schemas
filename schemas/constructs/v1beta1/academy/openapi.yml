@@ -1477,7 +1477,7 @@ components:
               description: "Learners who have unenrolled from the content."
             failed:
               type: integer
-              description: "Learners who have failed the content."
+              description: "Learners who have attempted to complete the content but did not meet the passing criteria."
         content_metrics:
           type: array
           description: "This list ranks your academy content by the total number of registrations. Use this data to quickly identify your most engaging content."
