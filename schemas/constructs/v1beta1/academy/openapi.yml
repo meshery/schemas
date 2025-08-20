@@ -1412,16 +1412,8 @@ components:
 
     CurriculaRegistrationsResponse:
       type: object
-      description: |
+      description: 
         This report provides a detailed view of every content registration across your academy. Use it to track individual progress, analyze enrollment patterns, and manage your learner base. You can filter and customize the view using the icons on the top-right.
-        Displays the learner's name and email. Clicking on the user's avatar will navigate to their public profile page.
-        The specific content the user is enrolled in. Clicking the title will take you directly to that learning path or certification.
-        The date the user enrolled in the content. It is displayed as a relative time (e.g., '3 days ago'). Hover over the text to see the full, exact timestamp.
-        The learner's current progress. Possible values include:
-        - Registered: In-progress.
-        - Completed: Successfully finished.
-        - Failed: Failed attempts.
-        - Withdrawn: Unenrollments.
 
       required:
         - data
