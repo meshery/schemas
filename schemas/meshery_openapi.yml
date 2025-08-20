@@ -64395,17 +64395,17 @@ components:
     invitation_InvitationsPage:
       type: object
       required:
-        - data
-        - totalCount
+        - Data
+        - Total
       properties:
         Data:
           type: array
           items:
-            x-go-type: Invitation
             type: object
             required:
               - id
               - default
+              - ownerId
               - name
               - description
               - emails
@@ -64421,11 +64421,28 @@ components:
               - deletedAt
             properties:
               id:
-                ref: '#/components/schemas/uuid'
                 x-go-name: ID
                 description: >-
                   Unique identifier for the invitation , is also used as the
                   invitation code
+                type: string
+                format: uuid
+                x-go-type: uuid.UUID
+                x-go-type-import:
+                  path: github.com/gofrs/uuid
+              ownerId:
+                description: >-
+                  ID of the user who created the invitation, this is used to
+                  track who created the invitation and can be used for auditing
+                  purposes
+                x-oapi-codegen-extra-tags:
+                  db: owner_id
+                  json: owner_id
+                type: string
+                format: uuid
+                x-go-type: uuid.UUID
+                x-go-type-import:
+                  path: github.com/gofrs/uuid
               isDefault:
                 type: boolean
                 description: >-
@@ -64449,9 +64466,11 @@ components:
                   string means the invitation does not have a description
               emails:
                 type: array
+                x-go-type: pq.StringArray
                 items:
                   type: string
                   format: email
+                  x-go-type: string
                   description: >-
                     Exact email address or the email address pattern for which
                     the invitation is valid , null means the invitation is valid
@@ -64479,6 +64498,7 @@ components:
                   string means the invitation does not have a quota
               acceptedBy:
                 type: array
+                x-go-type: pq.StringArray
                 items:
                   type: string
                 description: >-
@@ -64490,6 +64510,7 @@ components:
                   json: accepted_by
               roles:
                 type: array
+                x-go-type: pq.StringArray
                 items:
                   type: string
                   description: >-
@@ -64498,6 +64519,7 @@ components:
                     any roles
               teams:
                 type: array
+                x-go-type: pq.StringArray
                 items:
                   type: string
                   description: >-
@@ -64537,14 +64559,15 @@ components:
                 x-oapi-codegen-extra-tags:
                   db: deleted_at
                   json: deleted_at
+            x-go-type: Invitation
           description: List of invitations
           x-oapi-codegen-extra-tags:
             json: data
-        TotalCount:
+        Total:
           type: integer
           description: Total number of invitations available
           x-oapi-codegen-extra-tags:
-            json: total_count
+            json: total
     invitation_InvitationStatus:
       type: string
       enum:
@@ -64559,6 +64582,7 @@ components:
       required:
         - id
         - default
+        - ownerId
         - name
         - description
         - emails
@@ -64574,11 +64598,27 @@ components:
         - deletedAt
       properties:
         id:
-          ref: '#/components/schemas/uuid'
           x-go-name: ID
           description: >-
             Unique identifier for the invitation , is also used as the
             invitation code
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        ownerId:
+          description: >-
+            ID of the user who created the invitation, this is used to track who
+            created the invitation and can be used for auditing purposes
+          x-oapi-codegen-extra-tags:
+            db: owner_id
+            json: owner_id
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
         isDefault:
           type: boolean
           description: >-
@@ -64602,9 +64642,11 @@ components:
             means the invitation does not have a description
         emails:
           type: array
+          x-go-type: pq.StringArray
           items:
             type: string
             format: email
+            x-go-type: string
             description: >-
               Exact email address or the email address pattern for which the
               invitation is valid , null means the invitation is valid for all
@@ -64632,6 +64674,7 @@ components:
             invitation does not have a quota
         acceptedBy:
           type: array
+          x-go-type: pq.StringArray
           items:
             type: string
           description: >-
@@ -64642,6 +64685,7 @@ components:
             json: accepted_by
         roles:
           type: array
+          x-go-type: pq.StringArray
           items:
             type: string
             description: >-
@@ -64649,6 +64693,7 @@ components:
               or empty string means the invitation does not specify any roles
         teams:
           type: array
+          x-go-type: pq.StringArray
           items:
             type: string
             description: >-
