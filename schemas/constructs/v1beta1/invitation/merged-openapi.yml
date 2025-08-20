@@ -97,6 +97,7 @@
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -324,6 +325,7 @@
                   "emails": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-import": "github.com/lib/pq",
                     "items": {
                       "type": "string",
                       "format": "email",
@@ -487,6 +489,7 @@
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -680,6 +683,7 @@
                           "emails": {
                             "type": "array",
                             "x-go-type": "pq.StringArray",
+                            "x-go-import": "github.com/lib/pq",
                             "items": {
                               "type": "string",
                               "format": "email",
@@ -876,6 +880,7 @@
                   "emails": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-import": "github.com/lib/pq",
                     "items": {
                       "type": "string",
                       "format": "email",
@@ -1039,6 +1044,7 @@
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -1234,6 +1240,7 @@
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -1456,6 +1463,7 @@
                 "emails": {
                   "type": "array",
                   "x-go-type": "pq.StringArray",
+                  "x-go-import": "github.com/lib/pq",
                   "items": {
                     "type": "string",
                     "format": "email",
@@ -1634,6 +1642,7 @@
           "emails": {
             "type": "array",
             "x-go-type": "pq.StringArray",
+            "x-go-import": "github.com/lib/pq",
             "items": {
               "type": "string",
               "format": "email",

@@ -102,6 +102,7 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -329,6 +330,7 @@ const schema = {
                   "emails": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-import": "github.com/lib/pq",
                     "items": {
                       "type": "string",
                       "format": "email",
@@ -492,6 +494,7 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -685,6 +688,7 @@ const schema = {
                           "emails": {
                             "type": "array",
                             "x-go-type": "pq.StringArray",
+                            "x-go-import": "github.com/lib/pq",
                             "items": {
                               "type": "string",
                               "format": "email",
@@ -881,6 +885,7 @@ const schema = {
                   "emails": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-import": "github.com/lib/pq",
                     "items": {
                       "type": "string",
                       "format": "email",
@@ -1044,6 +1049,7 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -1239,6 +1245,7 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-import": "github.com/lib/pq",
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -1461,6 +1468,7 @@ const schema = {
                 "emails": {
                   "type": "array",
                   "x-go-type": "pq.StringArray",
+                  "x-go-import": "github.com/lib/pq",
                   "items": {
                     "type": "string",
                     "format": "email",
@@ -1639,6 +1647,7 @@ const schema = {
           "emails": {
             "type": "array",
             "x-go-type": "pq.StringArray",
+            "x-go-import": "github.com/lib/pq",
             "items": {
               "type": "string",
               "format": "email",
