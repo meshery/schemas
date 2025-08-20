@@ -1412,8 +1412,7 @@ components:
 
     CurriculaRegistrationsResponse:
       type: object
-      description: 
-        This report provides a detailed view of every content registration across your academy. Use it to track individual progress, analyze enrollment patterns, and manage your learner base. You can filter and customize the view using the icons on the top-right.
+      description: "This report provides a detailed view of every content registration across your academy. Use it to track individual progress, analyze enrollment patterns, and manage your learner base. You can filter and customize the view using the icons on the top-right."
 
       required:
         - data
@@ -1465,7 +1464,7 @@ components:
               description: "Total number of available challenges."
         learner_registration:
           type: object
-          description: "This chart shows the distribution of learners by their current status. A high ratio of Registered/Failed/Withdrawn to Completed may indicate that your content is challenging or has engagement issues."
+          description: "This chart shows the distribution of learners by their current status. A high ratio of non-completed statuses (i.e., Registered, Failed, and Withdrawn) relative to the 'Completed' status may indicate that your content is challenging or has engagement issues."
           properties:
             registered:
               type: integer
