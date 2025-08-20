@@ -810,12 +810,7 @@ components:
             - completed
             - failed
             - withdrawn
-          description: |
-            Status of the user's academy content registration:
-            - registered: The user has successfully enrolled in the content but has not completed it.
-            - completed: The user has successfully passed all the necessary assessments.
-            - failed: The user has attempted to complete the content but did not meet the passing criteria.
-            - withdrawn: The user has voluntarily unenrolled or has been removed from the content.
+          description: "Status of the user's academy content registration:\n- registered: Learners who are 'in-progress' and have not yet finished the content.\n- completed: Learners who have successfully finished the content.\n- failed: Learners who have attempted to complete the content but did not meet the passing criteria.\n- withdrawn: Learners who have unenrolled from the content."
           x-oapi-codegen-extra-tags:
             db: "status"
 
@@ -1434,3 +1429,4 @@ components:
           type: integer
         page:
           type: integer
+
