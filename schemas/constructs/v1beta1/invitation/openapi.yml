@@ -9,7 +9,7 @@ tags:
     description: Operations related to invitation
 paths:
 
-  /api/organizations/invitations/{id}:
+  /api/organizations/invitations/{invitationId}:
 
     get:
       x-internal: ["cloud"]
@@ -18,18 +18,31 @@ paths:
         - Invitation
       summary: Get an invitation by ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The ID of the invitation to retrieve
-          schema:
-            type: string
+        - $ref: "#/components/parameters/invitation_id"
       responses:
         "200":
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Invitation"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      x-internal: ["cloud"]
+      operationId: deleteInvitation
+      tags:
+        - Invitation
+      summary: Delete an invitation by ID
+      parameters:
+        - $ref: "#/components/parameters/invitation_id"
+      responses:
+        "204":
+          description: Invitation deleted successfully
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -44,12 +57,7 @@ paths:
         - Invitation
       summary: Update an existing invitation
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The ID of the invitation to update
-          schema:
-            type: string
+        - $ref: "#/components/parameters/invitation_id"
       requestBody:
         content:
           application/json:
@@ -113,6 +121,28 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /api/organizations/invitations/{invitationId}/accept:
+    post:
+      x-internal: ["cloud"]
+      operationId: acceptInvitation
+      tags:
+        - Invitation
+      summary: Accept an invitation by ID
+      parameters:
+        - $ref: "#/components/parameters/invitation_id"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invitation"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   parameters:
     organization_id:
@@ -120,6 +150,13 @@ components:
       in: path
       required: true
       description: The ID of the organization
+      schema:
+        type: string
+    invitation_id:
+      name: invitationId
+      in: path
+      required: true
+      description: The ID of the invitation
       schema:
         type: string
 
@@ -138,10 +175,10 @@ components:
     InvitationsPage:
       type: object
       required:
-        - Data
-        - Total
+        - data
+        - total
       properties:
-        Data:
+        data:
           type: array
           items:
             $ref: "#/components/schemas/Invitation"
@@ -150,7 +187,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: "data"
 
-        Total:
+        total:
           type: integer
           description: Total number of invitations available
 
@@ -172,20 +209,20 @@ components:
       required:
         - id
         - default
-        - ownerId
+        - owner_id
         - name
         - description
         - emails
-        - orgId
-        - expiresAt
+        - org_id
+        - expires_at
         - quota
-        - acceptedBy
+        - accepted_by
         - status
         - roles
         - teams
-        - createdAt
-        - updatedAt
-        - deletedAt
+        - created_at
+        - updated_at
+        - deleted_at
       properties:
         id:
 
@@ -193,7 +230,7 @@ components:
           x-go-name: ID
           description: Unique identifier for the invitation , is also used as the invitation code
 
-        ownerId:
+        owner_id:
 
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
           description: "ID of the user who created the invitation,
@@ -203,7 +240,7 @@ components:
             db: "owner_id"
             json: "owner_id"
 
-        isDefault:
+        is_default:
           type: boolean
           description: "Indicates whether the invitation is a default invitation (open invite),
                         which can be used to assign users when signing up from fqdn or custom domain,
@@ -232,14 +269,14 @@ components:
             description: "Exact email address or the email address pattern for which the invitation is valid ,
                           null means the invitation is valid for all email addresses"
 
-        orgId:
+        org_id:
           type: string
           description: ID of the organization to which the user is invited
           x-oapi-codegen-extra-tags:
             db: "org_id"
             json: "org_id"
 
-        expiresAt:
+        expires_at:
           type: string
           format: date-time
           description: Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
@@ -252,7 +289,7 @@ components:
           description: "Quota for the invitation, which can be used to limit the number of users that can accept the invitation,
                         null or empty string means the invitation does not have a quota"
 
-        acceptedBy:
+        accepted_by:
           type: array
 
           x-go-type: "pq.StringArray"
@@ -286,7 +323,7 @@ components:
           $ref: "#/components/schemas/InvitationStatus"
           x-go-type: "InvitationStatus"
 
-        createdAt:
+        created_at:
           type: string
           format: date-time
           description: Timestamp when the invitation was created
@@ -294,7 +331,7 @@ components:
             db: "created_at"
             json: "created_at"
 
-        updatedAt:
+        updated_at:
           type: string
           format: date-time
           description: Timestamp when the invitation was last updated
@@ -302,7 +339,7 @@ components:
             db: "updated_at"
             json: "updated_at"
 
-        deletedAt:
+        deleted_at:
           type: string
           format: date-time
           x-go-type : "core.NullTime"
