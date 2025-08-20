@@ -102,7 +102,9 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
-                      "x-go-import": "github.com/lib/pq",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -134,6 +136,9 @@ const schema = {
                     "accepted_by": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string"
                       },
@@ -146,6 +151,9 @@ const schema = {
                     "roles": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -154,6 +162,9 @@ const schema = {
                     "teams": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -330,7 +341,9 @@ const schema = {
                   "emails": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
-                    "x-go-import": "github.com/lib/pq",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string",
                       "format": "email",
@@ -362,6 +375,9 @@ const schema = {
                   "accepted_by": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string"
                     },
@@ -374,6 +390,9 @@ const schema = {
                   "roles": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string",
                       "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -382,6 +401,9 @@ const schema = {
                   "teams": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string",
                       "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -494,7 +516,9 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
-                      "x-go-import": "github.com/lib/pq",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -526,6 +550,9 @@ const schema = {
                     "accepted_by": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string"
                       },
@@ -538,6 +565,9 @@ const schema = {
                     "roles": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -546,6 +576,9 @@ const schema = {
                     "teams": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -688,7 +721,9 @@ const schema = {
                           "emails": {
                             "type": "array",
                             "x-go-type": "pq.StringArray",
-                            "x-go-import": "github.com/lib/pq",
+                            "x-go-type-import": {
+                              "path": "github.com/lib/pq"
+                            },
                             "items": {
                               "type": "string",
                               "format": "email",
@@ -720,6 +755,9 @@ const schema = {
                           "accepted_by": {
                             "type": "array",
                             "x-go-type": "pq.StringArray",
+                            "x-go-type-import": {
+                              "path": "github.com/lib/pq"
+                            },
                             "items": {
                               "type": "string"
                             },
@@ -732,6 +770,9 @@ const schema = {
                           "roles": {
                             "type": "array",
                             "x-go-type": "pq.StringArray",
+                            "x-go-type-import": {
+                              "path": "github.com/lib/pq"
+                            },
                             "items": {
                               "type": "string",
                               "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -740,6 +781,9 @@ const schema = {
                           "teams": {
                             "type": "array",
                             "x-go-type": "pq.StringArray",
+                            "x-go-type-import": {
+                              "path": "github.com/lib/pq"
+                            },
                             "items": {
                               "type": "string",
                               "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -885,7 +929,9 @@ const schema = {
                   "emails": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
-                    "x-go-import": "github.com/lib/pq",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string",
                       "format": "email",
@@ -917,6 +963,9 @@ const schema = {
                   "accepted_by": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string"
                     },
@@ -929,6 +978,9 @@ const schema = {
                   "roles": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string",
                       "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -937,6 +989,9 @@ const schema = {
                   "teams": {
                     "type": "array",
                     "x-go-type": "pq.StringArray",
+                    "x-go-type-import": {
+                      "path": "github.com/lib/pq"
+                    },
                     "items": {
                       "type": "string",
                       "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -1049,7 +1104,9 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
-                      "x-go-import": "github.com/lib/pq",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -1081,6 +1138,9 @@ const schema = {
                     "accepted_by": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string"
                       },
@@ -1093,6 +1153,9 @@ const schema = {
                     "roles": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -1101,6 +1164,9 @@ const schema = {
                     "teams": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -1245,7 +1311,9 @@ const schema = {
                     "emails": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
-                      "x-go-import": "github.com/lib/pq",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "format": "email",
@@ -1277,6 +1345,9 @@ const schema = {
                     "accepted_by": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string"
                       },
@@ -1289,6 +1360,9 @@ const schema = {
                     "roles": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -1297,6 +1371,9 @@ const schema = {
                     "teams": {
                       "type": "array",
                       "x-go-type": "pq.StringArray",
+                      "x-go-type-import": {
+                        "path": "github.com/lib/pq"
+                      },
                       "items": {
                         "type": "string",
                         "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -1468,7 +1545,9 @@ const schema = {
                 "emails": {
                   "type": "array",
                   "x-go-type": "pq.StringArray",
-                  "x-go-import": "github.com/lib/pq",
+                  "x-go-type-import": {
+                    "path": "github.com/lib/pq"
+                  },
                   "items": {
                     "type": "string",
                     "format": "email",
@@ -1500,6 +1579,9 @@ const schema = {
                 "accepted_by": {
                   "type": "array",
                   "x-go-type": "pq.StringArray",
+                  "x-go-type-import": {
+                    "path": "github.com/lib/pq"
+                  },
                   "items": {
                     "type": "string"
                   },
@@ -1512,6 +1594,9 @@ const schema = {
                 "roles": {
                   "type": "array",
                   "x-go-type": "pq.StringArray",
+                  "x-go-type-import": {
+                    "path": "github.com/lib/pq"
+                  },
                   "items": {
                     "type": "string",
                     "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -1520,6 +1605,9 @@ const schema = {
                 "teams": {
                   "type": "array",
                   "x-go-type": "pq.StringArray",
+                  "x-go-type-import": {
+                    "path": "github.com/lib/pq"
+                  },
                   "items": {
                     "type": "string",
                     "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
@@ -1647,7 +1735,9 @@ const schema = {
           "emails": {
             "type": "array",
             "x-go-type": "pq.StringArray",
-            "x-go-import": "github.com/lib/pq",
+            "x-go-type-import": {
+              "path": "github.com/lib/pq"
+            },
             "items": {
               "type": "string",
               "format": "email",
@@ -1679,6 +1769,9 @@ const schema = {
           "accepted_by": {
             "type": "array",
             "x-go-type": "pq.StringArray",
+            "x-go-type-import": {
+              "path": "github.com/lib/pq"
+            },
             "items": {
               "type": "string"
             },
@@ -1691,6 +1784,9 @@ const schema = {
           "roles": {
             "type": "array",
             "x-go-type": "pq.StringArray",
+            "x-go-type-import": {
+              "path": "github.com/lib/pq"
+            },
             "items": {
               "type": "string",
               "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
@@ -1699,6 +1795,9 @@ const schema = {
           "teams": {
             "type": "array",
             "x-go-type": "pq.StringArray",
+            "x-go-type-import": {
+              "path": "github.com/lib/pq"
+            },
             "items": {
               "type": "string",
               "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
