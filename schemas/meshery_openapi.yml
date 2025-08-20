@@ -5,17 +5,6 @@ info:
   contact:
     email: maintainers@meshery.io
   version: v0.6.394
-servers:
-  - url: https://cloud.meshery.io
-    description: Meshery Cloud production server URL
-  - url: https://staging-cloud.meshery.io
-    description: Meshery Cloud staging server URL
-  - url: http://localhost:9876
-    description: >
-      Meshery Cloud development server URL (controlled via PORT environment
-      variable)
-  - url: http://localhost:8080
-    description: Local development server
 tags:
   - name: design_other
     x-displayName: other
@@ -57,6 +46,9 @@ tags:
     x-displayName: Academy
   - name: Academy_API_other
     x-displayName: other
+  - name: invitation_Invitation
+    description: Operations related to invitation
+    x-displayName: Invitation
 paths:
   /api/pattern/import:
     post:
@@ -60879,9 +60871,37 @@ components:
                   x-go-type: Certificate
                   type: object
                   required:
+                    - id
+                    - org_id
                     - title
                     - description
+                    - issuing_authorities
+                    - issued_date
+                    - recipient_id
+                    - recipient_name
                   properties:
+                    id:
+                      type: string
+                      description: Unique identifier for the certificate
+                      example: 1234567890abcdef
+                      x-go-name: ID
+                    org_id:
+                      description: UUID of the organization that issued the certificate
+                      type: string
+                      format: uuid
+                      x-go-type: uuid.UUID
+                      x-go-type-import:
+                        path: github.com/gofrs/uuid
+                    recipient_id:
+                      type: string
+                      description: ID of the recipient (user) who received the certificate
+                      example: 1234567890abcdef
+                    recipient_name:
+                      type: string
+                      description: >-
+                        Name of the recipient (user) who received the
+                        certificate
+                      example: John Doe
                     title:
                       type: string
                       description: Title of the certificate
@@ -60892,6 +60912,43 @@ components:
                       example: >-
                         Awarded for successfully completing the Kubernetes
                         Expert course
+                    issuing_authorities:
+                      type: array
+                      items:
+                        x-go-type: CertificateIssuingAuthority
+                        type: object
+                        required:
+                          - name
+                          - url
+                        properties:
+                          name:
+                            type: string
+                            description: Name of the issuing authority
+                            example: Cloud Native Foundation
+                          role:
+                            type: string
+                            description: Role of the issuing authority
+                            example: COO
+                          signature_url:
+                            type: string
+                            format: uri
+                            description: >-
+                              URL to the signature image of the issuing
+                              authority should be a publicly accessible URL and
+                              transparent PNG or SVG format
+                            example: >-
+                              http://localhost:9876/signatures/cloud-native-foundation.png
+                      description: List of issuing authorities for the certificate
+                    issued_date:
+                      type: string
+                      format: date-time
+                      description: Date when the certificate was issued
+                      example: '2023-10-01T12:00:00Z'
+                    expiration_date:
+                      type: string
+                      format: date-time
+                      description: Date when the certificate expires (optional)
+                      example: '2025-10-01T12:00:00Z'
                 children:
                   type: array
                   description: List of children items in the top-level curricula
@@ -61143,9 +61200,39 @@ components:
                       x-go-type: Certificate
                       type: object
                       required:
+                        - id
+                        - org_id
                         - title
                         - description
+                        - issuing_authorities
+                        - issued_date
+                        - recipient_id
+                        - recipient_name
                       properties:
+                        id:
+                          type: string
+                          description: Unique identifier for the certificate
+                          example: 1234567890abcdef
+                          x-go-name: ID
+                        org_id:
+                          description: UUID of the organization that issued the certificate
+                          type: string
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                        recipient_id:
+                          type: string
+                          description: >-
+                            ID of the recipient (user) who received the
+                            certificate
+                          example: 1234567890abcdef
+                        recipient_name:
+                          type: string
+                          description: >-
+                            Name of the recipient (user) who received the
+                            certificate
+                          example: John Doe
                         title:
                           type: string
                           description: Title of the certificate
@@ -61156,6 +61243,43 @@ components:
                           example: >-
                             Awarded for successfully completing the Kubernetes
                             Expert course
+                        issuing_authorities:
+                          type: array
+                          items:
+                            x-go-type: CertificateIssuingAuthority
+                            type: object
+                            required:
+                              - name
+                              - url
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the issuing authority
+                                example: Cloud Native Foundation
+                              role:
+                                type: string
+                                description: Role of the issuing authority
+                                example: COO
+                              signature_url:
+                                type: string
+                                format: uri
+                                description: >-
+                                  URL to the signature image of the issuing
+                                  authority should be a publicly accessible URL
+                                  and transparent PNG or SVG format
+                                example: >-
+                                  http://localhost:9876/signatures/cloud-native-foundation.png
+                          description: List of issuing authorities for the certificate
+                        issued_date:
+                          type: string
+                          format: date-time
+                          description: Date when the certificate was issued
+                          example: '2023-10-01T12:00:00Z'
+                        expiration_date:
+                          type: string
+                          format: date-time
+                          description: Date when the certificate expires (optional)
+                          example: '2025-10-01T12:00:00Z'
                     children:
                       type: array
                       description: List of children items in the top-level curricula
@@ -61426,9 +61550,41 @@ components:
                         x-go-type: Certificate
                         type: object
                         required:
+                          - id
+                          - org_id
                           - title
                           - description
+                          - issuing_authorities
+                          - issued_date
+                          - recipient_id
+                          - recipient_name
                         properties:
+                          id:
+                            type: string
+                            description: Unique identifier for the certificate
+                            example: 1234567890abcdef
+                            x-go-name: ID
+                          org_id:
+                            description: >-
+                              UUID of the organization that issued the
+                              certificate
+                            type: string
+                            format: uuid
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
+                          recipient_id:
+                            type: string
+                            description: >-
+                              ID of the recipient (user) who received the
+                              certificate
+                            example: 1234567890abcdef
+                          recipient_name:
+                            type: string
+                            description: >-
+                              Name of the recipient (user) who received the
+                              certificate
+                            example: John Doe
                           title:
                             type: string
                             description: Title of the certificate
@@ -61439,6 +61595,43 @@ components:
                             example: >-
                               Awarded for successfully completing the Kubernetes
                               Expert course
+                          issuing_authorities:
+                            type: array
+                            items:
+                              x-go-type: CertificateIssuingAuthority
+                              type: object
+                              required:
+                                - name
+                                - url
+                              properties:
+                                name:
+                                  type: string
+                                  description: Name of the issuing authority
+                                  example: Cloud Native Foundation
+                                role:
+                                  type: string
+                                  description: Role of the issuing authority
+                                  example: COO
+                                signature_url:
+                                  type: string
+                                  format: uri
+                                  description: >-
+                                    URL to the signature image of the issuing
+                                    authority should be a publicly accessible
+                                    URL and transparent PNG or SVG format
+                                  example: >-
+                                    http://localhost:9876/signatures/cloud-native-foundation.png
+                            description: List of issuing authorities for the certificate
+                          issued_date:
+                            type: string
+                            format: date-time
+                            description: Date when the certificate was issued
+                            example: '2023-10-01T12:00:00Z'
+                          expiration_date:
+                            type: string
+                            format: date-time
+                            description: Date when the certificate expires (optional)
+                            example: '2025-10-01T12:00:00Z'
                       children:
                         type: array
                         description: List of children items in the top-level curricula
@@ -61708,9 +61901,41 @@ components:
                             x-go-type: Certificate
                             type: object
                             required:
+                              - id
+                              - org_id
                               - title
                               - description
+                              - issuing_authorities
+                              - issued_date
+                              - recipient_id
+                              - recipient_name
                             properties:
+                              id:
+                                type: string
+                                description: Unique identifier for the certificate
+                                example: 1234567890abcdef
+                                x-go-name: ID
+                              org_id:
+                                description: >-
+                                  UUID of the organization that issued the
+                                  certificate
+                                type: string
+                                format: uuid
+                                x-go-type: uuid.UUID
+                                x-go-type-import:
+                                  path: github.com/gofrs/uuid
+                              recipient_id:
+                                type: string
+                                description: >-
+                                  ID of the recipient (user) who received the
+                                  certificate
+                                example: 1234567890abcdef
+                              recipient_name:
+                                type: string
+                                description: >-
+                                  Name of the recipient (user) who received the
+                                  certificate
+                                example: John Doe
                               title:
                                 type: string
                                 description: Title of the certificate
@@ -61721,6 +61946,46 @@ components:
                                 example: >-
                                   Awarded for successfully completing the
                                   Kubernetes Expert course
+                              issuing_authorities:
+                                type: array
+                                items:
+                                  x-go-type: CertificateIssuingAuthority
+                                  type: object
+                                  required:
+                                    - name
+                                    - url
+                                  properties:
+                                    name:
+                                      type: string
+                                      description: Name of the issuing authority
+                                      example: Cloud Native Foundation
+                                    role:
+                                      type: string
+                                      description: Role of the issuing authority
+                                      example: COO
+                                    signature_url:
+                                      type: string
+                                      format: uri
+                                      description: >-
+                                        URL to the signature image of the
+                                        issuing authority should be a publicly
+                                        accessible URL and transparent PNG or
+                                        SVG format
+                                      example: >-
+                                        http://localhost:9876/signatures/cloud-native-foundation.png
+                                description: >-
+                                  List of issuing authorities for the
+                                  certificate
+                              issued_date:
+                                type: string
+                                format: date-time
+                                description: Date when the certificate was issued
+                                example: '2023-10-01T12:00:00Z'
+                              expiration_date:
+                                type: string
+                                format: date-time
+                                description: Date when the certificate expires (optional)
+                                example: '2025-10-01T12:00:00Z'
                           children:
                             type: array
                             description: List of children items in the top-level curricula
@@ -61873,9 +62138,35 @@ components:
           x-go-type: Certificate
           type: object
           required:
+            - id
+            - org_id
             - title
             - description
+            - issuing_authorities
+            - issued_date
+            - recipient_id
+            - recipient_name
           properties:
+            id:
+              type: string
+              description: Unique identifier for the certificate
+              example: 1234567890abcdef
+              x-go-name: ID
+            org_id:
+              description: UUID of the organization that issued the certificate
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            recipient_id:
+              type: string
+              description: ID of the recipient (user) who received the certificate
+              example: 1234567890abcdef
+            recipient_name:
+              type: string
+              description: Name of the recipient (user) who received the certificate
+              example: John Doe
             title:
               type: string
               description: Title of the certificate
@@ -61884,6 +62175,43 @@ components:
               type: string
               description: Description of the certificate
               example: Awarded for successfully completing the Kubernetes Expert course
+            issuing_authorities:
+              type: array
+              items:
+                x-go-type: CertificateIssuingAuthority
+                type: object
+                required:
+                  - name
+                  - url
+                properties:
+                  name:
+                    type: string
+                    description: Name of the issuing authority
+                    example: Cloud Native Foundation
+                  role:
+                    type: string
+                    description: Role of the issuing authority
+                    example: COO
+                  signature_url:
+                    type: string
+                    format: uri
+                    description: >-
+                      URL to the signature image of the issuing authority should
+                      be a publicly accessible URL and transparent PNG or SVG
+                      format
+                    example: >-
+                      http://localhost:9876/signatures/cloud-native-foundation.png
+              description: List of issuing authorities for the certificate
+            issued_date:
+              type: string
+              format: date-time
+              description: Date when the certificate was issued
+              example: '2023-10-01T12:00:00Z'
+            expiration_date:
+              type: string
+              format: date-time
+              description: Date when the certificate expires (optional)
+              example: '2025-10-01T12:00:00Z'
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -62011,9 +62339,35 @@ components:
           x-go-type: Certificate
           type: object
           required:
+            - id
+            - org_id
             - title
             - description
+            - issuing_authorities
+            - issued_date
+            - recipient_id
+            - recipient_name
           properties:
+            id:
+              type: string
+              description: Unique identifier for the certificate
+              example: 1234567890abcdef
+              x-go-name: ID
+            org_id:
+              description: UUID of the organization that issued the certificate
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            recipient_id:
+              type: string
+              description: ID of the recipient (user) who received the certificate
+              example: 1234567890abcdef
+            recipient_name:
+              type: string
+              description: Name of the recipient (user) who received the certificate
+              example: John Doe
             title:
               type: string
               description: Title of the certificate
@@ -62022,6 +62376,43 @@ components:
               type: string
               description: Description of the certificate
               example: Awarded for successfully completing the Kubernetes Expert course
+            issuing_authorities:
+              type: array
+              items:
+                x-go-type: CertificateIssuingAuthority
+                type: object
+                required:
+                  - name
+                  - url
+                properties:
+                  name:
+                    type: string
+                    description: Name of the issuing authority
+                    example: Cloud Native Foundation
+                  role:
+                    type: string
+                    description: Role of the issuing authority
+                    example: COO
+                  signature_url:
+                    type: string
+                    format: uri
+                    description: >-
+                      URL to the signature image of the issuing authority should
+                      be a publicly accessible URL and transparent PNG or SVG
+                      format
+                    example: >-
+                      http://localhost:9876/signatures/cloud-native-foundation.png
+              description: List of issuing authorities for the certificate
+            issued_date:
+              type: string
+              format: date-time
+              description: Date when the certificate was issued
+              example: '2023-10-01T12:00:00Z'
+            expiration_date:
+              type: string
+              format: date-time
+              description: Date when the certificate expires (optional)
+              example: '2025-10-01T12:00:00Z'
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -62118,12 +62509,59 @@ components:
           format: uri
           description: URL to the badge SVG image
           example: http://localhost:9876/badges/kubernetes-expert.svg
+    Academy_API_CertificateIssuingAuthority:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          description: Name of the issuing authority
+          example: Cloud Native Foundation
+        role:
+          type: string
+          description: Role of the issuing authority
+          example: COO
+        signature_url:
+          type: string
+          format: uri
+          description: >-
+            URL to the signature image of the issuing authority should be a
+            publicly accessible URL and transparent PNG or SVG format
+          example: http://localhost:9876/signatures/cloud-native-foundation.png
     Academy_API_Certificate:
       type: object
       required:
+        - id
+        - org_id
         - title
         - description
+        - issuing_authorities
+        - issued_date
+        - recipient_id
+        - recipient_name
       properties:
+        id:
+          type: string
+          description: Unique identifier for the certificate
+          example: 1234567890abcdef
+          x-go-name: ID
+        org_id:
+          description: UUID of the organization that issued the certificate
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        recipient_id:
+          type: string
+          description: ID of the recipient (user) who received the certificate
+          example: 1234567890abcdef
+        recipient_name:
+          type: string
+          description: Name of the recipient (user) who received the certificate
+          example: John Doe
         title:
           type: string
           description: Title of the certificate
@@ -62132,6 +62570,41 @@ components:
           type: string
           description: Description of the certificate
           example: Awarded for successfully completing the Kubernetes Expert course
+        issuing_authorities:
+          type: array
+          items:
+            x-go-type: CertificateIssuingAuthority
+            type: object
+            required:
+              - name
+              - url
+            properties:
+              name:
+                type: string
+                description: Name of the issuing authority
+                example: Cloud Native Foundation
+              role:
+                type: string
+                description: Role of the issuing authority
+                example: COO
+              signature_url:
+                type: string
+                format: uri
+                description: >-
+                  URL to the signature image of the issuing authority should be
+                  a publicly accessible URL and transparent PNG or SVG format
+                example: http://localhost:9876/signatures/cloud-native-foundation.png
+          description: List of issuing authorities for the certificate
+        issued_date:
+          type: string
+          format: date-time
+          description: Date when the certificate was issued
+          example: '2023-10-01T12:00:00Z'
+        expiration_date:
+          type: string
+          format: date-time
+          description: Date when the certificate expires (optional)
+          example: '2025-10-01T12:00:00Z'
     Academy_API_CurriculaMetadata:
       type: object
       properties:
@@ -62193,9 +62666,35 @@ components:
           x-go-type: Certificate
           type: object
           required:
+            - id
+            - org_id
             - title
             - description
+            - issuing_authorities
+            - issued_date
+            - recipient_id
+            - recipient_name
           properties:
+            id:
+              type: string
+              description: Unique identifier for the certificate
+              example: 1234567890abcdef
+              x-go-name: ID
+            org_id:
+              description: UUID of the organization that issued the certificate
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            recipient_id:
+              type: string
+              description: ID of the recipient (user) who received the certificate
+              example: 1234567890abcdef
+            recipient_name:
+              type: string
+              description: Name of the recipient (user) who received the certificate
+              example: John Doe
             title:
               type: string
               description: Title of the certificate
@@ -62204,6 +62703,43 @@ components:
               type: string
               description: Description of the certificate
               example: Awarded for successfully completing the Kubernetes Expert course
+            issuing_authorities:
+              type: array
+              items:
+                x-go-type: CertificateIssuingAuthority
+                type: object
+                required:
+                  - name
+                  - url
+                properties:
+                  name:
+                    type: string
+                    description: Name of the issuing authority
+                    example: Cloud Native Foundation
+                  role:
+                    type: string
+                    description: Role of the issuing authority
+                    example: COO
+                  signature_url:
+                    type: string
+                    format: uri
+                    description: >-
+                      URL to the signature image of the issuing authority should
+                      be a publicly accessible URL and transparent PNG or SVG
+                      format
+                    example: >-
+                      http://localhost:9876/signatures/cloud-native-foundation.png
+              description: List of issuing authorities for the certificate
+            issued_date:
+              type: string
+              format: date-time
+              description: Date when the certificate was issued
+              example: '2023-10-01T12:00:00Z'
+            expiration_date:
+              type: string
+              format: date-time
+              description: Date when the certificate expires (optional)
+              example: '2025-10-01T12:00:00Z'
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -62269,6 +62805,16 @@ components:
         - title
         - description
         - permalink
+    Academy_API_AcademyRegistrationStatus:
+      type: string
+      enum:
+        - registered
+        - completed
+        - failed
+        - withdrawn
+      description: Status of the user's course registration
+      x-oapi-codegen-extra-tags:
+        db: status
     Academy_API_AcademyRegistration:
       type: object
       required:
@@ -62279,6 +62825,7 @@ components:
         - created_at
         - updated_at
         - content_id
+        - certificate
         - metadata
       properties:
         id:
@@ -62320,16 +62867,16 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
         status:
-          type: string
-          enum:
-            - registered
-            - in_progress
-            - completed
-            - failed
-            - withdrawn
+          x-go-type: AcademyRegistrationStatus
           description: Status of the user's course registration
           x-oapi-codegen-extra-tags:
             db: status
+          type: string
+          enum:
+            - registered
+            - completed
+            - failed
+            - withdrawn
         updated_at:
           description: When the registration was updated
           x-oapi-codegen-extra-tags:
@@ -62353,6 +62900,87 @@ components:
           format: date-time
           x-go-name: DeletedAt
           x-go-type-skip-optional-pointer: true
+        certificate:
+          x-go-type: core.Map
+          description: Issued certificate for completing the curricula under registration
+          x-oapi-codegen-extra-tags:
+            db: certificate
+          type: object
+          required:
+            - id
+            - org_id
+            - title
+            - description
+            - issuing_authorities
+            - issued_date
+            - recipient_id
+            - recipient_name
+          properties:
+            id:
+              type: string
+              description: Unique identifier for the certificate
+              example: 1234567890abcdef
+              x-go-name: ID
+            org_id:
+              description: UUID of the organization that issued the certificate
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            recipient_id:
+              type: string
+              description: ID of the recipient (user) who received the certificate
+              example: 1234567890abcdef
+            recipient_name:
+              type: string
+              description: Name of the recipient (user) who received the certificate
+              example: John Doe
+            title:
+              type: string
+              description: Title of the certificate
+              example: Kubernetes Expert Certification
+            description:
+              type: string
+              description: Description of the certificate
+              example: Awarded for successfully completing the Kubernetes Expert course
+            issuing_authorities:
+              type: array
+              items:
+                x-go-type: CertificateIssuingAuthority
+                type: object
+                required:
+                  - name
+                  - url
+                properties:
+                  name:
+                    type: string
+                    description: Name of the issuing authority
+                    example: Cloud Native Foundation
+                  role:
+                    type: string
+                    description: Role of the issuing authority
+                    example: COO
+                  signature_url:
+                    type: string
+                    format: uri
+                    description: >-
+                      URL to the signature image of the issuing authority should
+                      be a publicly accessible URL and transparent PNG or SVG
+                      format
+                    example: >-
+                      http://localhost:9876/signatures/cloud-native-foundation.png
+              description: List of issuing authorities for the certificate
+            issued_date:
+              type: string
+              format: date-time
+              description: Date when the certificate was issued
+              example: '2023-10-01T12:00:00Z'
+            expiration_date:
+              type: string
+              format: date-time
+              description: Date when the certificate expires (optional)
+              example: '2025-10-01T12:00:00Z'
         metadata:
           type: object
           description: Additional metadata about the registration
@@ -62435,6 +63063,7 @@ components:
               - created_at
               - updated_at
               - content_id
+              - certificate
               - metadata
             properties:
               id:
@@ -62476,16 +63105,16 @@ components:
                 x-go-type-import:
                   path: github.com/gofrs/uuid
               status:
-                type: string
-                enum:
-                  - registered
-                  - in_progress
-                  - completed
-                  - failed
-                  - withdrawn
+                x-go-type: AcademyRegistrationStatus
                 description: Status of the user's course registration
                 x-oapi-codegen-extra-tags:
                   db: status
+                type: string
+                enum:
+                  - registered
+                  - completed
+                  - failed
+                  - withdrawn
               updated_at:
                 description: When the registration was updated
                 x-oapi-codegen-extra-tags:
@@ -62509,6 +63138,91 @@ components:
                 format: date-time
                 x-go-name: DeletedAt
                 x-go-type-skip-optional-pointer: true
+              certificate:
+                x-go-type: core.Map
+                description: >-
+                  Issued certificate for completing the curricula under
+                  registration
+                x-oapi-codegen-extra-tags:
+                  db: certificate
+                type: object
+                required:
+                  - id
+                  - org_id
+                  - title
+                  - description
+                  - issuing_authorities
+                  - issued_date
+                  - recipient_id
+                  - recipient_name
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier for the certificate
+                    example: 1234567890abcdef
+                    x-go-name: ID
+                  org_id:
+                    description: UUID of the organization that issued the certificate
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  recipient_id:
+                    type: string
+                    description: ID of the recipient (user) who received the certificate
+                    example: 1234567890abcdef
+                  recipient_name:
+                    type: string
+                    description: Name of the recipient (user) who received the certificate
+                    example: John Doe
+                  title:
+                    type: string
+                    description: Title of the certificate
+                    example: Kubernetes Expert Certification
+                  description:
+                    type: string
+                    description: Description of the certificate
+                    example: >-
+                      Awarded for successfully completing the Kubernetes Expert
+                      course
+                  issuing_authorities:
+                    type: array
+                    items:
+                      x-go-type: CertificateIssuingAuthority
+                      type: object
+                      required:
+                        - name
+                        - url
+                      properties:
+                        name:
+                          type: string
+                          description: Name of the issuing authority
+                          example: Cloud Native Foundation
+                        role:
+                          type: string
+                          description: Role of the issuing authority
+                          example: COO
+                        signature_url:
+                          type: string
+                          format: uri
+                          description: >-
+                            URL to the signature image of the issuing authority
+                            should be a publicly accessible URL and transparent
+                            PNG or SVG format
+                          example: >-
+                            http://localhost:9876/signatures/cloud-native-foundation.png
+                    description: List of issuing authorities for the certificate
+                  issued_date:
+                    type: string
+                    format: date-time
+                    description: Date when the certificate was issued
+                    example: '2023-10-01T12:00:00Z'
+                  expiration_date:
+                    type: string
+                    format: date-time
+                    description: Date when the certificate expires (optional)
+                    example: '2025-10-01T12:00:00Z'
               metadata:
                 type: object
                 description: Additional metadata about the registration
@@ -63389,6 +64103,533 @@ components:
           format: date-time
         attempts:
           type: integer
+    Academy_API_UserRegistration:
+      type: object
+      required:
+        - curricula_title
+        - curricula_type
+        - curricula_permalink
+        - registration_id
+        - status
+        - user_id
+        - user_email
+        - user_last_name
+        - user_first_name
+        - user_avatar_url
+        - total_count
+      properties:
+        curricula_title:
+          type: string
+          description: Title of the curricula
+          x-oapi-codegen-extra-tags:
+            db: curricula_title
+        curricula_type:
+          type: string
+          enum:
+            - learning-path
+            - challenge
+            - certification
+          description: Type of the curricula
+          x-go-type: ContentType
+          x-oapi-codegen-extra-tags:
+            db: curricula_type
+        curricula_permalink:
+          type: string
+          description: Permalink of the curricula
+          x-oapi-codegen-extra-tags:
+            db: curricula_permalink
+        registration_id:
+          type: string
+          format: uuid
+          description: Unique ID of the registration
+          x-oapi-codegen-extra-tags:
+            db: registration_id
+        status:
+          description: Registration status
+          x-go-type: AcademyRegistrationStatus
+          x-oapi-codegen-extra-tags:
+            db: status
+          type: string
+          enum:
+            - registered
+            - completed
+            - failed
+            - withdrawn
+        created_at:
+          type: string
+          format: date-time
+          description: When the registration was created
+          x-oapi-codegen-extra-tags:
+            db: created_at
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user
+          x-oapi-codegen-extra-tags:
+            db: user_id
+        user_first_name:
+          type: string
+          description: First name of the user
+          x-oapi-codegen-extra-tags:
+            db: user_first_name
+        user_last_name:
+          type: string
+          description: Last name of the user
+          x-oapi-codegen-extra-tags:
+            db: user_last_name
+        user_email:
+          type: string
+          format: email
+          description: Email of the user
+          x-oapi-codegen-extra-tags:
+            db: user_email
+        user_avatar_url:
+          type: string
+          format: uri
+          description: Avatar URL of the user
+          x-oapi-codegen-extra-tags:
+            db: user_avatar_url
+        total_count:
+          type: integer
+          format: int64
+          description: Total count for pagination
+          x-oapi-codegen-extra-tags:
+            db: total_count
+    Academy_API_CurriculaRegistrationsFilter:
+      type: object
+      required:
+        - pagesize
+        - page
+        - content_type
+        - status
+      properties:
+        pagesize:
+          type: integer
+        page:
+          type: integer
+        content_type:
+          type: array
+          items:
+            type: string
+        status:
+          type: array
+          items:
+            type: string
+    Academy_API_CurriculaRegistrationsResponse:
+      type: object
+      required:
+        - data
+        - total_count
+        - page_size
+        - page
+      properties:
+        data:
+          type: array
+          items:
+            x-go-type: UserRegistration
+            type: object
+            required:
+              - curricula_title
+              - curricula_type
+              - curricula_permalink
+              - registration_id
+              - status
+              - user_id
+              - user_email
+              - user_last_name
+              - user_first_name
+              - user_avatar_url
+              - total_count
+            properties:
+              curricula_title:
+                type: string
+                description: Title of the curricula
+                x-oapi-codegen-extra-tags:
+                  db: curricula_title
+              curricula_type:
+                type: string
+                enum:
+                  - learning-path
+                  - challenge
+                  - certification
+                description: Type of the curricula
+                x-go-type: ContentType
+                x-oapi-codegen-extra-tags:
+                  db: curricula_type
+              curricula_permalink:
+                type: string
+                description: Permalink of the curricula
+                x-oapi-codegen-extra-tags:
+                  db: curricula_permalink
+              registration_id:
+                type: string
+                format: uuid
+                description: Unique ID of the registration
+                x-oapi-codegen-extra-tags:
+                  db: registration_id
+              status:
+                description: Registration status
+                x-go-type: AcademyRegistrationStatus
+                x-oapi-codegen-extra-tags:
+                  db: status
+                type: string
+                enum:
+                  - registered
+                  - completed
+                  - failed
+                  - withdrawn
+              created_at:
+                type: string
+                format: date-time
+                description: When the registration was created
+                x-oapi-codegen-extra-tags:
+                  db: created_at
+              user_id:
+                type: string
+                format: uuid
+                description: ID of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_id
+              user_first_name:
+                type: string
+                description: First name of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_first_name
+              user_last_name:
+                type: string
+                description: Last name of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_last_name
+              user_email:
+                type: string
+                format: email
+                description: Email of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_email
+              user_avatar_url:
+                type: string
+                format: uri
+                description: Avatar URL of the user
+                x-oapi-codegen-extra-tags:
+                  db: user_avatar_url
+              total_count:
+                type: integer
+                format: int64
+                description: Total count for pagination
+                x-oapi-codegen-extra-tags:
+                  db: total_count
+        total_count:
+          type: integer
+          format: int64
+        page_size:
+          type: integer
+        page:
+          type: integer
+    invitation_uuid:
+      type: string
+      format: uuid
+      description: >-
+        A Universally Unique Identifier used to uniquely identify entities in
+        Meshery. The UUID core definition is used across different schemas.
+      x-go-type: uuid.UUID
+      x-go-type-import:
+        path: github.com/gofrs/uuid
+    invitation_InvitationsPage:
+      type: object
+      required:
+        - data
+        - totalCount
+      properties:
+        Data:
+          type: array
+          items:
+            x-go-type: Invitation
+            type: object
+            required:
+              - id
+              - default
+              - name
+              - description
+              - emails
+              - orgId
+              - expiresAt
+              - quota
+              - acceptedBy
+              - status
+              - roles
+              - teams
+              - createdAt
+              - updatedAt
+              - deletedAt
+            properties:
+              id:
+                ref: '#/components/schemas/uuid'
+                x-go-name: ID
+                description: >-
+                  Unique identifier for the invitation , is also used as the
+                  invitation code
+              isDefault:
+                type: boolean
+                description: >-
+                  Indicates whether the invitation is a default invitation (open
+                  invite), which can be used to assign users when signing up
+                  from fqdn or custom domain, a organization can only have one
+                  default invitation
+                x-oapi-codegen-extra-tags:
+                  db: is_default
+                  json: is_default
+              name:
+                type: string
+                description: >-
+                  Name of the invitation, which can be used to identify the
+                  invitation, required and cant be empty string,
+              description:
+                type: string
+                description: >-
+                  Description of the invitation, which can be used to provide
+                  additional information about the invitation, null or empty
+                  string means the invitation does not have a description
+              emails:
+                type: array
+                items:
+                  type: string
+                  format: email
+                  description: >-
+                    Exact email address or the email address pattern for which
+                    the invitation is valid , null means the invitation is valid
+                    for all email addresses
+              orgId:
+                type: string
+                description: ID of the organization to which the user is invited
+                x-oapi-codegen-extra-tags:
+                  db: org_id
+                  json: org_id
+              expiresAt:
+                type: string
+                format: date-time
+                description: >-
+                  Timestamp when the invitation expires, if applicable , null or
+                  empty string means the invitation does not expire
+                x-oapi-codegen-extra-tags:
+                  db: expires_at
+                  json: expires_at
+              quota:
+                type: integer
+                description: >-
+                  Quota for the invitation, which can be used to limit the
+                  number of users that can accept the invitation, null or empty
+                  string means the invitation does not have a quota
+              acceptedBy:
+                type: array
+                items:
+                  type: string
+                description: >-
+                  List of user ids that have already accepted the invitation,
+                  null or empty string means the invitation has not been used
+                  yet
+                x-oapi-codegen-extra-tags:
+                  db: accepted_by
+                  json: accepted_by
+              roles:
+                type: array
+                items:
+                  type: string
+                  description: >-
+                    Roles that the user will have when accepting the invitation,
+                    null or empty string means the invitation does not specify
+                    any roles
+              teams:
+                type: array
+                items:
+                  type: string
+                  description: >-
+                    Teams that the user will be added to when accepting the
+                    invitation, null or empty string means the invitation does
+                    not specify any teams
+              status:
+                type: string
+                x-go-type: InvitationStatus
+                enum:
+                  - enabled
+                  - disabled
+                description: >-
+                  Status of the invitation, where enabled means the invitation
+                  is active and can be used, disabled means the invitation is no
+                  longer valid and is temporarily inactive, disabled invitations
+                  can be re-enabled later.
+              createdAt:
+                type: string
+                format: date-time
+                description: Timestamp when the invitation was created
+                x-oapi-codegen-extra-tags:
+                  db: created_at
+                  json: created_at
+              updatedAt:
+                type: string
+                format: date-time
+                description: Timestamp when the invitation was last updated
+                x-oapi-codegen-extra-tags:
+                  db: updated_at
+                  json: updated_at
+              deletedAt:
+                type: string
+                format: date-time
+                x-go-type: core.NullTime
+                description: Timestamp when the invitation was deleted, if applicable
+                x-oapi-codegen-extra-tags:
+                  db: deleted_at
+                  json: deleted_at
+          description: List of invitations
+          x-oapi-codegen-extra-tags:
+            json: data
+        TotalCount:
+          type: integer
+          description: Total number of invitations available
+          x-oapi-codegen-extra-tags:
+            json: total_count
+    invitation_InvitationStatus:
+      type: string
+      enum:
+        - enabled
+        - disabled
+      description: >-
+        Status of the invitation, where enabled means the invitation is active
+        and can be used, disabled means the invitation is no longer valid and is
+        temporarily inactive, disabled invitations can be re-enabled later.
+    invitation_Invitation:
+      type: object
+      required:
+        - id
+        - default
+        - name
+        - description
+        - emails
+        - orgId
+        - expiresAt
+        - quota
+        - acceptedBy
+        - status
+        - roles
+        - teams
+        - createdAt
+        - updatedAt
+        - deletedAt
+      properties:
+        id:
+          ref: '#/components/schemas/uuid'
+          x-go-name: ID
+          description: >-
+            Unique identifier for the invitation , is also used as the
+            invitation code
+        isDefault:
+          type: boolean
+          description: >-
+            Indicates whether the invitation is a default invitation (open
+            invite), which can be used to assign users when signing up from fqdn
+            or custom domain, a organization can only have one default
+            invitation
+          x-oapi-codegen-extra-tags:
+            db: is_default
+            json: is_default
+        name:
+          type: string
+          description: >-
+            Name of the invitation, which can be used to identify the
+            invitation, required and cant be empty string,
+        description:
+          type: string
+          description: >-
+            Description of the invitation, which can be used to provide
+            additional information about the invitation, null or empty string
+            means the invitation does not have a description
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+            description: >-
+              Exact email address or the email address pattern for which the
+              invitation is valid , null means the invitation is valid for all
+              email addresses
+        orgId:
+          type: string
+          description: ID of the organization to which the user is invited
+          x-oapi-codegen-extra-tags:
+            db: org_id
+            json: org_id
+        expiresAt:
+          type: string
+          format: date-time
+          description: >-
+            Timestamp when the invitation expires, if applicable , null or empty
+            string means the invitation does not expire
+          x-oapi-codegen-extra-tags:
+            db: expires_at
+            json: expires_at
+        quota:
+          type: integer
+          description: >-
+            Quota for the invitation, which can be used to limit the number of
+            users that can accept the invitation, null or empty string means the
+            invitation does not have a quota
+        acceptedBy:
+          type: array
+          items:
+            type: string
+          description: >-
+            List of user ids that have already accepted the invitation, null or
+            empty string means the invitation has not been used yet
+          x-oapi-codegen-extra-tags:
+            db: accepted_by
+            json: accepted_by
+        roles:
+          type: array
+          items:
+            type: string
+            description: >-
+              Roles that the user will have when accepting the invitation, null
+              or empty string means the invitation does not specify any roles
+        teams:
+          type: array
+          items:
+            type: string
+            description: >-
+              Teams that the user will be added to when accepting the
+              invitation, null or empty string means the invitation does not
+              specify any teams
+        status:
+          type: string
+          x-go-type: InvitationStatus
+          enum:
+            - enabled
+            - disabled
+          description: >-
+            Status of the invitation, where enabled means the invitation is
+            active and can be used, disabled means the invitation is no longer
+            valid and is temporarily inactive, disabled invitations can be
+            re-enabled later.
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the invitation was created
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            json: created_at
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the invitation was last updated
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            json: updated_at
+        deletedAt:
+          type: string
+          format: date-time
+          x-go-type: core.NullTime
+          description: Timestamp when the invitation was deleted, if applicable
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
   responses:
     subscription_400:
       description: Invalid request body or request param
@@ -63432,6 +64673,12 @@ components:
         text/plain:
           schema:
             type: string
+    invitation_400:
+      description: Bad Request
+    invitation_401:
+      description: Unauthorized
+    invitation_500:
+      description: Internal Server Error
   parameters:
     subscription_subscriptionId:
       name: subscriptionId
@@ -63518,6 +64765,13 @@ components:
       schema:
         type: string
       required: true
+    invitation_organization_id:
+      name: organizationId
+      in: path
+      required: true
+      description: The ID of the organization
+      schema:
+        type: string
   securitySchemes:
     workspace_jwt:
       type: http
@@ -63659,3 +64913,6 @@ x-tagGroups:
     tags:
       - Academy_API_Academy
       - Academy_API_other
+  - name: invitation
+    tags:
+      - invitation_Invitation
