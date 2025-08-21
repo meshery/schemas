@@ -248,6 +248,8 @@ export type GetSubscriptionsApiResponse = /** status 200 Get subscription respon
       name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
       cadence: "monthly" | "yearly";
       unit: "user" | "free";
+      /** Minimum number of units required for the plan */
+      minimum_units: number;
       /** Price per unit of the plan */
       price_per_unit: number;
       currency: "usd";
@@ -293,6 +295,8 @@ export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse =
         name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
         cadence: "monthly" | "yearly";
         unit: "user" | "free";
+        /** Minimum number of units required for the plan */
+        minimum_units: number;
         /** Price per unit of the plan */
         price_per_unit: number;
         currency: "usd";
@@ -342,6 +346,8 @@ export type GetPlansApiResponse = /** status 200 Plans fetched successfully */ {
   name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
   cadence: "monthly" | "yearly";
   unit: "user" | "free";
+  /** Minimum number of units required for the plan */
+  minimum_units: number;
   /** Price per unit of the plan */
   price_per_unit: number;
   currency: "usd";
@@ -359,6 +365,8 @@ export type GetFeaturesApiResponse = /** status 200 Features fetched successfull
     name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
     cadence: "monthly" | "yearly";
     unit: "user" | "free";
+    /** Minimum number of units required for the plan */
+    minimum_units: number;
     /** Price per unit of the plan */
     price_per_unit: number;
     currency: "usd";
@@ -389,6 +397,8 @@ export type GetFeaturesByOrganizationApiResponse = /** status 200 Features fetch
     name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
     cadence: "monthly" | "yearly";
     unit: "user" | "free";
+    /** Minimum number of units required for the plan */
+    minimum_units: number;
     /** Price per unit of the plan */
     price_per_unit: number;
     currency: "usd";

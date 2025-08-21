@@ -82,6 +82,11 @@ const schema = {
                         "type": "object",
                         "properties": {
                           "id": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id",
+                              "csv": "id"
+                            },
                             "type": "string",
                             "format": "uuid",
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -93,6 +98,11 @@ const schema = {
                           "name": {
                             "type": "string",
                             "x-go-type": "PlanName",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name",
+                              "csv": "name"
+                            },
                             "description": "Name of the plan",
                             "enum": [
                               "Free",
@@ -103,6 +113,11 @@ const schema = {
                           },
                           "cadence": {
                             "x-go-type": "PlanCadence",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "cadence",
+                              "json": "cadence",
+                              "csv": "cadence"
+                            },
                             "type": "string",
                             "enum": [
                               "monthly",
@@ -111,21 +126,42 @@ const schema = {
                           },
                           "unit": {
                             "x-go-type": "PlanUnit",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "unit",
+                              "json": "unit",
+                              "csv": "unit"
+                            },
                             "type": "string",
                             "enum": [
                               "user",
                               "free"
                             ]
                           },
+                          "minimum_units": {
+                            "type": "integer",
+                            "description": "Minimum number of units required for the plan",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "minimum_units",
+                              "json": "minimum_units",
+                              "csv": "minimum_units"
+                            }
+                          },
                           "price_per_unit": {
                             "type": "number",
                             "description": "Price per unit of the plan",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "price_per_unit"
+                              "db": "price_per_unit",
+                              "json": "price_per_unit",
+                              "csv": "price_per_unit"
                             }
                           },
                           "currency": {
                             "x-go-type": "Currency",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "currency",
+                              "json": "currency",
+                              "csv": "currency"
+                            },
                             "type": "string",
                             "enum": [
                               "usd"
@@ -138,6 +174,7 @@ const schema = {
                           "cadence",
                           "unit",
                           "price_per_unit",
+                          "minimum_units",
                           "price_id",
                           "currency"
                         ]
@@ -302,6 +339,11 @@ const schema = {
                         "type": "object",
                         "properties": {
                           "id": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id",
+                              "csv": "id"
+                            },
                             "type": "string",
                             "format": "uuid",
                             "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -313,6 +355,11 @@ const schema = {
                           "name": {
                             "type": "string",
                             "x-go-type": "PlanName",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name",
+                              "csv": "name"
+                            },
                             "description": "Name of the plan",
                             "enum": [
                               "Free",
@@ -323,6 +370,11 @@ const schema = {
                           },
                           "cadence": {
                             "x-go-type": "PlanCadence",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "cadence",
+                              "json": "cadence",
+                              "csv": "cadence"
+                            },
                             "type": "string",
                             "enum": [
                               "monthly",
@@ -331,21 +383,42 @@ const schema = {
                           },
                           "unit": {
                             "x-go-type": "PlanUnit",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "unit",
+                              "json": "unit",
+                              "csv": "unit"
+                            },
                             "type": "string",
                             "enum": [
                               "user",
                               "free"
                             ]
                           },
+                          "minimum_units": {
+                            "type": "integer",
+                            "description": "Minimum number of units required for the plan",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "minimum_units",
+                              "json": "minimum_units",
+                              "csv": "minimum_units"
+                            }
+                          },
                           "price_per_unit": {
                             "type": "number",
                             "description": "Price per unit of the plan",
                             "x-oapi-codegen-extra-tags": {
-                              "db": "price_per_unit"
+                              "db": "price_per_unit",
+                              "json": "price_per_unit",
+                              "csv": "price_per_unit"
                             }
                           },
                           "currency": {
                             "x-go-type": "Currency",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "currency",
+                              "json": "currency",
+                              "csv": "currency"
+                            },
                             "type": "string",
                             "enum": [
                               "usd"
@@ -358,6 +431,7 @@ const schema = {
                           "cadence",
                           "unit",
                           "price_per_unit",
+                          "minimum_units",
                           "price_id",
                           "currency"
                         ]
@@ -510,6 +584,11 @@ const schema = {
               "type": "object",
               "properties": {
                 "id": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "id",
+                    "json": "id",
+                    "csv": "id"
+                  },
                   "type": "string",
                   "format": "uuid",
                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -521,6 +600,11 @@ const schema = {
                 "name": {
                   "type": "string",
                   "x-go-type": "PlanName",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "name",
+                    "json": "name",
+                    "csv": "name"
+                  },
                   "description": "Name of the plan",
                   "enum": [
                     "Free",
@@ -531,6 +615,11 @@ const schema = {
                 },
                 "cadence": {
                   "x-go-type": "PlanCadence",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "cadence",
+                    "json": "cadence",
+                    "csv": "cadence"
+                  },
                   "type": "string",
                   "enum": [
                     "monthly",
@@ -539,21 +628,42 @@ const schema = {
                 },
                 "unit": {
                   "x-go-type": "PlanUnit",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "unit",
+                    "json": "unit",
+                    "csv": "unit"
+                  },
                   "type": "string",
                   "enum": [
                     "user",
                     "free"
                   ]
                 },
+                "minimum_units": {
+                  "type": "integer",
+                  "description": "Minimum number of units required for the plan",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "minimum_units",
+                    "json": "minimum_units",
+                    "csv": "minimum_units"
+                  }
+                },
                 "price_per_unit": {
                   "type": "number",
                   "description": "Price per unit of the plan",
                   "x-oapi-codegen-extra-tags": {
-                    "db": "price_per_unit"
+                    "db": "price_per_unit",
+                    "json": "price_per_unit",
+                    "csv": "price_per_unit"
                   }
                 },
                 "currency": {
                   "x-go-type": "Currency",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "currency",
+                    "json": "currency",
+                    "csv": "currency"
+                  },
                   "type": "string",
                   "enum": [
                     "usd"
@@ -566,6 +676,7 @@ const schema = {
                 "cadence",
                 "unit",
                 "price_per_unit",
+                "minimum_units",
                 "price_id",
                 "currency"
               ]
@@ -672,6 +783,11 @@ const schema = {
             "type": "object",
             "properties": {
               "id": {
+                "x-oapi-codegen-extra-tags": {
+                  "db": "id",
+                  "json": "id",
+                  "csv": "id"
+                },
                 "type": "string",
                 "format": "uuid",
                 "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -683,6 +799,11 @@ const schema = {
               "name": {
                 "type": "string",
                 "x-go-type": "PlanName",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "name",
+                  "json": "name",
+                  "csv": "name"
+                },
                 "description": "Name of the plan",
                 "enum": [
                   "Free",
@@ -693,6 +814,11 @@ const schema = {
               },
               "cadence": {
                 "x-go-type": "PlanCadence",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "cadence",
+                  "json": "cadence",
+                  "csv": "cadence"
+                },
                 "type": "string",
                 "enum": [
                   "monthly",
@@ -701,21 +827,42 @@ const schema = {
               },
               "unit": {
                 "x-go-type": "PlanUnit",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "unit",
+                  "json": "unit",
+                  "csv": "unit"
+                },
                 "type": "string",
                 "enum": [
                   "user",
                   "free"
                 ]
               },
+              "minimum_units": {
+                "type": "integer",
+                "description": "Minimum number of units required for the plan",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "minimum_units",
+                  "json": "minimum_units",
+                  "csv": "minimum_units"
+                }
+              },
               "price_per_unit": {
                 "type": "number",
                 "description": "Price per unit of the plan",
                 "x-oapi-codegen-extra-tags": {
-                  "db": "price_per_unit"
+                  "db": "price_per_unit",
+                  "json": "price_per_unit",
+                  "csv": "price_per_unit"
                 }
               },
               "currency": {
                 "x-go-type": "Currency",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "currency",
+                  "json": "currency",
+                  "csv": "currency"
+                },
                 "type": "string",
                 "enum": [
                   "usd"
@@ -728,6 +875,7 @@ const schema = {
               "cadence",
               "unit",
               "price_per_unit",
+              "minimum_units",
               "price_id",
               "currency"
             ]

@@ -376,6 +376,10 @@ paths:
                           type: object
                           properties:
                             id:
+                              x-oapi-codegen-extra-tags:
+                                db: id
+                                json: id
+                                csv: id
                               type: string
                               format: uuid
                               description: >-
@@ -388,6 +392,10 @@ paths:
                             name:
                               type: string
                               x-go-type: PlanName
+                              x-oapi-codegen-extra-tags:
+                                db: name
+                                json: name
+                                csv: name
                               description: Name of the plan
                               enum:
                                 - Free
@@ -396,23 +404,44 @@ paths:
                                 - Enterprise
                             cadence:
                               x-go-type: PlanCadence
+                              x-oapi-codegen-extra-tags:
+                                db: cadence
+                                json: cadence
+                                csv: cadence
                               type: string
                               enum:
                                 - monthly
                                 - yearly
                             unit:
                               x-go-type: PlanUnit
+                              x-oapi-codegen-extra-tags:
+                                db: unit
+                                json: unit
+                                csv: unit
                               type: string
                               enum:
                                 - user
                                 - free
+                            minimum_units:
+                              type: integer
+                              description: Minimum number of units required for the plan
+                              x-oapi-codegen-extra-tags:
+                                db: minimum_units
+                                json: minimum_units
+                                csv: minimum_units
                             price_per_unit:
                               type: number
                               description: Price per unit of the plan
                               x-oapi-codegen-extra-tags:
                                 db: price_per_unit
+                                json: price_per_unit
+                                csv: price_per_unit
                             currency:
                               x-go-type: Currency
+                              x-oapi-codegen-extra-tags:
+                                db: currency
+                                json: currency
+                                csv: currency
                               type: string
                               enum:
                                 - usd
@@ -422,6 +451,7 @@ paths:
                             - cadence
                             - unit
                             - price_per_unit
+                            - minimum_units
                             - price_id
                             - currency
                         quantity:
@@ -622,6 +652,10 @@ paths:
                           type: object
                           properties:
                             id:
+                              x-oapi-codegen-extra-tags:
+                                db: id
+                                json: id
+                                csv: id
                               type: string
                               format: uuid
                               description: >-
@@ -634,6 +668,10 @@ paths:
                             name:
                               type: string
                               x-go-type: PlanName
+                              x-oapi-codegen-extra-tags:
+                                db: name
+                                json: name
+                                csv: name
                               description: Name of the plan
                               enum:
                                 - Free
@@ -642,23 +680,44 @@ paths:
                                 - Enterprise
                             cadence:
                               x-go-type: PlanCadence
+                              x-oapi-codegen-extra-tags:
+                                db: cadence
+                                json: cadence
+                                csv: cadence
                               type: string
                               enum:
                                 - monthly
                                 - yearly
                             unit:
                               x-go-type: PlanUnit
+                              x-oapi-codegen-extra-tags:
+                                db: unit
+                                json: unit
+                                csv: unit
                               type: string
                               enum:
                                 - user
                                 - free
+                            minimum_units:
+                              type: integer
+                              description: Minimum number of units required for the plan
+                              x-oapi-codegen-extra-tags:
+                                db: minimum_units
+                                json: minimum_units
+                                csv: minimum_units
                             price_per_unit:
                               type: number
                               description: Price per unit of the plan
                               x-oapi-codegen-extra-tags:
                                 db: price_per_unit
+                                json: price_per_unit
+                                csv: price_per_unit
                             currency:
                               x-go-type: Currency
+                              x-oapi-codegen-extra-tags:
+                                db: currency
+                                json: currency
+                                csv: currency
                               type: string
                               enum:
                                 - usd
@@ -668,6 +727,7 @@ paths:
                             - cadence
                             - unit
                             - price_per_unit
+                            - minimum_units
                             - price_id
                             - currency
                         quantity:
@@ -862,6 +922,10 @@ paths:
                   type: object
                   properties:
                     id:
+                      x-oapi-codegen-extra-tags:
+                        db: id
+                        json: id
+                        csv: id
                       type: string
                       format: uuid
                       description: >-
@@ -874,6 +938,10 @@ paths:
                     name:
                       type: string
                       x-go-type: PlanName
+                      x-oapi-codegen-extra-tags:
+                        db: name
+                        json: name
+                        csv: name
                       description: Name of the plan
                       enum:
                         - Free
@@ -882,23 +950,44 @@ paths:
                         - Enterprise
                     cadence:
                       x-go-type: PlanCadence
+                      x-oapi-codegen-extra-tags:
+                        db: cadence
+                        json: cadence
+                        csv: cadence
                       type: string
                       enum:
                         - monthly
                         - yearly
                     unit:
                       x-go-type: PlanUnit
+                      x-oapi-codegen-extra-tags:
+                        db: unit
+                        json: unit
+                        csv: unit
                       type: string
                       enum:
                         - user
                         - free
+                    minimum_units:
+                      type: integer
+                      description: Minimum number of units required for the plan
+                      x-oapi-codegen-extra-tags:
+                        db: minimum_units
+                        json: minimum_units
+                        csv: minimum_units
                     price_per_unit:
                       type: number
                       description: Price per unit of the plan
                       x-oapi-codegen-extra-tags:
                         db: price_per_unit
+                        json: price_per_unit
+                        csv: price_per_unit
                     currency:
                       x-go-type: Currency
+                      x-oapi-codegen-extra-tags:
+                        db: currency
+                        json: currency
+                        csv: currency
                       type: string
                       enum:
                         - usd
@@ -908,6 +997,7 @@ paths:
                     - cadence
                     - unit
                     - price_per_unit
+                    - minimum_units
                     - price_id
                     - currency
         '400':
@@ -975,6 +1065,10 @@ paths:
                       type: object
                       properties:
                         id:
+                          x-oapi-codegen-extra-tags:
+                            db: id
+                            json: id
+                            csv: id
                           type: string
                           format: uuid
                           description: >-
@@ -987,6 +1081,10 @@ paths:
                         name:
                           type: string
                           x-go-type: PlanName
+                          x-oapi-codegen-extra-tags:
+                            db: name
+                            json: name
+                            csv: name
                           description: Name of the plan
                           enum:
                             - Free
@@ -995,23 +1093,44 @@ paths:
                             - Enterprise
                         cadence:
                           x-go-type: PlanCadence
+                          x-oapi-codegen-extra-tags:
+                            db: cadence
+                            json: cadence
+                            csv: cadence
                           type: string
                           enum:
                             - monthly
                             - yearly
                         unit:
                           x-go-type: PlanUnit
+                          x-oapi-codegen-extra-tags:
+                            db: unit
+                            json: unit
+                            csv: unit
                           type: string
                           enum:
                             - user
                             - free
+                        minimum_units:
+                          type: integer
+                          description: Minimum number of units required for the plan
+                          x-oapi-codegen-extra-tags:
+                            db: minimum_units
+                            json: minimum_units
+                            csv: minimum_units
                         price_per_unit:
                           type: number
                           description: Price per unit of the plan
                           x-oapi-codegen-extra-tags:
                             db: price_per_unit
+                            json: price_per_unit
+                            csv: price_per_unit
                         currency:
                           x-go-type: Currency
+                          x-oapi-codegen-extra-tags:
+                            db: currency
+                            json: currency
+                            csv: currency
                           type: string
                           enum:
                             - usd
@@ -1021,6 +1140,7 @@ paths:
                         - cadence
                         - unit
                         - price_per_unit
+                        - minimum_units
                         - price_id
                         - currency
                     name:
@@ -1146,6 +1266,10 @@ paths:
                       type: object
                       properties:
                         id:
+                          x-oapi-codegen-extra-tags:
+                            db: id
+                            json: id
+                            csv: id
                           type: string
                           format: uuid
                           description: >-
@@ -1158,6 +1282,10 @@ paths:
                         name:
                           type: string
                           x-go-type: PlanName
+                          x-oapi-codegen-extra-tags:
+                            db: name
+                            json: name
+                            csv: name
                           description: Name of the plan
                           enum:
                             - Free
@@ -1166,23 +1294,44 @@ paths:
                             - Enterprise
                         cadence:
                           x-go-type: PlanCadence
+                          x-oapi-codegen-extra-tags:
+                            db: cadence
+                            json: cadence
+                            csv: cadence
                           type: string
                           enum:
                             - monthly
                             - yearly
                         unit:
                           x-go-type: PlanUnit
+                          x-oapi-codegen-extra-tags:
+                            db: unit
+                            json: unit
+                            csv: unit
                           type: string
                           enum:
                             - user
                             - free
+                        minimum_units:
+                          type: integer
+                          description: Minimum number of units required for the plan
+                          x-oapi-codegen-extra-tags:
+                            db: minimum_units
+                            json: minimum_units
+                            csv: minimum_units
                         price_per_unit:
                           type: number
                           description: Price per unit of the plan
                           x-oapi-codegen-extra-tags:
                             db: price_per_unit
+                            json: price_per_unit
+                            csv: price_per_unit
                         currency:
                           x-go-type: Currency
+                          x-oapi-codegen-extra-tags:
+                            db: currency
+                            json: currency
+                            csv: currency
                           type: string
                           enum:
                             - usd
@@ -1192,6 +1341,7 @@ paths:
                         - cadence
                         - unit
                         - price_per_unit
+                        - minimum_units
                         - price_id
                         - currency
                     name:
@@ -49600,6 +49750,10 @@ components:
                 type: object
                 properties:
                   id:
+                    x-oapi-codegen-extra-tags:
+                      db: id
+                      json: id
+                      csv: id
                     type: string
                     format: uuid
                     description: >-
@@ -49612,6 +49766,10 @@ components:
                   name:
                     type: string
                     x-go-type: PlanName
+                    x-oapi-codegen-extra-tags:
+                      db: name
+                      json: name
+                      csv: name
                     description: Name of the plan
                     enum:
                       - Free
@@ -49620,23 +49778,44 @@ components:
                       - Enterprise
                   cadence:
                     x-go-type: PlanCadence
+                    x-oapi-codegen-extra-tags:
+                      db: cadence
+                      json: cadence
+                      csv: cadence
                     type: string
                     enum:
                       - monthly
                       - yearly
                   unit:
                     x-go-type: PlanUnit
+                    x-oapi-codegen-extra-tags:
+                      db: unit
+                      json: unit
+                      csv: unit
                     type: string
                     enum:
                       - user
                       - free
+                  minimum_units:
+                    type: integer
+                    description: Minimum number of units required for the plan
+                    x-oapi-codegen-extra-tags:
+                      db: minimum_units
+                      json: minimum_units
+                      csv: minimum_units
                   price_per_unit:
                     type: number
                     description: Price per unit of the plan
                     x-oapi-codegen-extra-tags:
                       db: price_per_unit
+                      json: price_per_unit
+                      csv: price_per_unit
                   currency:
                     x-go-type: Currency
+                    x-oapi-codegen-extra-tags:
+                      db: currency
+                      json: currency
+                      csv: currency
                     type: string
                     enum:
                       - usd
@@ -49646,6 +49825,7 @@ components:
                   - cadence
                   - unit
                   - price_per_unit
+                  - minimum_units
                   - price_id
                   - currency
               quantity:
@@ -49788,6 +49968,10 @@ components:
           type: object
           properties:
             id:
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+                csv: id
               type: string
               format: uuid
               description: >-
@@ -49800,6 +49984,10 @@ components:
             name:
               type: string
               x-go-type: PlanName
+              x-oapi-codegen-extra-tags:
+                db: name
+                json: name
+                csv: name
               description: Name of the plan
               enum:
                 - Free
@@ -49808,23 +49996,44 @@ components:
                 - Enterprise
             cadence:
               x-go-type: PlanCadence
+              x-oapi-codegen-extra-tags:
+                db: cadence
+                json: cadence
+                csv: cadence
               type: string
               enum:
                 - monthly
                 - yearly
             unit:
               x-go-type: PlanUnit
+              x-oapi-codegen-extra-tags:
+                db: unit
+                json: unit
+                csv: unit
               type: string
               enum:
                 - user
                 - free
+            minimum_units:
+              type: integer
+              description: Minimum number of units required for the plan
+              x-oapi-codegen-extra-tags:
+                db: minimum_units
+                json: minimum_units
+                csv: minimum_units
             price_per_unit:
               type: number
               description: Price per unit of the plan
               x-oapi-codegen-extra-tags:
                 db: price_per_unit
+                json: price_per_unit
+                csv: price_per_unit
             currency:
               x-go-type: Currency
+              x-oapi-codegen-extra-tags:
+                db: currency
+                json: currency
+                csv: currency
               type: string
               enum:
                 - usd
@@ -49834,6 +50043,7 @@ components:
             - cadence
             - unit
             - price_per_unit
+            - minimum_units
             - price_id
             - currency
         quantity:
@@ -49973,6 +50183,10 @@ components:
             type: object
             properties:
               id:
+                x-oapi-codegen-extra-tags:
+                  db: id
+                  json: id
+                  csv: id
                 type: string
                 format: uuid
                 description: >-
@@ -49985,6 +50199,10 @@ components:
               name:
                 type: string
                 x-go-type: PlanName
+                x-oapi-codegen-extra-tags:
+                  db: name
+                  json: name
+                  csv: name
                 description: Name of the plan
                 enum:
                   - Free
@@ -49993,23 +50211,44 @@ components:
                   - Enterprise
               cadence:
                 x-go-type: PlanCadence
+                x-oapi-codegen-extra-tags:
+                  db: cadence
+                  json: cadence
+                  csv: cadence
                 type: string
                 enum:
                   - monthly
                   - yearly
               unit:
                 x-go-type: PlanUnit
+                x-oapi-codegen-extra-tags:
+                  db: unit
+                  json: unit
+                  csv: unit
                 type: string
                 enum:
                   - user
                   - free
+              minimum_units:
+                type: integer
+                description: Minimum number of units required for the plan
+                x-oapi-codegen-extra-tags:
+                  db: minimum_units
+                  json: minimum_units
+                  csv: minimum_units
               price_per_unit:
                 type: number
                 description: Price per unit of the plan
                 x-oapi-codegen-extra-tags:
                   db: price_per_unit
+                  json: price_per_unit
+                  csv: price_per_unit
               currency:
                 x-go-type: Currency
+                x-oapi-codegen-extra-tags:
+                  db: currency
+                  json: currency
+                  csv: currency
                 type: string
                 enum:
                   - usd
@@ -50019,6 +50258,7 @@ components:
               - cadence
               - unit
               - price_per_unit
+              - minimum_units
               - price_id
               - currency
             x-go-type: Plan
@@ -50026,6 +50266,10 @@ components:
       type: object
       properties:
         id:
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+            csv: id
           type: string
           format: uuid
           description: >-
@@ -50038,6 +50282,10 @@ components:
         name:
           type: string
           x-go-type: PlanName
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: name
+            csv: name
           description: Name of the plan
           enum:
             - Free
@@ -50046,23 +50294,44 @@ components:
             - Enterprise
         cadence:
           x-go-type: PlanCadence
+          x-oapi-codegen-extra-tags:
+            db: cadence
+            json: cadence
+            csv: cadence
           type: string
           enum:
             - monthly
             - yearly
         unit:
           x-go-type: PlanUnit
+          x-oapi-codegen-extra-tags:
+            db: unit
+            json: unit
+            csv: unit
           type: string
           enum:
             - user
             - free
+        minimum_units:
+          type: integer
+          description: Minimum number of units required for the plan
+          x-oapi-codegen-extra-tags:
+            db: minimum_units
+            json: minimum_units
+            csv: minimum_units
         price_per_unit:
           type: number
           description: Price per unit of the plan
           x-oapi-codegen-extra-tags:
             db: price_per_unit
+            json: price_per_unit
+            csv: price_per_unit
         currency:
           x-go-type: Currency
+          x-oapi-codegen-extra-tags:
+            db: currency
+            json: currency
+            csv: currency
           type: string
           enum:
             - usd
@@ -50072,6 +50341,7 @@ components:
         - cadence
         - unit
         - price_per_unit
+        - minimum_units
         - price_id
         - currency
     plan_PlanName:
@@ -50143,6 +50413,10 @@ components:
             type: object
             properties:
               id:
+                x-oapi-codegen-extra-tags:
+                  db: id
+                  json: id
+                  csv: id
                 type: string
                 format: uuid
                 description: >-
@@ -50155,6 +50429,10 @@ components:
               name:
                 type: string
                 x-go-type: PlanName
+                x-oapi-codegen-extra-tags:
+                  db: name
+                  json: name
+                  csv: name
                 description: Name of the plan
                 enum:
                   - Free
@@ -50163,23 +50441,44 @@ components:
                   - Enterprise
               cadence:
                 x-go-type: PlanCadence
+                x-oapi-codegen-extra-tags:
+                  db: cadence
+                  json: cadence
+                  csv: cadence
                 type: string
                 enum:
                   - monthly
                   - yearly
               unit:
                 x-go-type: PlanUnit
+                x-oapi-codegen-extra-tags:
+                  db: unit
+                  json: unit
+                  csv: unit
                 type: string
                 enum:
                   - user
                   - free
+              minimum_units:
+                type: integer
+                description: Minimum number of units required for the plan
+                x-oapi-codegen-extra-tags:
+                  db: minimum_units
+                  json: minimum_units
+                  csv: minimum_units
               price_per_unit:
                 type: number
                 description: Price per unit of the plan
                 x-oapi-codegen-extra-tags:
                   db: price_per_unit
+                  json: price_per_unit
+                  csv: price_per_unit
               currency:
                 x-go-type: Currency
+                x-oapi-codegen-extra-tags:
+                  db: currency
+                  json: currency
+                  csv: currency
                 type: string
                 enum:
                   - usd
@@ -50189,6 +50488,7 @@ components:
               - cadence
               - unit
               - price_per_unit
+              - minimum_units
               - price_id
               - currency
           name:
@@ -50276,6 +50576,10 @@ components:
           type: object
           properties:
             id:
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+                csv: id
               type: string
               format: uuid
               description: >-
@@ -50288,6 +50592,10 @@ components:
             name:
               type: string
               x-go-type: PlanName
+              x-oapi-codegen-extra-tags:
+                db: name
+                json: name
+                csv: name
               description: Name of the plan
               enum:
                 - Free
@@ -50296,23 +50604,44 @@ components:
                 - Enterprise
             cadence:
               x-go-type: PlanCadence
+              x-oapi-codegen-extra-tags:
+                db: cadence
+                json: cadence
+                csv: cadence
               type: string
               enum:
                 - monthly
                 - yearly
             unit:
               x-go-type: PlanUnit
+              x-oapi-codegen-extra-tags:
+                db: unit
+                json: unit
+                csv: unit
               type: string
               enum:
                 - user
                 - free
+            minimum_units:
+              type: integer
+              description: Minimum number of units required for the plan
+              x-oapi-codegen-extra-tags:
+                db: minimum_units
+                json: minimum_units
+                csv: minimum_units
             price_per_unit:
               type: number
               description: Price per unit of the plan
               x-oapi-codegen-extra-tags:
                 db: price_per_unit
+                json: price_per_unit
+                csv: price_per_unit
             currency:
               x-go-type: Currency
+              x-oapi-codegen-extra-tags:
+                db: currency
+                json: currency
+                csv: currency
               type: string
               enum:
                 - usd
@@ -50322,6 +50651,7 @@ components:
             - cadence
             - unit
             - price_per_unit
+            - minimum_units
             - price_id
             - currency
         name:
