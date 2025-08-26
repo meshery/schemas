@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: badge
+  description: OpenAPI schema for managing badges
+  version: v1beta1
+
+tags:
+  - name: Badge
+
+paths: {}
+
+components:
+  schemas:
+
+    Badge:
+      type: object
+      required:
+        - id
+        - label
+        - name
+        - org_id
+        - description
+        - png_location
+        - svg_location
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+
+
+        org_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: ID of the organization to which the user is invited
+          x-oapi-codegen-extra-tags:
+            db: "org_id"
+            json: "org_id"
+
+
+
+        label:
+          type: string
+          description: unique identifier for the badge ( auto generated )
+          example: Kubernetes-Expert
+          x-oapi-codegen-extra-tags:
+            db: "label"
+            json: "label"
+
+        name:
+          type: string
+          description: Name of the badge
+          example: Kubernetes Expert
+          x-oapi-codegen-extra-tags:
+            db: "name"
+            json: "name"
+
+        description:
+          type: string
+          description: Description of the badge
+          example: Awarded for mastering Kubernetes concepts and practice
+          x-oapi-codegen-extra-tags:
+            db: "description"
+            json: "description"
+
+
+        png_location:
+          type: string
+          format: uri
+          description: URL to the badge image
+          example: http://localhost:9876/badges/kubernetes-expert.png
+          x-oapi-codegen-extra-tags:
+            db: "png_location"
+            json: "png_location"
+
+
+        svg_location:
+          type: string
+          format: uri
+          description: URL to the badge SVG image
+          example: http://localhost:9876/badges/kubernetes-expert.svg
+          x-oapi-codegen-extra-tags:
+            db: "svg_location"
+            json: "svg_location"
+
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp when the invitation was created
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "created_at"
+
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when the invitation was last updated
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updated_at"
+
+        deleted_at:
+          type: string
+          format: date-time
+          x-go-type : "core.NullTime"
+          description: Timestamp when the invitation was deleted, if applicable
+
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deleted_at"
