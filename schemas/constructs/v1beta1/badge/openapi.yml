@@ -7,7 +7,28 @@ info:
 tags:
   - name: Badge
 
-paths: {}
+paths:
+
+  /api/organizations/badges:
+
+    post:
+      x-internal: ["cloud"]
+      operationId: createOrUpdateBadge
+      tags:
+        - Badge
+      summary: Create a new badge or update an existing badge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Badge"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Badge"
 
 components:
   schemas:
