@@ -640,39 +640,6 @@ components:
       $ref: "#/components/schemas/CurriculaMetadata"
       x-go-type: "CurriculaMetadata"
 
-    Badge:
-      type: object
-      required:
-        - label
-        - title
-        - description
-        - png
-        - svg
-      properties:
-        label:
-          type: string
-          description: unique identifier for the badge ( auto generated )
-          example: Kubernetes-Expert
-
-        title:
-          type: string
-          description: Title of the badge
-          example: Kubernetes Expert
-
-        description:
-          type: string
-          description: Description of the badge
-          example: Awarded for mastering Kubernetes concepts and practices
-        png:
-          type: string
-          format: uri
-          description: URL to the badge image
-          example: http://localhost:9876/badges/kubernetes-expert.png
-        svg:
-          type: string
-          format: uri
-          description: URL to the badge SVG image
-          example: http://localhost:9876/badges/kubernetes-expert.svg
 
     CertificateIssuingAuthority:
       type: object
@@ -783,8 +750,10 @@ components:
           example: http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
 
         badge:
-          $ref: "#/components/schemas/Badge"
-          x-go-type: "Badge"
+          $ref: "../badge/openapi.yml#/components/schemas/Badge"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/v1beta1/badge"
+          x-go-type: "badge.Badge"
 
         certificate:
           $ref: "#/components/schemas/Certificate"
