@@ -54,6 +54,7 @@ import WorkspaceDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/worksp
 import RelationshipDefinitionV1Alpha3OpenApiSchema from "./constructs/v1alpha3/V1alpha3OpenApiSchema";
 
 import InvitationSchema from "./constructs/v1beta1/invitation/InvitationOpenApiSchema"
+import BadgeSchema from "./constructs/v1beta1/badge/BadgeOpenApiSchema"
 
 import { components, paths } from "./openapi";
 import type * as core from "./constructs/core";
@@ -69,6 +70,7 @@ export {
   SubCategoryDefinitionV1Beta1OpenApiSchema,
   RelationshipDefinitionV1Alpha3OpenApiSchema,
   InvitationSchema,
+  BadgeSchema
 };
 
 // Contructs
