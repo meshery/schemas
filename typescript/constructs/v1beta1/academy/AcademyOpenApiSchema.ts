@@ -230,42 +230,122 @@ const schema = {
                                   "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                                 },
                                 "badge": {
-                                  "x-go-type": "Badge",
+                                  "x-go-type-import": {
+                                    "path": "github.com/meshery/schemas/models/v1beta1/badge"
+                                  },
+                                  "x-go-type": "badge.Badge",
                                   "type": "object",
                                   "required": [
+                                    "id",
                                     "label",
-                                    "title",
+                                    "name",
+                                    "org_id",
                                     "description",
-                                    "png",
-                                    "svg"
+                                    "image_url",
+                                    "created_at",
+                                    "updated_at",
+                                    "deleted_at"
                                   ],
                                   "properties": {
+                                    "id": {
+                                      "x-go-name": "ID",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "id",
+                                        "json": "id"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
+                                    "org_id": {
+                                      "description": "The ID of the organization in which this badge is available .",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "org_id",
+                                        "json": "org_id"
+                                      },
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      }
+                                    },
                                     "label": {
                                       "type": "string",
                                       "description": "unique identifier for the badge ( auto generated )",
-                                      "example": "Kubernetes-Expert"
+                                      "example": "Kubernetes-Expert",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "label",
+                                        "json": "label"
+                                      }
                                     },
-                                    "title": {
+                                    "name": {
                                       "type": "string",
-                                      "description": "Title of the badge",
-                                      "example": "Kubernetes Expert"
+                                      "description": "Concise descriptor for the badge or certificate.",
+                                      "example": "Kubernetes Expert",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "name",
+                                        "json": "name"
+                                      }
                                     },
                                     "description": {
                                       "type": "string",
-                                      "description": "Description of the badge",
-                                      "example": "Awarded for mastering Kubernetes concepts and practices"
+                                      "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                                      "example": "Awarded for mastering Kubernetes concepts and practices.",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "description",
+                                        "json": "description"
+                                      }
                                     },
-                                    "png": {
+                                    "image_url": {
                                       "type": "string",
                                       "format": "uri",
                                       "description": "URL to the badge image",
-                                      "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                      "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "svg_location",
+                                        "json": "svg_location"
+                                      }
                                     },
-                                    "svg": {
+                                    "created_at": {
+                                      "description": "Timestamp when the resource was created.",
+                                      "x-go-type": "time.Time",
                                       "type": "string",
-                                      "format": "uri",
-                                      "description": "URL to the badge SVG image",
-                                      "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                      "format": "date-time",
+                                      "x-go-name": "CreatedAt",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "created_at",
+                                        "yaml": "created_at"
+                                      },
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "updated_at": {
+                                      "description": "Timestamp when the resource was updated.",
+                                      "x-go-type": "time.Time",
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-name": "UpdatedAt",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "updated_at",
+                                        "yaml": "updated_at"
+                                      },
+                                      "x-go-type-skip-optional-pointer": true
+                                    },
+                                    "deleted_at": {
+                                      "description": "Timestamp when the resource was deleted.",
+                                      "x-go-type": "time.Time",
+                                      "type": "string",
+                                      "format": "date-time",
+                                      "x-go-name": "DeletedAt",
+                                      "x-oapi-codegen-extra-tags": {
+                                        "db": "deleted_at",
+                                        "yaml": "deleted_at"
+                                      },
+                                      "x-go-type-skip-optional-pointer": true
                                     }
                                   }
                                 },
@@ -765,42 +845,122 @@ const schema = {
                                       "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                                     },
                                     "badge": {
-                                      "x-go-type": "Badge",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/v1beta1/badge"
+                                      },
+                                      "x-go-type": "badge.Badge",
                                       "type": "object",
                                       "required": [
+                                        "id",
                                         "label",
-                                        "title",
+                                        "name",
+                                        "org_id",
                                         "description",
-                                        "png",
-                                        "svg"
+                                        "image_url",
+                                        "created_at",
+                                        "updated_at",
+                                        "deleted_at"
                                       ],
                                       "properties": {
+                                        "id": {
+                                          "x-go-name": "ID",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "id",
+                                            "json": "id"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
+                                        "org_id": {
+                                          "description": "The ID of the organization in which this badge is available .",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "org_id",
+                                            "json": "org_id"
+                                          },
+                                          "type": "string",
+                                          "format": "uuid",
+                                          "x-go-type": "uuid.UUID",
+                                          "x-go-type-import": {
+                                            "path": "github.com/gofrs/uuid"
+                                          }
+                                        },
                                         "label": {
                                           "type": "string",
                                           "description": "unique identifier for the badge ( auto generated )",
-                                          "example": "Kubernetes-Expert"
+                                          "example": "Kubernetes-Expert",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "label",
+                                            "json": "label"
+                                          }
                                         },
-                                        "title": {
+                                        "name": {
                                           "type": "string",
-                                          "description": "Title of the badge",
-                                          "example": "Kubernetes Expert"
+                                          "description": "Concise descriptor for the badge or certificate.",
+                                          "example": "Kubernetes Expert",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "name",
+                                            "json": "name"
+                                          }
                                         },
                                         "description": {
                                           "type": "string",
-                                          "description": "Description of the badge",
-                                          "example": "Awarded for mastering Kubernetes concepts and practices"
+                                          "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                                          "example": "Awarded for mastering Kubernetes concepts and practices.",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "description",
+                                            "json": "description"
+                                          }
                                         },
-                                        "png": {
+                                        "image_url": {
                                           "type": "string",
                                           "format": "uri",
                                           "description": "URL to the badge image",
-                                          "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                          "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "svg_location",
+                                            "json": "svg_location"
+                                          }
                                         },
-                                        "svg": {
+                                        "created_at": {
+                                          "description": "Timestamp when the resource was created.",
+                                          "x-go-type": "time.Time",
                                           "type": "string",
-                                          "format": "uri",
-                                          "description": "URL to the badge SVG image",
-                                          "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                          "format": "date-time",
+                                          "x-go-name": "CreatedAt",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "created_at",
+                                            "yaml": "created_at"
+                                          },
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "updated_at": {
+                                          "description": "Timestamp when the resource was updated.",
+                                          "x-go-type": "time.Time",
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-name": "UpdatedAt",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "updated_at",
+                                            "yaml": "updated_at"
+                                          },
+                                          "x-go-type-skip-optional-pointer": true
+                                        },
+                                        "deleted_at": {
+                                          "description": "Timestamp when the resource was deleted.",
+                                          "x-go-type": "time.Time",
+                                          "type": "string",
+                                          "format": "date-time",
+                                          "x-go-name": "DeletedAt",
+                                          "x-oapi-codegen-extra-tags": {
+                                            "db": "deleted_at",
+                                            "yaml": "deleted_at"
+                                          },
+                                          "x-go-type-skip-optional-pointer": true
                                         }
                                       }
                                     },
@@ -1230,42 +1390,122 @@ const schema = {
                               "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                             },
                             "badge": {
-                              "x-go-type": "Badge",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1beta1/badge"
+                              },
+                              "x-go-type": "badge.Badge",
                               "type": "object",
                               "required": [
+                                "id",
                                 "label",
-                                "title",
+                                "name",
+                                "org_id",
                                 "description",
-                                "png",
-                                "svg"
+                                "image_url",
+                                "created_at",
+                                "updated_at",
+                                "deleted_at"
                               ],
                               "properties": {
+                                "id": {
+                                  "x-go-name": "ID",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "id",
+                                    "json": "id"
+                                  },
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
+                                "org_id": {
+                                  "description": "The ID of the organization in which this badge is available .",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "org_id",
+                                    "json": "org_id"
+                                  },
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
                                 "label": {
                                   "type": "string",
                                   "description": "unique identifier for the badge ( auto generated )",
-                                  "example": "Kubernetes-Expert"
+                                  "example": "Kubernetes-Expert",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "label",
+                                    "json": "label"
+                                  }
                                 },
-                                "title": {
+                                "name": {
                                   "type": "string",
-                                  "description": "Title of the badge",
-                                  "example": "Kubernetes Expert"
+                                  "description": "Concise descriptor for the badge or certificate.",
+                                  "example": "Kubernetes Expert",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "name",
+                                    "json": "name"
+                                  }
                                 },
                                 "description": {
                                   "type": "string",
-                                  "description": "Description of the badge",
-                                  "example": "Awarded for mastering Kubernetes concepts and practices"
+                                  "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                                  "example": "Awarded for mastering Kubernetes concepts and practices.",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "description",
+                                    "json": "description"
+                                  }
                                 },
-                                "png": {
+                                "image_url": {
                                   "type": "string",
                                   "format": "uri",
                                   "description": "URL to the badge image",
-                                  "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                  "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "svg_location",
+                                    "json": "svg_location"
+                                  }
                                 },
-                                "svg": {
+                                "created_at": {
+                                  "description": "Timestamp when the resource was created.",
+                                  "x-go-type": "time.Time",
                                   "type": "string",
-                                  "format": "uri",
-                                  "description": "URL to the badge SVG image",
-                                  "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                  "format": "date-time",
+                                  "x-go-name": "CreatedAt",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "created_at",
+                                    "yaml": "created_at"
+                                  },
+                                  "x-go-type-skip-optional-pointer": true
+                                },
+                                "updated_at": {
+                                  "description": "Timestamp when the resource was updated.",
+                                  "x-go-type": "time.Time",
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "x-go-name": "UpdatedAt",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "updated_at",
+                                    "yaml": "updated_at"
+                                  },
+                                  "x-go-type-skip-optional-pointer": true
+                                },
+                                "deleted_at": {
+                                  "description": "Timestamp when the resource was deleted.",
+                                  "x-go-type": "time.Time",
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "x-go-name": "DeletedAt",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "deleted_at",
+                                    "yaml": "deleted_at"
+                                  },
+                                  "x-go-type-skip-optional-pointer": true
                                 }
                               }
                             },
@@ -1607,14 +1847,15 @@ const schema = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
-                      "x-go-type": "core.NullTime",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
                       "description": "Timestamp when the resource was deleted.",
+                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "yaml": "deleted_at"
+                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "certificate": {
@@ -1866,14 +2107,15 @@ const schema = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
-                      "x-go-type": "core.NullTime",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
                       "description": "Timestamp when the resource was deleted.",
+                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at",
+                        "yaml": "deleted_at"
+                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "certificate": {
@@ -3517,42 +3759,122 @@ const schema = {
                     "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                   },
                   "badge": {
-                    "x-go-type": "Badge",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/v1beta1/badge"
+                    },
+                    "x-go-type": "badge.Badge",
                     "type": "object",
                     "required": [
+                      "id",
                       "label",
-                      "title",
+                      "name",
+                      "org_id",
                       "description",
-                      "png",
-                      "svg"
+                      "image_url",
+                      "created_at",
+                      "updated_at",
+                      "deleted_at"
                     ],
                     "properties": {
+                      "id": {
+                        "x-go-name": "ID",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "id",
+                          "json": "id"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
+                      "org_id": {
+                        "description": "The ID of the organization in which this badge is available .",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "org_id",
+                          "json": "org_id"
+                        },
+                        "type": "string",
+                        "format": "uuid",
+                        "x-go-type": "uuid.UUID",
+                        "x-go-type-import": {
+                          "path": "github.com/gofrs/uuid"
+                        }
+                      },
                       "label": {
                         "type": "string",
                         "description": "unique identifier for the badge ( auto generated )",
-                        "example": "Kubernetes-Expert"
+                        "example": "Kubernetes-Expert",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "label",
+                          "json": "label"
+                        }
                       },
-                      "title": {
+                      "name": {
                         "type": "string",
-                        "description": "Title of the badge",
-                        "example": "Kubernetes Expert"
+                        "description": "Concise descriptor for the badge or certificate.",
+                        "example": "Kubernetes Expert",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "name",
+                          "json": "name"
+                        }
                       },
                       "description": {
                         "type": "string",
-                        "description": "Description of the badge",
-                        "example": "Awarded for mastering Kubernetes concepts and practices"
+                        "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                        "example": "Awarded for mastering Kubernetes concepts and practices.",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "description",
+                          "json": "description"
+                        }
                       },
-                      "png": {
+                      "image_url": {
                         "type": "string",
                         "format": "uri",
                         "description": "URL to the badge image",
-                        "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                        "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "svg_location",
+                          "json": "svg_location"
+                        }
                       },
-                      "svg": {
+                      "created_at": {
+                        "description": "Timestamp when the resource was created.",
+                        "x-go-type": "time.Time",
                         "type": "string",
-                        "format": "uri",
-                        "description": "URL to the badge SVG image",
-                        "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                        "format": "date-time",
+                        "x-go-name": "CreatedAt",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "created_at",
+                          "yaml": "created_at"
+                        },
+                        "x-go-type-skip-optional-pointer": true
+                      },
+                      "updated_at": {
+                        "description": "Timestamp when the resource was updated.",
+                        "x-go-type": "time.Time",
+                        "type": "string",
+                        "format": "date-time",
+                        "x-go-name": "UpdatedAt",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "updated_at",
+                          "yaml": "updated_at"
+                        },
+                        "x-go-type-skip-optional-pointer": true
+                      },
+                      "deleted_at": {
+                        "description": "Timestamp when the resource was deleted.",
+                        "x-go-type": "time.Time",
+                        "type": "string",
+                        "format": "date-time",
+                        "x-go-name": "DeletedAt",
+                        "x-oapi-codegen-extra-tags": {
+                          "db": "deleted_at",
+                          "yaml": "deleted_at"
+                        },
+                        "x-go-type-skip-optional-pointer": true
                       }
                     }
                   },
@@ -3910,42 +4232,122 @@ const schema = {
                         "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                       },
                       "badge": {
-                        "x-go-type": "Badge",
+                        "x-go-type-import": {
+                          "path": "github.com/meshery/schemas/models/v1beta1/badge"
+                        },
+                        "x-go-type": "badge.Badge",
                         "type": "object",
                         "required": [
+                          "id",
                           "label",
-                          "title",
+                          "name",
+                          "org_id",
                           "description",
-                          "png",
-                          "svg"
+                          "image_url",
+                          "created_at",
+                          "updated_at",
+                          "deleted_at"
                         ],
                         "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "org_id": {
+                            "description": "The ID of the organization in which this badge is available .",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_id",
+                              "json": "org_id"
+                            },
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
                           "label": {
                             "type": "string",
                             "description": "unique identifier for the badge ( auto generated )",
-                            "example": "Kubernetes-Expert"
+                            "example": "Kubernetes-Expert",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "label",
+                              "json": "label"
+                            }
                           },
-                          "title": {
+                          "name": {
                             "type": "string",
-                            "description": "Title of the badge",
-                            "example": "Kubernetes Expert"
+                            "description": "Concise descriptor for the badge or certificate.",
+                            "example": "Kubernetes Expert",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name"
+                            }
                           },
                           "description": {
                             "type": "string",
-                            "description": "Description of the badge",
-                            "example": "Awarded for mastering Kubernetes concepts and practices"
+                            "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                            "example": "Awarded for mastering Kubernetes concepts and practices.",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "description",
+                              "json": "description"
+                            }
                           },
-                          "png": {
+                          "image_url": {
                             "type": "string",
                             "format": "uri",
                             "description": "URL to the badge image",
-                            "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                            "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "svg_location",
+                              "json": "svg_location"
+                            }
                           },
-                          "svg": {
+                          "created_at": {
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
                             "type": "string",
-                            "format": "uri",
-                            "description": "URL to the badge SVG image",
-                            "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "description": "Timestamp when the resource was deleted.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "DeletedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at",
+                              "yaml": "deleted_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
                           }
                         }
                       },
@@ -4330,42 +4732,122 @@ const schema = {
                           "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                         },
                         "badge": {
-                          "x-go-type": "Badge",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/badge"
+                          },
+                          "x-go-type": "badge.Badge",
                           "type": "object",
                           "required": [
+                            "id",
                             "label",
-                            "title",
+                            "name",
+                            "org_id",
                             "description",
-                            "png",
-                            "svg"
+                            "image_url",
+                            "created_at",
+                            "updated_at",
+                            "deleted_at"
                           ],
                           "properties": {
+                            "id": {
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "id",
+                                "json": "id"
+                              },
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
+                            "org_id": {
+                              "description": "The ID of the organization in which this badge is available .",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "org_id",
+                                "json": "org_id"
+                              },
+                              "type": "string",
+                              "format": "uuid",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              }
+                            },
                             "label": {
                               "type": "string",
                               "description": "unique identifier for the badge ( auto generated )",
-                              "example": "Kubernetes-Expert"
+                              "example": "Kubernetes-Expert",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "label",
+                                "json": "label"
+                              }
                             },
-                            "title": {
+                            "name": {
                               "type": "string",
-                              "description": "Title of the badge",
-                              "example": "Kubernetes Expert"
+                              "description": "Concise descriptor for the badge or certificate.",
+                              "example": "Kubernetes Expert",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "name",
+                                "json": "name"
+                              }
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the badge",
-                              "example": "Awarded for mastering Kubernetes concepts and practices"
+                              "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                              "example": "Awarded for mastering Kubernetes concepts and practices.",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "description",
+                                "json": "description"
+                              }
                             },
-                            "png": {
+                            "image_url": {
                               "type": "string",
                               "format": "uri",
                               "description": "URL to the badge image",
-                              "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                              "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "svg_location",
+                                "json": "svg_location"
+                              }
                             },
-                            "svg": {
+                            "created_at": {
+                              "description": "Timestamp when the resource was created.",
+                              "x-go-type": "time.Time",
                               "type": "string",
-                              "format": "uri",
-                              "description": "URL to the badge SVG image",
-                              "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                              "format": "date-time",
+                              "x-go-name": "CreatedAt",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updated_at": {
+                              "description": "Timestamp when the resource was updated.",
+                              "x-go-type": "time.Time",
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-name": "UpdatedAt",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "deleted_at": {
+                              "description": "Timestamp when the resource was deleted.",
+                              "x-go-type": "time.Time",
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-name": "DeletedAt",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "deleted_at",
+                                "yaml": "deleted_at"
+                              },
+                              "x-go-type-skip-optional-pointer": true
                             }
                           }
                         },
@@ -4742,42 +5224,122 @@ const schema = {
                               "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
                             },
                             "badge": {
-                              "x-go-type": "Badge",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/v1beta1/badge"
+                              },
+                              "x-go-type": "badge.Badge",
                               "type": "object",
                               "required": [
+                                "id",
                                 "label",
-                                "title",
+                                "name",
+                                "org_id",
                                 "description",
-                                "png",
-                                "svg"
+                                "image_url",
+                                "created_at",
+                                "updated_at",
+                                "deleted_at"
                               ],
                               "properties": {
+                                "id": {
+                                  "x-go-name": "ID",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "id",
+                                    "json": "id"
+                                  },
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
+                                "org_id": {
+                                  "description": "The ID of the organization in which this badge is available .",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "org_id",
+                                    "json": "org_id"
+                                  },
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  }
+                                },
                                 "label": {
                                   "type": "string",
                                   "description": "unique identifier for the badge ( auto generated )",
-                                  "example": "Kubernetes-Expert"
+                                  "example": "Kubernetes-Expert",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "label",
+                                    "json": "label"
+                                  }
                                 },
-                                "title": {
+                                "name": {
                                   "type": "string",
-                                  "description": "Title of the badge",
-                                  "example": "Kubernetes Expert"
+                                  "description": "Concise descriptor for the badge or certificate.",
+                                  "example": "Kubernetes Expert",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "name",
+                                    "json": "name"
+                                  }
                                 },
                                 "description": {
                                   "type": "string",
-                                  "description": "Description of the badge",
-                                  "example": "Awarded for mastering Kubernetes concepts and practices"
+                                  "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                                  "example": "Awarded for mastering Kubernetes concepts and practices.",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "description",
+                                    "json": "description"
+                                  }
                                 },
-                                "png": {
+                                "image_url": {
                                   "type": "string",
                                   "format": "uri",
                                   "description": "URL to the badge image",
-                                  "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                                  "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "svg_location",
+                                    "json": "svg_location"
+                                  }
                                 },
-                                "svg": {
+                                "created_at": {
+                                  "description": "Timestamp when the resource was created.",
+                                  "x-go-type": "time.Time",
                                   "type": "string",
-                                  "format": "uri",
-                                  "description": "URL to the badge SVG image",
-                                  "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                                  "format": "date-time",
+                                  "x-go-name": "CreatedAt",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "created_at",
+                                    "yaml": "created_at"
+                                  },
+                                  "x-go-type-skip-optional-pointer": true
+                                },
+                                "updated_at": {
+                                  "description": "Timestamp when the resource was updated.",
+                                  "x-go-type": "time.Time",
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "x-go-name": "UpdatedAt",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "updated_at",
+                                    "yaml": "updated_at"
+                                  },
+                                  "x-go-type-skip-optional-pointer": true
+                                },
+                                "deleted_at": {
+                                  "description": "Timestamp when the resource was deleted.",
+                                  "x-go-type": "time.Time",
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "x-go-name": "DeletedAt",
+                                  "x-oapi-codegen-extra-tags": {
+                                    "db": "deleted_at",
+                                    "yaml": "deleted_at"
+                                  },
+                                  "x-go-type-skip-optional-pointer": true
                                 }
                               }
                             },
@@ -5024,42 +5586,122 @@ const schema = {
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
           },
           "badge": {
-            "x-go-type": "Badge",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta1/badge"
+            },
+            "x-go-type": "badge.Badge",
             "type": "object",
             "required": [
+              "id",
               "label",
-              "title",
+              "name",
+              "org_id",
               "description",
-              "png",
-              "svg"
+              "image_url",
+              "created_at",
+              "updated_at",
+              "deleted_at"
             ],
             "properties": {
+              "id": {
+                "x-go-name": "ID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "id",
+                  "json": "id"
+                },
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "org_id": {
+                "description": "The ID of the organization in which this badge is available .",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id"
+                },
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
               "label": {
                 "type": "string",
                 "description": "unique identifier for the badge ( auto generated )",
-                "example": "Kubernetes-Expert"
+                "example": "Kubernetes-Expert",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "label",
+                  "json": "label"
+                }
               },
-              "title": {
+              "name": {
                 "type": "string",
-                "description": "Title of the badge",
-                "example": "Kubernetes Expert"
+                "description": "Concise descriptor for the badge or certificate.",
+                "example": "Kubernetes Expert",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "name",
+                  "json": "name"
+                }
               },
               "description": {
                 "type": "string",
-                "description": "Description of the badge",
-                "example": "Awarded for mastering Kubernetes concepts and practices"
+                "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                "example": "Awarded for mastering Kubernetes concepts and practices.",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "description",
+                  "json": "description"
+                }
               },
-              "png": {
+              "image_url": {
                 "type": "string",
                 "format": "uri",
                 "description": "URL to the badge image",
-                "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "svg_location",
+                  "json": "svg_location"
+                }
               },
-              "svg": {
+              "created_at": {
+                "description": "Timestamp when the resource was created.",
+                "x-go-type": "time.Time",
                 "type": "string",
-                "format": "uri",
-                "description": "URL to the badge SVG image",
-                "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                "format": "date-time",
+                "x-go-name": "CreatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "yaml": "created_at"
+                },
+                "x-go-type-skip-optional-pointer": true
+              },
+              "updated_at": {
+                "description": "Timestamp when the resource was updated.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "UpdatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "yaml": "updated_at"
+                },
+                "x-go-type-skip-optional-pointer": true
+              },
+              "deleted_at": {
+                "description": "Timestamp when the resource was deleted.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "DeletedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "yaml": "deleted_at"
+                },
+                "x-go-type-skip-optional-pointer": true
               }
             }
           },
@@ -5264,42 +5906,122 @@ const schema = {
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
           },
           "badge": {
-            "x-go-type": "Badge",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta1/badge"
+            },
+            "x-go-type": "badge.Badge",
             "type": "object",
             "required": [
+              "id",
               "label",
-              "title",
+              "name",
+              "org_id",
               "description",
-              "png",
-              "svg"
+              "image_url",
+              "created_at",
+              "updated_at",
+              "deleted_at"
             ],
             "properties": {
+              "id": {
+                "x-go-name": "ID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "id",
+                  "json": "id"
+                },
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "org_id": {
+                "description": "The ID of the organization in which this badge is available .",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id"
+                },
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
               "label": {
                 "type": "string",
                 "description": "unique identifier for the badge ( auto generated )",
-                "example": "Kubernetes-Expert"
+                "example": "Kubernetes-Expert",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "label",
+                  "json": "label"
+                }
               },
-              "title": {
+              "name": {
                 "type": "string",
-                "description": "Title of the badge",
-                "example": "Kubernetes Expert"
+                "description": "Concise descriptor for the badge or certificate.",
+                "example": "Kubernetes Expert",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "name",
+                  "json": "name"
+                }
               },
               "description": {
                 "type": "string",
-                "description": "Description of the badge",
-                "example": "Awarded for mastering Kubernetes concepts and practices"
+                "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                "example": "Awarded for mastering Kubernetes concepts and practices.",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "description",
+                  "json": "description"
+                }
               },
-              "png": {
+              "image_url": {
                 "type": "string",
                 "format": "uri",
                 "description": "URL to the badge image",
-                "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "svg_location",
+                  "json": "svg_location"
+                }
               },
-              "svg": {
+              "created_at": {
+                "description": "Timestamp when the resource was created.",
+                "x-go-type": "time.Time",
                 "type": "string",
-                "format": "uri",
-                "description": "URL to the badge SVG image",
-                "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                "format": "date-time",
+                "x-go-name": "CreatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "yaml": "created_at"
+                },
+                "x-go-type-skip-optional-pointer": true
+              },
+              "updated_at": {
+                "description": "Timestamp when the resource was updated.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "UpdatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "yaml": "updated_at"
+                },
+                "x-go-type-skip-optional-pointer": true
+              },
+              "deleted_at": {
+                "description": "Timestamp when the resource was deleted.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "DeletedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "yaml": "deleted_at"
+                },
+                "x-go-type-skip-optional-pointer": true
               }
             }
           },
@@ -5476,45 +6198,6 @@ const schema = {
           "permalink"
         ]
       },
-      "Badge": {
-        "type": "object",
-        "required": [
-          "label",
-          "title",
-          "description",
-          "png",
-          "svg"
-        ],
-        "properties": {
-          "label": {
-            "type": "string",
-            "description": "unique identifier for the badge ( auto generated )",
-            "example": "Kubernetes-Expert"
-          },
-          "title": {
-            "type": "string",
-            "description": "Title of the badge",
-            "example": "Kubernetes Expert"
-          },
-          "description": {
-            "type": "string",
-            "description": "Description of the badge",
-            "example": "Awarded for mastering Kubernetes concepts and practices"
-          },
-          "png": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL to the badge image",
-            "example": "http://localhost:9876/badges/kubernetes-expert.png"
-          },
-          "svg": {
-            "type": "string",
-            "format": "uri",
-            "description": "URL to the badge SVG image",
-            "example": "http://localhost:9876/badges/kubernetes-expert.svg"
-          }
-        }
-      },
       "CertificateIssuingAuthority": {
         "type": "object",
         "required": [
@@ -5659,42 +6342,122 @@ const schema = {
             "example": "http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/"
           },
           "badge": {
-            "x-go-type": "Badge",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta1/badge"
+            },
+            "x-go-type": "badge.Badge",
             "type": "object",
             "required": [
+              "id",
               "label",
-              "title",
+              "name",
+              "org_id",
               "description",
-              "png",
-              "svg"
+              "image_url",
+              "created_at",
+              "updated_at",
+              "deleted_at"
             ],
             "properties": {
+              "id": {
+                "x-go-name": "ID",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "id",
+                  "json": "id"
+                },
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "org_id": {
+                "description": "The ID of the organization in which this badge is available .",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id"
+                },
+                "type": "string",
+                "format": "uuid",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
               "label": {
                 "type": "string",
                 "description": "unique identifier for the badge ( auto generated )",
-                "example": "Kubernetes-Expert"
+                "example": "Kubernetes-Expert",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "label",
+                  "json": "label"
+                }
               },
-              "title": {
+              "name": {
                 "type": "string",
-                "description": "Title of the badge",
-                "example": "Kubernetes Expert"
+                "description": "Concise descriptor for the badge or certificate.",
+                "example": "Kubernetes Expert",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "name",
+                  "json": "name"
+                }
               },
               "description": {
                 "type": "string",
-                "description": "Description of the badge",
-                "example": "Awarded for mastering Kubernetes concepts and practices"
+                "description": "A description of the milestone achieved, often including criteria for receiving this recognition.",
+                "example": "Awarded for mastering Kubernetes concepts and practices.",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "description",
+                  "json": "description"
+                }
               },
-              "png": {
+              "image_url": {
                 "type": "string",
                 "format": "uri",
                 "description": "URL to the badge image",
-                "example": "http://localhost:9876/badges/kubernetes-expert.png"
+                "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "svg_location",
+                  "json": "svg_location"
+                }
               },
-              "svg": {
+              "created_at": {
+                "description": "Timestamp when the resource was created.",
+                "x-go-type": "time.Time",
                 "type": "string",
-                "format": "uri",
-                "description": "URL to the badge SVG image",
-                "example": "http://localhost:9876/badges/kubernetes-expert.svg"
+                "format": "date-time",
+                "x-go-name": "CreatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "yaml": "created_at"
+                },
+                "x-go-type-skip-optional-pointer": true
+              },
+              "updated_at": {
+                "description": "Timestamp when the resource was updated.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "UpdatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "yaml": "updated_at"
+                },
+                "x-go-type-skip-optional-pointer": true
+              },
+              "deleted_at": {
+                "description": "Timestamp when the resource was deleted.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "DeletedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "deleted_at",
+                  "yaml": "deleted_at"
+                },
+                "x-go-type-skip-optional-pointer": true
               }
             }
           },
@@ -5977,14 +6740,15 @@ const schema = {
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
-            "x-go-type": "core.NullTime",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at"
-            },
             "description": "Timestamp when the resource was deleted.",
+            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at"
+            },
             "x-go-type-skip-optional-pointer": true
           },
           "certificate": {
@@ -6267,14 +7031,15 @@ const schema = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
-                  "x-go-type": "core.NullTime",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at"
-                  },
                   "description": "Timestamp when the resource was deleted.",
+                  "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at",
+                    "yaml": "deleted_at"
+                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "certificate": {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
+	"github.com/meshery/schemas/models/v1beta1/badge"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -192,7 +193,7 @@ type AcademyRegistration struct {
 	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt time.Time `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
 	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
@@ -222,24 +223,6 @@ type AcademyRegistrationsListResponse struct {
 
 	// Total Total number of learning paths
 	Total int `json:"total" yaml:"total"`
-}
-
-// Badge defines model for Badge.
-type Badge struct {
-	// Description Description of the badge
-	Description string `json:"description" yaml:"description"`
-
-	// Label unique identifier for the badge ( auto generated )
-	Label string `json:"label" yaml:"label"`
-
-	// Png URL to the badge image
-	Png string `json:"png" yaml:"png"`
-
-	// Svg URL to the badge SVG image
-	Svg string `json:"svg" yaml:"svg"`
-
-	// Title Title of the badge
-	Title string `json:"title" yaml:"title"`
 }
 
 // Certificate defines model for Certificate.
@@ -339,7 +322,7 @@ type ContentType string
 
 // CurriculaMetadata defines model for CurriculaMetadata.
 type CurriculaMetadata struct {
-	Badge *Badge `json:"badge,omitempty" yaml:"badge,omitempty"`
+	Badge *badge.Badge `json:"badge,omitempty" yaml:"badge,omitempty"`
 
 	// Banner Filename of the banner image, which should be placed in the same directory as the _index.md file
 	Banner      *string      `json:"banner" yaml:"banner"`

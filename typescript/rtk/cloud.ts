@@ -178,6 +178,9 @@ const injectedRtkApi = api.injectEndpoints({
     acceptInvitation: build.mutation<AcceptInvitationApiResponse, AcceptInvitationApiArg>({
       query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}/accept`, method: "POST" }),
     }),
+    createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
+      query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -615,16 +618,24 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
     /** Canonical URL for the learning path */
     permalink: string;
     badge?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The ID of the organization in which this badge is available . */
+      org_id: string;
       /** unique identifier for the badge ( auto generated ) */
       label: string;
-      /** Title of the badge */
-      title: string;
-      /** Description of the badge */
+      /** Concise descriptor for the badge or certificate. */
+      name: string;
+      /** A description of the milestone achieved, often including criteria for receiving this recognition. */
       description: string;
       /** URL to the badge image */
-      png: string;
-      /** URL to the badge SVG image */
-      svg: string;
+      image_url: string;
+      /** Timestamp when the resource was created. */
+      created_at: string;
+      /** Timestamp when the resource was updated. */
+      updated_at: string;
+      /** Timestamp when the resource was deleted. */
+      deleted_at: string;
     };
     certificate?: {
       /** Unique identifier for the certificate */
@@ -1295,6 +1306,48 @@ export type AcceptInvitationApiArg = {
   /** The ID of the invitation */
   invitationId: string;
 };
+export type CreateOrUpdateBadgeApiResponse = /** status 201 undefined */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** The ID of the organization in which this badge is available . */
+  org_id: string;
+  /** unique identifier for the badge ( auto generated ) */
+  label: string;
+  /** Concise descriptor for the badge or certificate. */
+  name: string;
+  /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+  description: string;
+  /** URL to the badge image */
+  image_url: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** Timestamp when the resource was deleted. */
+  deleted_at: string;
+};
+export type CreateOrUpdateBadgeApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** The ID of the organization in which this badge is available . */
+    org_id: string;
+    /** unique identifier for the badge ( auto generated ) */
+    label: string;
+    /** Concise descriptor for the badge or certificate. */
+    name: string;
+    /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+    description: string;
+    /** URL to the badge image */
+    image_url: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** Timestamp when the resource was deleted. */
+    deleted_at: string;
+  };
+};
 export const {
   useImportDesignMutation,
   useRegisterMeshmodelsMutation,
@@ -1328,4 +1381,5 @@ export const {
   useGetInvitationsQuery,
   useCreateInvitationMutation,
   useAcceptInvitationMutation,
+  useCreateOrUpdateBadgeMutation,
 } = injectedRtkApi;

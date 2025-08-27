@@ -107,7 +107,7 @@ const schema = {
                       },
                       "items": {
                         "type": "string",
-                        "format": "email",
+                        "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                       }
@@ -346,7 +346,7 @@ const schema = {
                     },
                     "items": {
                       "type": "string",
-                      "format": "email",
+                      "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                       "x-go-type": "string",
                       "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                     }
@@ -521,7 +521,7 @@ const schema = {
                       },
                       "items": {
                         "type": "string",
-                        "format": "email",
+                        "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                       }
@@ -726,7 +726,7 @@ const schema = {
                             },
                             "items": {
                               "type": "string",
-                              "format": "email",
+                              "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                               "x-go-type": "string",
                               "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                             }
@@ -934,7 +934,7 @@ const schema = {
                     },
                     "items": {
                       "type": "string",
-                      "format": "email",
+                      "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                       "x-go-type": "string",
                       "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                     }
@@ -1109,7 +1109,7 @@ const schema = {
                       },
                       "items": {
                         "type": "string",
-                        "format": "email",
+                        "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                       }
@@ -1316,7 +1316,7 @@ const schema = {
                       },
                       "items": {
                         "type": "string",
-                        "format": "email",
+                        "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                         "x-go-type": "string",
                         "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                       }
@@ -1550,7 +1550,7 @@ const schema = {
                   },
                   "items": {
                     "type": "string",
-                    "format": "email",
+                    "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
                     "x-go-type": "string",
                     "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
                   }
@@ -1740,7 +1740,7 @@ const schema = {
             },
             "items": {
               "type": "string",
-              "format": "email",
+              "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
               "x-go-type": "string",
               "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
             }
