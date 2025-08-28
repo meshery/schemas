@@ -1486,7 +1486,7 @@ components:
             type: object
         test_stats:
           type: object
-          description: "This panel provides a high-level summary of all test activities across your academy."
+          description: "Identity the most difficult, easiest, and most attempted tests in this  high-level summary of test performance."
           properties:
             pass_fail_summary:
               type: object
