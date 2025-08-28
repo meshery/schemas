@@ -634,7 +634,7 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       created_at: string;
       /** Timestamp when the resource was updated. */
       updated_at: string;
-      /** Timestamp when the resource was deleted. */
+      /** Timestamp when the resource was deleted, if applicable */
       deleted_at: string;
     };
     certificate?: {
@@ -1323,7 +1323,7 @@ export type CreateOrUpdateBadgeApiResponse = /** status 201 undefined */ {
   created_at: string;
   /** Timestamp when the resource was updated. */
   updated_at: string;
-  /** Timestamp when the resource was deleted. */
+  /** Timestamp when the resource was deleted, if applicable */
   deleted_at: string;
 };
 export type CreateOrUpdateBadgeApiArg = {
@@ -1344,7 +1344,7 @@ export type CreateOrUpdateBadgeApiArg = {
     created_at: string;
     /** Timestamp when the resource was updated. */
     updated_at: string;
-    /** Timestamp when the resource was deleted. */
+    /** Timestamp when the resource was deleted, if applicable */
     deleted_at: string;
   };
 };

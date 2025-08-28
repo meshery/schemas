@@ -2421,15 +2421,15 @@ paths:
                                   yaml: updated_at
                                 x-go-type-skip-optional-pointer: true
                               deleted_at:
-                                description: Timestamp when the resource was deleted.
-                                x-go-type: time.Time
                                 type: string
                                 format: date-time
-                                x-go-name: DeletedAt
+                                x-go-type: core.NullTime
+                                description: >-
+                                  Timestamp when the resource was deleted, if
+                                  applicable
                                 x-oapi-codegen-extra-tags:
                                   db: deleted_at
-                                  yaml: deleted_at
-                                x-go-type-skip-optional-pointer: true
+                                  json: deleted_at
                           certificate:
                             x-go-type: Certificate
                             type: object
@@ -2718,14 +2718,13 @@ paths:
                     format: date-time
                     x-go-type-skip-optional-pointer: true
                   deleted_at:
+                    x-go-type: core.NullTime
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
                     description: Timestamp when the resource was deleted.
-                    x-go-type: time.Time
                     type: string
                     format: date-time
                     x-go-name: DeletedAt
-                    x-oapi-codegen-extra-tags:
-                      db: deleted_at
-                      yaml: deleted_at
                     x-go-type-skip-optional-pointer: true
                   certificate:
                     x-go-type: core.Map
@@ -2933,14 +2932,13 @@ paths:
                     format: date-time
                     x-go-type-skip-optional-pointer: true
                   deleted_at:
+                    x-go-type: core.NullTime
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
                     description: Timestamp when the resource was deleted.
-                    x-go-type: time.Time
                     type: string
                     format: date-time
                     x-go-name: DeletedAt
-                    x-oapi-codegen-extra-tags:
-                      db: deleted_at
-                      yaml: deleted_at
                     x-go-type-skip-optional-pointer: true
                   certificate:
                     x-go-type: core.Map
@@ -5424,15 +5422,13 @@ paths:
                     yaml: updated_at
                   x-go-type-skip-optional-pointer: true
                 deleted_at:
-                  description: Timestamp when the resource was deleted.
-                  x-go-type: time.Time
                   type: string
                   format: date-time
-                  x-go-name: DeletedAt
+                  x-go-type: core.NullTime
+                  description: Timestamp when the resource was deleted, if applicable
                   x-oapi-codegen-extra-tags:
                     db: deleted_at
-                    yaml: deleted_at
-                  x-go-type-skip-optional-pointer: true
+                    json: deleted_at
         required: true
       responses:
         '201':
@@ -5530,15 +5526,13 @@ paths:
                       yaml: updated_at
                     x-go-type-skip-optional-pointer: true
                   deleted_at:
-                    description: Timestamp when the resource was deleted.
-                    x-go-type: time.Time
                     type: string
                     format: date-time
-                    x-go-name: DeletedAt
+                    x-go-type: core.NullTime
+                    description: Timestamp when the resource was deleted, if applicable
                     x-oapi-codegen-extra-tags:
                       db: deleted_at
-                      yaml: deleted_at
-                    x-go-type-skip-optional-pointer: true
+                      json: deleted_at
 components:
   schemas:
     design_DeletePatternModel:
@@ -51943,15 +51937,13 @@ components:
                         yaml: updated_at
                       x-go-type-skip-optional-pointer: true
                     deleted_at:
-                      description: Timestamp when the resource was deleted.
-                      x-go-type: time.Time
                       type: string
                       format: date-time
-                      x-go-name: DeletedAt
+                      x-go-type: core.NullTime
+                      description: Timestamp when the resource was deleted, if applicable
                       x-oapi-codegen-extra-tags:
                         db: deleted_at
-                        yaml: deleted_at
-                      x-go-type-skip-optional-pointer: true
+                        json: deleted_at
                 certificate:
                   x-go-type: Certificate
                   type: object
@@ -52351,15 +52343,15 @@ components:
                             yaml: updated_at
                           x-go-type-skip-optional-pointer: true
                         deleted_at:
-                          description: Timestamp when the resource was deleted.
-                          x-go-type: time.Time
                           type: string
                           format: date-time
-                          x-go-name: DeletedAt
+                          x-go-type: core.NullTime
+                          description: >-
+                            Timestamp when the resource was deleted, if
+                            applicable
                           x-oapi-codegen-extra-tags:
                             db: deleted_at
-                            yaml: deleted_at
-                          x-go-type-skip-optional-pointer: true
+                            json: deleted_at
                     certificate:
                       x-go-type: Certificate
                       type: object
@@ -52780,15 +52772,15 @@ components:
                               yaml: updated_at
                             x-go-type-skip-optional-pointer: true
                           deleted_at:
-                            description: Timestamp when the resource was deleted.
-                            x-go-type: time.Time
                             type: string
                             format: date-time
-                            x-go-name: DeletedAt
+                            x-go-type: core.NullTime
+                            description: >-
+                              Timestamp when the resource was deleted, if
+                              applicable
                             x-oapi-codegen-extra-tags:
                               db: deleted_at
-                              yaml: deleted_at
-                            x-go-type-skip-optional-pointer: true
+                              json: deleted_at
                       certificate:
                         x-go-type: Certificate
                         type: object
@@ -53214,15 +53206,15 @@ components:
                                   yaml: updated_at
                                 x-go-type-skip-optional-pointer: true
                               deleted_at:
-                                description: Timestamp when the resource was deleted.
-                                x-go-type: time.Time
                                 type: string
                                 format: date-time
-                                x-go-name: DeletedAt
+                                x-go-type: core.NullTime
+                                description: >-
+                                  Timestamp when the resource was deleted, if
+                                  applicable
                                 x-oapi-codegen-extra-tags:
                                   db: deleted_at
-                                  yaml: deleted_at
-                                x-go-type-skip-optional-pointer: true
+                                  json: deleted_at
                           certificate:
                             x-go-type: Certificate
                             type: object
@@ -53530,15 +53522,13 @@ components:
                 yaml: updated_at
               x-go-type-skip-optional-pointer: true
             deleted_at:
-              description: Timestamp when the resource was deleted.
-              x-go-type: time.Time
               type: string
               format: date-time
-              x-go-name: DeletedAt
+              x-go-type: core.NullTime
+              description: Timestamp when the resource was deleted, if applicable
               x-oapi-codegen-extra-tags:
                 db: deleted_at
-                yaml: deleted_at
-              x-go-type-skip-optional-pointer: true
+                json: deleted_at
         certificate:
           x-go-type: Certificate
           type: object
@@ -53808,15 +53798,13 @@ components:
                 yaml: updated_at
               x-go-type-skip-optional-pointer: true
             deleted_at:
-              description: Timestamp when the resource was deleted.
-              x-go-type: time.Time
               type: string
               format: date-time
-              x-go-name: DeletedAt
+              x-go-type: core.NullTime
+              description: Timestamp when the resource was deleted, if applicable
               x-oapi-codegen-extra-tags:
                 db: deleted_at
-                yaml: deleted_at
-              x-go-type-skip-optional-pointer: true
+                json: deleted_at
         certificate:
           x-go-type: Certificate
           type: object
@@ -54181,15 +54169,13 @@ components:
                 yaml: updated_at
               x-go-type-skip-optional-pointer: true
             deleted_at:
-              description: Timestamp when the resource was deleted.
-              x-go-type: time.Time
               type: string
               format: date-time
-              x-go-name: DeletedAt
+              x-go-type: core.NullTime
+              description: Timestamp when the resource was deleted, if applicable
               x-oapi-codegen-extra-tags:
                 db: deleted_at
-                yaml: deleted_at
-              x-go-type-skip-optional-pointer: true
+                json: deleted_at
         certificate:
           x-go-type: Certificate
           type: object
@@ -54425,14 +54411,13 @@ components:
           format: date-time
           x-go-type-skip-optional-pointer: true
         deleted_at:
+          x-go-type: core.NullTime
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
           description: Timestamp when the resource was deleted.
-          x-go-type: time.Time
           type: string
           format: date-time
           x-go-name: DeletedAt
-          x-oapi-codegen-extra-tags:
-            db: deleted_at
-            yaml: deleted_at
           x-go-type-skip-optional-pointer: true
         certificate:
           x-go-type: core.Map
@@ -54669,14 +54654,13 @@ components:
                 format: date-time
                 x-go-type-skip-optional-pointer: true
               deleted_at:
+                x-go-type: core.NullTime
+                x-oapi-codegen-extra-tags:
+                  db: deleted_at
                 description: Timestamp when the resource was deleted.
-                x-go-type: time.Time
                 type: string
                 format: date-time
                 x-go-name: DeletedAt
-                x-oapi-codegen-extra-tags:
-                  db: deleted_at
-                  yaml: deleted_at
                 x-go-type-skip-optional-pointer: true
               certificate:
                 x-go-type: core.Map
@@ -56317,15 +56301,13 @@ components:
             yaml: updated_at
           x-go-type-skip-optional-pointer: true
         deleted_at:
-          description: Timestamp when the resource was deleted.
-          x-go-type: time.Time
           type: string
           format: date-time
-          x-go-name: DeletedAt
+          x-go-type: core.NullTime
+          description: Timestamp when the resource was deleted, if applicable
           x-oapi-codegen-extra-tags:
             db: deleted_at
-            yaml: deleted_at
-          x-go-type-skip-optional-pointer: true
+            json: deleted_at
   responses:
     subscription_400:
       description: Invalid request body or request param

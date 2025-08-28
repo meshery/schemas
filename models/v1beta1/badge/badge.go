@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 )
 
 // Badge defines model for Badge.
@@ -14,8 +15,8 @@ type Badge struct {
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
-	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt time.Time `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+	// DeletedAt Timestamp when the resource was deleted, if applicable
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// Description A description of the milestone achieved, often including criteria for receiving this recognition.
 	Description string `db:"description" json:"description" yaml:"description"`

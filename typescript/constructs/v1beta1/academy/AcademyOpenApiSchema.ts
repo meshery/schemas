@@ -336,16 +336,14 @@ const schema = {
                                       "x-go-type-skip-optional-pointer": true
                                     },
                                     "deleted_at": {
-                                      "description": "Timestamp when the resource was deleted.",
-                                      "x-go-type": "time.Time",
                                       "type": "string",
                                       "format": "date-time",
-                                      "x-go-name": "DeletedAt",
+                                      "x-go-type": "core.NullTime",
+                                      "description": "Timestamp when the resource was deleted, if applicable",
                                       "x-oapi-codegen-extra-tags": {
                                         "db": "deleted_at",
-                                        "yaml": "deleted_at"
-                                      },
-                                      "x-go-type-skip-optional-pointer": true
+                                        "json": "deleted_at"
+                                      }
                                     }
                                   }
                                 },
@@ -951,16 +949,14 @@ const schema = {
                                           "x-go-type-skip-optional-pointer": true
                                         },
                                         "deleted_at": {
-                                          "description": "Timestamp when the resource was deleted.",
-                                          "x-go-type": "time.Time",
                                           "type": "string",
                                           "format": "date-time",
-                                          "x-go-name": "DeletedAt",
+                                          "x-go-type": "core.NullTime",
+                                          "description": "Timestamp when the resource was deleted, if applicable",
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "deleted_at",
-                                            "yaml": "deleted_at"
-                                          },
-                                          "x-go-type-skip-optional-pointer": true
+                                            "json": "deleted_at"
+                                          }
                                         }
                                       }
                                     },
@@ -1496,16 +1492,14 @@ const schema = {
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "deleted_at": {
-                                  "description": "Timestamp when the resource was deleted.",
-                                  "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
-                                  "x-go-name": "DeletedAt",
+                                  "x-go-type": "core.NullTime",
+                                  "description": "Timestamp when the resource was deleted, if applicable",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "deleted_at",
-                                    "yaml": "deleted_at"
-                                  },
-                                  "x-go-type-skip-optional-pointer": true
+                                    "json": "deleted_at"
+                                  }
                                 }
                               }
                             },
@@ -1847,15 +1841,14 @@ const schema = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
+                      "x-go-type": "core.NullTime",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      },
                       "description": "Timestamp when the resource was deleted.",
-                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "yaml": "deleted_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "certificate": {
@@ -2107,15 +2100,14 @@ const schema = {
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
+                      "x-go-type": "core.NullTime",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      },
                       "description": "Timestamp when the resource was deleted.",
-                      "x-go-type": "time.Time",
                       "type": "string",
                       "format": "date-time",
                       "x-go-name": "DeletedAt",
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at",
-                        "yaml": "deleted_at"
-                      },
                       "x-go-type-skip-optional-pointer": true
                     },
                     "certificate": {
@@ -3865,16 +3857,14 @@ const schema = {
                         "x-go-type-skip-optional-pointer": true
                       },
                       "deleted_at": {
-                        "description": "Timestamp when the resource was deleted.",
-                        "x-go-type": "time.Time",
                         "type": "string",
                         "format": "date-time",
-                        "x-go-name": "DeletedAt",
+                        "x-go-type": "core.NullTime",
+                        "description": "Timestamp when the resource was deleted, if applicable",
                         "x-oapi-codegen-extra-tags": {
                           "db": "deleted_at",
-                          "yaml": "deleted_at"
-                        },
-                        "x-go-type-skip-optional-pointer": true
+                          "json": "deleted_at"
+                        }
                       }
                     }
                   },
@@ -4338,16 +4328,14 @@ const schema = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
-                            "description": "Timestamp when the resource was deleted.",
-                            "x-go-type": "time.Time",
                             "type": "string",
                             "format": "date-time",
-                            "x-go-name": "DeletedAt",
+                            "x-go-type": "core.NullTime",
+                            "description": "Timestamp when the resource was deleted, if applicable",
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
-                              "yaml": "deleted_at"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                              "json": "deleted_at"
+                            }
                           }
                         }
                       },
@@ -4838,16 +4826,14 @@ const schema = {
                               "x-go-type-skip-optional-pointer": true
                             },
                             "deleted_at": {
-                              "description": "Timestamp when the resource was deleted.",
-                              "x-go-type": "time.Time",
                               "type": "string",
                               "format": "date-time",
-                              "x-go-name": "DeletedAt",
+                              "x-go-type": "core.NullTime",
+                              "description": "Timestamp when the resource was deleted, if applicable",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "deleted_at",
-                                "yaml": "deleted_at"
-                              },
-                              "x-go-type-skip-optional-pointer": true
+                                "json": "deleted_at"
+                              }
                             }
                           }
                         },
@@ -5330,16 +5316,14 @@ const schema = {
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "deleted_at": {
-                                  "description": "Timestamp when the resource was deleted.",
-                                  "x-go-type": "time.Time",
                                   "type": "string",
                                   "format": "date-time",
-                                  "x-go-name": "DeletedAt",
+                                  "x-go-type": "core.NullTime",
+                                  "description": "Timestamp when the resource was deleted, if applicable",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "deleted_at",
-                                    "yaml": "deleted_at"
-                                  },
-                                  "x-go-type-skip-optional-pointer": true
+                                    "json": "deleted_at"
+                                  }
                                 }
                               }
                             },
@@ -5692,16 +5676,14 @@ const schema = {
                 "x-go-type-skip-optional-pointer": true
               },
               "deleted_at": {
-                "description": "Timestamp when the resource was deleted.",
-                "x-go-type": "time.Time",
                 "type": "string",
                 "format": "date-time",
-                "x-go-name": "DeletedAt",
+                "x-go-type": "core.NullTime",
+                "description": "Timestamp when the resource was deleted, if applicable",
                 "x-oapi-codegen-extra-tags": {
                   "db": "deleted_at",
-                  "yaml": "deleted_at"
-                },
-                "x-go-type-skip-optional-pointer": true
+                  "json": "deleted_at"
+                }
               }
             }
           },
@@ -6012,16 +5994,14 @@ const schema = {
                 "x-go-type-skip-optional-pointer": true
               },
               "deleted_at": {
-                "description": "Timestamp when the resource was deleted.",
-                "x-go-type": "time.Time",
                 "type": "string",
                 "format": "date-time",
-                "x-go-name": "DeletedAt",
+                "x-go-type": "core.NullTime",
+                "description": "Timestamp when the resource was deleted, if applicable",
                 "x-oapi-codegen-extra-tags": {
                   "db": "deleted_at",
-                  "yaml": "deleted_at"
-                },
-                "x-go-type-skip-optional-pointer": true
+                  "json": "deleted_at"
+                }
               }
             }
           },
@@ -6448,16 +6428,14 @@ const schema = {
                 "x-go-type-skip-optional-pointer": true
               },
               "deleted_at": {
-                "description": "Timestamp when the resource was deleted.",
-                "x-go-type": "time.Time",
                 "type": "string",
                 "format": "date-time",
-                "x-go-name": "DeletedAt",
+                "x-go-type": "core.NullTime",
+                "description": "Timestamp when the resource was deleted, if applicable",
                 "x-oapi-codegen-extra-tags": {
                   "db": "deleted_at",
-                  "yaml": "deleted_at"
-                },
-                "x-go-type-skip-optional-pointer": true
+                  "json": "deleted_at"
+                }
               }
             }
           },
@@ -6740,15 +6718,14 @@ const schema = {
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
+            "x-go-type": "core.NullTime",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            },
             "description": "Timestamp when the resource was deleted.",
-            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
             "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           },
           "certificate": {
@@ -7031,15 +7008,14 @@ const schema = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
+                  "x-go-type": "core.NullTime",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at"
+                  },
                   "description": "Timestamp when the resource was deleted.",
-                  "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
                   "x-go-name": "DeletedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "yaml": "deleted_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "certificate": {
