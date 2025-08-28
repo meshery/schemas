@@ -49,6 +49,8 @@ tags:
   - name: invitation_Invitation
     description: Operations related to invitation
     x-displayName: Invitation
+  - name: badge_Badge
+    x-displayName: Badge
 paths:
   /api/pattern/import:
     servers: []
@@ -376,6 +378,10 @@ paths:
                           type: object
                           properties:
                             id:
+                              x-oapi-codegen-extra-tags:
+                                db: id
+                                json: id
+                                csv: id
                               type: string
                               format: uuid
                               description: >-
@@ -388,6 +394,10 @@ paths:
                             name:
                               type: string
                               x-go-type: PlanName
+                              x-oapi-codegen-extra-tags:
+                                db: name
+                                json: name
+                                csv: name
                               description: Name of the plan
                               enum:
                                 - Free
@@ -396,23 +406,44 @@ paths:
                                 - Enterprise
                             cadence:
                               x-go-type: PlanCadence
+                              x-oapi-codegen-extra-tags:
+                                db: cadence
+                                json: cadence
+                                csv: cadence
                               type: string
                               enum:
                                 - monthly
                                 - yearly
                             unit:
                               x-go-type: PlanUnit
+                              x-oapi-codegen-extra-tags:
+                                db: unit
+                                json: unit
+                                csv: unit
                               type: string
                               enum:
                                 - user
                                 - free
+                            minimum_units:
+                              type: integer
+                              description: Minimum number of units required for the plan
+                              x-oapi-codegen-extra-tags:
+                                db: minimum_units
+                                json: minimum_units
+                                csv: minimum_units
                             price_per_unit:
                               type: number
                               description: Price per unit of the plan
                               x-oapi-codegen-extra-tags:
                                 db: price_per_unit
+                                json: price_per_unit
+                                csv: price_per_unit
                             currency:
                               x-go-type: Currency
+                              x-oapi-codegen-extra-tags:
+                                db: currency
+                                json: currency
+                                csv: currency
                               type: string
                               enum:
                                 - usd
@@ -422,6 +453,7 @@ paths:
                             - cadence
                             - unit
                             - price_per_unit
+                            - minimum_units
                             - price_id
                             - currency
                         quantity:
@@ -622,6 +654,10 @@ paths:
                           type: object
                           properties:
                             id:
+                              x-oapi-codegen-extra-tags:
+                                db: id
+                                json: id
+                                csv: id
                               type: string
                               format: uuid
                               description: >-
@@ -634,6 +670,10 @@ paths:
                             name:
                               type: string
                               x-go-type: PlanName
+                              x-oapi-codegen-extra-tags:
+                                db: name
+                                json: name
+                                csv: name
                               description: Name of the plan
                               enum:
                                 - Free
@@ -642,23 +682,44 @@ paths:
                                 - Enterprise
                             cadence:
                               x-go-type: PlanCadence
+                              x-oapi-codegen-extra-tags:
+                                db: cadence
+                                json: cadence
+                                csv: cadence
                               type: string
                               enum:
                                 - monthly
                                 - yearly
                             unit:
                               x-go-type: PlanUnit
+                              x-oapi-codegen-extra-tags:
+                                db: unit
+                                json: unit
+                                csv: unit
                               type: string
                               enum:
                                 - user
                                 - free
+                            minimum_units:
+                              type: integer
+                              description: Minimum number of units required for the plan
+                              x-oapi-codegen-extra-tags:
+                                db: minimum_units
+                                json: minimum_units
+                                csv: minimum_units
                             price_per_unit:
                               type: number
                               description: Price per unit of the plan
                               x-oapi-codegen-extra-tags:
                                 db: price_per_unit
+                                json: price_per_unit
+                                csv: price_per_unit
                             currency:
                               x-go-type: Currency
+                              x-oapi-codegen-extra-tags:
+                                db: currency
+                                json: currency
+                                csv: currency
                               type: string
                               enum:
                                 - usd
@@ -668,6 +729,7 @@ paths:
                             - cadence
                             - unit
                             - price_per_unit
+                            - minimum_units
                             - price_id
                             - currency
                         quantity:
@@ -862,6 +924,10 @@ paths:
                   type: object
                   properties:
                     id:
+                      x-oapi-codegen-extra-tags:
+                        db: id
+                        json: id
+                        csv: id
                       type: string
                       format: uuid
                       description: >-
@@ -874,6 +940,10 @@ paths:
                     name:
                       type: string
                       x-go-type: PlanName
+                      x-oapi-codegen-extra-tags:
+                        db: name
+                        json: name
+                        csv: name
                       description: Name of the plan
                       enum:
                         - Free
@@ -882,23 +952,44 @@ paths:
                         - Enterprise
                     cadence:
                       x-go-type: PlanCadence
+                      x-oapi-codegen-extra-tags:
+                        db: cadence
+                        json: cadence
+                        csv: cadence
                       type: string
                       enum:
                         - monthly
                         - yearly
                     unit:
                       x-go-type: PlanUnit
+                      x-oapi-codegen-extra-tags:
+                        db: unit
+                        json: unit
+                        csv: unit
                       type: string
                       enum:
                         - user
                         - free
+                    minimum_units:
+                      type: integer
+                      description: Minimum number of units required for the plan
+                      x-oapi-codegen-extra-tags:
+                        db: minimum_units
+                        json: minimum_units
+                        csv: minimum_units
                     price_per_unit:
                       type: number
                       description: Price per unit of the plan
                       x-oapi-codegen-extra-tags:
                         db: price_per_unit
+                        json: price_per_unit
+                        csv: price_per_unit
                     currency:
                       x-go-type: Currency
+                      x-oapi-codegen-extra-tags:
+                        db: currency
+                        json: currency
+                        csv: currency
                       type: string
                       enum:
                         - usd
@@ -908,6 +999,7 @@ paths:
                     - cadence
                     - unit
                     - price_per_unit
+                    - minimum_units
                     - price_id
                     - currency
         '400':
@@ -975,6 +1067,10 @@ paths:
                       type: object
                       properties:
                         id:
+                          x-oapi-codegen-extra-tags:
+                            db: id
+                            json: id
+                            csv: id
                           type: string
                           format: uuid
                           description: >-
@@ -987,6 +1083,10 @@ paths:
                         name:
                           type: string
                           x-go-type: PlanName
+                          x-oapi-codegen-extra-tags:
+                            db: name
+                            json: name
+                            csv: name
                           description: Name of the plan
                           enum:
                             - Free
@@ -995,23 +1095,44 @@ paths:
                             - Enterprise
                         cadence:
                           x-go-type: PlanCadence
+                          x-oapi-codegen-extra-tags:
+                            db: cadence
+                            json: cadence
+                            csv: cadence
                           type: string
                           enum:
                             - monthly
                             - yearly
                         unit:
                           x-go-type: PlanUnit
+                          x-oapi-codegen-extra-tags:
+                            db: unit
+                            json: unit
+                            csv: unit
                           type: string
                           enum:
                             - user
                             - free
+                        minimum_units:
+                          type: integer
+                          description: Minimum number of units required for the plan
+                          x-oapi-codegen-extra-tags:
+                            db: minimum_units
+                            json: minimum_units
+                            csv: minimum_units
                         price_per_unit:
                           type: number
                           description: Price per unit of the plan
                           x-oapi-codegen-extra-tags:
                             db: price_per_unit
+                            json: price_per_unit
+                            csv: price_per_unit
                         currency:
                           x-go-type: Currency
+                          x-oapi-codegen-extra-tags:
+                            db: currency
+                            json: currency
+                            csv: currency
                           type: string
                           enum:
                             - usd
@@ -1021,6 +1142,7 @@ paths:
                         - cadence
                         - unit
                         - price_per_unit
+                        - minimum_units
                         - price_id
                         - currency
                     name:
@@ -1146,6 +1268,10 @@ paths:
                       type: object
                       properties:
                         id:
+                          x-oapi-codegen-extra-tags:
+                            db: id
+                            json: id
+                            csv: id
                           type: string
                           format: uuid
                           description: >-
@@ -1158,6 +1284,10 @@ paths:
                         name:
                           type: string
                           x-go-type: PlanName
+                          x-oapi-codegen-extra-tags:
+                            db: name
+                            json: name
+                            csv: name
                           description: Name of the plan
                           enum:
                             - Free
@@ -1166,23 +1296,44 @@ paths:
                             - Enterprise
                         cadence:
                           x-go-type: PlanCadence
+                          x-oapi-codegen-extra-tags:
+                            db: cadence
+                            json: cadence
+                            csv: cadence
                           type: string
                           enum:
                             - monthly
                             - yearly
                         unit:
                           x-go-type: PlanUnit
+                          x-oapi-codegen-extra-tags:
+                            db: unit
+                            json: unit
+                            csv: unit
                           type: string
                           enum:
                             - user
                             - free
+                        minimum_units:
+                          type: integer
+                          description: Minimum number of units required for the plan
+                          x-oapi-codegen-extra-tags:
+                            db: minimum_units
+                            json: minimum_units
+                            csv: minimum_units
                         price_per_unit:
                           type: number
                           description: Price per unit of the plan
                           x-oapi-codegen-extra-tags:
                             db: price_per_unit
+                            json: price_per_unit
+                            csv: price_per_unit
                         currency:
                           x-go-type: Currency
+                          x-oapi-codegen-extra-tags:
+                            db: currency
+                            json: currency
+                            csv: currency
                           type: string
                           enum:
                             - usd
@@ -1192,6 +1343,7 @@ paths:
                         - cadence
                         - unit
                         - price_per_unit
+                        - minimum_units
                         - price_id
                         - currency
                     name:
@@ -15993,43 +16145,117 @@ paths:
                             example: >-
                               http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
                           badge:
-                            x-go-type: Badge
+                            x-go-type-import:
+                              path: github.com/meshery/schemas/models/v1beta1/badge
+                            x-go-type: badge.Badge
                             type: object
                             required:
+                              - id
                               - label
-                              - title
+                              - name
+                              - org_id
                               - description
-                              - png
-                              - svg
+                              - image_url
+                              - created_at
+                              - updated_at
+                              - deleted_at
                             properties:
+                              id:
+                                x-go-name: ID
+                                x-oapi-codegen-extra-tags:
+                                  db: id
+                                  json: id
+                                type: string
+                                format: uuid
+                                description: >-
+                                  A Universally Unique Identifier used to
+                                  uniquely identify entities in Meshery. The
+                                  UUID core definition is used across different
+                                  schemas.
+                                x-go-type: uuid.UUID
+                                x-go-type-import:
+                                  path: github.com/gofrs/uuid
+                              org_id:
+                                description: >-
+                                  The ID of the organization in which this badge
+                                  is available .
+                                x-oapi-codegen-extra-tags:
+                                  db: org_id
+                                  json: org_id
+                                type: string
+                                format: uuid
+                                x-go-type: uuid.UUID
+                                x-go-type-import:
+                                  path: github.com/gofrs/uuid
                               label:
                                 type: string
                                 description: >-
                                   unique identifier for the badge ( auto
                                   generated )
                                 example: Kubernetes-Expert
-                              title:
+                                x-oapi-codegen-extra-tags:
+                                  db: label
+                                  json: label
+                              name:
                                 type: string
-                                description: Title of the badge
+                                description: >-
+                                  Concise descriptor for the badge or
+                                  certificate.
                                 example: Kubernetes Expert
+                                x-oapi-codegen-extra-tags:
+                                  db: name
+                                  json: name
                               description:
                                 type: string
-                                description: Description of the badge
+                                description: >-
+                                  A description of the milestone achieved, often
+                                  including criteria for receiving this
+                                  recognition.
                                 example: >-
                                   Awarded for mastering Kubernetes concepts and
-                                  practices
-                              png:
+                                  practices.
+                                x-oapi-codegen-extra-tags:
+                                  db: description
+                                  json: description
+                              image_url:
                                 type: string
                                 format: uri
                                 description: URL to the badge image
                                 example: >-
-                                  http://localhost:9876/badges/kubernetes-expert.png
-                              svg:
+                                  https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+                                x-oapi-codegen-extra-tags:
+                                  db: image_url
+                                  json: image_url
+                              created_at:
+                                description: Timestamp when the resource was created.
+                                x-go-type: time.Time
                                 type: string
-                                format: uri
-                                description: URL to the badge SVG image
-                                example: >-
-                                  http://localhost:9876/badges/kubernetes-expert.svg
+                                format: date-time
+                                x-go-name: CreatedAt
+                                x-oapi-codegen-extra-tags:
+                                  db: created_at
+                                  yaml: created_at
+                                x-go-type-skip-optional-pointer: true
+                              updated_at:
+                                description: Timestamp when the resource was updated.
+                                x-go-type: time.Time
+                                type: string
+                                format: date-time
+                                x-go-name: UpdatedAt
+                                x-oapi-codegen-extra-tags:
+                                  db: updated_at
+                                  yaml: updated_at
+                                x-go-type-skip-optional-pointer: true
+                              deleted_at:
+                                description: Timestamp when the resource was deleted.
+                                x-go-type: time.Time
+                                type: string
+                                format: date-time
+                                x-go-name: DeletedAt
+                                x-oapi-codegen-extra-tags:
+                                  db: deleted_at
+                                  yaml: deleted_at
+                                x-go-type-skip-optional-pointer: true
                           certificate:
                             x-go-type: Certificate
                             type: object
@@ -16319,13 +16545,14 @@ paths:
                     format: date-time
                     x-go-type-skip-optional-pointer: true
                   deleted_at:
-                    x-go-type: core.NullTime
-                    x-oapi-codegen-extra-tags:
-                      db: deleted_at
                     description: Timestamp when the resource was deleted.
+                    x-go-type: time.Time
                     type: string
                     format: date-time
                     x-go-name: DeletedAt
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      yaml: deleted_at
                     x-go-type-skip-optional-pointer: true
                   certificate:
                     x-go-type: core.Map
@@ -16534,13 +16761,14 @@ paths:
                     format: date-time
                     x-go-type-skip-optional-pointer: true
                   deleted_at:
-                    x-go-type: core.NullTime
-                    x-oapi-codegen-extra-tags:
-                      db: deleted_at
                     description: Timestamp when the resource was deleted.
+                    x-go-type: time.Time
                     type: string
                     format: date-time
                     x-go-name: DeletedAt
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      yaml: deleted_at
                     x-go-type-skip-optional-pointer: true
                   certificate:
                     x-go-type: core.Map
@@ -17602,6 +17830,580 @@ paths:
           description: Certificate not found
         '500':
           description: Server error
+  /api/organizations/invitations/{invitationId}:
+    servers: []
+    get:
+      x-internal:
+        - cloud
+      operationId: getInvitation
+      tags:
+        - invitation_Invitation
+      summary: Get an invitation by ID
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          description: The ID of the invitation
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - owner_id
+                  - name
+                  - description
+                  - org_id
+                  - accepted_by
+                  - emails
+                  - roles
+                  - teams
+                  - status
+                  - created_at
+                  - updated_at
+                  - deleted_at
+                properties:
+                  id:
+                    x-go-name: ID
+                    description: >-
+                      Unique identifier for the invitation , is also used as the
+                      invitation code
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  owner_id:
+                    description: >-
+                      ID of the user who created the invitation, this is used to
+                      track who created the invitation and can be used for
+                      auditing purposes
+                    x-oapi-codegen-extra-tags:
+                      db: owner_id
+                      json: owner_id
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  is_default:
+                    type: boolean
+                    description: >-
+                      Indicates whether the invitation is a default invitation
+                      (open invite), which can be used to assign users when
+                      signing up from fqdn or custom domain, a organization can
+                      only have one default invitation
+                    x-oapi-codegen-extra-tags:
+                      db: is_default
+                      json: is_default
+                  name:
+                    type: string
+                    description: >-
+                      Name of the invitation, which can be used to identify the
+                      invitation, required and cant be empty string,
+                  description:
+                    type: string
+                    description: >-
+                      Description of the invitation, which can be used to
+                      provide additional information about the invitation, null
+                      or empty string means the invitation does not have a
+                      description
+                  emails:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      pattern: >-
+                        ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                      x-go-type: string
+                      description: >-
+                        Exact email address or the email address pattern for
+                        which the invitation is valid , null means the
+                        invitation is valid for all email addresses
+                  org_id:
+                    type: string
+                    description: ID of the organization to which the user is invited
+                    x-oapi-codegen-extra-tags:
+                      db: org_id
+                      json: org_id
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: >-
+                      Timestamp when the invitation expires, if applicable ,
+                      null or empty string means the invitation does not expire
+                    x-oapi-codegen-extra-tags:
+                      db: expires_at
+                      json: expires_at
+                  quota:
+                    type: integer
+                    description: >-
+                      Quota for the invitation, which can be used to limit the
+                      number of users that can accept the invitation, null or
+                      empty string means the invitation does not have a quota
+                  accepted_by:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                    description: >-
+                      List of user ids that have already accepted the
+                      invitation, null or empty string means the invitation has
+                      not been used yet
+                    x-oapi-codegen-extra-tags:
+                      db: accepted_by
+                      json: accepted_by
+                  roles:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      description: >-
+                        Roles that the user will have when accepting the
+                        invitation, null or empty string means the invitation
+                        does not specify any roles
+                  teams:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      description: >-
+                        Teams that the user will be added to when accepting the
+                        invitation, null or empty string means the invitation
+                        does not specify any teams
+                  status:
+                    type: string
+                    x-go-type: InvitationStatus
+                    enum:
+                      - enabled
+                      - disabled
+                    description: >-
+                      Status of the invitation, where enabled means the
+                      invitation is active and can be used, disabled means the
+                      invitation is no longer valid and is temporarily inactive,
+                      disabled invitations can be re-enabled later.
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the invitation was created
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      json: created_at
+                  updated_at:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the invitation was last updated
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      json: updated_at
+                  deleted_at:
+                    type: string
+                    format: date-time
+                    x-go-type: core.NullTime
+                    description: Timestamp when the invitation was deleted, if applicable
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      json: deleted_at
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    delete:
+      x-internal:
+        - cloud
+      operationId: deleteInvitation
+      tags:
+        - invitation_Invitation
+      summary: Delete an invitation by ID
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          description: The ID of the invitation
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Invitation deleted successfully
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    put:
+      x-internal:
+        - cloud
+      operationId: updateInvitation
+      tags:
+        - invitation_Invitation
+      summary: Update an existing invitation
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          description: The ID of the invitation
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - owner_id
+                - name
+                - description
+                - org_id
+                - accepted_by
+                - emails
+                - roles
+                - teams
+                - status
+                - created_at
+                - updated_at
+                - deleted_at
+              properties:
+                id:
+                  x-go-name: ID
+                  description: >-
+                    Unique identifier for the invitation , is also used as the
+                    invitation code
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                owner_id:
+                  description: >-
+                    ID of the user who created the invitation, this is used to
+                    track who created the invitation and can be used for
+                    auditing purposes
+                  x-oapi-codegen-extra-tags:
+                    db: owner_id
+                    json: owner_id
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                is_default:
+                  type: boolean
+                  description: >-
+                    Indicates whether the invitation is a default invitation
+                    (open invite), which can be used to assign users when
+                    signing up from fqdn or custom domain, a organization can
+                    only have one default invitation
+                  x-oapi-codegen-extra-tags:
+                    db: is_default
+                    json: is_default
+                name:
+                  type: string
+                  description: >-
+                    Name of the invitation, which can be used to identify the
+                    invitation, required and cant be empty string,
+                description:
+                  type: string
+                  description: >-
+                    Description of the invitation, which can be used to provide
+                    additional information about the invitation, null or empty
+                    string means the invitation does not have a description
+                emails:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                    pattern: >-
+                      ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                    x-go-type: string
+                    description: >-
+                      Exact email address or the email address pattern for which
+                      the invitation is valid , null means the invitation is
+                      valid for all email addresses
+                org_id:
+                  type: string
+                  description: ID of the organization to which the user is invited
+                  x-oapi-codegen-extra-tags:
+                    db: org_id
+                    json: org_id
+                expires_at:
+                  type: string
+                  format: date-time
+                  description: >-
+                    Timestamp when the invitation expires, if applicable , null
+                    or empty string means the invitation does not expire
+                  x-oapi-codegen-extra-tags:
+                    db: expires_at
+                    json: expires_at
+                quota:
+                  type: integer
+                  description: >-
+                    Quota for the invitation, which can be used to limit the
+                    number of users that can accept the invitation, null or
+                    empty string means the invitation does not have a quota
+                accepted_by:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                  description: >-
+                    List of user ids that have already accepted the invitation,
+                    null or empty string means the invitation has not been used
+                    yet
+                  x-oapi-codegen-extra-tags:
+                    db: accepted_by
+                    json: accepted_by
+                roles:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                    description: >-
+                      Roles that the user will have when accepting the
+                      invitation, null or empty string means the invitation does
+                      not specify any roles
+                teams:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                    description: >-
+                      Teams that the user will be added to when accepting the
+                      invitation, null or empty string means the invitation does
+                      not specify any teams
+                status:
+                  type: string
+                  x-go-type: InvitationStatus
+                  enum:
+                    - enabled
+                    - disabled
+                  description: >-
+                    Status of the invitation, where enabled means the invitation
+                    is active and can be used, disabled means the invitation is
+                    no longer valid and is temporarily inactive, disabled
+                    invitations can be re-enabled later.
+                created_at:
+                  type: string
+                  format: date-time
+                  description: Timestamp when the invitation was created
+                  x-oapi-codegen-extra-tags:
+                    db: created_at
+                    json: created_at
+                updated_at:
+                  type: string
+                  format: date-time
+                  description: Timestamp when the invitation was last updated
+                  x-oapi-codegen-extra-tags:
+                    db: updated_at
+                    json: updated_at
+                deleted_at:
+                  type: string
+                  format: date-time
+                  x-go-type: core.NullTime
+                  description: Timestamp when the invitation was deleted, if applicable
+                  x-oapi-codegen-extra-tags:
+                    db: deleted_at
+                    json: deleted_at
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - owner_id
+                  - name
+                  - description
+                  - org_id
+                  - accepted_by
+                  - emails
+                  - roles
+                  - teams
+                  - status
+                  - created_at
+                  - updated_at
+                  - deleted_at
+                properties:
+                  id:
+                    x-go-name: ID
+                    description: >-
+                      Unique identifier for the invitation , is also used as the
+                      invitation code
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  owner_id:
+                    description: >-
+                      ID of the user who created the invitation, this is used to
+                      track who created the invitation and can be used for
+                      auditing purposes
+                    x-oapi-codegen-extra-tags:
+                      db: owner_id
+                      json: owner_id
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  is_default:
+                    type: boolean
+                    description: >-
+                      Indicates whether the invitation is a default invitation
+                      (open invite), which can be used to assign users when
+                      signing up from fqdn or custom domain, a organization can
+                      only have one default invitation
+                    x-oapi-codegen-extra-tags:
+                      db: is_default
+                      json: is_default
+                  name:
+                    type: string
+                    description: >-
+                      Name of the invitation, which can be used to identify the
+                      invitation, required and cant be empty string,
+                  description:
+                    type: string
+                    description: >-
+                      Description of the invitation, which can be used to
+                      provide additional information about the invitation, null
+                      or empty string means the invitation does not have a
+                      description
+                  emails:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      pattern: >-
+                        ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                      x-go-type: string
+                      description: >-
+                        Exact email address or the email address pattern for
+                        which the invitation is valid , null means the
+                        invitation is valid for all email addresses
+                  org_id:
+                    type: string
+                    description: ID of the organization to which the user is invited
+                    x-oapi-codegen-extra-tags:
+                      db: org_id
+                      json: org_id
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: >-
+                      Timestamp when the invitation expires, if applicable ,
+                      null or empty string means the invitation does not expire
+                    x-oapi-codegen-extra-tags:
+                      db: expires_at
+                      json: expires_at
+                  quota:
+                    type: integer
+                    description: >-
+                      Quota for the invitation, which can be used to limit the
+                      number of users that can accept the invitation, null or
+                      empty string means the invitation does not have a quota
+                  accepted_by:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                    description: >-
+                      List of user ids that have already accepted the
+                      invitation, null or empty string means the invitation has
+                      not been used yet
+                    x-oapi-codegen-extra-tags:
+                      db: accepted_by
+                      json: accepted_by
+                  roles:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      description: >-
+                        Roles that the user will have when accepting the
+                        invitation, null or empty string means the invitation
+                        does not specify any roles
+                  teams:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      description: >-
+                        Teams that the user will be added to when accepting the
+                        invitation, null or empty string means the invitation
+                        does not specify any teams
+                  status:
+                    type: string
+                    x-go-type: InvitationStatus
+                    enum:
+                      - enabled
+                      - disabled
+                    description: >-
+                      Status of the invitation, where enabled means the
+                      invitation is active and can be used, disabled means the
+                      invitation is no longer valid and is temporarily inactive,
+                      disabled invitations can be re-enabled later.
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the invitation was created
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      json: created_at
+                  updated_at:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the invitation was last updated
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      json: updated_at
+                  deleted_at:
+                    type: string
+                    format: date-time
+                    x-go-type: core.NullTime
+                    description: Timestamp when the invitation was deleted, if applicable
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      json: deleted_at
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
   /api/organizations/invitations:
     servers: []
     get:
@@ -17619,37 +18421,51 @@ paths:
                 type: object
                 required:
                   - data
-                  - totalCount
+                  - total
                 properties:
-                  Data:
+                  data:
                     type: array
                     items:
-                      x-go-type: Invitation
                       type: object
                       required:
                         - id
-                        - default
+                        - owner_id
                         - name
                         - description
+                        - org_id
+                        - accepted_by
                         - emails
-                        - orgId
-                        - expiresAt
-                        - quota
-                        - acceptedBy
-                        - status
                         - roles
                         - teams
-                        - createdAt
-                        - updatedAt
-                        - deletedAt
+                        - status
+                        - created_at
+                        - updated_at
+                        - deleted_at
                       properties:
                         id:
-                          ref: '#/components/schemas/uuid'
                           x-go-name: ID
                           description: >-
                             Unique identifier for the invitation , is also used
                             as the invitation code
-                        isDefault:
+                          type: string
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                        owner_id:
+                          description: >-
+                            ID of the user who created the invitation, this is
+                            used to track who created the invitation and can be
+                            used for auditing purposes
+                          x-oapi-codegen-extra-tags:
+                            db: owner_id
+                            json: owner_id
+                          type: string
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                        is_default:
                           type: boolean
                           description: >-
                             Indicates whether the invitation is a default
@@ -17675,20 +18491,25 @@ paths:
                             have a description
                         emails:
                           type: array
+                          x-go-type: pq.StringArray
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
-                            format: email
+                            pattern: >-
+                              ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                            x-go-type: string
                             description: >-
                               Exact email address or the email address pattern
                               for which the invitation is valid , null means the
                               invitation is valid for all email addresses
-                        orgId:
+                        org_id:
                           type: string
                           description: ID of the organization to which the user is invited
                           x-oapi-codegen-extra-tags:
                             db: org_id
                             json: org_id
-                        expiresAt:
+                        expires_at:
                           type: string
                           format: date-time
                           description: >-
@@ -17705,8 +18526,11 @@ paths:
                             the number of users that can accept the invitation,
                             null or empty string means the invitation does not
                             have a quota
-                        acceptedBy:
+                        accepted_by:
                           type: array
+                          x-go-type: pq.StringArray
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
                           description: >-
@@ -17718,6 +18542,9 @@ paths:
                             json: accepted_by
                         roles:
                           type: array
+                          x-go-type: pq.StringArray
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
                             description: >-
@@ -17726,6 +18553,9 @@ paths:
                               invitation does not specify any roles
                         teams:
                           type: array
+                          x-go-type: pq.StringArray
+                          x-go-type-import:
+                            path: github.com/lib/pq
                           items:
                             type: string
                             description: >-
@@ -17744,21 +18574,21 @@ paths:
                             the invitation is no longer valid and is temporarily
                             inactive, disabled invitations can be re-enabled
                             later.
-                        createdAt:
+                        created_at:
                           type: string
                           format: date-time
                           description: Timestamp when the invitation was created
                           x-oapi-codegen-extra-tags:
                             db: created_at
                             json: created_at
-                        updatedAt:
+                        updated_at:
                           type: string
                           format: date-time
                           description: Timestamp when the invitation was last updated
                           x-oapi-codegen-extra-tags:
                             db: updated_at
                             json: updated_at
-                        deletedAt:
+                        deleted_at:
                           type: string
                           format: date-time
                           x-go-type: core.NullTime
@@ -17768,14 +18598,15 @@ paths:
                           x-oapi-codegen-extra-tags:
                             db: deleted_at
                             json: deleted_at
+                      x-go-type: Invitation
                     description: List of invitations
                     x-oapi-codegen-extra-tags:
                       json: data
-                  TotalCount:
+                  total:
                     type: integer
                     description: Total number of invitations available
                     x-oapi-codegen-extra-tags:
-                      json: total_count
+                      json: total
         '400':
           description: Bad Request
         '401':
@@ -17796,28 +18627,43 @@ paths:
               type: object
               required:
                 - id
-                - default
+                - owner_id
                 - name
                 - description
+                - org_id
+                - accepted_by
                 - emails
-                - orgId
-                - expiresAt
-                - quota
-                - acceptedBy
-                - status
                 - roles
                 - teams
-                - createdAt
-                - updatedAt
-                - deletedAt
+                - status
+                - created_at
+                - updated_at
+                - deleted_at
               properties:
                 id:
-                  ref: '#/components/schemas/uuid'
                   x-go-name: ID
                   description: >-
                     Unique identifier for the invitation , is also used as the
                     invitation code
-                isDefault:
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                owner_id:
+                  description: >-
+                    ID of the user who created the invitation, this is used to
+                    track who created the invitation and can be used for
+                    auditing purposes
+                  x-oapi-codegen-extra-tags:
+                    db: owner_id
+                    json: owner_id
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                is_default:
                   type: boolean
                   description: >-
                     Indicates whether the invitation is a default invitation
@@ -17840,20 +18686,25 @@ paths:
                     string means the invitation does not have a description
                 emails:
                   type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
-                    format: email
+                    pattern: >-
+                      ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                    x-go-type: string
                     description: >-
                       Exact email address or the email address pattern for which
                       the invitation is valid , null means the invitation is
                       valid for all email addresses
-                orgId:
+                org_id:
                   type: string
                   description: ID of the organization to which the user is invited
                   x-oapi-codegen-extra-tags:
                     db: org_id
                     json: org_id
-                expiresAt:
+                expires_at:
                   type: string
                   format: date-time
                   description: >-
@@ -17868,8 +18719,11 @@ paths:
                     Quota for the invitation, which can be used to limit the
                     number of users that can accept the invitation, null or
                     empty string means the invitation does not have a quota
-                acceptedBy:
+                accepted_by:
                   type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                   description: >-
@@ -17881,6 +18735,9 @@ paths:
                     json: accepted_by
                 roles:
                   type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     description: >-
@@ -17889,6 +18746,9 @@ paths:
                       not specify any roles
                 teams:
                   type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
                   items:
                     type: string
                     description: >-
@@ -17906,21 +18766,21 @@ paths:
                     is active and can be used, disabled means the invitation is
                     no longer valid and is temporarily inactive, disabled
                     invitations can be re-enabled later.
-                createdAt:
+                created_at:
                   type: string
                   format: date-time
                   description: Timestamp when the invitation was created
                   x-oapi-codegen-extra-tags:
                     db: created_at
                     json: created_at
-                updatedAt:
+                updated_at:
                   type: string
                   format: date-time
                   description: Timestamp when the invitation was last updated
                   x-oapi-codegen-extra-tags:
                     db: updated_at
                     json: updated_at
-                deletedAt:
+                deleted_at:
                   type: string
                   format: date-time
                   x-go-type: core.NullTime
@@ -17937,28 +18797,43 @@ paths:
                 type: object
                 required:
                   - id
-                  - default
+                  - owner_id
                   - name
                   - description
+                  - org_id
+                  - accepted_by
                   - emails
-                  - orgId
-                  - expiresAt
-                  - quota
-                  - acceptedBy
-                  - status
                   - roles
                   - teams
-                  - createdAt
-                  - updatedAt
-                  - deletedAt
+                  - status
+                  - created_at
+                  - updated_at
+                  - deleted_at
                 properties:
                   id:
-                    ref: '#/components/schemas/uuid'
                     x-go-name: ID
                     description: >-
                       Unique identifier for the invitation , is also used as the
                       invitation code
-                  isDefault:
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  owner_id:
+                    description: >-
+                      ID of the user who created the invitation, this is used to
+                      track who created the invitation and can be used for
+                      auditing purposes
+                    x-oapi-codegen-extra-tags:
+                      db: owner_id
+                      json: owner_id
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  is_default:
                     type: boolean
                     description: >-
                       Indicates whether the invitation is a default invitation
@@ -17982,20 +18857,25 @@ paths:
                       description
                   emails:
                     type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
-                      format: email
+                      pattern: >-
+                        ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                      x-go-type: string
                       description: >-
                         Exact email address or the email address pattern for
                         which the invitation is valid , null means the
                         invitation is valid for all email addresses
-                  orgId:
+                  org_id:
                     type: string
                     description: ID of the organization to which the user is invited
                     x-oapi-codegen-extra-tags:
                       db: org_id
                       json: org_id
-                  expiresAt:
+                  expires_at:
                     type: string
                     format: date-time
                     description: >-
@@ -18010,8 +18890,11 @@ paths:
                       Quota for the invitation, which can be used to limit the
                       number of users that can accept the invitation, null or
                       empty string means the invitation does not have a quota
-                  acceptedBy:
+                  accepted_by:
                     type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                     description: >-
@@ -18023,6 +18906,9 @@ paths:
                       json: accepted_by
                   roles:
                     type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -18031,6 +18917,9 @@ paths:
                         does not specify any roles
                   teams:
                     type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
                     items:
                       type: string
                       description: >-
@@ -18048,21 +18937,21 @@ paths:
                       invitation is active and can be used, disabled means the
                       invitation is no longer valid and is temporarily inactive,
                       disabled invitations can be re-enabled later.
-                  createdAt:
+                  created_at:
                     type: string
                     format: date-time
                     description: Timestamp when the invitation was created
                     x-oapi-codegen-extra-tags:
                       db: created_at
                       json: created_at
-                  updatedAt:
+                  updated_at:
                     type: string
                     format: date-time
                     description: Timestamp when the invitation was last updated
                     x-oapi-codegen-extra-tags:
                       db: updated_at
                       json: updated_at
-                  deletedAt:
+                  deleted_at:
                     type: string
                     format: date-time
                     x-go-type: core.NullTime
@@ -18076,6 +18965,417 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
+  /api/organizations/invitations/{invitationId}/accept:
+    servers: []
+    post:
+      x-internal:
+        - cloud
+      operationId: acceptInvitation
+      tags:
+        - invitation_Invitation
+      summary: Accept an invitation by ID
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          description: The ID of the invitation
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - owner_id
+                  - name
+                  - description
+                  - org_id
+                  - accepted_by
+                  - emails
+                  - roles
+                  - teams
+                  - status
+                  - created_at
+                  - updated_at
+                  - deleted_at
+                properties:
+                  id:
+                    x-go-name: ID
+                    description: >-
+                      Unique identifier for the invitation , is also used as the
+                      invitation code
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  owner_id:
+                    description: >-
+                      ID of the user who created the invitation, this is used to
+                      track who created the invitation and can be used for
+                      auditing purposes
+                    x-oapi-codegen-extra-tags:
+                      db: owner_id
+                      json: owner_id
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  is_default:
+                    type: boolean
+                    description: >-
+                      Indicates whether the invitation is a default invitation
+                      (open invite), which can be used to assign users when
+                      signing up from fqdn or custom domain, a organization can
+                      only have one default invitation
+                    x-oapi-codegen-extra-tags:
+                      db: is_default
+                      json: is_default
+                  name:
+                    type: string
+                    description: >-
+                      Name of the invitation, which can be used to identify the
+                      invitation, required and cant be empty string,
+                  description:
+                    type: string
+                    description: >-
+                      Description of the invitation, which can be used to
+                      provide additional information about the invitation, null
+                      or empty string means the invitation does not have a
+                      description
+                  emails:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      pattern: >-
+                        ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                      x-go-type: string
+                      description: >-
+                        Exact email address or the email address pattern for
+                        which the invitation is valid , null means the
+                        invitation is valid for all email addresses
+                  org_id:
+                    type: string
+                    description: ID of the organization to which the user is invited
+                    x-oapi-codegen-extra-tags:
+                      db: org_id
+                      json: org_id
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: >-
+                      Timestamp when the invitation expires, if applicable ,
+                      null or empty string means the invitation does not expire
+                    x-oapi-codegen-extra-tags:
+                      db: expires_at
+                      json: expires_at
+                  quota:
+                    type: integer
+                    description: >-
+                      Quota for the invitation, which can be used to limit the
+                      number of users that can accept the invitation, null or
+                      empty string means the invitation does not have a quota
+                  accepted_by:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                    description: >-
+                      List of user ids that have already accepted the
+                      invitation, null or empty string means the invitation has
+                      not been used yet
+                    x-oapi-codegen-extra-tags:
+                      db: accepted_by
+                      json: accepted_by
+                  roles:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      description: >-
+                        Roles that the user will have when accepting the
+                        invitation, null or empty string means the invitation
+                        does not specify any roles
+                  teams:
+                    type: array
+                    x-go-type: pq.StringArray
+                    x-go-type-import:
+                      path: github.com/lib/pq
+                    items:
+                      type: string
+                      description: >-
+                        Teams that the user will be added to when accepting the
+                        invitation, null or empty string means the invitation
+                        does not specify any teams
+                  status:
+                    type: string
+                    x-go-type: InvitationStatus
+                    enum:
+                      - enabled
+                      - disabled
+                    description: >-
+                      Status of the invitation, where enabled means the
+                      invitation is active and can be used, disabled means the
+                      invitation is no longer valid and is temporarily inactive,
+                      disabled invitations can be re-enabled later.
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the invitation was created
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      json: created_at
+                  updated_at:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the invitation was last updated
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      json: updated_at
+                  deleted_at:
+                    type: string
+                    format: date-time
+                    x-go-type: core.NullTime
+                    description: Timestamp when the invitation was deleted, if applicable
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      json: deleted_at
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /api/organizations/badges:
+    servers: []
+    post:
+      x-internal:
+        - cloud
+      operationId: createOrUpdateBadge
+      tags:
+        - badge_Badge
+      summary: Create a new badge or update an existing badge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - label
+                - name
+                - org_id
+                - description
+                - image_url
+                - created_at
+                - updated_at
+                - deleted_at
+              properties:
+                id:
+                  x-go-name: ID
+                  x-oapi-codegen-extra-tags:
+                    db: id
+                    json: id
+                  type: string
+                  format: uuid
+                  description: >-
+                    A Universally Unique Identifier used to uniquely identify
+                    entities in Meshery. The UUID core definition is used across
+                    different schemas.
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                org_id:
+                  description: >-
+                    The ID of the organization in which this badge is available
+                    .
+                  x-oapi-codegen-extra-tags:
+                    db: org_id
+                    json: org_id
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                label:
+                  type: string
+                  description: unique identifier for the badge ( auto generated )
+                  example: Kubernetes-Expert
+                  x-oapi-codegen-extra-tags:
+                    db: label
+                    json: label
+                name:
+                  type: string
+                  description: Concise descriptor for the badge or certificate.
+                  example: Kubernetes Expert
+                  x-oapi-codegen-extra-tags:
+                    db: name
+                    json: name
+                description:
+                  type: string
+                  description: >-
+                    A description of the milestone achieved, often including
+                    criteria for receiving this recognition.
+                  example: Awarded for mastering Kubernetes concepts and practices.
+                  x-oapi-codegen-extra-tags:
+                    db: description
+                    json: description
+                image_url:
+                  type: string
+                  format: uri
+                  description: URL to the badge image
+                  example: >-
+                    https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+                  x-oapi-codegen-extra-tags:
+                    db: image_url
+                    json: image_url
+                created_at:
+                  description: Timestamp when the resource was created.
+                  x-go-type: time.Time
+                  type: string
+                  format: date-time
+                  x-go-name: CreatedAt
+                  x-oapi-codegen-extra-tags:
+                    db: created_at
+                    yaml: created_at
+                  x-go-type-skip-optional-pointer: true
+                updated_at:
+                  description: Timestamp when the resource was updated.
+                  x-go-type: time.Time
+                  type: string
+                  format: date-time
+                  x-go-name: UpdatedAt
+                  x-oapi-codegen-extra-tags:
+                    db: updated_at
+                    yaml: updated_at
+                  x-go-type-skip-optional-pointer: true
+                deleted_at:
+                  description: Timestamp when the resource was deleted.
+                  x-go-type: time.Time
+                  type: string
+                  format: date-time
+                  x-go-name: DeletedAt
+                  x-oapi-codegen-extra-tags:
+                    db: deleted_at
+                    yaml: deleted_at
+                  x-go-type-skip-optional-pointer: true
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - label
+                  - name
+                  - org_id
+                  - description
+                  - image_url
+                  - created_at
+                  - updated_at
+                  - deleted_at
+                properties:
+                  id:
+                    x-go-name: ID
+                    x-oapi-codegen-extra-tags:
+                      db: id
+                      json: id
+                    type: string
+                    format: uuid
+                    description: >-
+                      A Universally Unique Identifier used to uniquely identify
+                      entities in Meshery. The UUID core definition is used
+                      across different schemas.
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  org_id:
+                    description: >-
+                      The ID of the organization in which this badge is
+                      available .
+                    x-oapi-codegen-extra-tags:
+                      db: org_id
+                      json: org_id
+                    type: string
+                    format: uuid
+                    x-go-type: uuid.UUID
+                    x-go-type-import:
+                      path: github.com/gofrs/uuid
+                  label:
+                    type: string
+                    description: unique identifier for the badge ( auto generated )
+                    example: Kubernetes-Expert
+                    x-oapi-codegen-extra-tags:
+                      db: label
+                      json: label
+                  name:
+                    type: string
+                    description: Concise descriptor for the badge or certificate.
+                    example: Kubernetes Expert
+                    x-oapi-codegen-extra-tags:
+                      db: name
+                      json: name
+                  description:
+                    type: string
+                    description: >-
+                      A description of the milestone achieved, often including
+                      criteria for receiving this recognition.
+                    example: Awarded for mastering Kubernetes concepts and practices.
+                    x-oapi-codegen-extra-tags:
+                      db: description
+                      json: description
+                  image_url:
+                    type: string
+                    format: uri
+                    description: URL to the badge image
+                    example: >-
+                      https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+                    x-oapi-codegen-extra-tags:
+                      db: image_url
+                      json: image_url
+                  created_at:
+                    description: Timestamp when the resource was created.
+                    x-go-type: time.Time
+                    type: string
+                    format: date-time
+                    x-go-name: CreatedAt
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    description: Timestamp when the resource was updated.
+                    x-go-type: time.Time
+                    type: string
+                    format: date-time
+                    x-go-name: UpdatedAt
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    x-go-type-skip-optional-pointer: true
+                  deleted_at:
+                    description: Timestamp when the resource was deleted.
+                    x-go-type: time.Time
+                    type: string
+                    format: date-time
+                    x-go-name: DeletedAt
+                    x-oapi-codegen-extra-tags:
+                      db: deleted_at
+                      yaml: deleted_at
+                    x-go-type-skip-optional-pointer: true
 components:
   schemas:
     design_DeletePatternModel:
@@ -48754,6 +50054,10 @@ components:
                 type: object
                 properties:
                   id:
+                    x-oapi-codegen-extra-tags:
+                      db: id
+                      json: id
+                      csv: id
                     type: string
                     format: uuid
                     description: >-
@@ -48766,6 +50070,10 @@ components:
                   name:
                     type: string
                     x-go-type: PlanName
+                    x-oapi-codegen-extra-tags:
+                      db: name
+                      json: name
+                      csv: name
                     description: Name of the plan
                     enum:
                       - Free
@@ -48774,23 +50082,44 @@ components:
                       - Enterprise
                   cadence:
                     x-go-type: PlanCadence
+                    x-oapi-codegen-extra-tags:
+                      db: cadence
+                      json: cadence
+                      csv: cadence
                     type: string
                     enum:
                       - monthly
                       - yearly
                   unit:
                     x-go-type: PlanUnit
+                    x-oapi-codegen-extra-tags:
+                      db: unit
+                      json: unit
+                      csv: unit
                     type: string
                     enum:
                       - user
                       - free
+                  minimum_units:
+                    type: integer
+                    description: Minimum number of units required for the plan
+                    x-oapi-codegen-extra-tags:
+                      db: minimum_units
+                      json: minimum_units
+                      csv: minimum_units
                   price_per_unit:
                     type: number
                     description: Price per unit of the plan
                     x-oapi-codegen-extra-tags:
                       db: price_per_unit
+                      json: price_per_unit
+                      csv: price_per_unit
                   currency:
                     x-go-type: Currency
+                    x-oapi-codegen-extra-tags:
+                      db: currency
+                      json: currency
+                      csv: currency
                     type: string
                     enum:
                       - usd
@@ -48800,6 +50129,7 @@ components:
                   - cadence
                   - unit
                   - price_per_unit
+                  - minimum_units
                   - price_id
                   - currency
               quantity:
@@ -48942,6 +50272,10 @@ components:
           type: object
           properties:
             id:
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+                csv: id
               type: string
               format: uuid
               description: >-
@@ -48954,6 +50288,10 @@ components:
             name:
               type: string
               x-go-type: PlanName
+              x-oapi-codegen-extra-tags:
+                db: name
+                json: name
+                csv: name
               description: Name of the plan
               enum:
                 - Free
@@ -48962,23 +50300,44 @@ components:
                 - Enterprise
             cadence:
               x-go-type: PlanCadence
+              x-oapi-codegen-extra-tags:
+                db: cadence
+                json: cadence
+                csv: cadence
               type: string
               enum:
                 - monthly
                 - yearly
             unit:
               x-go-type: PlanUnit
+              x-oapi-codegen-extra-tags:
+                db: unit
+                json: unit
+                csv: unit
               type: string
               enum:
                 - user
                 - free
+            minimum_units:
+              type: integer
+              description: Minimum number of units required for the plan
+              x-oapi-codegen-extra-tags:
+                db: minimum_units
+                json: minimum_units
+                csv: minimum_units
             price_per_unit:
               type: number
               description: Price per unit of the plan
               x-oapi-codegen-extra-tags:
                 db: price_per_unit
+                json: price_per_unit
+                csv: price_per_unit
             currency:
               x-go-type: Currency
+              x-oapi-codegen-extra-tags:
+                db: currency
+                json: currency
+                csv: currency
               type: string
               enum:
                 - usd
@@ -48988,6 +50347,7 @@ components:
             - cadence
             - unit
             - price_per_unit
+            - minimum_units
             - price_id
             - currency
         quantity:
@@ -49127,6 +50487,10 @@ components:
             type: object
             properties:
               id:
+                x-oapi-codegen-extra-tags:
+                  db: id
+                  json: id
+                  csv: id
                 type: string
                 format: uuid
                 description: >-
@@ -49139,6 +50503,10 @@ components:
               name:
                 type: string
                 x-go-type: PlanName
+                x-oapi-codegen-extra-tags:
+                  db: name
+                  json: name
+                  csv: name
                 description: Name of the plan
                 enum:
                   - Free
@@ -49147,23 +50515,44 @@ components:
                   - Enterprise
               cadence:
                 x-go-type: PlanCadence
+                x-oapi-codegen-extra-tags:
+                  db: cadence
+                  json: cadence
+                  csv: cadence
                 type: string
                 enum:
                   - monthly
                   - yearly
               unit:
                 x-go-type: PlanUnit
+                x-oapi-codegen-extra-tags:
+                  db: unit
+                  json: unit
+                  csv: unit
                 type: string
                 enum:
                   - user
                   - free
+              minimum_units:
+                type: integer
+                description: Minimum number of units required for the plan
+                x-oapi-codegen-extra-tags:
+                  db: minimum_units
+                  json: minimum_units
+                  csv: minimum_units
               price_per_unit:
                 type: number
                 description: Price per unit of the plan
                 x-oapi-codegen-extra-tags:
                   db: price_per_unit
+                  json: price_per_unit
+                  csv: price_per_unit
               currency:
                 x-go-type: Currency
+                x-oapi-codegen-extra-tags:
+                  db: currency
+                  json: currency
+                  csv: currency
                 type: string
                 enum:
                   - usd
@@ -49173,6 +50562,7 @@ components:
               - cadence
               - unit
               - price_per_unit
+              - minimum_units
               - price_id
               - currency
             x-go-type: Plan
@@ -49180,6 +50570,10 @@ components:
       type: object
       properties:
         id:
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+            csv: id
           type: string
           format: uuid
           description: >-
@@ -49192,6 +50586,10 @@ components:
         name:
           type: string
           x-go-type: PlanName
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: name
+            csv: name
           description: Name of the plan
           enum:
             - Free
@@ -49200,23 +50598,44 @@ components:
             - Enterprise
         cadence:
           x-go-type: PlanCadence
+          x-oapi-codegen-extra-tags:
+            db: cadence
+            json: cadence
+            csv: cadence
           type: string
           enum:
             - monthly
             - yearly
         unit:
           x-go-type: PlanUnit
+          x-oapi-codegen-extra-tags:
+            db: unit
+            json: unit
+            csv: unit
           type: string
           enum:
             - user
             - free
+        minimum_units:
+          type: integer
+          description: Minimum number of units required for the plan
+          x-oapi-codegen-extra-tags:
+            db: minimum_units
+            json: minimum_units
+            csv: minimum_units
         price_per_unit:
           type: number
           description: Price per unit of the plan
           x-oapi-codegen-extra-tags:
             db: price_per_unit
+            json: price_per_unit
+            csv: price_per_unit
         currency:
           x-go-type: Currency
+          x-oapi-codegen-extra-tags:
+            db: currency
+            json: currency
+            csv: currency
           type: string
           enum:
             - usd
@@ -49226,6 +50645,7 @@ components:
         - cadence
         - unit
         - price_per_unit
+        - minimum_units
         - price_id
         - currency
     plan_PlanName:
@@ -49297,6 +50717,10 @@ components:
             type: object
             properties:
               id:
+                x-oapi-codegen-extra-tags:
+                  db: id
+                  json: id
+                  csv: id
                 type: string
                 format: uuid
                 description: >-
@@ -49309,6 +50733,10 @@ components:
               name:
                 type: string
                 x-go-type: PlanName
+                x-oapi-codegen-extra-tags:
+                  db: name
+                  json: name
+                  csv: name
                 description: Name of the plan
                 enum:
                   - Free
@@ -49317,23 +50745,44 @@ components:
                   - Enterprise
               cadence:
                 x-go-type: PlanCadence
+                x-oapi-codegen-extra-tags:
+                  db: cadence
+                  json: cadence
+                  csv: cadence
                 type: string
                 enum:
                   - monthly
                   - yearly
               unit:
                 x-go-type: PlanUnit
+                x-oapi-codegen-extra-tags:
+                  db: unit
+                  json: unit
+                  csv: unit
                 type: string
                 enum:
                   - user
                   - free
+              minimum_units:
+                type: integer
+                description: Minimum number of units required for the plan
+                x-oapi-codegen-extra-tags:
+                  db: minimum_units
+                  json: minimum_units
+                  csv: minimum_units
               price_per_unit:
                 type: number
                 description: Price per unit of the plan
                 x-oapi-codegen-extra-tags:
                   db: price_per_unit
+                  json: price_per_unit
+                  csv: price_per_unit
               currency:
                 x-go-type: Currency
+                x-oapi-codegen-extra-tags:
+                  db: currency
+                  json: currency
+                  csv: currency
                 type: string
                 enum:
                   - usd
@@ -49343,6 +50792,7 @@ components:
               - cadence
               - unit
               - price_per_unit
+              - minimum_units
               - price_id
               - currency
           name:
@@ -49430,6 +50880,10 @@ components:
           type: object
           properties:
             id:
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+                csv: id
               type: string
               format: uuid
               description: >-
@@ -49442,6 +50896,10 @@ components:
             name:
               type: string
               x-go-type: PlanName
+              x-oapi-codegen-extra-tags:
+                db: name
+                json: name
+                csv: name
               description: Name of the plan
               enum:
                 - Free
@@ -49450,23 +50908,44 @@ components:
                 - Enterprise
             cadence:
               x-go-type: PlanCadence
+              x-oapi-codegen-extra-tags:
+                db: cadence
+                json: cadence
+                csv: cadence
               type: string
               enum:
                 - monthly
                 - yearly
             unit:
               x-go-type: PlanUnit
+              x-oapi-codegen-extra-tags:
+                db: unit
+                json: unit
+                csv: unit
               type: string
               enum:
                 - user
                 - free
+            minimum_units:
+              type: integer
+              description: Minimum number of units required for the plan
+              x-oapi-codegen-extra-tags:
+                db: minimum_units
+                json: minimum_units
+                csv: minimum_units
             price_per_unit:
               type: number
               description: Price per unit of the plan
               x-oapi-codegen-extra-tags:
                 db: price_per_unit
+                json: price_per_unit
+                csv: price_per_unit
             currency:
               x-go-type: Currency
+              x-oapi-codegen-extra-tags:
+                db: currency
+                json: currency
+                csv: currency
               type: string
               enum:
                 - usd
@@ -49476,6 +50955,7 @@ components:
             - cadence
             - unit
             - price_per_unit
+            - minimum_units
             - price_id
             - currency
         name:
@@ -64206,37 +65686,109 @@ components:
                   example: >-
                     http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
                 badge:
-                  x-go-type: Badge
+                  x-go-type-import:
+                    path: github.com/meshery/schemas/models/v1beta1/badge
+                  x-go-type: badge.Badge
                   type: object
                   required:
+                    - id
                     - label
-                    - title
+                    - name
+                    - org_id
                     - description
-                    - png
-                    - svg
+                    - image_url
+                    - created_at
+                    - updated_at
+                    - deleted_at
                   properties:
+                    id:
+                      x-go-name: ID
+                      x-oapi-codegen-extra-tags:
+                        db: id
+                        json: id
+                      type: string
+                      format: uuid
+                      description: >-
+                        A Universally Unique Identifier used to uniquely
+                        identify entities in Meshery. The UUID core definition
+                        is used across different schemas.
+                      x-go-type: uuid.UUID
+                      x-go-type-import:
+                        path: github.com/gofrs/uuid
+                    org_id:
+                      description: >-
+                        The ID of the organization in which this badge is
+                        available .
+                      x-oapi-codegen-extra-tags:
+                        db: org_id
+                        json: org_id
+                      type: string
+                      format: uuid
+                      x-go-type: uuid.UUID
+                      x-go-type-import:
+                        path: github.com/gofrs/uuid
                     label:
                       type: string
                       description: unique identifier for the badge ( auto generated )
                       example: Kubernetes-Expert
-                    title:
+                      x-oapi-codegen-extra-tags:
+                        db: label
+                        json: label
+                    name:
                       type: string
-                      description: Title of the badge
+                      description: Concise descriptor for the badge or certificate.
                       example: Kubernetes Expert
+                      x-oapi-codegen-extra-tags:
+                        db: name
+                        json: name
                     description:
                       type: string
-                      description: Description of the badge
-                      example: Awarded for mastering Kubernetes concepts and practices
-                    png:
+                      description: >-
+                        A description of the milestone achieved, often including
+                        criteria for receiving this recognition.
+                      example: Awarded for mastering Kubernetes concepts and practices.
+                      x-oapi-codegen-extra-tags:
+                        db: description
+                        json: description
+                    image_url:
                       type: string
                       format: uri
                       description: URL to the badge image
-                      example: http://localhost:9876/badges/kubernetes-expert.png
-                    svg:
+                      example: >-
+                        https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+                      x-oapi-codegen-extra-tags:
+                        db: image_url
+                        json: image_url
+                    created_at:
+                      description: Timestamp when the resource was created.
+                      x-go-type: time.Time
                       type: string
-                      format: uri
-                      description: URL to the badge SVG image
-                      example: http://localhost:9876/badges/kubernetes-expert.svg
+                      format: date-time
+                      x-go-name: CreatedAt
+                      x-oapi-codegen-extra-tags:
+                        db: created_at
+                        yaml: created_at
+                      x-go-type-skip-optional-pointer: true
+                    updated_at:
+                      description: Timestamp when the resource was updated.
+                      x-go-type: time.Time
+                      type: string
+                      format: date-time
+                      x-go-name: UpdatedAt
+                      x-oapi-codegen-extra-tags:
+                        db: updated_at
+                        yaml: updated_at
+                      x-go-type-skip-optional-pointer: true
+                    deleted_at:
+                      description: Timestamp when the resource was deleted.
+                      x-go-type: time.Time
+                      type: string
+                      format: date-time
+                      x-go-name: DeletedAt
+                      x-oapi-codegen-extra-tags:
+                        db: deleted_at
+                        yaml: deleted_at
+                      x-go-type-skip-optional-pointer: true
                 certificate:
                   x-go-type: Certificate
                   type: object
@@ -64540,39 +66092,111 @@ components:
                       example: >-
                         http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
                     badge:
-                      x-go-type: Badge
+                      x-go-type-import:
+                        path: github.com/meshery/schemas/models/v1beta1/badge
+                      x-go-type: badge.Badge
                       type: object
                       required:
+                        - id
                         - label
-                        - title
+                        - name
+                        - org_id
                         - description
-                        - png
-                        - svg
+                        - image_url
+                        - created_at
+                        - updated_at
+                        - deleted_at
                       properties:
+                        id:
+                          x-go-name: ID
+                          x-oapi-codegen-extra-tags:
+                            db: id
+                            json: id
+                          type: string
+                          format: uuid
+                          description: >-
+                            A Universally Unique Identifier used to uniquely
+                            identify entities in Meshery. The UUID core
+                            definition is used across different schemas.
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                        org_id:
+                          description: >-
+                            The ID of the organization in which this badge is
+                            available .
+                          x-oapi-codegen-extra-tags:
+                            db: org_id
+                            json: org_id
+                          type: string
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
                         label:
                           type: string
                           description: unique identifier for the badge ( auto generated )
                           example: Kubernetes-Expert
-                        title:
+                          x-oapi-codegen-extra-tags:
+                            db: label
+                            json: label
+                        name:
                           type: string
-                          description: Title of the badge
+                          description: Concise descriptor for the badge or certificate.
                           example: Kubernetes Expert
+                          x-oapi-codegen-extra-tags:
+                            db: name
+                            json: name
                         description:
                           type: string
-                          description: Description of the badge
+                          description: >-
+                            A description of the milestone achieved, often
+                            including criteria for receiving this recognition.
                           example: >-
                             Awarded for mastering Kubernetes concepts and
-                            practices
-                        png:
+                            practices.
+                          x-oapi-codegen-extra-tags:
+                            db: description
+                            json: description
+                        image_url:
                           type: string
                           format: uri
                           description: URL to the badge image
-                          example: http://localhost:9876/badges/kubernetes-expert.png
-                        svg:
+                          example: >-
+                            https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+                          x-oapi-codegen-extra-tags:
+                            db: image_url
+                            json: image_url
+                        created_at:
+                          description: Timestamp when the resource was created.
+                          x-go-type: time.Time
                           type: string
-                          format: uri
-                          description: URL to the badge SVG image
-                          example: http://localhost:9876/badges/kubernetes-expert.svg
+                          format: date-time
+                          x-go-name: CreatedAt
+                          x-oapi-codegen-extra-tags:
+                            db: created_at
+                            yaml: created_at
+                          x-go-type-skip-optional-pointer: true
+                        updated_at:
+                          description: Timestamp when the resource was updated.
+                          x-go-type: time.Time
+                          type: string
+                          format: date-time
+                          x-go-name: UpdatedAt
+                          x-oapi-codegen-extra-tags:
+                            db: updated_at
+                            yaml: updated_at
+                          x-go-type-skip-optional-pointer: true
+                        deleted_at:
+                          description: Timestamp when the resource was deleted.
+                          x-go-type: time.Time
+                          type: string
+                          format: date-time
+                          x-go-name: DeletedAt
+                          x-oapi-codegen-extra-tags:
+                            db: deleted_at
+                            yaml: deleted_at
+                          x-go-type-skip-optional-pointer: true
                     certificate:
                       x-go-type: Certificate
                       type: object
@@ -64897,39 +66521,111 @@ components:
                         example: >-
                           http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
                       badge:
-                        x-go-type: Badge
+                        x-go-type-import:
+                          path: github.com/meshery/schemas/models/v1beta1/badge
+                        x-go-type: badge.Badge
                         type: object
                         required:
+                          - id
                           - label
-                          - title
+                          - name
+                          - org_id
                           - description
-                          - png
-                          - svg
+                          - image_url
+                          - created_at
+                          - updated_at
+                          - deleted_at
                         properties:
+                          id:
+                            x-go-name: ID
+                            x-oapi-codegen-extra-tags:
+                              db: id
+                              json: id
+                            type: string
+                            format: uuid
+                            description: >-
+                              A Universally Unique Identifier used to uniquely
+                              identify entities in Meshery. The UUID core
+                              definition is used across different schemas.
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
+                          org_id:
+                            description: >-
+                              The ID of the organization in which this badge is
+                              available .
+                            x-oapi-codegen-extra-tags:
+                              db: org_id
+                              json: org_id
+                            type: string
+                            format: uuid
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
                           label:
                             type: string
                             description: unique identifier for the badge ( auto generated )
                             example: Kubernetes-Expert
-                          title:
+                            x-oapi-codegen-extra-tags:
+                              db: label
+                              json: label
+                          name:
                             type: string
-                            description: Title of the badge
+                            description: Concise descriptor for the badge or certificate.
                             example: Kubernetes Expert
+                            x-oapi-codegen-extra-tags:
+                              db: name
+                              json: name
                           description:
                             type: string
-                            description: Description of the badge
+                            description: >-
+                              A description of the milestone achieved, often
+                              including criteria for receiving this recognition.
                             example: >-
                               Awarded for mastering Kubernetes concepts and
-                              practices
-                          png:
+                              practices.
+                            x-oapi-codegen-extra-tags:
+                              db: description
+                              json: description
+                          image_url:
                             type: string
                             format: uri
                             description: URL to the badge image
-                            example: http://localhost:9876/badges/kubernetes-expert.png
-                          svg:
+                            example: >-
+                              https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+                            x-oapi-codegen-extra-tags:
+                              db: image_url
+                              json: image_url
+                          created_at:
+                            description: Timestamp when the resource was created.
+                            x-go-type: time.Time
                             type: string
-                            format: uri
-                            description: URL to the badge SVG image
-                            example: http://localhost:9876/badges/kubernetes-expert.svg
+                            format: date-time
+                            x-go-name: CreatedAt
+                            x-oapi-codegen-extra-tags:
+                              db: created_at
+                              yaml: created_at
+                            x-go-type-skip-optional-pointer: true
+                          updated_at:
+                            description: Timestamp when the resource was updated.
+                            x-go-type: time.Time
+                            type: string
+                            format: date-time
+                            x-go-name: UpdatedAt
+                            x-oapi-codegen-extra-tags:
+                              db: updated_at
+                              yaml: updated_at
+                            x-go-type-skip-optional-pointer: true
+                          deleted_at:
+                            description: Timestamp when the resource was deleted.
+                            x-go-type: time.Time
+                            type: string
+                            format: date-time
+                            x-go-name: DeletedAt
+                            x-oapi-codegen-extra-tags:
+                              db: deleted_at
+                              yaml: deleted_at
+                            x-go-type-skip-optional-pointer: true
                       certificate:
                         x-go-type: Certificate
                         type: object
@@ -65253,43 +66949,117 @@ components:
                             example: >-
                               http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
                           badge:
-                            x-go-type: Badge
+                            x-go-type-import:
+                              path: github.com/meshery/schemas/models/v1beta1/badge
+                            x-go-type: badge.Badge
                             type: object
                             required:
+                              - id
                               - label
-                              - title
+                              - name
+                              - org_id
                               - description
-                              - png
-                              - svg
+                              - image_url
+                              - created_at
+                              - updated_at
+                              - deleted_at
                             properties:
+                              id:
+                                x-go-name: ID
+                                x-oapi-codegen-extra-tags:
+                                  db: id
+                                  json: id
+                                type: string
+                                format: uuid
+                                description: >-
+                                  A Universally Unique Identifier used to
+                                  uniquely identify entities in Meshery. The
+                                  UUID core definition is used across different
+                                  schemas.
+                                x-go-type: uuid.UUID
+                                x-go-type-import:
+                                  path: github.com/gofrs/uuid
+                              org_id:
+                                description: >-
+                                  The ID of the organization in which this badge
+                                  is available .
+                                x-oapi-codegen-extra-tags:
+                                  db: org_id
+                                  json: org_id
+                                type: string
+                                format: uuid
+                                x-go-type: uuid.UUID
+                                x-go-type-import:
+                                  path: github.com/gofrs/uuid
                               label:
                                 type: string
                                 description: >-
                                   unique identifier for the badge ( auto
                                   generated )
                                 example: Kubernetes-Expert
-                              title:
+                                x-oapi-codegen-extra-tags:
+                                  db: label
+                                  json: label
+                              name:
                                 type: string
-                                description: Title of the badge
+                                description: >-
+                                  Concise descriptor for the badge or
+                                  certificate.
                                 example: Kubernetes Expert
+                                x-oapi-codegen-extra-tags:
+                                  db: name
+                                  json: name
                               description:
                                 type: string
-                                description: Description of the badge
+                                description: >-
+                                  A description of the milestone achieved, often
+                                  including criteria for receiving this
+                                  recognition.
                                 example: >-
                                   Awarded for mastering Kubernetes concepts and
-                                  practices
-                              png:
+                                  practices.
+                                x-oapi-codegen-extra-tags:
+                                  db: description
+                                  json: description
+                              image_url:
                                 type: string
                                 format: uri
                                 description: URL to the badge image
                                 example: >-
-                                  http://localhost:9876/badges/kubernetes-expert.png
-                              svg:
+                                  https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+                                x-oapi-codegen-extra-tags:
+                                  db: image_url
+                                  json: image_url
+                              created_at:
+                                description: Timestamp when the resource was created.
+                                x-go-type: time.Time
                                 type: string
-                                format: uri
-                                description: URL to the badge SVG image
-                                example: >-
-                                  http://localhost:9876/badges/kubernetes-expert.svg
+                                format: date-time
+                                x-go-name: CreatedAt
+                                x-oapi-codegen-extra-tags:
+                                  db: created_at
+                                  yaml: created_at
+                                x-go-type-skip-optional-pointer: true
+                              updated_at:
+                                description: Timestamp when the resource was updated.
+                                x-go-type: time.Time
+                                type: string
+                                format: date-time
+                                x-go-name: UpdatedAt
+                                x-oapi-codegen-extra-tags:
+                                  db: updated_at
+                                  yaml: updated_at
+                                x-go-type-skip-optional-pointer: true
+                              deleted_at:
+                                description: Timestamp when the resource was deleted.
+                                x-go-type: time.Time
+                                type: string
+                                format: date-time
+                                x-go-name: DeletedAt
+                                x-oapi-codegen-extra-tags:
+                                  db: deleted_at
+                                  yaml: deleted_at
+                                x-go-type-skip-optional-pointer: true
                           certificate:
                             x-go-type: Certificate
                             type: object
@@ -65505,37 +67275,107 @@ components:
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
         badge:
-          x-go-type: Badge
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/badge
+          x-go-type: badge.Badge
           type: object
           required:
+            - id
             - label
-            - title
+            - name
+            - org_id
             - description
-            - png
-            - svg
+            - image_url
+            - created_at
+            - updated_at
+            - deleted_at
           properties:
+            id:
+              x-go-name: ID
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+              type: string
+              format: uuid
+              description: >-
+                A Universally Unique Identifier used to uniquely identify
+                entities in Meshery. The UUID core definition is used across
+                different schemas.
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            org_id:
+              description: The ID of the organization in which this badge is available .
+              x-oapi-codegen-extra-tags:
+                db: org_id
+                json: org_id
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
             label:
               type: string
               description: unique identifier for the badge ( auto generated )
               example: Kubernetes-Expert
-            title:
+              x-oapi-codegen-extra-tags:
+                db: label
+                json: label
+            name:
               type: string
-              description: Title of the badge
+              description: Concise descriptor for the badge or certificate.
               example: Kubernetes Expert
+              x-oapi-codegen-extra-tags:
+                db: name
+                json: name
             description:
               type: string
-              description: Description of the badge
-              example: Awarded for mastering Kubernetes concepts and practices
-            png:
+              description: >-
+                A description of the milestone achieved, often including
+                criteria for receiving this recognition.
+              example: Awarded for mastering Kubernetes concepts and practices.
+              x-oapi-codegen-extra-tags:
+                db: description
+                json: description
+            image_url:
               type: string
               format: uri
               description: URL to the badge image
-              example: http://localhost:9876/badges/kubernetes-expert.png
-            svg:
+              example: >-
+                https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+              x-oapi-codegen-extra-tags:
+                db: image_url
+                json: image_url
+            created_at:
+              description: Timestamp when the resource was created.
+              x-go-type: time.Time
               type: string
-              format: uri
-              description: URL to the badge SVG image
-              example: http://localhost:9876/badges/kubernetes-expert.svg
+              format: date-time
+              x-go-name: CreatedAt
+              x-oapi-codegen-extra-tags:
+                db: created_at
+                yaml: created_at
+              x-go-type-skip-optional-pointer: true
+            updated_at:
+              description: Timestamp when the resource was updated.
+              x-go-type: time.Time
+              type: string
+              format: date-time
+              x-go-name: UpdatedAt
+              x-oapi-codegen-extra-tags:
+                db: updated_at
+                yaml: updated_at
+              x-go-type-skip-optional-pointer: true
+            deleted_at:
+              description: Timestamp when the resource was deleted.
+              x-go-type: time.Time
+              type: string
+              format: date-time
+              x-go-name: DeletedAt
+              x-oapi-codegen-extra-tags:
+                db: deleted_at
+                yaml: deleted_at
+              x-go-type-skip-optional-pointer: true
         certificate:
           x-go-type: Certificate
           type: object
@@ -65713,37 +67553,107 @@ components:
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
         badge:
-          x-go-type: Badge
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/badge
+          x-go-type: badge.Badge
           type: object
           required:
+            - id
             - label
-            - title
+            - name
+            - org_id
             - description
-            - png
-            - svg
+            - image_url
+            - created_at
+            - updated_at
+            - deleted_at
           properties:
+            id:
+              x-go-name: ID
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+              type: string
+              format: uuid
+              description: >-
+                A Universally Unique Identifier used to uniquely identify
+                entities in Meshery. The UUID core definition is used across
+                different schemas.
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            org_id:
+              description: The ID of the organization in which this badge is available .
+              x-oapi-codegen-extra-tags:
+                db: org_id
+                json: org_id
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
             label:
               type: string
               description: unique identifier for the badge ( auto generated )
               example: Kubernetes-Expert
-            title:
+              x-oapi-codegen-extra-tags:
+                db: label
+                json: label
+            name:
               type: string
-              description: Title of the badge
+              description: Concise descriptor for the badge or certificate.
               example: Kubernetes Expert
+              x-oapi-codegen-extra-tags:
+                db: name
+                json: name
             description:
               type: string
-              description: Description of the badge
-              example: Awarded for mastering Kubernetes concepts and practices
-            png:
+              description: >-
+                A description of the milestone achieved, often including
+                criteria for receiving this recognition.
+              example: Awarded for mastering Kubernetes concepts and practices.
+              x-oapi-codegen-extra-tags:
+                db: description
+                json: description
+            image_url:
               type: string
               format: uri
               description: URL to the badge image
-              example: http://localhost:9876/badges/kubernetes-expert.png
-            svg:
+              example: >-
+                https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+              x-oapi-codegen-extra-tags:
+                db: image_url
+                json: image_url
+            created_at:
+              description: Timestamp when the resource was created.
+              x-go-type: time.Time
               type: string
-              format: uri
-              description: URL to the badge SVG image
-              example: http://localhost:9876/badges/kubernetes-expert.svg
+              format: date-time
+              x-go-name: CreatedAt
+              x-oapi-codegen-extra-tags:
+                db: created_at
+                yaml: created_at
+              x-go-type-skip-optional-pointer: true
+            updated_at:
+              description: Timestamp when the resource was updated.
+              x-go-type: time.Time
+              type: string
+              format: date-time
+              x-go-name: UpdatedAt
+              x-oapi-codegen-extra-tags:
+                db: updated_at
+                yaml: updated_at
+              x-go-type-skip-optional-pointer: true
+            deleted_at:
+              description: Timestamp when the resource was deleted.
+              x-go-type: time.Time
+              type: string
+              format: date-time
+              x-go-name: DeletedAt
+              x-oapi-codegen-extra-tags:
+                db: deleted_at
+                yaml: deleted_at
+              x-go-type-skip-optional-pointer: true
         certificate:
           x-go-type: Certificate
           type: object
@@ -65892,37 +67802,6 @@ components:
         - title
         - description
         - permalink
-    Academy_API_Badge:
-      type: object
-      required:
-        - label
-        - title
-        - description
-        - png
-        - svg
-      properties:
-        label:
-          type: string
-          description: unique identifier for the badge ( auto generated )
-          example: Kubernetes-Expert
-        title:
-          type: string
-          description: Title of the badge
-          example: Kubernetes Expert
-        description:
-          type: string
-          description: Description of the badge
-          example: Awarded for mastering Kubernetes concepts and practices
-        png:
-          type: string
-          format: uri
-          description: URL to the badge image
-          example: http://localhost:9876/badges/kubernetes-expert.png
-        svg:
-          type: string
-          format: uri
-          description: URL to the badge SVG image
-          example: http://localhost:9876/badges/kubernetes-expert.svg
     Academy_API_CertificateIssuingAuthority:
       type: object
       required:
@@ -66047,37 +67926,107 @@ components:
           example: >-
             http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
         badge:
-          x-go-type: Badge
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/v1beta1/badge
+          x-go-type: badge.Badge
           type: object
           required:
+            - id
             - label
-            - title
+            - name
+            - org_id
             - description
-            - png
-            - svg
+            - image_url
+            - created_at
+            - updated_at
+            - deleted_at
           properties:
+            id:
+              x-go-name: ID
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+              type: string
+              format: uuid
+              description: >-
+                A Universally Unique Identifier used to uniquely identify
+                entities in Meshery. The UUID core definition is used across
+                different schemas.
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            org_id:
+              description: The ID of the organization in which this badge is available .
+              x-oapi-codegen-extra-tags:
+                db: org_id
+                json: org_id
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
             label:
               type: string
               description: unique identifier for the badge ( auto generated )
               example: Kubernetes-Expert
-            title:
+              x-oapi-codegen-extra-tags:
+                db: label
+                json: label
+            name:
               type: string
-              description: Title of the badge
+              description: Concise descriptor for the badge or certificate.
               example: Kubernetes Expert
+              x-oapi-codegen-extra-tags:
+                db: name
+                json: name
             description:
               type: string
-              description: Description of the badge
-              example: Awarded for mastering Kubernetes concepts and practices
-            png:
+              description: >-
+                A description of the milestone achieved, often including
+                criteria for receiving this recognition.
+              example: Awarded for mastering Kubernetes concepts and practices.
+              x-oapi-codegen-extra-tags:
+                db: description
+                json: description
+            image_url:
               type: string
               format: uri
               description: URL to the badge image
-              example: http://localhost:9876/badges/kubernetes-expert.png
-            svg:
+              example: >-
+                https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+              x-oapi-codegen-extra-tags:
+                db: image_url
+                json: image_url
+            created_at:
+              description: Timestamp when the resource was created.
+              x-go-type: time.Time
               type: string
-              format: uri
-              description: URL to the badge SVG image
-              example: http://localhost:9876/badges/kubernetes-expert.svg
+              format: date-time
+              x-go-name: CreatedAt
+              x-oapi-codegen-extra-tags:
+                db: created_at
+                yaml: created_at
+              x-go-type-skip-optional-pointer: true
+            updated_at:
+              description: Timestamp when the resource was updated.
+              x-go-type: time.Time
+              type: string
+              format: date-time
+              x-go-name: UpdatedAt
+              x-oapi-codegen-extra-tags:
+                db: updated_at
+                yaml: updated_at
+              x-go-type-skip-optional-pointer: true
+            deleted_at:
+              description: Timestamp when the resource was deleted.
+              x-go-type: time.Time
+              type: string
+              format: date-time
+              x-go-name: DeletedAt
+              x-oapi-codegen-extra-tags:
+                db: deleted_at
+                yaml: deleted_at
+              x-go-type-skip-optional-pointer: true
         certificate:
           x-go-type: Certificate
           type: object
@@ -66313,13 +68262,14 @@ components:
           format: date-time
           x-go-type-skip-optional-pointer: true
         deleted_at:
-          x-go-type: core.NullTime
-          x-oapi-codegen-extra-tags:
-            db: deleted_at
           description: Timestamp when the resource was deleted.
+          x-go-type: time.Time
           type: string
           format: date-time
           x-go-name: DeletedAt
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            yaml: deleted_at
           x-go-type-skip-optional-pointer: true
         certificate:
           x-go-type: core.Map
@@ -66556,13 +68506,14 @@ components:
                 format: date-time
                 x-go-type-skip-optional-pointer: true
               deleted_at:
-                x-go-type: core.NullTime
-                x-oapi-codegen-extra-tags:
-                  db: deleted_at
                 description: Timestamp when the resource was deleted.
+                x-go-type: time.Time
                 type: string
                 format: date-time
                 x-go-name: DeletedAt
+                x-oapi-codegen-extra-tags:
+                  db: deleted_at
+                  yaml: deleted_at
                 x-go-type-skip-optional-pointer: true
               certificate:
                 x-go-type: core.Map
@@ -67764,37 +69715,51 @@ components:
       type: object
       required:
         - data
-        - totalCount
+        - total
       properties:
-        Data:
+        data:
           type: array
           items:
-            x-go-type: Invitation
             type: object
             required:
               - id
-              - default
+              - owner_id
               - name
               - description
+              - org_id
+              - accepted_by
               - emails
-              - orgId
-              - expiresAt
-              - quota
-              - acceptedBy
-              - status
               - roles
               - teams
-              - createdAt
-              - updatedAt
-              - deletedAt
+              - status
+              - created_at
+              - updated_at
+              - deleted_at
             properties:
               id:
-                ref: '#/components/schemas/uuid'
                 x-go-name: ID
                 description: >-
                   Unique identifier for the invitation , is also used as the
                   invitation code
-              isDefault:
+                type: string
+                format: uuid
+                x-go-type: uuid.UUID
+                x-go-type-import:
+                  path: github.com/gofrs/uuid
+              owner_id:
+                description: >-
+                  ID of the user who created the invitation, this is used to
+                  track who created the invitation and can be used for auditing
+                  purposes
+                x-oapi-codegen-extra-tags:
+                  db: owner_id
+                  json: owner_id
+                type: string
+                format: uuid
+                x-go-type: uuid.UUID
+                x-go-type-import:
+                  path: github.com/gofrs/uuid
+              is_default:
                 type: boolean
                 description: >-
                   Indicates whether the invitation is a default invitation (open
@@ -67817,20 +69782,25 @@ components:
                   string means the invitation does not have a description
               emails:
                 type: array
+                x-go-type: pq.StringArray
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
-                  format: email
+                  pattern: >-
+                    ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                  x-go-type: string
                   description: >-
                     Exact email address or the email address pattern for which
                     the invitation is valid , null means the invitation is valid
                     for all email addresses
-              orgId:
+              org_id:
                 type: string
                 description: ID of the organization to which the user is invited
                 x-oapi-codegen-extra-tags:
                   db: org_id
                   json: org_id
-              expiresAt:
+              expires_at:
                 type: string
                 format: date-time
                 description: >-
@@ -67845,8 +69815,11 @@ components:
                   Quota for the invitation, which can be used to limit the
                   number of users that can accept the invitation, null or empty
                   string means the invitation does not have a quota
-              acceptedBy:
+              accepted_by:
                 type: array
+                x-go-type: pq.StringArray
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
                 description: >-
@@ -67858,6 +69831,9 @@ components:
                   json: accepted_by
               roles:
                 type: array
+                x-go-type: pq.StringArray
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
                   description: >-
@@ -67866,6 +69842,9 @@ components:
                     any roles
               teams:
                 type: array
+                x-go-type: pq.StringArray
+                x-go-type-import:
+                  path: github.com/lib/pq
                 items:
                   type: string
                   description: >-
@@ -67883,21 +69862,21 @@ components:
                   is active and can be used, disabled means the invitation is no
                   longer valid and is temporarily inactive, disabled invitations
                   can be re-enabled later.
-              createdAt:
+              created_at:
                 type: string
                 format: date-time
                 description: Timestamp when the invitation was created
                 x-oapi-codegen-extra-tags:
                   db: created_at
                   json: created_at
-              updatedAt:
+              updated_at:
                 type: string
                 format: date-time
                 description: Timestamp when the invitation was last updated
                 x-oapi-codegen-extra-tags:
                   db: updated_at
                   json: updated_at
-              deletedAt:
+              deleted_at:
                 type: string
                 format: date-time
                 x-go-type: core.NullTime
@@ -67905,14 +69884,15 @@ components:
                 x-oapi-codegen-extra-tags:
                   db: deleted_at
                   json: deleted_at
+            x-go-type: Invitation
           description: List of invitations
           x-oapi-codegen-extra-tags:
             json: data
-        TotalCount:
+        total:
           type: integer
           description: Total number of invitations available
           x-oapi-codegen-extra-tags:
-            json: total_count
+            json: total
     invitation_InvitationStatus:
       type: string
       enum:
@@ -67926,28 +69906,42 @@ components:
       type: object
       required:
         - id
-        - default
+        - owner_id
         - name
         - description
+        - org_id
+        - accepted_by
         - emails
-        - orgId
-        - expiresAt
-        - quota
-        - acceptedBy
-        - status
         - roles
         - teams
-        - createdAt
-        - updatedAt
-        - deletedAt
+        - status
+        - created_at
+        - updated_at
+        - deleted_at
       properties:
         id:
-          ref: '#/components/schemas/uuid'
           x-go-name: ID
           description: >-
             Unique identifier for the invitation , is also used as the
             invitation code
-        isDefault:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        owner_id:
+          description: >-
+            ID of the user who created the invitation, this is used to track who
+            created the invitation and can be used for auditing purposes
+          x-oapi-codegen-extra-tags:
+            db: owner_id
+            json: owner_id
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        is_default:
           type: boolean
           description: >-
             Indicates whether the invitation is a default invitation (open
@@ -67970,20 +69964,25 @@ components:
             means the invitation does not have a description
         emails:
           type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
-            format: email
+            pattern: >-
+              ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+            x-go-type: string
             description: >-
               Exact email address or the email address pattern for which the
               invitation is valid , null means the invitation is valid for all
               email addresses
-        orgId:
+        org_id:
           type: string
           description: ID of the organization to which the user is invited
           x-oapi-codegen-extra-tags:
             db: org_id
             json: org_id
-        expiresAt:
+        expires_at:
           type: string
           format: date-time
           description: >-
@@ -67998,8 +69997,11 @@ components:
             Quota for the invitation, which can be used to limit the number of
             users that can accept the invitation, null or empty string means the
             invitation does not have a quota
-        acceptedBy:
+        accepted_by:
           type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
           description: >-
@@ -68010,6 +70012,9 @@ components:
             json: accepted_by
         roles:
           type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
             description: >-
@@ -68017,6 +70022,9 @@ components:
               or empty string means the invitation does not specify any roles
         teams:
           type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
           items:
             type: string
             description: >-
@@ -68034,21 +70042,21 @@ components:
             active and can be used, disabled means the invitation is no longer
             valid and is temporarily inactive, disabled invitations can be
             re-enabled later.
-        createdAt:
+        created_at:
           type: string
           format: date-time
           description: Timestamp when the invitation was created
           x-oapi-codegen-extra-tags:
             db: created_at
             json: created_at
-        updatedAt:
+        updated_at:
           type: string
           format: date-time
           description: Timestamp when the invitation was last updated
           x-oapi-codegen-extra-tags:
             db: updated_at
             json: updated_at
-        deletedAt:
+        deleted_at:
           type: string
           format: date-time
           x-go-type: core.NullTime
@@ -68056,6 +70064,105 @@ components:
           x-oapi-codegen-extra-tags:
             db: deleted_at
             json: deleted_at
+    badge_Badge:
+      type: object
+      required:
+        - id
+        - label
+        - name
+        - org_id
+        - description
+        - image_url
+        - created_at
+        - updated_at
+        - deleted_at
+      properties:
+        id:
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+          type: string
+          format: uuid
+          description: >-
+            A Universally Unique Identifier used to uniquely identify entities
+            in Meshery. The UUID core definition is used across different
+            schemas.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        org_id:
+          description: The ID of the organization in which this badge is available .
+          x-oapi-codegen-extra-tags:
+            db: org_id
+            json: org_id
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        label:
+          type: string
+          description: unique identifier for the badge ( auto generated )
+          example: Kubernetes-Expert
+          x-oapi-codegen-extra-tags:
+            db: label
+            json: label
+        name:
+          type: string
+          description: Concise descriptor for the badge or certificate.
+          example: Kubernetes Expert
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: name
+        description:
+          type: string
+          description: >-
+            A description of the milestone achieved, often including criteria
+            for receiving this recognition.
+          example: Awarded for mastering Kubernetes concepts and practices.
+          x-oapi-codegen-extra-tags:
+            db: description
+            json: description
+        image_url:
+          type: string
+          format: uri
+          description: URL to the badge image
+          example: >-
+            https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+          x-oapi-codegen-extra-tags:
+            db: image_url
+            json: image_url
+        created_at:
+          description: Timestamp when the resource was created.
+          x-go-type: time.Time
+          type: string
+          format: date-time
+          x-go-name: CreatedAt
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            yaml: created_at
+          x-go-type-skip-optional-pointer: true
+        updated_at:
+          description: Timestamp when the resource was updated.
+          x-go-type: time.Time
+          type: string
+          format: date-time
+          x-go-name: UpdatedAt
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            yaml: updated_at
+          x-go-type-skip-optional-pointer: true
+        deleted_at:
+          description: Timestamp when the resource was deleted.
+          x-go-type: time.Time
+          type: string
+          format: date-time
+          x-go-name: DeletedAt
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            yaml: deleted_at
+          x-go-type-skip-optional-pointer: true
   responses:
     subscription_400:
       description: Invalid request body or request param
@@ -68196,6 +70303,13 @@ components:
       in: path
       required: true
       description: The ID of the organization
+      schema:
+        type: string
+    invitation_invitation_id:
+      name: invitationId
+      in: path
+      required: true
+      description: The ID of the invitation
       schema:
         type: string
   securitySchemes:
@@ -68342,3 +70456,6 @@ x-tagGroups:
   - name: invitation
     tags:
       - invitation_Invitation
+  - name: badge
+    tags:
+      - badge_Badge

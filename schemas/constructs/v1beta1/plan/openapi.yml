@@ -55,23 +55,49 @@ components:
       properties:
         id:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+            csv: "id"
         name:
           type: "string"
           $ref: "#/components/schemas/PlanName"
           x-go-type: PlanName
+          x-oapi-codegen-extra-tags:
+            db: "name"
+            json: "name"
+            csv: "name"
         cadence:
           $ref: "#/components/schemas/PlanCadence"
           x-go-type: PlanCadence
+          x-oapi-codegen-extra-tags:
+            db: "cadence"
+            json: "cadence"
+            csv: "cadence"
 
         unit:
           $ref: "#/components/schemas/PlanUnit"
           x-go-type: PlanUnit
+          x-oapi-codegen-extra-tags:
+            db: "unit"
+            json: "unit"
+            csv: "unit"
+
+        minimum_units:
+          type: "integer"
+          description: "Minimum number of units required for the plan"
+          x-oapi-codegen-extra-tags:
+            db: "minimum_units"
+            json: "minimum_units"
+            csv: "minimum_units"
 
         price_per_unit:
           type: "number"
           description: "Price per unit of the plan"
           x-oapi-codegen-extra-tags:
             db: "price_per_unit"
+            json: "price_per_unit"
+            csv: "price_per_unit"
 
         # price_id:
         #     type: "string"
@@ -80,6 +106,10 @@ components:
         currency:
           $ref: "#/components/schemas/Currency"
           x-go-type: Currency
+          x-oapi-codegen-extra-tags:
+            db: "currency"
+            json: "currency"
+            csv: "currency"
 
       required:
         - id
@@ -87,6 +117,7 @@ components:
         - cadence
         - unit
         - price_per_unit
+        - minimum_units
         - price_id
         - currency
     PlanName:
