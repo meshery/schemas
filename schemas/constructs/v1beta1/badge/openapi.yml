@@ -99,4 +99,11 @@ components:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/updated_at"
 
         deleted_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/deleted_at"
+          type: string
+          format: date-time
+          x-go-type : "core.NullTime"
+          description: Timestamp when the resource was deleted, if applicable
+
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deleted_at"
