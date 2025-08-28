@@ -24,7 +24,7 @@ type Badge struct {
 	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// ImageUrl URL to the badge image
-	ImageUrl string `db:"svg_location" json:"svg_location" yaml:"svg_location"`
+	ImageUrl string `db:"image_url" json:"image_url" yaml:"image_url"`
 
 	// Label unique identifier for the badge ( auto generated )
 	Label string `db:"label" json:"label" yaml:"label"`

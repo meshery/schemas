@@ -103,8 +103,8 @@ const schema = {
                     "description": "URL to the badge image",
                     "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "svg_location",
-                      "json": "svg_location"
+                      "db": "image_url",
+                      "json": "image_url"
                     }
                   },
                   "created_at": {
@@ -227,8 +227,8 @@ const schema = {
                       "description": "URL to the badge image",
                       "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
                       "x-oapi-codegen-extra-tags": {
-                        "db": "svg_location",
-                        "json": "svg_location"
+                        "db": "image_url",
+                        "json": "image_url"
                       }
                     },
                     "created_at": {
@@ -352,8 +352,8 @@ const schema = {
             "description": "URL to the badge image",
             "example": "https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp",
             "x-oapi-codegen-extra-tags": {
-              "db": "svg_location",
-              "json": "svg_location"
+              "db": "image_url",
+              "json": "image_url"
             }
           },
           "created_at": {
