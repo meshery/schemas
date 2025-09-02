@@ -47,6 +47,32 @@ paths:
       '500':
         description: Server error
 
+  /api/academy/curricula:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: createAcademyCurricula
+      summary: Create a new academy curricula
+      description: Creates a new academy curricula with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAcademyCurriculaRequest'
+      responses:
+        '201':
+          description: created the curricula
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcademyCirricula'
+        '400':
+          description: Invalid request parameters
+        '500':
+          description: Server error
+
   /api/academy/cirricula:
     get:
       x-internal: ["cloud"]
@@ -530,6 +556,29 @@ components:
             json: "level"
             yaml: "level"
 
+        badge_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: ID of the badge to be awarded on completion of this curricula
+          x-oapi-codegen-extra-tags:
+            db: "badge_id"
+            json: "badge_id"
+            yaml: "badge_id"
+
+        invite_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: ID of the invite associated with this cirricula
+          x-oapi-codegen-extra-tags:
+            db: "invite_id"
+            json: "invite_id"
+            yaml: "invite_id"
+
+        workspace_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: ID of the workspace to which this cirricula belongs
+          x-oapi-codegen-extra-tags:
+            db: "workspace_id"
+            json: "workspace_id"
+            yaml: "workspace_id"
 
 
         createdAt:
@@ -583,6 +632,84 @@ components:
         - deletedAt
         - metadata
         - level
+
+
+    CreateAcademyCurriculaRequest:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/ContentType"
+          description: Type of the curricula
+          x-go-name: Type
+          x-go-type: "ContentType"
+          x-oapi-codegen-extra-tags:
+            json: "type"
+
+        title:
+          type: string
+          description: Title of the curricula
+          example: "Introduction to Kubernetes"
+          x-go-name: Title
+          x-oapi-codegen-extra-tags:
+            json: "title"
+
+        orgId:
+          $ref: "#/components/schemas/AcademyCirricula/properties/orgId"
+          description: Organization ID that owns this curricula
+          x-go-name: OrgId
+          x-oapi-codegen-extra-tags:
+            json: "org_id"
+            db: "org_id"
+            yaml: "org_id"
+
+        workspace_id:
+          $ref: "#/components/schemas/AcademyCirricula/properties/workspace_id"
+
+        badge_id:
+          $ref: "#/components/schemas/AcademyCirricula/properties/badge_id"
+
+        team_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: ID of the team associated with this curricula
+          x-go-name: TeamId
+          x-oapi-codegen-extra-tags:
+            json: "team_id"
+            db: "team_id"
+            yaml: "team_id"
+
+        access_expires_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          description: Expiry time for curricula access
+          x-go-name: AccessExpiresAt
+          x-go-type: "*time.Time"
+          x-oapi-codegen-extra-tags:
+            json: "access_expires_at"
+            db: "access_expires_at"
+            yaml: "access_expires_at"
+
+        access_status:
+          $ref: "../invitation/openapi.yml#/components/schemas/InvitationStatus"
+          description: Current access status of the curricula
+          x-go-name: AccessStatus
+          x-go-type: "invitation.InvitationStatus"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/v1beta1/invitation"
+          x-oapi-codegen-extra-tags:
+            json: "access_status"
+            db: "access_status"
+            yaml: "access_status"
+
+        metadata:
+          $ref: "#/components/schemas/AcademyCirricula/properties/metadata"
+
+      required:
+        - type
+        - title
+        - orgId
+        - workspace_id
+        - team_id
+        - access_status
+        - metadata
 
     AcademyCurriculaWithMetrics:
       allOf:
