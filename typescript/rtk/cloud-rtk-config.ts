@@ -7,6 +7,7 @@ const config: ConfigFile = {
   outputFile: "./cloud.ts",
   exportName: "cloudApi",
   hooks: true,
+  tag:true,
 };
 
 export default config;

@@ -7,6 +7,7 @@ const config: ConfigFile = {
   outputFile: "./meshery.ts",
   exportName: "mesheryApi",
   hooks: true,
+  tag:true,
 };
 
 export default config;
