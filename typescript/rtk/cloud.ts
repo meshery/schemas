@@ -1,192 +1,247 @@
 import { cloudBaseApi as api } from "./api";
-const injectedRtkApi = api.injectEndpoints({
-  endpoints: (build) => ({
-    importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
-      query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
-    }),
-    registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
-      query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
-    }),
-    getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
-      query: (queryArg) => ({
-        url: `/api/entitlement/subscriptions`,
-        params: {
-          page: queryArg.page,
-          pagesize: queryArg.pagesize,
-          order: queryArg.order,
-          status: queryArg.status,
-        },
+export const addTagTypes = [
+  "design_other",
+  "model_other",
+  "subscription_subscription",
+  "subscription_other",
+  "plan_Plans",
+  "feature_Features",
+  "workspace_workspaces",
+  "environment_environments",
+  "Academy_API_Academy",
+  "Academy_API_other",
+  "invitation_Invitation",
+  "badge_Badge",
+] as const;
+const injectedRtkApi = api
+  .enhanceEndpoints({
+    addTagTypes,
+  })
+  .injectEndpoints({
+    endpoints: (build) => ({
+      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
+        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["design_other"],
+      }),
+      registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
+        query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["model_other"],
+      }),
+      getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            order: queryArg.order,
+            status: queryArg.status,
+          },
+        }),
+        providesTags: ["subscription_subscription"],
+      }),
+      postApiEntitlementSubscriptionsBySubscriptionIdCancel: build.mutation<
+        PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse,
+        PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/cancel`,
+          method: "POST",
+        }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      postApiEntitlementSubscriptionsCreate: build.mutation<
+        PostApiEntitlementSubscriptionsCreateApiResponse,
+        PostApiEntitlementSubscriptionsCreateApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/create`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      postApiEntitlementSubscriptionsWebhooks: build.mutation<
+        PostApiEntitlementSubscriptionsWebhooksApiResponse,
+        PostApiEntitlementSubscriptionsWebhooksApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/webhooks`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      getPlans: build.query<GetPlansApiResponse, GetPlansApiArg>({
+        query: () => ({ url: `/api/entitlement/plans` }),
+        providesTags: ["plan_Plans"],
+      }),
+      getFeatures: build.query<GetFeaturesApiResponse, GetFeaturesApiArg>({
+        query: () => ({ url: `/api/entitlement/features` }),
+        providesTags: ["feature_Features"],
+      }),
+      getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/organizations/${queryArg.organizationId}/features`,
+        }),
+        providesTags: ["feature_Features"],
+      }),
+      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
+        query: () => ({ url: `/api/workspaces` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
+        query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["environment_environments"],
+      }),
+      getEnvironments: build.query<GetEnvironmentsApiResponse, GetEnvironmentsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/environments`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            orgID: queryArg.orgId,
+          },
+        }),
+        providesTags: ["environment_environments"],
+      }),
+      getMyAcademyCirricula: build.query<GetMyAcademyCirriculaApiResponse, GetMyAcademyCirriculaApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/cirricula/registered`,
+          params: {
+            contentType: queryArg.contentType,
+            orgId: queryArg.orgId,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      createAcademyCurricula: build.mutation<CreateAcademyCurriculaApiResponse, CreateAcademyCurriculaApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/curricula`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyCirricula: build.query<GetAcademyCirriculaApiResponse, GetAcademyCirriculaApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/cirricula`,
+          params: {
+            contentType: queryArg.contentType,
+            visibility: queryArg.visibility,
+            level: queryArg.level,
+            orgId: queryArg.orgId,
+            category: queryArg.category,
+            status: queryArg.status,
+            search: queryArg.search,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getApiAcademyByTypeAndOrgIdSlug: build.query<
+        GetApiAcademyByTypeAndOrgIdSlugApiResponse,
+        GetApiAcademyByTypeAndOrgIdSlugApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/${queryArg["type"]}/${queryArg.orgId}/${queryArg.slug}` }),
+        providesTags: ["Academy_API_other"],
+      }),
+      registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getApiAcademyRegistrationsByContentId: build.query<
+        GetApiAcademyRegistrationsByContentIdApiResponse,
+        GetApiAcademyRegistrationsByContentIdApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/${queryArg.contentId}`,
+          params: {
+            status: queryArg.status,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      updateCurrentItemInProgressTracker: build.mutation<
+        UpdateCurrentItemInProgressTrackerApiResponse,
+        UpdateCurrentItemInProgressTrackerApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/${queryArg.registrationId}/progress-tracker/update-current-item`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/quiz/submit`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
+        query: () => ({ url: `/api/academy/admin/summary` }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyAdminRegistrations: build.query<
+        GetAcademyAdminRegistrationsApiResponse,
+        GetAcademyAdminRegistrationsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/admin/registrations`,
+          params: {
+            pagesize: queryArg.pagesize,
+            page: queryArg.page,
+            content_type: queryArg.contentType,
+            status: queryArg.status,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getCertificateById: build.query<GetCertificateByIdApiResponse, GetCertificateByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
+        providesTags: ["invitation_Invitation"],
+      }),
+      deleteInvitation: build.mutation<DeleteInvitationApiResponse, DeleteInvitationApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}`, method: "DELETE" }),
+        invalidatesTags: ["invitation_Invitation"],
+      }),
+      updateInvitation: build.mutation<UpdateInvitationApiResponse, UpdateInvitationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/organizations/invitations/${queryArg.invitationId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["invitation_Invitation"],
+      }),
+      getInvitations: build.query<GetInvitationsApiResponse, GetInvitationsApiArg>({
+        query: () => ({ url: `/api/organizations/invitations` }),
+        providesTags: ["invitation_Invitation"],
+      }),
+      createInvitation: build.mutation<CreateInvitationApiResponse, CreateInvitationApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/invitations`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["invitation_Invitation"],
+      }),
+      acceptInvitation: build.mutation<AcceptInvitationApiResponse, AcceptInvitationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/organizations/invitations/${queryArg.invitationId}/accept`,
+          method: "POST",
+        }),
+        invalidatesTags: ["invitation_Invitation"],
+      }),
+      createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["badge_Badge"],
       }),
     }),
-    postApiEntitlementSubscriptionsBySubscriptionIdCancel: build.mutation<
-      PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse,
-      PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/cancel`,
-        method: "POST",
-      }),
-    }),
-    postApiEntitlementSubscriptionsCreate: build.mutation<
-      PostApiEntitlementSubscriptionsCreateApiResponse,
-      PostApiEntitlementSubscriptionsCreateApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/entitlement/subscriptions/create`, method: "POST", body: queryArg.body }),
-    }),
-    postApiEntitlementSubscriptionsWebhooks: build.mutation<
-      PostApiEntitlementSubscriptionsWebhooksApiResponse,
-      PostApiEntitlementSubscriptionsWebhooksApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/entitlement/subscriptions/webhooks`, method: "POST", body: queryArg.body }),
-    }),
-    getPlans: build.query<GetPlansApiResponse, GetPlansApiArg>({
-      query: () => ({ url: `/api/entitlement/plans` }),
-    }),
-    getFeatures: build.query<GetFeaturesApiResponse, GetFeaturesApiArg>({
-      query: () => ({ url: `/api/entitlement/features` }),
-    }),
-    getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
-      query: (queryArg) => ({
-        url: `/api/entitlement/subscriptions/organizations/${queryArg.organizationId}/features`,
-      }),
-    }),
-    getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
-      query: () => ({ url: `/api/workspaces` }),
-    }),
-    postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
-    }),
-    getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
-    }),
-    putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
-    }),
-    deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
-    }),
-    createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
-      query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
-    }),
-    getEnvironments: build.query<GetEnvironmentsApiResponse, GetEnvironmentsApiArg>({
-      query: (queryArg) => ({
-        url: `/api/environments`,
-        params: {
-          search: queryArg.search,
-          order: queryArg.order,
-          page: queryArg.page,
-          pagesize: queryArg.pagesize,
-          orgID: queryArg.orgId,
-        },
-      }),
-    }),
-    getMyAcademyCirricula: build.query<GetMyAcademyCirriculaApiResponse, GetMyAcademyCirriculaApiArg>({
-      query: (queryArg) => ({
-        url: `/api/academy/cirricula/registered`,
-        params: {
-          contentType: queryArg.contentType,
-          orgId: queryArg.orgId,
-        },
-      }),
-    }),
-    createAcademyCurricula: build.mutation<CreateAcademyCurriculaApiResponse, CreateAcademyCurriculaApiArg>({
-      query: (queryArg) => ({ url: `/api/academy/curricula`, method: "POST", body: queryArg.body }),
-    }),
-    getAcademyCirricula: build.query<GetAcademyCirriculaApiResponse, GetAcademyCirriculaApiArg>({
-      query: (queryArg) => ({
-        url: `/api/academy/cirricula`,
-        params: {
-          contentType: queryArg.contentType,
-          visibility: queryArg.visibility,
-          level: queryArg.level,
-          orgId: queryArg.orgId,
-          category: queryArg.category,
-          status: queryArg.status,
-          search: queryArg.search,
-        },
-      }),
-    }),
-    getApiAcademyByTypeAndOrgIdSlug: build.query<
-      GetApiAcademyByTypeAndOrgIdSlugApiResponse,
-      GetApiAcademyByTypeAndOrgIdSlugApiArg
-    >({
-      query: (queryArg) => ({ url: `/api/academy/${queryArg["type"]}/${queryArg.orgId}/${queryArg.slug}` }),
-    }),
-    registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
-      query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
-    }),
-    getApiAcademyRegistrationsByContentId: build.query<
-      GetApiAcademyRegistrationsByContentIdApiResponse,
-      GetApiAcademyRegistrationsByContentIdApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/academy/registrations/${queryArg.contentId}`,
-        params: {
-          status: queryArg.status,
-        },
-      }),
-    }),
-    updateCurrentItemInProgressTracker: build.mutation<
-      UpdateCurrentItemInProgressTrackerApiResponse,
-      UpdateCurrentItemInProgressTrackerApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/academy/registrations/${queryArg.registrationId}/progress-tracker/update-current-item`,
-        method: "POST",
-        body: queryArg.body,
-      }),
-    }),
-    submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
-      query: (queryArg) => ({ url: `/api/academy/quiz/submit`, method: "POST", body: queryArg.body }),
-    }),
-    getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
-      query: () => ({ url: `/api/academy/admin/summary` }),
-    }),
-    getAcademyAdminRegistrations: build.query<
-      GetAcademyAdminRegistrationsApiResponse,
-      GetAcademyAdminRegistrationsApiArg
-    >({
-      query: (queryArg) => ({
-        url: `/api/academy/admin/registrations`,
-        params: {
-          pagesize: queryArg.pagesize,
-          page: queryArg.page,
-          content_type: queryArg.contentType,
-          status: queryArg.status,
-        },
-      }),
-    }),
-    getCertificateById: build.query<GetCertificateByIdApiResponse, GetCertificateByIdApiArg>({
-      query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
-    }),
-    getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
-      query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
-    }),
-    deleteInvitation: build.mutation<DeleteInvitationApiResponse, DeleteInvitationApiArg>({
-      query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}`, method: "DELETE" }),
-    }),
-    updateInvitation: build.mutation<UpdateInvitationApiResponse, UpdateInvitationApiArg>({
-      query: (queryArg) => ({
-        url: `/api/organizations/invitations/${queryArg.invitationId}`,
-        method: "PUT",
-        body: queryArg.body,
-      }),
-    }),
-    getInvitations: build.query<GetInvitationsApiResponse, GetInvitationsApiArg>({
-      query: () => ({ url: `/api/organizations/invitations` }),
-    }),
-    createInvitation: build.mutation<CreateInvitationApiResponse, CreateInvitationApiArg>({
-      query: (queryArg) => ({ url: `/api/organizations/invitations`, method: "POST", body: queryArg.body }),
-    }),
-    acceptInvitation: build.mutation<AcceptInvitationApiResponse, AcceptInvitationApiArg>({
-      query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}/accept`, method: "POST" }),
-    }),
-    createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
-      query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
-    }),
-  }),
-  overrideExisting: false,
-});
+    overrideExisting: false,
+  });
 export { injectedRtkApi as cloudApi };
 export type ImportDesignApiResponse = /** status 200 Successful Import */ {
   message?: string;

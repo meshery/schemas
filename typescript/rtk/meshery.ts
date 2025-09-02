@@ -1,48 +1,69 @@
 import { mesheryBaseApi as api } from "./api";
-const injectedRtkApi = api.injectEndpoints({
-  endpoints: (build) => ({
-    importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
-      query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
-    }),
-    registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
-      query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
-    }),
-    getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
-      query: () => ({ url: `/api/workspaces` }),
-    }),
-    postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
-    }),
-    getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
-    }),
-    putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
-    }),
-    deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
-      query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
-    }),
-    createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
-      query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
-    }),
-    getEnvironments: build.query<GetEnvironmentsApiResponse, GetEnvironmentsApiArg>({
-      query: (queryArg) => ({
-        url: `/api/environments`,
-        params: {
-          search: queryArg.search,
-          order: queryArg.order,
-          page: queryArg.page,
-          pagesize: queryArg.pagesize,
-          orgID: queryArg.orgId,
-        },
+export const addTagTypes = [
+  "design_other",
+  "model_other",
+  "workspace_workspaces",
+  "environment_environments",
+  "evaluation_other",
+] as const;
+const injectedRtkApi = api
+  .enhanceEndpoints({
+    addTagTypes,
+  })
+  .injectEndpoints({
+    endpoints: (build) => ({
+      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
+        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["design_other"],
+      }),
+      registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
+        query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["model_other"],
+      }),
+      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
+        query: () => ({ url: `/api/workspaces` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
+        query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["environment_environments"],
+      }),
+      getEnvironments: build.query<GetEnvironmentsApiResponse, GetEnvironmentsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/environments`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            orgID: queryArg.orgId,
+          },
+        }),
+        providesTags: ["environment_environments"],
+      }),
+      postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
+        query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["evaluation_other"],
       }),
     }),
-    postEvaluate: build.mutation<PostEvaluateApiResponse, PostEvaluateApiArg>({
-      query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
-    }),
-  }),
-  overrideExisting: false,
-});
+    overrideExisting: false,
+  });
 export { injectedRtkApi as mesheryApi };
 export type ImportDesignApiResponse = /** status 200 Successful Import */ {
   message?: string;
