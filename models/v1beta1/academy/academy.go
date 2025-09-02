@@ -9,6 +9,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1beta1/badge"
+	"github.com/meshery/schemas/models/v1beta1/invitation"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -64,6 +65,9 @@ const (
 
 // AcademyCirricula defines model for AcademyCirricula.
 type AcademyCirricula struct {
+	// BadgeId ID of the badge to be awarded on completion of this curricula
+	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+
 	// CreatedAt When the cirricula item was created
 	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
@@ -72,6 +76,9 @@ type AcademyCirricula struct {
 
 	// ID Id of the cirricula
 	ID string `db:"id" json:"id" yaml:"id"`
+
+	// InviteId ID of the invite associated with this cirricula
+	InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
 
 	// Level Level of the cirricula
 	Level Level `db:"level" json:"level" yaml:"level"`
@@ -94,6 +101,9 @@ type AcademyCirricula struct {
 
 	// Visibility Visibility of the cirricula
 	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+
+	// WorkspaceId ID of the workspace to which this cirricula belongs
+	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
 // AcademyCirriculaListResponse defines model for AcademyCirriculaListResponse.
@@ -108,6 +118,9 @@ type AcademyCirriculaListResponse struct {
 type AcademyCurriculaWithMetrics struct {
 	RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
 
+	// BadgeId ID of the badge to be awarded on completion of this curricula
+	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+
 	// CreatedAt When the cirricula item was created
 	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
@@ -116,6 +129,9 @@ type AcademyCurriculaWithMetrics struct {
 
 	// ID Id of the cirricula
 	ID string `db:"id" json:"id" yaml:"id"`
+
+	// InviteId ID of the invite associated with this cirricula
+	InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
 
 	// Level Level of the cirricula
 	Level Level `db:"level" json:"level" yaml:"level"`
@@ -138,12 +154,18 @@ type AcademyCurriculaWithMetrics struct {
 
 	// Visibility Visibility of the cirricula
 	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+
+	// WorkspaceId ID of the workspace to which this cirricula belongs
+	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
 // AcademyCurriculaWithMetricsListResponse defines model for AcademyCurriculaWithMetricsListResponse.
 type AcademyCurriculaWithMetricsListResponse struct {
 	Data []struct {
 		RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+
+		// BadgeId ID of the badge to be awarded on completion of this curricula
+		BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
 
 		// CreatedAt When the cirricula item was created
 		CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
@@ -153,6 +175,9 @@ type AcademyCurriculaWithMetricsListResponse struct {
 
 		// ID Id of the cirricula
 		ID string `db:"id" json:"id" yaml:"id"`
+
+		// InviteId ID of the invite associated with this cirricula
+		InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
 
 		// Level Level of the cirricula
 		Level Level `db:"level" json:"level" yaml:"level"`
@@ -175,6 +200,9 @@ type AcademyCurriculaWithMetricsListResponse struct {
 
 		// Visibility Visibility of the cirricula
 		Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+
+		// WorkspaceId ID of the workspace to which this cirricula belongs
+		WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 	} `json:"data" yaml:"data"`
 
 	// Total Total number of cirricula
@@ -319,6 +347,36 @@ type CirriculaProgressTracker struct {
 
 // ContentType defines model for ContentType.
 type ContentType string
+
+// CreateAcademyCurriculaRequest defines model for CreateAcademyCurriculaRequest.
+type CreateAcademyCurriculaRequest struct {
+	// AccessExpiresAt Expiry time for curricula access
+	AccessExpiresAt *time.Time `db:"access_expires_at" json:"access_expires_at" yaml:"access_expires_at"`
+
+	// AccessStatus Current access status of the curricula
+	AccessStatus invitation.InvitationStatus `db:"access_status" json:"access_status" yaml:"access_status"`
+
+	// BadgeId ID of the badge to be awarded on completion of this curricula
+	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+
+	// Metadata Additional metadata about the cirricula
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+	// OrgId Organization ID that owns this curricula
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// TeamId ID of the team associated with this curricula
+	TeamId uuid.UUID `db:"team_id" json:"team_id" yaml:"team_id"`
+
+	// Title Title of the curricula
+	Title string `json:"title" yaml:"title"`
+
+	// Type Type of the curricula
+	Type ContentType `json:"type" yaml:"type"`
+
+	// WorkspaceId ID of the workspace to which this cirricula belongs
+	WorkspaceId uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+}
 
 // CurriculaMetadata defines model for CurriculaMetadata.
 type CurriculaMetadata struct {

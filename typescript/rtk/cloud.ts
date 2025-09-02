@@ -89,6 +89,9 @@ const injectedRtkApi = api.injectEndpoints({
         },
       }),
     }),
+    createAcademyCurricula: build.mutation<CreateAcademyCurriculaApiResponse, CreateAcademyCurriculaApiArg>({
+      query: (queryArg) => ({ url: `/api/academy/curricula`, method: "POST", body: queryArg.body }),
+    }),
     getAcademyCirricula: build.query<GetAcademyCirriculaApiResponse, GetAcademyCirriculaApiArg>({
       query: (queryArg) => ({
         url: `/api/academy/cirricula`,
@@ -570,6 +573,209 @@ export type GetMyAcademyCirriculaApiArg = {
   /** Filter content by organization IDs */
   orgId?: string[];
 };
+export type CreateAcademyCurriculaApiResponse = /** status 201 created the curricula */ {
+  /** Id of the cirricula */
+  id: string;
+  type: "learning-path" | "challenge" | "certification";
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** Visibility of the cirricula */
+  visibility: "public" | "private";
+  /** Status of the cirricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the cirricula */
+  slug: string;
+  /** Level of the cirricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badge_id?: string;
+  /** ID of the invite associated with this cirricula */
+  invite_id?: string;
+  /** ID of the workspace to which this cirricula belongs */
+  workspace_id?: string;
+  /** When the cirricula item was created */
+  createdAt: string;
+  /** When the cirricula was last updated */
+  updatedAt: string;
+  /** Timestamp when the resource was deleted. */
+  deletedAt: string;
+  /** Additional metadata about the cirricula */
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Description of the learning path */
+    description: string;
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    badge?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** The ID of the organization in which this badge is available . */
+      org_id: string;
+      /** unique identifier for the badge ( auto generated ) */
+      label: string;
+      /** Concise descriptor for the badge or certificate. */
+      name: string;
+      /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+      description: string;
+      /** URL to the badge image */
+      image_url: string;
+      /** Timestamp when the resource was created. */
+      created_at: string;
+      /** Timestamp when the resource was updated. */
+      updated_at: string;
+      /** Timestamp when the resource was deleted, if applicable */
+      deleted_at: string;
+    };
+    certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** UUID of the organization that issued the certificate */
+      org_id: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipient_id: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipient_name: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuing_authorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signature_url?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issued_date: string;
+      /** Date when the certificate expires (optional) */
+      expiration_date?: string;
+    };
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+      weight?: number;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
+};
+export type CreateAcademyCurriculaApiArg = {
+  body: {
+    /** Type of the curricula */
+    type: "learning-path" | "challenge" | "certification";
+    /** Title of the curricula */
+    title: string;
+    /** Organization ID that owns this curricula */
+    orgId: string;
+    /** ID of the workspace to which this cirricula belongs */
+    workspace_id: string;
+    /** ID of the badge to be awarded on completion of this curricula */
+    badge_id?: string;
+    /** ID of the team associated with this curricula */
+    team_id: string;
+    /** Expiry time for curricula access */
+    access_expires_at?: string;
+    /** Current access status of the curricula */
+    access_status: "enabled" | "disabled";
+    /** Additional metadata about the cirricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Description of the learning path */
+      description: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      badge?: {
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+        id: string;
+        /** The ID of the organization in which this badge is available . */
+        org_id: string;
+        /** unique identifier for the badge ( auto generated ) */
+        label: string;
+        /** Concise descriptor for the badge or certificate. */
+        name: string;
+        /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+        description: string;
+        /** URL to the badge image */
+        image_url: string;
+        /** Timestamp when the resource was created. */
+        created_at: string;
+        /** Timestamp when the resource was updated. */
+        updated_at: string;
+        /** Timestamp when the resource was deleted, if applicable */
+        deleted_at: string;
+      };
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** UUID of the organization that issued the certificate */
+        org_id: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipient_id: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipient_name: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuing_authorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signature_url?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issued_date: string;
+        /** Date when the certificate expires (optional) */
+        expiration_date?: string;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  };
+};
 export type GetAcademyCirriculaApiResponse = unknown;
 export type GetAcademyCirriculaApiArg = {
   /** Filter content by content types */
@@ -601,6 +807,12 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
   slug: string;
   /** Level of the cirricula */
   level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badge_id?: string;
+  /** ID of the invite associated with this cirricula */
+  invite_id?: string;
+  /** ID of the workspace to which this cirricula belongs */
+  workspace_id?: string;
   /** When the cirricula item was created */
   createdAt: string;
   /** When the cirricula was last updated */
@@ -1366,6 +1578,7 @@ export const {
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
   useGetMyAcademyCirriculaQuery,
+  useCreateAcademyCurriculaMutation,
   useGetAcademyCirriculaQuery,
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useRegisterToAcademyContentMutation,
