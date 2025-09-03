@@ -9,6 +9,37 @@ tags:
 
 paths:
 
+  /api/organizations/badges/{id}:
+    delete:
+      x-internal: ["cloud"]
+      operationId: deleteBadgeByID
+      tags:
+        - Badge
+      summary: Delete a badge by its ID
+      parameters:
+        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/id"
+
+      responses:
+        "204":
+          description: Badge deleted successfully
+
+    get:
+      x-internal: ["cloud"]
+      operationId: getBadgeByID
+      tags:
+        - Badge
+      summary: Get a badge by its ID
+      parameters:
+        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/id"
+
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Badge"
+
+
   /api/organizations/badges:
 
     post:
