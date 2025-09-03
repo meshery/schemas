@@ -235,6 +235,14 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["invitation_Invitation"],
       }),
+      deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["badge_Badge"],
+      }),
+      getBadgeById: build.query<GetBadgeByIdApiResponse, GetBadgeByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.id}` }),
+        providesTags: ["badge_Badge"],
+      }),
       createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["badge_Badge"],
@@ -1573,6 +1581,35 @@ export type AcceptInvitationApiArg = {
   /** The ID of the invitation */
   invitationId: string;
 };
+export type DeleteBadgeByIdApiResponse = unknown;
+export type DeleteBadgeByIdApiArg = {
+  /** Unique identifier */
+  id: string;
+};
+export type GetBadgeByIdApiResponse = /** status 200 undefined */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** The ID of the organization in which this badge is available . */
+  org_id: string;
+  /** unique identifier for the badge ( auto generated ) */
+  label: string;
+  /** Concise descriptor for the badge or certificate. */
+  name: string;
+  /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+  description: string;
+  /** URL to the badge image */
+  image_url: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** Timestamp when the resource was deleted, if applicable */
+  deleted_at: string;
+};
+export type GetBadgeByIdApiArg = {
+  /** Unique identifier */
+  id: string;
+};
 export type CreateOrUpdateBadgeApiResponse = /** status 201 undefined */ {
   /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
@@ -1649,5 +1686,7 @@ export const {
   useGetInvitationsQuery,
   useCreateInvitationMutation,
   useAcceptInvitationMutation,
+  useDeleteBadgeByIdMutation,
+  useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
 } = injectedRtkApi;
