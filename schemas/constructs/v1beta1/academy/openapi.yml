@@ -876,12 +876,6 @@ components:
           description: Canonical URL for the learning path
           example: http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
 
-        badge:
-          $ref: "../badge/openapi.yml#/components/schemas/Badge"
-          x-go-type-import:
-            path: "github.com/meshery/schemas/models/v1beta1/badge"
-          x-go-type: "badge.Badge"
-
         certificate:
           $ref: "#/components/schemas/Certificate"
           x-go-type: "Certificate"
