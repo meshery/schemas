@@ -672,26 +672,6 @@ export type CreateAcademyCurriculaApiResponse = /** status 201 created the curri
     banner?: string | null;
     /** Canonical URL for the learning path */
     permalink: string;
-    badge?: {
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      id: string;
-      /** The ID of the organization in which this badge is available . */
-      org_id: string;
-      /** unique identifier for the badge ( auto generated ) */
-      label: string;
-      /** Concise descriptor for the badge or certificate. */
-      name: string;
-      /** A description of the milestone achieved, often including criteria for receiving this recognition. */
-      description: string;
-      /** URL to the badge image */
-      image_url: string;
-      /** Timestamp when the resource was created. */
-      created_at: string;
-      /** Timestamp when the resource was updated. */
-      updated_at: string;
-      /** Timestamp when the resource was deleted, if applicable */
-      deleted_at: string;
-    };
     certificate?: {
       /** Unique identifier for the certificate */
       id: string;
@@ -769,26 +749,6 @@ export type CreateAcademyCurriculaApiArg = {
       banner?: string | null;
       /** Canonical URL for the learning path */
       permalink: string;
-      badge?: {
-        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-        id: string;
-        /** The ID of the organization in which this badge is available . */
-        org_id: string;
-        /** unique identifier for the badge ( auto generated ) */
-        label: string;
-        /** Concise descriptor for the badge or certificate. */
-        name: string;
-        /** A description of the milestone achieved, often including criteria for receiving this recognition. */
-        description: string;
-        /** URL to the badge image */
-        image_url: string;
-        /** Timestamp when the resource was created. */
-        created_at: string;
-        /** Timestamp when the resource was updated. */
-        updated_at: string;
-        /** Timestamp when the resource was deleted, if applicable */
-        deleted_at: string;
-      };
       certificate?: {
         /** Unique identifier for the certificate */
         id: string;
@@ -892,26 +852,6 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
     banner?: string | null;
     /** Canonical URL for the learning path */
     permalink: string;
-    badge?: {
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      id: string;
-      /** The ID of the organization in which this badge is available . */
-      org_id: string;
-      /** unique identifier for the badge ( auto generated ) */
-      label: string;
-      /** Concise descriptor for the badge or certificate. */
-      name: string;
-      /** A description of the milestone achieved, often including criteria for receiving this recognition. */
-      description: string;
-      /** URL to the badge image */
-      image_url: string;
-      /** Timestamp when the resource was created. */
-      created_at: string;
-      /** Timestamp when the resource was updated. */
-      updated_at: string;
-      /** Timestamp when the resource was deleted, if applicable */
-      deleted_at: string;
-    };
     certificate?: {
       /** Unique identifier for the certificate */
       id: string;

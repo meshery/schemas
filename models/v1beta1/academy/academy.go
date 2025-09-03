@@ -8,7 +8,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
-	"github.com/meshery/schemas/models/v1beta1/badge"
 	"github.com/meshery/schemas/models/v1beta1/invitation"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -380,8 +379,6 @@ type CreateAcademyCurriculaRequest struct {
 
 // CurriculaMetadata defines model for CurriculaMetadata.
 type CurriculaMetadata struct {
-	Badge *badge.Badge `json:"badge,omitempty" yaml:"badge,omitempty"`
-
 	// Banner Filename of the banner image, which should be placed in the same directory as the _index.md file
 	Banner      *string      `json:"banner" yaml:"banner"`
 	Certificate *Certificate `json:"certificate,omitempty" yaml:"certificate,omitempty"`
