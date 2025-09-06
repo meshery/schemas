@@ -139,6 +139,10 @@ const injectedRtkApi = api
             category: queryArg.category,
             status: queryArg.status,
             search: queryArg.search,
+            sort: queryArg.sort,
+            order: queryArg.order,
+            pagesize: queryArg.pagesize,
+            page: queryArg.page,
           },
         }),
         providesTags: ["Academy_API_Academy"],
@@ -815,6 +819,14 @@ export type GetAcademyCirriculaApiArg = {
   status?: string[];
   /** Search content by title */
   search?: string;
+  /** Sort results by a specific field (e.g., title, createdAt) */
+  sort?: string;
+  /** Order of sorting (asc or desc) */
+  order?: "asc" | "desc";
+  /** Number of results per page */
+  pagesize?: number;
+  /** Page number */
+  page?: number;
 };
 export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single academy content */ {
   /** Id of the cirricula */
