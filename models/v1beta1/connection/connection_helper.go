@@ -66,7 +66,7 @@ const (
 	MeshsyncDeploymentModeOperator  MeshsyncDeploymentMode = "operator"
 	MeshsyncDeploymentModeEmbedded  MeshsyncDeploymentMode = "embedded"
 	MeshsyncDeploymentModeUndefined MeshsyncDeploymentMode = "undefined"
-	MeshsyncDeploymentModeDefault                          = MeshsyncDeploymentModeOperator
+	MeshsyncDeploymentModeDefault                          = MeshsyncDeploymentModeEmbedded
 )
 
 func MeshsyncDeploymentModeFromString(value string) MeshsyncDeploymentMode {
