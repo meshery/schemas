@@ -3439,6 +3439,1470 @@ paths:
           description: Invalid request parameters
         '500':
           description: Server error
+  /api/academy/curricula/{id}:
+    put:
+      x-internal:
+        - cloud
+      tags:
+        - Academy_API_Academy
+      operationId: updateAcademyCurriculaByID
+      summary: Update an existing academy curricula by ID
+      description: >-
+        Updates the details of an existing academy curricula identified by its
+        ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the curricula
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  description: Type of the curricula
+                  x-go-name: Type
+                  x-go-type: ContentType
+                  x-oapi-codegen-extra-tags:
+                    json: type
+                  type: string
+                  enum:
+                    - learning-path
+                    - challenge
+                    - certification
+                title:
+                  type: string
+                  description: Title of the curricula
+                  example: Introduction to Kubernetes
+                  x-go-name: Title
+                  x-oapi-codegen-extra-tags:
+                    json: title
+                orgId:
+                  description: Organization ID that owns this curricula
+                  x-go-name: OrgId
+                  x-oapi-codegen-extra-tags:
+                    json: org_id
+                    db: org_id
+                    yaml: org_id
+                  type: string
+                  example: layer5
+                workspace_id:
+                  description: ID of the workspace to which this cirricula belongs
+                  x-oapi-codegen-extra-tags:
+                    db: workspace_id
+                    json: workspace_id
+                    yaml: workspace_id
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                badge_id:
+                  description: >-
+                    ID of the badge to be awarded on completion of this
+                    curricula
+                  x-oapi-codegen-extra-tags:
+                    db: badge_id
+                    json: badge_id
+                    yaml: badge_id
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                team_id:
+                  description: ID of the team associated with this curricula
+                  x-go-name: TeamId
+                  x-oapi-codegen-extra-tags:
+                    json: team_id
+                    db: team_id
+                    yaml: team_id
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                access_expires_at:
+                  description: Expiry time for curricula access
+                  x-go-name: AccessExpiresAt
+                  x-go-type: '*time.Time'
+                  x-oapi-codegen-extra-tags:
+                    json: access_expires_at
+                    db: access_expires_at
+                    yaml: access_expires_at
+                  type: string
+                  format: date-time
+                  x-go-type-skip-optional-pointer: true
+                access_status:
+                  description: Current access status of the curricula
+                  x-go-name: AccessStatus
+                  x-go-type: invitation.InvitationStatus
+                  x-go-type-import:
+                    path: github.com/meshery/schemas/models/v1beta1/invitation
+                  x-oapi-codegen-extra-tags:
+                    json: access_status
+                    db: access_status
+                    yaml: access_status
+                  type: string
+                  enum:
+                    - enabled
+                    - disabled
+                metadata:
+                  type: object
+                  description: Additional metadata about the cirricula
+                  additionalProperties: true
+                  x-go-type: core.Map
+                  x-go-type-skip-optional-pointer: true
+                  x-oapi-codegen-extra-tags:
+                    db: metadata
+                    json: metadata
+                    yaml: metadata
+                  oneOf:
+                    - x-go-type: CurriculaMetadata
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: Title of the learning path
+                          example: Mastering Kubernetes for Engineers
+                        description:
+                          type: string
+                          description: Description of the learning path
+                          example: >-
+                            Learn how to configure your Kubernetes clusters and
+                            manage the lifecycle of your workloads
+                        banner:
+                          type: string
+                          format: uri
+                          nullable: true
+                          description: >-
+                            Filename of the banner image, which should be placed
+                            in the same directory as the _index.md file
+                          example: kubernetes-icon.svg
+                        permalink:
+                          type: string
+                          format: uri
+                          description: Canonical URL for the learning path
+                          example: >-
+                            http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                        certificate:
+                          x-go-type: Certificate
+                          type: object
+                          required:
+                            - id
+                            - org_id
+                            - title
+                            - description
+                            - issuing_authorities
+                            - issued_date
+                            - recipient_id
+                            - recipient_name
+                          properties:
+                            id:
+                              type: string
+                              description: Unique identifier for the certificate
+                              example: 1234567890abcdef
+                              x-go-name: ID
+                            org_id:
+                              description: >-
+                                UUID of the organization that issued the
+                                certificate
+                              type: string
+                              format: uuid
+                              x-go-type: uuid.UUID
+                              x-go-type-import:
+                                path: github.com/gofrs/uuid
+                            recipient_id:
+                              type: string
+                              description: >-
+                                ID of the recipient (user) who received the
+                                certificate
+                              example: 1234567890abcdef
+                            recipient_name:
+                              type: string
+                              description: >-
+                                Name of the recipient (user) who received the
+                                certificate
+                              example: John Doe
+                            title:
+                              type: string
+                              description: Title of the certificate
+                              example: Kubernetes Expert Certification
+                            description:
+                              type: string
+                              description: Description of the certificate
+                              example: >-
+                                Awarded for successfully completing the
+                                Kubernetes Expert course
+                            issuing_authorities:
+                              type: array
+                              items:
+                                x-go-type: CertificateIssuingAuthority
+                                type: object
+                                required:
+                                  - name
+                                  - url
+                                properties:
+                                  name:
+                                    type: string
+                                    description: Name of the issuing authority
+                                    example: Cloud Native Foundation
+                                  role:
+                                    type: string
+                                    description: Role of the issuing authority
+                                    example: COO
+                                  signature_url:
+                                    type: string
+                                    format: uri
+                                    description: >-
+                                      URL to the signature image of the issuing
+                                      authority should be a publicly accessible
+                                      URL and transparent PNG or SVG format
+                                    example: >-
+                                      http://localhost:9876/signatures/cloud-native-foundation.png
+                              description: List of issuing authorities for the certificate
+                            issued_date:
+                              type: string
+                              format: date-time
+                              description: Date when the certificate was issued
+                              example: '2023-10-01T12:00:00Z'
+                            expiration_date:
+                              type: string
+                              format: date-time
+                              description: Date when the certificate expires (optional)
+                              example: '2025-10-01T12:00:00Z'
+                        children:
+                          type: array
+                          description: List of children items in the top-level curricula
+                          items:
+                            x-go-type: ChildNode
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                description: Unique identifier for the course
+                                example: 1234567890abcdef
+                                x-go-name: ID
+                                x-oapi-codegen-extra-tags:
+                                  db: id
+                                  json: id
+                                  yaml: id
+                              title:
+                                type: string
+                                description: Title of the course
+                                example: Kubernetes Basics
+                              permalink:
+                                type: string
+                                format: uri
+                                description: URL to the course content
+                                example: >-
+                                  http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                              description:
+                                type: string
+                                description: Course description
+                                example: Learn the basics of Kubernetes
+                              weight:
+                                type: number
+                                description: >-
+                                  A numeric value to determine the display
+                                  order. A smaller number appears first. If not
+                                  specified, items will be sorted alphabetically
+                                  by title.
+                                example: eg 1 , 2
+                              banner:
+                                type: string
+                                format: uri
+                                nullable: true
+                                description: >-
+                                  Filename of the banner image, which should be
+                                  placed in the same directory as the _index.md
+                                  file
+                                example: kubernetes-icon.svg
+                              type:
+                                x-go-type: ContentType
+                                description: >-
+                                  Type of the content (e.g., learning-path,
+                                  challenge, certification)
+                                type: string
+                                enum:
+                                  - learning-path
+                                  - challenge
+                                  - certification
+                              children:
+                                type: array
+                                description: List of child nodes (sub-courses or modules)
+                                items:
+                                  type: object
+                                  x-go-type: ChildNode
+                            required:
+                              - title
+                              - description
+                              - id
+                              - permalink
+                      required:
+                        - title
+                        - description
+                        - permalink
+              required:
+                - type
+                - title
+                - orgId
+                - workspace_id
+                - team_id
+                - access_status
+                - metadata
+      responses:
+        '200':
+          description: updated the curricula
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Id of the cirricula
+                        example: 923458-3490394-934893
+                        x-go-name: ID
+                        x-oapi-codegen-extra-tags:
+                          db: id
+                          json: id
+                          yaml: id
+                      type:
+                        x-go-type: ContentType
+                        x-oapi-codegen-extra-tags:
+                          db: type
+                        type: string
+                        enum:
+                          - learning-path
+                          - challenge
+                          - certification
+                      orgId:
+                        type: string
+                        description: Organization ID that owns this learning path
+                        example: layer5
+                        x-oapi-codegen-extra-tags:
+                          db: org_id
+                          json: org_id
+                          yaml: org_id
+                      visibility:
+                        description: Visibility of the cirricula
+                        x-go-type: Visibility
+                        x-oapi-codegen-extra-tags:
+                          db: visibility
+                          json: visibility
+                          yaml: visibility
+                        type: string
+                        enum:
+                          - public
+                          - private
+                      status:
+                        example: ready
+                        description: Status of the cirricula
+                        x-go-type: Status
+                        x-oapi-codegen-extra-tags:
+                          db: status
+                          json: status
+                          yaml: status
+                        type: string
+                        enum:
+                          - ready
+                          - archived
+                          - not_ready
+                      slug:
+                        type: string
+                        description: slug of the cirricula
+                        example: intro-kubernetes-course
+                      level:
+                        description: Level of the cirricula
+                        x-go-type: Level
+                        x-oapi-codegen-extra-tags:
+                          db: level
+                          json: level
+                          yaml: level
+                        type: string
+                        enum:
+                          - beginner
+                          - intermediate
+                          - advanced
+                      badge_id:
+                        description: >-
+                          ID of the badge to be awarded on completion of this
+                          curricula
+                        x-oapi-codegen-extra-tags:
+                          db: badge_id
+                          json: badge_id
+                          yaml: badge_id
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                      invite_id:
+                        description: ID of the invite associated with this cirricula
+                        x-oapi-codegen-extra-tags:
+                          db: invite_id
+                          json: invite_id
+                          yaml: invite_id
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                      workspace_id:
+                        description: ID of the workspace to which this cirricula belongs
+                        x-oapi-codegen-extra-tags:
+                          db: workspace_id
+                          json: workspace_id
+                          yaml: workspace_id
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                      createdAt:
+                        description: When the cirricula item was created
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          json: created_at
+                          yaml: created_at
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updatedAt:
+                        description: When the cirricula was last updated
+                        x-go-type: core.Time
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          json: updated_at
+                          yaml: updated_at
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      deletedAt:
+                        x-go-type: core.NullTime
+                        x-oapi-codegen-extra-tags:
+                          db: deleted_at
+                          json: deleted_at
+                          yaml: deleted_at
+                        description: Timestamp when the resource was deleted.
+                        type: string
+                        format: date-time
+                        x-go-name: DeletedAt
+                        x-go-type-skip-optional-pointer: true
+                      metadata:
+                        type: object
+                        description: Additional metadata about the cirricula
+                        additionalProperties: true
+                        x-go-type: core.Map
+                        x-go-type-skip-optional-pointer: true
+                        x-oapi-codegen-extra-tags:
+                          db: metadata
+                          json: metadata
+                          yaml: metadata
+                        oneOf:
+                          - x-go-type: CurriculaMetadata
+                            type: object
+                            properties:
+                              title:
+                                type: string
+                                description: Title of the learning path
+                                example: Mastering Kubernetes for Engineers
+                              description:
+                                type: string
+                                description: Description of the learning path
+                                example: >-
+                                  Learn how to configure your Kubernetes
+                                  clusters and manage the lifecycle of your
+                                  workloads
+                              banner:
+                                type: string
+                                format: uri
+                                nullable: true
+                                description: >-
+                                  Filename of the banner image, which should be
+                                  placed in the same directory as the _index.md
+                                  file
+                                example: kubernetes-icon.svg
+                              permalink:
+                                type: string
+                                format: uri
+                                description: Canonical URL for the learning path
+                                example: >-
+                                  http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                              certificate:
+                                x-go-type: Certificate
+                                type: object
+                                required:
+                                  - id
+                                  - org_id
+                                  - title
+                                  - description
+                                  - issuing_authorities
+                                  - issued_date
+                                  - recipient_id
+                                  - recipient_name
+                                properties:
+                                  id:
+                                    type: string
+                                    description: Unique identifier for the certificate
+                                    example: 1234567890abcdef
+                                    x-go-name: ID
+                                  org_id:
+                                    description: >-
+                                      UUID of the organization that issued the
+                                      certificate
+                                    type: string
+                                    format: uuid
+                                    x-go-type: uuid.UUID
+                                    x-go-type-import:
+                                      path: github.com/gofrs/uuid
+                                  recipient_id:
+                                    type: string
+                                    description: >-
+                                      ID of the recipient (user) who received
+                                      the certificate
+                                    example: 1234567890abcdef
+                                  recipient_name:
+                                    type: string
+                                    description: >-
+                                      Name of the recipient (user) who received
+                                      the certificate
+                                    example: John Doe
+                                  title:
+                                    type: string
+                                    description: Title of the certificate
+                                    example: Kubernetes Expert Certification
+                                  description:
+                                    type: string
+                                    description: Description of the certificate
+                                    example: >-
+                                      Awarded for successfully completing the
+                                      Kubernetes Expert course
+                                  issuing_authorities:
+                                    type: array
+                                    items:
+                                      x-go-type: CertificateIssuingAuthority
+                                      type: object
+                                      required:
+                                        - name
+                                        - url
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: Name of the issuing authority
+                                          example: Cloud Native Foundation
+                                        role:
+                                          type: string
+                                          description: Role of the issuing authority
+                                          example: COO
+                                        signature_url:
+                                          type: string
+                                          format: uri
+                                          description: >-
+                                            URL to the signature image of the
+                                            issuing authority should be a publicly
+                                            accessible URL and transparent PNG or
+                                            SVG format
+                                          example: >-
+                                            http://localhost:9876/signatures/cloud-native-foundation.png
+                                    description: >-
+                                      List of issuing authorities for the
+                                      certificate
+                                  issued_date:
+                                    type: string
+                                    format: date-time
+                                    description: Date when the certificate was issued
+                                    example: '2023-10-01T12:00:00Z'
+                                  expiration_date:
+                                    type: string
+                                    format: date-time
+                                    description: >-
+                                      Date when the certificate expires
+                                      (optional)
+                                    example: '2025-10-01T12:00:00Z'
+                              children:
+                                type: array
+                                description: >-
+                                  List of children items in the top-level
+                                  curricula
+                                items:
+                                  x-go-type: ChildNode
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      description: Unique identifier for the course
+                                      example: 1234567890abcdef
+                                      x-go-name: ID
+                                      x-oapi-codegen-extra-tags:
+                                        db: id
+                                        json: id
+                                        yaml: id
+                                    title:
+                                      type: string
+                                      description: Title of the course
+                                      example: Kubernetes Basics
+                                    permalink:
+                                      type: string
+                                      format: uri
+                                      description: URL to the course content
+                                      example: >-
+                                        http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                                    description:
+                                      type: string
+                                      description: Course description
+                                      example: Learn the basics of Kubernetes
+                                    weight:
+                                      type: number
+                                      description: >-
+                                        A numeric value to determine the display
+                                        order. A smaller number appears first.
+                                        If not specified, items will be sorted
+                                        alphabetically by title.
+                                      example: eg 1 , 2
+                                    banner:
+                                      type: string
+                                      format: uri
+                                      nullable: true
+                                      description: >-
+                                        Filename of the banner image, which
+                                        should be placed in the same directory
+                                        as the _index.md file
+                                      example: kubernetes-icon.svg
+                                    type:
+                                      x-go-type: ContentType
+                                      description: >-
+                                        Type of the content (e.g.,
+                                        learning-path, challenge, certification)
+                                      type: string
+                                      enum:
+                                        - learning-path
+                                        - challenge
+                                        - certification
+                                    children:
+                                      type: array
+                                      description: >-
+                                        List of child nodes (sub-courses or
+                                        modules)
+                                      items:
+                                        type: object
+                                        x-go-type: ChildNode
+                                  required:
+                                    - title
+                                    - description
+                                    - id
+                                    - permalink
+                            required:
+                              - title
+                              - description
+                              - permalink
+                    required:
+                      - id
+                      - type
+                      - orgId
+                      - visibility
+                      - status
+                      - slug
+                      - createdAt
+                      - updatedAt
+                      - deletedAt
+                      - metadata
+                      - level
+                  - type: object
+                    required:
+                      - RegistrationCount
+                    properties:
+                      RegistrationCount:
+                        type: number
+                        x-oapi-codegen-extra-tags:
+                          db: registration_count,omitempty
+                          json: registration_count,omitempty
+                          yaml: registration_count,omitempty
+                      Invitation:
+                        x-go-type: invitation.Invitation
+                        x-go-type-import:
+                          path: github.com/meshery/schemas/models/v1beta1/invitation
+                        type: object
+                        required:
+                          - id
+                          - owner_id
+                          - name
+                          - description
+                          - org_id
+                          - accepted_by
+                          - emails
+                          - roles
+                          - teams
+                          - status
+                          - created_at
+                          - updated_at
+                          - deleted_at
+                        properties:
+                          id:
+                            x-go-name: ID
+                            description: >-
+                              Unique identifier for the invitation , is also
+                              used as the invitation code
+                            type: string
+                            format: uuid
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
+                          owner_id:
+                            description: >-
+                              ID of the user who created the invitation, this is
+                              used to track who created the invitation and can
+                              be used for auditing purposes
+                            x-oapi-codegen-extra-tags:
+                              db: owner_id
+                              json: owner_id
+                            type: string
+                            format: uuid
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
+                          is_default:
+                            type: boolean
+                            description: >-
+                              Indicates whether the invitation is a default
+                              invitation (open invite), which can be used to
+                              assign users when signing up from fqdn or custom
+                              domain, a organization can only have one default
+                              invitation
+                            x-oapi-codegen-extra-tags:
+                              db: is_default
+                              json: is_default
+                          name:
+                            type: string
+                            description: >-
+                              Name of the invitation, which can be used to
+                              identify the invitation, required and cant be
+                              empty string,
+                          description:
+                            type: string
+                            description: >-
+                              Description of the invitation, which can be used
+                              to provide additional information about the
+                              invitation, null or empty string means the
+                              invitation does not have a description
+                          emails:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                              pattern: >-
+                                ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                              x-go-type: string
+                              description: >-
+                                Exact email address or the email address pattern
+                                for which the invitation is valid , null means
+                                the invitation is valid for all email addresses
+                          org_id:
+                            type: string
+                            description: >-
+                              ID of the organization to which the user is
+                              invited
+                            x-oapi-codegen-extra-tags:
+                              db: org_id
+                              json: org_id
+                          expires_at:
+                            type: string
+                            format: date-time
+                            description: >-
+                              Timestamp when the invitation expires, if
+                              applicable , null or empty string means the
+                              invitation does not expire
+                            x-oapi-codegen-extra-tags:
+                              db: expires_at
+                              json: expires_at
+                          quota:
+                            type: integer
+                            description: >-
+                              Quota for the invitation, which can be used to
+                              limit the number of users that can accept the
+                              invitation, null or empty string means the
+                              invitation does not have a quota
+                          accepted_by:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                            description: >-
+                              List of user ids that have already accepted the
+                              invitation, null or empty string means the
+                              invitation has not been used yet
+                            x-oapi-codegen-extra-tags:
+                              db: accepted_by
+                              json: accepted_by
+                          roles:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                              description: >-
+                                Roles that the user will have when accepting the
+                                invitation, null or empty string means the
+                                invitation does not specify any roles
+                          teams:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                              description: >-
+                                Teams that the user will be added to when
+                                accepting the invitation, null or empty string
+                                means the invitation does not specify any teams
+                          status:
+                            type: string
+                            x-go-type: InvitationStatus
+                            enum:
+                              - enabled
+                              - disabled
+                            description: >-
+                              Status of the invitation, where enabled means the
+                              invitation is active and can be used, disabled
+                              means the invitation is no longer valid and is
+                              temporarily inactive, disabled invitations can be
+                              re-enabled later.
+                          created_at:
+                            type: string
+                            format: date-time
+                            description: Timestamp when the invitation was created
+                            x-oapi-codegen-extra-tags:
+                              db: created_at
+                              json: created_at
+                          updated_at:
+                            type: string
+                            format: date-time
+                            description: Timestamp when the invitation was last updated
+                            x-oapi-codegen-extra-tags:
+                              db: updated_at
+                              json: updated_at
+                          deleted_at:
+                            type: string
+                            format: date-time
+                            x-go-type: core.NullTime
+                            description: >-
+                              Timestamp when the invitation was deleted, if
+                              applicable
+                            x-oapi-codegen-extra-tags:
+                              db: deleted_at
+                              json: deleted_at
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Curricula not found
+        '500':
+          description: Server error
+    delete:
+      x-internal:
+        - cloud
+      tags:
+        - Academy_API_Academy
+      operationId: deleteAcademyCurriculaByID
+      summary: Delete an academy curricula by ID
+      description: Deletes an existing academy curricula identified by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the curricula
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted the curricula
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Curricula not found
+        '500':
+          description: Server error
+    get:
+      x-internal:
+        - cloud
+      tags:
+        - Academy_API_Academy
+      operationId: getAcademyCurriculaByID
+      summary: Get a single academy curricula by ID
+      description: Returns a single academy curricula identified by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the curricula
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single curricula
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: string
+                        description: Id of the cirricula
+                        example: 923458-3490394-934893
+                        x-go-name: ID
+                        x-oapi-codegen-extra-tags:
+                          db: id
+                          json: id
+                          yaml: id
+                      type:
+                        x-go-type: ContentType
+                        x-oapi-codegen-extra-tags:
+                          db: type
+                        type: string
+                        enum:
+                          - learning-path
+                          - challenge
+                          - certification
+                      orgId:
+                        type: string
+                        description: Organization ID that owns this learning path
+                        example: layer5
+                        x-oapi-codegen-extra-tags:
+                          db: org_id
+                          json: org_id
+                          yaml: org_id
+                      visibility:
+                        description: Visibility of the cirricula
+                        x-go-type: Visibility
+                        x-oapi-codegen-extra-tags:
+                          db: visibility
+                          json: visibility
+                          yaml: visibility
+                        type: string
+                        enum:
+                          - public
+                          - private
+                      status:
+                        example: ready
+                        description: Status of the cirricula
+                        x-go-type: Status
+                        x-oapi-codegen-extra-tags:
+                          db: status
+                          json: status
+                          yaml: status
+                        type: string
+                        enum:
+                          - ready
+                          - archived
+                          - not_ready
+                      slug:
+                        type: string
+                        description: slug of the cirricula
+                        example: intro-kubernetes-course
+                      level:
+                        description: Level of the cirricula
+                        x-go-type: Level
+                        x-oapi-codegen-extra-tags:
+                          db: level
+                          json: level
+                          yaml: level
+                        type: string
+                        enum:
+                          - beginner
+                          - intermediate
+                          - advanced
+                      badge_id:
+                        description: >-
+                          ID of the badge to be awarded on completion of this
+                          curricula
+                        x-oapi-codegen-extra-tags:
+                          db: badge_id
+                          json: badge_id
+                          yaml: badge_id
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                      invite_id:
+                        description: ID of the invite associated with this cirricula
+                        x-oapi-codegen-extra-tags:
+                          db: invite_id
+                          json: invite_id
+                          yaml: invite_id
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                      workspace_id:
+                        description: ID of the workspace to which this cirricula belongs
+                        x-oapi-codegen-extra-tags:
+                          db: workspace_id
+                          json: workspace_id
+                          yaml: workspace_id
+                        type: string
+                        format: uuid
+                        x-go-type: uuid.UUID
+                        x-go-type-import:
+                          path: github.com/gofrs/uuid
+                      createdAt:
+                        description: When the cirricula item was created
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          json: created_at
+                          yaml: created_at
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updatedAt:
+                        description: When the cirricula was last updated
+                        x-go-type: core.Time
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          json: updated_at
+                          yaml: updated_at
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      deletedAt:
+                        x-go-type: core.NullTime
+                        x-oapi-codegen-extra-tags:
+                          db: deleted_at
+                          json: deleted_at
+                          yaml: deleted_at
+                        description: Timestamp when the resource was deleted.
+                        type: string
+                        format: date-time
+                        x-go-name: DeletedAt
+                        x-go-type-skip-optional-pointer: true
+                      metadata:
+                        type: object
+                        description: Additional metadata about the cirricula
+                        additionalProperties: true
+                        x-go-type: core.Map
+                        x-go-type-skip-optional-pointer: true
+                        x-oapi-codegen-extra-tags:
+                          db: metadata
+                          json: metadata
+                          yaml: metadata
+                        oneOf:
+                          - x-go-type: CurriculaMetadata
+                            type: object
+                            properties:
+                              title:
+                                type: string
+                                description: Title of the learning path
+                                example: Mastering Kubernetes for Engineers
+                              description:
+                                type: string
+                                description: Description of the learning path
+                                example: >-
+                                  Learn how to configure your Kubernetes
+                                  clusters and manage the lifecycle of your
+                                  workloads
+                              banner:
+                                type: string
+                                format: uri
+                                nullable: true
+                                description: >-
+                                  Filename of the banner image, which should be
+                                  placed in the same directory as the _index.md
+                                  file
+                                example: kubernetes-icon.svg
+                              permalink:
+                                type: string
+                                format: uri
+                                description: Canonical URL for the learning path
+                                example: >-
+                                  http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                              certificate:
+                                x-go-type: Certificate
+                                type: object
+                                required:
+                                  - id
+                                  - org_id
+                                  - title
+                                  - description
+                                  - issuing_authorities
+                                  - issued_date
+                                  - recipient_id
+                                  - recipient_name
+                                properties:
+                                  id:
+                                    type: string
+                                    description: Unique identifier for the certificate
+                                    example: 1234567890abcdef
+                                    x-go-name: ID
+                                  org_id:
+                                    description: >-
+                                      UUID of the organization that issued the
+                                      certificate
+                                    type: string
+                                    format: uuid
+                                    x-go-type: uuid.UUID
+                                    x-go-type-import:
+                                      path: github.com/gofrs/uuid
+                                  recipient_id:
+                                    type: string
+                                    description: >-
+                                      ID of the recipient (user) who received
+                                      the certificate
+                                    example: 1234567890abcdef
+                                  recipient_name:
+                                    type: string
+                                    description: >-
+                                      Name of the recipient (user) who received
+                                      the certificate
+                                    example: John Doe
+                                  title:
+                                    type: string
+                                    description: Title of the certificate
+                                    example: Kubernetes Expert Certification
+                                  description:
+                                    type: string
+                                    description: Description of the certificate
+                                    example: >-
+                                      Awarded for successfully completing the
+                                      Kubernetes Expert course
+                                  issuing_authorities:
+                                    type: array
+                                    items:
+                                      x-go-type: CertificateIssuingAuthority
+                                      type: object
+                                      required:
+                                        - name
+                                        - url
+                                      properties:
+                                        name:
+                                          type: string
+                                          description: Name of the issuing authority
+                                          example: Cloud Native Foundation
+                                        role:
+                                          type: string
+                                          description: Role of the issuing authority
+                                          example: COO
+                                        signature_url:
+                                          type: string
+                                          format: uri
+                                          description: >-
+                                            URL to the signature image of the
+                                            issuing authority should be a publicly
+                                            accessible URL and transparent PNG or
+                                            SVG format
+                                          example: >-
+                                            http://localhost:9876/signatures/cloud-native-foundation.png
+                                    description: >-
+                                      List of issuing authorities for the
+                                      certificate
+                                  issued_date:
+                                    type: string
+                                    format: date-time
+                                    description: Date when the certificate was issued
+                                    example: '2023-10-01T12:00:00Z'
+                                  expiration_date:
+                                    type: string
+                                    format: date-time
+                                    description: >-
+                                      Date when the certificate expires
+                                      (optional)
+                                    example: '2025-10-01T12:00:00Z'
+                              children:
+                                type: array
+                                description: >-
+                                  List of children items in the top-level
+                                  curricula
+                                items:
+                                  x-go-type: ChildNode
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      description: Unique identifier for the course
+                                      example: 1234567890abcdef
+                                      x-go-name: ID
+                                      x-oapi-codegen-extra-tags:
+                                        db: id
+                                        json: id
+                                        yaml: id
+                                    title:
+                                      type: string
+                                      description: Title of the course
+                                      example: Kubernetes Basics
+                                    permalink:
+                                      type: string
+                                      format: uri
+                                      description: URL to the course content
+                                      example: >-
+                                        http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                                    description:
+                                      type: string
+                                      description: Course description
+                                      example: Learn the basics of Kubernetes
+                                    weight:
+                                      type: number
+                                      description: >-
+                                        A numeric value to determine the display
+                                        order. A smaller number appears first.
+                                        If not specified, items will be sorted
+                                        alphabetically by title.
+                                      example: eg 1 , 2
+                                    banner:
+                                      type: string
+                                      format: uri
+                                      nullable: true
+                                      description: >-
+                                        Filename of the banner image, which
+                                        should be placed in the same directory
+                                        as the _index.md file
+                                      example: kubernetes-icon.svg
+                                    type:
+                                      x-go-type: ContentType
+                                      description: >-
+                                        Type of the content (e.g.,
+                                        learning-path, challenge, certification)
+                                      type: string
+                                      enum:
+                                        - learning-path
+                                        - challenge
+                                        - certification
+                                    children:
+                                      type: array
+                                      description: >-
+                                        List of child nodes (sub-courses or
+                                        modules)
+                                      items:
+                                        type: object
+                                        x-go-type: ChildNode
+                                  required:
+                                    - title
+                                    - description
+                                    - id
+                                    - permalink
+                            required:
+                              - title
+                              - description
+                              - permalink
+                    required:
+                      - id
+                      - type
+                      - orgId
+                      - visibility
+                      - status
+                      - slug
+                      - createdAt
+                      - updatedAt
+                      - deletedAt
+                      - metadata
+                      - level
+                  - type: object
+                    required:
+                      - RegistrationCount
+                    properties:
+                      RegistrationCount:
+                        type: number
+                        x-oapi-codegen-extra-tags:
+                          db: registration_count,omitempty
+                          json: registration_count,omitempty
+                          yaml: registration_count,omitempty
+                      Invitation:
+                        x-go-type: invitation.Invitation
+                        x-go-type-import:
+                          path: github.com/meshery/schemas/models/v1beta1/invitation
+                        type: object
+                        required:
+                          - id
+                          - owner_id
+                          - name
+                          - description
+                          - org_id
+                          - accepted_by
+                          - emails
+                          - roles
+                          - teams
+                          - status
+                          - created_at
+                          - updated_at
+                          - deleted_at
+                        properties:
+                          id:
+                            x-go-name: ID
+                            description: >-
+                              Unique identifier for the invitation , is also
+                              used as the invitation code
+                            type: string
+                            format: uuid
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
+                          owner_id:
+                            description: >-
+                              ID of the user who created the invitation, this is
+                              used to track who created the invitation and can
+                              be used for auditing purposes
+                            x-oapi-codegen-extra-tags:
+                              db: owner_id
+                              json: owner_id
+                            type: string
+                            format: uuid
+                            x-go-type: uuid.UUID
+                            x-go-type-import:
+                              path: github.com/gofrs/uuid
+                          is_default:
+                            type: boolean
+                            description: >-
+                              Indicates whether the invitation is a default
+                              invitation (open invite), which can be used to
+                              assign users when signing up from fqdn or custom
+                              domain, a organization can only have one default
+                              invitation
+                            x-oapi-codegen-extra-tags:
+                              db: is_default
+                              json: is_default
+                          name:
+                            type: string
+                            description: >-
+                              Name of the invitation, which can be used to
+                              identify the invitation, required and cant be
+                              empty string,
+                          description:
+                            type: string
+                            description: >-
+                              Description of the invitation, which can be used
+                              to provide additional information about the
+                              invitation, null or empty string means the
+                              invitation does not have a description
+                          emails:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                              pattern: >-
+                                ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                              x-go-type: string
+                              description: >-
+                                Exact email address or the email address pattern
+                                for which the invitation is valid , null means
+                                the invitation is valid for all email addresses
+                          org_id:
+                            type: string
+                            description: >-
+                              ID of the organization to which the user is
+                              invited
+                            x-oapi-codegen-extra-tags:
+                              db: org_id
+                              json: org_id
+                          expires_at:
+                            type: string
+                            format: date-time
+                            description: >-
+                              Timestamp when the invitation expires, if
+                              applicable , null or empty string means the
+                              invitation does not expire
+                            x-oapi-codegen-extra-tags:
+                              db: expires_at
+                              json: expires_at
+                          quota:
+                            type: integer
+                            description: >-
+                              Quota for the invitation, which can be used to
+                              limit the number of users that can accept the
+                              invitation, null or empty string means the
+                              invitation does not have a quota
+                          accepted_by:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                            description: >-
+                              List of user ids that have already accepted the
+                              invitation, null or empty string means the
+                              invitation has not been used yet
+                            x-oapi-codegen-extra-tags:
+                              db: accepted_by
+                              json: accepted_by
+                          roles:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                              description: >-
+                                Roles that the user will have when accepting the
+                                invitation, null or empty string means the
+                                invitation does not specify any roles
+                          teams:
+                            type: array
+                            x-go-type: pq.StringArray
+                            x-go-type-import:
+                              path: github.com/lib/pq
+                            items:
+                              type: string
+                              description: >-
+                                Teams that the user will be added to when
+                                accepting the invitation, null or empty string
+                                means the invitation does not specify any teams
+                          status:
+                            type: string
+                            x-go-type: InvitationStatus
+                            enum:
+                              - enabled
+                              - disabled
+                            description: >-
+                              Status of the invitation, where enabled means the
+                              invitation is active and can be used, disabled
+                              means the invitation is no longer valid and is
+                              temporarily inactive, disabled invitations can be
+                              re-enabled later.
+                          created_at:
+                            type: string
+                            format: date-time
+                            description: Timestamp when the invitation was created
+                            x-oapi-codegen-extra-tags:
+                              db: created_at
+                              json: created_at
+                          updated_at:
+                            type: string
+                            format: date-time
+                            description: Timestamp when the invitation was last updated
+                            x-oapi-codegen-extra-tags:
+                              db: updated_at
+                              json: updated_at
+                          deleted_at:
+                            type: string
+                            format: date-time
+                            x-go-type: core.NullTime
+                            description: >-
+                              Timestamp when the invitation was deleted, if
+                              applicable
+                            x-oapi-codegen-extra-tags:
+                              db: deleted_at
+                              json: deleted_at
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Curricula not found
+        '500':
+          description: Server error
   /api/academy/registrations/{contentId}:
     get:
       tags:
@@ -52796,6 +54260,522 @@ components:
         - deletedAt
         - metadata
         - level
+    Academy_API_SingleAcademyCurriculaResponse:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              description: Id of the cirricula
+              example: 923458-3490394-934893
+              x-go-name: ID
+              x-oapi-codegen-extra-tags:
+                db: id
+                json: id
+                yaml: id
+            type:
+              x-go-type: ContentType
+              x-oapi-codegen-extra-tags:
+                db: type
+              type: string
+              enum:
+                - learning-path
+                - challenge
+                - certification
+            orgId:
+              type: string
+              description: Organization ID that owns this learning path
+              example: layer5
+              x-oapi-codegen-extra-tags:
+                db: org_id
+                json: org_id
+                yaml: org_id
+            visibility:
+              description: Visibility of the cirricula
+              x-go-type: Visibility
+              x-oapi-codegen-extra-tags:
+                db: visibility
+                json: visibility
+                yaml: visibility
+              type: string
+              enum:
+                - public
+                - private
+            status:
+              example: ready
+              description: Status of the cirricula
+              x-go-type: Status
+              x-oapi-codegen-extra-tags:
+                db: status
+                json: status
+                yaml: status
+              type: string
+              enum:
+                - ready
+                - archived
+                - not_ready
+            slug:
+              type: string
+              description: slug of the cirricula
+              example: intro-kubernetes-course
+            level:
+              description: Level of the cirricula
+              x-go-type: Level
+              x-oapi-codegen-extra-tags:
+                db: level
+                json: level
+                yaml: level
+              type: string
+              enum:
+                - beginner
+                - intermediate
+                - advanced
+            badge_id:
+              description: ID of the badge to be awarded on completion of this curricula
+              x-oapi-codegen-extra-tags:
+                db: badge_id
+                json: badge_id
+                yaml: badge_id
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            invite_id:
+              description: ID of the invite associated with this cirricula
+              x-oapi-codegen-extra-tags:
+                db: invite_id
+                json: invite_id
+                yaml: invite_id
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            workspace_id:
+              description: ID of the workspace to which this cirricula belongs
+              x-oapi-codegen-extra-tags:
+                db: workspace_id
+                json: workspace_id
+                yaml: workspace_id
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+            createdAt:
+              description: When the cirricula item was created
+              x-oapi-codegen-extra-tags:
+                db: created_at
+                json: created_at
+                yaml: created_at
+              type: string
+              format: date-time
+              x-go-type-skip-optional-pointer: true
+            updatedAt:
+              description: When the cirricula was last updated
+              x-go-type: core.Time
+              x-oapi-codegen-extra-tags:
+                db: updated_at
+                json: updated_at
+                yaml: updated_at
+              type: string
+              format: date-time
+              x-go-type-skip-optional-pointer: true
+            deletedAt:
+              x-go-type: core.NullTime
+              x-oapi-codegen-extra-tags:
+                db: deleted_at
+                json: deleted_at
+                yaml: deleted_at
+              description: Timestamp when the resource was deleted.
+              type: string
+              format: date-time
+              x-go-name: DeletedAt
+              x-go-type-skip-optional-pointer: true
+            metadata:
+              type: object
+              description: Additional metadata about the cirricula
+              additionalProperties: true
+              x-go-type: core.Map
+              x-go-type-skip-optional-pointer: true
+              x-oapi-codegen-extra-tags:
+                db: metadata
+                json: metadata
+                yaml: metadata
+              oneOf:
+                - x-go-type: CurriculaMetadata
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: Title of the learning path
+                      example: Mastering Kubernetes for Engineers
+                    description:
+                      type: string
+                      description: Description of the learning path
+                      example: >-
+                        Learn how to configure your Kubernetes clusters and
+                        manage the lifecycle of your workloads
+                    banner:
+                      type: string
+                      format: uri
+                      nullable: true
+                      description: >-
+                        Filename of the banner image, which should be placed in
+                        the same directory as the _index.md file
+                      example: kubernetes-icon.svg
+                    permalink:
+                      type: string
+                      format: uri
+                      description: Canonical URL for the learning path
+                      example: >-
+                        http://localhost:9876/academy/learning-paths/layer5/mastering-kubernetes-for-engineers/
+                    certificate:
+                      x-go-type: Certificate
+                      type: object
+                      required:
+                        - id
+                        - org_id
+                        - title
+                        - description
+                        - issuing_authorities
+                        - issued_date
+                        - recipient_id
+                        - recipient_name
+                      properties:
+                        id:
+                          type: string
+                          description: Unique identifier for the certificate
+                          example: 1234567890abcdef
+                          x-go-name: ID
+                        org_id:
+                          description: UUID of the organization that issued the certificate
+                          type: string
+                          format: uuid
+                          x-go-type: uuid.UUID
+                          x-go-type-import:
+                            path: github.com/gofrs/uuid
+                        recipient_id:
+                          type: string
+                          description: >-
+                            ID of the recipient (user) who received the
+                            certificate
+                          example: 1234567890abcdef
+                        recipient_name:
+                          type: string
+                          description: >-
+                            Name of the recipient (user) who received the
+                            certificate
+                          example: John Doe
+                        title:
+                          type: string
+                          description: Title of the certificate
+                          example: Kubernetes Expert Certification
+                        description:
+                          type: string
+                          description: Description of the certificate
+                          example: >-
+                            Awarded for successfully completing the Kubernetes
+                            Expert course
+                        issuing_authorities:
+                          type: array
+                          items:
+                            x-go-type: CertificateIssuingAuthority
+                            type: object
+                            required:
+                              - name
+                              - url
+                            properties:
+                              name:
+                                type: string
+                                description: Name of the issuing authority
+                                example: Cloud Native Foundation
+                              role:
+                                type: string
+                                description: Role of the issuing authority
+                                example: COO
+                              signature_url:
+                                type: string
+                                format: uri
+                                description: >-
+                                  URL to the signature image of the issuing
+                                  authority should be a publicly accessible URL
+                                  and transparent PNG or SVG format
+                                example: >-
+                                  http://localhost:9876/signatures/cloud-native-foundation.png
+                          description: List of issuing authorities for the certificate
+                        issued_date:
+                          type: string
+                          format: date-time
+                          description: Date when the certificate was issued
+                          example: '2023-10-01T12:00:00Z'
+                        expiration_date:
+                          type: string
+                          format: date-time
+                          description: Date when the certificate expires (optional)
+                          example: '2025-10-01T12:00:00Z'
+                    children:
+                      type: array
+                      description: List of children items in the top-level curricula
+                      items:
+                        x-go-type: ChildNode
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            description: Unique identifier for the course
+                            example: 1234567890abcdef
+                            x-go-name: ID
+                            x-oapi-codegen-extra-tags:
+                              db: id
+                              json: id
+                              yaml: id
+                          title:
+                            type: string
+                            description: Title of the course
+                            example: Kubernetes Basics
+                          permalink:
+                            type: string
+                            format: uri
+                            description: URL to the course content
+                            example: >-
+                              http://localhost:9876/academy/learning-paths/layer5/intro-kubernetes-course/kubernetes/
+                          description:
+                            type: string
+                            description: Course description
+                            example: Learn the basics of Kubernetes
+                          weight:
+                            type: number
+                            description: >-
+                              A numeric value to determine the display order. A
+                              smaller number appears first. If not specified,
+                              items will be sorted alphabetically by title.
+                            example: eg 1 , 2
+                          banner:
+                            type: string
+                            format: uri
+                            nullable: true
+                            description: >-
+                              Filename of the banner image, which should be
+                              placed in the same directory as the _index.md file
+                            example: kubernetes-icon.svg
+                          type:
+                            x-go-type: ContentType
+                            description: >-
+                              Type of the content (e.g., learning-path,
+                              challenge, certification)
+                            type: string
+                            enum:
+                              - learning-path
+                              - challenge
+                              - certification
+                          children:
+                            type: array
+                            description: List of child nodes (sub-courses or modules)
+                            items:
+                              type: object
+                              x-go-type: ChildNode
+                        required:
+                          - title
+                          - description
+                          - id
+                          - permalink
+                  required:
+                    - title
+                    - description
+                    - permalink
+          required:
+            - id
+            - type
+            - orgId
+            - visibility
+            - status
+            - slug
+            - createdAt
+            - updatedAt
+            - deletedAt
+            - metadata
+            - level
+        - type: object
+          required:
+            - RegistrationCount
+          properties:
+            RegistrationCount:
+              type: number
+              x-oapi-codegen-extra-tags:
+                db: registration_count,omitempty
+                json: registration_count,omitempty
+                yaml: registration_count,omitempty
+            Invitation:
+              x-go-type: invitation.Invitation
+              x-go-type-import:
+                path: github.com/meshery/schemas/models/v1beta1/invitation
+              type: object
+              required:
+                - id
+                - owner_id
+                - name
+                - description
+                - org_id
+                - accepted_by
+                - emails
+                - roles
+                - teams
+                - status
+                - created_at
+                - updated_at
+                - deleted_at
+              properties:
+                id:
+                  x-go-name: ID
+                  description: >-
+                    Unique identifier for the invitation , is also used as the
+                    invitation code
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                owner_id:
+                  description: >-
+                    ID of the user who created the invitation, this is used to
+                    track who created the invitation and can be used for
+                    auditing purposes
+                  x-oapi-codegen-extra-tags:
+                    db: owner_id
+                    json: owner_id
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                is_default:
+                  type: boolean
+                  description: >-
+                    Indicates whether the invitation is a default invitation
+                    (open invite), which can be used to assign users when
+                    signing up from fqdn or custom domain, a organization can
+                    only have one default invitation
+                  x-oapi-codegen-extra-tags:
+                    db: is_default
+                    json: is_default
+                name:
+                  type: string
+                  description: >-
+                    Name of the invitation, which can be used to identify the
+                    invitation, required and cant be empty string,
+                description:
+                  type: string
+                  description: >-
+                    Description of the invitation, which can be used to provide
+                    additional information about the invitation, null or empty
+                    string means the invitation does not have a description
+                emails:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                    pattern: >-
+                      ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+                    x-go-type: string
+                    description: >-
+                      Exact email address or the email address pattern for which
+                      the invitation is valid , null means the invitation is
+                      valid for all email addresses
+                org_id:
+                  type: string
+                  description: ID of the organization to which the user is invited
+                  x-oapi-codegen-extra-tags:
+                    db: org_id
+                    json: org_id
+                expires_at:
+                  type: string
+                  format: date-time
+                  description: >-
+                    Timestamp when the invitation expires, if applicable , null
+                    or empty string means the invitation does not expire
+                  x-oapi-codegen-extra-tags:
+                    db: expires_at
+                    json: expires_at
+                quota:
+                  type: integer
+                  description: >-
+                    Quota for the invitation, which can be used to limit the
+                    number of users that can accept the invitation, null or
+                    empty string means the invitation does not have a quota
+                accepted_by:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                  description: >-
+                    List of user ids that have already accepted the invitation,
+                    null or empty string means the invitation has not been used
+                    yet
+                  x-oapi-codegen-extra-tags:
+                    db: accepted_by
+                    json: accepted_by
+                roles:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                    description: >-
+                      Roles that the user will have when accepting the
+                      invitation, null or empty string means the invitation does
+                      not specify any roles
+                teams:
+                  type: array
+                  x-go-type: pq.StringArray
+                  x-go-type-import:
+                    path: github.com/lib/pq
+                  items:
+                    type: string
+                    description: >-
+                      Teams that the user will be added to when accepting the
+                      invitation, null or empty string means the invitation does
+                      not specify any teams
+                status:
+                  type: string
+                  x-go-type: InvitationStatus
+                  enum:
+                    - enabled
+                    - disabled
+                  description: >-
+                    Status of the invitation, where enabled means the invitation
+                    is active and can be used, disabled means the invitation is
+                    no longer valid and is temporarily inactive, disabled
+                    invitations can be re-enabled later.
+                created_at:
+                  type: string
+                  format: date-time
+                  description: Timestamp when the invitation was created
+                  x-oapi-codegen-extra-tags:
+                    db: created_at
+                    json: created_at
+                updated_at:
+                  type: string
+                  format: date-time
+                  description: Timestamp when the invitation was last updated
+                  x-oapi-codegen-extra-tags:
+                    db: updated_at
+                    json: updated_at
+                deleted_at:
+                  type: string
+                  format: date-time
+                  x-go-type: core.NullTime
+                  description: Timestamp when the invitation was deleted, if applicable
+                  x-oapi-codegen-extra-tags:
+                    db: deleted_at
+                    json: deleted_at
     Academy_API_CreateAcademyCurriculaRequest:
       type: object
       properties:
@@ -56895,6 +58875,13 @@ components:
       schema:
         type: string
       required: true
+    Academy_API_id:
+      name: id
+      in: path
+      required: true
+      description: The ID of the curricula
+      schema:
+        type: string
     invitation_organization_id:
       name: organizationId
       in: path

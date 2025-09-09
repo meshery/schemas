@@ -158,6 +158,24 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
+      updateAcademyCurriculaById: build.mutation<
+        UpdateAcademyCurriculaByIdApiResponse,
+        UpdateAcademyCurriculaByIdApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      deleteAcademyCurriculaById: build.mutation<
+        DeleteAcademyCurriculaByIdApiResponse,
+        DeleteAcademyCurriculaByIdApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAcademyCurriculaById: build.query<GetAcademyCurriculaByIdApiResponse, GetAcademyCurriculaByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/academy/curricula/${queryArg.id}` }),
+        providesTags: ["Academy_API_Academy"],
+      }),
       getApiAcademyRegistrationsByContentId: build.query<
         GetApiAcademyRegistrationsByContentIdApiResponse,
         GetApiAcademyRegistrationsByContentIdApiArg
@@ -975,6 +993,331 @@ export type RegisterToAcademyContentApiArg = {
     content_type?: "learning-path" | "challenge" | "certification";
   };
 };
+export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the curricula */ {
+  /** Id of the cirricula */
+  id: string;
+  type: "learning-path" | "challenge" | "certification";
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** Visibility of the cirricula */
+  visibility: "public" | "private";
+  /** Status of the cirricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the cirricula */
+  slug: string;
+  /** Level of the cirricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badge_id?: string;
+  /** ID of the invite associated with this cirricula */
+  invite_id?: string;
+  /** ID of the workspace to which this cirricula belongs */
+  workspace_id?: string;
+  /** When the cirricula item was created */
+  createdAt: string;
+  /** When the cirricula was last updated */
+  updatedAt: string;
+  /** Timestamp when the resource was deleted. */
+  deletedAt: string;
+  /** Additional metadata about the cirricula */
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Description of the learning path */
+    description: string;
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** UUID of the organization that issued the certificate */
+      org_id: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipient_id: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipient_name: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuing_authorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signature_url?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issued_date: string;
+      /** Date when the certificate expires (optional) */
+      expiration_date?: string;
+    };
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+      weight?: number;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
+} & {
+  RegistrationCount: number;
+  Invitation?: {
+    /** Unique identifier for the invitation , is also used as the invitation code */
+    id: string;
+    /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+    owner_id: string;
+    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+    is_default?: boolean;
+    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+    name: string;
+    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+    description: string;
+    emails: string[];
+    /** ID of the organization to which the user is invited */
+    org_id: string;
+    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    expires_at?: string;
+    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+    quota?: number;
+    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+    accepted_by: string[];
+    roles: string[];
+    teams: string[];
+    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+    status: "enabled" | "disabled";
+    /** Timestamp when the invitation was created */
+    created_at: string;
+    /** Timestamp when the invitation was last updated */
+    updated_at: string;
+    /** Timestamp when the invitation was deleted, if applicable */
+    deleted_at: string;
+  };
+};
+export type UpdateAcademyCurriculaByIdApiArg = {
+  /** The ID of the curricula */
+  id: string;
+  body: {
+    /** Type of the curricula */
+    type: "learning-path" | "challenge" | "certification";
+    /** Title of the curricula */
+    title: string;
+    /** Organization ID that owns this curricula */
+    orgId: string;
+    /** ID of the workspace to which this cirricula belongs */
+    workspace_id: string;
+    /** ID of the badge to be awarded on completion of this curricula */
+    badge_id?: string;
+    /** ID of the team associated with this curricula */
+    team_id: string;
+    /** Expiry time for curricula access */
+    access_expires_at?: string;
+    /** Current access status of the curricula */
+    access_status: "enabled" | "disabled";
+    /** Additional metadata about the cirricula */
+    metadata: {
+      /** Title of the learning path */
+      title: string;
+      /** Description of the learning path */
+      description: string;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Canonical URL for the learning path */
+      permalink: string;
+      certificate?: {
+        /** Unique identifier for the certificate */
+        id: string;
+        /** UUID of the organization that issued the certificate */
+        org_id: string;
+        /** ID of the recipient (user) who received the certificate */
+        recipient_id: string;
+        /** Name of the recipient (user) who received the certificate */
+        recipient_name: string;
+        /** Title of the certificate */
+        title: string;
+        /** Description of the certificate */
+        description: string;
+        /** List of issuing authorities for the certificate */
+        issuing_authorities: {
+          /** Name of the issuing authority */
+          name: string;
+          /** Role of the issuing authority */
+          role?: string;
+          /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+          signature_url?: string;
+        }[];
+        /** Date when the certificate was issued */
+        issued_date: string;
+        /** Date when the certificate expires (optional) */
+        expiration_date?: string;
+      };
+      /** List of children items in the top-level curricula */
+      children?: {
+        /** Unique identifier for the course */
+        id: string;
+        /** Title of the course */
+        title: string;
+        /** URL to the course content */
+        permalink: string;
+        /** Course description */
+        description: string;
+        /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+        weight?: number;
+        /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+        banner?: string | null;
+        /** Type of the content (e.g., learning-path, challenge, certification) */
+        type?: "learning-path" | "challenge" | "certification";
+        /** List of child nodes (sub-courses or modules) */
+        children?: object[];
+      }[];
+      [key: string]: any;
+    };
+  };
+};
+export type DeleteAcademyCurriculaByIdApiResponse = unknown;
+export type DeleteAcademyCurriculaByIdApiArg = {
+  /** The ID of the curricula */
+  id: string;
+};
+export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricula */ {
+  /** Id of the cirricula */
+  id: string;
+  type: "learning-path" | "challenge" | "certification";
+  /** Organization ID that owns this learning path */
+  orgId: string;
+  /** Visibility of the cirricula */
+  visibility: "public" | "private";
+  /** Status of the cirricula */
+  status: "ready" | "archived" | "not_ready";
+  /** slug of the cirricula */
+  slug: string;
+  /** Level of the cirricula */
+  level: "beginner" | "intermediate" | "advanced";
+  /** ID of the badge to be awarded on completion of this curricula */
+  badge_id?: string;
+  /** ID of the invite associated with this cirricula */
+  invite_id?: string;
+  /** ID of the workspace to which this cirricula belongs */
+  workspace_id?: string;
+  /** When the cirricula item was created */
+  createdAt: string;
+  /** When the cirricula was last updated */
+  updatedAt: string;
+  /** Timestamp when the resource was deleted. */
+  deletedAt: string;
+  /** Additional metadata about the cirricula */
+  metadata: {
+    /** Title of the learning path */
+    title: string;
+    /** Description of the learning path */
+    description: string;
+    /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+    banner?: string | null;
+    /** Canonical URL for the learning path */
+    permalink: string;
+    certificate?: {
+      /** Unique identifier for the certificate */
+      id: string;
+      /** UUID of the organization that issued the certificate */
+      org_id: string;
+      /** ID of the recipient (user) who received the certificate */
+      recipient_id: string;
+      /** Name of the recipient (user) who received the certificate */
+      recipient_name: string;
+      /** Title of the certificate */
+      title: string;
+      /** Description of the certificate */
+      description: string;
+      /** List of issuing authorities for the certificate */
+      issuing_authorities: {
+        /** Name of the issuing authority */
+        name: string;
+        /** Role of the issuing authority */
+        role?: string;
+        /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+        signature_url?: string;
+      }[];
+      /** Date when the certificate was issued */
+      issued_date: string;
+      /** Date when the certificate expires (optional) */
+      expiration_date?: string;
+    };
+    /** List of children items in the top-level curricula */
+    children?: {
+      /** Unique identifier for the course */
+      id: string;
+      /** Title of the course */
+      title: string;
+      /** URL to the course content */
+      permalink: string;
+      /** Course description */
+      description: string;
+      /** A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title. */
+      weight?: number;
+      /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
+      banner?: string | null;
+      /** Type of the content (e.g., learning-path, challenge, certification) */
+      type?: "learning-path" | "challenge" | "certification";
+      /** List of child nodes (sub-courses or modules) */
+      children?: object[];
+    }[];
+    [key: string]: any;
+  };
+} & {
+  RegistrationCount: number;
+  Invitation?: {
+    /** Unique identifier for the invitation , is also used as the invitation code */
+    id: string;
+    /** ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes */
+    owner_id: string;
+    /** Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+    is_default?: boolean;
+    /** Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+    name: string;
+    /** Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+    description: string;
+    emails: string[];
+    /** ID of the organization to which the user is invited */
+    org_id: string;
+    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    expires_at?: string;
+    /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+    quota?: number;
+    /** List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
+    accepted_by: string[];
+    roles: string[];
+    teams: string[];
+    /** Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later. */
+    status: "enabled" | "disabled";
+    /** Timestamp when the invitation was created */
+    created_at: string;
+    /** Timestamp when the invitation was last updated */
+    updated_at: string;
+    /** Timestamp when the invitation was deleted, if applicable */
+    deleted_at: string;
+  };
+};
+export type GetAcademyCurriculaByIdApiArg = {
+  /** The ID of the curricula */
+  id: string;
+};
 export type GetApiAcademyRegistrationsByContentIdApiResponse =
   /** status 200 Registration data for the specified content */ {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
@@ -1626,6 +1969,9 @@ export const {
   useGetAcademyCirriculaQuery,
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useRegisterToAcademyContentMutation,
+  useUpdateAcademyCurriculaByIdMutation,
+  useDeleteAcademyCurriculaByIdMutation,
+  useGetAcademyCurriculaByIdQuery,
   useGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
   useSubmitQuizMutation,

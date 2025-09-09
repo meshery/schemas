@@ -521,6 +521,52 @@ type RegisterToAcademyContentRequest struct {
 // RegisterToAcademyContentRequestContentType defines model for RegisterToAcademyContentRequest.ContentType.
 type RegisterToAcademyContentRequestContentType string
 
+// SingleAcademyCurriculaResponse defines model for SingleAcademyCurriculaResponse.
+type SingleAcademyCurriculaResponse struct {
+	Invitation        *invitation.Invitation `json:"Invitation,omitempty" yaml:"Invitation,omitempty"`
+	RegistrationCount float32                `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+
+	// BadgeId ID of the badge to be awarded on completion of this curricula
+	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+
+	// CreatedAt When the cirricula item was created
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+	// DeletedAt Timestamp when the resource was deleted.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+
+	// ID Id of the cirricula
+	ID string `db:"id" json:"id" yaml:"id"`
+
+	// InviteId ID of the invite associated with this cirricula
+	InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
+
+	// Level Level of the cirricula
+	Level Level `db:"level" json:"level" yaml:"level"`
+
+	// Metadata Additional metadata about the cirricula
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+	// OrgId Organization ID that owns this learning path
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// Slug slug of the cirricula
+	Slug string `json:"slug" yaml:"slug"`
+
+	// Status Status of the cirricula
+	Status Status      `db:"status" json:"status" yaml:"status"`
+	Type   ContentType `db:"type" json:"type" yaml:"type"`
+
+	// UpdatedAt When the cirricula was last updated
+	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+
+	// Visibility Visibility of the cirricula
+	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
+
+	// WorkspaceId ID of the workspace to which this cirricula belongs
+	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+}
+
 // Status defines model for Status.
 type Status string
 
@@ -578,3 +624,6 @@ type UserRegistration struct {
 
 // Visibility defines model for Visibility.
 type Visibility string
+
+// Id defines model for id.
+type Id = string
