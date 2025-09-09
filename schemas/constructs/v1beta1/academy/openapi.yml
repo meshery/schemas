@@ -254,6 +254,78 @@ paths:
         '500':
           description: Server error
 
+  /api/academy/curricula/{id}:
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: updateAcademyCurriculaByID
+      summary: Update an existing academy curricula by ID
+      description: Updates the details of an existing academy curricula identified by its ID.
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAcademyCurriculaRequest'
+      responses:
+        '200':
+          description: updated the curricula
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAcademyCurriculaResponse'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Curricula not found
+        '500':
+          description: Server error
+
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: deleteAcademyCurriculaByID
+      summary: Delete an academy curricula by ID
+      description: Deletes an existing academy curricula identified by its ID.
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '204':
+          description: Successfully deleted the curricula
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Curricula not found
+        '500':
+          description: Server error
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Academy
+      operationId: getAcademyCurriculaByID
+      summary: Get a single academy curricula by ID
+      description: Returns a single academy curricula identified by its ID.
+      parameters:
+        - $ref: '#/components/parameters/id'
+
+      responses:
+        '200':
+          description: A single curricula
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleAcademyCurriculaResponse'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Curricula not found
+        '500':
+          description: Server error
+
 
 
   /api/academy/registrations/{contentId}:
@@ -484,6 +556,15 @@ paths:
           description: Server error
 
 components:
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      description: The ID of the curricula
+      schema:
+        type: string
+
   schemas:
 
     RegisterToAcademyContentRequest:
@@ -659,6 +740,25 @@ components:
         - metadata
         - level
 
+    SingleAcademyCurriculaResponse:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/AcademyCirricula"
+        - type: object
+          required:
+            - RegistrationCount
+          properties:
+            RegistrationCount:
+              type: number
+              x-oapi-codegen-extra-tags:
+                db: "registration_count,omitempty"
+                json: "registration_count,omitempty"
+                yaml: "registration_count,omitempty"
+            Invitation:
+              $ref: "../invitation/openapi.yml#/components/schemas/Invitation"
+              x-go-type: "invitation.Invitation"
+              x-go-type-import:
+                path: "github.com/meshery/schemas/models/v1beta1/invitation"
 
     CreateAcademyCurriculaRequest:
       type: object
