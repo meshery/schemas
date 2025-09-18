@@ -668,3 +668,11 @@ func (t *ImportRequest_ImportBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
+
+// NewModelDefinition_Metadata is a constructor for ModelDefinition_Metadata which initializes the CreatedAt field.
+func NewModelDefinition_Metadata() *ModelDefinition_Metadata {
+    now := time.Now()
+    return &ModelDefinition_Metadata{
+        CreatedAt: &now,
+    }
+}
