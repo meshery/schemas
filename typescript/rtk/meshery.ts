@@ -512,6 +512,8 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             | "round-tag"
             | "vee"
             | "polygon";
+          /** Timestamp when the model was created or added to the registry in RFC3339 format */
+          createdAt?: string;
           [key: string]: any;
         };
         /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
@@ -1987,6 +1989,8 @@ export type PostEvaluateApiArg = {
               | "round-tag"
               | "vee"
               | "polygon";
+            /** Timestamp when the model was created or added to the registry in RFC3339 format */
+            createdAt?: string;
             [key: string]: any;
           };
           /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
