@@ -70,76 +70,76 @@ type ImportBody struct {
 // ImportBody0 defines model for .
 type ImportBody0 struct {
 	// FileName Name of the file being uploaded.
-	FileName string `json:"fileName"`
+	FileName string `json:"fileName" yaml:"fileName"`
 
 	// ModelFile Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-	ModelFile string `json:"modelFile"`
+	ModelFile string `json:"modelFile" yaml:"modelFile"`
 }
 
 // ImportBody1 defines model for .
 type ImportBody1 struct {
 	// Url A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-	Url string `json:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
 // ImportBody2 defines model for .
 type ImportBody2 struct {
 	// ComponentCsv Upload a CSV file containing component definitions
-	ComponentCsv openapi_types.File `json:"componentCsv"`
+	ComponentCsv openapi_types.File `json:"componentCsv" yaml:"componentCsv"`
 
 	// ModelCsv Upload a CSV file containing model definitions
-	ModelCsv openapi_types.File `json:"modelCsv"`
+	ModelCsv openapi_types.File `json:"modelCsv" yaml:"modelCsv"`
 
 	// RelationshipCsv Upload a CSV file containing relationship definitions
-	RelationshipCsv openapi_types.File `json:"relationshipCsv"`
+	RelationshipCsv openapi_types.File `json:"relationshipCsv" yaml:"relationshipCsv"`
 }
 
 // ImportBody3 defines model for .
 type ImportBody3 struct {
 	// Url URI to the source code or package of the model.
-	Url string `json:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
 // ImportRequest defines model for ImportRequest.
 type ImportRequest struct {
-	ImportBody ImportRequest_ImportBody `json:"importBody"`
-	Register   bool                     `json:"register"`
+	ImportBody ImportRequest_ImportBody `json:"importBody" yaml:"importBody"`
+	Register   bool                     `json:"register" yaml:"register"`
 
 	// UploadType Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.
-	UploadType ImportRequestUploadType `json:"uploadType"`
+	UploadType ImportRequestUploadType `json:"uploadType" yaml:"uploadType"`
 }
 
 // ImportRequestImportBody0 defines model for .
 type ImportRequestImportBody0 struct {
 	// FileName Name of the file being uploaded.
-	FileName string `json:"fileName"`
+	FileName string `json:"fileName" yaml:"fileName"`
 
 	// ModelFile Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-	ModelFile string `json:"modelFile"`
+	ModelFile string `json:"modelFile" yaml:"modelFile"`
 }
 
 // ImportRequestImportBody1 defines model for .
 type ImportRequestImportBody1 struct {
 	// Url A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-	Url string `json:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
 // ImportRequestImportBody2 defines model for .
 type ImportRequestImportBody2 struct {
 	// ComponentCsv Upload a CSV file containing component definitions
-	ComponentCsv openapi_types.File `json:"componentCsv"`
+	ComponentCsv openapi_types.File `json:"componentCsv" yaml:"componentCsv"`
 
 	// ModelCsv Upload a CSV file containing model definitions
-	ModelCsv openapi_types.File `json:"modelCsv"`
+	ModelCsv openapi_types.File `json:"modelCsv" yaml:"modelCsv"`
 
 	// RelationshipCsv Upload a CSV file containing relationship definitions
-	RelationshipCsv openapi_types.File `json:"relationshipCsv"`
+	RelationshipCsv openapi_types.File `json:"relationshipCsv" yaml:"relationshipCsv"`
 }
 
 // ImportRequestImportBody3 defines model for .
 type ImportRequestImportBody3 struct {
 	// Url URI to the source code or package of the model.
-	Url string `json:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
 // ImportRequest_ImportBody defines model for ImportRequest.ImportBody.
@@ -205,7 +205,7 @@ type ModelDefinition struct {
 	Model struct {
 		// Version Version of the model as defined by the registrant.
 		Version string `json:"version" yaml:"version"`
-	} `gorm:"type:bytes;serializer:json" json:"model"`
+	} `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
 
 	// ComponentsCount Number of components associated with the model.
 	ComponentsCount int `gorm:"-" json:"components_count" yaml:"components_count"`
@@ -229,7 +229,7 @@ type ModelDefinitionMetadataShape string
 // ModelDefinition_Metadata Metadata containing additional information associated with the model.
 type ModelDefinition_Metadata struct {
 	// Capabilities Capabilities associated with the model
-	Capabilities *[]capability.Capability `json:"capabilities,omitempty"`
+	Capabilities *[]capability.Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
 
 	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
 	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
@@ -250,11 +250,11 @@ type ModelDefinition_Metadata struct {
 	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
 
 	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape *ModelDefinitionMetadataShape `json:"shape,omitempty"`
+	Shape *ModelDefinitionMetadataShape `json:"shape,omitempty" yaml:"shape,omitempty"`
 
 	// CreatedAt Timestamp when the model was created or added to the registry in RFC3339 format
 	CreatedAt            *time.Time             `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // Getter for additional properties for ModelDefinition_Metadata. Returns the specified

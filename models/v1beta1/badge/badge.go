@@ -16,25 +16,25 @@ type Badge struct {
 	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted, if applicable
-	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// Description A description of the milestone achieved, often including criteria for receiving this recognition.
-	Description string `db:"description" json:"description"`
+	Description string `db:"description" json:"description" yaml:"description"`
 
 	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID uuid.UUID `db:"id" json:"id"`
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// ImageUrl URL to the badge image
-	ImageUrl string `db:"image_url" json:"image_url"`
+	ImageUrl string `db:"image_url" json:"image_url" yaml:"image_url"`
 
 	// Label unique identifier for the badge ( auto generated )
-	Label string `db:"label" json:"label"`
+	Label string `db:"label" json:"label" yaml:"label"`
 
 	// Name Concise descriptor for the badge or certificate.
-	Name string `db:"name" json:"name"`
+	Name string `db:"name" json:"name" yaml:"name"`
 
 	// OrgId The ID of the organization in which this badge is available .
-	OrgId uuid.UUID `db:"org_id" json:"org_id"`
+	OrgId uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
