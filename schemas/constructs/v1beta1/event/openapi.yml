@@ -58,7 +58,7 @@ paths:
               $ref: "#/components/schemas/BulkDeleteRequest"
       responses:
         "200":
-          description: Events deleted successfully
+          description: event deleted
           content:
             application/json:
               schema:
