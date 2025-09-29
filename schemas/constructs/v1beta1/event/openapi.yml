@@ -38,6 +38,16 @@ paths:
           description: Server error
 
   /events:
+
+    post:
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
     delete:
       summary: Bulk delete events
       requestBody:
