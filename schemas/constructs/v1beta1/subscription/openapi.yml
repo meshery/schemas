@@ -58,13 +58,12 @@ paths:
   /api/entitlement/subscriptions/{subscriptionId}/cancel:
     post:
       x-internal: ["cloud"]
-      summary: Cancel an existing subscription
+      summary: Cancel an existing subscription . The subscription will remain active until the end of the billing period and then it will be canceled.
 
       parameters:
         - $ref: "#/components/parameters/subscriptionId"
       responses:
         "200":
-          description: Subscription created successfully
           content:
             application/json:
               schema:
@@ -85,11 +84,33 @@ paths:
               $ref: "#/components/schemas/CreateSubscriptionRequest"
       responses:
         "200":
-          description: Subscription created successfully
+          description: A new subscription has been created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateSubscriptionResponse"
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
+  /api/entitlement/subscriptions/{subscriptionId}/upgrade:
+    post:
+      x-internal: ["cloud"]
+      summary: Upgrade or downgrade an existing subscription by changing one of the plans in the subscription
+      parameters:
+        - $ref: "#/components/parameters/subscriptionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpgradeSubscriptionRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
         "400":
           description: Invalid request
         "500":
@@ -142,6 +163,9 @@ components:
       $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/order"
 
   schemas:
+
+
+
     PaymentProcessor:
       type: string
       enum:
@@ -168,6 +192,18 @@ components:
           description: Email of the customer
         payment_processor:
           $ref: "#/components/schemas/PaymentProcessor"
+
+    UpgradeSubscriptionRequest:
+      type: object
+      properties:
+        old_plan_id:
+
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: Old Plan id that is being changed
+        new_plan_id:
+
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          description: New Plan id that is being changed to
 
     CreateSubscriptionResponse:
       type: object
