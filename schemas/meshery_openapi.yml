@@ -45287,6 +45287,23 @@ components:
             - paypal
             - braintree
           description: Supported payment processors
+    subscription_UpgradeSubscriptionRequest:
+      type: object
+      properties:
+        old_plan_id:
+          description: Old Plan id that is being changed
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+        new_plan_id:
+          description: New Plan id that is being changed to
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
     subscription_CreateSubscriptionResponse:
       type: object
       properties:
