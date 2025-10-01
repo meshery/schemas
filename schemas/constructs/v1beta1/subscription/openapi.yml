@@ -115,6 +115,29 @@ paths:
           description: Invalid request
         "500":
           description: Internal server error
+  /api/entitlement/subscriptions/{subscriptionId}/upgradePreview:
+    post:
+      x-internal: ["cloud"]
+      summary: Upgrade or downgrade an existing subscription by changing one of the plans in the subscription
+      parameters:
+        - $ref: "#/components/parameters/subscriptionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpgradeSubscriptionRequest"
+      responses:
+        "200":
+          description: Preview of the upgraded subscription invoice
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
 
   /api/entitlement/subscriptions/webhooks:
     post:
