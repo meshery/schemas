@@ -118,7 +118,7 @@ paths:
   /api/entitlement/subscriptions/{subscriptionId}/upgradePreview:
     post:
       x-internal: ["cloud"]
-      summary: Upgrade or downgrade an existing subscription by changing one of the plans in the subscription
+      summary: Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the subscription
       parameters:
         - $ref: "#/components/parameters/subscriptionId"
       requestBody:
