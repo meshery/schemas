@@ -67,6 +67,17 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["subscription_other"],
       }),
+      postApiEntitlementSubscriptionsBySubscriptionIdUpgradePreview: build.mutation<
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse,
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgradePreview`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["subscription_other"],
+      }),
       postApiEntitlementSubscriptionsWebhooks: build.mutation<
         PostApiEntitlementSubscriptionsWebhooksApiResponse,
         PostApiEntitlementSubscriptionsWebhooksApiArg
@@ -468,6 +479,18 @@ export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiResponse = 
   billing_id: string;
 };
 export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+  body: {
+    /** Old Plan id that is being changed */
+    old_plan_id?: string;
+    /** New Plan id that is being changed to */
+    new_plan_id?: string;
+  };
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse =
+  /** status 200 Preview of the upgraded subscription invoice */ object;
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg = {
   /** Subscription ID */
   subscriptionId: string;
   body: {
@@ -2005,6 +2028,7 @@ export const {
   usePostApiEntitlementSubscriptionsBySubscriptionIdCancelMutation,
   usePostApiEntitlementSubscriptionsCreateMutation,
   usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradeMutation,
+  usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewMutation,
   usePostApiEntitlementSubscriptionsWebhooksMutation,
   useGetPlansQuery,
   useGetFeaturesQuery,
