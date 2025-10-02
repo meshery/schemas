@@ -184,7 +184,7 @@ const injectedRtkApi = api
         WithdrawFromAcademyContentApiResponse,
         WithdrawFromAcademyContentApiArg
       >({
-        query: (queryArg) => ({ url: `/api/academy/curricula/registerations/:id/withdraw`, method: "POST" }),
+        query: (queryArg) => ({ url: `/api/academy/curricula/registrations/${queryArg.id}/withdraw`, method: "POST" }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
       updateAcademyCurriculaById: build.mutation<

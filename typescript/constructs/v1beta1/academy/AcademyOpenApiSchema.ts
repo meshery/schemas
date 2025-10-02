@@ -2548,7 +2548,7 @@ const schema = {
         }
       }
     },
-    "/api/academy/curricula/registerations/:id/withdraw": {
+    "/api/academy/curricula/registrations/{id}/withdraw": {
       "post": {
         "x-internal": [
           "cloud"

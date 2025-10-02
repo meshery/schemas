@@ -17586,7 +17586,7 @@ paths:
           description: Invalid request parameters
         '500':
           description: Server error
-  /api/academy/curricula/registerations/:id/withdraw:
+  /api/academy/curricula/registrations/{id}/withdraw:
     servers: []
     post:
       x-internal:
