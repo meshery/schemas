@@ -180,6 +180,13 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
+      withdrawFromAcademyContent: build.mutation<
+        WithdrawFromAcademyContentApiResponse,
+        WithdrawFromAcademyContentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/curricula/registerations/:id/withdraw`, method: "POST" }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
       updateAcademyCurriculaById: build.mutation<
         UpdateAcademyCurriculaByIdApiResponse,
         UpdateAcademyCurriculaByIdApiArg
@@ -1066,6 +1073,60 @@ export type RegisterToAcademyContentApiArg = {
     content_id: string;
     content_type?: "learning-path" | "challenge" | "certification";
   };
+};
+export type WithdrawFromAcademyContentApiResponse = /** status 200 registered content */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** ID of the organization */
+  org_id: string;
+  /** ID of the course content */
+  content_id: string;
+  /** ID of the user (foreign key to User) */
+  user_id: string;
+  /** Status of the user's course registration */
+  status: "registered" | "completed" | "failed" | "withdrawn";
+  /** When the registration was updated */
+  updated_at: string;
+  /** When the registration was created */
+  created_at: string;
+  /** Timestamp when the resource was deleted. */
+  deleted_at?: string;
+  /** Issued certificate for completing the curricula under registration */
+  certificate: {
+    /** Unique identifier for the certificate */
+    id: string;
+    /** UUID of the organization that issued the certificate */
+    org_id: string;
+    /** ID of the recipient (user) who received the certificate */
+    recipient_id: string;
+    /** Name of the recipient (user) who received the certificate */
+    recipient_name: string;
+    /** Title of the certificate */
+    title: string;
+    /** Description of the certificate */
+    description: string;
+    /** List of issuing authorities for the certificate */
+    issuing_authorities: {
+      /** Name of the issuing authority */
+      name: string;
+      /** Role of the issuing authority */
+      role?: string;
+      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+      signature_url?: string;
+    }[];
+    /** Date when the certificate was issued */
+    issued_date: string;
+    /** Date when the certificate expires (optional) */
+    expiration_date?: string;
+  };
+  /** Additional metadata about the registration */
+  metadata: {
+    [key: string]: any;
+  };
+};
+export type WithdrawFromAcademyContentApiArg = {
+  /** The ID of the curricula */
+  id: string;
 };
 export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the curricula */ {
   /** Id of the cirricula */
@@ -2045,6 +2106,7 @@ export const {
   useGetAcademyCirriculaQuery,
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useRegisterToAcademyContentMutation,
+  useWithdrawFromAcademyContentMutation,
   useUpdateAcademyCurriculaByIdMutation,
   useDeleteAcademyCurriculaByIdMutation,
   useGetAcademyCurriculaByIdQuery,
