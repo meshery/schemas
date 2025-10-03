@@ -123,7 +123,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                      "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -362,7 +362,7 @@ const schema = {
                   "expires_at": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                    "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "expires_at",
                       "json": "expires_at"
@@ -537,7 +537,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                      "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -742,7 +742,7 @@ const schema = {
                           "expires_at": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                            "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "expires_at",
                               "json": "expires_at"
@@ -950,7 +950,7 @@ const schema = {
                   "expires_at": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                    "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "expires_at",
                       "json": "expires_at"
@@ -1125,7 +1125,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                      "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -1332,7 +1332,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                      "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -1566,7 +1566,7 @@ const schema = {
                 "expires_at": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                  "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "expires_at",
                     "json": "expires_at"
@@ -1756,7 +1756,7 @@ const schema = {
           "expires_at": {
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+            "description": "An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.",
             "x-oapi-codegen-extra-tags": {
               "db": "expires_at",
               "json": "expires_at"

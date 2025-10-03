@@ -32,7 +32,7 @@ type Invitation struct {
 	Description string         `json:"description" yaml:"description"`
 	Emails      pq.StringArray `json:"emails" yaml:"emails"`
 
-	// ExpiresAt Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+	// ExpiresAt An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire.
 	ExpiresAt *time.Time `db:"expires_at" json:"expires_at" yaml:"expires_at"`
 
 	// ID Unique identifier for the invitation , is also used as the invitation code
