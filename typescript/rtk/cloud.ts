@@ -1228,7 +1228,7 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
     emails: string[];
     /** ID of the organization to which the user is invited */
     org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
     expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota?: number;
@@ -1431,7 +1431,7 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
     emails: string[];
     /** ID of the organization to which the user is invited */
     org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
     expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota?: number;
@@ -1783,7 +1783,7 @@ export type GetInvitationApiResponse = /** status 200 undefined */ {
   emails: string[];
   /** ID of the organization to which the user is invited */
   org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
   expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
   quota?: number;
@@ -1823,7 +1823,7 @@ export type UpdateInvitationApiResponse = /** status 200 undefined */ {
   emails: string[];
   /** ID of the organization to which the user is invited */
   org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
   expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
   quota?: number;
@@ -1857,7 +1857,7 @@ export type UpdateInvitationApiArg = {
     emails: string[];
     /** ID of the organization to which the user is invited */
     org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
     expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota?: number;
@@ -1891,7 +1891,7 @@ export type GetInvitationsApiResponse = /** status 200 undefined */ {
     emails: string[];
     /** ID of the organization to which the user is invited */
     org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
     expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota?: number;
@@ -1926,7 +1926,7 @@ export type CreateInvitationApiResponse = /** status 201 undefined */ {
   emails: string[];
   /** ID of the organization to which the user is invited */
   org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
   expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
   quota?: number;
@@ -1958,7 +1958,7 @@ export type CreateInvitationApiArg = {
     emails: string[];
     /** ID of the organization to which the user is invited */
     org_id: string;
-    /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+    /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
     expires_at?: string;
     /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
     quota?: number;
@@ -1990,7 +1990,7 @@ export type AcceptInvitationApiResponse = /** status 200 undefined */ {
   emails: string[];
   /** ID of the organization to which the user is invited */
   org_id: string;
-  /** Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire */
+  /** An invitation expires only when the timestamp is set. If the timestamp is null or empty, the invitation does not expire. */
   expires_at?: string;
   /** Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
   quota?: number;
