@@ -56,6 +56,28 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/entitlement/subscriptions/create`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["subscription_other"],
       }),
+      postApiEntitlementSubscriptionsBySubscriptionIdUpgrade: build.mutation<
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiResponse,
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgrade`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      postApiEntitlementSubscriptionsBySubscriptionIdUpgradePreview: build.mutation<
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse,
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgradePreview`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["subscription_other"],
+      }),
       postApiEntitlementSubscriptionsWebhooks: build.mutation<
         PostApiEntitlementSubscriptionsWebhooksApiResponse,
         PostApiEntitlementSubscriptionsWebhooksApiArg
@@ -156,6 +178,13 @@ const injectedRtkApi = api
       }),
       registerToAcademyContent: build.mutation<RegisterToAcademyContentApiResponse, RegisterToAcademyContentApiArg>({
         query: (queryArg) => ({ url: `/api/academy/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      withdrawFromAcademyContent: build.mutation<
+        WithdrawFromAcademyContentApiResponse,
+        WithdrawFromAcademyContentApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/academy/curricula/registrations/${queryArg.id}/withdraw`, method: "POST" }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
       updateAcademyCurriculaById: build.mutation<
@@ -367,48 +396,47 @@ export type GetSubscriptionsApiArg = {
   /** Filter subscriptions by status */
   status?: string[];
 };
-export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse =
-  /** status 200 Subscription created successfully */ {
-    page: number;
-    page_size: number;
-    total_count: number;
-    subscriptions: {
+export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse = /** status 200 undefined */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    ID: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    org_id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    plan_id: string;
+    plan?: {
       /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      ID: string;
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      org_id: string;
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      plan_id: string;
-      plan?: {
-        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-        id: string;
-        /** Name of the plan */
-        name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-        cadence: "monthly" | "yearly";
-        unit: "user" | "free";
-        /** Minimum number of units required for the plan */
-        minimum_units: number;
-        /** Price per unit of the plan */
-        price_per_unit: number;
-        currency: "usd";
-      };
-      quantity: number;
-      start_date?: string;
-      end_date?: string;
-      /** Possible statuses of a Stripe subscription. */
-      status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
-      created_at?: string;
-      updated_at?: string;
-      deleted_at?: string;
-      /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-      billing_id: string;
-    }[];
-  };
+      id: string;
+      /** Name of the plan */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      cadence: "monthly" | "yearly";
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan */
+      minimum_units: number;
+      /** Price per unit of the plan */
+      price_per_unit: number;
+      currency: "usd";
+    };
+    quantity: number;
+    start_date?: string;
+    end_date?: string;
+    /** Possible statuses of a Stripe subscription. */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+    billing_id: string;
+  }[];
+};
 export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiArg = {
   /** Subscription ID */
   subscriptionId: string;
 };
-export type PostApiEntitlementSubscriptionsCreateApiResponse = /** status 200 Subscription created successfully */ {
+export type PostApiEntitlementSubscriptionsCreateApiResponse = /** status 200 A new subscription has been created */ {
   subscription_id?: string;
   clientSecret?: string;
 };
@@ -424,6 +452,59 @@ export type PostApiEntitlementSubscriptionsCreateApiArg = {
     email?: string;
     /** Supported payment processors */
     payment_processor?: "stripe" | "paypal" | "braintree";
+  };
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiResponse = /** status 200 undefined */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  ID: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  org_id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  plan_id: string;
+  plan?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Name of the plan */
+    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+    cadence: "monthly" | "yearly";
+    unit: "user" | "free";
+    /** Minimum number of units required for the plan */
+    minimum_units: number;
+    /** Price per unit of the plan */
+    price_per_unit: number;
+    currency: "usd";
+  };
+  quantity: number;
+  start_date?: string;
+  end_date?: string;
+  /** Possible statuses of a Stripe subscription. */
+  status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+  billing_id: string;
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+  body: {
+    /** Old Plan id that is being changed */
+    old_plan_id?: string;
+    /** New Plan id that is being changed to */
+    new_plan_id?: string;
+  };
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse =
+  /** status 200 Preview of the upgraded subscription invoice */ object;
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+  body: {
+    /** Old Plan id that is being changed */
+    old_plan_id?: string;
+    /** New Plan id that is being changed to */
+    new_plan_id?: string;
   };
 };
 export type PostApiEntitlementSubscriptionsWebhooksApiResponse = unknown;
@@ -992,6 +1073,60 @@ export type RegisterToAcademyContentApiArg = {
     content_id: string;
     content_type?: "learning-path" | "challenge" | "certification";
   };
+};
+export type WithdrawFromAcademyContentApiResponse = /** status 200 registered content */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** ID of the organization */
+  org_id: string;
+  /** ID of the course content */
+  content_id: string;
+  /** ID of the user (foreign key to User) */
+  user_id: string;
+  /** Status of the user's course registration */
+  status: "registered" | "completed" | "failed" | "withdrawn";
+  /** When the registration was updated */
+  updated_at: string;
+  /** When the registration was created */
+  created_at: string;
+  /** Timestamp when the resource was deleted. */
+  deleted_at?: string;
+  /** Issued certificate for completing the curricula under registration */
+  certificate: {
+    /** Unique identifier for the certificate */
+    id: string;
+    /** UUID of the organization that issued the certificate */
+    org_id: string;
+    /** ID of the recipient (user) who received the certificate */
+    recipient_id: string;
+    /** Name of the recipient (user) who received the certificate */
+    recipient_name: string;
+    /** Title of the certificate */
+    title: string;
+    /** Description of the certificate */
+    description: string;
+    /** List of issuing authorities for the certificate */
+    issuing_authorities: {
+      /** Name of the issuing authority */
+      name: string;
+      /** Role of the issuing authority */
+      role?: string;
+      /** URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format */
+      signature_url?: string;
+    }[];
+    /** Date when the certificate was issued */
+    issued_date: string;
+    /** Date when the certificate expires (optional) */
+    expiration_date?: string;
+  };
+  /** Additional metadata about the registration */
+  metadata: {
+    [key: string]: any;
+  };
+};
+export type WithdrawFromAcademyContentApiArg = {
+  /** The ID of the curricula */
+  id: string;
 };
 export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the curricula */ {
   /** Id of the cirricula */
@@ -1953,6 +2088,8 @@ export const {
   useGetSubscriptionsQuery,
   usePostApiEntitlementSubscriptionsBySubscriptionIdCancelMutation,
   usePostApiEntitlementSubscriptionsCreateMutation,
+  usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradeMutation,
+  usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewMutation,
   usePostApiEntitlementSubscriptionsWebhooksMutation,
   useGetPlansQuery,
   useGetFeaturesQuery,
@@ -1969,6 +2106,7 @@ export const {
   useGetAcademyCirriculaQuery,
   useGetApiAcademyByTypeAndOrgIdSlugQuery,
   useRegisterToAcademyContentMutation,
+  useWithdrawFromAcademyContentMutation,
   useUpdateAcademyCurriculaByIdMutation,
   useDeleteAcademyCurriculaByIdMutation,
   useGetAcademyCurriculaByIdQuery,

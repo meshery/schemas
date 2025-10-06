@@ -67,6 +67,19 @@ const schema = {
       }
     },
     "/events": {
+      "post": {
+        "summary": "Create a new event",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
       "delete": {
         "summary": "Bulk delete events",
         "requestBody": {
@@ -98,7 +111,7 @@ const schema = {
         },
         "responses": {
           "200": {
-            "description": "Events deleted successfully",
+            "description": "event deleted",
             "content": {
               "application/json": {
                 "schema": {

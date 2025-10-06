@@ -38,6 +38,16 @@ paths:
           description: Server error
 
   /events:
+
+    post:
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
     delete:
       summary: Bulk delete events
       requestBody:
@@ -48,7 +58,7 @@ paths:
               $ref: "#/components/schemas/BulkDeleteRequest"
       responses:
         "200":
-          description: Events deleted successfully
+          description: event deleted
           content:
             application/json:
               schema:

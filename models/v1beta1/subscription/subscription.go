@@ -139,6 +139,15 @@ type UpdateUsersRequest struct {
 // UpdateUsersRequestPaymentProcessor Supported payment processors
 type UpdateUsersRequestPaymentProcessor string
 
+// UpgradeSubscriptionRequest defines model for UpgradeSubscriptionRequest.
+type UpgradeSubscriptionRequest struct {
+	// NewPlanId New Plan id that is being changed to
+	NewPlanId *uuid.UUID `json:"new_plan_id,omitempty" yaml:"new_plan_id,omitempty"`
+
+	// OldPlanId Old Plan id that is being changed
+	OldPlanId *uuid.UUID `json:"old_plan_id,omitempty" yaml:"old_plan_id,omitempty"`
+}
+
 // WebhookEvent Payload for webhook events from payment processors
 type WebhookEvent = map[string]interface{}
 
