@@ -1063,6 +1063,7 @@ components:
         - updated_at
         - content_id
         - certificate
+        - test_submissions
         - metadata
       properties:
         id:
@@ -1126,6 +1127,11 @@ components:
           description: Issued certificate for completing the curricula under registration
           x-oapi-codegen-extra-tags:
             db: "certificate"
+        test_submissions:
+          $ref: '#/components/schemas/AllTestSubmissionsForCurricula'
+          x-go-type: "core.Map"
+          x-oapi-codegen-extra-tags:
+            db: "test_submissions"
 
         metadata:
           type: object
@@ -1137,6 +1143,18 @@ components:
           x-oapi-codegen-extra-tags:
             db: "metadata"
 
+    AllTestSubmissionsForCurricula:
+          type: object
+          description: Test submissions made by the user (map of test IDs to Submissions)
+          additionalProperties:
+            $ref: '#/components/schemas/TestSubmissions'
+            x-go-type: "TestSubmissions"
+
+    TestSubmissions:
+      type: array
+      description: Test submissions made by the user (array of QuizEvaluationResult)
+      items:
+        $ref: '#/components/schemas/QuizEvaluationResult'
 
     ChildNode:
       type: object
