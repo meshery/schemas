@@ -1062,6 +1062,69 @@ export type RegisterToAcademyContentApiResponse = /** status 200 registered cont
     /** Date when the certificate expires (optional) */
     expiration_date?: string;
   };
+  /** Test submissions made by the user (map of test IDs to Submissions) */
+  test_submissions: {
+    [key: string]: {
+      score: number;
+      passed: boolean;
+      percentage_scored: number;
+      total_marks: number;
+      pass_percentage: number;
+      correct_submissions: {
+        [key: string]: boolean;
+      };
+      quiz: {
+        id: string;
+        /** Organization ID that owns this quiz */
+        orgId: string;
+        /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+        final: boolean;
+        title: string;
+        description: string;
+        slug: string;
+        relPermalink: string;
+        permalink: string;
+        type: string;
+        section: string;
+        layout: string;
+        date: string;
+        lastmod: string;
+        draft: boolean;
+        file_path: string;
+        pass_percentage: number;
+        time_limit: string;
+        questions: {
+          id: string;
+          text: string;
+          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          marks: number;
+          multiple_answers?: boolean;
+          options: {
+            id: string;
+            text: string;
+            is_correct: boolean;
+          }[];
+          correct_answer: string;
+        }[];
+        total_questions: number;
+        total_marks: number;
+        prerequisites: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        }[];
+        parent?: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+      };
+      attempted_at: string;
+      attempts: number;
+    }[];
+  };
   /** Additional metadata about the registration */
   metadata: {
     [key: string]: any;
@@ -1118,6 +1181,69 @@ export type WithdrawFromAcademyContentApiResponse = /** status 200 registered co
     issued_date: string;
     /** Date when the certificate expires (optional) */
     expiration_date?: string;
+  };
+  /** Test submissions made by the user (map of test IDs to Submissions) */
+  test_submissions: {
+    [key: string]: {
+      score: number;
+      passed: boolean;
+      percentage_scored: number;
+      total_marks: number;
+      pass_percentage: number;
+      correct_submissions: {
+        [key: string]: boolean;
+      };
+      quiz: {
+        id: string;
+        /** Organization ID that owns this quiz */
+        orgId: string;
+        /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+        final: boolean;
+        title: string;
+        description: string;
+        slug: string;
+        relPermalink: string;
+        permalink: string;
+        type: string;
+        section: string;
+        layout: string;
+        date: string;
+        lastmod: string;
+        draft: boolean;
+        file_path: string;
+        pass_percentage: number;
+        time_limit: string;
+        questions: {
+          id: string;
+          text: string;
+          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+          marks: number;
+          multiple_answers?: boolean;
+          options: {
+            id: string;
+            text: string;
+            is_correct: boolean;
+          }[];
+          correct_answer: string;
+        }[];
+        total_questions: number;
+        total_marks: number;
+        prerequisites: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        }[];
+        parent?: {
+          id: string;
+          title: string;
+          relPermalink: string;
+          type: string;
+        };
+      };
+      attempted_at: string;
+      attempts: number;
+    }[];
   };
   /** Additional metadata about the registration */
   metadata: {
@@ -1498,6 +1624,69 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+    };
+    /** Test submissions made by the user (map of test IDs to Submissions) */
+    test_submissions: {
+      [key: string]: {
+        score: number;
+        passed: boolean;
+        percentage_scored: number;
+        total_marks: number;
+        pass_percentage: number;
+        correct_submissions: {
+          [key: string]: boolean;
+        };
+        quiz: {
+          id: string;
+          /** Organization ID that owns this quiz */
+          orgId: string;
+          /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+          final: boolean;
+          title: string;
+          description: string;
+          slug: string;
+          relPermalink: string;
+          permalink: string;
+          type: string;
+          section: string;
+          layout: string;
+          date: string;
+          lastmod: string;
+          draft: boolean;
+          file_path: string;
+          pass_percentage: number;
+          time_limit: string;
+          questions: {
+            id: string;
+            text: string;
+            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+            marks: number;
+            multiple_answers?: boolean;
+            options: {
+              id: string;
+              text: string;
+              is_correct: boolean;
+            }[];
+            correct_answer: string;
+          }[];
+          total_questions: number;
+          total_marks: number;
+          prerequisites: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          }[];
+          parent?: {
+            id: string;
+            title: string;
+            relPermalink: string;
+            type: string;
+          };
+        };
+        attempted_at: string;
+        attempts: number;
+      }[];
     };
     /** Additional metadata about the registration */
     metadata: {

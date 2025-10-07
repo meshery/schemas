@@ -234,6 +234,9 @@ type AcademyRegistration struct {
 	// Status Status of the user's course registration
 	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
 
+	// TestSubmissions Test submissions made by the user (map of test IDs to Submissions)
+	TestSubmissions core.Map `db:"test_submissions" json:"test_submissions" yaml:"test_submissions"`
+
 	// UpdatedAt When the registration was updated
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
@@ -251,6 +254,9 @@ type AcademyRegistrationsListResponse struct {
 	// Total Total number of learning paths
 	Total int `json:"total" yaml:"total"`
 }
+
+// AllTestSubmissionsForCurricula Test submissions made by the user (map of test IDs to Submissions)
+type AllTestSubmissionsForCurricula map[string]TestSubmissions
 
 // Certificate defines model for Certificate.
 type Certificate struct {
@@ -575,6 +581,19 @@ type SubmittedAnswer struct {
 	AnswerText       string          `json:"answer_text" yaml:"answer_text"`
 	QuestionId       string          `json:"question_id" yaml:"question_id"`
 	SelectedOptionId map[string]bool `json:"selected_option_id" yaml:"selected_option_id"`
+}
+
+// TestSubmissions Test submissions made by the user (array of QuizEvaluationResult)
+type TestSubmissions = []struct {
+	AttemptedAt        time.Time       `json:"attempted_at" yaml:"attempted_at"`
+	Attempts           int             `json:"attempts" yaml:"attempts"`
+	CorrectSubmissions map[string]bool `json:"correct_submissions" yaml:"correct_submissions"`
+	PassPercentage     float32         `json:"pass_percentage" yaml:"pass_percentage"`
+	Passed             bool            `json:"passed" yaml:"passed"`
+	PercentageScored   float32         `json:"percentage_scored" yaml:"percentage_scored"`
+	Quiz               Quiz            `json:"quiz" yaml:"quiz"`
+	Score              int             `json:"score" yaml:"score"`
+	TotalMarks         int             `json:"total_marks" yaml:"total_marks"`
 }
 
 // UpdateCurrentItemRequest defines model for UpdateCurrentItemRequest.
