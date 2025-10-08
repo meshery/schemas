@@ -7,6 +7,33 @@ import (
 	"fmt"
 )
 
+
+
+func StructToMap(obj interface{}) (map[string]interface{}, error) {
+	var result map[string]interface{}
+	bytes, err := json.Marshal(obj)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bytes, &result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func MapToStruct(m map[string]interface{}, obj interface{}) error {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(bytes, obj)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Map is a map[string]interface.
 type Map map[string]any
 
