@@ -440,7 +440,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /api/academy/curricula/test/start:
-    get:
+    post:
       tags:
         - Academy
       x-internal: ["cloud"]
