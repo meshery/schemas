@@ -1571,7 +1571,6 @@ components:
         - test_abs_path
         - user_id
         - created_at
-        - submitted_at
         - status
         - test
 
@@ -1598,7 +1597,7 @@ components:
             db: "test_abs_path"
 
         user_id:
-          type: string
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
           x-oapi-codegen-extra-tags:
             db: "user_id"
 
