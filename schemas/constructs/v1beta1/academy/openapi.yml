@@ -1527,6 +1527,8 @@ components:
         - user_id
         - answers
       properties:
+        test_submission_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
         quiz_abs_path:
           type: string
         registration_id:
@@ -1561,6 +1563,10 @@ components:
         - not-attempted
         - failed
         - passed
+      x-enum-varnames:
+        - TestSubmissionStatusNotAttempted
+        - TestSubmissionStatusFailed
+        - TestSubmissionStatusPassed
 
 
     TestSubmission:
@@ -1606,7 +1612,20 @@ components:
           type: string
           format: date-time
           x-oapi-codegen-extra-tags:
-            db: "started_at"
+            db: "created_at"
+
+        updated_at:
+          description: When the submission was last updated
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+
+        deleted_at:
+          x-go-type : "core.NullTime"
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/deleted_at"
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
 
         submitted_at:
           type: string
