@@ -56,6 +56,13 @@ const (
 	Ready    Status = "ready"
 )
 
+// Defines values for TestSubmissionStatus.
+const (
+	TestSubmissionStatusFailed       TestSubmissionStatus = "failed"
+	TestSubmissionStatusNotAttempted TestSubmissionStatus = "not-attempted"
+	TestSubmissionStatusPassed       TestSubmissionStatus = "passed"
+)
+
 // Defines values for Visibility.
 const (
 	Private Visibility = "private"
@@ -233,9 +240,6 @@ type AcademyRegistration struct {
 
 	// Status Status of the user's course registration
 	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
-
-	// TestSubmissions Test submissions made by the user (map of test IDs to Submissions)
-	TestSubmissions core.Map `db:"test_submissions" json:"test_submissions" yaml:"test_submissions"`
 
 	// UpdatedAt When the registration was updated
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
@@ -514,7 +518,10 @@ type QuizSubmission struct {
 	Answers        []SubmittedAnswer `json:"answers" yaml:"answers"`
 	QuizAbsPath    string            `json:"quiz_abs_path" yaml:"quiz_abs_path"`
 	RegistrationId string            `json:"registration_id" yaml:"registration_id"`
-	UserId         string            `json:"user_id" yaml:"user_id"`
+
+	// TestSubmissionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	TestSubmissionId *uuid.UUID `json:"test_submission_id,omitempty" yaml:"test_submission_id,omitempty"`
+	UserId           string     `json:"user_id" yaml:"user_id"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
@@ -573,6 +580,13 @@ type SingleAcademyCurriculaResponse struct {
 	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
+// StartTestRequest defines model for StartTestRequest.
+type StartTestRequest struct {
+	QuizAbsPath    string `json:"quiz_abs_path" yaml:"quiz_abs_path"`
+	RegistrationId string `json:"registration_id" yaml:"registration_id"`
+	UserId         string `json:"user_id" yaml:"user_id"`
+}
+
 // Status defines model for Status.
 type Status string
 
@@ -582,6 +596,36 @@ type SubmittedAnswer struct {
 	QuestionId       string          `json:"question_id" yaml:"question_id"`
 	SelectedOptionId map[string]bool `json:"selected_option_id" yaml:"selected_option_id"`
 }
+
+// TestSubmission defines model for TestSubmission.
+type TestSubmission struct {
+	// CreatedAt When the submission was created or started
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+	// DeletedAt Timestamp when the resource was deleted.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
+
+	// RegistrationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	RegistrationId uuid.UUID             `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
+	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
+	SubmissionData *QuizSubmission       `db:"submission_data" json:"submission_data,omitempty" yaml:"submission_data,omitempty"`
+	SubmittedAt    *time.Time            `db:"submitted_at" json:"submitted_at,omitempty" yaml:"submitted_at,omitempty"`
+	Test           Quiz                  `json:"test" yaml:"test"`
+	TestAbsPath    string                `db:"test_abs_path" json:"test_abs_path" yaml:"test_abs_path"`
+
+	// UpdatedAt When the submission was last updated
+	UpdatedAt *time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId uuid.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
+}
+
+// TestSubmissionStatus defines model for TestSubmissionStatus.
+type TestSubmissionStatus string
 
 // TestSubmissions Test submissions made by the user (array of QuizEvaluationResult)
 type TestSubmissions = []struct {
