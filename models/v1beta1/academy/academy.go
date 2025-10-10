@@ -519,9 +519,9 @@ type QuizSubmission struct {
 	QuizAbsPath    string            `json:"quiz_abs_path" yaml:"quiz_abs_path"`
 	RegistrationId string            `json:"registration_id" yaml:"registration_id"`
 
-	// TestSubmissionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	TestSubmissionId *uuid.UUID `json:"test_submission_id,omitempty" yaml:"test_submission_id,omitempty"`
-	UserId           string     `json:"user_id" yaml:"user_id"`
+	// TestSessionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	TestSessionId uuid.UUID `json:"test_session_id" yaml:"test_session_id"`
+	UserId        string    `json:"user_id" yaml:"user_id"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
@@ -582,9 +582,8 @@ type SingleAcademyCurriculaResponse struct {
 
 // StartTestRequest defines model for StartTestRequest.
 type StartTestRequest struct {
-	QuizAbsPath    string `json:"quiz_abs_path" yaml:"quiz_abs_path"`
 	RegistrationId string `json:"registration_id" yaml:"registration_id"`
-	UserId         string `json:"user_id" yaml:"user_id"`
+	TestAbsPath    string `json:"test_abs_path" yaml:"test_abs_path"`
 }
 
 // Status defines model for Status.

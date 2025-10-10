@@ -228,12 +228,41 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
+      getTestByAbsPath: build.query<GetTestByAbsPathApiResponse, GetTestByAbsPathApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/tests`,
+          params: {
+            absPath: queryArg.absPath,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
       startTestById: build.mutation<StartTestByIdApiResponse, StartTestByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/curricula/test/start`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/test-sessions/start`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
+      getAllTestSessionsForRegistration: build.query<
+        GetAllTestSessionsForRegistrationApiResponse,
+        GetAllTestSessionsForRegistrationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/${queryArg.id}/test-sessions`,
+          params: {
+            testAbsPath: queryArg.testAbsPath,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
       submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/quiz/submit`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/test-sessions/submit`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
       getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
@@ -1624,6 +1653,58 @@ export type UpdateCurrentItemInProgressTrackerApiArg = {
     };
   };
 };
+export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
+  id: string;
+  /** Organization ID that owns this quiz */
+  orgId: string;
+  /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+  final: boolean;
+  title: string;
+  description: string;
+  slug: string;
+  relPermalink: string;
+  permalink: string;
+  type: string;
+  section: string;
+  layout: string;
+  date: string;
+  lastmod: string;
+  draft: boolean;
+  file_path: string;
+  pass_percentage: number;
+  time_limit: string;
+  questions: {
+    id: string;
+    text: string;
+    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+    marks: number;
+    multiple_answers?: boolean;
+    options: {
+      id: string;
+      text: string;
+      is_correct: boolean;
+    }[];
+    correct_answer: string;
+  }[];
+  total_questions: number;
+  total_marks: number;
+  prerequisites: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  }[];
+  parent?: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  };
+};
+export type GetTestByAbsPathApiArg = {
+  /** The absolute path of the test to retrieve */
+  absPath: string;
+};
 export type StartTestByIdApiResponse = /** status 200 A single test */ {
   id: string;
   /** Organization ID that owns this quiz */
@@ -1674,10 +1755,76 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
 };
 export type StartTestByIdApiArg = {
   body: {
-    quiz_abs_path: string;
+    test_abs_path: string;
     registration_id: string;
-    user_id: string;
   };
+};
+export type GetAllTestSessionsForRegistrationApiResponse =
+  /** status 200 A list of tests for the specified registration */ {
+    score: number;
+    passed: boolean;
+    percentage_scored: number;
+    total_marks: number;
+    pass_percentage: number;
+    correct_submissions: {
+      [key: string]: boolean;
+    };
+    quiz: {
+      id: string;
+      /** Organization ID that owns this quiz */
+      orgId: string;
+      /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+      final: boolean;
+      title: string;
+      description: string;
+      slug: string;
+      relPermalink: string;
+      permalink: string;
+      type: string;
+      section: string;
+      layout: string;
+      date: string;
+      lastmod: string;
+      draft: boolean;
+      file_path: string;
+      pass_percentage: number;
+      time_limit: string;
+      questions: {
+        id: string;
+        text: string;
+        type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+        marks: number;
+        multiple_answers?: boolean;
+        options: {
+          id: string;
+          text: string;
+          is_correct: boolean;
+        }[];
+        correct_answer: string;
+      }[];
+      total_questions: number;
+      total_marks: number;
+      prerequisites: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      }[];
+      parent?: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      };
+    };
+    attempted_at: string;
+    attempts: number;
+  }[][];
+export type GetAllTestSessionsForRegistrationApiArg = {
+  /** The ID of the registration to retrieve tests for */
+  id: string;
+  /** Filter tests by absolute path */
+  testAbsPath?: string;
 };
 export type SubmitQuizApiResponse = /** status 200 Successfully updated the progress tracker */ {
   score: number;
@@ -1742,7 +1889,7 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
 export type SubmitQuizApiArg = {
   body: {
     /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    test_submission_id?: string;
+    test_session_id: string;
     quiz_abs_path: string;
     registration_id: string;
     user_id: string;
@@ -2173,7 +2320,9 @@ export const {
   useGetAcademyCurriculaByIdQuery,
   useGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
+  useGetTestByAbsPathQuery,
   useStartTestByIdMutation,
+  useGetAllTestSessionsForRegistrationQuery,
   useSubmitQuizMutation,
   useGetAcademyAdminSummaryQuery,
   useGetAcademyAdminRegistrationsQuery,

@@ -63918,7 +63918,6 @@ components:
       type: object
       description: Test submissions made by the user (map of test IDs to Submissions)
       additionalProperties:
-        x-go-type: TestSubmissions
         type: array
         description: Test submissions made by the user (array of QuizEvaluationResult)
         items:
@@ -64124,6 +64123,7 @@ components:
               format: date-time
             attempts:
               type: integer
+        x-go-type: TestSubmissions
     Academy_API_TestSubmissions:
       type: array
       description: Test submissions made by the user (array of QuizEvaluationResult)
@@ -65203,25 +65203,23 @@ components:
     Academy_API_StartTestRequest:
       type: object
       required:
-        - quiz_abs_path
+        - test_abs_path
         - registration_id
-        - user_id
       properties:
-        quiz_abs_path:
+        test_abs_path:
           type: string
         registration_id:
-          type: string
-        user_id:
           type: string
     Academy_API_QuizSubmission:
       type: object
       required:
         - quiz_abs_path
         - registration_id
+        - test_session_id
         - user_id
         - answers
       properties:
-        test_submission_id:
+        test_session_id:
           type: string
           format: uuid
           description: >-
@@ -65367,10 +65365,11 @@ components:
           required:
             - quiz_abs_path
             - registration_id
+            - test_session_id
             - user_id
             - answers
           properties:
-            test_submission_id:
+            test_session_id:
               type: string
               format: uuid
               description: >-
