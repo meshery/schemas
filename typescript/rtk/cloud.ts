@@ -1583,7 +1583,10 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
             draft: boolean;
             file_path: string;
             pass_percentage: number;
+            /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
             time_limit: string;
+            /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+            max_attempts: number;
             questions: {
               id: string;
               text: string;
@@ -1672,7 +1675,10 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
   draft: boolean;
   file_path: string;
   pass_percentage: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
   time_limit: string;
+  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+  max_attempts: number;
   questions: {
     id: string;
     text: string;
@@ -1724,7 +1730,10 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
   draft: boolean;
   file_path: string;
   pass_percentage: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
   time_limit: string;
+  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+  max_attempts: number;
   questions: {
     id: string;
     text: string;
@@ -1788,7 +1797,10 @@ export type GetAllTestSessionsForRegistrationApiResponse =
       draft: boolean;
       file_path: string;
       pass_percentage: number;
+      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
       time_limit: string;
+      /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+      max_attempts: number;
       questions: {
         id: string;
         text: string;
@@ -1854,7 +1866,10 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
     draft: boolean;
     file_path: string;
     pass_percentage: number;
+    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
     time_limit: string;
+    /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+    max_attempts: number;
     questions: {
       id: string;
       text: string;

@@ -483,6 +483,9 @@ type Quiz struct {
 	Lastmod openapi_types.Date `json:"lastmod" yaml:"lastmod"`
 	Layout  string             `json:"layout" yaml:"layout"`
 
+	// MaxAttempts Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
+	MaxAttempts int `json:"max_attempts" yaml:"max_attempts"`
+
 	// OrgId Organization ID that owns this quiz
 	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`
 	Parent         *Parent    `json:"parent,omitempty" yaml:"parent,omitempty"`
@@ -493,11 +496,13 @@ type Quiz struct {
 	RelPermalink   string     `json:"relPermalink" yaml:"relPermalink"`
 	Section        string     `json:"section" yaml:"section"`
 	Slug           string     `json:"slug" yaml:"slug"`
-	TimeLimit      string     `json:"time_limit" yaml:"time_limit"`
-	Title          string     `json:"title" yaml:"title"`
-	TotalMarks     int        `json:"total_marks" yaml:"total_marks"`
-	TotalQuestions int        `json:"total_questions" yaml:"total_questions"`
-	Type           string     `json:"type" yaml:"type"`
+
+	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit.
+	TimeLimit      string `json:"time_limit" yaml:"time_limit"`
+	Title          string `json:"title" yaml:"title"`
+	TotalMarks     int    `json:"total_marks" yaml:"total_marks"`
+	TotalQuestions int    `json:"total_questions" yaml:"total_questions"`
+	Type           string `json:"type" yaml:"type"`
 }
 
 // QuizEvaluationResult defines model for QuizEvaluationResult.
@@ -603,6 +608,9 @@ type TestSubmission struct {
 
 	// DeletedAt Timestamp when the resource was deleted.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// ExpiresAt Expiry time for the test submission ( based on the time limit of the test )
+	ExpiresAt *time.Time `db:"expires_at" json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
 
 	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID uuid.UUID `db:"id" json:"id" yaml:"id"`

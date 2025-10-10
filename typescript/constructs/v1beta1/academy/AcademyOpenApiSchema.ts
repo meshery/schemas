@@ -4879,6 +4879,7 @@ const schema = {
                                   "file_path",
                                   "pass_percentage",
                                   "time_limit",
+                                  "max_attempts",
                                   "questions",
                                   "total_questions",
                                   "total_marks",
@@ -4950,7 +4951,12 @@ const schema = {
                                     "format": "float"
                                   },
                                   "time_limit": {
+                                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                                     "type": "string"
+                                  },
+                                  "max_attempts": {
+                                    "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                                    "type": "integer"
                                   },
                                   "questions": {
                                     "type": "array",
@@ -5274,6 +5280,7 @@ const schema = {
                     "file_path",
                     "pass_percentage",
                     "time_limit",
+                    "max_attempts",
                     "questions",
                     "total_questions",
                     "total_marks",
@@ -5345,7 +5352,12 @@ const schema = {
                       "format": "float"
                     },
                     "time_limit": {
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                       "type": "string"
+                    },
+                    "max_attempts": {
+                      "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                      "type": "integer"
                     },
                     "questions": {
                       "type": "array",
@@ -5550,6 +5562,7 @@ const schema = {
                     "file_path",
                     "pass_percentage",
                     "time_limit",
+                    "max_attempts",
                     "questions",
                     "total_questions",
                     "total_marks",
@@ -5621,7 +5634,12 @@ const schema = {
                       "format": "float"
                     },
                     "time_limit": {
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                       "type": "string"
+                    },
+                    "max_attempts": {
+                      "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                      "type": "integer"
                     },
                     "questions": {
                       "type": "array",
@@ -5867,6 +5885,7 @@ const schema = {
                             "file_path",
                             "pass_percentage",
                             "time_limit",
+                            "max_attempts",
                             "questions",
                             "total_questions",
                             "total_marks",
@@ -5938,7 +5957,12 @@ const schema = {
                               "format": "float"
                             },
                             "time_limit": {
+                              "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                               "type": "string"
+                            },
+                            "max_attempts": {
+                              "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                              "type": "integer"
                             },
                             "questions": {
                               "type": "array",
@@ -6232,6 +6256,7 @@ const schema = {
                         "file_path",
                         "pass_percentage",
                         "time_limit",
+                        "max_attempts",
                         "questions",
                         "total_questions",
                         "total_marks",
@@ -6303,7 +6328,12 @@ const schema = {
                           "format": "float"
                         },
                         "time_limit": {
+                          "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                           "type": "string"
+                        },
+                        "max_attempts": {
+                          "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                          "type": "integer"
                         },
                         "questions": {
                           "type": "array",
@@ -10515,6 +10545,7 @@ const schema = {
                   "file_path",
                   "pass_percentage",
                   "time_limit",
+                  "max_attempts",
                   "questions",
                   "total_questions",
                   "total_marks",
@@ -10586,7 +10617,12 @@ const schema = {
                     "format": "float"
                   },
                   "time_limit": {
+                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                     "type": "string"
+                  },
+                  "max_attempts": {
+                    "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                    "type": "integer"
                   },
                   "questions": {
                     "type": "array",
@@ -10791,6 +10827,7 @@ const schema = {
                 "file_path",
                 "pass_percentage",
                 "time_limit",
+                "max_attempts",
                 "questions",
                 "total_questions",
                 "total_marks",
@@ -10862,7 +10899,12 @@ const schema = {
                   "format": "float"
                 },
                 "time_limit": {
+                  "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                   "type": "string"
+                },
+                "max_attempts": {
+                  "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                  "type": "integer"
                 },
                 "questions": {
                   "type": "array",
@@ -11430,6 +11472,7 @@ const schema = {
                     "file_path",
                     "pass_percentage",
                     "time_limit",
+                    "max_attempts",
                     "questions",
                     "total_questions",
                     "total_marks",
@@ -11501,7 +11544,12 @@ const schema = {
                       "format": "float"
                     },
                     "time_limit": {
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                       "type": "string"
+                    },
+                    "max_attempts": {
+                      "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                      "type": "integer"
                     },
                     "questions": {
                       "type": "array",
@@ -11811,6 +11859,7 @@ const schema = {
           "file_path",
           "pass_percentage",
           "time_limit",
+          "max_attempts",
           "questions",
           "total_questions",
           "total_marks",
@@ -11882,7 +11931,12 @@ const schema = {
             "format": "float"
           },
           "time_limit": {
+            "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
             "type": "string"
+          },
+          "max_attempts": {
+            "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+            "type": "integer"
           },
           "questions": {
             "type": "array",
@@ -12397,6 +12451,14 @@ const schema = {
               "db": "submission_data"
             }
           },
+          "expires_at": {
+            "type": "string",
+            "description": "Expiry time for the test submission ( based on the time limit of the test )",
+            "format": "date-time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "expires_at"
+            }
+          },
           "status": {
             "x-go-type": "TestSubmissionStatus",
             "type": "string",
@@ -12469,6 +12531,7 @@ const schema = {
                   "file_path",
                   "pass_percentage",
                   "time_limit",
+                  "max_attempts",
                   "questions",
                   "total_questions",
                   "total_marks",
@@ -12540,7 +12603,12 @@ const schema = {
                     "format": "float"
                   },
                   "time_limit": {
+                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                     "type": "string"
+                  },
+                  "max_attempts": {
+                    "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                    "type": "integer"
                   },
                   "questions": {
                     "type": "array",
@@ -12705,6 +12773,7 @@ const schema = {
               "file_path",
               "pass_percentage",
               "time_limit",
+              "max_attempts",
               "questions",
               "total_questions",
               "total_marks",
@@ -12776,7 +12845,12 @@ const schema = {
                 "format": "float"
               },
               "time_limit": {
+                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                 "type": "string"
+              },
+              "max_attempts": {
+                "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                "type": "integer"
               },
               "questions": {
                 "type": "array",
@@ -12969,6 +13043,7 @@ const schema = {
               "file_path",
               "pass_percentage",
               "time_limit",
+              "max_attempts",
               "questions",
               "total_questions",
               "total_marks",
@@ -13040,7 +13115,12 @@ const schema = {
                 "format": "float"
               },
               "time_limit": {
+                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                 "type": "string"
+              },
+              "max_attempts": {
+                "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                "type": "integer"
               },
               "questions": {
                 "type": "array",
