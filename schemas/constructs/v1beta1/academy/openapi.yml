@@ -439,7 +439,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /api/academy/curricula/test/start:
+  /api/academy/registrations/tests:
+    get:
+      tags:
+        - Academy
+      x-internal: ["cloud"]
+      operationId: getTestByAbsPath
+      summary: Get test metadata
+      description: Returns metadata for test identified by its absolute path.
+      parameters:
+        - name: absPath
+          in: query
+          required: true
+          description: The absolute path of the test to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single test
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Quiz not found
+        '500':
+          description: Server error
+
+  /api/academy/registrations/test-sessions/start:
     post:
       tags:
         - Academy
@@ -447,6 +476,7 @@ paths:
       operationId: startTestByID
       summary: Start a Test by ID
       description: Starts a new test session for the quiz identified by its ID.
+
 
       requestBody:
         required: true
@@ -469,7 +499,45 @@ paths:
         '500':
           description: Server error
 
-  /api/academy/quiz/submit:
+  /api/academy/registrations/{id}/test-sessions:
+    get:
+      tags:
+        - Academy
+      x-internal: ["cloud"]
+      operationId: getAllTestSessionsForRegistration
+      summary: Get all tests for a registration
+      description: Returns all tests associated with a specific registration ID for a user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the registration to retrieve tests for
+          schema:
+            type: string
+        - name: testAbsPath
+          in: query
+          required: false
+          description: Filter tests by absolute path
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: A list of tests for the specified registration
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TestSubmissions'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Registration not found
+        '500':
+          description: Server error
+
+  /api/academy/registrations/test-sessions/submit:
     post:
       tags:
         - Academy
@@ -617,6 +685,7 @@ components:
         type: string
 
   schemas:
+
 
     RegisterToAcademyContentRequest:
       type: object
@@ -1508,15 +1577,12 @@ components:
     StartTestRequest:
       type: object
       required:
-        - quiz_abs_path
+        - test_abs_path
         - registration_id
-        - user_id
       properties:
-        quiz_abs_path:
+        test_abs_path:
           type: string
         registration_id:
-          type: string
-        user_id:
           type: string
 
     QuizSubmission:
@@ -1524,10 +1590,11 @@ components:
       required:
         - quiz_abs_path
         - registration_id
+        - test_session_id
         - user_id
         - answers
       properties:
-        test_submission_id:
+        test_session_id:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
         quiz_abs_path:
           type: string
