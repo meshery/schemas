@@ -2,6 +2,8 @@ package academy
 
 import (
 	"database/sql/driver"
+	"strconv"
+	"time"
 
 	"github.com/meshery/schemas/models/core"
 )
@@ -15,6 +17,20 @@ func (test *Quiz) Scan(value interface{}) error {
 	}
 	return core.MapToStruct(mapVal, test)
 }
+
+
+
+// returns time limit as a duration pointer, or nil if no time limit is Section
+func (test *Quiz) GetTimeLimit() *time.Duration {
+	// string to int ( given in minutes like "30" )
+	timeLimitMinutes ,err := strconv.Atoi(test.TimeLimit)
+	if err != nil || timeLimitMinutes <= 0 {
+		return nil
+	}
+	duration := time.Duration(timeLimitMinutes) * time.Minute
+	return &duration
+}
+
 
 func (test Quiz) Value() (driver.Value, error) {
 	mapVal, err := core.StructToMap(test)
