@@ -2335,6 +2335,7 @@ const schema = {
                     "updated_at",
                     "content_id",
                     "certificate",
+                    "test_submissions",
                     "metadata"
                   ],
                   "properties": {
@@ -2585,6 +2586,7 @@ const schema = {
                     "updated_at",
                     "content_id",
                     "certificate",
+                    "test_submissions",
                     "metadata"
                   ],
                   "properties": {
@@ -4475,6 +4477,7 @@ const schema = {
                     "updated_at",
                     "content_id",
                     "certificate",
+                    "test_submissions",
                     "metadata"
                   ],
                   "properties": {
@@ -4876,6 +4879,7 @@ const schema = {
                                   "file_path",
                                   "pass_percentage",
                                   "time_limit",
+                                  "max_attempts",
                                   "questions",
                                   "total_questions",
                                   "total_marks",
@@ -4947,7 +4951,12 @@ const schema = {
                                     "format": "float"
                                   },
                                   "time_limit": {
+                                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                                     "type": "string"
+                                  },
+                                  "max_attempts": {
+                                    "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                                    "type": "integer"
                                   },
                                   "questions": {
                                     "type": "array",
@@ -5224,7 +5233,894 @@ const schema = {
         }
       }
     },
-    "/api/academy/quiz/submit": {
+    "/api/academy/registrations/tests": {
+      "get": {
+        "tags": [
+          "Academy"
+        ],
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getTestByAbsPath",
+        "summary": "Get test metadata",
+        "description": "Returns metadata for test identified by its absolute path.",
+        "parameters": [
+          {
+            "name": "absPath",
+            "in": "query",
+            "required": true,
+            "description": "The absolute path of the test to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "orgId",
+                    "description",
+                    "slug",
+                    "relPermalink",
+                    "permalink",
+                    "type",
+                    "section",
+                    "layout",
+                    "date",
+                    "final",
+                    "lastmod",
+                    "draft",
+                    "file_path",
+                    "pass_percentage",
+                    "time_limit",
+                    "max_attempts",
+                    "questions",
+                    "total_questions",
+                    "total_marks",
+                    "prerequisites"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "id"
+                      }
+                    },
+                    "orgId": {
+                      "type": "string",
+                      "description": "Organization ID that owns this quiz",
+                      "example": "layer5",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_id",
+                        "json": "org_id",
+                        "yaml": "org_id"
+                      }
+                    },
+                    "final": {
+                      "type": "boolean",
+                      "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                      "example": true
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "relPermalink": {
+                      "type": "string"
+                    },
+                    "permalink": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "section": {
+                      "type": "string"
+                    },
+                    "layout": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "lastmod": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "draft": {
+                      "type": "boolean"
+                    },
+                    "file_path": {
+                      "type": "string"
+                    },
+                    "pass_percentage": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "time_limit": {
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
+                      "type": "string"
+                    },
+                    "max_attempts": {
+                      "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                      "type": "integer"
+                    },
+                    "questions": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Question",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "text",
+                          "type",
+                          "marks",
+                          "options",
+                          "correct_answer"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "x-go-type": "QuestionType",
+                            "type": "string",
+                            "x-enum-varnames": [
+                              "QuestionTypeMultipleAnswers",
+                              "QuestionTypeSingleAnswer",
+                              "QuestionTypeShortAnswer",
+                              "QuestionTypeEssay"
+                            ],
+                            "enum": [
+                              "multiple-answers",
+                              "single-answer",
+                              "short-answer",
+                              "essay"
+                            ]
+                          },
+                          "marks": {
+                            "type": "integer"
+                          },
+                          "multiple_answers": {
+                            "type": "boolean"
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "x-go-type": "QuestionOption",
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "text",
+                                "is_correct"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "type": "string"
+                                },
+                                "is_correct": {
+                                  "type": "boolean"
+                                }
+                              }
+                            }
+                          },
+                          "correct_answer": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "total_questions": {
+                      "type": "integer"
+                    },
+                    "total_marks": {
+                      "type": "integer"
+                    },
+                    "prerequisites": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Parent",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "title",
+                          "relPermalink",
+                          "type"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "relPermalink": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "parent": {
+                      "x-go-type": "Parent",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "relPermalink",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "relPermalink": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Quiz not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/academy/registrations/test-sessions/start": {
+      "post": {
+        "tags": [
+          "Academy"
+        ],
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "startTestByID",
+        "summary": "Start a Test by ID",
+        "description": "Starts a new test session for the quiz identified by its ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "test_abs_path",
+                  "registration_id"
+                ],
+                "properties": {
+                  "test_abs_path": {
+                    "type": "string"
+                  },
+                  "registration_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A single test",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "orgId",
+                    "description",
+                    "slug",
+                    "relPermalink",
+                    "permalink",
+                    "type",
+                    "section",
+                    "layout",
+                    "date",
+                    "final",
+                    "lastmod",
+                    "draft",
+                    "file_path",
+                    "pass_percentage",
+                    "time_limit",
+                    "max_attempts",
+                    "questions",
+                    "total_questions",
+                    "total_marks",
+                    "prerequisites"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "x-go-name": "ID",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "id"
+                      }
+                    },
+                    "orgId": {
+                      "type": "string",
+                      "description": "Organization ID that owns this quiz",
+                      "example": "layer5",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "org_id",
+                        "json": "org_id",
+                        "yaml": "org_id"
+                      }
+                    },
+                    "final": {
+                      "type": "boolean",
+                      "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                      "example": true
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "relPermalink": {
+                      "type": "string"
+                    },
+                    "permalink": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "section": {
+                      "type": "string"
+                    },
+                    "layout": {
+                      "type": "string"
+                    },
+                    "date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "lastmod": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "draft": {
+                      "type": "boolean"
+                    },
+                    "file_path": {
+                      "type": "string"
+                    },
+                    "pass_percentage": {
+                      "type": "number",
+                      "format": "float"
+                    },
+                    "time_limit": {
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
+                      "type": "string"
+                    },
+                    "max_attempts": {
+                      "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                      "type": "integer"
+                    },
+                    "questions": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Question",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "text",
+                          "type",
+                          "marks",
+                          "options",
+                          "correct_answer"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "x-go-type": "QuestionType",
+                            "type": "string",
+                            "x-enum-varnames": [
+                              "QuestionTypeMultipleAnswers",
+                              "QuestionTypeSingleAnswer",
+                              "QuestionTypeShortAnswer",
+                              "QuestionTypeEssay"
+                            ],
+                            "enum": [
+                              "multiple-answers",
+                              "single-answer",
+                              "short-answer",
+                              "essay"
+                            ]
+                          },
+                          "marks": {
+                            "type": "integer"
+                          },
+                          "multiple_answers": {
+                            "type": "boolean"
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "x-go-type": "QuestionOption",
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "text",
+                                "is_correct"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "text": {
+                                  "type": "string"
+                                },
+                                "is_correct": {
+                                  "type": "boolean"
+                                }
+                              }
+                            }
+                          },
+                          "correct_answer": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "total_questions": {
+                      "type": "integer"
+                    },
+                    "total_marks": {
+                      "type": "integer"
+                    },
+                    "prerequisites": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Parent",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "title",
+                          "relPermalink",
+                          "type"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "relPermalink": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "parent": {
+                      "x-go-type": "Parent",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "relPermalink",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "relPermalink": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Quiz not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/academy/registrations/{id}/test-sessions": {
+      "get": {
+        "tags": [
+          "Academy"
+        ],
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getAllTestSessionsForRegistration",
+        "summary": "Get all tests for a registration",
+        "description": "Returns all tests associated with a specific registration ID for a user.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the registration to retrieve tests for",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testAbsPath",
+            "in": "query",
+            "required": false,
+            "description": "Filter tests by absolute path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of tests for the specified registration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "description": "Test submissions made by the user (array of QuizEvaluationResult)",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "score",
+                        "passed",
+                        "total_marks",
+                        "pass_percentage",
+                        "quiz",
+                        "attempted_at",
+                        "attempts",
+                        "percentage_scored",
+                        "correct_submissions"
+                      ],
+                      "properties": {
+                        "score": {
+                          "type": "integer"
+                        },
+                        "passed": {
+                          "type": "boolean"
+                        },
+                        "percentage_scored": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "total_marks": {
+                          "type": "integer"
+                        },
+                        "pass_percentage": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "correct_submissions": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "boolean"
+                          }
+                        },
+                        "quiz": {
+                          "x-go-type": "Quiz",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "title",
+                            "orgId",
+                            "description",
+                            "slug",
+                            "relPermalink",
+                            "permalink",
+                            "type",
+                            "section",
+                            "layout",
+                            "date",
+                            "final",
+                            "lastmod",
+                            "draft",
+                            "file_path",
+                            "pass_percentage",
+                            "time_limit",
+                            "max_attempts",
+                            "questions",
+                            "total_questions",
+                            "total_marks",
+                            "prerequisites"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "x-go-name": "ID",
+                              "x-oapi-codegen-extra-tags": {
+                                "json": "id"
+                              }
+                            },
+                            "orgId": {
+                              "type": "string",
+                              "description": "Organization ID that owns this quiz",
+                              "example": "layer5",
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "org_id",
+                                "json": "org_id",
+                                "yaml": "org_id"
+                              }
+                            },
+                            "final": {
+                              "type": "boolean",
+                              "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                              "example": true
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "slug": {
+                              "type": "string"
+                            },
+                            "relPermalink": {
+                              "type": "string"
+                            },
+                            "permalink": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "section": {
+                              "type": "string"
+                            },
+                            "layout": {
+                              "type": "string"
+                            },
+                            "date": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "lastmod": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "draft": {
+                              "type": "boolean"
+                            },
+                            "file_path": {
+                              "type": "string"
+                            },
+                            "pass_percentage": {
+                              "type": "number",
+                              "format": "float"
+                            },
+                            "time_limit": {
+                              "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
+                              "type": "string"
+                            },
+                            "max_attempts": {
+                              "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                              "type": "integer"
+                            },
+                            "questions": {
+                              "type": "array",
+                              "items": {
+                                "x-go-type": "Question",
+                                "type": "object",
+                                "required": [
+                                  "id",
+                                  "text",
+                                  "type",
+                                  "marks",
+                                  "options",
+                                  "correct_answer"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "text": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "x-go-type": "QuestionType",
+                                    "type": "string",
+                                    "x-enum-varnames": [
+                                      "QuestionTypeMultipleAnswers",
+                                      "QuestionTypeSingleAnswer",
+                                      "QuestionTypeShortAnswer",
+                                      "QuestionTypeEssay"
+                                    ],
+                                    "enum": [
+                                      "multiple-answers",
+                                      "single-answer",
+                                      "short-answer",
+                                      "essay"
+                                    ]
+                                  },
+                                  "marks": {
+                                    "type": "integer"
+                                  },
+                                  "multiple_answers": {
+                                    "type": "boolean"
+                                  },
+                                  "options": {
+                                    "type": "array",
+                                    "items": {
+                                      "x-go-type": "QuestionOption",
+                                      "type": "object",
+                                      "required": [
+                                        "id",
+                                        "text",
+                                        "is_correct"
+                                      ],
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "text": {
+                                          "type": "string"
+                                        },
+                                        "is_correct": {
+                                          "type": "boolean"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "correct_answer": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "total_questions": {
+                              "type": "integer"
+                            },
+                            "total_marks": {
+                              "type": "integer"
+                            },
+                            "prerequisites": {
+                              "type": "array",
+                              "items": {
+                                "x-go-type": "Parent",
+                                "type": "object",
+                                "required": [
+                                  "id",
+                                  "title",
+                                  "relPermalink",
+                                  "type"
+                                ],
+                                "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "relPermalink": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "parent": {
+                              "x-go-type": "Parent",
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "title",
+                                "relPermalink",
+                                "type"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "title": {
+                                  "type": "string"
+                                },
+                                "relPermalink": {
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "attempted_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "attempts": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "404": {
+            "description": "Registration not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/academy/registrations/test-sessions/submit": {
       "post": {
         "tags": [
           "Academy"
@@ -5243,10 +6139,20 @@ const schema = {
                 "required": [
                   "quiz_abs_path",
                   "registration_id",
+                  "test_session_id",
                   "user_id",
                   "answers"
                 ],
                 "properties": {
+                  "test_session_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                    "x-go-type": "uuid.UUID",
+                    "x-go-type-import": {
+                      "path": "github.com/gofrs/uuid"
+                    }
+                  },
                   "quiz_abs_path": {
                     "type": "string"
                   },
@@ -5350,6 +6256,7 @@ const schema = {
                         "file_path",
                         "pass_percentage",
                         "time_limit",
+                        "max_attempts",
                         "questions",
                         "total_questions",
                         "total_marks",
@@ -5421,7 +6328,12 @@ const schema = {
                           "format": "float"
                         },
                         "time_limit": {
+                          "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                           "type": "string"
+                        },
+                        "max_attempts": {
+                          "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                          "type": "integer"
                         },
                         "questions": {
                           "type": "array",
@@ -9367,6 +10279,7 @@ const schema = {
           "updated_at",
           "content_id",
           "certificate",
+          "test_submissions",
           "metadata"
         ],
         "properties": {
@@ -9568,6 +10481,571 @@ const schema = {
           }
         }
       },
+      "AllTestSubmissionsForCurricula": {
+        "type": "object",
+        "description": "Test submissions made by the user (map of test IDs to Submissions)",
+        "additionalProperties": {
+          "type": "array",
+          "description": "Test submissions made by the user (array of QuizEvaluationResult)",
+          "items": {
+            "type": "object",
+            "required": [
+              "score",
+              "passed",
+              "total_marks",
+              "pass_percentage",
+              "quiz",
+              "attempted_at",
+              "attempts",
+              "percentage_scored",
+              "correct_submissions"
+            ],
+            "properties": {
+              "score": {
+                "type": "integer"
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "percentage_scored": {
+                "type": "number",
+                "format": "float"
+              },
+              "total_marks": {
+                "type": "integer"
+              },
+              "pass_percentage": {
+                "type": "number",
+                "format": "float"
+              },
+              "correct_submissions": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "boolean"
+                }
+              },
+              "quiz": {
+                "x-go-type": "Quiz",
+                "type": "object",
+                "required": [
+                  "id",
+                  "title",
+                  "orgId",
+                  "description",
+                  "slug",
+                  "relPermalink",
+                  "permalink",
+                  "type",
+                  "section",
+                  "layout",
+                  "date",
+                  "final",
+                  "lastmod",
+                  "draft",
+                  "file_path",
+                  "pass_percentage",
+                  "time_limit",
+                  "max_attempts",
+                  "questions",
+                  "total_questions",
+                  "total_marks",
+                  "prerequisites"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "x-go-name": "ID",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "id"
+                    }
+                  },
+                  "orgId": {
+                    "type": "string",
+                    "description": "Organization ID that owns this quiz",
+                    "example": "layer5",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "org_id",
+                      "json": "org_id",
+                      "yaml": "org_id"
+                    }
+                  },
+                  "final": {
+                    "type": "boolean",
+                    "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                    "example": true
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "relPermalink": {
+                    "type": "string"
+                  },
+                  "permalink": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "section": {
+                    "type": "string"
+                  },
+                  "layout": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "lastmod": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "draft": {
+                    "type": "boolean"
+                  },
+                  "file_path": {
+                    "type": "string"
+                  },
+                  "pass_percentage": {
+                    "type": "number",
+                    "format": "float"
+                  },
+                  "time_limit": {
+                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
+                    "type": "string"
+                  },
+                  "max_attempts": {
+                    "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                    "type": "integer"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Question",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "text",
+                        "type",
+                        "marks",
+                        "options",
+                        "correct_answer"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "x-go-type": "QuestionType",
+                          "type": "string",
+                          "x-enum-varnames": [
+                            "QuestionTypeMultipleAnswers",
+                            "QuestionTypeSingleAnswer",
+                            "QuestionTypeShortAnswer",
+                            "QuestionTypeEssay"
+                          ],
+                          "enum": [
+                            "multiple-answers",
+                            "single-answer",
+                            "short-answer",
+                            "essay"
+                          ]
+                        },
+                        "marks": {
+                          "type": "integer"
+                        },
+                        "multiple_answers": {
+                          "type": "boolean"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": {
+                            "x-go-type": "QuestionOption",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "text",
+                              "is_correct"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "text": {
+                                "type": "string"
+                              },
+                              "is_correct": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        },
+                        "correct_answer": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "total_questions": {
+                    "type": "integer"
+                  },
+                  "total_marks": {
+                    "type": "integer"
+                  },
+                  "prerequisites": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Parent",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "relPermalink",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "relPermalink": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "parent": {
+                    "x-go-type": "Parent",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "title",
+                      "relPermalink",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "relPermalink": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "attempted_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "attempts": {
+                "type": "integer"
+              }
+            }
+          },
+          "x-go-type": "TestSubmissions"
+        }
+      },
+      "TestSubmissions": {
+        "type": "array",
+        "description": "Test submissions made by the user (array of QuizEvaluationResult)",
+        "items": {
+          "type": "object",
+          "required": [
+            "score",
+            "passed",
+            "total_marks",
+            "pass_percentage",
+            "quiz",
+            "attempted_at",
+            "attempts",
+            "percentage_scored",
+            "correct_submissions"
+          ],
+          "properties": {
+            "score": {
+              "type": "integer"
+            },
+            "passed": {
+              "type": "boolean"
+            },
+            "percentage_scored": {
+              "type": "number",
+              "format": "float"
+            },
+            "total_marks": {
+              "type": "integer"
+            },
+            "pass_percentage": {
+              "type": "number",
+              "format": "float"
+            },
+            "correct_submissions": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "boolean"
+              }
+            },
+            "quiz": {
+              "x-go-type": "Quiz",
+              "type": "object",
+              "required": [
+                "id",
+                "title",
+                "orgId",
+                "description",
+                "slug",
+                "relPermalink",
+                "permalink",
+                "type",
+                "section",
+                "layout",
+                "date",
+                "final",
+                "lastmod",
+                "draft",
+                "file_path",
+                "pass_percentage",
+                "time_limit",
+                "max_attempts",
+                "questions",
+                "total_questions",
+                "total_marks",
+                "prerequisites"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "x-go-name": "ID",
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "id"
+                  }
+                },
+                "orgId": {
+                  "type": "string",
+                  "description": "Organization ID that owns this quiz",
+                  "example": "layer5",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "org_id",
+                    "json": "org_id",
+                    "yaml": "org_id"
+                  }
+                },
+                "final": {
+                  "type": "boolean",
+                  "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                  "example": true
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "relPermalink": {
+                  "type": "string"
+                },
+                "permalink": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "section": {
+                  "type": "string"
+                },
+                "layout": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "lastmod": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "draft": {
+                  "type": "boolean"
+                },
+                "file_path": {
+                  "type": "string"
+                },
+                "pass_percentage": {
+                  "type": "number",
+                  "format": "float"
+                },
+                "time_limit": {
+                  "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
+                  "type": "string"
+                },
+                "max_attempts": {
+                  "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                  "type": "integer"
+                },
+                "questions": {
+                  "type": "array",
+                  "items": {
+                    "x-go-type": "Question",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "text",
+                      "type",
+                      "marks",
+                      "options",
+                      "correct_answer"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "text": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "x-go-type": "QuestionType",
+                        "type": "string",
+                        "x-enum-varnames": [
+                          "QuestionTypeMultipleAnswers",
+                          "QuestionTypeSingleAnswer",
+                          "QuestionTypeShortAnswer",
+                          "QuestionTypeEssay"
+                        ],
+                        "enum": [
+                          "multiple-answers",
+                          "single-answer",
+                          "short-answer",
+                          "essay"
+                        ]
+                      },
+                      "marks": {
+                        "type": "integer"
+                      },
+                      "multiple_answers": {
+                        "type": "boolean"
+                      },
+                      "options": {
+                        "type": "array",
+                        "items": {
+                          "x-go-type": "QuestionOption",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "text",
+                            "is_correct"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "text": {
+                              "type": "string"
+                            },
+                            "is_correct": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      },
+                      "correct_answer": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "total_questions": {
+                  "type": "integer"
+                },
+                "total_marks": {
+                  "type": "integer"
+                },
+                "prerequisites": {
+                  "type": "array",
+                  "items": {
+                    "x-go-type": "Parent",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "title",
+                      "relPermalink",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "relPermalink": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "parent": {
+                  "x-go-type": "Parent",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "relPermalink",
+                    "type"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "relPermalink": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "attempted_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "attempts": {
+              "type": "integer"
+            }
+          }
+        }
+      },
       "ChildNode": {
         "type": "object",
         "properties": {
@@ -9657,6 +11135,7 @@ const schema = {
                 "updated_at",
                 "content_id",
                 "certificate",
+                "test_submissions",
                 "metadata"
               ],
               "properties": {
@@ -9993,6 +11472,7 @@ const schema = {
                     "file_path",
                     "pass_percentage",
                     "time_limit",
+                    "max_attempts",
                     "questions",
                     "total_questions",
                     "total_marks",
@@ -10064,7 +11544,12 @@ const schema = {
                       "format": "float"
                     },
                     "time_limit": {
+                      "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                       "type": "string"
+                    },
+                    "max_attempts": {
+                      "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                      "type": "integer"
                     },
                     "questions": {
                       "type": "array",
@@ -10374,6 +11859,7 @@ const schema = {
           "file_path",
           "pass_percentage",
           "time_limit",
+          "max_attempts",
           "questions",
           "total_questions",
           "total_marks",
@@ -10445,7 +11931,12 @@ const schema = {
             "format": "float"
           },
           "time_limit": {
+            "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
             "type": "string"
+          },
+          "max_attempts": {
+            "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+            "type": "integer"
           },
           "questions": {
             "type": "array",
@@ -10701,15 +12192,40 @@ const schema = {
           }
         }
       },
+      "StartTestRequest": {
+        "type": "object",
+        "required": [
+          "test_abs_path",
+          "registration_id"
+        ],
+        "properties": {
+          "test_abs_path": {
+            "type": "string"
+          },
+          "registration_id": {
+            "type": "string"
+          }
+        }
+      },
       "QuizSubmission": {
         "type": "object",
         "required": [
           "quiz_abs_path",
           "registration_id",
+          "test_session_id",
           "user_id",
           "answers"
         ],
         "properties": {
+          "test_session_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
           "quiz_abs_path": {
             "type": "string"
           },
@@ -10769,45 +12285,475 @@ const schema = {
           }
         }
       },
-      "QuizEvaluationResult": {
+      "TestSubmissionStatus": {
+        "type": "string",
+        "enum": [
+          "not-attempted",
+          "failed",
+          "passed"
+        ],
+        "x-enum-varnames": [
+          "TestSubmissionStatusNotAttempted",
+          "TestSubmissionStatusFailed",
+          "TestSubmissionStatusPassed"
+        ]
+      },
+      "TestSubmission": {
         "type": "object",
         "required": [
-          "score",
-          "passed",
-          "total_marks",
-          "pass_percentage",
-          "quiz",
-          "attempted_at",
-          "attempts",
-          "percentage_scored",
-          "correct_submissions"
+          "id",
+          "registration_id",
+          "test_abs_path",
+          "user_id",
+          "created_at",
+          "status",
+          "test"
         ],
         "properties": {
-          "score": {
-            "type": "integer"
-          },
-          "passed": {
-            "type": "boolean"
-          },
-          "percentage_scored": {
-            "type": "number",
-            "format": "float"
-          },
-          "total_marks": {
-            "type": "integer"
-          },
-          "pass_percentage": {
-            "type": "number",
-            "format": "float"
-          },
-          "correct_submissions": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "boolean"
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "ID",
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id",
+              "yaml": "id"
             }
           },
-          "quiz": {
-            "x-go-type": "Quiz",
+          "registration_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "registration_id",
+              "json": "registration_id",
+              "yaml": "registration_id"
+            }
+          },
+          "test_abs_path": {
+            "type": "string",
+            "x-oapi-codegen-extra-tags": {
+              "db": "test_abs_path"
+            }
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id"
+            }
+          },
+          "created_at": {
+            "description": "When the submission was created or started",
+            "type": "string",
+            "format": "date-time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at"
+            }
+          },
+          "updated_at": {
+            "description": "When the submission was last updated",
+            "type": "string",
+            "format": "date-time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            }
+          },
+          "deleted_at": {
+            "x-go-type": "core.NullTime",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            },
+            "description": "Timestamp when the resource was deleted.",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "DeletedAt",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "submitted_at"
+            }
+          },
+          "submission_data": {
+            "type": "object",
+            "required": [
+              "quiz_abs_path",
+              "registration_id",
+              "test_session_id",
+              "user_id",
+              "answers"
+            ],
+            "properties": {
+              "test_session_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "quiz_abs_path": {
+                "type": "string"
+              },
+              "registration_id": {
+                "type": "string"
+              },
+              "user_id": {
+                "type": "string"
+              },
+              "answers": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "SubmittedAnswer",
+                  "type": "object",
+                  "required": [
+                    "question_id",
+                    "selected_option_id",
+                    "answer_text"
+                  ],
+                  "properties": {
+                    "question_id": {
+                      "type": "string"
+                    },
+                    "selected_option_id": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "boolean"
+                      }
+                    },
+                    "answer_text": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "x-go-type": "QuizSubmission",
+            "x-oapi-codegen-extra-tags": {
+              "db": "submission_data"
+            }
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "Expiry time for the test submission ( based on the time limit of the test )",
+            "format": "date-time",
+            "x-oapi-codegen-extra-tags": {
+              "db": "expires_at"
+            }
+          },
+          "status": {
+            "x-go-type": "TestSubmissionStatus",
+            "type": "string",
+            "enum": [
+              "not-attempted",
+              "failed",
+              "passed"
+            ],
+            "x-enum-varnames": [
+              "TestSubmissionStatusNotAttempted",
+              "TestSubmissionStatusFailed",
+              "TestSubmissionStatusPassed"
+            ]
+          },
+          "result": {
+            "type": "object",
+            "required": [
+              "score",
+              "passed",
+              "total_marks",
+              "pass_percentage",
+              "quiz",
+              "attempted_at",
+              "attempts",
+              "percentage_scored",
+              "correct_submissions"
+            ],
+            "properties": {
+              "score": {
+                "type": "integer"
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "percentage_scored": {
+                "type": "number",
+                "format": "float"
+              },
+              "total_marks": {
+                "type": "integer"
+              },
+              "pass_percentage": {
+                "type": "number",
+                "format": "float"
+              },
+              "correct_submissions": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "boolean"
+                }
+              },
+              "quiz": {
+                "x-go-type": "Quiz",
+                "type": "object",
+                "required": [
+                  "id",
+                  "title",
+                  "orgId",
+                  "description",
+                  "slug",
+                  "relPermalink",
+                  "permalink",
+                  "type",
+                  "section",
+                  "layout",
+                  "date",
+                  "final",
+                  "lastmod",
+                  "draft",
+                  "file_path",
+                  "pass_percentage",
+                  "time_limit",
+                  "max_attempts",
+                  "questions",
+                  "total_questions",
+                  "total_marks",
+                  "prerequisites"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "x-go-name": "ID",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "id"
+                    }
+                  },
+                  "orgId": {
+                    "type": "string",
+                    "description": "Organization ID that owns this quiz",
+                    "example": "layer5",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "org_id",
+                      "json": "org_id",
+                      "yaml": "org_id"
+                    }
+                  },
+                  "final": {
+                    "type": "boolean",
+                    "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                    "example": true
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "relPermalink": {
+                    "type": "string"
+                  },
+                  "permalink": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "section": {
+                    "type": "string"
+                  },
+                  "layout": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "lastmod": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "draft": {
+                    "type": "boolean"
+                  },
+                  "file_path": {
+                    "type": "string"
+                  },
+                  "pass_percentage": {
+                    "type": "number",
+                    "format": "float"
+                  },
+                  "time_limit": {
+                    "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
+                    "type": "string"
+                  },
+                  "max_attempts": {
+                    "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                    "type": "integer"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Question",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "text",
+                        "type",
+                        "marks",
+                        "options",
+                        "correct_answer"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "x-go-type": "QuestionType",
+                          "type": "string",
+                          "x-enum-varnames": [
+                            "QuestionTypeMultipleAnswers",
+                            "QuestionTypeSingleAnswer",
+                            "QuestionTypeShortAnswer",
+                            "QuestionTypeEssay"
+                          ],
+                          "enum": [
+                            "multiple-answers",
+                            "single-answer",
+                            "short-answer",
+                            "essay"
+                          ]
+                        },
+                        "marks": {
+                          "type": "integer"
+                        },
+                        "multiple_answers": {
+                          "type": "boolean"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": {
+                            "x-go-type": "QuestionOption",
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "text",
+                              "is_correct"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string"
+                              },
+                              "text": {
+                                "type": "string"
+                              },
+                              "is_correct": {
+                                "type": "boolean"
+                              }
+                            }
+                          }
+                        },
+                        "correct_answer": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "total_questions": {
+                    "type": "integer"
+                  },
+                  "total_marks": {
+                    "type": "integer"
+                  },
+                  "prerequisites": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Parent",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "relPermalink",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "relPermalink": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "parent": {
+                    "x-go-type": "Parent",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "title",
+                      "relPermalink",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "relPermalink": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "attempted_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "attempts": {
+                "type": "integer"
+              }
+            },
+            "x-go-type": "QuizEvaluationResult",
+            "x-oapi-codegen-extra-tags": {
+              "db": "result"
+            }
+          },
+          "test": {
             "type": "object",
             "required": [
               "id",
@@ -10827,6 +12773,7 @@ const schema = {
               "file_path",
               "pass_percentage",
               "time_limit",
+              "max_attempts",
               "questions",
               "total_questions",
               "total_marks",
@@ -10898,7 +12845,282 @@ const schema = {
                 "format": "float"
               },
               "time_limit": {
+                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
                 "type": "string"
+              },
+              "max_attempts": {
+                "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                "type": "integer"
+              },
+              "questions": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "Question",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "text",
+                    "type",
+                    "marks",
+                    "options",
+                    "correct_answer"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "x-go-type": "QuestionType",
+                      "type": "string",
+                      "x-enum-varnames": [
+                        "QuestionTypeMultipleAnswers",
+                        "QuestionTypeSingleAnswer",
+                        "QuestionTypeShortAnswer",
+                        "QuestionTypeEssay"
+                      ],
+                      "enum": [
+                        "multiple-answers",
+                        "single-answer",
+                        "short-answer",
+                        "essay"
+                      ]
+                    },
+                    "marks": {
+                      "type": "integer"
+                    },
+                    "multiple_answers": {
+                      "type": "boolean"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "QuestionOption",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "text",
+                          "is_correct"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "is_correct": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "correct_answer": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "total_questions": {
+                "type": "integer"
+              },
+              "total_marks": {
+                "type": "integer"
+              },
+              "prerequisites": {
+                "type": "array",
+                "items": {
+                  "x-go-type": "Parent",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "relPermalink",
+                    "type"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "relPermalink": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "parent": {
+                "x-go-type": "Parent",
+                "type": "object",
+                "required": [
+                  "id",
+                  "title",
+                  "relPermalink",
+                  "type"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "relPermalink": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "x-go-type": "Quiz"
+          }
+        }
+      },
+      "QuizEvaluationResult": {
+        "type": "object",
+        "required": [
+          "score",
+          "passed",
+          "total_marks",
+          "pass_percentage",
+          "quiz",
+          "attempted_at",
+          "attempts",
+          "percentage_scored",
+          "correct_submissions"
+        ],
+        "properties": {
+          "score": {
+            "type": "integer"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "percentage_scored": {
+            "type": "number",
+            "format": "float"
+          },
+          "total_marks": {
+            "type": "integer"
+          },
+          "pass_percentage": {
+            "type": "number",
+            "format": "float"
+          },
+          "correct_submissions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "quiz": {
+            "x-go-type": "Quiz",
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "orgId",
+              "description",
+              "slug",
+              "relPermalink",
+              "permalink",
+              "type",
+              "section",
+              "layout",
+              "date",
+              "final",
+              "lastmod",
+              "draft",
+              "file_path",
+              "pass_percentage",
+              "time_limit",
+              "max_attempts",
+              "questions",
+              "total_questions",
+              "total_marks",
+              "prerequisites"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "x-go-name": "ID",
+                "x-oapi-codegen-extra-tags": {
+                  "json": "id"
+                }
+              },
+              "orgId": {
+                "type": "string",
+                "description": "Organization ID that owns this quiz",
+                "example": "layer5",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "org_id",
+                  "json": "org_id",
+                  "yaml": "org_id"
+                }
+              },
+              "final": {
+                "type": "boolean",
+                "description": "Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path",
+                "example": true
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "relPermalink": {
+                "type": "string"
+              },
+              "permalink": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "section": {
+                "type": "string"
+              },
+              "layout": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "lastmod": {
+                "type": "string",
+                "format": "date"
+              },
+              "draft": {
+                "type": "boolean"
+              },
+              "file_path": {
+                "type": "string"
+              },
+              "pass_percentage": {
+                "type": "number",
+                "format": "float"
+              },
+              "time_limit": {
+                "description": "Time limit for the quiz in minutes. A value of 0 indicates no time limit.",
+                "type": "string"
+              },
+              "max_attempts": {
+                "description": "Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.",
+                "type": "integer"
               },
               "questions": {
                 "type": "array",
