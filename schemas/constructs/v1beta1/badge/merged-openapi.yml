@@ -40,7 +40,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Badge deleted."
+            "description": "Badge deleted successfully"
           }
         }
       },
