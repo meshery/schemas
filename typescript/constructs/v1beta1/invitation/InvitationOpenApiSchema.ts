@@ -131,7 +131,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                     },
                     "accepted_by": {
                       "type": "array",
@@ -370,7 +370,7 @@ const schema = {
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                    "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                   },
                   "accepted_by": {
                     "type": "array",
@@ -545,7 +545,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                     },
                     "accepted_by": {
                       "type": "array",
@@ -750,7 +750,7 @@ const schema = {
                           },
                           "quota": {
                             "type": "integer",
-                            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                            "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                           },
                           "accepted_by": {
                             "type": "array",
@@ -958,7 +958,7 @@ const schema = {
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                    "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                   },
                   "accepted_by": {
                     "type": "array",
@@ -1133,7 +1133,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                     },
                     "accepted_by": {
                       "type": "array",
@@ -1340,7 +1340,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                     },
                     "accepted_by": {
                       "type": "array",
@@ -1574,7 +1574,7 @@ const schema = {
                 },
                 "quota": {
                   "type": "integer",
-                  "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+                  "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
                 },
                 "accepted_by": {
                   "type": "array",
@@ -1764,7 +1764,7 @@ const schema = {
           },
           "quota": {
             "type": "integer",
-            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
+            "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
           },
           "accepted_by": {
             "type": "array",
