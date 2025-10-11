@@ -123,7 +123,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -131,7 +131,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                     },
                     "accepted_by": {
                       "type": "array",
@@ -362,7 +362,7 @@ const schema = {
                   "expires_at": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                     "x-oapi-codegen-extra-tags": {
                       "db": "expires_at",
                       "json": "expires_at"
@@ -370,7 +370,7 @@ const schema = {
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                   },
                   "accepted_by": {
                     "type": "array",
@@ -537,7 +537,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -545,7 +545,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                     },
                     "accepted_by": {
                       "type": "array",
@@ -742,7 +742,7 @@ const schema = {
                           "expires_at": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                             "x-oapi-codegen-extra-tags": {
                               "db": "expires_at",
                               "json": "expires_at"
@@ -750,7 +750,7 @@ const schema = {
                           },
                           "quota": {
                             "type": "integer",
-                            "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                           },
                           "accepted_by": {
                             "type": "array",
@@ -950,7 +950,7 @@ const schema = {
                   "expires_at": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                     "x-oapi-codegen-extra-tags": {
                       "db": "expires_at",
                       "json": "expires_at"
@@ -958,7 +958,7 @@ const schema = {
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                   },
                   "accepted_by": {
                     "type": "array",
@@ -1125,7 +1125,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -1133,7 +1133,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                     },
                     "accepted_by": {
                       "type": "array",
@@ -1332,7 +1332,7 @@ const schema = {
                     "expires_at": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                      "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                       "x-oapi-codegen-extra-tags": {
                         "db": "expires_at",
                         "json": "expires_at"
@@ -1340,7 +1340,7 @@ const schema = {
                     },
                     "quota": {
                       "type": "integer",
-                      "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                      "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                     },
                     "accepted_by": {
                       "type": "array",
@@ -1566,7 +1566,7 @@ const schema = {
                 "expires_at": {
                   "type": "string",
                   "format": "date-time",
-                  "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+                  "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
                   "x-oapi-codegen-extra-tags": {
                     "db": "expires_at",
                     "json": "expires_at"
@@ -1574,7 +1574,7 @@ const schema = {
                 },
                 "quota": {
                   "type": "integer",
-                  "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+                  "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
                 },
                 "accepted_by": {
                   "type": "array",
@@ -1756,7 +1756,7 @@ const schema = {
           "expires_at": {
             "type": "string",
             "format": "date-time",
-            "description": "The invitation expires at the specified date and time (if set). Leave it unset (empty) to keep the invitation valid indefinitely.",
+            "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
             "x-oapi-codegen-extra-tags": {
               "db": "expires_at",
               "json": "expires_at"
@@ -1764,7 +1764,7 @@ const schema = {
           },
           "quota": {
             "type": "integer",
-            "description": "Set and enforce a limit on the number of users that can use this invitation. Leave unset (empty) to not enforce a capacity limit, but allow an unlimited number of users to use this invitation."
+            "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
           },
           "accepted_by": {
             "type": "array",
