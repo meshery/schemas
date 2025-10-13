@@ -498,11 +498,13 @@ type Quiz struct {
 	Slug           string     `json:"slug" yaml:"slug"`
 
 	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit.
-	TimeLimit      string `json:"time_limit" yaml:"time_limit"`
-	Title          string `json:"title" yaml:"title"`
-	TotalMarks     int    `json:"total_marks" yaml:"total_marks"`
-	TotalQuestions int    `json:"total_questions" yaml:"total_questions"`
-	Type           string `json:"type" yaml:"type"`
+	TimeLimit            string `json:"time_limit" yaml:"time_limit"`
+	Title                string `json:"title" yaml:"title"`
+	TotalMarks           int    `json:"total_marks" yaml:"total_marks"`
+	TotalQuestionSets    int    `json:"total_question_sets" yaml:"total_question_sets"`
+	TotalQuestions       int    `json:"total_questions" yaml:"total_questions"`
+	TotalQuestionsInBank int    `json:"total_questions_in_bank" yaml:"total_questions_in_bank"`
+	Type                 string `json:"type" yaml:"type"`
 }
 
 // QuizEvaluationResult defines model for QuizEvaluationResult.

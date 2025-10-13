@@ -63973,6 +63973,8 @@ components:
                 - max_attempts
                 - questions
                 - total_questions
+                - total_questions_in_bank
+                - total_question_sets
                 - total_marks
                 - prerequisites
               properties:
@@ -64089,6 +64091,10 @@ components:
                         type: string
                 total_questions:
                   type: integer
+                total_questions_in_bank:
+                  type: integer
+                total_question_sets:
+                  type: integer
                 total_marks:
                   type: integer
                 prerequisites:
@@ -64189,6 +64195,8 @@ components:
               - max_attempts
               - questions
               - total_questions
+              - total_questions_in_bank
+              - total_question_sets
               - total_marks
               - prerequisites
             properties:
@@ -64304,6 +64312,10 @@ components:
                     correct_answer:
                       type: string
               total_questions:
+                type: integer
+              total_questions_in_bank:
+                type: integer
+              total_question_sets:
                 type: integer
               total_marks:
                 type: integer
@@ -64706,6 +64718,8 @@ components:
                   - max_attempts
                   - questions
                   - total_questions
+                  - total_questions_in_bank
+                  - total_question_sets
                   - total_marks
                   - prerequisites
                 properties:
@@ -64821,6 +64835,10 @@ components:
                         correct_answer:
                           type: string
                   total_questions:
+                    type: integer
+                  total_questions_in_bank:
+                    type: integer
+                  total_question_sets:
                     type: integer
                   total_marks:
                     type: integer
@@ -64993,6 +65011,8 @@ components:
         - max_attempts
         - questions
         - total_questions
+        - total_questions_in_bank
+        - total_question_sets
         - total_marks
         - prerequisites
       properties:
@@ -65107,6 +65127,10 @@ components:
               correct_answer:
                 type: string
         total_questions:
+          type: integer
+        total_questions_in_bank:
+          type: integer
+        total_question_sets:
           type: integer
         total_marks:
           type: integer
@@ -65514,6 +65538,8 @@ components:
                 - max_attempts
                 - questions
                 - total_questions
+                - total_questions_in_bank
+                - total_question_sets
                 - total_marks
                 - prerequisites
               properties:
@@ -65630,6 +65656,10 @@ components:
                         type: string
                 total_questions:
                   type: integer
+                total_questions_in_bank:
+                  type: integer
+                total_question_sets:
+                  type: integer
                 total_marks:
                   type: integer
                 prerequisites:
@@ -65699,6 +65729,8 @@ components:
             - max_attempts
             - questions
             - total_questions
+            - total_questions_in_bank
+            - total_question_sets
             - total_marks
             - prerequisites
           properties:
@@ -65814,6 +65846,10 @@ components:
                   correct_answer:
                     type: string
             total_questions:
+              type: integer
+            total_questions_in_bank:
+              type: integer
+            total_question_sets:
               type: integer
             total_marks:
               type: integer
@@ -65907,6 +65943,8 @@ components:
             - max_attempts
             - questions
             - total_questions
+            - total_questions_in_bank
+            - total_question_sets
             - total_marks
             - prerequisites
           properties:
@@ -66022,6 +66060,10 @@ components:
                   correct_answer:
                     type: string
             total_questions:
+              type: integer
+            total_questions_in_bank:
+              type: integer
+            total_question_sets:
               type: integer
             total_marks:
               type: integer

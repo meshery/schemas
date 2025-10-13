@@ -1601,6 +1601,8 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
               correct_answer: string;
             }[];
             total_questions: number;
+            total_questions_in_bank: number;
+            total_question_sets: number;
             total_marks: number;
             prerequisites: {
               id: string;
@@ -1693,6 +1695,8 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
     correct_answer: string;
   }[];
   total_questions: number;
+  total_questions_in_bank: number;
+  total_question_sets: number;
   total_marks: number;
   prerequisites: {
     id: string;
@@ -1748,6 +1752,8 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
     correct_answer: string;
   }[];
   total_questions: number;
+  total_questions_in_bank: number;
+  total_question_sets: number;
   total_marks: number;
   prerequisites: {
     id: string;
@@ -1815,6 +1821,8 @@ export type GetAllTestSessionsForRegistrationApiResponse =
         correct_answer: string;
       }[];
       total_questions: number;
+      total_questions_in_bank: number;
+      total_question_sets: number;
       total_marks: number;
       prerequisites: {
         id: string;
@@ -1884,6 +1892,8 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
       correct_answer: string;
     }[];
     total_questions: number;
+    total_questions_in_bank: number;
+    total_question_sets: number;
     total_marks: number;
     prerequisites: {
       id: string;

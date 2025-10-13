@@ -4882,6 +4882,8 @@ const schema = {
                                   "max_attempts",
                                   "questions",
                                   "total_questions",
+                                  "total_questions_in_bank",
+                                  "total_question_sets",
                                   "total_marks",
                                   "prerequisites"
                                 ],
@@ -5030,6 +5032,12 @@ const schema = {
                                     }
                                   },
                                   "total_questions": {
+                                    "type": "integer"
+                                  },
+                                  "total_questions_in_bank": {
+                                    "type": "integer"
+                                  },
+                                  "total_question_sets": {
                                     "type": "integer"
                                   },
                                   "total_marks": {
@@ -5283,6 +5291,8 @@ const schema = {
                     "max_attempts",
                     "questions",
                     "total_questions",
+                    "total_questions_in_bank",
+                    "total_question_sets",
                     "total_marks",
                     "prerequisites"
                   ],
@@ -5431,6 +5441,12 @@ const schema = {
                       }
                     },
                     "total_questions": {
+                      "type": "integer"
+                    },
+                    "total_questions_in_bank": {
+                      "type": "integer"
+                    },
+                    "total_question_sets": {
                       "type": "integer"
                     },
                     "total_marks": {
@@ -5565,6 +5581,8 @@ const schema = {
                     "max_attempts",
                     "questions",
                     "total_questions",
+                    "total_questions_in_bank",
+                    "total_question_sets",
                     "total_marks",
                     "prerequisites"
                   ],
@@ -5713,6 +5731,12 @@ const schema = {
                       }
                     },
                     "total_questions": {
+                      "type": "integer"
+                    },
+                    "total_questions_in_bank": {
+                      "type": "integer"
+                    },
+                    "total_question_sets": {
                       "type": "integer"
                     },
                     "total_marks": {
@@ -5888,6 +5912,8 @@ const schema = {
                             "max_attempts",
                             "questions",
                             "total_questions",
+                            "total_questions_in_bank",
+                            "total_question_sets",
                             "total_marks",
                             "prerequisites"
                           ],
@@ -6036,6 +6062,12 @@ const schema = {
                               }
                             },
                             "total_questions": {
+                              "type": "integer"
+                            },
+                            "total_questions_in_bank": {
+                              "type": "integer"
+                            },
+                            "total_question_sets": {
                               "type": "integer"
                             },
                             "total_marks": {
@@ -6259,6 +6291,8 @@ const schema = {
                         "max_attempts",
                         "questions",
                         "total_questions",
+                        "total_questions_in_bank",
+                        "total_question_sets",
                         "total_marks",
                         "prerequisites"
                       ],
@@ -6407,6 +6441,12 @@ const schema = {
                           }
                         },
                         "total_questions": {
+                          "type": "integer"
+                        },
+                        "total_questions_in_bank": {
+                          "type": "integer"
+                        },
+                        "total_question_sets": {
                           "type": "integer"
                         },
                         "total_marks": {
@@ -10548,6 +10588,8 @@ const schema = {
                   "max_attempts",
                   "questions",
                   "total_questions",
+                  "total_questions_in_bank",
+                  "total_question_sets",
                   "total_marks",
                   "prerequisites"
                 ],
@@ -10698,6 +10740,12 @@ const schema = {
                   "total_questions": {
                     "type": "integer"
                   },
+                  "total_questions_in_bank": {
+                    "type": "integer"
+                  },
+                  "total_question_sets": {
+                    "type": "integer"
+                  },
                   "total_marks": {
                     "type": "integer"
                   },
@@ -10830,6 +10878,8 @@ const schema = {
                 "max_attempts",
                 "questions",
                 "total_questions",
+                "total_questions_in_bank",
+                "total_question_sets",
                 "total_marks",
                 "prerequisites"
               ],
@@ -10978,6 +11028,12 @@ const schema = {
                   }
                 },
                 "total_questions": {
+                  "type": "integer"
+                },
+                "total_questions_in_bank": {
+                  "type": "integer"
+                },
+                "total_question_sets": {
                   "type": "integer"
                 },
                 "total_marks": {
@@ -11475,6 +11531,8 @@ const schema = {
                     "max_attempts",
                     "questions",
                     "total_questions",
+                    "total_questions_in_bank",
+                    "total_question_sets",
                     "total_marks",
                     "prerequisites"
                   ],
@@ -11623,6 +11681,12 @@ const schema = {
                       }
                     },
                     "total_questions": {
+                      "type": "integer"
+                    },
+                    "total_questions_in_bank": {
+                      "type": "integer"
+                    },
+                    "total_question_sets": {
                       "type": "integer"
                     },
                     "total_marks": {
@@ -11862,6 +11926,8 @@ const schema = {
           "max_attempts",
           "questions",
           "total_questions",
+          "total_questions_in_bank",
+          "total_question_sets",
           "total_marks",
           "prerequisites"
         ],
@@ -12010,6 +12076,12 @@ const schema = {
             }
           },
           "total_questions": {
+            "type": "integer"
+          },
+          "total_questions_in_bank": {
+            "type": "integer"
+          },
+          "total_question_sets": {
             "type": "integer"
           },
           "total_marks": {
@@ -12534,6 +12606,8 @@ const schema = {
                   "max_attempts",
                   "questions",
                   "total_questions",
+                  "total_questions_in_bank",
+                  "total_question_sets",
                   "total_marks",
                   "prerequisites"
                 ],
@@ -12684,6 +12758,12 @@ const schema = {
                   "total_questions": {
                     "type": "integer"
                   },
+                  "total_questions_in_bank": {
+                    "type": "integer"
+                  },
+                  "total_question_sets": {
+                    "type": "integer"
+                  },
                   "total_marks": {
                     "type": "integer"
                   },
@@ -12776,6 +12856,8 @@ const schema = {
               "max_attempts",
               "questions",
               "total_questions",
+              "total_questions_in_bank",
+              "total_question_sets",
               "total_marks",
               "prerequisites"
             ],
@@ -12924,6 +13006,12 @@ const schema = {
                 }
               },
               "total_questions": {
+                "type": "integer"
+              },
+              "total_questions_in_bank": {
+                "type": "integer"
+              },
+              "total_question_sets": {
                 "type": "integer"
               },
               "total_marks": {
@@ -13046,6 +13134,8 @@ const schema = {
               "max_attempts",
               "questions",
               "total_questions",
+              "total_questions_in_bank",
+              "total_question_sets",
               "total_marks",
               "prerequisites"
             ],
@@ -13194,6 +13284,12 @@ const schema = {
                 }
               },
               "total_questions": {
+                "type": "integer"
+              },
+              "total_questions_in_bank": {
+                "type": "integer"
+              },
+              "total_question_sets": {
                 "type": "integer"
               },
               "total_marks": {
