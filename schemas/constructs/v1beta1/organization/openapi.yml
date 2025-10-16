@@ -3,7 +3,34 @@ info:
   title: Organization
   version: 1.0.0
 
-paths: {}
+paths: {
+  /api/identity/orgs/by-domain: {
+    get: {
+      summary: Get organization by domain
+      operationId: getOrgByDomain
+      parameters:
+        - name: domain
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200': {
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        }
+        '404': {
+          description: Organization not found
+        }
+        '500': {
+          description: Internal server error
+        }
+    }
+  }
+}
 
 components:
   schemas:
