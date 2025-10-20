@@ -61051,10 +61051,17 @@ components:
                   example: Mastering Kubernetes for Engineers
                 description:
                   type: string
-                  description: Description of the learning path
+                  description: Short description of the curricula
                   example: >-
                     Learn how to configure your Kubernetes clusters and manage
                     the lifecycle of your workloads
+                detailed_description:
+                  type: string
+                  description: Detailed description of the curricula
+                  example: >-
+                    This learning path covers everything from Kubernetes
+                    architecture to advanced deployment strategies, including
+                    hands-on labs and real-world scenarios.
                 banner:
                   type: string
                   format: uri
@@ -61151,6 +61158,10 @@ components:
                       format: date-time
                       description: Date when the certificate expires (optional)
                       example: '2025-10-01T12:00:00Z'
+                    expires_in:
+                      type: integer
+                      description: Number of months after which the certificate expires
+                      example: 24
                 children:
                   type: array
                   description: List of children items in the top-level curricula
@@ -61387,10 +61398,17 @@ components:
                       example: Mastering Kubernetes for Engineers
                     description:
                       type: string
-                      description: Description of the learning path
+                      description: Short description of the curricula
                       example: >-
                         Learn how to configure your Kubernetes clusters and
                         manage the lifecycle of your workloads
+                    detailed_description:
+                      type: string
+                      description: Detailed description of the curricula
+                      example: >-
+                        This learning path covers everything from Kubernetes
+                        architecture to advanced deployment strategies,
+                        including hands-on labs and real-world scenarios.
                     banner:
                       type: string
                       format: uri
@@ -61489,6 +61507,10 @@ components:
                           format: date-time
                           description: Date when the certificate expires (optional)
                           example: '2025-10-01T12:00:00Z'
+                        expires_in:
+                          type: integer
+                          description: Number of months after which the certificate expires
+                          example: 24
                     children:
                       type: array
                       description: List of children items in the top-level curricula
@@ -61858,10 +61880,17 @@ components:
                   example: Mastering Kubernetes for Engineers
                 description:
                   type: string
-                  description: Description of the learning path
+                  description: Short description of the curricula
                   example: >-
                     Learn how to configure your Kubernetes clusters and manage
                     the lifecycle of your workloads
+                detailed_description:
+                  type: string
+                  description: Detailed description of the curricula
+                  example: >-
+                    This learning path covers everything from Kubernetes
+                    architecture to advanced deployment strategies, including
+                    hands-on labs and real-world scenarios.
                 banner:
                   type: string
                   format: uri
@@ -61958,6 +61987,10 @@ components:
                       format: date-time
                       description: Date when the certificate expires (optional)
                       example: '2025-10-01T12:00:00Z'
+                    expires_in:
+                      type: integer
+                      description: Number of months after which the certificate expires
+                      example: 24
                 children:
                   type: array
                   description: List of children items in the top-level curricula
@@ -62189,10 +62222,17 @@ components:
                       example: Mastering Kubernetes for Engineers
                     description:
                       type: string
-                      description: Description of the learning path
+                      description: Short description of the curricula
                       example: >-
                         Learn how to configure your Kubernetes clusters and
                         manage the lifecycle of your workloads
+                    detailed_description:
+                      type: string
+                      description: Detailed description of the curricula
+                      example: >-
+                        This learning path covers everything from Kubernetes
+                        architecture to advanced deployment strategies,
+                        including hands-on labs and real-world scenarios.
                     banner:
                       type: string
                       format: uri
@@ -62291,6 +62331,10 @@ components:
                           format: date-time
                           description: Date when the certificate expires (optional)
                           example: '2025-10-01T12:00:00Z'
+                        expires_in:
+                          type: integer
+                          description: Number of months after which the certificate expires
+                          example: 24
                     children:
                       type: array
                       description: List of children items in the top-level curricula
@@ -62545,10 +62589,17 @@ components:
                         example: Mastering Kubernetes for Engineers
                       description:
                         type: string
-                        description: Description of the learning path
+                        description: Short description of the curricula
                         example: >-
                           Learn how to configure your Kubernetes clusters and
                           manage the lifecycle of your workloads
+                      detailed_description:
+                        type: string
+                        description: Detailed description of the curricula
+                        example: >-
+                          This learning path covers everything from Kubernetes
+                          architecture to advanced deployment strategies,
+                          including hands-on labs and real-world scenarios.
                       banner:
                         type: string
                         format: uri
@@ -62649,6 +62700,12 @@ components:
                             format: date-time
                             description: Date when the certificate expires (optional)
                             example: '2025-10-01T12:00:00Z'
+                          expires_in:
+                            type: integer
+                            description: >-
+                              Number of months after which the certificate
+                              expires
+                            example: 24
                       children:
                         type: array
                         description: List of children items in the top-level curricula
@@ -62902,10 +62959,18 @@ components:
                             example: Mastering Kubernetes for Engineers
                           description:
                             type: string
-                            description: Description of the learning path
+                            description: Short description of the curricula
                             example: >-
                               Learn how to configure your Kubernetes clusters
                               and manage the lifecycle of your workloads
+                          detailed_description:
+                            type: string
+                            description: Detailed description of the curricula
+                            example: >-
+                              This learning path covers everything from
+                              Kubernetes architecture to advanced deployment
+                              strategies, including hands-on labs and real-world
+                              scenarios.
                           banner:
                             type: string
                             format: uri
@@ -63009,6 +63074,12 @@ components:
                                 format: date-time
                                 description: Date when the certificate expires (optional)
                                 example: '2025-10-01T12:00:00Z'
+                              expires_in:
+                                type: integer
+                                description: >-
+                                  Number of months after which the certificate
+                                  expires
+                                example: 24
                           children:
                             type: array
                             description: List of children items in the top-level curricula
@@ -63116,10 +63187,17 @@ components:
           example: Mastering Kubernetes for Engineers
         description:
           type: string
-          description: Description of the learning path
+          description: Short description of the curricula
           example: >-
             Learn how to configure your Kubernetes clusters and manage the
             lifecycle of your workloads
+        detailed_description:
+          type: string
+          description: Detailed description of the curricula
+          example: >-
+            This learning path covers everything from Kubernetes architecture to
+            advanced deployment strategies, including hands-on labs and
+            real-world scenarios.
         banner:
           type: string
           format: uri
@@ -63212,6 +63290,10 @@ components:
               format: date-time
               description: Date when the certificate expires (optional)
               example: '2025-10-01T12:00:00Z'
+            expires_in:
+              type: integer
+              description: Number of months after which the certificate expires
+              example: 24
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -63292,10 +63374,17 @@ components:
           example: Mastering Kubernetes for Engineers
         description:
           type: string
-          description: Description of the learning path
+          description: Short description of the curricula
           example: >-
             Learn how to configure your Kubernetes clusters and manage the
             lifecycle of your workloads
+        detailed_description:
+          type: string
+          description: Detailed description of the curricula
+          example: >-
+            This learning path covers everything from Kubernetes architecture to
+            advanced deployment strategies, including hands-on labs and
+            real-world scenarios.
         banner:
           type: string
           format: uri
@@ -63388,6 +63477,10 @@ components:
               format: date-time
               description: Date when the certificate expires (optional)
               example: '2025-10-01T12:00:00Z'
+            expires_in:
+              type: integer
+              description: Number of months after which the certificate expires
+              example: 24
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -63554,6 +63647,10 @@ components:
           format: date-time
           description: Date when the certificate expires (optional)
           example: '2025-10-01T12:00:00Z'
+        expires_in:
+          type: integer
+          description: Number of months after which the certificate expires
+          example: 24
     Academy_API_CurriculaMetadata:
       type: object
       properties:
@@ -63563,10 +63660,17 @@ components:
           example: Mastering Kubernetes for Engineers
         description:
           type: string
-          description: Description of the learning path
+          description: Short description of the curricula
           example: >-
             Learn how to configure your Kubernetes clusters and manage the
             lifecycle of your workloads
+        detailed_description:
+          type: string
+          description: Detailed description of the curricula
+          example: >-
+            This learning path covers everything from Kubernetes architecture to
+            advanced deployment strategies, including hands-on labs and
+            real-world scenarios.
         banner:
           type: string
           format: uri
@@ -63659,6 +63763,10 @@ components:
               format: date-time
               description: Date when the certificate expires (optional)
               example: '2025-10-01T12:00:00Z'
+            expires_in:
+              type: integer
+              description: Number of months after which the certificate expires
+              example: 24
         children:
           type: array
           description: List of children items in the top-level curricula
@@ -63906,6 +64014,10 @@ components:
               format: date-time
               description: Date when the certificate expires (optional)
               example: '2025-10-01T12:00:00Z'
+            expires_in:
+              type: integer
+              description: Number of months after which the certificate expires
+              example: 24
         metadata:
           type: object
           description: Additional metadata about the registration
@@ -64600,6 +64712,10 @@ components:
                     format: date-time
                     description: Date when the certificate expires (optional)
                     example: '2025-10-01T12:00:00Z'
+                  expires_in:
+                    type: integer
+                    description: Number of months after which the certificate expires
+                    example: 24
               metadata:
                 type: object
                 description: Additional metadata about the registration

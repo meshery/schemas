@@ -255,8 +255,13 @@ const schema = {
                                 },
                                 "description": {
                                   "type": "string",
-                                  "description": "Description of the learning path",
+                                  "description": "Short description of the curricula",
                                   "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                },
+                                "detailed_description": {
+                                  "type": "string",
+                                  "description": "Detailed description of the curricula",
+                                  "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                                 },
                                 "banner": {
                                   "type": "string",
@@ -361,6 +366,11 @@ const schema = {
                                       "format": "date-time",
                                       "description": "Date when the certificate expires (optional)",
                                       "example": "2025-10-01T12:00:00Z"
+                                    },
+                                    "expires_in": {
+                                      "type": "integer",
+                                      "description": "Number of months after which the certificate expires",
+                                      "example": 24
                                     }
                                   }
                                 },
@@ -628,8 +638,13 @@ const schema = {
                           },
                           "description": {
                             "type": "string",
-                            "description": "Description of the learning path",
+                            "description": "Short description of the curricula",
                             "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                          },
+                          "detailed_description": {
+                            "type": "string",
+                            "description": "Detailed description of the curricula",
+                            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                           },
                           "banner": {
                             "type": "string",
@@ -734,6 +749,11 @@ const schema = {
                                 "format": "date-time",
                                 "description": "Date when the certificate expires (optional)",
                                 "example": "2025-10-01T12:00:00Z"
+                              },
+                              "expires_in": {
+                                "type": "integer",
+                                "description": "Number of months after which the certificate expires",
+                                "example": 24
                               }
                             }
                           },
@@ -1025,8 +1045,13 @@ const schema = {
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the learning path",
+                              "description": "Short description of the curricula",
                               "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            },
+                            "detailed_description": {
+                              "type": "string",
+                              "description": "Detailed description of the curricula",
+                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                             },
                             "banner": {
                               "type": "string",
@@ -1131,6 +1156,11 @@ const schema = {
                                   "format": "date-time",
                                   "description": "Date when the certificate expires (optional)",
                                   "example": "2025-10-01T12:00:00Z"
+                                },
+                                "expires_in": {
+                                  "type": "integer",
+                                  "description": "Number of months after which the certificate expires",
+                                  "example": 24
                                 }
                               }
                             },
@@ -1596,8 +1626,13 @@ const schema = {
                                     },
                                     "description": {
                                       "type": "string",
-                                      "description": "Description of the learning path",
+                                      "description": "Short description of the curricula",
                                       "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                    },
+                                    "detailed_description": {
+                                      "type": "string",
+                                      "description": "Detailed description of the curricula",
+                                      "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                                     },
                                     "banner": {
                                       "type": "string",
@@ -1702,6 +1737,11 @@ const schema = {
                                           "format": "date-time",
                                           "description": "Date when the certificate expires (optional)",
                                           "example": "2025-10-01T12:00:00Z"
+                                        },
+                                        "expires_in": {
+                                          "type": "integer",
+                                          "description": "Number of months after which the certificate expires",
+                                          "example": 24
                                         }
                                       }
                                     },
@@ -2063,8 +2103,13 @@ const schema = {
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the learning path",
+                              "description": "Short description of the curricula",
                               "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            },
+                            "detailed_description": {
+                              "type": "string",
+                              "description": "Detailed description of the curricula",
+                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                             },
                             "banner": {
                               "type": "string",
@@ -2169,6 +2214,11 @@ const schema = {
                                   "format": "date-time",
                                   "description": "Date when the certificate expires (optional)",
                                   "example": "2025-10-01T12:00:00Z"
+                                },
+                                "expires_in": {
+                                  "type": "integer",
+                                  "description": "Number of months after which the certificate expires",
+                                  "example": 24
                                 }
                               }
                             },
@@ -2522,6 +2572,11 @@ const schema = {
                           "format": "date-time",
                           "description": "Date when the certificate expires (optional)",
                           "example": "2025-10-01T12:00:00Z"
+                        },
+                        "expires_in": {
+                          "type": "integer",
+                          "description": "Number of months after which the certificate expires",
+                          "example": 24
                         }
                       }
                     },
@@ -2773,6 +2828,11 @@ const schema = {
                           "format": "date-time",
                           "description": "Date when the certificate expires (optional)",
                           "example": "2025-10-01T12:00:00Z"
+                        },
+                        "expires_in": {
+                          "type": "integer",
+                          "description": "Number of months after which the certificate expires",
+                          "example": 24
                         }
                       }
                     },
@@ -2960,8 +3020,13 @@ const schema = {
                           },
                           "description": {
                             "type": "string",
-                            "description": "Description of the learning path",
+                            "description": "Short description of the curricula",
                             "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                          },
+                          "detailed_description": {
+                            "type": "string",
+                            "description": "Detailed description of the curricula",
+                            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                           },
                           "banner": {
                             "type": "string",
@@ -3066,6 +3131,11 @@ const schema = {
                                 "format": "date-time",
                                 "description": "Date when the certificate expires (optional)",
                                 "example": "2025-10-01T12:00:00Z"
+                              },
+                              "expires_in": {
+                                "type": "integer",
+                                "description": "Number of months after which the certificate expires",
+                                "example": 24
                               }
                             }
                           },
@@ -3360,8 +3430,13 @@ const schema = {
                                 },
                                 "description": {
                                   "type": "string",
-                                  "description": "Description of the learning path",
+                                  "description": "Short description of the curricula",
                                   "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                },
+                                "detailed_description": {
+                                  "type": "string",
+                                  "description": "Detailed description of the curricula",
+                                  "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                                 },
                                 "banner": {
                                   "type": "string",
@@ -3466,6 +3541,11 @@ const schema = {
                                       "format": "date-time",
                                       "description": "Date when the certificate expires (optional)",
                                       "example": "2025-10-01T12:00:00Z"
+                                    },
+                                    "expires_in": {
+                                      "type": "integer",
+                                      "description": "Number of months after which the certificate expires",
+                                      "example": 24
                                     }
                                   }
                                 },
@@ -4021,8 +4101,13 @@ const schema = {
                                 },
                                 "description": {
                                   "type": "string",
-                                  "description": "Description of the learning path",
+                                  "description": "Short description of the curricula",
                                   "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                                },
+                                "detailed_description": {
+                                  "type": "string",
+                                  "description": "Detailed description of the curricula",
+                                  "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                                 },
                                 "banner": {
                                   "type": "string",
@@ -4127,6 +4212,11 @@ const schema = {
                                       "format": "date-time",
                                       "description": "Date when the certificate expires (optional)",
                                       "example": "2025-10-01T12:00:00Z"
+                                    },
+                                    "expires_in": {
+                                      "type": "integer",
+                                      "description": "Number of months after which the certificate expires",
+                                      "example": 24
                                     }
                                   }
                                 },
@@ -4664,6 +4754,11 @@ const schema = {
                           "format": "date-time",
                           "description": "Date when the certificate expires (optional)",
                           "example": "2025-10-01T12:00:00Z"
+                        },
+                        "expires_in": {
+                          "type": "integer",
+                          "description": "Number of months after which the certificate expires",
+                          "example": 24
                         }
                       }
                     },
@@ -6925,6 +7020,11 @@ const schema = {
                       "format": "date-time",
                       "description": "Date when the certificate expires (optional)",
                       "example": "2025-10-01T12:00:00Z"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "Number of months after which the certificate expires",
+                      "example": 24
                     }
                   }
                 }
@@ -7196,8 +7296,13 @@ const schema = {
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the learning path",
+                    "description": "Short description of the curricula",
                     "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                  },
+                  "detailed_description": {
+                    "type": "string",
+                    "description": "Detailed description of the curricula",
+                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                   },
                   "banner": {
                     "type": "string",
@@ -7302,6 +7407,11 @@ const schema = {
                         "format": "date-time",
                         "description": "Date when the certificate expires (optional)",
                         "example": "2025-10-01T12:00:00Z"
+                      },
+                      "expires_in": {
+                        "type": "integer",
+                        "description": "Number of months after which the certificate expires",
+                        "example": 24
                       }
                     }
                   },
@@ -7592,8 +7702,13 @@ const schema = {
                       },
                       "description": {
                         "type": "string",
-                        "description": "Description of the learning path",
+                        "description": "Short description of the curricula",
                         "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                      },
+                      "detailed_description": {
+                        "type": "string",
+                        "description": "Detailed description of the curricula",
+                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                       },
                       "banner": {
                         "type": "string",
@@ -7698,6 +7813,11 @@ const schema = {
                             "format": "date-time",
                             "description": "Date when the certificate expires (optional)",
                             "example": "2025-10-01T12:00:00Z"
+                          },
+                          "expires_in": {
+                            "type": "integer",
+                            "description": "Number of months after which the certificate expires",
+                            "example": 24
                           }
                         }
                       },
@@ -8121,8 +8241,13 @@ const schema = {
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the learning path",
+                    "description": "Short description of the curricula",
                     "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                  },
+                  "detailed_description": {
+                    "type": "string",
+                    "description": "Detailed description of the curricula",
+                    "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                   },
                   "banner": {
                     "type": "string",
@@ -8227,6 +8352,11 @@ const schema = {
                         "format": "date-time",
                         "description": "Date when the certificate expires (optional)",
                         "example": "2025-10-01T12:00:00Z"
+                      },
+                      "expires_in": {
+                        "type": "integer",
+                        "description": "Number of months after which the certificate expires",
+                        "example": 24
                       }
                     }
                   },
@@ -8512,8 +8642,13 @@ const schema = {
                       },
                       "description": {
                         "type": "string",
-                        "description": "Description of the learning path",
+                        "description": "Short description of the curricula",
                         "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                      },
+                      "detailed_description": {
+                        "type": "string",
+                        "description": "Detailed description of the curricula",
+                        "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                       },
                       "banner": {
                         "type": "string",
@@ -8618,6 +8753,11 @@ const schema = {
                             "format": "date-time",
                             "description": "Date when the certificate expires (optional)",
                             "example": "2025-10-01T12:00:00Z"
+                          },
+                          "expires_in": {
+                            "type": "integer",
+                            "description": "Number of months after which the certificate expires",
+                            "example": 24
                           }
                         }
                       },
@@ -8934,8 +9074,13 @@ const schema = {
                         },
                         "description": {
                           "type": "string",
-                          "description": "Description of the learning path",
+                          "description": "Short description of the curricula",
                           "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                        },
+                        "detailed_description": {
+                          "type": "string",
+                          "description": "Detailed description of the curricula",
+                          "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                         },
                         "banner": {
                           "type": "string",
@@ -9040,6 +9185,11 @@ const schema = {
                               "format": "date-time",
                               "description": "Date when the certificate expires (optional)",
                               "example": "2025-10-01T12:00:00Z"
+                            },
+                            "expires_in": {
+                              "type": "integer",
+                              "description": "Number of months after which the certificate expires",
+                              "example": 24
                             }
                           }
                         },
@@ -9348,8 +9498,13 @@ const schema = {
                             },
                             "description": {
                               "type": "string",
-                              "description": "Description of the learning path",
+                              "description": "Short description of the curricula",
                               "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+                            },
+                            "detailed_description": {
+                              "type": "string",
+                              "description": "Detailed description of the curricula",
+                              "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
                             },
                             "banner": {
                               "type": "string",
@@ -9454,6 +9609,11 @@ const schema = {
                                   "format": "date-time",
                                   "description": "Date when the certificate expires (optional)",
                                   "example": "2025-10-01T12:00:00Z"
+                                },
+                                "expires_in": {
+                                  "type": "integer",
+                                  "description": "Number of months after which the certificate expires",
+                                  "example": 24
                                 }
                               }
                             },
@@ -9590,8 +9750,13 @@ const schema = {
           },
           "description": {
             "type": "string",
-            "description": "Description of the learning path",
+            "description": "Short description of the curricula",
             "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+          },
+          "detailed_description": {
+            "type": "string",
+            "description": "Detailed description of the curricula",
+            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
           },
           "banner": {
             "type": "string",
@@ -9696,6 +9861,11 @@ const schema = {
                 "format": "date-time",
                 "description": "Date when the certificate expires (optional)",
                 "example": "2025-10-01T12:00:00Z"
+              },
+              "expires_in": {
+                "type": "integer",
+                "description": "Number of months after which the certificate expires",
+                "example": 24
               }
             }
           },
@@ -9790,8 +9960,13 @@ const schema = {
           },
           "description": {
             "type": "string",
-            "description": "Description of the learning path",
+            "description": "Short description of the curricula",
             "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+          },
+          "detailed_description": {
+            "type": "string",
+            "description": "Detailed description of the curricula",
+            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
           },
           "banner": {
             "type": "string",
@@ -9896,6 +10071,11 @@ const schema = {
                 "format": "date-time",
                 "description": "Date when the certificate expires (optional)",
                 "example": "2025-10-01T12:00:00Z"
+              },
+              "expires_in": {
+                "type": "integer",
+                "description": "Number of months after which the certificate expires",
+                "example": 24
               }
             }
           },
@@ -10093,6 +10273,11 @@ const schema = {
             "format": "date-time",
             "description": "Date when the certificate expires (optional)",
             "example": "2025-10-01T12:00:00Z"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "Number of months after which the certificate expires",
+            "example": 24
           }
         }
       },
@@ -10106,8 +10291,13 @@ const schema = {
           },
           "description": {
             "type": "string",
-            "description": "Description of the learning path",
+            "description": "Short description of the curricula",
             "example": "Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads"
+          },
+          "detailed_description": {
+            "type": "string",
+            "description": "Detailed description of the curricula",
+            "example": "This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios."
           },
           "banner": {
             "type": "string",
@@ -10212,6 +10402,11 @@ const schema = {
                 "format": "date-time",
                 "description": "Date when the certificate expires (optional)",
                 "example": "2025-10-01T12:00:00Z"
+              },
+              "expires_in": {
+                "type": "integer",
+                "description": "Number of months after which the certificate expires",
+                "example": 24
               }
             }
           },
@@ -10506,6 +10701,11 @@ const schema = {
                 "format": "date-time",
                 "description": "Date when the certificate expires (optional)",
                 "example": "2025-10-01T12:00:00Z"
+              },
+              "expires_in": {
+                "type": "integer",
+                "description": "Number of months after which the certificate expires",
+                "example": 24
               }
             }
           },
@@ -11378,6 +11578,11 @@ const schema = {
                       "format": "date-time",
                       "description": "Date when the certificate expires (optional)",
                       "example": "2025-10-01T12:00:00Z"
+                    },
+                    "expires_in": {
+                      "type": "integer",
+                      "description": "Number of months after which the certificate expires",
+                      "example": 24
                     }
                   }
                 },

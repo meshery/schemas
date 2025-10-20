@@ -270,6 +270,9 @@ type Certificate struct {
 	// ExpirationDate Date when the certificate expires (optional)
 	ExpirationDate *time.Time `json:"expiration_date,omitempty" yaml:"expiration_date,omitempty"`
 
+	// ExpiresIn Number of months after which the certificate expires
+	ExpiresIn *int `json:"expires_in,omitempty" yaml:"expires_in,omitempty"`
+
 	// ID Unique identifier for the certificate
 	ID string `json:"id" yaml:"id"`
 
@@ -396,8 +399,11 @@ type CurriculaMetadata struct {
 	// Children List of children items in the top-level curricula
 	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
 
-	// Description Description of the learning path
+	// Description Short description of the curricula
 	Description string `json:"description" yaml:"description"`
+
+	// DetailedDescription Detailed description of the curricula
+	DetailedDescription *string `json:"detailed_description,omitempty" yaml:"detailed_description,omitempty"`
 
 	// Permalink Canonical URL for the learning path
 	Permalink string `json:"permalink" yaml:"permalink"`

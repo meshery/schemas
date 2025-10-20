@@ -802,8 +802,10 @@ export type CreateAcademyCurriculaApiResponse = /** status 201 created the curri
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -834,6 +836,8 @@ export type CreateAcademyCurriculaApiResponse = /** status 201 created the curri
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -879,8 +883,10 @@ export type CreateAcademyCurriculaApiArg = {
     metadata: {
       /** Title of the learning path */
       title: string;
-      /** Description of the learning path */
+      /** Short description of the curricula */
       description: string;
+      /** Detailed description of the curricula */
+      detailed_description?: string;
       /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
       banner?: string | null;
       /** Canonical URL for the learning path */
@@ -911,6 +917,8 @@ export type CreateAcademyCurriculaApiArg = {
         issued_date: string;
         /** Date when the certificate expires (optional) */
         expiration_date?: string;
+        /** Number of months after which the certificate expires */
+        expires_in?: number;
       };
       /** List of children items in the top-level curricula */
       children?: {
@@ -990,8 +998,10 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -1022,6 +1032,8 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -1094,6 +1106,8 @@ export type RegisterToAcademyContentApiResponse = /** status 200 registered cont
     issued_date: string;
     /** Date when the certificate expires (optional) */
     expiration_date?: string;
+    /** Number of months after which the certificate expires */
+    expires_in?: number;
   };
   /** Additional metadata about the registration */
   metadata: {
@@ -1151,6 +1165,8 @@ export type WithdrawFromAcademyContentApiResponse = /** status 200 registered co
     issued_date: string;
     /** Date when the certificate expires (optional) */
     expiration_date?: string;
+    /** Number of months after which the certificate expires */
+    expires_in?: number;
   };
   /** Additional metadata about the registration */
   metadata: {
@@ -1191,8 +1207,10 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -1223,6 +1241,8 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -1303,8 +1323,10 @@ export type UpdateAcademyCurriculaByIdApiArg = {
     metadata: {
       /** Title of the learning path */
       title: string;
-      /** Description of the learning path */
+      /** Short description of the curricula */
       description: string;
+      /** Detailed description of the curricula */
+      detailed_description?: string;
       /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
       banner?: string | null;
       /** Canonical URL for the learning path */
@@ -1335,6 +1357,8 @@ export type UpdateAcademyCurriculaByIdApiArg = {
         issued_date: string;
         /** Date when the certificate expires (optional) */
         expiration_date?: string;
+        /** Number of months after which the certificate expires */
+        expires_in?: number;
       };
       /** List of children items in the top-level curricula */
       children?: {
@@ -1394,8 +1418,10 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -1426,6 +1452,8 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -1531,6 +1559,8 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** Additional metadata about the registration */
     metadata: {
@@ -1997,6 +2027,8 @@ export type GetCertificateByIdApiResponse = /** status 200 A single certificate 
   issued_date: string;
   /** Date when the certificate expires (optional) */
   expiration_date?: string;
+  /** Number of months after which the certificate expires */
+  expires_in?: number;
 };
 export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
