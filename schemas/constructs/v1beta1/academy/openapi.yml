@@ -1092,11 +1092,17 @@ components:
           description: Date when the certificate was issued
           example: 2023-10-01T12:00:00Z
 
+        # this field is dynamically calculated based on issued_date and expires_in ( not specified by instructors )
         expiration_date:
           type: string
           format: date-time
           description: Date when the certificate expires (optional)
           example: 2025-10-01T12:00:00Z
+
+        expires_in:
+          type: integer
+          description: Number of months after which the certificate expires
+          example: 24
 
 
     CurriculaMetadata:
