@@ -1114,8 +1114,12 @@ components:
           example: Mastering Kubernetes for Engineers
         description:
           type: string
-          description: Description of the learning path
+          description: Short description of the curricula
           example: Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+        detailed_description:
+          type: string
+          description: Detailed description of the curricula
+          example: This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
         banner:
           type: string
           format: uri
