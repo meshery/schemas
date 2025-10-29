@@ -439,8 +439,105 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/academy/registrations/tests:
+    get:
+      tags:
+        - Academy
+      x-internal: ["cloud"]
+      operationId: getTestByAbsPath
+      summary: Get test metadata
+      description: Returns metadata for test identified by its absolute path.
+      parameters:
+        - name: absPath
+          in: query
+          required: true
+          description: The absolute path of the test to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single test
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Quiz not found
+        '500':
+          description: Server error
 
-  /api/academy/quiz/submit:
+  /api/academy/registrations/test-sessions/start:
+    post:
+      tags:
+        - Academy
+      x-internal: ["cloud"]
+      operationId: startTestByID
+      summary: Start a Test by ID
+      description: Starts a new test session for the quiz identified by its ID.
+
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartTestRequest'
+
+      responses:
+        '200':
+          description: A single test
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Quiz not found
+        '500':
+          description: Server error
+
+  /api/academy/registrations/{id}/test-sessions:
+    get:
+      tags:
+        - Academy
+      x-internal: ["cloud"]
+      operationId: getAllTestSessionsForRegistration
+      summary: Get all tests for a registration
+      description: Returns all tests associated with a specific registration ID for a user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the registration to retrieve tests for
+          schema:
+            type: string
+        - name: testAbsPath
+          in: query
+          required: false
+          description: Filter tests by absolute path
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: A list of tests for the specified registration
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TestSubmissions'
+        '400':
+          description: Invalid request parameters
+        '404':
+          description: Registration not found
+        '500':
+          description: Server error
+
+  /api/academy/registrations/test-sessions/submit:
     post:
       tags:
         - Academy
@@ -588,6 +685,7 @@ components:
         type: string
 
   schemas:
+
 
     RegisterToAcademyContentRequest:
       type: object
@@ -994,11 +1092,17 @@ components:
           description: Date when the certificate was issued
           example: 2023-10-01T12:00:00Z
 
+        # this field is dynamically calculated based on issued_date and expires_in ( not specified by instructors )
         expiration_date:
           type: string
           format: date-time
           description: Date when the certificate expires (optional)
           example: 2025-10-01T12:00:00Z
+
+        expires_in:
+          type: integer
+          description: Number of months after which the certificate expires
+          example: 24
 
 
     CurriculaMetadata:
@@ -1010,8 +1114,12 @@ components:
           example: Mastering Kubernetes for Engineers
         description:
           type: string
-          description: Description of the learning path
+          description: Short description of the curricula
           example: Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
+        detailed_description:
+          type: string
+          description: Detailed description of the curricula
+          example: This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
         banner:
           type: string
           format: uri
@@ -1127,11 +1235,7 @@ components:
           description: Issued certificate for completing the curricula under registration
           x-oapi-codegen-extra-tags:
             db: "certificate"
-        test_submissions:
-          $ref: '#/components/schemas/AllTestSubmissionsForCurricula'
-          x-go-type: "core.Map"
-          x-oapi-codegen-extra-tags:
-            db: "test_submissions"
+
 
         metadata:
           type: object
@@ -1332,8 +1436,11 @@ components:
         - file_path
         - pass_percentage
         - time_limit
+        - max_attempts
         - questions
         - total_questions
+        - total_questions_in_bank
+        - total_question_sets
         - total_marks
         - prerequisites
 
@@ -1385,13 +1492,21 @@ components:
           type: number
           format: float
         time_limit:
+          description: Time limit for the quiz in minutes. A value of 0 indicates no time limit.
           type: string
+        max_attempts:
+          description: Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
+          type: integer
         questions:
           type: array
           items:
             $ref: "#/components/schemas/Question"
             x-go-type: Question
         total_questions:
+          type: integer
+        total_questions_in_bank:
+          type: integer
+        total_question_sets:
           type: integer
         total_marks:
           type: integer
@@ -1480,14 +1595,28 @@ components:
         is_correct:
           type: boolean
 
+    StartTestRequest:
+      type: object
+      required:
+        - test_abs_path
+        - registration_id
+      properties:
+        test_abs_path:
+          type: string
+        registration_id:
+          type: string
+
     QuizSubmission:
       type: object
       required:
         - quiz_abs_path
         - registration_id
+        - test_session_id
         - user_id
         - answers
       properties:
+        test_session_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
         quiz_abs_path:
           type: string
         registration_id:
@@ -1515,6 +1644,107 @@ components:
             type: boolean
         answer_text:
           type: string
+
+    TestSubmissionStatus:
+      type: string
+      enum:
+        - not-attempted
+        - failed
+        - passed
+      x-enum-varnames:
+        - TestSubmissionStatusNotAttempted
+        - TestSubmissionStatusFailed
+        - TestSubmissionStatusPassed
+
+
+    TestSubmission:
+      type: object
+      required:
+        - id
+        - registration_id
+        - test_abs_path
+        - user_id
+        - created_at
+        - status
+        - test
+
+      properties:
+
+        id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id"
+            yaml: "id"
+
+        registration_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "registration_id"
+            json: "registration_id"
+            yaml: "registration_id"
+
+        test_abs_path:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: "test_abs_path"
+
+        user_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: "user_id"
+
+        created_at:
+          description: When the submission was created or started
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+
+        updated_at:
+          description: When the submission was last updated
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+
+        deleted_at:
+          x-go-type : "core.NullTime"
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/deleted_at"
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+
+        submitted_at:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            db: "submitted_at"
+        submission_data:
+          $ref: "#/components/schemas/QuizSubmission"
+          x-go-type: QuizSubmission
+          x-oapi-codegen-extra-tags:
+            db: "submission_data"
+
+        expires_at:
+          type: string
+          description: Expiry time for the test submission ( based on the time limit of the test )
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            db: "expires_at"
+        status:
+          $ref: "#/components/schemas/TestSubmissionStatus"
+          x-go-type: TestSubmissionStatus
+
+        result:
+          $ref: "#/components/schemas/QuizEvaluationResult"
+          x-go-type: QuizEvaluationResult
+          x-oapi-codegen-extra-tags:
+            db: "result"
+
+        test:
+          $ref: "#/components/schemas/Quiz"
+          x-go-type: Quiz
 
     QuizEvaluationResult:
       type: object

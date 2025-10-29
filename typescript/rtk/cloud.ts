@@ -228,8 +228,41 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
+      getTestByAbsPath: build.query<GetTestByAbsPathApiResponse, GetTestByAbsPathApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/tests`,
+          params: {
+            absPath: queryArg.absPath,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
+      startTestById: build.mutation<StartTestByIdApiResponse, StartTestByIdApiArg>({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/test-sessions/start`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Academy_API_Academy"],
+      }),
+      getAllTestSessionsForRegistration: build.query<
+        GetAllTestSessionsForRegistrationApiResponse,
+        GetAllTestSessionsForRegistrationApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/${queryArg.id}/test-sessions`,
+          params: {
+            testAbsPath: queryArg.testAbsPath,
+          },
+        }),
+        providesTags: ["Academy_API_Academy"],
+      }),
       submitQuiz: build.mutation<SubmitQuizApiResponse, SubmitQuizApiArg>({
-        query: (queryArg) => ({ url: `/api/academy/quiz/submit`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({
+          url: `/api/academy/registrations/test-sessions/submit`,
+          method: "POST",
+          body: queryArg.body,
+        }),
         invalidatesTags: ["Academy_API_Academy"],
       }),
       getAcademyAdminSummary: build.query<GetAcademyAdminSummaryApiResponse, GetAcademyAdminSummaryApiArg>({
@@ -769,8 +802,10 @@ export type CreateAcademyCurriculaApiResponse = /** status 201 created the curri
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -801,6 +836,8 @@ export type CreateAcademyCurriculaApiResponse = /** status 201 created the curri
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -846,8 +883,10 @@ export type CreateAcademyCurriculaApiArg = {
     metadata: {
       /** Title of the learning path */
       title: string;
-      /** Description of the learning path */
+      /** Short description of the curricula */
       description: string;
+      /** Detailed description of the curricula */
+      detailed_description?: string;
       /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
       banner?: string | null;
       /** Canonical URL for the learning path */
@@ -878,6 +917,8 @@ export type CreateAcademyCurriculaApiArg = {
         issued_date: string;
         /** Date when the certificate expires (optional) */
         expiration_date?: string;
+        /** Number of months after which the certificate expires */
+        expires_in?: number;
       };
       /** List of children items in the top-level curricula */
       children?: {
@@ -957,8 +998,10 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -989,6 +1032,8 @@ export type GetApiAcademyByTypeAndOrgIdSlugApiResponse = /** status 200 A single
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -1061,69 +1106,8 @@ export type RegisterToAcademyContentApiResponse = /** status 200 registered cont
     issued_date: string;
     /** Date when the certificate expires (optional) */
     expiration_date?: string;
-  };
-  /** Test submissions made by the user (map of test IDs to Submissions) */
-  test_submissions: {
-    [key: string]: {
-      score: number;
-      passed: boolean;
-      percentage_scored: number;
-      total_marks: number;
-      pass_percentage: number;
-      correct_submissions: {
-        [key: string]: boolean;
-      };
-      quiz: {
-        id: string;
-        /** Organization ID that owns this quiz */
-        orgId: string;
-        /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-        final: boolean;
-        title: string;
-        description: string;
-        slug: string;
-        relPermalink: string;
-        permalink: string;
-        type: string;
-        section: string;
-        layout: string;
-        date: string;
-        lastmod: string;
-        draft: boolean;
-        file_path: string;
-        pass_percentage: number;
-        time_limit: string;
-        questions: {
-          id: string;
-          text: string;
-          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-          marks: number;
-          multiple_answers?: boolean;
-          options: {
-            id: string;
-            text: string;
-            is_correct: boolean;
-          }[];
-          correct_answer: string;
-        }[];
-        total_questions: number;
-        total_marks: number;
-        prerequisites: {
-          id: string;
-          title: string;
-          relPermalink: string;
-          type: string;
-        }[];
-        parent?: {
-          id: string;
-          title: string;
-          relPermalink: string;
-          type: string;
-        };
-      };
-      attempted_at: string;
-      attempts: number;
-    }[];
+    /** Number of months after which the certificate expires */
+    expires_in?: number;
   };
   /** Additional metadata about the registration */
   metadata: {
@@ -1181,69 +1165,8 @@ export type WithdrawFromAcademyContentApiResponse = /** status 200 registered co
     issued_date: string;
     /** Date when the certificate expires (optional) */
     expiration_date?: string;
-  };
-  /** Test submissions made by the user (map of test IDs to Submissions) */
-  test_submissions: {
-    [key: string]: {
-      score: number;
-      passed: boolean;
-      percentage_scored: number;
-      total_marks: number;
-      pass_percentage: number;
-      correct_submissions: {
-        [key: string]: boolean;
-      };
-      quiz: {
-        id: string;
-        /** Organization ID that owns this quiz */
-        orgId: string;
-        /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-        final: boolean;
-        title: string;
-        description: string;
-        slug: string;
-        relPermalink: string;
-        permalink: string;
-        type: string;
-        section: string;
-        layout: string;
-        date: string;
-        lastmod: string;
-        draft: boolean;
-        file_path: string;
-        pass_percentage: number;
-        time_limit: string;
-        questions: {
-          id: string;
-          text: string;
-          type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-          marks: number;
-          multiple_answers?: boolean;
-          options: {
-            id: string;
-            text: string;
-            is_correct: boolean;
-          }[];
-          correct_answer: string;
-        }[];
-        total_questions: number;
-        total_marks: number;
-        prerequisites: {
-          id: string;
-          title: string;
-          relPermalink: string;
-          type: string;
-        }[];
-        parent?: {
-          id: string;
-          title: string;
-          relPermalink: string;
-          type: string;
-        };
-      };
-      attempted_at: string;
-      attempts: number;
-    }[];
+    /** Number of months after which the certificate expires */
+    expires_in?: number;
   };
   /** Additional metadata about the registration */
   metadata: {
@@ -1284,8 +1207,10 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -1316,6 +1241,8 @@ export type UpdateAcademyCurriculaByIdApiResponse = /** status 200 updated the c
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -1396,8 +1323,10 @@ export type UpdateAcademyCurriculaByIdApiArg = {
     metadata: {
       /** Title of the learning path */
       title: string;
-      /** Description of the learning path */
+      /** Short description of the curricula */
       description: string;
+      /** Detailed description of the curricula */
+      detailed_description?: string;
       /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
       banner?: string | null;
       /** Canonical URL for the learning path */
@@ -1428,6 +1357,8 @@ export type UpdateAcademyCurriculaByIdApiArg = {
         issued_date: string;
         /** Date when the certificate expires (optional) */
         expiration_date?: string;
+        /** Number of months after which the certificate expires */
+        expires_in?: number;
       };
       /** List of children items in the top-level curricula */
       children?: {
@@ -1487,8 +1418,10 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
   metadata: {
     /** Title of the learning path */
     title: string;
-    /** Description of the learning path */
+    /** Short description of the curricula */
     description: string;
+    /** Detailed description of the curricula */
+    detailed_description?: string;
     /** Filename of the banner image, which should be placed in the same directory as the _index.md file */
     banner?: string | null;
     /** Canonical URL for the learning path */
@@ -1519,6 +1452,8 @@ export type GetAcademyCurriculaByIdApiResponse = /** status 200 A single curricu
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** List of children items in the top-level curricula */
     children?: {
@@ -1624,69 +1559,8 @@ export type GetApiAcademyRegistrationsByContentIdApiResponse =
       issued_date: string;
       /** Date when the certificate expires (optional) */
       expiration_date?: string;
-    };
-    /** Test submissions made by the user (map of test IDs to Submissions) */
-    test_submissions: {
-      [key: string]: {
-        score: number;
-        passed: boolean;
-        percentage_scored: number;
-        total_marks: number;
-        pass_percentage: number;
-        correct_submissions: {
-          [key: string]: boolean;
-        };
-        quiz: {
-          id: string;
-          /** Organization ID that owns this quiz */
-          orgId: string;
-          /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
-          final: boolean;
-          title: string;
-          description: string;
-          slug: string;
-          relPermalink: string;
-          permalink: string;
-          type: string;
-          section: string;
-          layout: string;
-          date: string;
-          lastmod: string;
-          draft: boolean;
-          file_path: string;
-          pass_percentage: number;
-          time_limit: string;
-          questions: {
-            id: string;
-            text: string;
-            type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
-            marks: number;
-            multiple_answers?: boolean;
-            options: {
-              id: string;
-              text: string;
-              is_correct: boolean;
-            }[];
-            correct_answer: string;
-          }[];
-          total_questions: number;
-          total_marks: number;
-          prerequisites: {
-            id: string;
-            title: string;
-            relPermalink: string;
-            type: string;
-          }[];
-          parent?: {
-            id: string;
-            title: string;
-            relPermalink: string;
-            type: string;
-          };
-        };
-        attempted_at: string;
-        attempts: number;
-      }[];
+      /** Number of months after which the certificate expires */
+      expires_in?: number;
     };
     /** Additional metadata about the registration */
     metadata: {
@@ -1739,7 +1613,10 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
             draft: boolean;
             file_path: string;
             pass_percentage: number;
+            /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
             time_limit: string;
+            /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+            max_attempts: number;
             questions: {
               id: string;
               text: string;
@@ -1754,6 +1631,8 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
               correct_answer: string;
             }[];
             total_questions: number;
+            total_questions_in_bank: number;
+            total_question_sets: number;
             total_marks: number;
             prerequisites: {
               id: string;
@@ -1809,6 +1688,194 @@ export type UpdateCurrentItemInProgressTrackerApiArg = {
     };
   };
 };
+export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
+  id: string;
+  /** Organization ID that owns this quiz */
+  orgId: string;
+  /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+  final: boolean;
+  title: string;
+  description: string;
+  slug: string;
+  relPermalink: string;
+  permalink: string;
+  type: string;
+  section: string;
+  layout: string;
+  date: string;
+  lastmod: string;
+  draft: boolean;
+  file_path: string;
+  pass_percentage: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+  time_limit: string;
+  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+  max_attempts: number;
+  questions: {
+    id: string;
+    text: string;
+    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+    marks: number;
+    multiple_answers?: boolean;
+    options: {
+      id: string;
+      text: string;
+      is_correct: boolean;
+    }[];
+    correct_answer: string;
+  }[];
+  total_questions: number;
+  total_questions_in_bank: number;
+  total_question_sets: number;
+  total_marks: number;
+  prerequisites: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  }[];
+  parent?: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  };
+};
+export type GetTestByAbsPathApiArg = {
+  /** The absolute path of the test to retrieve */
+  absPath: string;
+};
+export type StartTestByIdApiResponse = /** status 200 A single test */ {
+  id: string;
+  /** Organization ID that owns this quiz */
+  orgId: string;
+  /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+  final: boolean;
+  title: string;
+  description: string;
+  slug: string;
+  relPermalink: string;
+  permalink: string;
+  type: string;
+  section: string;
+  layout: string;
+  date: string;
+  lastmod: string;
+  draft: boolean;
+  file_path: string;
+  pass_percentage: number;
+  /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+  time_limit: string;
+  /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+  max_attempts: number;
+  questions: {
+    id: string;
+    text: string;
+    type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+    marks: number;
+    multiple_answers?: boolean;
+    options: {
+      id: string;
+      text: string;
+      is_correct: boolean;
+    }[];
+    correct_answer: string;
+  }[];
+  total_questions: number;
+  total_questions_in_bank: number;
+  total_question_sets: number;
+  total_marks: number;
+  prerequisites: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  }[];
+  parent?: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  };
+};
+export type StartTestByIdApiArg = {
+  body: {
+    test_abs_path: string;
+    registration_id: string;
+  };
+};
+export type GetAllTestSessionsForRegistrationApiResponse =
+  /** status 200 A list of tests for the specified registration */ {
+    score: number;
+    passed: boolean;
+    percentage_scored: number;
+    total_marks: number;
+    pass_percentage: number;
+    correct_submissions: {
+      [key: string]: boolean;
+    };
+    quiz: {
+      id: string;
+      /** Organization ID that owns this quiz */
+      orgId: string;
+      /** Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path */
+      final: boolean;
+      title: string;
+      description: string;
+      slug: string;
+      relPermalink: string;
+      permalink: string;
+      type: string;
+      section: string;
+      layout: string;
+      date: string;
+      lastmod: string;
+      draft: boolean;
+      file_path: string;
+      pass_percentage: number;
+      /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
+      time_limit: string;
+      /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+      max_attempts: number;
+      questions: {
+        id: string;
+        text: string;
+        type: "multiple-answers" | "single-answer" | "short-answer" | "essay";
+        marks: number;
+        multiple_answers?: boolean;
+        options: {
+          id: string;
+          text: string;
+          is_correct: boolean;
+        }[];
+        correct_answer: string;
+      }[];
+      total_questions: number;
+      total_questions_in_bank: number;
+      total_question_sets: number;
+      total_marks: number;
+      prerequisites: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      }[];
+      parent?: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      };
+    };
+    attempted_at: string;
+    attempts: number;
+  }[][];
+export type GetAllTestSessionsForRegistrationApiArg = {
+  /** The ID of the registration to retrieve tests for */
+  id: string;
+  /** Filter tests by absolute path */
+  testAbsPath?: string;
+};
 export type SubmitQuizApiResponse = /** status 200 Successfully updated the progress tracker */ {
   score: number;
   passed: boolean;
@@ -1837,7 +1904,10 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
     draft: boolean;
     file_path: string;
     pass_percentage: number;
+    /** Time limit for the quiz in minutes. A value of 0 indicates no time limit. */
     time_limit: string;
+    /** Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts. */
+    max_attempts: number;
     questions: {
       id: string;
       text: string;
@@ -1852,6 +1922,8 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
       correct_answer: string;
     }[];
     total_questions: number;
+    total_questions_in_bank: number;
+    total_question_sets: number;
     total_marks: number;
     prerequisites: {
       id: string;
@@ -1871,6 +1943,8 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
 };
 export type SubmitQuizApiArg = {
   body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    test_session_id: string;
     quiz_abs_path: string;
     registration_id: string;
     user_id: string;
@@ -1953,6 +2027,8 @@ export type GetCertificateByIdApiResponse = /** status 200 A single certificate 
   issued_date: string;
   /** Date when the certificate expires (optional) */
   expiration_date?: string;
+  /** Number of months after which the certificate expires */
+  expires_in?: number;
 };
 export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
@@ -2301,6 +2377,9 @@ export const {
   useGetAcademyCurriculaByIdQuery,
   useGetApiAcademyRegistrationsByContentIdQuery,
   useUpdateCurrentItemInProgressTrackerMutation,
+  useGetTestByAbsPathQuery,
+  useStartTestByIdMutation,
+  useGetAllTestSessionsForRegistrationQuery,
   useSubmitQuizMutation,
   useGetAcademyAdminSummaryQuery,
   useGetAcademyAdminRegistrationsQuery,
