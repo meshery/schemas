@@ -22,6 +22,15 @@ var modelCreationLock sync.Mutex //Each component/relationship will perform a ch
 
 const ModelDefinitionStatusIgnored = Ignored
 
+func (m ModelDefinition) ToReference() ModelReference {
+	return ModelReference{
+		Name:    m.Name,
+		Version: m.Version,
+		DisplayName: m.DisplayName,
+		Model: m.Model,
+	}
+}
+
 func (m ModelDefinition) TableName() string {
 	return "model_dbs"
 }
