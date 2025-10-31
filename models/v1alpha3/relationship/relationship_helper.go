@@ -29,17 +29,13 @@ func (r RelationshipDefinition) GetID() uuid.UUID {
 }
 
 func (r *RelationshipDefinition) GetEntityDetail() string {
-	return fmt.Sprintf("type: %s, definition version: %s, kind: %s, model: %s, version: %s", r.Type(), r.Version, r.Kind, r.Model.Name, r.Model.Version)
+	return fmt.Sprintf("type: %s, definition version: %s, kind: %s, model: %s, version: %s", r.Type(), r.Version, r.Kind, r.Model.DisplayName, r.Model.Version)
 }
 
 func (r *RelationshipDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.UUID, error) {
 	r.Id, _ = r.GenerateID()
-	mid, err := r.Model.Create(db, hostID)
-	if err != nil {
-		return uuid.UUID{}, err
-	}
-	r.ModelId = mid
-	err = db.Omit(clause.Associations).Create(&r).Error
+
+	err := db.Omit(clause.Associations).Create(&r).Error
 	if err != nil {
 		return uuid.UUID{}, err
 	}

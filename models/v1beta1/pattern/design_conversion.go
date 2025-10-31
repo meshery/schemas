@@ -91,7 +91,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 				Kind:    service.Type,
 				Version: service.ApiVersion,
 			},
-			Model: model.ModelDefinition{
+			Model: &model.ModelDefinition{
 				SchemaVersion: v1beta1.ModelSchemaVersion,
 				Name:          service.Model,
 			},
