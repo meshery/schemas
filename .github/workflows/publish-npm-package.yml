@@ -73,4 +73,5 @@ jobs:
           commit_user_name: meshery
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          token: ${{ secrets.GITHUB_TOKEN }}
 
