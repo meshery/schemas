@@ -490,7 +490,8 @@ type Quiz struct {
 	Layout  string             `json:"layout" yaml:"layout"`
 
 	// MaxAttempts Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
-	MaxAttempts int `json:"max_attempts" yaml:"max_attempts"`
+	MaxAttempts int    `json:"max_attempts" yaml:"max_attempts"`
+	NextPage    Parent `json:"next_page" yaml:"next_page"`
 
 	// OrgId Organization ID that owns this quiz
 	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`

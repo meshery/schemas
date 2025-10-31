@@ -19726,6 +19726,7 @@ paths:
                                 - total_question_sets
                                 - total_marks
                                 - prerequisites
+                                - next_page
                               properties:
                                 id:
                                   type: string
@@ -19868,6 +19869,23 @@ paths:
                                       type:
                                         type: string
                                 parent:
+                                  x-go-type: Parent
+                                  type: object
+                                  required:
+                                    - id
+                                    - title
+                                    - relPermalink
+                                    - type
+                                  properties:
+                                    id:
+                                      type: string
+                                    title:
+                                      type: string
+                                    relPermalink:
+                                      type: string
+                                    type:
+                                      type: string
+                                next_page:
                                   x-go-type: Parent
                                   type: object
                                   required:
@@ -20027,6 +20045,7 @@ paths:
                   - total_question_sets
                   - total_marks
                   - prerequisites
+                  - next_page
                 properties:
                   id:
                     type: string
@@ -20183,6 +20202,23 @@ paths:
                         type: string
                       type:
                         type: string
+                  next_page:
+                    x-go-type: Parent
+                    type: object
+                    required:
+                      - id
+                      - title
+                      - relPermalink
+                      - type
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      relPermalink:
+                        type: string
+                      type:
+                        type: string
         '400':
           description: Invalid request parameters
         '404':
@@ -20245,6 +20281,7 @@ paths:
                   - total_question_sets
                   - total_marks
                   - prerequisites
+                  - next_page
                 properties:
                   id:
                     type: string
@@ -20385,6 +20422,23 @@ paths:
                         type:
                           type: string
                   parent:
+                    x-go-type: Parent
+                    type: object
+                    required:
+                      - id
+                      - title
+                      - relPermalink
+                      - type
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      relPermalink:
+                        type: string
+                      type:
+                        type: string
+                  next_page:
                     x-go-type: Parent
                     type: object
                     required:
@@ -20499,6 +20553,7 @@ paths:
                           - total_question_sets
                           - total_marks
                           - prerequisites
+                          - next_page
                         properties:
                           id:
                             type: string
@@ -20655,6 +20710,23 @@ paths:
                                 type: string
                               type:
                                 type: string
+                          next_page:
+                            x-go-type: Parent
+                            type: object
+                            required:
+                              - id
+                              - title
+                              - relPermalink
+                              - type
+                            properties:
+                              id:
+                                type: string
+                              title:
+                                type: string
+                              relPermalink:
+                                type: string
+                              type:
+                                type: string
                       attempted_at:
                         type: string
                         format: date-time
@@ -20784,6 +20856,7 @@ paths:
                       - total_question_sets
                       - total_marks
                       - prerequisites
+                      - next_page
                     properties:
                       id:
                         type: string
@@ -20924,6 +20997,23 @@ paths:
                             type:
                               type: string
                       parent:
+                        x-go-type: Parent
+                        type: object
+                        required:
+                          - id
+                          - title
+                          - relPermalink
+                          - type
+                        properties:
+                          id:
+                            type: string
+                          title:
+                            type: string
+                          relPermalink:
+                            type: string
+                          type:
+                            type: string
+                      next_page:
                         x-go-type: Parent
                         type: object
                         required:
@@ -72330,6 +72420,7 @@ components:
                 - total_question_sets
                 - total_marks
                 - prerequisites
+                - next_page
               properties:
                 id:
                   type: string
@@ -72486,6 +72577,23 @@ components:
                       type: string
                     type:
                       type: string
+                next_page:
+                  x-go-type: Parent
+                  type: object
+                  required:
+                    - id
+                    - title
+                    - relPermalink
+                    - type
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    relPermalink:
+                      type: string
+                    type:
+                      type: string
             attempted_at:
               type: string
               format: date-time
@@ -72552,6 +72660,7 @@ components:
               - total_question_sets
               - total_marks
               - prerequisites
+              - next_page
             properties:
               id:
                 type: string
@@ -72692,6 +72801,23 @@ components:
                     type:
                       type: string
               parent:
+                x-go-type: Parent
+                type: object
+                required:
+                  - id
+                  - title
+                  - relPermalink
+                  - type
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  relPermalink:
+                    type: string
+                  type:
+                    type: string
+              next_page:
                 x-go-type: Parent
                 type: object
                 required:
@@ -73079,6 +73205,7 @@ components:
                   - total_question_sets
                   - total_marks
                   - prerequisites
+                  - next_page
                 properties:
                   id:
                     type: string
@@ -73235,6 +73362,23 @@ components:
                         type: string
                       type:
                         type: string
+                  next_page:
+                    x-go-type: Parent
+                    type: object
+                    required:
+                      - id
+                      - title
+                      - relPermalink
+                      - type
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      relPermalink:
+                        type: string
+                      type:
+                        type: string
               attempted_at:
                 type: string
                 format: date-time
@@ -73372,6 +73516,7 @@ components:
         - total_question_sets
         - total_marks
         - prerequisites
+        - next_page
       properties:
         id:
           type: string
@@ -73511,6 +73656,23 @@ components:
               type:
                 type: string
         parent:
+          x-go-type: Parent
+          type: object
+          required:
+            - id
+            - title
+            - relPermalink
+            - type
+          properties:
+            id:
+              type: string
+            title:
+              type: string
+            relPermalink:
+              type: string
+            type:
+              type: string
+        next_page:
           x-go-type: Parent
           type: object
           required:
@@ -73899,6 +74061,7 @@ components:
                 - total_question_sets
                 - total_marks
                 - prerequisites
+                - next_page
               properties:
                 id:
                   type: string
@@ -74055,6 +74218,23 @@ components:
                       type: string
                     type:
                       type: string
+                next_page:
+                  x-go-type: Parent
+                  type: object
+                  required:
+                    - id
+                    - title
+                    - relPermalink
+                    - type
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    relPermalink:
+                      type: string
+                    type:
+                      type: string
             attempted_at:
               type: string
               format: date-time
@@ -74090,6 +74270,7 @@ components:
             - total_question_sets
             - total_marks
             - prerequisites
+            - next_page
           properties:
             id:
               type: string
@@ -74246,6 +74427,23 @@ components:
                   type: string
                 type:
                   type: string
+            next_page:
+              x-go-type: Parent
+              type: object
+              required:
+                - id
+                - title
+                - relPermalink
+                - type
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                relPermalink:
+                  type: string
+                type:
+                  type: string
           x-go-type: Quiz
     Academy_API_QuizEvaluationResult:
       type: object
@@ -74304,6 +74502,7 @@ components:
             - total_question_sets
             - total_marks
             - prerequisites
+            - next_page
           properties:
             id:
               type: string
@@ -74444,6 +74643,23 @@ components:
                   type:
                     type: string
             parent:
+              x-go-type: Parent
+              type: object
+              required:
+                - id
+                - title
+                - relPermalink
+                - type
+              properties:
+                id:
+                  type: string
+                title:
+                  type: string
+                relPermalink:
+                  type: string
+                type:
+                  type: string
+            next_page:
               x-go-type: Parent
               type: object
               required:

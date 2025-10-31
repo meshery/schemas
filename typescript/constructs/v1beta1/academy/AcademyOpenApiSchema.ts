@@ -4980,7 +4980,8 @@ const schema = {
                                   "total_questions_in_bank",
                                   "total_question_sets",
                                   "total_marks",
-                                  "prerequisites"
+                                  "prerequisites",
+                                  "next_page"
                                 ],
                                 "properties": {
                                   "id": {
@@ -5166,6 +5167,30 @@ const schema = {
                                     }
                                   },
                                   "parent": {
+                                    "x-go-type": "Parent",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "title",
+                                      "relPermalink",
+                                      "type"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "title": {
+                                        "type": "string"
+                                      },
+                                      "relPermalink": {
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "next_page": {
                                     "x-go-type": "Parent",
                                     "type": "object",
                                     "required": [
@@ -5389,7 +5414,8 @@ const schema = {
                     "total_questions_in_bank",
                     "total_question_sets",
                     "total_marks",
-                    "prerequisites"
+                    "prerequisites",
+                    "next_page"
                   ],
                   "properties": {
                     "id": {
@@ -5597,6 +5623,30 @@ const schema = {
                           "type": "string"
                         }
                       }
+                    },
+                    "next_page": {
+                      "x-go-type": "Parent",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "relPermalink",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "relPermalink": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
                     }
                   }
                 }
@@ -5679,7 +5729,8 @@ const schema = {
                     "total_questions_in_bank",
                     "total_question_sets",
                     "total_marks",
-                    "prerequisites"
+                    "prerequisites",
+                    "next_page"
                   ],
                   "properties": {
                     "id": {
@@ -5865,6 +5916,30 @@ const schema = {
                       }
                     },
                     "parent": {
+                      "x-go-type": "Parent",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "relPermalink",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "relPermalink": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "next_page": {
                       "x-go-type": "Parent",
                       "type": "object",
                       "required": [
@@ -6010,7 +6085,8 @@ const schema = {
                             "total_questions_in_bank",
                             "total_question_sets",
                             "total_marks",
-                            "prerequisites"
+                            "prerequisites",
+                            "next_page"
                           ],
                           "properties": {
                             "id": {
@@ -6218,6 +6294,30 @@ const schema = {
                                   "type": "string"
                                 }
                               }
+                            },
+                            "next_page": {
+                              "x-go-type": "Parent",
+                              "type": "object",
+                              "required": [
+                                "id",
+                                "title",
+                                "relPermalink",
+                                "type"
+                              ],
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "title": {
+                                  "type": "string"
+                                },
+                                "relPermalink": {
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "type": "string"
+                                }
+                              }
                             }
                           }
                         },
@@ -6389,7 +6489,8 @@ const schema = {
                         "total_questions_in_bank",
                         "total_question_sets",
                         "total_marks",
-                        "prerequisites"
+                        "prerequisites",
+                        "next_page"
                       ],
                       "properties": {
                         "id": {
@@ -6575,6 +6676,30 @@ const schema = {
                           }
                         },
                         "parent": {
+                          "x-go-type": "Parent",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "title",
+                            "relPermalink",
+                            "type"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "relPermalink": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "next_page": {
                           "x-go-type": "Parent",
                           "type": "object",
                           "required": [
@@ -10791,7 +10916,8 @@ const schema = {
                   "total_questions_in_bank",
                   "total_question_sets",
                   "total_marks",
-                  "prerequisites"
+                  "prerequisites",
+                  "next_page"
                 ],
                 "properties": {
                   "id": {
@@ -10999,6 +11125,30 @@ const schema = {
                         "type": "string"
                       }
                     }
+                  },
+                  "next_page": {
+                    "x-go-type": "Parent",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "title",
+                      "relPermalink",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "relPermalink": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
@@ -11081,7 +11231,8 @@ const schema = {
                 "total_questions_in_bank",
                 "total_question_sets",
                 "total_marks",
-                "prerequisites"
+                "prerequisites",
+                "next_page"
               ],
               "properties": {
                 "id": {
@@ -11267,6 +11418,30 @@ const schema = {
                   }
                 },
                 "parent": {
+                  "x-go-type": "Parent",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "relPermalink",
+                    "type"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "relPermalink": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "next_page": {
                   "x-go-type": "Parent",
                   "type": "object",
                   "required": [
@@ -11739,7 +11914,8 @@ const schema = {
                     "total_questions_in_bank",
                     "total_question_sets",
                     "total_marks",
-                    "prerequisites"
+                    "prerequisites",
+                    "next_page"
                   ],
                   "properties": {
                     "id": {
@@ -11925,6 +12101,30 @@ const schema = {
                       }
                     },
                     "parent": {
+                      "x-go-type": "Parent",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "title",
+                        "relPermalink",
+                        "type"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "relPermalink": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "next_page": {
                       "x-go-type": "Parent",
                       "type": "object",
                       "required": [
@@ -12134,7 +12334,8 @@ const schema = {
           "total_questions_in_bank",
           "total_question_sets",
           "total_marks",
-          "prerequisites"
+          "prerequisites",
+          "next_page"
         ],
         "properties": {
           "id": {
@@ -12320,6 +12521,30 @@ const schema = {
             }
           },
           "parent": {
+            "x-go-type": "Parent",
+            "type": "object",
+            "required": [
+              "id",
+              "title",
+              "relPermalink",
+              "type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "relPermalink": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          },
+          "next_page": {
             "x-go-type": "Parent",
             "type": "object",
             "required": [
@@ -12814,7 +13039,8 @@ const schema = {
                   "total_questions_in_bank",
                   "total_question_sets",
                   "total_marks",
-                  "prerequisites"
+                  "prerequisites",
+                  "next_page"
                 ],
                 "properties": {
                   "id": {
@@ -13022,6 +13248,30 @@ const schema = {
                         "type": "string"
                       }
                     }
+                  },
+                  "next_page": {
+                    "x-go-type": "Parent",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "title",
+                      "relPermalink",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "relPermalink": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    }
                   }
                 }
               },
@@ -13064,7 +13314,8 @@ const schema = {
               "total_questions_in_bank",
               "total_question_sets",
               "total_marks",
-              "prerequisites"
+              "prerequisites",
+              "next_page"
             ],
             "properties": {
               "id": {
@@ -13272,6 +13523,30 @@ const schema = {
                     "type": "string"
                   }
                 }
+              },
+              "next_page": {
+                "x-go-type": "Parent",
+                "type": "object",
+                "required": [
+                  "id",
+                  "title",
+                  "relPermalink",
+                  "type"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "relPermalink": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
               }
             },
             "x-go-type": "Quiz"
@@ -13342,7 +13617,8 @@ const schema = {
               "total_questions_in_bank",
               "total_question_sets",
               "total_marks",
-              "prerequisites"
+              "prerequisites",
+              "next_page"
             ],
             "properties": {
               "id": {
@@ -13528,6 +13804,30 @@ const schema = {
                 }
               },
               "parent": {
+                "x-go-type": "Parent",
+                "type": "object",
+                "required": [
+                  "id",
+                  "title",
+                  "relPermalink",
+                  "type"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "relPermalink": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              },
+              "next_page": {
                 "x-go-type": "Parent",
                 "type": "object",
                 "required": [

@@ -1646,6 +1646,12 @@ export type UpdateCurrentItemInProgressTrackerApiResponse =
               relPermalink: string;
               type: string;
             };
+            next_page: {
+              id: string;
+              title: string;
+              relPermalink: string;
+              type: string;
+            };
           };
           attempted_at: string;
           attempts: number;
@@ -1740,6 +1746,12 @@ export type GetTestByAbsPathApiResponse = /** status 200 A single test */ {
     relPermalink: string;
     type: string;
   };
+  next_page: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  };
 };
 export type GetTestByAbsPathApiArg = {
   /** The absolute path of the test to retrieve */
@@ -1792,6 +1804,12 @@ export type StartTestByIdApiResponse = /** status 200 A single test */ {
     type: string;
   }[];
   parent?: {
+    id: string;
+    title: string;
+    relPermalink: string;
+    type: string;
+  };
+  next_page: {
     id: string;
     title: string;
     relPermalink: string;
@@ -1866,6 +1884,12 @@ export type GetAllTestSessionsForRegistrationApiResponse =
         relPermalink: string;
         type: string;
       };
+      next_page: {
+        id: string;
+        title: string;
+        relPermalink: string;
+        type: string;
+      };
     };
     attempted_at: string;
     attempts: number;
@@ -1932,6 +1956,12 @@ export type SubmitQuizApiResponse = /** status 200 Successfully updated the prog
       type: string;
     }[];
     parent?: {
+      id: string;
+      title: string;
+      relPermalink: string;
+      type: string;
+    };
+    next_page: {
       id: string;
       title: string;
       relPermalink: string;
