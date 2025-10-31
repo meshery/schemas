@@ -28,6 +28,9 @@ func (m ModelDefinition) ToReference() ModelReference {
 		Version: m.Version,
 		DisplayName: m.DisplayName,
 		Model: m.Model,
+		Registrant: RegistrantReference{
+			Kind:    m.Registrant.Kind,
+		},
 	}
 }
 

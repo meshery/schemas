@@ -47,20 +47,34 @@ components:
     ModelDefinition:
       $ref: "./model.json"
 
+    RegistrantReference:
+       "type": "object"
+       required:
+         - "kind"
+       "properties":
+         "kind":
+           "type": "string"
+
     ModelReference:
       type: "object"
-      "required": ["id", "name", "version", "displayName","model"]
+      "required": ["id", "name", "version", "displayName","model", "registrant"]
       "properties":
-        "id":
+        id:
           "$ref": "../../core.json#/definitions/uuid"
-        "name":
+        name:
             "$ref": "../model/model.json#/properties/name"
-        "version":
+        version:
             "$ref": "../model/model.json#/properties/version"
-        "displayName":
+        displayName:
             "$ref": "../model/model.json#/properties/displayName"
-        "model":
+        model:
           "$ref": "../model/model.json#/properties/model"
+        registrant:
+          "x-go-type": "RegistrantReference"
+          "$ref": "#/components/schemas/RegistrantReference"
+          x-oapi-codegen-extra-tags:
+            yaml: "registrant"
+            json: "registrant"
 
       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
 
