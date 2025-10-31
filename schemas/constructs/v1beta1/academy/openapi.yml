@@ -1443,6 +1443,7 @@ components:
         - total_question_sets
         - total_marks
         - prerequisites
+        - next_page
 
       properties:
         id:
@@ -1520,6 +1521,11 @@ components:
         parent:
           $ref: "#/components/schemas/Parent"
           x-go-type: Parent
+
+        next_page:
+          $ref: "#/components/schemas/Parent"
+          x-go-type: Parent
+
 
     Parent:
       type: object
