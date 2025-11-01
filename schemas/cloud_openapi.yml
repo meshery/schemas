@@ -10371,6 +10371,16 @@ components:
                           - round-tag
                           - vee
                           - polygon
+                      createdAt:
+                        type: string
+                        format: date-time
+                        description: >-
+                          Timestamp when the model was created or added to the
+                          registry in RFC3339 format
+                        x-oapi-codegen-extra-tags:
+                          yaml: createdAt,omitempty
+                          json: createdAt,omitempty
+                        x-order: 9
                     x-oapi-codegen-extra-tags:
                       gorm: type:bytes;serializer:json
                       json: metadata
@@ -17112,6 +17122,16 @@ components:
                               - round-tag
                               - vee
                               - polygon
+                          createdAt:
+                            type: string
+                            format: date-time
+                            description: >-
+                              Timestamp when the model was created or added to
+                              the registry in RFC3339 format
+                            x-oapi-codegen-extra-tags:
+                              yaml: createdAt,omitempty
+                              json: createdAt,omitempty
+                            x-order: 9
                         x-oapi-codegen-extra-tags:
                           gorm: type:bytes;serializer:json
                           json: metadata
@@ -23979,6 +23999,16 @@ components:
                                     - round-tag
                                     - vee
                                     - polygon
+                                createdAt:
+                                  type: string
+                                  format: date-time
+                                  description: >-
+                                    Timestamp when the model was created or
+                                    added to the registry in RFC3339 format
+                                  x-oapi-codegen-extra-tags:
+                                    yaml: createdAt,omitempty
+                                    json: createdAt,omitempty
+                                  x-order: 9
                               x-oapi-codegen-extra-tags:
                                 gorm: type:bytes;serializer:json
                                 json: metadata
@@ -30948,6 +30978,16 @@ components:
                                   - round-tag
                                   - vee
                                   - polygon
+                              createdAt:
+                                type: string
+                                format: date-time
+                                description: >-
+                                  Timestamp when the model was created or added
+                                  to the registry in RFC3339 format
+                                x-oapi-codegen-extra-tags:
+                                  yaml: createdAt,omitempty
+                                  json: createdAt,omitempty
+                                x-order: 9
                             x-oapi-codegen-extra-tags:
                               gorm: type:bytes;serializer:json
                               json: metadata
@@ -37558,6 +37598,16 @@ components:
                     - round-tag
                     - vee
                     - polygon
+                createdAt:
+                  type: string
+                  format: date-time
+                  description: >-
+                    Timestamp when the model was created or added to the
+                    registry in RFC3339 format
+                  x-oapi-codegen-extra-tags:
+                    yaml: createdAt,omitempty
+                    json: createdAt,omitempty
+                  x-order: 9
               x-oapi-codegen-extra-tags:
                 gorm: type:bytes;serializer:json
                 json: metadata
@@ -39440,6 +39490,16 @@ components:
                 - round-tag
                 - vee
                 - polygon
+            createdAt:
+              type: string
+              format: date-time
+              description: >-
+                Timestamp when the model was created or added to the registry in
+                RFC3339 format
+              x-oapi-codegen-extra-tags:
+                yaml: createdAt,omitempty
+                json: createdAt,omitempty
+              x-order: 9
           x-oapi-codegen-extra-tags:
             gorm: type:bytes;serializer:json
             json: metadata
@@ -42760,6 +42820,16 @@ components:
                               - round-tag
                               - vee
                               - polygon
+                          createdAt:
+                            type: string
+                            format: date-time
+                            description: >-
+                              Timestamp when the model was created or added to
+                              the registry in RFC3339 format
+                            x-oapi-codegen-extra-tags:
+                              yaml: createdAt,omitempty
+                              json: createdAt,omitempty
+                            x-order: 9
                         x-oapi-codegen-extra-tags:
                           gorm: type:bytes;serializer:json
                           json: metadata
@@ -49464,6 +49534,16 @@ components:
                               - round-tag
                               - vee
                               - polygon
+                          createdAt:
+                            type: string
+                            format: date-time
+                            description: >-
+                              Timestamp when the model was created or added to
+                              the registry in RFC3339 format
+                            x-oapi-codegen-extra-tags:
+                              yaml: createdAt,omitempty
+                              json: createdAt,omitempty
+                            x-order: 9
                         x-oapi-codegen-extra-tags:
                           gorm: type:bytes;serializer:json
                           json: metadata
