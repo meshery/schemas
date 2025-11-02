@@ -114,7 +114,7 @@ type Relationship_Metadata struct {
 	// Description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.
 	Description  *string                               `json:"description" yaml:"description"`
 	Styles       *RelationshipDefinitionMetadataStyles `json:"styles" yaml:"styles"`
-	IsAnnotation *bool                                 `json:"isAnnotation" yaml:"isAnnotation"` 
+	IsAnnotation *bool                                 `json:"isAnnotation" yaml:"isAnnotation"`
   AdditionalProperties map[string]interface{}                  `json:"-"`
 }
 
@@ -140,7 +140,7 @@ type SelectorItem struct {
 	MatchStrategyMatrix [][]string `json:"match_strategy_matrix" yaml:"match_strategy_matrix"`
 
 	// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
-	Model *model.ModelDefinition                  `json:"model,omitempty" yaml:"model"`
+	Model *model.ModelReference                  `json:"model,omitempty" yaml:"model"`
 	Patch *RelationshipDefinition_Selectors_Patch `json:"patch" yaml:"patch"`
 }
 
@@ -188,8 +188,8 @@ type RelationshipDefinition struct {
 	// Metadata Metadata contains additional information associated with the Relationship.
 	Metadata *Relationship_Metadata `json:"metadata,omitempty" yaml:"metadata" gorm:"type:bytes;serializer:json"`
 
-	// Model Name of the model in which this relationship is packaged.
-	Model model.ModelDefinition `json:"model" yaml:"model" gorm:"foreignKey:ModelId;references:Id"`
+	// Model Name of the model in which this relationship is packaged store as blob in gorm
+	Model model.ModelReference `json:"model" yaml:"model" gorm:"type:bytes;serializer:json"`
 
 	ModelId uuid.UUID `json:"-" gorm:"index:idx_relationship_definition_dbs_model_id,column:model_id"`
 

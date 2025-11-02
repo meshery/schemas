@@ -312,9 +312,10 @@ export interface HttpsSchemasMesheryIoComponentJson {
    * Format specifies the format used in the `component.schema` field. JSON is the default.
    */
   format: "JSON" | "CUE";
-  model: HttpsSchemasMesheryIoModelJson;
+  model?: HttpsSchemasMesheryIoModelJson;
+  modelReference: ModelReference;
   /**
-   * ModelId is the foreign key to the model to which the component belongs.
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
    */
   modelId: string;
   styles?: ComponentStyles;
@@ -671,6 +672,34 @@ export interface Model {
    * Version of the model as defined by the registrant.
    */
   version: string;
+  [k: string]: unknown;
+}
+/**
+ * Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+ */
+export interface ModelReference {
+  /**
+   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   */
+  id: string;
+  /**
+   * The unique name for the model within the scope of a registrant.
+   */
+  name: string;
+  /**
+   * Version of the model definition.
+   */
+  version: string;
+  /**
+   * Human-readable name for the model.
+   */
+  displayName: string;
+  model: Model;
+  registrant: RegistrantReference;
+  [k: string]: unknown;
+}
+export interface RegistrantReference {
+  kind: string;
   [k: string]: unknown;
 }
 /**
