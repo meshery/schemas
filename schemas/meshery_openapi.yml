@@ -5,17 +5,6 @@ info:
   contact:
     email: maintainers@meshery.io
   version: v0.6.394
-servers:
-  - url: https://cloud.meshery.io
-    description: Meshery Cloud production server URL
-  - url: https://staging-cloud.meshery.io
-    description: Meshery Cloud staging server URL
-  - url: http://localhost:9876
-    description: >
-      Meshery Cloud development server URL (controlled via PORT environment
-      variable)
-  - url: http://localhost:8080
-    description: Local development server
 tags:
   - name: design_other
     x-displayName: other
