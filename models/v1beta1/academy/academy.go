@@ -270,6 +270,9 @@ type Certificate struct {
 	// ExpirationDate Date when the certificate expires (optional)
 	ExpirationDate *time.Time `json:"expiration_date,omitempty" yaml:"expiration_date,omitempty"`
 
+	// ExpiresIn Number of months after which the certificate expires
+	ExpiresIn *int `json:"expires_in,omitempty" yaml:"expires_in,omitempty"`
+
 	// ID Unique identifier for the certificate
 	ID string `json:"id" yaml:"id"`
 
@@ -396,8 +399,11 @@ type CurriculaMetadata struct {
 	// Children List of children items in the top-level curricula
 	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
 
-	// Description Description of the learning path
+	// Description Short description of the curricula
 	Description string `json:"description" yaml:"description"`
+
+	// DetailedDescription Detailed description of the curricula
+	DetailedDescription *string `json:"detailed_description,omitempty" yaml:"detailed_description,omitempty"`
 
 	// Permalink Canonical URL for the learning path
 	Permalink string `json:"permalink" yaml:"permalink"`
@@ -484,7 +490,8 @@ type Quiz struct {
 	Layout  string             `json:"layout" yaml:"layout"`
 
 	// MaxAttempts Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
-	MaxAttempts int `json:"max_attempts" yaml:"max_attempts"`
+	MaxAttempts int    `json:"max_attempts" yaml:"max_attempts"`
+	NextPage    Parent `json:"next_page" yaml:"next_page"`
 
 	// OrgId Organization ID that owns this quiz
 	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`
@@ -498,11 +505,13 @@ type Quiz struct {
 	Slug           string     `json:"slug" yaml:"slug"`
 
 	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit.
-	TimeLimit      string `json:"time_limit" yaml:"time_limit"`
-	Title          string `json:"title" yaml:"title"`
-	TotalMarks     int    `json:"total_marks" yaml:"total_marks"`
-	TotalQuestions int    `json:"total_questions" yaml:"total_questions"`
-	Type           string `json:"type" yaml:"type"`
+	TimeLimit            string `json:"time_limit" yaml:"time_limit"`
+	Title                string `json:"title" yaml:"title"`
+	TotalMarks           int    `json:"total_marks" yaml:"total_marks"`
+	TotalQuestionSets    int    `json:"total_question_sets" yaml:"total_question_sets"`
+	TotalQuestions       int    `json:"total_questions" yaml:"total_questions"`
+	TotalQuestionsInBank int    `json:"total_questions_in_bank" yaml:"total_questions_in_bank"`
+	Type                 string `json:"type" yaml:"type"`
 }
 
 // QuizEvaluationResult defines model for QuizEvaluationResult.
