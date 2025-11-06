@@ -10716,6 +10716,20 @@ const schema = {
               "type": "string"
             }
           },
+          "user_id": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter events by user ID (Actor ID)"
+          },
+          "system_id": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Filter events by system ID"
+          },
           "limit": {
             "type": "integer"
           },
