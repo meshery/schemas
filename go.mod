@@ -2,12 +2,10 @@ module github.com/meshery/schemas
 
 go 1.24.0
 
-toolchain go1.24.1
-
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/lib/pq v1.10.9
-	github.com/meshery/meshkit v0.8.44
+	github.com/meshery/meshkit v0.8.46
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
