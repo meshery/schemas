@@ -520,6 +520,10 @@ export interface components {
       category: string[];
       action: string[];
       severity: string[];
+      /** @description Filter events by user ID (Actor ID) */
+      user_id?: string[];
+      /** @description Filter events by system ID */
+      system_id?: string[];
       limit: number;
       offset: number;
       /** @description Field on which records are sorted */
