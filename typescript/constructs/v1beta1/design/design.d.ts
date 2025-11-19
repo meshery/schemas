@@ -297,6 +297,10 @@ export interface DesignSchema {
    */
   name: string;
   /**
+   * A written representation of the purpose and characteristics of the design.
+   */
+  description?: string;
+  /**
    * Specifies the version of the schema to which the design conforms.
    */
   schemaVersion: string;

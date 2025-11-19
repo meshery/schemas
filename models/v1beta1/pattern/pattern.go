@@ -84,6 +84,9 @@ type PatternFile struct {
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
 
+	// Description A written representation of the purpose and characteristics of the design.
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+
 	// SchemaVersion Specifies the version of the schema to which the design conforms.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
 
