@@ -140,6 +140,6 @@ components:
       properties:
         layers:
           type: object
-          description: List of available layers
+          description: Map of available layers, where keys are layer names.
       required:
         - layers
