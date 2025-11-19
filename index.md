@@ -28,7 +28,7 @@
 | connection | v1beta1 | [schemas/constructs/v1beta1/connection/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/connection/openapi.yml) |
 | invitation | v1beta1 | [schemas/constructs/v1beta1/invitation/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/invitation/openapi.yml) |
 | catalog_data | v1alpha1 | [schemas/constructs/v1alpha1/catalog_data.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/catalog_data.json) |
-| design | v1beta1 | [schemas/constructs/v1beta1/design.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/design/openapi.yml) |
+| design | v1beta1 | [schemas/constructs/v1beta1/design/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/design/openapi.yml) |
 | relationship | v1alpha3 | [schemas/constructs/v1alpha3/relationship.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha3/relationship.json) |
 | selector | v1alpha3 | [schemas/constructs/v1alpha3/selector.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha3/selector.json) |
 <!-- LATEST-CONSTRUCTS-END -->
