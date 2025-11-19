@@ -12,7 +12,7 @@
 | subcategory | v1beta1 | [schemas/constructs/v1beta1/subcategory/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subcategory/openapi.yml) |
 | model | v1beta1 | [schemas/constructs/v1beta1/model/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/model/openapi.yml) |
 | component | v1beta1 | [schemas/constructs/v1beta1/component/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/component/openapi.yml) |
-| pattern | v1beta1 | [schemas/constructs/v1beta1/pattern/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/pattern/merged-openapi.yml) |
+| pattern | v1beta1 | [schemas/constructs/v1beta1/pattern/merged-openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/pattern/merged-openapi.yml) |
 | core | v1alpha1 | [schemas/constructs/v1alpha1/core/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/core/openapi.yml) |
 | catalog | v1alpha2 | [schemas/constructs/v1alpha2/catalog/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/catalog/openapi.yml) |
 | subscription | v1beta1 | [schemas/constructs/v1beta1/subscription/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subscription/openapi.yml) |
