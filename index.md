@@ -12,7 +12,7 @@
 | subcategory | v1beta1 | [schemas/constructs/v1beta1/subcategory/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subcategory/openapi.yml) |
 | model | v1beta1 | [schemas/constructs/v1beta1/model/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/model/openapi.yml) |
 | component | v1beta1 | [schemas/constructs/v1beta1/component/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/component/openapi.yml) |
-| pattern | v1beta1 | [schemas/constructs/v1beta1/pattern/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/pattern/openapi.yml) |
+| pattern | v1beta1 | [schemas/constructs/v1beta1/pattern/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/pattern/merged-openapi.yml) |
 | core | v1alpha1 | [schemas/constructs/v1alpha1/core/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/core/openapi.yml) |
 | catalog | v1alpha2 | [schemas/constructs/v1alpha2/catalog/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/catalog/openapi.yml) |
 | subscription | v1beta1 | [schemas/constructs/v1beta1/subscription/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/subscription/openapi.yml) |
@@ -28,11 +28,7 @@
 | connection | v1beta1 | [schemas/constructs/v1beta1/connection/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/connection/openapi.yml) |
 | invitation | v1beta1 | [schemas/constructs/v1beta1/invitation/openapi.yml](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/invitation/openapi.yml) |
 | catalog_data | v1alpha1 | [schemas/constructs/v1alpha1/catalog_data.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/catalog_data.json) |
-| relationship | v1alpha1 | [schemas/constructs/v1alpha1/relationship.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/relationship.json) |
-| selector | v1alpha1 | [schemas/constructs/v1alpha1/selector.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/selector.json) |
-| design | v1alpha2 | [schemas/constructs/v1alpha2/design.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/design.json) |
-| relationship | v1alpha2 | [schemas/constructs/v1alpha2/relationship.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/relationship.json) |
-| selector | v1alpha2 | [schemas/constructs/v1alpha2/selector.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/selector.json) |
+| design | v1beta1 | [schemas/constructs/v1beta1/design.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta1/design/openapi.yml) |
 | relationship | v1alpha3 | [schemas/constructs/v1alpha3/relationship.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha3/relationship.json) |
 | selector | v1alpha3 | [schemas/constructs/v1alpha3/selector.json](https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha3/selector.json) |
 <!-- LATEST-CONSTRUCTS-END -->
