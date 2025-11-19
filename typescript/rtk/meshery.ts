@@ -771,7 +771,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
     }[];
     /** Design-level preferences */
     preferences?: {
-      /** List of available layers */
+      /** Map of available layers, where keys are layer names. */
       layers: object;
     };
     /** List of relationships between components */
@@ -1806,7 +1806,7 @@ export type PostEvaluateApiArg = {
       }[];
       /** Design-level preferences */
       preferences?: {
-        /** List of available layers */
+        /** Map of available layers, where keys are layer names. */
         layers: object;
       };
       /** List of relationships between components */

@@ -4823,13 +4823,14 @@ paths:
                           - modelReference
                           - component
                     preferences:
+                      x-go-type: DesignPreferences
                       type: object
                       description: Design-level preferences
                       x-order: 7
                       properties:
                         layers:
                           type: object
-                          description: List of available layers
+                          description: Map of available layers, where keys are layer names.
                       required:
                         - layers
                     relationships:
@@ -9716,13 +9717,16 @@ paths:
                             - modelReference
                             - component
                       preferences:
+                        x-go-type: DesignPreferences
                         type: object
                         description: Design-level preferences
                         x-order: 7
                         properties:
                           layers:
                             type: object
-                            description: List of available layers
+                            description: >-
+                              Map of available layers, where keys are layer
+                              names.
                         required:
                           - layers
                       relationships:
@@ -21301,13 +21305,14 @@ components:
               - modelReference
               - component
         preferences:
+          x-go-type: DesignPreferences
           type: object
           description: Design-level preferences
           x-order: 7
           properties:
             layers:
               type: object
-              description: List of available layers
+              description: Map of available layers, where keys are layer names.
           required:
             - layers
         relationships:
@@ -26093,13 +26098,14 @@ components:
                   - modelReference
                   - component
             preferences:
+              x-go-type: DesignPreferences
               type: object
               description: Design-level preferences
               x-order: 7
               properties:
                 layers:
                   type: object
-                  description: List of available layers
+                  description: Map of available layers, where keys are layer names.
               required:
                 - layers
             relationships:
@@ -31019,13 +31025,14 @@ components:
                         - modelReference
                         - component
                   preferences:
+                    x-go-type: DesignPreferences
                     type: object
                     description: Design-level preferences
                     x-order: 7
                     properties:
                       layers:
                         type: object
-                        description: List of available layers
+                        description: Map of available layers, where keys are layer names.
                     required:
                       - layers
                   relationships:
@@ -35975,13 +35982,14 @@ components:
                       - modelReference
                       - component
                 preferences:
+                  x-go-type: DesignPreferences
                   type: object
                   description: Design-level preferences
                   x-order: 7
                   properties:
                     layers:
                       type: object
-                      description: List of available layers
+                      description: Map of available layers, where keys are layer names.
                   required:
                     - layers
                 relationships:
@@ -38461,6 +38469,16 @@ components:
             Docker Compose, or Meshery Design. See [Import Designs
             Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui)
             for details
+    design_DesignPreferences:
+      type: object
+      description: Design-level preferences
+      x-order: 7
+      properties:
+        layers:
+          type: object
+          description: Map of available layers, where keys are layer names.
+      required:
+        - layers
     component_ComponentDefinition:
       $id: https://schemas.meshery.io/component.json
       $schema: http://json-schema.org/draft-07/schema#
@@ -45990,13 +46008,14 @@ components:
                   - modelReference
                   - component
             preferences:
+              x-go-type: DesignPreferences
               type: object
               description: Design-level preferences
               x-order: 7
               properties:
                 layers:
                   type: object
-                  description: List of available layers
+                  description: Map of available layers, where keys are layer names.
               required:
                 - layers
             relationships:
@@ -50705,13 +50724,14 @@ components:
                   - modelReference
                   - component
             preferences:
+              x-go-type: DesignPreferences
               type: object
               description: Design-level preferences
               x-order: 7
               properties:
                 layers:
                   type: object
-                  description: List of available layers
+                  description: Map of available layers, where keys are layer names.
               required:
                 - layers
             relationships:

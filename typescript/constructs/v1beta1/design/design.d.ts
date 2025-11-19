@@ -329,18 +329,7 @@ export interface DesignSchema {
    * @minItems 0
    */
   components: HttpsSchemasMesheryIoComponentJson[];
-  /**
-   * Design-level preferences
-   */
-  preferences?: {
-    /**
-     * List of available layers
-     */
-    layers: {
-      [k: string]: unknown;
-    };
-    [k: string]: unknown;
-  };
+  preferences?: DesignPreferences;
   /**
    * List of relationships between components
    */
@@ -920,6 +909,18 @@ export interface Component {
    * JSON schema of the object as defined by the registrant.
    */
   schema: string;
+  [k: string]: unknown;
+}
+/**
+ * Design-level preferences
+ */
+export interface DesignPreferences {
+  /**
+   * Map of available layers, where keys are layer names.
+   */
+  layers: {
+    [k: string]: unknown;
+  };
   [k: string]: unknown;
 }
 /**

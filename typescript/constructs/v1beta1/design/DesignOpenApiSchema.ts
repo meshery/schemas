@@ -2304,13 +2304,14 @@ const schema = {
             }
           },
           "preferences": {
+            "x-go-type": "DesignPreferences",
             "type": "object",
             "description": "Design-level preferences",
             "x-order": 7,
             "properties": {
               "layers": {
                 "type": "object",
-                "description": "List of available layers"
+                "description": "Map of available layers, where keys are layer names."
               }
             },
             "required": [
@@ -6891,13 +6892,14 @@ const schema = {
                 }
               },
               "preferences": {
+                "x-go-type": "DesignPreferences",
                 "type": "object",
                 "description": "Design-level preferences",
                 "x-order": 7,
                 "properties": {
                   "layers": {
                     "type": "object",
-                    "description": "List of available layers"
+                    "description": "Map of available layers, where keys are layer names."
                   }
                 },
                 "required": [
@@ -11510,13 +11512,14 @@ const schema = {
                       }
                     },
                     "preferences": {
+                      "x-go-type": "DesignPreferences",
                       "type": "object",
                       "description": "Design-level preferences",
                       "x-order": 7,
                       "properties": {
                         "layers": {
                           "type": "object",
-                          "description": "List of available layers"
+                          "description": "Map of available layers, where keys are layer names."
                         }
                       },
                       "required": [
@@ -16161,13 +16164,14 @@ const schema = {
                     }
                   },
                   "preferences": {
+                    "x-go-type": "DesignPreferences",
                     "type": "object",
                     "description": "Design-level preferences",
                     "x-order": 7,
                     "properties": {
                       "layers": {
                         "type": "object",
-                        "description": "List of available layers"
+                        "description": "Map of available layers, where keys are layer names."
                       }
                     },
                     "required": [
@@ -18488,6 +18492,20 @@ const schema = {
             "description": "Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details"
           }
         }
+      },
+      "DesignPreferences": {
+        "type": "object",
+        "description": "Design-level preferences",
+        "x-order": 7,
+        "properties": {
+          "layers": {
+            "type": "object",
+            "description": "Map of available layers, where keys are layer names."
+          }
+        },
+        "required": [
+          "layers"
+        ]
       }
     }
   },

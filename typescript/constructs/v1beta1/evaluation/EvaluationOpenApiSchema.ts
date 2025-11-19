@@ -2240,13 +2240,14 @@ const schema = {
                         }
                       },
                       "preferences": {
+                        "x-go-type": "DesignPreferences",
                         "type": "object",
                         "description": "Design-level preferences",
                         "x-order": 7,
                         "properties": {
                           "layers": {
                             "type": "object",
-                            "description": "List of available layers"
+                            "description": "Map of available layers, where keys are layer names."
                           }
                         },
                         "required": [
@@ -6752,13 +6753,14 @@ const schema = {
                           }
                         },
                         "preferences": {
+                          "x-go-type": "DesignPreferences",
                           "type": "object",
                           "description": "Design-level preferences",
                           "x-order": 7,
                           "properties": {
                             "layers": {
                               "type": "object",
-                              "description": "List of available layers"
+                              "description": "Map of available layers, where keys are layer names."
                             }
                           },
                           "required": [
@@ -11288,13 +11290,14 @@ const schema = {
                 }
               },
               "preferences": {
+                "x-go-type": "DesignPreferences",
                 "type": "object",
                 "description": "Design-level preferences",
                 "x-order": 7,
                 "properties": {
                   "layers": {
                     "type": "object",
-                    "description": "List of available layers"
+                    "description": "Map of available layers, where keys are layer names."
                   }
                 },
                 "required": [
@@ -15792,13 +15795,14 @@ const schema = {
                 }
               },
               "preferences": {
+                "x-go-type": "DesignPreferences",
                 "type": "object",
                 "description": "Design-level preferences",
                 "x-order": 7,
                 "properties": {
                   "layers": {
                     "type": "object",
-                    "description": "List of available layers"
+                    "description": "Map of available layers, where keys are layer names."
                   }
                 },
                 "required": [
