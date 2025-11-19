@@ -119,3 +119,92 @@ node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/meshery_op
 # Generate rtk query api
 npx --yes @rtk-query/codegen-openapi typescript/rtk/cloud-rtk-config.ts
 npx --yes @rtk-query/codegen-openapi typescript/rtk/meshery-rtk-config.ts
+
+# Publish latest construct links into `index.md`.
+publish_latest_links() {
+    local script_dir root_dir src out_md tmp_file map_file
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    root_dir="$(cd "$script_dir/.." && pwd)"
+    src="$root_dir/generate-golang.sh"
+    out_md="$root_dir/index.md"
+
+    if [[ ! -f "$src" || ! -f "$out_md" ]]; then
+        echo "Skipping publish: missing $src or $out_md" >&2
+        return 0
+    fi
+
+    tmp_file="$(mktemp)"
+    map_file="$(mktemp)"
+    trap 'rm -f "$tmp_file" "$map_file"' RETURN
+
+    # Header
+    cat > "$tmp_file" <<'MD'
+<!-- AUTO-GENERATED: LATEST CONSTRUCTS -->
+## Latest Constructs
+
+MD
+    echo "| Construct | Latest | Path |" >> "$tmp_file"
+    echo "|---|---:|---|" >> "$tmp_file"
+
+    # Extract mapping from generate_schema_models
+    perl -nle 'while(/generate_schema_models\s+"([^\"]+)"\s+"([^\"]+)"/g){print "$1|$2"}' "$src" > "$map_file"
+
+    # Emit rows for mapped constructs (preserve order)
+    while IFS='|' read -r pkg ver; do
+        path="schemas/constructs/$ver/$pkg/openapi.yml"
+        gh_link="https://github.com/meshery/schemas/blob/main/$path"
+        printf "| %s | %s | [%s](%s) |\n" "$pkg" "$ver" "$path" "$gh_link" >> "$tmp_file"
+    done < "$map_file"
+
+    # Include JSON-only constructs (directories that lack an OpenAPI bundle)
+    find "$root_dir/schemas/constructs" -type f -iname '*.json' | sort | while IFS= read -r f; do
+        base="$(basename "$f")"
+        case "$base" in *_template.*) continue ;; esac
+        dir="$(dirname "$f")"
+        if [[ -f "$dir/openapi.yml" || -f "$dir/openapi.yaml" || -f "$dir/merged-openapi.yml" ]]; then
+            continue
+        fi
+        name="$(basename "${f%.*}")"
+        # skip duplicates if present in the mapping
+        if grep -q "^${name}|" "$map_file"; then
+            continue
+        fi
+        parent="$(basename "$dir")"
+        if [[ "$parent" == "constructs" ]]; then
+            ver='n/a'
+        else
+            ver="$parent"
+        fi
+        rel="${f#$root_dir/}"
+        gh_link="https://github.com/meshery/schemas/blob/main/$rel"
+        printf "| %s | %s | [%s](%s) |\n" "$name" "$ver" "$rel" "$gh_link" >> "$tmp_file"
+    done
+
+    local start end
+    start='<!-- LATEST-CONSTRUCTS-START -->'
+    end='<!-- LATEST-CONSTRUCTS-END -->'
+
+    # Replace the section between markers atomically
+    if grep -q "$start" "$out_md"; then
+        awk -v s="$start" -v e="$end" -v t="$tmp_file" '
+            BEGIN{inside=0}
+            { if(index($0,s)){ print; system("cat " t); inside=1; next }
+              if(inside){ if(index($0,e)){ print; inside=0 } else next }
+              else print }
+        ' "$out_md" > "$out_md.tmp" && mv "$out_md.tmp" "$out_md"
+        echo "Updated $out_md with latest construct links."
+    else
+        cat >> "$out_md" <<EOF
+
+$start
+$(cat "$tmp_file")
+$end
+EOF
+        echo "Appended latest construct links to $out_md."
+    fi
+
+    return 0
+}
+
+# Run publish step (inlined)
+publish_latest_links || true
