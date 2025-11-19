@@ -262,6 +262,8 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
     id: string;
     /** Name of the design; a descriptive, but concise title for the design document. */
     name: string;
+    /** A written representation of the purpose and characteristics of the design. */
+    description?: string;
     /** Specifies the version of the schema to which the design conforms. */
     schemaVersion: string;
     /** Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number. */
@@ -1297,6 +1299,8 @@ export type PostEvaluateApiArg = {
       id: string;
       /** Name of the design; a descriptive, but concise title for the design document. */
       name: string;
+      /** A written representation of the purpose and characteristics of the design. */
+      description?: string;
       /** Specifies the version of the schema to which the design conforms. */
       schemaVersion: string;
       /** Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number. */

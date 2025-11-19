@@ -118,9 +118,18 @@ const schema = {
             "description": "Name of the design; a descriptive, but concise title for the design document.",
             "x-order": 2
           },
+          "description": {
+            "type": "string",
+            "description": "A written representation of the purpose and characteristics of the design.",
+            "x-order": 3,
+            "x-oapi-codegen-extra-tags": {
+              "yaml": "description,omitempty",
+              "json": "description,omitempty"
+            }
+          },
           "schemaVersion": {
             "description": "Specifies the version of the schema to which the design conforms.",
-            "x-order": 3,
+            "x-order": 4,
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
@@ -134,7 +143,7 @@ const schema = {
           },
           "version": {
             "default": "v0.0.1",
-            "x-order": 4,
+            "x-order": 5,
             "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
             "minLength": 1,
             "maxLength": 50,
@@ -143,7 +152,7 @@ const schema = {
           },
           "metadata": {
             "type": "object",
-            "x-order": 5,
+            "x-order": 6,
             "additionalProperties": true,
             "properties": {
               "resolvedAliases": {
@@ -233,7 +242,7 @@ const schema = {
           "components": {
             "description": "A list of one or more component declarations.",
             "minItems": 0,
-            "x-order": 6,
+            "x-order": 7,
             "type": "array",
             "items": {
               "x-go-type": "*component.ComponentDefinition",
@@ -2306,7 +2315,7 @@ const schema = {
           "preferences": {
             "type": "object",
             "description": "Design-level preferences",
-            "x-order": 7,
+            "x-order": 8,
             "properties": {
               "layers": {
                 "type": "object",
@@ -2320,7 +2329,7 @@ const schema = {
           "relationships": {
             "description": "List of relationships between components",
             "type": "array",
-            "x-order": 8,
+            "x-order": 9,
             "items": {
               "x-go-type": "*relationship.RelationshipDefinition",
               "x-go-type-import": {
@@ -4705,9 +4714,18 @@ const schema = {
                 "description": "Name of the design; a descriptive, but concise title for the design document.",
                 "x-order": 2
               },
+              "description": {
+                "type": "string",
+                "description": "A written representation of the purpose and characteristics of the design.",
+                "x-order": 3,
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "description,omitempty",
+                  "json": "description,omitempty"
+                }
+              },
               "schemaVersion": {
                 "description": "Specifies the version of the schema to which the design conforms.",
-                "x-order": 3,
+                "x-order": 4,
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
@@ -4721,7 +4739,7 @@ const schema = {
               },
               "version": {
                 "default": "v0.0.1",
-                "x-order": 4,
+                "x-order": 5,
                 "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
                 "minLength": 1,
                 "maxLength": 50,
@@ -4730,7 +4748,7 @@ const schema = {
               },
               "metadata": {
                 "type": "object",
-                "x-order": 5,
+                "x-order": 6,
                 "additionalProperties": true,
                 "properties": {
                   "resolvedAliases": {
@@ -4820,7 +4838,7 @@ const schema = {
               "components": {
                 "description": "A list of one or more component declarations.",
                 "minItems": 0,
-                "x-order": 6,
+                "x-order": 7,
                 "type": "array",
                 "items": {
                   "x-go-type": "*component.ComponentDefinition",
@@ -6893,7 +6911,7 @@ const schema = {
               "preferences": {
                 "type": "object",
                 "description": "Design-level preferences",
-                "x-order": 7,
+                "x-order": 8,
                 "properties": {
                   "layers": {
                     "type": "object",
@@ -6907,7 +6925,7 @@ const schema = {
               "relationships": {
                 "description": "List of relationships between components",
                 "type": "array",
-                "x-order": 8,
+                "x-order": 9,
                 "items": {
                   "x-go-type": "*relationship.RelationshipDefinition",
                   "x-go-type-import": {
@@ -9324,9 +9342,18 @@ const schema = {
                       "description": "Name of the design; a descriptive, but concise title for the design document.",
                       "x-order": 2
                     },
+                    "description": {
+                      "type": "string",
+                      "description": "A written representation of the purpose and characteristics of the design.",
+                      "x-order": 3,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "description,omitempty",
+                        "json": "description,omitempty"
+                      }
+                    },
                     "schemaVersion": {
                       "description": "Specifies the version of the schema to which the design conforms.",
-                      "x-order": 3,
+                      "x-order": 4,
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
@@ -9340,7 +9367,7 @@ const schema = {
                     },
                     "version": {
                       "default": "v0.0.1",
-                      "x-order": 4,
+                      "x-order": 5,
                       "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
                       "minLength": 1,
                       "maxLength": 50,
@@ -9349,7 +9376,7 @@ const schema = {
                     },
                     "metadata": {
                       "type": "object",
-                      "x-order": 5,
+                      "x-order": 6,
                       "additionalProperties": true,
                       "properties": {
                         "resolvedAliases": {
@@ -9439,7 +9466,7 @@ const schema = {
                     "components": {
                       "description": "A list of one or more component declarations.",
                       "minItems": 0,
-                      "x-order": 6,
+                      "x-order": 7,
                       "type": "array",
                       "items": {
                         "x-go-type": "*component.ComponentDefinition",
@@ -11512,7 +11539,7 @@ const schema = {
                     "preferences": {
                       "type": "object",
                       "description": "Design-level preferences",
-                      "x-order": 7,
+                      "x-order": 8,
                       "properties": {
                         "layers": {
                           "type": "object",
@@ -11526,7 +11553,7 @@ const schema = {
                     "relationships": {
                       "description": "List of relationships between components",
                       "type": "array",
-                      "x-order": 8,
+                      "x-order": 9,
                       "items": {
                         "x-go-type": "*relationship.RelationshipDefinition",
                         "x-go-type-import": {
@@ -13975,9 +14002,18 @@ const schema = {
                     "description": "Name of the design; a descriptive, but concise title for the design document.",
                     "x-order": 2
                   },
+                  "description": {
+                    "type": "string",
+                    "description": "A written representation of the purpose and characteristics of the design.",
+                    "x-order": 3,
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "description,omitempty",
+                      "json": "description,omitempty"
+                    }
+                  },
                   "schemaVersion": {
                     "description": "Specifies the version of the schema to which the design conforms.",
-                    "x-order": 3,
+                    "x-order": 4,
                     "type": "string",
                     "minLength": 2,
                     "maxLength": 100,
@@ -13991,7 +14027,7 @@ const schema = {
                   },
                   "version": {
                     "default": "v0.0.1",
-                    "x-order": 4,
+                    "x-order": 5,
                     "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
                     "minLength": 1,
                     "maxLength": 50,
@@ -14000,7 +14036,7 @@ const schema = {
                   },
                   "metadata": {
                     "type": "object",
-                    "x-order": 5,
+                    "x-order": 6,
                     "additionalProperties": true,
                     "properties": {
                       "resolvedAliases": {
@@ -14090,7 +14126,7 @@ const schema = {
                   "components": {
                     "description": "A list of one or more component declarations.",
                     "minItems": 0,
-                    "x-order": 6,
+                    "x-order": 7,
                     "type": "array",
                     "items": {
                       "x-go-type": "*component.ComponentDefinition",
@@ -16163,7 +16199,7 @@ const schema = {
                   "preferences": {
                     "type": "object",
                     "description": "Design-level preferences",
-                    "x-order": 7,
+                    "x-order": 8,
                     "properties": {
                       "layers": {
                         "type": "object",
@@ -16177,7 +16213,7 @@ const schema = {
                   "relationships": {
                     "description": "List of relationships between components",
                     "type": "array",
-                    "x-order": 8,
+                    "x-order": 9,
                     "items": {
                       "x-go-type": "*relationship.RelationshipDefinition",
                       "x-go-type-import": {
