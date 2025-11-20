@@ -314,6 +314,22 @@
         "gorm": "type:bytes;serializer:json"
       },
       "x-go-type": "Component"
+    },
+    "created_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
+        "db": "created_at",
+        "yaml": "created_at"
+      },
+      "x-order": 14
+    },
+    "updated_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "x-oapi-codegen-extra-tags": {
+        "db": "updated_at",
+        "yaml": "updated_at"
+      },
+      "x-order": 15
     }
   },
   "required": [

@@ -1320,6 +1320,26 @@ const schema = {
                         "yaml": "relationships_count"
                       },
                       "default": 0
+                    },
+                    "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
+                      "x-order": 14,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
+                      "x-order": 15,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
                     }
                   },
                   "required": [
@@ -2286,6 +2306,26 @@ const schema = {
                     "kind",
                     "schema"
                   ]
+                },
+                "created_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
+                  "x-order": 14,
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updated_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
+                  "x-order": 15,
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
                 }
               },
               "required": [
@@ -4555,6 +4595,24 @@ const schema = {
                       }
                     }
                   }
+                },
+                "created_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updated_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
                 }
               }
             }
@@ -5908,6 +5966,26 @@ const schema = {
                             "yaml": "relationships_count"
                           },
                           "default": 0
+                        },
+                        "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
+                          "x-order": 14,
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
+                          "x-order": 15,
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
                         }
                       },
                       "required": [
@@ -6874,6 +6952,26 @@ const schema = {
                         "kind",
                         "schema"
                       ]
+                    },
+                    "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
+                      "x-order": 14,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
+                      "x-order": 15,
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
                     }
                   },
                   "required": [
@@ -9143,6 +9241,24 @@ const schema = {
                           }
                         }
                       }
+                    },
+                    "created_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updated_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
                     }
                   }
                 }
@@ -10528,6 +10644,26 @@ const schema = {
                                   "yaml": "relationships_count"
                                 },
                                 "default": 0
+                              },
+                              "created_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "created_at",
+                                  "yaml": "created_at"
+                                },
+                                "x-order": 14,
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
+                              },
+                              "updated_at": {
+                                "x-oapi-codegen-extra-tags": {
+                                  "db": "updated_at",
+                                  "yaml": "updated_at"
+                                },
+                                "x-order": 15,
+                                "type": "string",
+                                "format": "date-time",
+                                "x-go-type-skip-optional-pointer": true
                               }
                             },
                             "required": [
@@ -11494,6 +11630,26 @@ const schema = {
                               "kind",
                               "schema"
                             ]
+                          },
+                          "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "x-order": 14,
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
+                            "x-order": 15,
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
                           }
                         },
                         "required": [
@@ -13763,6 +13919,24 @@ const schema = {
                                 }
                               }
                             }
+                          },
+                          "created_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
                           }
                         }
                       }
@@ -15180,6 +15354,26 @@ const schema = {
                                 "yaml": "relationships_count"
                               },
                               "default": 0
+                            },
+                            "created_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "created_at",
+                                "yaml": "created_at"
+                              },
+                              "x-order": 14,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
+                            },
+                            "updated_at": {
+                              "x-oapi-codegen-extra-tags": {
+                                "db": "updated_at",
+                                "yaml": "updated_at"
+                              },
+                              "x-order": 15,
+                              "type": "string",
+                              "format": "date-time",
+                              "x-go-type-skip-optional-pointer": true
                             }
                           },
                           "required": [
@@ -16146,6 +16340,26 @@ const schema = {
                             "kind",
                             "schema"
                           ]
+                        },
+                        "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
+                          "x-order": 14,
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
+                          "x-order": 15,
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
                         }
                       },
                       "required": [
@@ -18415,6 +18629,24 @@ const schema = {
                               }
                             }
                           }
+                        },
+                        "created_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "created_at",
+                            "yaml": "created_at"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
+                        },
+                        "updated_at": {
+                          "x-oapi-codegen-extra-tags": {
+                            "db": "updated_at",
+                            "yaml": "updated_at"
+                          },
+                          "type": "string",
+                          "format": "date-time",
+                          "x-go-type-skip-optional-pointer": true
                         }
                       }
                     }

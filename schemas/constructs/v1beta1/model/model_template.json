@@ -54,5 +54,7 @@
     "version": "v0.0.1"
   },
   "componentsCount": 0,
-  "relationshipsCount": 0
+  "relationshipsCount": 0,
+  "created_at": "0001-01-01T00:00:00Z",
+  "updated_at": "0001-01-01T00:00:00Z"
 }

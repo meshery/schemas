@@ -2263,6 +2263,22 @@ paths:
                                   json: relationships_count
                                   yaml: relationships_count
                                 default: 0
+                              created_at:
+                                x-oapi-codegen-extra-tags:
+                                  db: created_at
+                                  yaml: created_at
+                                x-order: 14
+                                type: string
+                                format: date-time
+                                x-go-type-skip-optional-pointer: true
+                              updated_at:
+                                x-oapi-codegen-extra-tags:
+                                  db: updated_at
+                                  yaml: updated_at
+                                x-order: 15
+                                type: string
+                                format: date-time
+                                x-go-type-skip-optional-pointer: true
                             required:
                               - id
                               - schemaVersion
@@ -3332,6 +3348,22 @@ paths:
                               - version
                               - kind
                               - schema
+                          created_at:
+                            x-oapi-codegen-extra-tags:
+                              db: created_at
+                              yaml: created_at
+                            x-order: 14
+                            type: string
+                            format: date-time
+                            x-go-type-skip-optional-pointer: true
+                          updated_at:
+                            x-oapi-codegen-extra-tags:
+                              db: updated_at
+                              yaml: updated_at
+                            x-order: 15
+                            type: string
+                            format: date-time
+                            x-go-type-skip-optional-pointer: true
                         required:
                           - id
                           - displayName
@@ -5776,6 +5808,20 @@ paths:
                                           Optional fields that are a part of the
                                           `from` selector. Absence of a field has
                                           an implied * meaning.
+                          created_at:
+                            x-oapi-codegen-extra-tags:
+                              db: created_at
+                              yaml: created_at
+                            type: string
+                            format: date-time
+                            x-go-type-skip-optional-pointer: true
+                          updated_at:
+                            x-oapi-codegen-extra-tags:
+                              db: updated_at
+                              yaml: updated_at
+                            type: string
+                            format: date-time
+                            x-go-type-skip-optional-pointer: true
                   required:
                     - id
                     - name
@@ -7145,6 +7191,22 @@ paths:
                                     json: relationships_count
                                     yaml: relationships_count
                                   default: 0
+                                created_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: created_at
+                                    yaml: created_at
+                                  x-order: 14
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
+                                updated_at:
+                                  x-oapi-codegen-extra-tags:
+                                    db: updated_at
+                                    yaml: updated_at
+                                  x-order: 15
+                                  type: string
+                                  format: date-time
+                                  x-go-type-skip-optional-pointer: true
                               required:
                                 - id
                                 - schemaVersion
@@ -8226,6 +8288,22 @@ paths:
                                 - version
                                 - kind
                                 - schema
+                            created_at:
+                              x-oapi-codegen-extra-tags:
+                                db: created_at
+                                yaml: created_at
+                              x-order: 14
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
+                            updated_at:
+                              x-oapi-codegen-extra-tags:
+                                db: updated_at
+                                yaml: updated_at
+                              x-order: 15
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
                           required:
                             - id
                             - displayName
@@ -10676,6 +10754,20 @@ paths:
                                             Optional fields that are a part of the
                                             `from` selector. Absence of a field has
                                             an implied * meaning.
+                            created_at:
+                              x-oapi-codegen-extra-tags:
+                                db: created_at
+                                yaml: created_at
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
+                            updated_at:
+                              x-oapi-codegen-extra-tags:
+                                db: updated_at
+                                yaml: updated_at
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
                     required:
                       - id
                       - name
@@ -11973,6 +12065,22 @@ components:
                       json: relationships_count
                       yaml: relationships_count
                     default: 0
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    x-order: 14
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    x-order: 15
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
                 required:
                   - id
                   - schemaVersion
@@ -12961,6 +13069,22 @@ components:
                   - version
                   - kind
                   - schema
+              created_at:
+                x-oapi-codegen-extra-tags:
+                  db: created_at
+                  yaml: created_at
+                x-order: 14
+                type: string
+                format: date-time
+                x-go-type-skip-optional-pointer: true
+              updated_at:
+                x-oapi-codegen-extra-tags:
+                  db: updated_at
+                  yaml: updated_at
+                x-order: 15
+                type: string
+                format: date-time
+                x-go-type-skip-optional-pointer: true
             required:
               - id
               - displayName
@@ -15345,6 +15469,20 @@ components:
                               Optional fields that are a part of the `from`
                               selector. Absence of a field has an implied *
                               meaning.
+              created_at:
+                x-oapi-codegen-extra-tags:
+                  db: created_at
+                  yaml: created_at
+                type: string
+                format: date-time
+                x-go-type-skip-optional-pointer: true
+              updated_at:
+                x-oapi-codegen-extra-tags:
+                  db: updated_at
+                  yaml: updated_at
+                type: string
+                format: date-time
+                x-go-type-skip-optional-pointer: true
       required:
         - id
         - name
@@ -16741,6 +16879,22 @@ components:
                           json: relationships_count
                           yaml: relationships_count
                         default: 0
+                      created_at:
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          yaml: created_at
+                        x-order: 14
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updated_at:
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          yaml: updated_at
+                        x-order: 15
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
                     required:
                       - id
                       - schemaVersion
@@ -17754,6 +17908,22 @@ components:
                       - version
                       - kind
                       - schema
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    x-order: 14
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    x-order: 15
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
                 required:
                   - id
                   - displayName
@@ -20159,6 +20329,20 @@ components:
                                   Optional fields that are a part of the `from`
                                   selector. Absence of a field has an implied *
                                   meaning.
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
           required:
             - id
             - name
@@ -21624,6 +21808,22 @@ components:
                                 json: relationships_count
                                 yaml: relationships_count
                               default: 0
+                            created_at:
+                              x-oapi-codegen-extra-tags:
+                                db: created_at
+                                yaml: created_at
+                              x-order: 14
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
+                            updated_at:
+                              x-oapi-codegen-extra-tags:
+                                db: updated_at
+                                yaml: updated_at
+                              x-order: 15
+                              type: string
+                              format: date-time
+                              x-go-type-skip-optional-pointer: true
                           required:
                             - id
                             - schemaVersion
@@ -22681,6 +22881,22 @@ components:
                             - version
                             - kind
                             - schema
+                        created_at:
+                          x-oapi-codegen-extra-tags:
+                            db: created_at
+                            yaml: created_at
+                          x-order: 14
+                          type: string
+                          format: date-time
+                          x-go-type-skip-optional-pointer: true
+                        updated_at:
+                          x-oapi-codegen-extra-tags:
+                            db: updated_at
+                            yaml: updated_at
+                          x-order: 15
+                          type: string
+                          format: date-time
+                          x-go-type-skip-optional-pointer: true
                       required:
                         - id
                         - displayName
@@ -25122,6 +25338,20 @@ components:
                                         Optional fields that are a part of the
                                         `from` selector. Absence of a field has
                                         an implied * meaning.
+                        created_at:
+                          x-oapi-codegen-extra-tags:
+                            db: created_at
+                            yaml: created_at
+                          type: string
+                          format: date-time
+                          x-go-type-skip-optional-pointer: true
+                        updated_at:
+                          x-oapi-codegen-extra-tags:
+                            db: updated_at
+                            yaml: updated_at
+                          type: string
+                          format: date-time
+                          x-go-type-skip-optional-pointer: true
                 required:
                   - id
                   - name
@@ -26596,6 +26826,22 @@ components:
                               json: relationships_count
                               yaml: relationships_count
                             default: 0
+                          created_at:
+                            x-oapi-codegen-extra-tags:
+                              db: created_at
+                              yaml: created_at
+                            x-order: 14
+                            type: string
+                            format: date-time
+                            x-go-type-skip-optional-pointer: true
+                          updated_at:
+                            x-oapi-codegen-extra-tags:
+                              db: updated_at
+                              yaml: updated_at
+                            x-order: 15
+                            type: string
+                            format: date-time
+                            x-go-type-skip-optional-pointer: true
                         required:
                           - id
                           - schemaVersion
@@ -27638,6 +27884,22 @@ components:
                           - version
                           - kind
                           - schema
+                      created_at:
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          yaml: created_at
+                        x-order: 14
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updated_at:
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          yaml: updated_at
+                        x-order: 15
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
                     required:
                       - id
                       - displayName
@@ -30068,6 +30330,20 @@ components:
                                       Optional fields that are a part of the
                                       `from` selector. Absence of a field has an
                                       implied * meaning.
+                      created_at:
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          yaml: created_at
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updated_at:
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          yaml: updated_at
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
               required:
                 - id
                 - name
@@ -31216,6 +31492,22 @@ components:
                 json: relationships_count
                 yaml: relationships_count
               default: 0
+            created_at:
+              x-oapi-codegen-extra-tags:
+                db: created_at
+                yaml: created_at
+              x-order: 14
+              type: string
+              format: date-time
+              x-go-type-skip-optional-pointer: true
+            updated_at:
+              x-oapi-codegen-extra-tags:
+                db: updated_at
+                yaml: updated_at
+              x-order: 15
+              type: string
+              format: date-time
+              x-go-type-skip-optional-pointer: true
           required:
             - id
             - schemaVersion
@@ -32172,6 +32464,22 @@ components:
             - version
             - kind
             - schema
+        created_at:
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            yaml: created_at
+          x-order: 14
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+        updated_at:
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            yaml: updated_at
+          x-order: 15
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
       required:
         - id
         - displayName
@@ -33211,6 +33519,22 @@ components:
             json: relationships_count
             yaml: relationships_count
           default: 0
+        created_at:
+          x-oapi-codegen-extra-tags:
+            db: created_at
+            yaml: created_at
+          x-order: 14
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
+        updated_at:
+          x-oapi-codegen-extra-tags:
+            db: updated_at
+            yaml: updated_at
+          x-order: 15
+          type: string
+          format: date-time
+          x-go-type-skip-optional-pointer: true
       required:
         - id
         - schemaVersion
@@ -36651,6 +36975,22 @@ components:
                           json: relationships_count
                           yaml: relationships_count
                         default: 0
+                      created_at:
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          yaml: created_at
+                        x-order: 14
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updated_at:
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          yaml: updated_at
+                        x-order: 15
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
                     required:
                       - id
                       - schemaVersion
@@ -37664,6 +38004,22 @@ components:
                       - version
                       - kind
                       - schema
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    x-order: 14
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    x-order: 15
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
                 required:
                   - id
                   - displayName
@@ -40069,6 +40425,20 @@ components:
                                   Optional fields that are a part of the `from`
                                   selector. Absence of a field has an implied *
                                   meaning.
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
           required:
             - id
             - name
@@ -41367,6 +41737,22 @@ components:
                           json: relationships_count
                           yaml: relationships_count
                         default: 0
+                      created_at:
+                        x-oapi-codegen-extra-tags:
+                          db: created_at
+                          yaml: created_at
+                        x-order: 14
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
+                      updated_at:
+                        x-oapi-codegen-extra-tags:
+                          db: updated_at
+                          yaml: updated_at
+                        x-order: 15
+                        type: string
+                        format: date-time
+                        x-go-type-skip-optional-pointer: true
                     required:
                       - id
                       - schemaVersion
@@ -42380,6 +42766,22 @@ components:
                       - version
                       - kind
                       - schema
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    x-order: 14
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    x-order: 15
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
                 required:
                   - id
                   - displayName
@@ -44785,6 +45187,20 @@ components:
                                   Optional fields that are a part of the `from`
                                   selector. Absence of a field has an implied *
                                   meaning.
+                  created_at:
+                    x-oapi-codegen-extra-tags:
+                      db: created_at
+                      yaml: created_at
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
+                  updated_at:
+                    x-oapi-codegen-extra-tags:
+                      db: updated_at
+                      yaml: updated_at
+                    type: string
+                    format: date-time
+                    x-go-type-skip-optional-pointer: true
           required:
             - id
             - name
