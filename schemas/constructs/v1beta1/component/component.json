@@ -314,6 +314,14 @@
         "gorm": "type:bytes;serializer:json"
       },
       "x-go-type": "Component"
+    },
+    "created_at": {
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/created_at",
+      "x-order": 14
+    },
+    "updated_at": {
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/updated_at",
+      "x-order": 15
     }
   },
   "required": [
