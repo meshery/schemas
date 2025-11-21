@@ -525,8 +525,6 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
         componentsCount: number;
         /** Number of relationships associated with the model. */
         relationshipsCount: number;
-        created_at?: string;
-        updated_at?: string;
       };
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
       modelReference: {
@@ -770,8 +768,6 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
         /** JSON schema of the object as defined by the registrant. */
         schema: string;
       };
-      created_at?: string;
-      updated_at?: string;
     }[];
     /** Design-level preferences */
     preferences?: {
@@ -1285,8 +1281,6 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           }[];
         };
       }[];
-      created_at?: string;
-      updated_at?: string;
     }[];
   };
   /** Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results. */
@@ -1566,8 +1560,6 @@ export type PostEvaluateApiArg = {
           componentsCount: number;
           /** Number of relationships associated with the model. */
           relationshipsCount: number;
-          created_at?: string;
-          updated_at?: string;
         };
         /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
         modelReference: {
@@ -1811,8 +1803,6 @@ export type PostEvaluateApiArg = {
           /** JSON schema of the object as defined by the registrant. */
           schema: string;
         };
-        created_at?: string;
-        updated_at?: string;
       }[];
       /** Design-level preferences */
       preferences?: {
@@ -2326,8 +2316,6 @@ export type PostEvaluateApiArg = {
             }[];
           };
         }[];
-        created_at?: string;
-        updated_at?: string;
       }[];
     };
     options?: {

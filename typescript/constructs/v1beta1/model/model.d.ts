@@ -178,8 +178,6 @@ export interface HttpsSchemasMesheryIoModelJson {
    * Number of relationships associated with the model.
    */
   relationshipsCount: number;
-  created_at?: string;
-  updated_at?: string;
 }
 /**
  * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections

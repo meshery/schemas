@@ -4,8 +4,6 @@
 package relationship
 
 import (
-	"time"
-
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/v1alpha1/capability"
 	"github.com/meshery/schemas/models/v1beta1/model"
@@ -212,9 +210,6 @@ type RelationshipDefinition struct {
 
 	// Version Specifies the version of the relationship definition.
 	Version string `json:"version" yaml:"version"`
-
-	CreatedAt time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // RelationshipDefinitionCapabilitiesEntityState defines model for RelationshipDefinition.Capabilities.EntityState.

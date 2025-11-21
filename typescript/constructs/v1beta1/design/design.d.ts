@@ -441,8 +441,6 @@ export interface HttpsSchemasMesheryIoComponentJson {
     [k: string]: unknown;
   };
   component: Component;
-  created_at?: string;
-  updated_at?: string;
 }
 /**
  * Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
@@ -566,8 +564,6 @@ export interface HttpsSchemasMesheryIoModelJson {
    * Number of relationships associated with the model.
    */
   relationshipsCount: number;
-  created_at?: string;
-  updated_at?: string;
 }
 /**
  * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
@@ -1550,8 +1546,6 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
       [k: string]: unknown;
     };
   }[];
-  created_at?: string;
-  updated_at?: string;
 }
 /**
  * Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
