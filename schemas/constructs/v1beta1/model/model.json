@@ -292,6 +292,14 @@
         "yaml": "relationships_count"
       },
       "default": 0
+    },
+    "created_at": {
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/created_at",
+      "x-order": 14
+    },
+    "updated_at": {
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/updated_at",
+      "x-order": 15
     }
   },
   "required": [
