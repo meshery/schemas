@@ -6,6 +6,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/v1alpha1/capability"
@@ -210,9 +211,15 @@ type ModelDefinition struct {
 	ComponentsCount int `gorm:"-" json:"components_count" yaml:"components_count"`
 
 	// RelationshipsCount Number of relationships associated with the model.
-	RelationshipsCount int         `gorm:"-" json:"relationships_count" yaml:"relationships_count"`
-	Components         interface{} `gorm:"-" json:"components" yaml:"components"`
-	Relationships      interface{} `gorm:"-" json:"relationships" yaml:"relationships"`
+	RelationshipsCount int `gorm:"-" json:"relationships_count" yaml:"relationships_count"`
+
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt     time.Time   `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Components    interface{} `gorm:"-" json:"components" yaml:"components"`
+	Relationships interface{} `gorm:"-" json:"relationships" yaml:"relationships"`
 }
 
 // ModelDefinitionStatus Status of model, including:

@@ -289,6 +289,14 @@ export interface HttpsSchemasMesheryIoModelJson {
    * Number of relationships associated with the model.
    */
   relationshipsCount: number;
+  /**
+   * Timestamp when the resource was created.
+   */
+  created_at?: string;
+  /**
+   * Timestamp when the resource was updated.
+   */
+  updated_at?: string;
 }
 /**
  * Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
@@ -592,6 +600,14 @@ export interface HttpsSchemasMesheryIoModelJson1 {
    * Number of relationships associated with the model.
    */
   relationshipsCount: number;
+  /**
+   * Timestamp when the resource was created.
+   */
+  created_at?: string;
+  /**
+   * Timestamp when the resource was updated.
+   */
+  updated_at?: string;
 }
 /**
  * Model of the component. Learn more at https://docs.meshery.io/concepts/models
@@ -715,4 +731,12 @@ export interface HttpsSchemasMesheryIoModelJson2 {
    * Number of relationships associated with the model.
    */
   relationshipsCount: number;
+  /**
+   * Timestamp when the resource was created.
+   */
+  created_at?: string;
+  /**
+   * Timestamp when the resource was updated.
+   */
+  updated_at?: string;
 }

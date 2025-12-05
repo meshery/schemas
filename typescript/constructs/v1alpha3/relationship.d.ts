@@ -628,6 +628,14 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
       [k: string]: unknown;
     };
   }[];
+  /**
+   * Timestamp when the resource was created.
+   */
+  created_at?: string;
+  /**
+   * Timestamp when the resource was updated.
+   */
+  updated_at?: string;
 }
 /**
  * Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models

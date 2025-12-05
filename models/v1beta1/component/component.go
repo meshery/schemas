@@ -6,6 +6,7 @@ package component
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/v1alpha1/capability"
@@ -150,6 +151,12 @@ type ComponentDefinition struct {
 
 	// Component data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an
 	Component Component `gorm:"type:bytes;serializer:json" json:"component" yaml:"component"`
+
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// ModelId A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
 	ModelId uuid.UUID `gorm:"index:idx_component_definition_dbs_model_id,column:model_id" json:"-" yaml:"-"`
