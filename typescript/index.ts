@@ -18,6 +18,7 @@ import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/compone
 import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model/model";
 import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design/design";
 import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./constructs/v1beta1/connection";
+import { User as V1beta1User } from "./constructs/v1beta1/user/user";
 
 /**
  * SCHEMA OPTIMIZATION NOTICE
@@ -55,6 +56,7 @@ import RelationshipDefinitionV1Alpha3OpenApiSchema from "./constructs/v1alpha3/V
 
 import InvitationSchema from "./constructs/v1beta1/invitation/InvitationOpenApiSchema"
 import BadgeSchema from "./constructs/v1beta1/badge/BadgeOpenApiSchema"
+// import UserDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/user/UserOpenApiSchema";
 
 import { components, paths } from "./openapi";
 import type * as core from "./constructs/core";
@@ -95,6 +97,7 @@ export namespace v1beta1 {
   export type Model = HttpsSchemasMesheryIoModelJson;
   export type Design = V1beta1DesignSchema;
   export type Connection = V1beta1Connection;
+  export type User = V1beta1User;
 }
 
 // OpenAPI
