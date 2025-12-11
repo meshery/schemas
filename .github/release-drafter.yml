@@ -39,3 +39,4 @@ autolabeler:
     branch:
       - '/.github/'
       - '/build/'
+no-duplicate-categories: true
