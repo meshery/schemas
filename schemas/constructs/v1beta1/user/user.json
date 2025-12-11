@@ -1,0 +1,259 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schemas.meshery.io/user_v1beta1.json",
+  "title": "User",
+  "description": "Represents a user in Layer5 Cloud (Meshery)",
+  "version": "v1beta1",
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "../../core.json#/definitions/uuid",
+      "description": "Unique identifier for the user"
+    },
+    "user_id": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "User identifier (username or external ID)"
+    },
+    "provider": {
+      "type": "string",
+      "maxLength": 100,
+      "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
+      "examples": ["local", "github", "google", "twitter"]
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 300,
+      "description": "User's email address"
+    },
+    "first_name": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "User's first name"
+    },
+    "last_name": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "User's last name"
+    },
+    "avatar_url": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 500,
+      "description": "URL to user's avatar image"
+    },
+    "status": {
+      "type": "string",
+      "maxLength": 100,
+      "enum": ["active", "inactive", "pending", "anonymous"],
+      "description": "User account status"
+    },
+    "bio": {
+      "type": "string",
+      "maxLength": 1000,
+      "default": "",
+      "description": "User's biography or description"
+    },
+    "country": {
+      "type": "object",
+      "description": "User's country information stored as JSONB",
+      "additionalProperties": true
+    },
+    "region": {
+      "type": "object",
+      "description": "User's region information stored as JSONB",
+      "additionalProperties": true
+    },
+    "preferences": {
+      "type": "object",
+      "default": {},
+      "description": "User preferences stored as JSONB. Can contain arbitrary key-value pairs for user settings and configurations",
+      "additionalProperties": true,
+      "properties": {
+        "welcome_email": {
+          "type": "boolean",
+          "description": "Whether user wants to receive welcome emails"
+        },
+        "notify_role_change": {
+          "type": "boolean",
+          "description": "Whether user wants to be notified of role changes"
+        },
+        "meshAdapters": {
+          "type": "array",
+          "description": "Mesh adapters configuration",
+          "items": {
+            "type": "object"
+          }
+        },
+        "grafana": {
+          "type": "object",
+          "description": "Grafana configuration",
+          "properties": {
+            "grafanaURL": {
+              "type": "string"
+            },
+            "grafanaAPIKey": {
+              "type": "string"
+            },
+            "selectedBoardsConfigs": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "prometheus": {
+          "type": "object",
+          "description": "Prometheus configuration",
+          "properties": {
+            "prometheusURL": {
+              "type": "string"
+            },
+            "selectedPrometheusBoardsConfigs": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "loadTestPrefs": {
+          "type": "object",
+          "description": "Load test preferences",
+          "properties": {
+            "c": {
+              "type": "integer",
+              "description": "Concurrent requests"
+            },
+            "qps": {
+              "type": "integer",
+              "description": "Queries per second"
+            },
+            "t": {
+              "type": "string",
+              "description": "Duration"
+            },
+            "gen": {
+              "type": "string",
+              "description": "Load generator"
+            }
+          }
+        },
+        "anonymousUsageStats": {
+          "type": "boolean",
+          "description": "Whether to collect anonymous usage statistics"
+        },
+        "anonymousPerfResults": {
+          "type": "boolean",
+          "description": "Whether to collect anonymous performance results"
+        },
+        "dashboardPreferences": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Dashboard preferences"
+        },
+        "selectedOrganizationID": {
+          "type": "string",
+          "description": "Currently selected organization ID"
+        },
+        "selectedWorkspaceForOrganizations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Selected workspace for each organization"
+        },
+        "usersExtensionPreferences": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "User extension preferences"
+        },
+        "remoteProviderPreferences": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Remote provider preferences"
+        }
+      }
+    },
+    "accepted_terms_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "description": "Timestamp when user accepted terms and conditions"
+    },
+    "first_login_time": {
+      "$ref": "../../core.json#/definitions/time",
+      "description": "Timestamp of user's first login"
+    },
+    "last_login_time": {
+      "$ref": "../../core.json#/definitions/time",
+      "description": "Timestamp of user's most recent login"
+    },
+    "created_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "description": "Timestamp when the user record was created"
+    },
+    "updated_at": {
+      "$ref": "../../core.json#/definitions/time",
+      "description": "Timestamp when the user record was last updated"
+    },
+    "deleted_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Timestamp when the user record was soft-deleted (null if not deleted)"
+    },
+    "role_names": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["admin", "meshmap", "curator", "team admin", "workspace admin", "workspace manager", "organization admin", "user"]
+      },
+      "description": "List of global roles assigned to the user",
+      "examples": [["admin", "meshmap"], ["user"]]
+    },
+    "teams": {
+      "type": "object",
+      "description": "Teams the user belongs to with role information",
+      "properties": {
+        "teams_with_roles": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "total_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "organizations": {
+      "type": "object",
+      "description": "Organizations the user belongs to with role information",
+      "properties": {
+        "organizations_with_roles": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "total_count": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "user_id",
+    "provider",
+    "email",
+    "first_name",
+    "last_name",
+    "status",
+    "created_at",
+    "updated_at",
+    "last_login_time",
+    "deleted_at"
+  ],
+  "additionalProperties": false
+}
