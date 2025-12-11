@@ -56,7 +56,6 @@ import RelationshipDefinitionV1Alpha3OpenApiSchema from "./constructs/v1alpha3/V
 
 import InvitationSchema from "./constructs/v1beta1/invitation/InvitationOpenApiSchema"
 import BadgeSchema from "./constructs/v1beta1/badge/BadgeOpenApiSchema"
-// import UserDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/user/UserOpenApiSchema";
 
 import { components, paths } from "./openapi";
 import type * as core from "./constructs/core";

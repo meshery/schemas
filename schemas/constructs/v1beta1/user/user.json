@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.meshery.io/user_v1beta1.json",
+  "$id": "https://schemas.meshery.io/user.json",
   "title": "User",
   "description": "Represents a user in Layer5 Cloud (Meshery)",
   "version": "v1beta1",
