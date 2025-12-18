@@ -75,5 +75,5 @@
     }
   },
 
-  "required": ["id", "name", "schemaVersion", "version", "components", "relationships"]
+  "required": ["id", "name", "schemaVersion", "version", "components"]
 }
