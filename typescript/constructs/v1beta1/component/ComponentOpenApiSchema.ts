@@ -107,7 +107,9 @@ const schema = {
             "x-order": 7,
             "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
             "x-oapi-codegen-extra-tags": {
-              "gorm": "foreignKey:ModelId;references:Id"
+              "gorm": "foreignKey:ModelId;references:Id",
+              "json": "model,omitempty",
+              "yaml": "model,omitempty"
             },
             "$id": "https://schemas.meshery.io/model.json",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1091,6 +1093,32 @@ const schema = {
                   "yaml": "relationships_count"
                 },
                 "default": 0
+              },
+              "created_at": {
+                "x-order": 14,
+                "description": "Timestamp when the resource was created.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "CreatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "created_at",
+                  "yaml": "created_at"
+                },
+                "x-go-type-skip-optional-pointer": true
+              },
+              "updated_at": {
+                "x-order": 15,
+                "description": "Timestamp when the resource was updated.",
+                "x-go-type": "time.Time",
+                "type": "string",
+                "format": "date-time",
+                "x-go-name": "UpdatedAt",
+                "x-oapi-codegen-extra-tags": {
+                  "db": "updated_at",
+                  "yaml": "updated_at"
+                },
+                "x-go-type-skip-optional-pointer": true
               }
             },
             "required": [
@@ -1113,20 +1141,144 @@ const schema = {
               "relationships"
             ]
           },
-          "modelId": {
-            "description": "ModelId is the foreign key to the model to which the component belongs.",
-            "x-oapi-codegen-extra-tags": {
-              "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
-              "yaml": "-",
-              "json": "-"
+          "modelReference": {
+            "x-go-type": "model.ModelReference",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta1/model"
             },
+            "x-order": 8,
+            "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+            "x-oapi-codegen-extra-tags": {
+              "gorm": "-"
+            },
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "version",
+              "displayName",
+              "model",
+              "registrant"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                },
+                "default": "00000000-0000-0000-0000-000000000000"
+              },
+              "name": {
+                "type": "string",
+                "description": "The unique name for the model within the scope of a registrant.",
+                "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
+                "pattern": "^[a-z0-9-]+$",
+                "examples": [
+                  "cert-manager"
+                ],
+                "x-order": 4,
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "name",
+                  "json": "name"
+                },
+                "default": "untitled-model"
+              },
+              "version": {
+                "description": "Version of the model definition.",
+                "type": "string",
+                "x-order": 3,
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "version",
+                  "json": "version"
+                },
+                "minLength": 5,
+                "maxLength": 100,
+                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                "default": "v0.0.1"
+              },
+              "displayName": {
+                "description": "Human-readable name for the model.",
+                "helperText": "Model display name may include letters, numbers, and spaces. Special characters are not allowed.",
+                "minLength": 1,
+                "maxLength": 100,
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9 ]+$",
+                "examples": [
+                  "Cert Manager"
+                ],
+                "x-order": 5,
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "displayName",
+                  "json": "displayName"
+                },
+                "default": "Untitled Model"
+              },
+              "model": {
+                "x-oapi-codegen-extra-tags": {
+                  "gorm": "type:bytes;serializer:json"
+                },
+                "x-order": 12,
+                "type": "object",
+                "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
+                "required": [
+                  "version"
+                ],
+                "properties": {
+                  "version": {
+                    "description": "Version of the model as defined by the registrant.",
+                    "allOf": [
+                      {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 100,
+                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+                        "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
+                        "default": "v0.0.1"
+                      }
+                    ],
+                    "x-oapi-codegen-extra-tags": {
+                      "yaml": "version",
+                      "json": "version"
+                    },
+                    "x-order": 1
+                  }
+                }
+              },
+              "registrant": {
+                "x-go-type": "RegistrantReference",
+                "x-oapi-codegen-extra-tags": {
+                  "yaml": "registrant",
+                  "json": "registrant"
+                },
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "modelId": {
             "type": "string",
             "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
             },
-            "default": "00000000-0000-0000-0000-000000000000"
+            "default": "00000000-0000-0000-0000-000000000000",
+            "x-oapi-codegen-extra-tags": {
+              "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
+              "yaml": "-",
+              "json": "-"
+            }
           },
           "styles": {
             "x-oapi-codegen-extra-tags": {
@@ -1933,6 +2085,32 @@ const schema = {
               "kind",
               "schema"
             ]
+          },
+          "created_at": {
+            "x-order": 14,
+            "description": "Timestamp when the resource was created.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updated_at": {
+            "x-order": 15,
+            "description": "Timestamp when the resource was updated.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
+            "x-go-type-skip-optional-pointer": true
           }
         },
         "required": [
@@ -1945,7 +2123,7 @@ const schema = {
           "configuration",
           "metadata",
           "modelId",
-          "model",
+          "modelReference",
           "component"
         ]
       },

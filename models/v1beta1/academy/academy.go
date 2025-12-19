@@ -56,6 +56,13 @@ const (
 	Ready    Status = "ready"
 )
 
+// Defines values for TestSubmissionStatus.
+const (
+	TestSubmissionStatusFailed       TestSubmissionStatus = "failed"
+	TestSubmissionStatusNotAttempted TestSubmissionStatus = "not-attempted"
+	TestSubmissionStatusPassed       TestSubmissionStatus = "passed"
+)
+
 // Defines values for Visibility.
 const (
 	Private Visibility = "private"
@@ -252,6 +259,9 @@ type AcademyRegistrationsListResponse struct {
 	Total int `json:"total" yaml:"total"`
 }
 
+// AllTestSubmissionsForCurricula Test submissions made by the user (map of test IDs to Submissions)
+type AllTestSubmissionsForCurricula map[string]TestSubmissions
+
 // Certificate defines model for Certificate.
 type Certificate struct {
 	// Description Description of the certificate
@@ -259,6 +269,9 @@ type Certificate struct {
 
 	// ExpirationDate Date when the certificate expires (optional)
 	ExpirationDate *time.Time `json:"expiration_date,omitempty" yaml:"expiration_date,omitempty"`
+
+	// ExpiresIn Number of months after which the certificate expires
+	ExpiresIn *int `json:"expires_in,omitempty" yaml:"expires_in,omitempty"`
 
 	// ID Unique identifier for the certificate
 	ID string `json:"id" yaml:"id"`
@@ -386,8 +399,11 @@ type CurriculaMetadata struct {
 	// Children List of children items in the top-level curricula
 	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
 
-	// Description Description of the learning path
+	// Description Short description of the curricula
 	Description string `json:"description" yaml:"description"`
+
+	// DetailedDescription Detailed description of the curricula
+	DetailedDescription *string `json:"detailed_description,omitempty" yaml:"detailed_description,omitempty"`
 
 	// Permalink Canonical URL for the learning path
 	Permalink string `json:"permalink" yaml:"permalink"`
@@ -473,6 +489,10 @@ type Quiz struct {
 	Lastmod openapi_types.Date `json:"lastmod" yaml:"lastmod"`
 	Layout  string             `json:"layout" yaml:"layout"`
 
+	// MaxAttempts Maximum number of attempts allowed for the quiz. A value of 0 indicates unlimited attempts.
+	MaxAttempts int    `json:"max_attempts" yaml:"max_attempts"`
+	NextPage    Parent `json:"next_page" yaml:"next_page"`
+
 	// OrgId Organization ID that owns this quiz
 	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`
 	Parent         *Parent    `json:"parent,omitempty" yaml:"parent,omitempty"`
@@ -483,11 +503,15 @@ type Quiz struct {
 	RelPermalink   string     `json:"relPermalink" yaml:"relPermalink"`
 	Section        string     `json:"section" yaml:"section"`
 	Slug           string     `json:"slug" yaml:"slug"`
-	TimeLimit      string     `json:"time_limit" yaml:"time_limit"`
-	Title          string     `json:"title" yaml:"title"`
-	TotalMarks     int        `json:"total_marks" yaml:"total_marks"`
-	TotalQuestions int        `json:"total_questions" yaml:"total_questions"`
-	Type           string     `json:"type" yaml:"type"`
+
+	// TimeLimit Time limit for the quiz in minutes. A value of 0 indicates no time limit.
+	TimeLimit            string `json:"time_limit" yaml:"time_limit"`
+	Title                string `json:"title" yaml:"title"`
+	TotalMarks           int    `json:"total_marks" yaml:"total_marks"`
+	TotalQuestionSets    int    `json:"total_question_sets" yaml:"total_question_sets"`
+	TotalQuestions       int    `json:"total_questions" yaml:"total_questions"`
+	TotalQuestionsInBank int    `json:"total_questions_in_bank" yaml:"total_questions_in_bank"`
+	Type                 string `json:"type" yaml:"type"`
 }
 
 // QuizEvaluationResult defines model for QuizEvaluationResult.
@@ -508,7 +532,10 @@ type QuizSubmission struct {
 	Answers        []SubmittedAnswer `json:"answers" yaml:"answers"`
 	QuizAbsPath    string            `json:"quiz_abs_path" yaml:"quiz_abs_path"`
 	RegistrationId string            `json:"registration_id" yaml:"registration_id"`
-	UserId         string            `json:"user_id" yaml:"user_id"`
+
+	// TestSessionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	TestSessionId uuid.UUID `json:"test_session_id" yaml:"test_session_id"`
+	UserId        string    `json:"user_id" yaml:"user_id"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
@@ -567,6 +594,12 @@ type SingleAcademyCurriculaResponse struct {
 	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
+// StartTestRequest defines model for StartTestRequest.
+type StartTestRequest struct {
+	RegistrationId string `json:"registration_id" yaml:"registration_id"`
+	TestAbsPath    string `json:"test_abs_path" yaml:"test_abs_path"`
+}
+
 // Status defines model for Status.
 type Status string
 
@@ -575,6 +608,52 @@ type SubmittedAnswer struct {
 	AnswerText       string          `json:"answer_text" yaml:"answer_text"`
 	QuestionId       string          `json:"question_id" yaml:"question_id"`
 	SelectedOptionId map[string]bool `json:"selected_option_id" yaml:"selected_option_id"`
+}
+
+// TestSubmission defines model for TestSubmission.
+type TestSubmission struct {
+	// CreatedAt When the submission was created or started
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+
+	// DeletedAt Timestamp when the resource was deleted.
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// ExpiresAt Expiry time for the test submission ( based on the time limit of the test )
+	ExpiresAt *time.Time `db:"expires_at" json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
+
+	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
+
+	// RegistrationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	RegistrationId uuid.UUID             `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
+	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
+	SubmissionData *QuizSubmission       `db:"submission_data" json:"submission_data,omitempty" yaml:"submission_data,omitempty"`
+	SubmittedAt    *time.Time            `db:"submitted_at" json:"submitted_at,omitempty" yaml:"submitted_at,omitempty"`
+	Test           Quiz                  `json:"test" yaml:"test"`
+	TestAbsPath    string                `db:"test_abs_path" json:"test_abs_path" yaml:"test_abs_path"`
+
+	// UpdatedAt When the submission was last updated
+	UpdatedAt *time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId uuid.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
+}
+
+// TestSubmissionStatus defines model for TestSubmissionStatus.
+type TestSubmissionStatus string
+
+// TestSubmissions Test submissions made by the user (array of QuizEvaluationResult)
+type TestSubmissions = []struct {
+	AttemptedAt        time.Time       `json:"attempted_at" yaml:"attempted_at"`
+	Attempts           int             `json:"attempts" yaml:"attempts"`
+	CorrectSubmissions map[string]bool `json:"correct_submissions" yaml:"correct_submissions"`
+	PassPercentage     float32         `json:"pass_percentage" yaml:"pass_percentage"`
+	Passed             bool            `json:"passed" yaml:"passed"`
+	PercentageScored   float32         `json:"percentage_scored" yaml:"percentage_scored"`
+	Quiz               Quiz            `json:"quiz" yaml:"quiz"`
+	Score              int             `json:"score" yaml:"score"`
+	TotalMarks         int             `json:"total_marks" yaml:"total_marks"`
 }
 
 // UpdateCurrentItemRequest defines model for UpdateCurrentItemRequest.

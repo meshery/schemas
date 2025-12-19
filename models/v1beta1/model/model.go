@@ -211,9 +211,15 @@ type ModelDefinition struct {
 	ComponentsCount int `gorm:"-" json:"components_count" yaml:"components_count"`
 
 	// RelationshipsCount Number of relationships associated with the model.
-	RelationshipsCount int         `gorm:"-" json:"relationships_count" yaml:"relationships_count"`
-	Components         interface{} `gorm:"-" json:"components" yaml:"components"`
-	Relationships      interface{} `gorm:"-" json:"relationships" yaml:"relationships"`
+	RelationshipsCount int `gorm:"-" json:"relationships_count" yaml:"relationships_count"`
+
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt     time.Time   `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Components    interface{} `gorm:"-" json:"components" yaml:"components"`
+	Relationships interface{} `gorm:"-" json:"relationships" yaml:"relationships"`
 }
 
 // ModelDefinitionStatus Status of model, including:
@@ -255,6 +261,33 @@ type ModelDefinition_Metadata struct {
 	// CreatedAt Timestamp when the model was created or added to the registry in RFC3339 format
 	CreatedAt            *time.Time             `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
 	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
+// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+type ModelReference struct {
+	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+	Version string `json:"version" yaml:"version"`
+
+	// Name The unique name for the model within the scope of a registrant.
+	Name string `json:"name" yaml:"name"`
+
+	// DisplayName Human-readable name for the model.
+	DisplayName string `json:"displayName" yaml:"displayName"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	Id         uuid.UUID           `json:"id" yaml:"id"`
+	Registrant RegistrantReference `json:"registrant" yaml:"registrant"`
+
+	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
+	Model struct {
+		// Version Version of the model as defined by the registrant.
+		Version string `json:"version" yaml:"version"`
+	} `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
+}
+
+// RegistrantReference defines model for RegistrantReference.
+type RegistrantReference struct {
+	Kind string `json:"kind" yaml:"kind"`
 }
 
 // Getter for additional properties for ModelDefinition_Metadata. Returns the specified

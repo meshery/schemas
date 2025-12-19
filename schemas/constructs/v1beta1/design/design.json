@@ -20,7 +20,7 @@
     },
     "version": {
       "$ref": "../../core.json#/definitions/semverString",
-      "default":"v0.0.1",
+      "default": "v0.0.1",
       "x-order": 4,
       "description": "Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.",
       "minLength": 1,
@@ -58,16 +58,8 @@
       }
     },
     "preferences": {
-      "type": "object",
-      "description": "Design-level preferences",
-      "x-order": 7,
-      "properties": {
-        "layers": {
-          "type": "object",
-          "description": "List of available layers"
-        }
-      },
-      "required": ["layers"]
+      "$ref": "./openapi.yml#/components/schemas/DesignPreferences",
+      "x-go-type": "DesignPreferences"
     },
     "relationships": {
       "description": "List of relationships between components",
@@ -83,12 +75,5 @@
     }
   },
 
-  "required": [
-    "id",
-    "name",
-    "schemaVersion",
-    "version",
-    "components",
-    "relationships"
-  ]
+  "required": ["id", "name", "schemaVersion", "version", "components", "relationships"]
 }

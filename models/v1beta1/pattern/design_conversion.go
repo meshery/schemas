@@ -1,7 +1,6 @@
 package pattern
 
 import (
-	"crypto/rand"
 	"math/big"
 	"reflect"
 	"strings"
@@ -91,7 +90,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 				Kind:    service.Type,
 				Version: service.ApiVersion,
 			},
-			Model: model.ModelDefinition{
+			Model: &model.ModelDefinition{
 				SchemaVersion: v1beta1.ModelSchemaVersion,
 				Name:          service.Model,
 			},
@@ -163,27 +162,6 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 
 	cmp.Metadata = _compMetadata
 	cmp.Metadata.IsNamespaced = isNamespaced
-
-	// Handle position properties: traits.meshmap.position
-	randX, _ := rand.Int(rand.Reader, big.NewInt(100))
-
-	randY, _ := rand.Int(rand.Reader, big.NewInt(100))
-
-	positionX, _ := big.NewFloat(0).SetInt(randX).Float64()
-	positionY, _ := big.NewFloat(0).SetInt(randY).Float64()
-
-	cmp.Styles = &component.ComponentDefinition_Styles{
-		Position: &struct {
-			// X The x-coordinate of the node.
-			X float64 `json:"x" yaml:"x"`
-
-			// Y The y-coordinate of the node.
-			Y float64 `json:"y" yaml:"y"`
-		}{
-			X: positionX,
-			Y: positionY,
-		},
-	}
 
 	pos, err := utils.MarshalAndUnmarshal[interface{}, position](extensionsMetadata["position"])
 	if err == nil {

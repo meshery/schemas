@@ -15,6 +15,12 @@ import (
 	"github.com/meshery/schemas/models/v1beta1/component"
 )
 
+// DesignPreferences Design-level preferences
+type DesignPreferences struct {
+	// Layers Map of available layers, where keys are layer names.
+	Layers map[string]interface{} `json:"layers" yaml:"layers"`
+}
+
 // DeletePatternModel defines model for DeletePatternModel.
 type DeletePatternModel struct {
 	Id   uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
@@ -95,10 +101,7 @@ type PatternFile struct {
 	Components []*component.ComponentDefinition `json:"components" yaml:"components"`
 
 	// Preferences Design-level preferences
-	Preferences *struct {
-		// Layers List of available layers
-		Layers map[string]interface{} `json:"layers" yaml:"layers"`
-	} `json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	Preferences *DesignPreferences `json:"preferences,omitempty" yaml:"preferences,omitempty"`
 
 	// Relationships List of relationships between components
 	Relationships []*relationship.RelationshipDefinition `json:"relationships" yaml:"relationships"`

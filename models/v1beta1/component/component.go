@@ -6,6 +6,7 @@ package component
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/v1alpha1/capability"
@@ -124,7 +125,10 @@ type ComponentDefinition struct {
 	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	Model model.ModelDefinition `gorm:"foreignKey:ModelId;references:Id" json:"model" yaml:"model"`
+	Model *model.ModelDefinition `gorm:"foreignKey:ModelId;references:Id" json:"model,omitempty" yaml:"model,omitempty"`
+
+	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+	ModelReference model.ModelReference `gorm:"-" json:"modelReference" yaml:"modelReference"`
 
 	// Styles Visualization styles for a component
 	Styles *ComponentDefinition_Styles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
@@ -148,7 +152,13 @@ type ComponentDefinition struct {
 	// Component data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an
 	Component Component `gorm:"type:bytes;serializer:json" json:"component" yaml:"component"`
 
-	// ModelId ModelId is the foreign key to the model to which the component belongs.
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+
+	// ModelId A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
 	ModelId uuid.UUID `gorm:"index:idx_component_definition_dbs_model_id,column:model_id" json:"-" yaml:"-"`
 }
 

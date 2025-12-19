@@ -300,7 +300,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
       /** Format specifies the format used in the `component.schema` field. JSON is the default. */
       format: "JSON" | "CUE";
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-      model: {
+      model?: {
         /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
         id: string;
         /** Specifies the version of the schema used for the definition. */
@@ -527,8 +527,31 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
         componentsCount: number;
         /** Number of relationships associated with the model. */
         relationshipsCount: number;
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
       };
-      /** ModelId is the foreign key to the model to which the component belongs. */
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+      modelReference: {
+        /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+        id: string;
+        /** The unique name for the model within the scope of a registrant. */
+        name: string;
+        /** Version of the model definition. */
+        version: string;
+        /** Human-readable name for the model. */
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
+          /** Version of the model as defined by the registrant. */
+          version: string;
+        };
+        registrant: {
+          kind: string;
+        };
+      };
+      /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
       modelId: string;
       /** Visualization styles for a component */
       styles?: {
@@ -751,10 +774,14 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
         /** JSON schema of the object as defined by the registrant. */
         schema: string;
       };
+      /** Timestamp when the resource was created. */
+      created_at?: string;
+      /** Timestamp when the resource was updated. */
+      updated_at?: string;
     }[];
     /** Design-level preferences */
     preferences?: {
-      /** List of available layers */
+      /** Map of available layers, where keys are layer names. */
       layers: object;
     };
     /** List of relationships between components */
@@ -765,122 +792,23 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
       schemaVersion: string;
       /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
       version: string;
-      /** Name of the model in which this relationship is packaged. */
+      /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
       model: {
-        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-        id?: string;
-        /** Specifies the version of the schema used for the definition. */
-        schemaVersion?: string;
-        /** Version of the model definition. */
-        version: string;
+        /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+        id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
+        /** Version of the model definition. */
+        version: string;
         /** Human-readable name for the model. */
-        displayName?: string;
-        /** Description of the model. */
-        description?: string;
-        /** Status of model, including:
-                - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                - maintenance: model is unavailable for a period of time.
-                - enabled: model is available for use for all users of this Meshery Server.
-                - ignored: model is unavailable for use for all users of this Meshery Server. */
-        status?: "ignored" | "enabled" | "duplicate";
-        /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-        registrant: {
-          /** ID */
-          id?: string;
-          /** Connection Name */
-          name?: string;
-          /** Credential ID */
-          credential_id?: string;
-          /** Connection Type */
-          type: string;
-          /** Connection Subtype */
-          sub_type?: string;
-          /** Connection Kind */
-          kind: string;
-          metadata?: object;
-          /** Connection Status */
-          status:
-            | "discovered"
-            | "registered"
-            | "connected"
-            | "ignored"
-            | "maintenance"
-            | "disconnected"
-            | "deleted"
-            | "not found";
-          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-          user_id?: string;
-          created_at?: string;
-          updated_at?: string;
-          deleted_at?: string;
-        };
-        /** Category of the model. */
-        category: {
-          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-          id?: string;
-          name?: string;
-          metadata?: object;
-        };
-        /** Sub-category of the model. */
-        subCategory?: string;
-        /** Metadata containing additional information associated with the model. */
-        metadata?: {
-          /** Capabilities associated with the model */
-          capabilities?: {
-            /** Specifies the version of the schema to which the capability definition conforms. */
-            schemaVersion: string;
-            /** Version of the capability definition. */
-            version: string;
-            /** Name of the capability in human-readible format. */
-            displayName: string;
-            /** A written representation of the purpose and characteristics of the capability. */
-            description?: string;
-            /** Top-level categorization of the capability */
-            kind: "action" | "mutate" | "view" | "interaction";
-            /** Classification of capabilities. Used to group capabilities similar in nature. */
-            type: string;
-            /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship. */
-            subType?:
-              | "inventory"
-              | "matchLabels"
-              | "permission"
-              | "network"
-              | "firewall"
-              | "mount"
-              | "alias"
-              | "annotation"
-              | "reference";
-            /** Key that backs the capability. */
-            key?: string;
-            /** State of the entity in which the capability is applicable. */
-            entityState: ("declaration" | "instance")[];
-            /** Status of the capability */
-            status: "enabled" | "disabled";
-            /** Metadata contains additional information associated with the capability. Extension point. */
-            metadata?: {
-              [key: string]: any;
-            };
-          }[];
-          /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-          isAnnotation?: boolean;
-          /** Primary color associated with the model. */
-          primaryColor?: string;
-          /** Secondary color associated with the model. */
-          secondaryColor?: string;
-          /** SVG representation of the model in white color. */
-          svgWhite?: string;
-          /** SVG representation of the model in colored format. */
-          svgColor?: string;
-          /** SVG representation of the complete model. */
-          svgComplete?: string;
-          [key: string]: any;
-        };
-        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-        model?: {
+        displayName: string;
+        /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+        model: {
           /** Version of the model as defined by the registrant. */
           version: string;
+        };
+        registrant: {
+          kind: string;
         };
       };
       /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
@@ -1055,113 +983,23 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
           from: {
             kind?: string;
-            /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-              id?: string;
-              /** Specifies the version of the schema used for the definition. */
-              schemaVersion?: string;
-              /** Version of the model definition. */
-              version: string;
+              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
+              /** Version of the model definition. */
+              version: string;
               /** Human-readable name for the model. */
-              displayName?: string;
-              /** Description of the model. */
-              description?: string;
-              /** Status of model, including:
-                            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                            - maintenance: model is unavailable for a period of time.
-                            - enabled: model is available for use for all users of this Meshery Server.
-                            - ignored: model is unavailable for use for all users of this Meshery Server. */
-              status?: "ignored" | "enabled" | "duplicate";
-              /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-              registrant: {
-                /** ID */
-                id?: string;
-                /** Connection Name */
-                name?: string;
-                /** Credential ID */
-                credential_id?: string;
-                /** Connection Type */
-                type: string;
-                /** Connection Subtype */
-                sub_type?: string;
-                /** Connection Kind */
-                kind: string;
-                metadata?: object;
-                /** Connection Status */
-                status:
-                  | "discovered"
-                  | "registered"
-                  | "connected"
-                  | "ignored"
-                  | "maintenance"
-                  | "disconnected"
-                  | "deleted"
-                  | "not found";
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                user_id?: string;
-                created_at?: string;
-                updated_at?: string;
-                deleted_at?: string;
-              };
-              /** Category of the model. */
-              category: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                id?: string;
-                name?: string;
-                metadata?: object;
-              };
-              /** Sub-category of the model. */
-              subCategory?: string;
-              /** Metadata containing additional information associated with the model. */
-              metadata?: {
-                /** Capabilities associated with the model */
-                capabilities?: {
-                  /** Specifies the version of the schema to which the capability definition conforms. */
-                  schemaVersion: string;
-                  /** Version of the capability definition. */
-                  version: string;
-                  /** Name of the capability in human-readible format. */
-                  displayName: string;
-                  /** A written representation of the purpose and characteristics of the capability. */
-                  description?: string;
-                  /** Top-level categorization of the capability */
-                  kind: "action" | "mutate" | "view" | "interaction";
-                  /** Classification of capabilities. Used to group capabilities similar in nature. */
-                  type: string;
-                  /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                  subType?: string;
-                  /** Key that backs the capability. */
-                  key?: string;
-                  /** State of the entity in which the capability is applicable. */
-                  entityState: ("declaration" | "instance")[];
-                  /** Status of the capability */
-                  status: "enabled" | "disabled";
-                  /** Metadata contains additional information associated with the capability. Extension point. */
-                  metadata?: {
-                    [key: string]: any;
-                  };
-                }[];
-                /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                isAnnotation?: boolean;
-                /** Primary color associated with the model. */
-                primaryColor?: string;
-                /** Secondary color associated with the model. */
-                secondaryColor?: string;
-                /** SVG representation of the model in white color. */
-                svgWhite?: string;
-                /** SVG representation of the model in colored format. */
-                svgColor?: string;
-                /** SVG representation of the complete model. */
-                svgComplete?: string;
-                [key: string]: any;
-              };
-              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-              model?: {
+              displayName: string;
+              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
                 /** Version of the model as defined by the registrant. */
                 version: string;
+              };
+              registrant: {
+                kind: string;
               };
             };
             /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -1221,113 +1059,23 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
           to: {
             kind?: string;
-            /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-              id?: string;
-              /** Specifies the version of the schema used for the definition. */
-              schemaVersion?: string;
-              /** Version of the model definition. */
-              version: string;
+              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
+              /** Version of the model definition. */
+              version: string;
               /** Human-readable name for the model. */
-              displayName?: string;
-              /** Description of the model. */
-              description?: string;
-              /** Status of model, including:
-                            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                            - maintenance: model is unavailable for a period of time.
-                            - enabled: model is available for use for all users of this Meshery Server.
-                            - ignored: model is unavailable for use for all users of this Meshery Server. */
-              status?: "ignored" | "enabled" | "duplicate";
-              /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-              registrant: {
-                /** ID */
-                id?: string;
-                /** Connection Name */
-                name?: string;
-                /** Credential ID */
-                credential_id?: string;
-                /** Connection Type */
-                type: string;
-                /** Connection Subtype */
-                sub_type?: string;
-                /** Connection Kind */
-                kind: string;
-                metadata?: object;
-                /** Connection Status */
-                status:
-                  | "discovered"
-                  | "registered"
-                  | "connected"
-                  | "ignored"
-                  | "maintenance"
-                  | "disconnected"
-                  | "deleted"
-                  | "not found";
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                user_id?: string;
-                created_at?: string;
-                updated_at?: string;
-                deleted_at?: string;
-              };
-              /** Category of the model. */
-              category: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                id?: string;
-                name?: string;
-                metadata?: object;
-              };
-              /** Sub-category of the model. */
-              subCategory?: string;
-              /** Metadata containing additional information associated with the model. */
-              metadata?: {
-                /** Capabilities associated with the model */
-                capabilities?: {
-                  /** Specifies the version of the schema to which the capability definition conforms. */
-                  schemaVersion: string;
-                  /** Version of the capability definition. */
-                  version: string;
-                  /** Name of the capability in human-readible format. */
-                  displayName: string;
-                  /** A written representation of the purpose and characteristics of the capability. */
-                  description?: string;
-                  /** Top-level categorization of the capability */
-                  kind: "action" | "mutate" | "view" | "interaction";
-                  /** Classification of capabilities. Used to group capabilities similar in nature. */
-                  type: string;
-                  /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                  subType?: string;
-                  /** Key that backs the capability. */
-                  key?: string;
-                  /** State of the entity in which the capability is applicable. */
-                  entityState: ("declaration" | "instance")[];
-                  /** Status of the capability */
-                  status: "enabled" | "disabled";
-                  /** Metadata contains additional information associated with the capability. Extension point. */
-                  metadata?: {
-                    [key: string]: any;
-                  };
-                }[];
-                /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                isAnnotation?: boolean;
-                /** Primary color associated with the model. */
-                primaryColor?: string;
-                /** Secondary color associated with the model. */
-                secondaryColor?: string;
-                /** SVG representation of the model in white color. */
-                svgWhite?: string;
-                /** SVG representation of the model in colored format. */
-                svgColor?: string;
-                /** SVG representation of the complete model. */
-                svgComplete?: string;
-                [key: string]: any;
-              };
-              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-              model?: {
+              displayName: string;
+              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
                 /** Version of the model as defined by the registrant. */
                 version: string;
+              };
+              registrant: {
+                kind: string;
               };
             };
             /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -1392,113 +1140,23 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             kind?: string;
             /** Strategy criterion for determing how to match the values at mutator/mutated paths */
             match_strategy_matrix?: string[][];
-            /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-              id?: string;
-              /** Specifies the version of the schema used for the definition. */
-              schemaVersion?: string;
-              /** Version of the model definition. */
-              version: string;
+              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
+              /** Version of the model definition. */
+              version: string;
               /** Human-readable name for the model. */
-              displayName?: string;
-              /** Description of the model. */
-              description?: string;
-              /** Status of model, including:
-                            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                            - maintenance: model is unavailable for a period of time.
-                            - enabled: model is available for use for all users of this Meshery Server.
-                            - ignored: model is unavailable for use for all users of this Meshery Server. */
-              status?: "ignored" | "enabled" | "duplicate";
-              /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-              registrant: {
-                /** ID */
-                id?: string;
-                /** Connection Name */
-                name?: string;
-                /** Credential ID */
-                credential_id?: string;
-                /** Connection Type */
-                type: string;
-                /** Connection Subtype */
-                sub_type?: string;
-                /** Connection Kind */
-                kind: string;
-                metadata?: object;
-                /** Connection Status */
-                status:
-                  | "discovered"
-                  | "registered"
-                  | "connected"
-                  | "ignored"
-                  | "maintenance"
-                  | "disconnected"
-                  | "deleted"
-                  | "not found";
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                user_id?: string;
-                created_at?: string;
-                updated_at?: string;
-                deleted_at?: string;
-              };
-              /** Category of the model. */
-              category: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                id?: string;
-                name?: string;
-                metadata?: object;
-              };
-              /** Sub-category of the model. */
-              subCategory?: string;
-              /** Metadata containing additional information associated with the model. */
-              metadata?: {
-                /** Capabilities associated with the model */
-                capabilities?: {
-                  /** Specifies the version of the schema to which the capability definition conforms. */
-                  schemaVersion: string;
-                  /** Version of the capability definition. */
-                  version: string;
-                  /** Name of the capability in human-readible format. */
-                  displayName: string;
-                  /** A written representation of the purpose and characteristics of the capability. */
-                  description?: string;
-                  /** Top-level categorization of the capability */
-                  kind: "action" | "mutate" | "view" | "interaction";
-                  /** Classification of capabilities. Used to group capabilities similar in nature. */
-                  type: string;
-                  /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                  subType?: string;
-                  /** Key that backs the capability. */
-                  key?: string;
-                  /** State of the entity in which the capability is applicable. */
-                  entityState: ("declaration" | "instance")[];
-                  /** Status of the capability */
-                  status: "enabled" | "disabled";
-                  /** Metadata contains additional information associated with the capability. Extension point. */
-                  metadata?: {
-                    [key: string]: any;
-                  };
-                }[];
-                /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                isAnnotation?: boolean;
-                /** Primary color associated with the model. */
-                primaryColor?: string;
-                /** Secondary color associated with the model. */
-                secondaryColor?: string;
-                /** SVG representation of the model in white color. */
-                svgWhite?: string;
-                /** SVG representation of the model in colored format. */
-                svgColor?: string;
-                /** SVG representation of the complete model. */
-                svgComplete?: string;
-                [key: string]: any;
-              };
-              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-              model?: {
+              displayName: string;
+              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
                 /** Version of the model as defined by the registrant. */
                 version: string;
+              };
+              registrant: {
+                kind: string;
               };
             };
             /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -1558,113 +1216,23 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
           to: {
             kind?: string;
-            /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+            /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-              id?: string;
-              /** Specifies the version of the schema used for the definition. */
-              schemaVersion?: string;
-              /** Version of the model definition. */
-              version: string;
+              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
+              /** Version of the model definition. */
+              version: string;
               /** Human-readable name for the model. */
-              displayName?: string;
-              /** Description of the model. */
-              description?: string;
-              /** Status of model, including:
-                            - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                            - maintenance: model is unavailable for a period of time.
-                            - enabled: model is available for use for all users of this Meshery Server.
-                            - ignored: model is unavailable for use for all users of this Meshery Server. */
-              status?: "ignored" | "enabled" | "duplicate";
-              /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-              registrant: {
-                /** ID */
-                id?: string;
-                /** Connection Name */
-                name?: string;
-                /** Credential ID */
-                credential_id?: string;
-                /** Connection Type */
-                type: string;
-                /** Connection Subtype */
-                sub_type?: string;
-                /** Connection Kind */
-                kind: string;
-                metadata?: object;
-                /** Connection Status */
-                status:
-                  | "discovered"
-                  | "registered"
-                  | "connected"
-                  | "ignored"
-                  | "maintenance"
-                  | "disconnected"
-                  | "deleted"
-                  | "not found";
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                user_id?: string;
-                created_at?: string;
-                updated_at?: string;
-                deleted_at?: string;
-              };
-              /** Category of the model. */
-              category: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                id?: string;
-                name?: string;
-                metadata?: object;
-              };
-              /** Sub-category of the model. */
-              subCategory?: string;
-              /** Metadata containing additional information associated with the model. */
-              metadata?: {
-                /** Capabilities associated with the model */
-                capabilities?: {
-                  /** Specifies the version of the schema to which the capability definition conforms. */
-                  schemaVersion: string;
-                  /** Version of the capability definition. */
-                  version: string;
-                  /** Name of the capability in human-readible format. */
-                  displayName: string;
-                  /** A written representation of the purpose and characteristics of the capability. */
-                  description?: string;
-                  /** Top-level categorization of the capability */
-                  kind: "action" | "mutate" | "view" | "interaction";
-                  /** Classification of capabilities. Used to group capabilities similar in nature. */
-                  type: string;
-                  /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                  subType?: string;
-                  /** Key that backs the capability. */
-                  key?: string;
-                  /** State of the entity in which the capability is applicable. */
-                  entityState: ("declaration" | "instance")[];
-                  /** Status of the capability */
-                  status: "enabled" | "disabled";
-                  /** Metadata contains additional information associated with the capability. Extension point. */
-                  metadata?: {
-                    [key: string]: any;
-                  };
-                }[];
-                /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                isAnnotation?: boolean;
-                /** Primary color associated with the model. */
-                primaryColor?: string;
-                /** Secondary color associated with the model. */
-                secondaryColor?: string;
-                /** SVG representation of the model in white color. */
-                svgWhite?: string;
-                /** SVG representation of the model in colored format. */
-                svgColor?: string;
-                /** SVG representation of the complete model. */
-                svgComplete?: string;
-                [key: string]: any;
-              };
-              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-              model?: {
+              displayName: string;
+              /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+              model: {
                 /** Version of the model as defined by the registrant. */
                 version: string;
+              };
+              registrant: {
+                kind: string;
               };
             };
             /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -1723,6 +1291,10 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           }[];
         };
       }[];
+      /** Timestamp when the resource was created. */
+      created_at?: string;
+      /** Timestamp when the resource was updated. */
+      updated_at?: string;
     }[];
   };
   /** Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results. */
@@ -1777,7 +1349,7 @@ export type PostEvaluateApiArg = {
         /** Format specifies the format used in the `component.schema` field. JSON is the default. */
         format: "JSON" | "CUE";
         /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-        model: {
+        model?: {
           /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
           id: string;
           /** Specifies the version of the schema used for the definition. */
@@ -2004,8 +1576,31 @@ export type PostEvaluateApiArg = {
           componentsCount: number;
           /** Number of relationships associated with the model. */
           relationshipsCount: number;
+          /** Timestamp when the resource was created. */
+          created_at?: string;
+          /** Timestamp when the resource was updated. */
+          updated_at?: string;
         };
-        /** ModelId is the foreign key to the model to which the component belongs. */
+        /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
+        modelReference: {
+          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+          id: string;
+          /** The unique name for the model within the scope of a registrant. */
+          name: string;
+          /** Version of the model definition. */
+          version: string;
+          /** Human-readable name for the model. */
+          displayName: string;
+          /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+          model: {
+            /** Version of the model as defined by the registrant. */
+            version: string;
+          };
+          registrant: {
+            kind: string;
+          };
+        };
+        /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
         modelId: string;
         /** Visualization styles for a component */
         styles?: {
@@ -2228,10 +1823,14 @@ export type PostEvaluateApiArg = {
           /** JSON schema of the object as defined by the registrant. */
           schema: string;
         };
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
       }[];
       /** Design-level preferences */
       preferences?: {
-        /** List of available layers */
+        /** Map of available layers, where keys are layer names. */
         layers: object;
       };
       /** List of relationships between components */
@@ -2242,122 +1841,23 @@ export type PostEvaluateApiArg = {
         schemaVersion: string;
         /** A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
         version: string;
-        /** Name of the model in which this relationship is packaged. */
+        /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
         model: {
-          /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-          id?: string;
-          /** Specifies the version of the schema used for the definition. */
-          schemaVersion?: string;
-          /** Version of the model definition. */
-          version: string;
+          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+          id: string;
           /** The unique name for the model within the scope of a registrant. */
           name: string;
+          /** Version of the model definition. */
+          version: string;
           /** Human-readable name for the model. */
-          displayName?: string;
-          /** Description of the model. */
-          description?: string;
-          /** Status of model, including:
-                    - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                    - maintenance: model is unavailable for a period of time.
-                    - enabled: model is available for use for all users of this Meshery Server.
-                    - ignored: model is unavailable for use for all users of this Meshery Server. */
-          status?: "ignored" | "enabled" | "duplicate";
-          /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-          registrant: {
-            /** ID */
-            id?: string;
-            /** Connection Name */
-            name?: string;
-            /** Credential ID */
-            credential_id?: string;
-            /** Connection Type */
-            type: string;
-            /** Connection Subtype */
-            sub_type?: string;
-            /** Connection Kind */
-            kind: string;
-            metadata?: object;
-            /** Connection Status */
-            status:
-              | "discovered"
-              | "registered"
-              | "connected"
-              | "ignored"
-              | "maintenance"
-              | "disconnected"
-              | "deleted"
-              | "not found";
-            /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-            user_id?: string;
-            created_at?: string;
-            updated_at?: string;
-            deleted_at?: string;
-          };
-          /** Category of the model. */
-          category: {
-            /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-            id?: string;
-            name?: string;
-            metadata?: object;
-          };
-          /** Sub-category of the model. */
-          subCategory?: string;
-          /** Metadata containing additional information associated with the model. */
-          metadata?: {
-            /** Capabilities associated with the model */
-            capabilities?: {
-              /** Specifies the version of the schema to which the capability definition conforms. */
-              schemaVersion: string;
-              /** Version of the capability definition. */
-              version: string;
-              /** Name of the capability in human-readible format. */
-              displayName: string;
-              /** A written representation of the purpose and characteristics of the capability. */
-              description?: string;
-              /** Top-level categorization of the capability */
-              kind: "action" | "mutate" | "view" | "interaction";
-              /** Classification of capabilities. Used to group capabilities similar in nature. */
-              type: string;
-              /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Relaationship. */
-              subType?:
-                | "inventory"
-                | "matchLabels"
-                | "permission"
-                | "network"
-                | "firewall"
-                | "mount"
-                | "alias"
-                | "annotation"
-                | "reference";
-              /** Key that backs the capability. */
-              key?: string;
-              /** State of the entity in which the capability is applicable. */
-              entityState: ("declaration" | "instance")[];
-              /** Status of the capability */
-              status: "enabled" | "disabled";
-              /** Metadata contains additional information associated with the capability. Extension point. */
-              metadata?: {
-                [key: string]: any;
-              };
-            }[];
-            /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-            isAnnotation?: boolean;
-            /** Primary color associated with the model. */
-            primaryColor?: string;
-            /** Secondary color associated with the model. */
-            secondaryColor?: string;
-            /** SVG representation of the model in white color. */
-            svgWhite?: string;
-            /** SVG representation of the model in colored format. */
-            svgColor?: string;
-            /** SVG representation of the complete model. */
-            svgComplete?: string;
-            [key: string]: any;
-          };
-          /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-          model?: {
+          displayName: string;
+          /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+          model: {
             /** Version of the model as defined by the registrant. */
             version: string;
+          };
+          registrant: {
+            kind: string;
           };
         };
         /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
@@ -2532,113 +2032,23 @@ export type PostEvaluateApiArg = {
             /** Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
             from: {
               kind?: string;
-              /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+              /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-                id?: string;
-                /** Specifies the version of the schema used for the definition. */
-                schemaVersion?: string;
-                /** Version of the model definition. */
-                version: string;
+                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
+                /** Version of the model definition. */
+                version: string;
                 /** Human-readable name for the model. */
-                displayName?: string;
-                /** Description of the model. */
-                description?: string;
-                /** Status of model, including:
-                                - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                                - maintenance: model is unavailable for a period of time.
-                                - enabled: model is available for use for all users of this Meshery Server.
-                                - ignored: model is unavailable for use for all users of this Meshery Server. */
-                status?: "ignored" | "enabled" | "duplicate";
-                /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-                registrant: {
-                  /** ID */
-                  id?: string;
-                  /** Connection Name */
-                  name?: string;
-                  /** Credential ID */
-                  credential_id?: string;
-                  /** Connection Type */
-                  type: string;
-                  /** Connection Subtype */
-                  sub_type?: string;
-                  /** Connection Kind */
-                  kind: string;
-                  metadata?: object;
-                  /** Connection Status */
-                  status:
-                    | "discovered"
-                    | "registered"
-                    | "connected"
-                    | "ignored"
-                    | "maintenance"
-                    | "disconnected"
-                    | "deleted"
-                    | "not found";
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  user_id?: string;
-                  created_at?: string;
-                  updated_at?: string;
-                  deleted_at?: string;
-                };
-                /** Category of the model. */
-                category: {
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  id?: string;
-                  name?: string;
-                  metadata?: object;
-                };
-                /** Sub-category of the model. */
-                subCategory?: string;
-                /** Metadata containing additional information associated with the model. */
-                metadata?: {
-                  /** Capabilities associated with the model */
-                  capabilities?: {
-                    /** Specifies the version of the schema to which the capability definition conforms. */
-                    schemaVersion: string;
-                    /** Version of the capability definition. */
-                    version: string;
-                    /** Name of the capability in human-readible format. */
-                    displayName: string;
-                    /** A written representation of the purpose and characteristics of the capability. */
-                    description?: string;
-                    /** Top-level categorization of the capability */
-                    kind: "action" | "mutate" | "view" | "interaction";
-                    /** Classification of capabilities. Used to group capabilities similar in nature. */
-                    type: string;
-                    /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                    subType?: string;
-                    /** Key that backs the capability. */
-                    key?: string;
-                    /** State of the entity in which the capability is applicable. */
-                    entityState: ("declaration" | "instance")[];
-                    /** Status of the capability */
-                    status: "enabled" | "disabled";
-                    /** Metadata contains additional information associated with the capability. Extension point. */
-                    metadata?: {
-                      [key: string]: any;
-                    };
-                  }[];
-                  /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                  isAnnotation?: boolean;
-                  /** Primary color associated with the model. */
-                  primaryColor?: string;
-                  /** Secondary color associated with the model. */
-                  secondaryColor?: string;
-                  /** SVG representation of the model in white color. */
-                  svgWhite?: string;
-                  /** SVG representation of the model in colored format. */
-                  svgColor?: string;
-                  /** SVG representation of the complete model. */
-                  svgComplete?: string;
-                  [key: string]: any;
-                };
-                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-                model?: {
+                displayName: string;
+                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                model: {
                   /** Version of the model as defined by the registrant. */
                   version: string;
+                };
+                registrant: {
+                  kind: string;
                 };
               };
               /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -2698,113 +2108,23 @@ export type PostEvaluateApiArg = {
             /** Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
             to: {
               kind?: string;
-              /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+              /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-                id?: string;
-                /** Specifies the version of the schema used for the definition. */
-                schemaVersion?: string;
-                /** Version of the model definition. */
-                version: string;
+                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
+                /** Version of the model definition. */
+                version: string;
                 /** Human-readable name for the model. */
-                displayName?: string;
-                /** Description of the model. */
-                description?: string;
-                /** Status of model, including:
-                                - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                                - maintenance: model is unavailable for a period of time.
-                                - enabled: model is available for use for all users of this Meshery Server.
-                                - ignored: model is unavailable for use for all users of this Meshery Server. */
-                status?: "ignored" | "enabled" | "duplicate";
-                /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-                registrant: {
-                  /** ID */
-                  id?: string;
-                  /** Connection Name */
-                  name?: string;
-                  /** Credential ID */
-                  credential_id?: string;
-                  /** Connection Type */
-                  type: string;
-                  /** Connection Subtype */
-                  sub_type?: string;
-                  /** Connection Kind */
-                  kind: string;
-                  metadata?: object;
-                  /** Connection Status */
-                  status:
-                    | "discovered"
-                    | "registered"
-                    | "connected"
-                    | "ignored"
-                    | "maintenance"
-                    | "disconnected"
-                    | "deleted"
-                    | "not found";
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  user_id?: string;
-                  created_at?: string;
-                  updated_at?: string;
-                  deleted_at?: string;
-                };
-                /** Category of the model. */
-                category: {
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  id?: string;
-                  name?: string;
-                  metadata?: object;
-                };
-                /** Sub-category of the model. */
-                subCategory?: string;
-                /** Metadata containing additional information associated with the model. */
-                metadata?: {
-                  /** Capabilities associated with the model */
-                  capabilities?: {
-                    /** Specifies the version of the schema to which the capability definition conforms. */
-                    schemaVersion: string;
-                    /** Version of the capability definition. */
-                    version: string;
-                    /** Name of the capability in human-readible format. */
-                    displayName: string;
-                    /** A written representation of the purpose and characteristics of the capability. */
-                    description?: string;
-                    /** Top-level categorization of the capability */
-                    kind: "action" | "mutate" | "view" | "interaction";
-                    /** Classification of capabilities. Used to group capabilities similar in nature. */
-                    type: string;
-                    /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                    subType?: string;
-                    /** Key that backs the capability. */
-                    key?: string;
-                    /** State of the entity in which the capability is applicable. */
-                    entityState: ("declaration" | "instance")[];
-                    /** Status of the capability */
-                    status: "enabled" | "disabled";
-                    /** Metadata contains additional information associated with the capability. Extension point. */
-                    metadata?: {
-                      [key: string]: any;
-                    };
-                  }[];
-                  /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                  isAnnotation?: boolean;
-                  /** Primary color associated with the model. */
-                  primaryColor?: string;
-                  /** Secondary color associated with the model. */
-                  secondaryColor?: string;
-                  /** SVG representation of the model in white color. */
-                  svgWhite?: string;
-                  /** SVG representation of the model in colored format. */
-                  svgColor?: string;
-                  /** SVG representation of the complete model. */
-                  svgComplete?: string;
-                  [key: string]: any;
-                };
-                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-                model?: {
+                displayName: string;
+                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                model: {
                   /** Version of the model as defined by the registrant. */
                   version: string;
+                };
+                registrant: {
+                  kind: string;
                 };
               };
               /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -2869,113 +2189,23 @@ export type PostEvaluateApiArg = {
               kind?: string;
               /** Strategy criterion for determing how to match the values at mutator/mutated paths */
               match_strategy_matrix?: string[][];
-              /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+              /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-                id?: string;
-                /** Specifies the version of the schema used for the definition. */
-                schemaVersion?: string;
-                /** Version of the model definition. */
-                version: string;
+                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
+                /** Version of the model definition. */
+                version: string;
                 /** Human-readable name for the model. */
-                displayName?: string;
-                /** Description of the model. */
-                description?: string;
-                /** Status of model, including:
-                                - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                                - maintenance: model is unavailable for a period of time.
-                                - enabled: model is available for use for all users of this Meshery Server.
-                                - ignored: model is unavailable for use for all users of this Meshery Server. */
-                status?: "ignored" | "enabled" | "duplicate";
-                /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-                registrant: {
-                  /** ID */
-                  id?: string;
-                  /** Connection Name */
-                  name?: string;
-                  /** Credential ID */
-                  credential_id?: string;
-                  /** Connection Type */
-                  type: string;
-                  /** Connection Subtype */
-                  sub_type?: string;
-                  /** Connection Kind */
-                  kind: string;
-                  metadata?: object;
-                  /** Connection Status */
-                  status:
-                    | "discovered"
-                    | "registered"
-                    | "connected"
-                    | "ignored"
-                    | "maintenance"
-                    | "disconnected"
-                    | "deleted"
-                    | "not found";
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  user_id?: string;
-                  created_at?: string;
-                  updated_at?: string;
-                  deleted_at?: string;
-                };
-                /** Category of the model. */
-                category: {
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  id?: string;
-                  name?: string;
-                  metadata?: object;
-                };
-                /** Sub-category of the model. */
-                subCategory?: string;
-                /** Metadata containing additional information associated with the model. */
-                metadata?: {
-                  /** Capabilities associated with the model */
-                  capabilities?: {
-                    /** Specifies the version of the schema to which the capability definition conforms. */
-                    schemaVersion: string;
-                    /** Version of the capability definition. */
-                    version: string;
-                    /** Name of the capability in human-readible format. */
-                    displayName: string;
-                    /** A written representation of the purpose and characteristics of the capability. */
-                    description?: string;
-                    /** Top-level categorization of the capability */
-                    kind: "action" | "mutate" | "view" | "interaction";
-                    /** Classification of capabilities. Used to group capabilities similar in nature. */
-                    type: string;
-                    /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                    subType?: string;
-                    /** Key that backs the capability. */
-                    key?: string;
-                    /** State of the entity in which the capability is applicable. */
-                    entityState: ("declaration" | "instance")[];
-                    /** Status of the capability */
-                    status: "enabled" | "disabled";
-                    /** Metadata contains additional information associated with the capability. Extension point. */
-                    metadata?: {
-                      [key: string]: any;
-                    };
-                  }[];
-                  /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                  isAnnotation?: boolean;
-                  /** Primary color associated with the model. */
-                  primaryColor?: string;
-                  /** Secondary color associated with the model. */
-                  secondaryColor?: string;
-                  /** SVG representation of the model in white color. */
-                  svgWhite?: string;
-                  /** SVG representation of the model in colored format. */
-                  svgColor?: string;
-                  /** SVG representation of the complete model. */
-                  svgComplete?: string;
-                  [key: string]: any;
-                };
-                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-                model?: {
+                displayName: string;
+                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                model: {
                   /** Version of the model as defined by the registrant. */
                   version: string;
+                };
+                registrant: {
+                  kind: string;
                 };
               };
               /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -3035,113 +2265,23 @@ export type PostEvaluateApiArg = {
             /** Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match. */
             to: {
               kind?: string;
-              /** Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models */
+              /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
-                id?: string;
-                /** Specifies the version of the schema used for the definition. */
-                schemaVersion?: string;
-                /** Version of the model definition. */
-                version: string;
+                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
+                /** Version of the model definition. */
+                version: string;
                 /** Human-readable name for the model. */
-                displayName?: string;
-                /** Description of the model. */
-                description?: string;
-                /** Status of model, including:
-                                - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
-                                - maintenance: model is unavailable for a period of time.
-                                - enabled: model is available for use for all users of this Meshery Server.
-                                - ignored: model is unavailable for use for all users of this Meshery Server. */
-                status?: "ignored" | "enabled" | "duplicate";
-                /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
-                registrant: {
-                  /** ID */
-                  id?: string;
-                  /** Connection Name */
-                  name?: string;
-                  /** Credential ID */
-                  credential_id?: string;
-                  /** Connection Type */
-                  type: string;
-                  /** Connection Subtype */
-                  sub_type?: string;
-                  /** Connection Kind */
-                  kind: string;
-                  metadata?: object;
-                  /** Connection Status */
-                  status:
-                    | "discovered"
-                    | "registered"
-                    | "connected"
-                    | "ignored"
-                    | "maintenance"
-                    | "disconnected"
-                    | "deleted"
-                    | "not found";
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  user_id?: string;
-                  created_at?: string;
-                  updated_at?: string;
-                  deleted_at?: string;
-                };
-                /** Category of the model. */
-                category: {
-                  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
-                  id?: string;
-                  name?: string;
-                  metadata?: object;
-                };
-                /** Sub-category of the model. */
-                subCategory?: string;
-                /** Metadata containing additional information associated with the model. */
-                metadata?: {
-                  /** Capabilities associated with the model */
-                  capabilities?: {
-                    /** Specifies the version of the schema to which the capability definition conforms. */
-                    schemaVersion: string;
-                    /** Version of the capability definition. */
-                    version: string;
-                    /** Name of the capability in human-readible format. */
-                    displayName: string;
-                    /** A written representation of the purpose and characteristics of the capability. */
-                    description?: string;
-                    /** Top-level categorization of the capability */
-                    kind: "action" | "mutate" | "view" | "interaction";
-                    /** Classification of capabilities. Used to group capabilities similar in nature. */
-                    type: string;
-                    /** Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability. */
-                    subType?: string;
-                    /** Key that backs the capability. */
-                    key?: string;
-                    /** State of the entity in which the capability is applicable. */
-                    entityState: ("declaration" | "instance")[];
-                    /** Status of the capability */
-                    status: "enabled" | "disabled";
-                    /** Metadata contains additional information associated with the capability. Extension point. */
-                    metadata?: {
-                      [key: string]: any;
-                    };
-                  }[];
-                  /** Indicates whether the model and its entities should be treated as deployable entities or as logical representations. */
-                  isAnnotation?: boolean;
-                  /** Primary color associated with the model. */
-                  primaryColor?: string;
-                  /** Secondary color associated with the model. */
-                  secondaryColor?: string;
-                  /** SVG representation of the model in white color. */
-                  svgWhite?: string;
-                  /** SVG representation of the model in colored format. */
-                  svgColor?: string;
-                  /** SVG representation of the complete model. */
-                  svgComplete?: string;
-                  [key: string]: any;
-                };
-                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31) */
-                model?: {
+                displayName: string;
+                /** Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
+                model: {
                   /** Version of the model as defined by the registrant. */
                   version: string;
+                };
+                registrant: {
+                  kind: string;
                 };
               };
               /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
@@ -3200,6 +2340,10 @@ export type PostEvaluateApiArg = {
             }[];
           };
         }[];
+        /** Timestamp when the resource was created. */
+        created_at?: string;
+        /** Timestamp when the resource was updated. */
+        updated_at?: string;
       }[];
     };
     options?: {

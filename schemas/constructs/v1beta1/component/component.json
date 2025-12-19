@@ -73,7 +73,21 @@
       "x-order": 7,
       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
       "x-oapi-codegen-extra-tags": {
-        "gorm": "foreignKey:ModelId;references:Id"
+        "gorm": "foreignKey:ModelId;references:Id",
+        "json": "model,omitempty",
+        "yaml": "model,omitempty"
+      }
+    },
+    "modelReference": {
+      "$ref": "../model/openapi.yml#/components/schemas/ModelReference",
+      "x-go-type": "model.ModelReference",
+      "x-go-type-import": {
+        "path": "github.com/meshery/schemas/models/v1beta1/model"
+      },
+      "x-order": 8,
+      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+      "x-oapi-codegen-extra-tags": {
+        "gorm": "-"
       }
     },
     "modelId": {
@@ -108,7 +122,7 @@
         "x-go-type": "capability.Capability",
         "x-go-type-import": {
           "path": "github.com/meshery/schemas/models/v1alpha1/capability"
-        } 
+        }
       },
       "x-oapi-codegen-extra-tags": {
         "gorm": "type:bytes;serializer:json",
@@ -300,6 +314,14 @@
         "gorm": "type:bytes;serializer:json"
       },
       "x-go-type": "Component"
+    },
+    "created_at": {
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/created_at",
+      "x-order": 14
+    },
+    "updated_at": {
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/updated_at",
+      "x-order": 15
     }
   },
   "required": [
@@ -312,7 +334,7 @@
     "configuration",
     "metadata",
     "modelId",
-    "model",
+    "modelReference",
     "component"
   ]
 }
