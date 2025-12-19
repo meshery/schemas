@@ -4636,8 +4636,7 @@
           "name",
           "schemaVersion",
           "version",
-          "components",
-          "relationships"
+          "components"
         ]
       },
       "MesheryPattern": {
@@ -9300,8 +9299,7 @@
               "name",
               "schemaVersion",
               "version",
-              "components",
-              "relationships"
+              "components"
             ]
           },
           "updated_at": {
@@ -13996,8 +13994,7 @@
                     "name",
                     "schemaVersion",
                     "version",
-                    "components",
-                    "relationships"
+                    "components"
                   ]
                 },
                 "updated_at": {
@@ -18724,8 +18721,7 @@
                   "name",
                   "schemaVersion",
                   "version",
-                  "components",
-                  "relationships"
+                  "components"
                 ]
               },
               "updated_at": {
