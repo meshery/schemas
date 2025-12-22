@@ -130,3 +130,19 @@ components:
           type: string
           format: uri
       required: ["site", "link"]
+
+    UsersPage:
+      description: "link"
+      type: object
+      properties:
+        page:
+          type: integer
+        totalCount:
+          type: integer
+        pageSize:
+          type: integer
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+      required: [page, totalCount, pageSize, users]
