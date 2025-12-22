@@ -43942,7 +43942,7 @@ components:
           description: >-
             Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook,
             Github)
-          examples:
+          example:
             - local
             - github
             - google
@@ -44271,7 +44271,7 @@ components:
               description: >-
                 Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook,
                 Github)
-              examples:
+              example:
                 - local
                 - github
                 - google
@@ -44569,7 +44569,7 @@ components:
                   - organization admin
                   - user
               description: List of global roles assigned to the user
-              examples:
+              example:
                 - - admin
                   - meshmap
                 - - user

@@ -59,7 +59,7 @@ const schema = {
             "type": "string",
             "maxLength": 100,
             "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
-            "examples": [
+            "example": [
               "local",
               "github",
               "google",
@@ -464,7 +464,7 @@ const schema = {
                 "type": "string",
                 "maxLength": 100,
                 "description": "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)",
-                "examples": [
+                "example": [
                   "local",
                   "github",
                   "google",
@@ -838,7 +838,7 @@ const schema = {
                   ]
                 },
                 "description": "List of global roles assigned to the user",
-                "examples": [
+                "example": [
                   [
                     "admin",
                     "meshmap"
