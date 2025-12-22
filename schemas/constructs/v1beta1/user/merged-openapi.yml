@@ -366,6 +366,34 @@
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
+          "socials": {
+            "type": "array",
+            "description": "Various online profiles associated with the user account",
+            "items": {
+              "x-go-type": "Social",
+              "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+              "type": "object",
+              "properties": {
+                "site": {
+                  "type": "string",
+                  "maxLength": 50
+                },
+                "link": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "site",
+                "link"
+              ]
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "socials",
+              "json": "socials",
+              "yaml": "socials"
+            }
+          },
           "deleted_at": {
             "type": "string",
             "format": "date-time",
@@ -742,6 +770,34 @@
                 "type": "string",
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
+              },
+              "socials": {
+                "type": "array",
+                "description": "Various online profiles associated with the user account",
+                "items": {
+                  "x-go-type": "Social",
+                  "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
+                  "type": "object",
+                  "properties": {
+                    "site": {
+                      "type": "string",
+                      "maxLength": 50
+                    },
+                    "link": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  },
+                  "required": [
+                    "site",
+                    "link"
+                  ]
+                },
+                "x-oapi-codegen-extra-tags": {
+                  "db": "socials",
+                  "json": "socials",
+                  "yaml": "socials"
+                }
               },
               "deleted_at": {
                 "type": "string",

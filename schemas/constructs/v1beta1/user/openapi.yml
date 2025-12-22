@@ -167,6 +167,16 @@ components:
             db: "updated_at"
             json: "updated_at"
             yaml: "updated_at"
+        socials:
+          type: array
+          description: Various online profiles associated with the user account
+          items:
+            $ref: "#/components/schemas/Social"
+            x-go-type: "Social"
+          x-oapi-codegen-extra-tags:
+            db: "socials"
+            json: "socials"
+            yaml: "socials"
         deleted_at:
           type: string
           format: date-time

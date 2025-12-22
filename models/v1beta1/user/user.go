@@ -98,6 +98,9 @@ type GetUserResponse struct {
 	// RoleNames List of global roles assigned to the user
 	RoleNames *[]GetUserResponseRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
 
+	// Socials Various online profiles associated with the user account
+	Socials *[]Social `db:"socials" json:"socials" yaml:"socials"`
+
 	// Status User account status
 	Status GetUserResponseStatus `db:"status" json:"status" yaml:"status"`
 
@@ -188,6 +191,12 @@ type SelectedGrafanaConfig struct {
 	TemplateVars *[]string                 `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
 }
 
+// Social Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.
+type Social struct {
+	Link string `json:"link" yaml:"link"`
+	Site string `json:"site" yaml:"site"`
+}
+
 // User Represents a user in Layer5 Cloud (Meshery)
 type User struct {
 	// AcceptedTermsAt Timestamp when user accepted terms and conditions
@@ -234,6 +243,9 @@ type User struct {
 
 	// Region User's region information stored as JSONB
 	Region *core.Map `db:"region" json:"region" yaml:"region"`
+
+	// Socials Various online profiles associated with the user account
+	Socials *[]Social `db:"socials" json:"socials" yaml:"socials"`
 
 	// Status User account status
 	Status UserStatus `db:"status" json:"status" yaml:"status"`
