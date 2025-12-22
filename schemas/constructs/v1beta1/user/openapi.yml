@@ -41,7 +41,7 @@ components:
           type: string
           maxLength: 100
           description: "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)"
-          examples:
+          example:
             - local
             - github
             - google
@@ -209,7 +209,7 @@ components:
                   - organization admin
                   - user
               description: List of global roles assigned to the user
-              examples:
+              example:
                 - ["admin", "meshmap"]
                 - ["user"]
               x-oapi-codegen-extra-tags:
@@ -386,3 +386,19 @@ components:
           type: string
           format: uri
       required: ["site", "link"]
+
+    # UsersPage:
+    #   description: "link"
+    #   type: object
+    #   properties:
+    #     page:
+    #       type: integer
+    #     totalCount:
+    #       type: integer
+    #     pageSize:
+    #       type: integer
+    #     users:
+    #       type: array
+    #       items:
+    #         $ref: "#/components/schemas/User"
+    #   required: [page, totalCount, pageSize, users]
