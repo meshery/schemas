@@ -44104,6 +44104,21 @@ components:
         gen:
           type: string
           description: Load generator
+    Preference_Schema_Social:
+      description: >-
+        Various online profiles associated with the user account, like GitHub,
+        LinkedIn, X, and so on.
+      type: object
+      properties:
+        site:
+          type: string
+          maxLength: 50
+        link:
+          type: string
+          format: uri
+      required:
+        - site
+        - link
     Academy_API_RegisterToAcademyContentRequest:
       type: object
       required:
