@@ -77,3 +77,9 @@ type SelectedGrafanaConfig struct {
 	Panels       *[]map[string]interface{} `json:"panels,omitempty" yaml:"panels,omitempty"`
 	TemplateVars *[]string                 `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
 }
+
+// Social Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.
+type Social struct {
+	Link string `json:"link" yaml:"link"`
+	Site string `json:"site" yaml:"site"`
+}
