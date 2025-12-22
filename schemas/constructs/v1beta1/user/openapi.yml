@@ -178,44 +178,51 @@ components:
           format: date-time
           nullable: true
           description: Timestamp when the user record was soft-deleted (null if not deleted)
-        role_names:
-          type: array
-          items:
-            type: string
-            enum:
-              - admin
-              - meshmap
-              - curator
-              - team admin
-              - workspace admin
-              - workspace manager
-              - organization admin
-              - user
-          description: List of global roles assigned to the user
-          examples:
-            - ["admin", "meshmap"]
-            - ["user"]
-        teams:
-          type: object
-          description: Teams the user belongs to with role information
-          properties:
-            teams_with_roles:
-              type: array
-              items:
-                type: object
-            total_count:
-              type: integer
-        organizations:
-          type: object
-          description: Organizations the user belongs to with role information
-          properties:
-            organizations_with_roles:
-              type: array
-              items:
-                type: object
-            total_count:
-              type: integer
       additionalProperties: false
+
+    GetUserResponse:
+      description: Response schema for getting user information, includes user data with roles, teams, and organizations
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            role_names:
+              type: array
+              items:
+                type: string
+                enum:
+                  - admin
+                  - meshmap
+                  - curator
+                  - team admin
+                  - workspace admin
+                  - workspace manager
+                  - organization admin
+                  - user
+              description: List of global roles assigned to the user
+              examples:
+                - ["admin", "meshmap"]
+                - ["user"]
+            teams:
+              type: object
+              description: Teams the user belongs to with role information
+              properties:
+                teams_with_roles:
+                  type: array
+                  items:
+                    type: object
+                total_count:
+                  type: integer
+            organizations:
+              type: object
+              description: Organizations the user belongs to with role information
+              properties:
+                organizations_with_roles:
+                  type: array
+                  items:
+                    type: object
+                total_count:
+                  type: integer
 
     Preference:
       type: object
