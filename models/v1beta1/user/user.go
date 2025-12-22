@@ -4,11 +4,10 @@
 package user
 
 import (
-	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -46,135 +45,73 @@ type Adapter = map[string]interface{}
 // GetUserResponse defines model for GetUserResponse.
 type GetUserResponse struct {
 	// AcceptedTermsAt Timestamp when user accepted terms and conditions
-	AcceptedTermsAt time.Time `json:"accepted_terms_at,omitempty" yaml:"accepted_terms_at,omitempty"`
+	AcceptedTermsAt time.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at"`
 
 	// AvatarUrl URL to user's avatar image
-	AvatarUrl *string `json:"avatar_url,omitempty" yaml:"avatar_url,omitempty"`
+	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
 
 	// Bio User's biography or description
-	Bio *string `json:"bio,omitempty" yaml:"bio,omitempty"`
+	Bio *string `db:"bio" json:"bio" yaml:"bio"`
 
 	// Country User's country information stored as JSONB
-	Country *map[string]interface{} `json:"country,omitempty" yaml:"country,omitempty"`
+	Country *core.Map `db:"country" json:"country" yaml:"country"`
 
 	// CreatedAt Timestamp when the user record was created
-	CreatedAt time.Time `json:"created_at" yaml:"created_at"`
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
-	DeletedAt *time.Time `json:"deleted_at" yaml:"deleted_at"`
+	DeletedAt *core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// Email User's email address
-	Email openapi_types.Email `json:"email" yaml:"email"`
+	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
 
 	// FirstLoginTime Timestamp of user's first login
-	FirstLoginTime time.Time `json:"first_login_time,omitempty" yaml:"first_login_time,omitempty"`
+	FirstLoginTime time.Time `db:"first_login_time" json:"first_login_time" yaml:"first_login_time"`
 
 	// FirstName User's first name
-	FirstName string `json:"first_name" yaml:"first_name"`
+	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
 
-	// Id Unique identifier for the user
-	Id uuid.UUID `json:"id" yaml:"id"`
+	// ID Unique identifier for the user
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// LastLoginTime Timestamp of user's most recent login
-	LastLoginTime time.Time `json:"last_login_time" yaml:"last_login_time"`
+	LastLoginTime time.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
 
 	// LastName User's last name
-	LastName string `json:"last_name" yaml:"last_name"`
+	LastName string `db:"last_name" json:"last_name" yaml:"last_name"`
 
 	// Organizations Organizations the user belongs to with role information
 	Organizations *struct {
-		OrganizationsWithRoles *[]map[string]interface{} `json:"organizations_with_roles,omitempty" yaml:"organizations_with_roles,omitempty"`
-		TotalCount             *int                      `json:"total_count,omitempty" yaml:"total_count,omitempty"`
-	} `json:"organizations,omitempty" yaml:"organizations,omitempty"`
+		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizations_with_roles" yaml:"organizations_with_roles"`
+		TotalCount             *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
+	} `db:"organizations" json:"organizations" yaml:"organizations"`
 
-	// Preferences User preferences stored as JSONB. Can contain arbitrary key-value pairs for user settings and configurations
-	Preferences *GetUserResponse_Preferences `json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	// Preferences User preferences stored as JSONB
+	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
 
 	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-	Provider string `json:"provider" yaml:"provider"`
+	Provider string `db:"provider" json:"provider" yaml:"provider"`
 
 	// Region User's region information stored as JSONB
-	Region *map[string]interface{} `json:"region,omitempty" yaml:"region,omitempty"`
+	Region *core.Map `db:"region" json:"region" yaml:"region"`
 
 	// RoleNames List of global roles assigned to the user
-	RoleNames *[]GetUserResponseRoleNames `json:"role_names,omitempty" yaml:"role_names,omitempty"`
+	RoleNames *[]GetUserResponseRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
 
 	// Status User account status
-	Status GetUserResponseStatus `json:"status" yaml:"status"`
+	Status GetUserResponseStatus `db:"status" json:"status" yaml:"status"`
 
 	// Teams Teams the user belongs to with role information
 	Teams *struct {
-		TeamsWithRoles *[]map[string]interface{} `json:"teams_with_roles,omitempty" yaml:"teams_with_roles,omitempty"`
-		TotalCount     *int                      `json:"total_count,omitempty" yaml:"total_count,omitempty"`
-	} `json:"teams,omitempty" yaml:"teams,omitempty"`
+		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teams_with_roles" yaml:"teams_with_roles"`
+		TotalCount     *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
+	} `db:"teams" json:"teams" yaml:"teams"`
 
 	// UpdatedAt Timestamp when the user record was last updated
-	UpdatedAt time.Time `json:"updated_at" yaml:"updated_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserId User identifier (username or external ID)
-	UserId string `json:"user_id" yaml:"user_id"`
-}
-
-// GetUserResponse_Preferences User preferences stored as JSONB. Can contain arbitrary key-value pairs for user settings and configurations
-type GetUserResponse_Preferences struct {
-	// AnonymousPerfResults Whether to collect anonymous performance results
-	AnonymousPerfResults *bool `json:"anonymousPerfResults,omitempty" yaml:"anonymousPerfResults,omitempty"`
-
-	// AnonymousUsageStats Whether to collect anonymous usage statistics
-	AnonymousUsageStats *bool `json:"anonymousUsageStats,omitempty" yaml:"anonymousUsageStats,omitempty"`
-
-	// DashboardPreferences Dashboard preferences
-	DashboardPreferences *map[string]interface{} `json:"dashboardPreferences,omitempty" yaml:"dashboardPreferences,omitempty"`
-
-	// Grafana Grafana configuration
-	Grafana *struct {
-		GrafanaAPIKey         *string                   `json:"grafanaAPIKey,omitempty" yaml:"grafanaAPIKey,omitempty"`
-		GrafanaURL            *string                   `json:"grafanaURL,omitempty" yaml:"grafanaURL,omitempty"`
-		SelectedBoardsConfigs *[]map[string]interface{} `json:"selectedBoardsConfigs,omitempty" yaml:"selectedBoardsConfigs,omitempty"`
-	} `json:"grafana,omitempty" yaml:"grafana,omitempty"`
-
-	// LoadTestPrefs Load test preferences
-	LoadTestPrefs *struct {
-		// C Concurrent requests
-		C *int `json:"c,omitempty" yaml:"c,omitempty"`
-
-		// Gen Load generator
-		Gen *string `json:"gen,omitempty" yaml:"gen,omitempty"`
-
-		// Qps Queries per second
-		Qps *int `json:"qps,omitempty" yaml:"qps,omitempty"`
-
-		// T Duration
-		T *string `json:"t,omitempty" yaml:"t,omitempty"`
-	} `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
-
-	// MeshAdapters Mesh adapters configuration
-	MeshAdapters *[]map[string]interface{} `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
-
-	// NotifyRoleChange Whether user wants to be notified of role changes
-	NotifyRoleChange *bool `json:"notify_role_change,omitempty" yaml:"notify_role_change,omitempty"`
-
-	// Prometheus Prometheus configuration
-	Prometheus *struct {
-		PrometheusURL                   *string                   `json:"prometheusURL,omitempty" yaml:"prometheusURL,omitempty"`
-		SelectedPrometheusBoardsConfigs *[]map[string]interface{} `json:"selectedPrometheusBoardsConfigs,omitempty" yaml:"selectedPrometheusBoardsConfigs,omitempty"`
-	} `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
-
-	// RemoteProviderPreferences Remote provider preferences
-	RemoteProviderPreferences *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
-
-	// SelectedOrganizationID Currently selected organization ID
-	SelectedOrganizationID *string `json:"selectedOrganizationID,omitempty" yaml:"selectedOrganizationID,omitempty"`
-
-	// SelectedWorkspaceForOrganizations Selected workspace for each organization
-	SelectedWorkspaceForOrganizations *map[string]string `json:"selectedWorkspaceForOrganizations,omitempty" yaml:"selectedWorkspaceForOrganizations,omitempty"`
-
-	// UsersExtensionPreferences User extension preferences
-	UsersExtensionPreferences *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`
-
-	// WelcomeEmail Whether user wants to receive welcome emails
-	WelcomeEmail         *bool                  `json:"welcome_email,omitempty" yaml:"welcome_email,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+	UserId string `db:"user_id" json:"user_id" yaml:"user_id"`
 }
 
 // GetUserResponseRoleNames defines model for GetUserResponse.RoleNames.
@@ -254,617 +191,59 @@ type SelectedGrafanaConfig struct {
 // User Represents a user in Layer5 Cloud (Meshery)
 type User struct {
 	// AcceptedTermsAt Timestamp when user accepted terms and conditions
-	AcceptedTermsAt time.Time `json:"accepted_terms_at,omitempty" yaml:"accepted_terms_at,omitempty"`
+	AcceptedTermsAt time.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at"`
 
 	// AvatarUrl URL to user's avatar image
-	AvatarUrl *string `json:"avatar_url,omitempty" yaml:"avatar_url,omitempty"`
+	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
 
 	// Bio User's biography or description
-	Bio *string `json:"bio,omitempty" yaml:"bio,omitempty"`
+	Bio *string `db:"bio" json:"bio" yaml:"bio"`
 
 	// Country User's country information stored as JSONB
-	Country *map[string]interface{} `json:"country,omitempty" yaml:"country,omitempty"`
+	Country *core.Map `db:"country" json:"country" yaml:"country"`
 
 	// CreatedAt Timestamp when the user record was created
-	CreatedAt time.Time `json:"created_at" yaml:"created_at"`
+	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
-	DeletedAt *time.Time `json:"deleted_at" yaml:"deleted_at"`
+	DeletedAt *core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
 	// Email User's email address
-	Email openapi_types.Email `json:"email" yaml:"email"`
+	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
 
 	// FirstLoginTime Timestamp of user's first login
-	FirstLoginTime time.Time `json:"first_login_time,omitempty" yaml:"first_login_time,omitempty"`
+	FirstLoginTime time.Time `db:"first_login_time" json:"first_login_time" yaml:"first_login_time"`
 
 	// FirstName User's first name
-	FirstName string `json:"first_name" yaml:"first_name"`
+	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
 
-	// Id Unique identifier for the user
-	Id uuid.UUID `json:"id" yaml:"id"`
+	// ID Unique identifier for the user
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// LastLoginTime Timestamp of user's most recent login
-	LastLoginTime time.Time `json:"last_login_time" yaml:"last_login_time"`
+	LastLoginTime time.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
 
 	// LastName User's last name
-	LastName string `json:"last_name" yaml:"last_name"`
+	LastName string `db:"last_name" json:"last_name" yaml:"last_name"`
 
-	// Preferences User preferences stored as JSONB. Can contain arbitrary key-value pairs for user settings and configurations
-	Preferences *User_Preferences `json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	// Preferences User preferences stored as JSONB
+	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
 
 	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-	Provider string `json:"provider" yaml:"provider"`
+	Provider string `db:"provider" json:"provider" yaml:"provider"`
 
 	// Region User's region information stored as JSONB
-	Region *map[string]interface{} `json:"region,omitempty" yaml:"region,omitempty"`
+	Region *core.Map `db:"region" json:"region" yaml:"region"`
 
 	// Status User account status
-	Status UserStatus `json:"status" yaml:"status"`
+	Status UserStatus `db:"status" json:"status" yaml:"status"`
 
 	// UpdatedAt Timestamp when the user record was last updated
-	UpdatedAt time.Time `json:"updated_at" yaml:"updated_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserId User identifier (username or external ID)
-	UserId string `json:"user_id" yaml:"user_id"`
-}
-
-// User_Preferences User preferences stored as JSONB. Can contain arbitrary key-value pairs for user settings and configurations
-type User_Preferences struct {
-	// AnonymousPerfResults Whether to collect anonymous performance results
-	AnonymousPerfResults *bool `json:"anonymousPerfResults,omitempty" yaml:"anonymousPerfResults,omitempty"`
-
-	// AnonymousUsageStats Whether to collect anonymous usage statistics
-	AnonymousUsageStats *bool `json:"anonymousUsageStats,omitempty" yaml:"anonymousUsageStats,omitempty"`
-
-	// DashboardPreferences Dashboard preferences
-	DashboardPreferences *map[string]interface{} `json:"dashboardPreferences,omitempty" yaml:"dashboardPreferences,omitempty"`
-
-	// Grafana Grafana configuration
-	Grafana *struct {
-		GrafanaAPIKey         *string                   `json:"grafanaAPIKey,omitempty" yaml:"grafanaAPIKey,omitempty"`
-		GrafanaURL            *string                   `json:"grafanaURL,omitempty" yaml:"grafanaURL,omitempty"`
-		SelectedBoardsConfigs *[]map[string]interface{} `json:"selectedBoardsConfigs,omitempty" yaml:"selectedBoardsConfigs,omitempty"`
-	} `json:"grafana,omitempty" yaml:"grafana,omitempty"`
-
-	// LoadTestPrefs Load test preferences
-	LoadTestPrefs *struct {
-		// C Concurrent requests
-		C *int `json:"c,omitempty" yaml:"c,omitempty"`
-
-		// Gen Load generator
-		Gen *string `json:"gen,omitempty" yaml:"gen,omitempty"`
-
-		// Qps Queries per second
-		Qps *int `json:"qps,omitempty" yaml:"qps,omitempty"`
-
-		// T Duration
-		T *string `json:"t,omitempty" yaml:"t,omitempty"`
-	} `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
-
-	// MeshAdapters Mesh adapters configuration
-	MeshAdapters *[]map[string]interface{} `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
-
-	// NotifyRoleChange Whether user wants to be notified of role changes
-	NotifyRoleChange *bool `json:"notify_role_change,omitempty" yaml:"notify_role_change,omitempty"`
-
-	// Prometheus Prometheus configuration
-	Prometheus *struct {
-		PrometheusURL                   *string                   `json:"prometheusURL,omitempty" yaml:"prometheusURL,omitempty"`
-		SelectedPrometheusBoardsConfigs *[]map[string]interface{} `json:"selectedPrometheusBoardsConfigs,omitempty" yaml:"selectedPrometheusBoardsConfigs,omitempty"`
-	} `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
-
-	// RemoteProviderPreferences Remote provider preferences
-	RemoteProviderPreferences *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
-
-	// SelectedOrganizationID Currently selected organization ID
-	SelectedOrganizationID *string `json:"selectedOrganizationID,omitempty" yaml:"selectedOrganizationID,omitempty"`
-
-	// SelectedWorkspaceForOrganizations Selected workspace for each organization
-	SelectedWorkspaceForOrganizations *map[string]string `json:"selectedWorkspaceForOrganizations,omitempty" yaml:"selectedWorkspaceForOrganizations,omitempty"`
-
-	// UsersExtensionPreferences User extension preferences
-	UsersExtensionPreferences *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`
-
-	// WelcomeEmail Whether user wants to receive welcome emails
-	WelcomeEmail         *bool                  `json:"welcome_email,omitempty" yaml:"welcome_email,omitempty"`
-	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+	UserId string `db:"user_id" json:"user_id" yaml:"user_id"`
 }
 
 // UserStatus User account status
 type UserStatus string
-
-// Getter for additional properties for GetUserResponse_Preferences. Returns the specified
-// element and whether it was found
-func (a GetUserResponse_Preferences) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for GetUserResponse_Preferences
-func (a *GetUserResponse_Preferences) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for GetUserResponse_Preferences to handle AdditionalProperties
-func (a *GetUserResponse_Preferences) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["anonymousPerfResults"]; found {
-		err = json.Unmarshal(raw, &a.AnonymousPerfResults)
-		if err != nil {
-			return fmt.Errorf("error reading 'anonymousPerfResults': %w", err)
-		}
-		delete(object, "anonymousPerfResults")
-	}
-
-	if raw, found := object["anonymousUsageStats"]; found {
-		err = json.Unmarshal(raw, &a.AnonymousUsageStats)
-		if err != nil {
-			return fmt.Errorf("error reading 'anonymousUsageStats': %w", err)
-		}
-		delete(object, "anonymousUsageStats")
-	}
-
-	if raw, found := object["dashboardPreferences"]; found {
-		err = json.Unmarshal(raw, &a.DashboardPreferences)
-		if err != nil {
-			return fmt.Errorf("error reading 'dashboardPreferences': %w", err)
-		}
-		delete(object, "dashboardPreferences")
-	}
-
-	if raw, found := object["grafana"]; found {
-		err = json.Unmarshal(raw, &a.Grafana)
-		if err != nil {
-			return fmt.Errorf("error reading 'grafana': %w", err)
-		}
-		delete(object, "grafana")
-	}
-
-	if raw, found := object["loadTestPrefs"]; found {
-		err = json.Unmarshal(raw, &a.LoadTestPrefs)
-		if err != nil {
-			return fmt.Errorf("error reading 'loadTestPrefs': %w", err)
-		}
-		delete(object, "loadTestPrefs")
-	}
-
-	if raw, found := object["meshAdapters"]; found {
-		err = json.Unmarshal(raw, &a.MeshAdapters)
-		if err != nil {
-			return fmt.Errorf("error reading 'meshAdapters': %w", err)
-		}
-		delete(object, "meshAdapters")
-	}
-
-	if raw, found := object["notify_role_change"]; found {
-		err = json.Unmarshal(raw, &a.NotifyRoleChange)
-		if err != nil {
-			return fmt.Errorf("error reading 'notify_role_change': %w", err)
-		}
-		delete(object, "notify_role_change")
-	}
-
-	if raw, found := object["prometheus"]; found {
-		err = json.Unmarshal(raw, &a.Prometheus)
-		if err != nil {
-			return fmt.Errorf("error reading 'prometheus': %w", err)
-		}
-		delete(object, "prometheus")
-	}
-
-	if raw, found := object["remoteProviderPreferences"]; found {
-		err = json.Unmarshal(raw, &a.RemoteProviderPreferences)
-		if err != nil {
-			return fmt.Errorf("error reading 'remoteProviderPreferences': %w", err)
-		}
-		delete(object, "remoteProviderPreferences")
-	}
-
-	if raw, found := object["selectedOrganizationID"]; found {
-		err = json.Unmarshal(raw, &a.SelectedOrganizationID)
-		if err != nil {
-			return fmt.Errorf("error reading 'selectedOrganizationID': %w", err)
-		}
-		delete(object, "selectedOrganizationID")
-	}
-
-	if raw, found := object["selectedWorkspaceForOrganizations"]; found {
-		err = json.Unmarshal(raw, &a.SelectedWorkspaceForOrganizations)
-		if err != nil {
-			return fmt.Errorf("error reading 'selectedWorkspaceForOrganizations': %w", err)
-		}
-		delete(object, "selectedWorkspaceForOrganizations")
-	}
-
-	if raw, found := object["usersExtensionPreferences"]; found {
-		err = json.Unmarshal(raw, &a.UsersExtensionPreferences)
-		if err != nil {
-			return fmt.Errorf("error reading 'usersExtensionPreferences': %w", err)
-		}
-		delete(object, "usersExtensionPreferences")
-	}
-
-	if raw, found := object["welcome_email"]; found {
-		err = json.Unmarshal(raw, &a.WelcomeEmail)
-		if err != nil {
-			return fmt.Errorf("error reading 'welcome_email': %w", err)
-		}
-		delete(object, "welcome_email")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for GetUserResponse_Preferences to handle AdditionalProperties
-func (a GetUserResponse_Preferences) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.AnonymousPerfResults != nil {
-		object["anonymousPerfResults"], err = json.Marshal(a.AnonymousPerfResults)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'anonymousPerfResults': %w", err)
-		}
-	}
-
-	if a.AnonymousUsageStats != nil {
-		object["anonymousUsageStats"], err = json.Marshal(a.AnonymousUsageStats)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'anonymousUsageStats': %w", err)
-		}
-	}
-
-	if a.DashboardPreferences != nil {
-		object["dashboardPreferences"], err = json.Marshal(a.DashboardPreferences)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'dashboardPreferences': %w", err)
-		}
-	}
-
-	if a.Grafana != nil {
-		object["grafana"], err = json.Marshal(a.Grafana)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'grafana': %w", err)
-		}
-	}
-
-	if a.LoadTestPrefs != nil {
-		object["loadTestPrefs"], err = json.Marshal(a.LoadTestPrefs)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'loadTestPrefs': %w", err)
-		}
-	}
-
-	if a.MeshAdapters != nil {
-		object["meshAdapters"], err = json.Marshal(a.MeshAdapters)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'meshAdapters': %w", err)
-		}
-	}
-
-	if a.NotifyRoleChange != nil {
-		object["notify_role_change"], err = json.Marshal(a.NotifyRoleChange)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'notify_role_change': %w", err)
-		}
-	}
-
-	if a.Prometheus != nil {
-		object["prometheus"], err = json.Marshal(a.Prometheus)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'prometheus': %w", err)
-		}
-	}
-
-	if a.RemoteProviderPreferences != nil {
-		object["remoteProviderPreferences"], err = json.Marshal(a.RemoteProviderPreferences)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'remoteProviderPreferences': %w", err)
-		}
-	}
-
-	if a.SelectedOrganizationID != nil {
-		object["selectedOrganizationID"], err = json.Marshal(a.SelectedOrganizationID)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'selectedOrganizationID': %w", err)
-		}
-	}
-
-	if a.SelectedWorkspaceForOrganizations != nil {
-		object["selectedWorkspaceForOrganizations"], err = json.Marshal(a.SelectedWorkspaceForOrganizations)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'selectedWorkspaceForOrganizations': %w", err)
-		}
-	}
-
-	if a.UsersExtensionPreferences != nil {
-		object["usersExtensionPreferences"], err = json.Marshal(a.UsersExtensionPreferences)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'usersExtensionPreferences': %w", err)
-		}
-	}
-
-	if a.WelcomeEmail != nil {
-		object["welcome_email"], err = json.Marshal(a.WelcomeEmail)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'welcome_email': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for User_Preferences. Returns the specified
-// element and whether it was found
-func (a User_Preferences) Get(fieldName string) (value interface{}, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for User_Preferences
-func (a *User_Preferences) Set(fieldName string, value interface{}) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]interface{})
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for User_Preferences to handle AdditionalProperties
-func (a *User_Preferences) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["anonymousPerfResults"]; found {
-		err = json.Unmarshal(raw, &a.AnonymousPerfResults)
-		if err != nil {
-			return fmt.Errorf("error reading 'anonymousPerfResults': %w", err)
-		}
-		delete(object, "anonymousPerfResults")
-	}
-
-	if raw, found := object["anonymousUsageStats"]; found {
-		err = json.Unmarshal(raw, &a.AnonymousUsageStats)
-		if err != nil {
-			return fmt.Errorf("error reading 'anonymousUsageStats': %w", err)
-		}
-		delete(object, "anonymousUsageStats")
-	}
-
-	if raw, found := object["dashboardPreferences"]; found {
-		err = json.Unmarshal(raw, &a.DashboardPreferences)
-		if err != nil {
-			return fmt.Errorf("error reading 'dashboardPreferences': %w", err)
-		}
-		delete(object, "dashboardPreferences")
-	}
-
-	if raw, found := object["grafana"]; found {
-		err = json.Unmarshal(raw, &a.Grafana)
-		if err != nil {
-			return fmt.Errorf("error reading 'grafana': %w", err)
-		}
-		delete(object, "grafana")
-	}
-
-	if raw, found := object["loadTestPrefs"]; found {
-		err = json.Unmarshal(raw, &a.LoadTestPrefs)
-		if err != nil {
-			return fmt.Errorf("error reading 'loadTestPrefs': %w", err)
-		}
-		delete(object, "loadTestPrefs")
-	}
-
-	if raw, found := object["meshAdapters"]; found {
-		err = json.Unmarshal(raw, &a.MeshAdapters)
-		if err != nil {
-			return fmt.Errorf("error reading 'meshAdapters': %w", err)
-		}
-		delete(object, "meshAdapters")
-	}
-
-	if raw, found := object["notify_role_change"]; found {
-		err = json.Unmarshal(raw, &a.NotifyRoleChange)
-		if err != nil {
-			return fmt.Errorf("error reading 'notify_role_change': %w", err)
-		}
-		delete(object, "notify_role_change")
-	}
-
-	if raw, found := object["prometheus"]; found {
-		err = json.Unmarshal(raw, &a.Prometheus)
-		if err != nil {
-			return fmt.Errorf("error reading 'prometheus': %w", err)
-		}
-		delete(object, "prometheus")
-	}
-
-	if raw, found := object["remoteProviderPreferences"]; found {
-		err = json.Unmarshal(raw, &a.RemoteProviderPreferences)
-		if err != nil {
-			return fmt.Errorf("error reading 'remoteProviderPreferences': %w", err)
-		}
-		delete(object, "remoteProviderPreferences")
-	}
-
-	if raw, found := object["selectedOrganizationID"]; found {
-		err = json.Unmarshal(raw, &a.SelectedOrganizationID)
-		if err != nil {
-			return fmt.Errorf("error reading 'selectedOrganizationID': %w", err)
-		}
-		delete(object, "selectedOrganizationID")
-	}
-
-	if raw, found := object["selectedWorkspaceForOrganizations"]; found {
-		err = json.Unmarshal(raw, &a.SelectedWorkspaceForOrganizations)
-		if err != nil {
-			return fmt.Errorf("error reading 'selectedWorkspaceForOrganizations': %w", err)
-		}
-		delete(object, "selectedWorkspaceForOrganizations")
-	}
-
-	if raw, found := object["usersExtensionPreferences"]; found {
-		err = json.Unmarshal(raw, &a.UsersExtensionPreferences)
-		if err != nil {
-			return fmt.Errorf("error reading 'usersExtensionPreferences': %w", err)
-		}
-		delete(object, "usersExtensionPreferences")
-	}
-
-	if raw, found := object["welcome_email"]; found {
-		err = json.Unmarshal(raw, &a.WelcomeEmail)
-		if err != nil {
-			return fmt.Errorf("error reading 'welcome_email': %w", err)
-		}
-		delete(object, "welcome_email")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]interface{})
-		for fieldName, fieldBuf := range object {
-			var fieldVal interface{}
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for User_Preferences to handle AdditionalProperties
-func (a User_Preferences) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	if a.AnonymousPerfResults != nil {
-		object["anonymousPerfResults"], err = json.Marshal(a.AnonymousPerfResults)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'anonymousPerfResults': %w", err)
-		}
-	}
-
-	if a.AnonymousUsageStats != nil {
-		object["anonymousUsageStats"], err = json.Marshal(a.AnonymousUsageStats)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'anonymousUsageStats': %w", err)
-		}
-	}
-
-	if a.DashboardPreferences != nil {
-		object["dashboardPreferences"], err = json.Marshal(a.DashboardPreferences)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'dashboardPreferences': %w", err)
-		}
-	}
-
-	if a.Grafana != nil {
-		object["grafana"], err = json.Marshal(a.Grafana)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'grafana': %w", err)
-		}
-	}
-
-	if a.LoadTestPrefs != nil {
-		object["loadTestPrefs"], err = json.Marshal(a.LoadTestPrefs)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'loadTestPrefs': %w", err)
-		}
-	}
-
-	if a.MeshAdapters != nil {
-		object["meshAdapters"], err = json.Marshal(a.MeshAdapters)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'meshAdapters': %w", err)
-		}
-	}
-
-	if a.NotifyRoleChange != nil {
-		object["notify_role_change"], err = json.Marshal(a.NotifyRoleChange)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'notify_role_change': %w", err)
-		}
-	}
-
-	if a.Prometheus != nil {
-		object["prometheus"], err = json.Marshal(a.Prometheus)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'prometheus': %w", err)
-		}
-	}
-
-	if a.RemoteProviderPreferences != nil {
-		object["remoteProviderPreferences"], err = json.Marshal(a.RemoteProviderPreferences)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'remoteProviderPreferences': %w", err)
-		}
-	}
-
-	if a.SelectedOrganizationID != nil {
-		object["selectedOrganizationID"], err = json.Marshal(a.SelectedOrganizationID)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'selectedOrganizationID': %w", err)
-		}
-	}
-
-	if a.SelectedWorkspaceForOrganizations != nil {
-		object["selectedWorkspaceForOrganizations"], err = json.Marshal(a.SelectedWorkspaceForOrganizations)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'selectedWorkspaceForOrganizations': %w", err)
-		}
-	}
-
-	if a.UsersExtensionPreferences != nil {
-		object["usersExtensionPreferences"], err = json.Marshal(a.UsersExtensionPreferences)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'usersExtensionPreferences': %w", err)
-		}
-	}
-
-	if a.WelcomeEmail != nil {
-		object["welcome_email"], err = json.Marshal(a.WelcomeEmail)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling 'welcome_email': %w", err)
-		}
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
-		}
-	}
-	return json.Marshal(object)
-}
