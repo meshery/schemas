@@ -17,7 +17,7 @@
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {
-          "$ref": "../core.json#/definitions/semverString"
+          "$ref": "../core.json#/definitions/relationshipVersionString"
         },
         "match": {
           "type": "object",
@@ -80,7 +80,7 @@
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {
-          "$ref": "../core.json#/definitions/semverString"
+          "$ref": "../core.json#/definitions/relationshipVersionString"
         },
         "match": {
           "type": "object",
