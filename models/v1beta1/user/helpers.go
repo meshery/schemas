@@ -1,8 +1,15 @@
 package user
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
+
 	"github.com/meshery/schemas/models/core"
 )
+
+// UserSocials User social profiles
+type UserSocials []Social
 
 // event category
 func (User) EventCategory() string {
@@ -23,7 +30,7 @@ func (preference *Preference) Scan(value interface{}) error {
 	return core.MapToStruct(mapVal, preference)
 }
 
-func (preference Preference) Value() (interface{}, error) {
+func (preference Preference) Value() (driver.Value, error) {
 	mapVal, err := core.StructToMap(preference)
 	if err != nil {
 		return nil, err
@@ -31,24 +38,26 @@ func (preference Preference) Value() (interface{}, error) {
 	return core.Map(mapVal).Value()
 }
 
-func (social *Social) Scan(value interface{}) error {
-	if value == nil {
-		*social = Social{}
-		return nil
+// Value implements driver.Valuer
+func (us UserSocials) Value() (driver.Value, error) {
+	// Ensure empty slice is stored as [] not null
+	if us == nil {
+		return []byte("[]"), nil
 	}
-	mapVal := core.Map{}
-	err := mapVal.Scan(value)
-	if err != nil {
-		return err
-	}
-	return core.MapToStruct(mapVal, social)
+	return json.Marshal(us)
 }
 
-func (social Social) Value() (interface{}, error) {
-	mapVal, err := core.StructToMap(social)
-
-	if err != nil {
-		return nil, err
+// Scan implements sql.Scanner
+func (us *UserSocials) Scan(value interface{}) error {
+	if value == nil {
+		*us = UserSocials{}
+		return nil
 	}
-	return core.Map(mapVal).Value()
+
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("failed to scan UserSocials: %T", value)
+	}
+
+	return json.Unmarshal(bytes, us)
 }
