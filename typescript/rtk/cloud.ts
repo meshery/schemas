@@ -909,7 +909,7 @@ export type GetDesignsOfWorkspaceApiArg = {
   page?: string;
   /** Get responses by pagesize */
   pagesize?: string;
-  /** Get filtered reponses */
+  /** Get filtered responses */
   filter?: string;
 };
 export type AssignDesignToWorkspaceApiResponse = /** status 200 Workspaces designs mapping */ {
@@ -959,7 +959,7 @@ export type GetEnvironmentsOfWorkspaceApiArg = {
   page?: string;
   /** Get responses by pagesize */
   pagesize?: string;
-  /** Get filtered reponses */
+  /** Get filtered responses */
   filter?: string;
 };
 export type AssignEnvironmentToWorkspaceApiResponse = /** status 200 Workspaces environments mapping */ {
@@ -1009,7 +1009,7 @@ export type GetTeamsOfWorkspaceApiArg = {
   page?: string;
   /** Get responses by pagesize */
   pagesize?: string;
-  /** Get filtered reponses */
+  /** Get filtered responses */
   filter?: string;
 };
 export type AssignTeamToWorkspaceApiResponse = /** status 200 Workspaces teams mapping */ {
@@ -1059,7 +1059,7 @@ export type GetViewsOfWorkspaceApiArg = {
   page?: string;
   /** Get responses by pagesize */
   pagesize?: string;
-  /** Get filtered reponses */
+  /** Get filtered responses */
   filter?: string;
 };
 export type AssignViewToWorkspaceApiResponse = /** status 200 Workspaces views mapping */ {

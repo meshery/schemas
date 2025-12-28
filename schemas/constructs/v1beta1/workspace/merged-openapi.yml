@@ -1058,7 +1058,7 @@
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -1505,7 +1505,7 @@
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -1952,7 +1952,7 @@
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -2399,7 +2399,7 @@
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -2952,7 +2952,7 @@
       "filter": {
         "name": "filter",
         "in": "query",
-        "description": "Get filtered reponses",
+        "description": "Get filtered responses",
         "schema": {
           "type": "string"
         }

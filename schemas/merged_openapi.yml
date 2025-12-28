@@ -2510,7 +2510,7 @@ paths:
             type: string
         - name: filter
           in: query
-          description: Get filtered reponses
+          description: Get filtered responses
           schema:
             type: string
       responses:
@@ -2840,7 +2840,7 @@ paths:
             type: string
         - name: filter
           in: query
-          description: Get filtered reponses
+          description: Get filtered responses
           schema:
             type: string
       responses:
@@ -3170,7 +3170,7 @@ paths:
             type: string
         - name: filter
           in: query
-          description: Get filtered reponses
+          description: Get filtered responses
           schema:
             type: string
       responses:
@@ -3500,7 +3500,7 @@ paths:
             type: string
         - name: filter
           in: query
-          description: Get filtered reponses
+          description: Get filtered responses
           schema:
             type: string
       responses:
@@ -63162,7 +63162,7 @@ components:
     workspace_filter:
       name: filter
       in: query
-      description: Get filtered reponses
+      description: Get filtered responses
       schema:
         type: string
     workspace_orgIDQuery:

@@ -1063,7 +1063,7 @@ const schema = {
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -1510,7 +1510,7 @@ const schema = {
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -1957,7 +1957,7 @@ const schema = {
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -2404,7 +2404,7 @@ const schema = {
           {
             "name": "filter",
             "in": "query",
-            "description": "Get filtered reponses",
+            "description": "Get filtered responses",
             "schema": {
               "type": "string"
             }
@@ -2957,7 +2957,7 @@ const schema = {
       "filter": {
         "name": "filter",
         "in": "query",
-        "description": "Get filtered reponses",
+        "description": "Get filtered responses",
         "schema": {
           "type": "string"
         }
