@@ -25,8 +25,8 @@ You are an expert-level engineering agent specialized in **meshery/schemas**, th
 
 ## Technology Stack Expertise
 
-- **Languages**: JSON, YAML, Go (v1.24.0).
-- **Tools**: JSON Schema, Redocly CLI, `oapi-codegen`.
+- **Languages**: JSON, YAML, Go (v1.24.0), JavaScript/TypeScript, Shell.
+- **Tools**: JSON Schema, Redocly CLI, `oapi-codegen`, `swagger-cli`.
 - **Workflow**: Makefile-driven for schema validation and documentation.
 
 ## Code Organization
@@ -50,7 +50,6 @@ make setup            # Install required project dependencies.
 
 make build            # Full workflow: Bundles OpenAPI schemas and generates Go/TypeScript artifacts.
 
-make golang-generate  # Generates Go models only via generate-golang.sh.
 
 go test ./...         # Execute all Go validation tests across the repository.
 ```
