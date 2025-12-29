@@ -1,11 +1,308 @@
 openapi: 3.0.0
 info:
   title: connection
-  version: 1.0.0
-paths: {}
+  description: Documentation for Meshery Connection REST APIs
+  contact:
+    email: maintainers@meshery.io
+  version: v0.6.394
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+
+security:
+  - jwt: []
+
+tags:
+  - name: connections
+    description: APIs for connections
+
 components:
+  responses:
+    "200":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/200"
+    "201":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/201"
+    "400":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+    "401":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+    "404":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+    "500":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
+  parameters:
+    connectionId:
+      name: connectionId
+      in: path
+      description: Connection ID
+      schema:
+        $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Id
+      required: true
+    search:
+      $ref: ../../v1alpha1/core/openapi.yml#/components/parameters/search
+    order:
+      $ref: ../../v1alpha1/core/openapi.yml#/components/parameters/order
+    page:
+      $ref: ../../v1alpha1/core/openapi.yml#/components/parameters/page
+    pagesize:
+      $ref: ../../v1alpha1/core/openapi.yml#/components/parameters/pagesize
+    kind:
+      name: kind
+      in: query
+      description: Filter connections by kind
+      schema:
+        type: string
+      required: false
+    type:
+      name: type
+      in: query
+      description: Filter connections by type
+      schema:
+        type: string
+      required: false
+    status:
+      name: status
+      in: query
+      description: Filter connections by status
+      schema:
+        type: string
+        enum:
+          - discovered
+          - registered
+          - connected
+          - ignored
+          - maintenance
+          - disconnected
+          - deleted
+          - not found
+      required: false
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+
   schemas:
     Connection:
       $ref: "./connection.json"
     ConnectionPage:
       $ref: "./connection_page.json"
+    connectionPayload:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Connection name
+        type:
+          type: string
+          description: Connection type
+        sub_type:
+          type: string
+          description: Connection subtype
+        kind:
+          type: string
+          description: Connection kind
+        metadata:
+          type: object
+          description: Connection metadata
+        credential_id:
+          type: string
+          format: uuid
+          description: Credential ID associated with the connection
+        status:
+          type: string
+          description: Connection status
+          enum:
+            - discovered
+            - registered
+            - connected
+            - ignored
+            - maintenance
+            - disconnected
+            - deleted
+            - not found
+      required:
+        - name
+        - type
+        - sub_type
+        - kind
+    connectionStatusPayload:
+      type: object
+      properties:
+        status:
+          type: string
+          description: New status for the connection
+          enum:
+            - discovered
+            - registered
+            - connected
+            - ignored
+            - maintenance
+            - disconnected
+            - deleted
+            - not found
+      required:
+        - status
+
+  requestBodies:
+    connectionPayload:
+      description: Body for creating or updating a connection
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/connectionPayload"
+    connectionStatusPayload:
+      description: Body for updating connection status
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/connectionStatusPayload"
+
+paths:
+  /api/connections:
+    post:
+      tags:
+        - connections
+      operationId: CreateConnection
+      summary: Create a connection
+      description: Creates a new connection
+      requestBody:
+        $ref: "#/components/requestBodies/connectionPayload"
+      responses:
+        "201":
+          description: Created connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - connections
+      operationId: GetConnections
+      summary: Get all connections
+      description: Gets all connections with optional filtering
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/kind"
+        - $ref: "#/components/parameters/type"
+        - $ref: "#/components/parameters/status"
+      responses:
+        "200":
+          description: Connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/connections/{connectionId}:
+    get:
+      tags:
+        - connections
+      operationId: GetConnection
+      summary: Get a connection by ID
+      description: Gets a specific connection by its ID
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - connections
+      operationId: UpdateConnection
+      summary: Update a connection
+      description: Updates an existing connection
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        $ref: "#/components/requestBodies/connectionPayload"
+      responses:
+        "200":
+          description: Updated connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - connections
+      operationId: DeleteConnection
+      summary: Delete a connection
+      description: Deletes a specific connection
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          $ref: "#/components/responses/200"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/connections/{connectionId}/status:
+    patch:
+      tags:
+        - connections
+      operationId: UpdateConnectionStatus
+      summary: Update connection status
+      description: Updates the status of a specific connection
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        $ref: "#/components/requestBodies/connectionStatusPayload"
+      responses:
+        "200":
+          description: Connection with updated status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
