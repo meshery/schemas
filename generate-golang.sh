@@ -4,7 +4,7 @@ set -euo pipefail  # ✅ Exit on error, unset vars, and pipefail
 # Disable telemetry for @redocly/cli
 export REDOCLY_TELEMETRY=off
 
-merged_construct="merged-openapi.yml"
+merged_construct="merged-openapi.json"
 
 generate_schema_models() {
 
