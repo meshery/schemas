@@ -15,7 +15,7 @@
           "type": "string"
         },
         "version": {
-          "$ref": "../core.json#/definitions/relationshipVersionString"
+          "$ref": "../core.json#/definitions/versionConstraintString"
         },
         "match": {
           "type": "object",
@@ -77,7 +77,7 @@
           "type": "string"
         },
         "version": {
-          "$ref": "../core.json#/definitions/relationshipVersionString"
+          "$ref": "../core.json#/definitions/versionConstraintString"
         },
         "match": {
           "type": "object",

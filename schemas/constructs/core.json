@@ -34,7 +34,7 @@
       },
       "default": "00000000-0000-0000-0000-000000000000"
     },
-    "relationshipVersionString": {
+    "versionConstraintString": {
       "type": "string",
       "pattern": "^(>=|<=|>|<)?v\\d+(\\.\\d+)*(?:[.-][a-zA-Z0-9]+)*$",
       "description": "Version string for Relationships selector. Supports 'v1.2.3', '>v1.2.3', '>=v1.2.3', '<v1.2.3', '<=v1.2.3', and optional suffixes."
