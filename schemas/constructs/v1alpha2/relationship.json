@@ -61,13 +61,13 @@
     "selectors": {
       "type": "array",
       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
-      "$comment": "Sets of selectors are interpreted as a locical OR, while sets of allow/deny are interpreted a logical AND.",
+      "$comment": "Sets of selectors are interpreted as a logical OR, while sets of allow/deny are interpreted a logical AND.",
       "items": {
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
         "required": [
-          "alllow"
+          "allow"
         ],
         "properties": {
           "deny": {
