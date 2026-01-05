@@ -206,6 +206,9 @@ components:
         plan_id:
           type: string
           description: Price ID from the payment processor
+        coupon_id:
+          type: string
+          description: Coupon ID to apply 
         user_count:
           type: integer
           description: Number of users in the organization
@@ -362,4 +365,5 @@ components:
         active: "The subscription is active, and billing is functioning normally."
         past_due: "The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge."
         canceled: "The subscription has been canceled and will no longer generate invoices."
+
         unpaid: "The subscription is still technically active but has unpaid invoices and is no longer generating new invoices."
