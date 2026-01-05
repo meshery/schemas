@@ -73,6 +73,7 @@ jobs:
           commit_user_name: meshery
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          token: ${{ secrets.GH_ACCESS_TOKEN }}
+          token: ${{ secrets.MESHERY_CI }}
+
 
 
