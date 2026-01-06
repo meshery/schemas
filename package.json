@@ -5,6 +5,10 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+    "repository": {
+    "url": "git+https://github.com/meshery/schemas.git",
+    "type": "git"
+  },
   "files": [
     "dist"
   ],
