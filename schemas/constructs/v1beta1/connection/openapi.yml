@@ -2,7 +2,115 @@ openapi: 3.0.0
 info:
   title: connection
   version: 1.0.0
-paths: {}
+paths:
+  /api/integrations/connections:
+    get:
+      tags:
+        - connection
+      summary: Get all connections
+      operationId: GetConnections
+      parameters:
+        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/page"
+        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesize"
+        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/search"
+        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/order"
+        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/filter"
+        - name: connection_kind
+          in: query
+          description: Filter by connection kind
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: List of connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "400":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+    post:
+      tags:
+        - connection
+      summary: Create a connection
+      operationId: CreateConnection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Connection"
+      responses:
+        "201":
+          description: Connection created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
+  /api/integrations/connections/{connectionId}:
+    parameters:
+      - name: connectionId
+        in: path
+        required: true
+        schema:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+    get:
+      tags:
+        - connection
+      summary: Get connection by ID
+      operationId: GetConnectionById
+      responses:
+        "200":
+          description: Connection details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "404":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+    put:
+      tags:
+        - connection
+      summary: Update connection
+      operationId: UpdateConnection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Connection"
+      responses:
+        "200":
+          description: Connection updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "404":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+    delete:
+      tags:
+        - connection
+      summary: Delete connection
+      operationId: DeleteConnection
+      responses:
+        "200":
+          description: Connection deleted
+        "404":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+        "500":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
 components:
   schemas:
     Connection:

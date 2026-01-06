@@ -124,6 +124,38 @@ components:
           items:
             x-go-type: Environment
             $ref: "#/components/schemas/environment"
+    environmentUpdatePayload:
+      properties:
+        name:
+          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
+          description: Name of the environment
+        description:
+          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
+          description: Environment description
+        organization_id:
+          type: string
+          description: Organization ID
+          x-go-type-skip-optional-pointer: true
+          x-go-name: OrganizationID
+          x-oapi-codegen-extra-tags:
+            json: organization_id
+      required:
+        - organization_id
+
+    environmentConnectionMapping:
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
+        environment_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/environment_id"
+        connection_id:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/connection_id"
+        created_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+        updated_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+        deleted_at:
+          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/nullTime"
 
   requestBodies:
     environmentPayload:
@@ -133,6 +165,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/environmentPayload"
+    environmentUpdatePayload:
+      description: Body for updating environment
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/environmentUpdatePayload"
 
 paths:
   /api/environments:
@@ -176,5 +215,166 @@ paths:
                 $ref: "#/components/schemas/environmentPage"
         "401":
           $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}:
+    get:
+      tags:
+        - environments
+      operationId: GetEnvironmentByID
+      summary: Get an environment by ID
+      description: Gets an environment by its ID
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/orgIDQuery"
+      responses:
+        "200":
+          description: Environment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          description: Environment not found
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - environments
+      operationId: DeleteEnvironment
+      summary: Delete an environment
+      description: Deletes an environment by its ID
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      responses:
+        "200":
+          description: Environment deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          description: Environment not found
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - environments
+      operationId: UpdateEnvironment
+      summary: Update an environment
+      description: Updates the environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      requestBody:
+        $ref: "#/components/requestBodies/environmentUpdatePayload"
+      responses:
+        "200":
+          description: Environment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}/connections:
+    get:
+      tags:
+        - environments
+      operationId: GetConnectionsOfEnvironment
+      summary: Get all connections assigned to an environment
+      description: Gets all connections assigned to an environment with pagination and filtering
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Connections in Environment
+          content:
+            application/json:
+              schema:
+                $ref: "../connection/openapi.yml#/components/schemas/ConnectionPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}/connections/{connectionId}:
+    post:
+      tags:
+        - environments
+      operationId: AssignConnectionToEnvironment
+      summary: Assign a connection to an environment
+      description: Assigns a connection to an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - name: connectionId
+          in: path
+          schema:
+            $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+          required: true
+          description: Connection ID
+      responses:
+        "200":
+          description: Connection assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentConnectionMapping"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - environments
+      operationId: UnassignConnectionFromEnvironment
+      summary: Unassign a connection from an environment
+      description: Unassigns a connection from an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - name: connectionId
+          in: path
+          schema:
+            $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+          required: true
+          description: Connection ID
+      responses:
+        "200":
+          description: Connection unassigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentConnectionMapping"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
