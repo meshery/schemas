@@ -35,7 +35,9 @@ jobs:
           scope: "@meshery"          
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          unset NODE_AUTH_TOKEN &&
+          npm ci
 
       - name: Configure Git
         run: |
@@ -63,7 +65,7 @@ jobs:
       - name: Publish Package
         run: |
           set -e
-          NODE_AUTH_TOKEN="" npm publish --verbose
+          npm publish --provenance --access public --verbose
 
       - name: Pull changes from remote
         run: git pull origin master
