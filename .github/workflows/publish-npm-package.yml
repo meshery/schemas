@@ -20,6 +20,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write  # Required for OIDC trusted publishing
       contents: write
     steps:
       - name: Checkout Repository
@@ -35,9 +36,10 @@ jobs:
           scope: "@meshery"          
 
       - name: Install Dependencies
-        run: |
-          unset NODE_AUTH_TOKEN &&
-          npm ci
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ''  # Explicitly empty for install
+          
 
       - name: Configure Git
         run: |
@@ -65,7 +67,7 @@ jobs:
       - name: Publish Package
         run: |
           set -e
-          npm publish --access public --verbose
+          npm publish --provenance --access public --verbose
 
       - name: Pull changes from remote
         run: git pull origin master
