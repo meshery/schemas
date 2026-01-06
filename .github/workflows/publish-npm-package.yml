@@ -65,7 +65,7 @@ jobs:
       - name: Publish Package
         run: |
           set -e
-          npm publish --provenance --access public --verbose
+          npm publish --access public --verbose
 
       - name: Pull changes from remote
         run: git pull origin master
