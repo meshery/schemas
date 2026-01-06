@@ -100,7 +100,7 @@ components:
         description:
           $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
           description: "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
-        OrganizationID:
+        organization_id:
           type: string
           description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
           x-go-type-skip-optional-pointer: true
@@ -109,7 +109,7 @@ components:
             json: organization_id
       required:
         - name
-        - organizationID
+        - organization_id
     environmentPage:
       properties:
         page:
@@ -132,30 +132,6 @@ components:
         description:
           $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
           description: Environment description
-        organization_id:
-          type: string
-          description: Organization ID
-          x-go-type-skip-optional-pointer: true
-          x-go-name: OrganizationID
-          x-oapi-codegen-extra-tags:
-            json: organization_id
-      required:
-        - organization_id
-
-    environmentConnectionMapping:
-      properties:
-        ID:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/general_id"
-        environment_id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/environment_id"
-        connection_id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/connection_id"
-        created_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
-        updated_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
-        deleted_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/nullTime"
 
   requestBodies:
     environmentPayload:
@@ -240,7 +216,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "404":
-          description: Environment not found
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     delete:
@@ -263,7 +239,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "404":
-          description: Environment not found
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     put:
@@ -287,6 +263,8 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -315,7 +293,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "404":
-          $ref: "#/components/responses/404"
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -346,7 +324,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "404":
-          $ref: "#/components/responses/404"
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     delete:
@@ -375,6 +353,6 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "404":
-          $ref: "#/components/responses/404"
+          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
