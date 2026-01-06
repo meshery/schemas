@@ -37,8 +37,8 @@ golangci: error dep-check
 .PHONY: redocly-docs-build api-validate schemas-join docs-build
 
 ## Validate Remote provider APIs against OpenAPI spec
-api-validate:
-	openapi-generator validate -i schemas/openapi.yml
+api-validate: dep-check-swagger
+	swagger-cli validate schemas/openapi.yml
 
 
 
@@ -99,11 +99,22 @@ endif
 
 # oapi-codegen
 ifeq (,$(shell command -v oapi-codegen))
-	@echo "Dependency missing: oapi-codegen. Install oapi-codegen cli from
+	@echo "Dependency missing: oapi-codegen. Install oapi-codegen cli"
 	@echo "installing oapi-codegen"
 	# for the binary install
 	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 endif
+
+
+
+.PHONY: dep-check-swagger
+dep-check-swagger:
+	@if ! command -v swagger-cli >/dev/null 2>&1; then \
+		echo "Dependency missing: swagger-cli."; \
+		echo "Please install it from https://www.npmjs.com/package/@apidevtools/swagger-cli"; \
+		exit 1; \
+	fi
+dep-check: dep-check-swagger
 
 
 
