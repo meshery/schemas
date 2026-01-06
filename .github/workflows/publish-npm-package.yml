@@ -63,7 +63,7 @@ jobs:
       - name: Publish Package
         run: |
           set -e
-          npm publish --verbose
+          NODE_AUTH_TOKEN="" npm publish --verbose
 
       - name: Pull changes from remote
         run: git pull origin master
