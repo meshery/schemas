@@ -37,10 +37,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/workspacePage"
-     post:
-       summary: Create a workspace
-       tags:
-         - workspaces
+    post:
+      summary: Create a workspace
+      tags:
+        - workspaces
       requestBody:
         $ref: "#/components/requestBodies/workspacePayload"
       responses:
@@ -169,6 +169,70 @@ paths:
         '500':
           $ref: '#/components/responses/500'
 components:
+  responses:
+    "200":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/200"
+    "400":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+    "401":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+    "404":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+    "500":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
+  parameters:
+    workspaceId:
+      name: workspaceId
+      in: path
+      description: Workspace ID
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+    environmentId:
+      name: environmentId
+      in: path
+      description: Environment ID
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+    designId:
+      name: designId
+      in: path
+      description: Design ID
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+    search:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/order"
+    page:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesize"
+    filter:
+      name: filter
+      in: query
+      description: Filter
+      required: false
+      schema:
+        type: string
+    orgIDQuery:
+      name: orgID
+      in: query
+      description: User's organization ID
+      required: true
+      schema:
+        type: string
+    workspaceFilter:
+      name: filter
+      in: query
+      description: Filter
+      required: false
+      schema:
+        type: string
+
   securitySchemes:
     jwt:
       type: http
