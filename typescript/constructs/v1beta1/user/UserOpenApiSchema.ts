@@ -374,6 +374,7 @@ const schema = {
           "socials": {
             "type": "array",
             "description": "Various online profiles associated with the user account",
+            "x-go-type": "UserSocials",
             "items": {
               "x-go-type": "Social",
               "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
@@ -779,6 +780,7 @@ const schema = {
               "socials": {
                 "type": "array",
                 "description": "Various online profiles associated with the user account",
+                "x-go-type": "UserSocials",
                 "items": {
                   "x-go-type": "Social",
                   "description": "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.",
