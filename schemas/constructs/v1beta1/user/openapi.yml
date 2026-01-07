@@ -170,6 +170,9 @@ components:
         socials:
           type: array
           description: Various online profiles associated with the user account
+          # use a custom type to represent a slice of Social structs , the default is []Social which
+          # cant be used with sql drivers as we cant add methods to that type
+          x-go-type: "UserSocials"
           items:
             $ref: "#/components/schemas/Social"
             x-go-type: "Social"

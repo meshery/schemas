@@ -99,7 +99,7 @@ type GetUserResponse struct {
 	RoleNames *[]GetUserResponseRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
 
 	// Socials Various online profiles associated with the user account
-	Socials *[]Social `db:"socials" json:"socials" yaml:"socials"`
+	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
 
 	// Status User account status
 	Status GetUserResponseStatus `db:"status" json:"status" yaml:"status"`
@@ -245,7 +245,7 @@ type User struct {
 	Region *core.Map `db:"region" json:"region" yaml:"region"`
 
 	// Socials Various online profiles associated with the user account
-	Socials *[]Social `db:"socials" json:"socials" yaml:"socials"`
+	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
 
 	// Status User account status
 	Status UserStatus `db:"status" json:"status" yaml:"status"`
