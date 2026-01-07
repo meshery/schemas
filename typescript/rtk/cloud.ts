@@ -479,6 +479,8 @@ export type PostApiEntitlementSubscriptionsCreateApiArg = {
     org_id?: string;
     /** Price ID from the payment processor */
     plan_id?: string;
+    /** Coupon ID to apply */
+    coupon_id?: string;
     /** Number of users in the organization */
     user_count?: number;
     /** Email of the customer */
