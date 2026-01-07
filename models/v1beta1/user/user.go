@@ -98,7 +98,7 @@ type GetUserResponse struct {
 	// RoleNames List of global roles assigned to the user
 	RoleNames *[]GetUserResponseRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
 
-	// Socials User social profiles
+	// Socials Various online profiles associated with the user account
 	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
 
 	// Status User account status
@@ -244,7 +244,7 @@ type User struct {
 	// Region User's region information stored as JSONB
 	Region *core.Map `db:"region" json:"region" yaml:"region"`
 
-	// Socials User social profiles
+	// Socials Various online profiles associated with the user account
 	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
 
 	// Status User account status
