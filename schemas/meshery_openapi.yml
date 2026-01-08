@@ -45853,6 +45853,7 @@ components:
         socials:
           type: array
           description: Various online profiles associated with the user account
+          x-go-type: UserSocials
           items:
             x-go-type: Social
             description: >-
@@ -46182,6 +46183,7 @@ components:
             socials:
               type: array
               description: Various online profiles associated with the user account
+              x-go-type: UserSocials
               items:
                 x-go-type: Social
                 description: >-
