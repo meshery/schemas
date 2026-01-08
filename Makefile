@@ -46,7 +46,7 @@ docs-build: dep-check
 generate-ts:
 	npm run generate:types
 
-## Bundle Typecript library, json templates, yaml templates
+## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts
 	npm run build
 
