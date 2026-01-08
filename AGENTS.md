@@ -33,8 +33,8 @@ The `core.json` file is deprecated. All references should use the OpenAPI YAML f
   - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `<construct>_template.(json|yaml)`.
 
 - Endpoints and operations
-  - Paths are under `/api` with kebab-case , plural nouns (e.g., `/api/workspaces`, `/api/environments`).
-  - Path params are camelCase  (e.g., `{subscriptionId}`, `{connectionId}`).
+  - Paths are under `/api` with kebab-case, plural nouns (e.g., `/api/workspaces`, `/api/environments`).
+  - Path params are camelCase (e.g., `{subscriptionId}`, `{connectionId}`).
   - Non-CRUD actions append a verb segment (e.g., `.../register`, `.../export`, `.../cancel`); legacy lowerCamelCase may appear (e.g., `.../upgradePreview`).
   - `operationId` is camelCase VerbNoun (e.g., `registerMeshmodels`).
 
