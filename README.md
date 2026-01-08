@@ -126,8 +126,8 @@ schemas/
       <construct>/                  # e.g., model, component
         <construct>.json            # Schema definition for the construct (noun)
         openapi.yml                 # API operations (verbs: create, update, delete)
-        <construct>_template.json   # Generated JSON template from schema
-        <construct>_template.yaml   # Generated YAML template from schema
+        <construct>_template.json   # JSON template from schema
+        <construct>_template.yaml   # YAML template from schema
 ```
 
 ### 🧠 Explanation
@@ -136,8 +136,8 @@ schemas/
   * **`<schema-version>/`** – Represents a version (e.g., `v1alpha2`, `v1beta1`).
     * **`<construct>/`** – A directory to contain all files for any given construct like `pattern`, `component`, etc.
       * **`<construct>.json`** – Defines the **data model (noun)** for the construct.
-      * **`openapi.yml`** – Contains a package manifest of all schema files with respect to any given construct (used by openapi generator) AND defines **API operations** (verbs).
-      * **Templates** – `*_template.json` and `*_template.yaml` are auto-generated examples with resolved references and defaults.
+      * **`openapi.yml`** – Contains a package manifest of all schema files with respect to any given construct (used by oapi-codegen) AND defines **API operations** (verbs).
+      * **Templates** – `*_template.json` and `*_template.yaml` are  examples with defaults.
 
 ---
 
