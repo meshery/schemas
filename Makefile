@@ -29,7 +29,7 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup docs-build generate-ts publish-ts generate-golang docs-build golangci
+.PHONY: setup docs-build generate-ts publish-ts generate-golang golangci
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
