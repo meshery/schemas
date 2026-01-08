@@ -141,6 +141,29 @@ schemas/
 
 ---
 
+## Naming Conventions
+
+- Property names
+  - Use camelCase for property fields (e.g., `schemaVersion`, `displayName`, `componentsCount`).
+  - Identifier fields use lowerCamelCase with "Id" suffix (e.g., `modelId`, `registrantId`, `categoryId`).
+  - Enums use lowercase words (e.g., `enabled`, `ignored`, `duplicate`).
+
+- OpenAPI schema names
+  - PascalCase nouns under `components/schemas` (e.g., `Model`, `Component`).
+  - Files/folders are lowercase: `<construct>.yml, `openapi.yml`, `<construct>_template.(json|yaml)`.
+
+- Endpoints and operations
+  - Paths are under `/api` with kebab-case , plural nouns (e.g., `/api/workspaces`, `/api/environments`).
+  - Path params are camelCase  (e.g., `{subscriptionId}`, `{connectionId}`).
+  - Non-CRUD actions append a verb segment (e.g., `.../register`, `.../export`, `.../cancel`); legacy lowerCamelCase may appear (e.g., `.../upgradePreview`).
+  - `operationId` is cascalCase VerbNoun (e.g., `registerMeshmodels`).
+
+- Versioning
+  - `schemaVersion` uses group/version (e.g., `models.meshery.io/v1beta1`, `components.meshery.io/v1beta1`).
+  - Version strings follow k8s-style (`v1`, `v1alpha1`, `v1beta1`); semver fields use standard SemVer.
+
+---
+
 ## ⚙️ Code Generation
 
 Meshery supports **automated code generation** from schemas for:
