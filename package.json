@@ -29,7 +29,7 @@
     "@openapi-contrib/openapi-schema-to-json-schema": "^5.1.0",
     "@rtk-query/codegen-openapi": "^2.0.0",
     "esbuild-runner": "^2.2.2",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "json-schema-default": "^1.0.2",
     "json-schema-empty-strings": "^1.0.2",
     "json-schema-faker": "^0.5.8",
