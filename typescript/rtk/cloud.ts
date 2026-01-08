@@ -8,6 +8,7 @@ export const addTagTypes = [
   "feature_Features",
   "workspace_workspaces",
   "environment_environments",
+  "connection_connections",
   "Academy_API_Academy",
   "Academy_API_other",
   "invitation_Invitation",
@@ -135,6 +136,45 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["environment_environments"],
+      }),
+      createConnection: build.mutation<CreateConnectionApiResponse, CreateConnectionApiArg>({
+        query: (queryArg) => ({ url: `/api/connections`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["connection_connections"],
+      }),
+      getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/connections`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            kind: queryArg.kind,
+            type: queryArg["type"],
+            status: queryArg.status,
+          },
+        }),
+        providesTags: ["connection_connections"],
+      }),
+      getConnection: build.query<GetConnectionApiResponse, GetConnectionApiArg>({
+        query: (queryArg) => ({ url: `/api/connections/${queryArg.connectionId}` }),
+        providesTags: ["connection_connections"],
+      }),
+      updateConnection: build.mutation<UpdateConnectionApiResponse, UpdateConnectionApiArg>({
+        query: (queryArg) => ({ url: `/api/connections/${queryArg.connectionId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["connection_connections"],
+      }),
+      deleteConnection: build.mutation<DeleteConnectionApiResponse, DeleteConnectionApiArg>({
+        query: (queryArg) => ({ url: `/api/connections/${queryArg.connectionId}`, method: "DELETE" }),
+        invalidatesTags: ["connection_connections"],
+      }),
+      updateConnectionStatus: build.mutation<UpdateConnectionStatusApiResponse, UpdateConnectionStatusApiArg>({
+        query: (queryArg) => ({
+          url: `/api/connections/${queryArg.connectionId}/status`,
+          method: "PATCH",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["connection_connections"],
       }),
       getMyAcademyCirricula: build.query<GetMyAcademyCirriculaApiResponse, GetMyAcademyCirriculaApiArg>({
         query: (queryArg) => ({
@@ -766,6 +806,360 @@ export type GetEnvironmentsApiArg = {
   pagesize?: string;
   /** User's organization ID */
   orgId: string;
+};
+export type CreateConnectionApiResponse = /** status 201 Created connection */ {
+  /** ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Credential ID */
+  credential_id?: string;
+  /** Connection Type */
+  type: string;
+  /** Connection Subtype */
+  sub_type: string;
+  /** Connection Kind */
+  kind: string;
+  metadata?: object;
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type CreateConnectionApiArg = {
+  /** Body for creating or updating a connection */
+  body: {
+    /** Connection name */
+    name: string;
+    /** Connection type */
+    type: string;
+    /** Connection subtype */
+    sub_type: string;
+    /** Connection kind */
+    kind: string;
+    /** Connection metadata */
+    metadata?: object;
+    /** Credential ID associated with the connection */
+    credential_id?: string;
+    /** Connection status */
+    status?:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+  };
+};
+export type GetConnectionsApiResponse = /** status 200 Connections */ {
+  connections: {
+    /** ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Credential ID */
+    credential_id?: string;
+    /** Connection Type */
+    type: string;
+    /** Connection Subtype */
+    sub_type: string;
+    /** Connection Kind */
+    kind: string;
+    metadata?: object;
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+    user_id?: string;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+    environments?: {
+      /** ID */
+      id: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organization_id: string;
+      /** Environment owner */
+      owner?: string;
+      created_at?: string;
+      metadata?: object;
+      updated_at?: string;
+      deleted_at?: string;
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  }[];
+  /** Total number of connections on all pages */
+  total_count: number;
+  /** Page number */
+  page: number;
+  /** Number of elements per page */
+  page_size: number;
+};
+export type GetConnectionsApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Filter connections by kind */
+  kind?: string;
+  /** Filter connections by type */
+  type?: string;
+  /** Filter connections by status */
+  status?:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+};
+export type GetConnectionApiResponse = /** status 200 Connection details */ {
+  /** ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Credential ID */
+  credential_id?: string;
+  /** Connection Type */
+  type: string;
+  /** Connection Subtype */
+  sub_type: string;
+  /** Connection Kind */
+  kind: string;
+  metadata?: object;
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type GetConnectionApiArg = {
+  /** Connection ID */
+  connectionId: string;
+};
+export type UpdateConnectionApiResponse = /** status 200 Updated connection */ {
+  /** ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Credential ID */
+  credential_id?: string;
+  /** Connection Type */
+  type: string;
+  /** Connection Subtype */
+  sub_type: string;
+  /** Connection Kind */
+  kind: string;
+  metadata?: object;
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type UpdateConnectionApiArg = {
+  /** Connection ID */
+  connectionId: string;
+  /** Body for creating or updating a connection */
+  body: {
+    /** Connection name */
+    name: string;
+    /** Connection type */
+    type: string;
+    /** Connection subtype */
+    sub_type: string;
+    /** Connection kind */
+    kind: string;
+    /** Connection metadata */
+    metadata?: object;
+    /** Credential ID associated with the connection */
+    credential_id?: string;
+    /** Connection status */
+    status?:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+  };
+};
+export type DeleteConnectionApiResponse = unknown;
+export type DeleteConnectionApiArg = {
+  /** Connection ID */
+  connectionId: string;
+};
+export type UpdateConnectionStatusApiResponse = /** status 200 Connection with updated status */ {
+  /** ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Credential ID */
+  credential_id?: string;
+  /** Connection Type */
+  type: string;
+  /** Connection Subtype */
+  sub_type: string;
+  /** Connection Kind */
+  kind: string;
+  metadata?: object;
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type UpdateConnectionStatusApiArg = {
+  /** Connection ID */
+  connectionId: string;
+  /** Body for updating connection status */
+  body: {
+    /** New status for the connection */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+  };
 };
 export type GetMyAcademyCirriculaApiResponse = unknown;
 export type GetMyAcademyCirriculaApiArg = {
@@ -2398,6 +2792,12 @@ export const {
   useDeleteApiWorkspacesByIdMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
+  useCreateConnectionMutation,
+  useGetConnectionsQuery,
+  useGetConnectionQuery,
+  useUpdateConnectionMutation,
+  useDeleteConnectionMutation,
+  useUpdateConnectionStatusMutation,
   useGetMyAcademyCirriculaQuery,
   useCreateAcademyCurriculaMutation,
   useGetAcademyCirriculaQuery,

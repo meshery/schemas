@@ -104,6 +104,7 @@ npx --yes @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/feature/${merged_construct}" \
      "${v1beta1}/workspace/${merged_construct}" \
      "${v1beta1}/environment/${merged_construct}" \
+     "${v1beta1}/connection/${merged_construct}" \
      "${v1alpha2}/catalog/${merged_construct}" \
      "${v1beta1}/evaluation/${merged_construct}" \
      "${v1beta1}/user/${merged_construct}" \
