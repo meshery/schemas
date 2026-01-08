@@ -1688,8 +1688,6 @@ components:
       type: string
       x-go-type-skip-optional-pointer: true
     connection:
-      $id: https://schemas.meshery.io/component.json
-      $schema: http://json-schema.org/draft-07/schema#
       description: >-
         Meshery Connections are managed and unmanaged resources that either
         through discovery or manual entry are tracked by Meshery. Learn more at
@@ -2409,8 +2407,6 @@ components:
         publishToRegistry:
           type: boolean
     category:
-      $id: https://schemas.meshery.io/category.json
-      $schema: http://json-schema.org/draft-07/schema#
       type: object
       description: Category of the model.
       required:
@@ -2456,8 +2452,6 @@ components:
             gorm: type:bytes;serializer:json
           x-order: 3
     subcategory:
-      $id: https://schemas.meshery.io/category.json
-      $schema: http://json-schema.org/draft-07/schema#
       type: string
       title: SubCategory
       description: Sub category of the model determines the secondary grouping.
