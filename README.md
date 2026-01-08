@@ -150,7 +150,7 @@ schemas/
 
 - OpenAPI schema names
   - PascalCase nouns under `components/schemas` (e.g., `Model`, `Component`).
-  - Files/folders are lowercase: `<construct>.yml, `openapi.yml`, `<construct>_template.(json|yaml)`.
+  - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `<construct>_template.(json|yaml)`.
 
 - Endpoints and operations
   - Paths are under `/api` with kebab-case , plural nouns (e.g., `/api/workspaces`, `/api/environments`).
