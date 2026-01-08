@@ -50,7 +50,7 @@ The `core.json` file is deprecated. All references should use the OpenAPI YAML f
 - **Version String**: `../../v1alpha1/core/openapi.yml#/components/schemas/versionString`
 - **Semver String**: `../../v1alpha1/core/openapi.yml#/components/schemas/semverString`
 
-### 3. Timestamp Field Pattern
+### 4. Timestamp Field Pattern
 
 When adding `created_at` and `updated_at` fields to schemas:
 
@@ -69,7 +69,7 @@ When adding `created_at` and `updated_at` fields to schemas:
 
 **Do NOT include** additional `x-oapi-codegen-extra-tags` when using the reference - these are already defined in the core schema.
 
-### 4. Template File Updates
+### 5. Template File Updates
 
 When updating schema JSON files, also update the corresponding template files (e.g., `*_template.json`) with default values:
 
@@ -80,7 +80,7 @@ When updating schema JSON files, also update the corresponding template files (e
 }
 ```
 
-### 5. Path Adjustments for v1alpha3
+### 6. Path Adjustments for v1alpha3
 
 For schemas in `v1alpha3` directory, adjust the path accordingly:
 
