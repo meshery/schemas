@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: environment
-  description: Documentation for meshery Cloud REST APIs
+  description: API for managing Meshery Environments - logical groupings of connections and resources.
   contact:
     email: maintainers@meshery.io
   version: v0.6.394
@@ -18,7 +18,7 @@ security:
 
 tags:
   - name: environments
-    description: APIs for environments
+    description: APIs for managing environments. Environments are logical groupings of connections. See [Environments documentation](https://docs.meshery.io/concepts/logical/environments).
 components:
   responses:
     200:
@@ -29,12 +29,14 @@ components:
       $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
     500:
       $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+    404:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
 
   parameters:
     environmentId:
       name: environmentId
       in: path
-      description: Environment ID
+      description: Unique identifier of the environment
       schema:
         $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Id
       required: true
@@ -46,12 +48,21 @@ components:
       $ref: ../../v1alpha1/core/openapi.yml#/components/parameters/page
     pagesize:
       $ref: ../../v1alpha1/core/openapi.yml#/components/parameters/pagesize
+    filter:
+      $ref: ../../v1alpha1/core/openapi.yml#/components/parameters/filter
     orgIDQuery:
       name: orgID
       in: query
       description: User's organization ID
       schema:
         type: string
+      required: true
+    connectionId:
+      name: connectionId
+      in: path
+      description: Unique identifier of the connection
+      schema:
+        $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
       required: true
 
   securitySchemes:
@@ -62,36 +73,6 @@ components:
   schemas:
     environment:
       $ref: "./environment.json"
-    environmentConnectionMapping:
-      properties:
-        ID:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/general_id
-        environment_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-          x-oapi-codegen-extra-tags:
-            db: environment_id
-            json: environment_id
-          x-go-type-skip-optional-pointer: true
-        connection_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-          x-oapi-codegen-extra-tags:
-            db: connection_id
-            json: connection_id
-          x-go-type-skip-optional-pointer: true
-        created_at:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
-        updated_at:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
-        deleted_at:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/nullTime
     environmentPayload:
       properties:
         name:
@@ -99,7 +80,7 @@ components:
           description: An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.
         description:
           $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
-          description: "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
+          description: "An environment is a collection of resources, such as connections & credentials. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
         organization_id:
           type: string
           description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
@@ -128,21 +109,21 @@ components:
       properties:
         name:
           $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
-          description: Name of the environment
+          description: Updated name for the environment. Choose a name that represents the grouped resources.
         description:
           $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Text
-          description: Environment description
+          description: Updated description for the environment. Use this to clarify its purpose.
 
   requestBodies:
     environmentPayload:
-      description: Body for creating environment
+      description: Request body for creating a new environment.
       required: true
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/environmentPayload"
     environmentUpdatePayload:
-      description: Body for updating environment
+      description: Request body for updating environment name or description.
       required: true
       content:
         application/json:
@@ -156,18 +137,26 @@ paths:
         - environments
       operationId: CreateEnvironment
       summary: Create an environment
-      description: Creates a new environment
+      description: |
+        Creates a new environment in the specified organization. Environments group
+        related connections for easier management. The organization cannot be changed
+        after creation.
+      externalDocs:
+        description: Learn more about Environments
+        url: https://docs.meshery.io/concepts/logical/environments
       requestBody:
         $ref: "#/components/requestBodies/environmentPayload"
       responses:
         "201":
-          description: Created environment
+          description: Environment created. Add connections to group your infrastructure.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/environment"
         "400":
           $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
     get:
@@ -175,38 +164,52 @@ paths:
         - environments
       operationId: GetEnvironments
       summary: Get all environments
-      description: Gets all environments
+      description: |
+        Returns a paginated list of all environments in the organization.
+        Use search and filters to narrow results.
+      externalDocs:
+        description: Learn more about Environments
+        url: https://docs.meshery.io/concepts/logical/environments
       parameters:
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
         - $ref: "#/components/parameters/orgIDQuery"
       responses:
         "200":
-          description: Environments
+          description: Returns a list of environments with pagination metadata.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/environmentPage"
+        "400":
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
 
   /api/environments/{environmentId}:
+    parameters:
+      - $ref: "#/components/parameters/environmentId"
     get:
       tags:
         - environments
-      operationId: GetEnvironmentByID
+      operationId: GetEnvironmentById
       summary: Get an environment by ID
-      description: Gets an environment by its ID
+      description: |
+        Returns environment details including name, description, organization,
+        and metadata. Use this before modifying or deleting an environment.
+      externalDocs:
+        description: Environments overview
+        url: https://docs.meshery.io/concepts/logical/environments
       parameters:
-        - $ref: "#/components/parameters/environmentId"
         - $ref: "#/components/parameters/orgIDQuery"
       responses:
         "200":
-          description: Environment
+          description: Environment details including name, description, and organization.
           content:
             application/json:
               schema:
@@ -224,12 +227,15 @@ paths:
         - environments
       operationId: DeleteEnvironment
       summary: Delete an environment
-      description: Deletes an environment by its ID
-      parameters:
-        - $ref: "#/components/parameters/environmentId"
+      description: |
+        Permanently removes an environment. All connection assignments are
+        removed, but the connections themselves remain. This cannot be undone.
+      externalDocs:
+        description: Environment deletion
+        url: https://docs.meshery.io/concepts/logical/environments
       responses:
         "200":
-          description: Environment deleted successfully
+          description: Environment deleted. Connection assignments removed but connections remain.
           content:
             application/json:
               schema:
@@ -247,14 +253,17 @@ paths:
         - environments
       operationId: UpdateEnvironment
       summary: Update an environment
-      description: Updates the environment
-      parameters:
-        - $ref: "#/components/parameters/environmentId"
+      description: |
+        Modifies an environment's name or description. The organization
+        cannot be changed after creation.
+      externalDocs:
+        description: Managing environments
+        url: https://docs.meshery.io/concepts/logical/environments
       requestBody:
         $ref: "#/components/requestBodies/environmentUpdatePayload"
       responses:
         "200":
-          description: Environment updated successfully
+          description: Environment updated. Organization ID remains unchanged.
           content:
             application/json:
               schema:
@@ -274,7 +283,13 @@ paths:
         - environments
       operationId: GetConnectionsOfEnvironment
       summary: Get all connections assigned to an environment
-      description: Gets all connections assigned to an environment with pagination and filtering
+      description: |
+        Returns a paginated list of connections assigned to this environment.
+        A connection can be assigned to multiple environments.
+        Use this to audit infrastructure resources grouped here.
+      externalDocs:
+        description: Managing environment connections
+        url: https://docs.meshery.io/concepts/logical/environments
       parameters:
         - $ref: "#/components/parameters/environmentId"
         - $ref: "#/components/parameters/search"
@@ -283,7 +298,7 @@ paths:
         - $ref: "#/components/parameters/pagesize"
       responses:
         "200":
-          description: Connections in Environment
+          description: List of connections linked to this environment.
           content:
             application/json:
               schema:
@@ -303,18 +318,18 @@ paths:
         - environments
       operationId: AssignConnectionToEnvironment
       summary: Assign a connection to an environment
-      description: Assigns a connection to an environment
+      description: |
+        Links a connection to this environment. Creates an association allowing workspace members to access resources in the environment. A connection can belong to
+        multiple environments. This does not affect the connection's status.
+      externalDocs:
+        description: Managing environment connections
+        url: https://docs.meshery.io/concepts/logical/environments
       parameters:
         - $ref: "#/components/parameters/environmentId"
-        - name: connectionId
-          in: path
-          schema:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
-          required: true
-          description: Connection ID
+        - $ref: "#/components/parameters/connectionId"
       responses:
         "200":
-          description: Connection assigned successfully
+          description: Connection linked to environment.
           content:
             application/json:
               schema:
@@ -332,18 +347,18 @@ paths:
         - environments
       operationId: UnassignConnectionFromEnvironment
       summary: Unassign a connection from an environment
-      description: Unassigns a connection from an environment
+      description: |
+        Removes a connection from this environment. The connection itself
+        is not deleted and remains available for other environments.
+      externalDocs:
+        description: Managing environment connections
+        url: https://docs.meshery.io/concepts/logical/environments
       parameters:
         - $ref: "#/components/parameters/environmentId"
-        - name: connectionId
-          in: path
-          schema:
-            $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
-          required: true
-          description: Connection ID
+        - $ref: "#/components/parameters/connectionId"
       responses:
         "200":
-          description: Connection unassigned successfully
+          description: Connection unlinked from environment.
           content:
             application/json:
               schema:

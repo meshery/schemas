@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: workspace
-  description: Documentation for meshery Cloud REST APIs
+  description: API for managing Meshery Workspaces - logical groupings of designs, views, and resources for team collaboration.
   contact:
     email: maintainers@meshery.io
   version: v0.6.394
@@ -16,11 +16,18 @@ security:
   - jwt: []
 tags:
   - name: workspaces
-    description: Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces).
+    description: Workspaces serve as a virtual space for your team-based work, allowing you to control access to designs and environments. You can update the workspace description at any time. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces).
 paths:
   /api/workspaces:
     get:
+      operationId: GetWorkspaces
       summary: Get all workspaces
+      description: |
+        Returns a paginated list of all workspaces in the organization.
+        Use search and filters to narrow results.
+      externalDocs:
+        description: Learn more about Workspaces
+        url: https://docs.meshery.io/concepts/logical/workspaces
       tags:
         - workspaces
       parameters:
@@ -32,35 +39,61 @@ paths:
         - $ref: "#/components/parameters/orgIDQuery"
       responses:
         "200":
-          description: List of workspaces
+          description: Returns a list of workspaces with pagination metadata.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/workspacePage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
     post:
+      operationId: CreateWorkspace
       summary: Create a workspace
+      description: |
+        Creates a new workspace. Teams and environments can be assigned after creation.
+        Note: The organization cannot be changed after the workspace is created.
       tags:
         - workspaces
+      externalDocs:
+        description: Learn more about Workspaces
+        url: https://docs.meshery.io/concepts/logical/workspaces
       requestBody:
         $ref: "#/components/requestBodies/workspacePayload"
       responses:
         "201":
-          description: Workspace created successfully
+          description: Workspace created. Assign teams and environments to start collaborating.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/workspace"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
   /api/workspaces/{workspaceId}:
+    parameters:
+      - $ref: "#/components/parameters/workspaceId"
     get:
+      operationId: GetWorkspaceById
       summary: Get workspace by ID
+      description: |
+        Returns workspace details including name, description, organization, and owner.
+      externalDocs:
+        description: Workspaces overview
+        url: https://docs.meshery.io/concepts/logical/workspaces
       tags:
         - workspaces
       parameters:
-        - $ref: "#/components/parameters/workspaceId"
         - $ref: "#/components/parameters/orgIDQuery"
       responses:
         "200":
-          description: Workspace details
+          description: Workspace details including name, description, and owner.
           content:
             application/json:
               schema:
@@ -74,16 +107,21 @@ paths:
         "500":
           $ref: "#/components/responses/500"
     put:
+      operationId: UpdateWorkspace
       summary: Update workspace
+      description: |
+        Modifies a workspace's name or description. The organization cannot be
+        changed after creation.
+      externalDocs:
+        description: Managing workspaces
+        url: https://docs.meshery.io/concepts/logical/workspaces
       tags:
         - workspaces
-      parameters:
-        - $ref: "#/components/parameters/workspaceId"
       requestBody:
         $ref: "#/components/requestBodies/workspaceUpdatePayload"
       responses:
         "200":
-          description: Workspace updated successfully
+          description: Workspace updated. Organization ID remains unchanged.
           content:
             application/json:
               schema:
@@ -92,17 +130,24 @@ paths:
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     delete:
+      operationId: DeleteWorkspace
       summary: Delete workspace
+      description: |
+        Permanently deletes a workspace and unlinks all teams, environments, and designs.
+        The resources themselves are not deleted. This action cannot be undone.
+      externalDocs:
+        description: Workspace deletion
+        url: https://docs.meshery.io/concepts/logical/workspaces
       tags:
         - workspaces
-      parameters:
-        - $ref: "#/components/parameters/workspaceId"
       responses:
         "204":
-          description: Workspace deleted successfully
+          description: Workspace deleted. All team/environment/design mappings removed.
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -114,60 +159,71 @@ paths:
 
   /api/workspaces/{workspaceId}/environments:
     get:
+      operationId: GetEnvironmentsOfWorkspace
       tags:
         - workspaces
       summary: Get all environments assigned to a workspace
-      description: Gets environments of a given workspace
+      description: |
+        Returns a paginated list of environments assigned to this workspace.
+      externalDocs:
+        description: Workspace environments
+        url: https://docs.meshery.io/concepts/logical/workspaces
       parameters:
-        - $ref: '#/components/parameters/workspaceId'
-        - $ref: '#/components/parameters/search'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/pagesize'
-        - $ref: '#/components/parameters/workspaceFilter'
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/workspaceFilter"
       responses:
-        '200':
-          description: Environment List
+        "200":
+          description: List of environments linked to this workspace.
           content:
             application/json:
               schema:
-                $ref: '../environment/openapi.yml#/components/schemas/environmentPage'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '404':
-          $ref: '#/components/responses/404'
-        '500':
-          $ref: '#/components/responses/500'
+                $ref: "../environment/openapi.yml#/components/schemas/environmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
 
   /api/workspaces/{workspaceId}/designs:
     get:
+      operationId: GetDesignsOfWorkspace
       tags:
         - workspaces
       summary: Get all designs assigned to a workspace
+      description: |
+        Returns a paginated list of designs assigned to this workspace.
+      externalDocs:
+        description: Workspace designs
+        url: https://docs.meshery.io/concepts/logical/workspaces
       parameters:
-        - $ref: '#/components/parameters/workspaceId'
-        - $ref: '#/components/parameters/search'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/pagesize'
-        - $ref: '#/components/parameters/workspaceFilter'
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/workspaceFilter"
       responses:
-        '200':
-          description: Design List
+        "200":
+          description: List of designs linked to this workspace.
           content:
             application/json:
               schema:
-                $ref: '../design/openapi.yml#/components/schemas/MesheryPatternPage'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '404':
-          $ref: '#/components/responses/404'
-        '500':
-          $ref: '#/components/responses/500'
+                $ref: "../design/openapi.yml#/components/schemas/MesheryPatternPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
 components:
   responses:
     "200":
@@ -185,21 +241,21 @@ components:
     workspaceId:
       name: workspaceId
       in: path
-      description: Workspace ID
+      description: Unique identifier of the workspace
       required: true
       schema:
         $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
     environmentId:
       name: environmentId
       in: path
-      description: Environment ID
+      description: Unique identifier of the environment
       required: true
       schema:
         $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
     designId:
       name: designId
       in: path
-      description: Design ID
+      description: Unique identifier of the design
       required: true
       schema:
         $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
@@ -214,7 +270,9 @@ components:
     filter:
       name: filter
       in: query
-      description: Filter
+      description: |
+        Filter results using a SQL-like syntax.
+        Example: `name like '%default%'`
       required: false
       schema:
         type: string
@@ -228,7 +286,9 @@ components:
     workspaceFilter:
       name: filter
       in: query
-      description: Filter
+      description: |
+        Filter results within the workspace using a SQL-like syntax.
+        Applies to the list of environments or designs being retrieved.
       required: false
       schema:
         type: string
@@ -317,19 +377,10 @@ components:
       properties:
         name:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
-          description: Name of workspace
+          description: Updated name for the workspace. Choose a name that clearly identifies the workspace's purpose.
         description:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
-          description: Workspace description
-        organization_id:
-          type: string
-          description: Organization ID
-          x-go-type-skip-optional-pointer: true
-          x-go-name: OrganizationID
-          x-oapi-codegen-extra-tags:
-            json: organization_id
-      required:
-        - organization_id
+          description: Updated description for the workspace. Use this to clarify the workspace's purpose and contents.
     workspacePayload:
       properties:
         name:
@@ -337,7 +388,7 @@ components:
           description: Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation.
         description:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
-          description: Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces)
+          description: Workspaces serve as a virtual space for your team-based work, allowing you to control access and more. Provide a detailed description to clarify the purpose of this workspace. You can change the description at any time. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces).
         organization_id:
           type: string
           description: Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation.
@@ -364,14 +415,14 @@ components:
             $ref: "#/components/schemas/workspace"
   requestBodies:
     workspacePayload:
-      description: Body for creating workspace
+      description: Request body for creating a new workspace.
       required: true
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/workspacePayload"
     workspaceUpdatePayload:
-      description: Body for updating workspace
+      description: Request body for updating workspace name or description.
       required: true
       content:
         application/json:
@@ -598,14 +649,19 @@ components:
       tags:
         - workspaces
       operationId: UnassignEnvironmentFromWorkspace
-      summary: Unassign a environment from a workspace
-      description: Unassigns a environment from a workspace
+      summary: Unassign an environment from a workspace
+      description: |
+        Removes an environment from this workspace. The environment itself
+        is not deleted and remains available for other workspaces.
+      externalDocs:
+        description: Managing workspace environments
+        url: https://docs.meshery.io/concepts/logical/workspaces
       parameters:
         - $ref: '#/components/parameters/workspaceId'
         - $ref: '#/components/parameters/environmentId'
       responses:
         '200':
-          description: Workspaces environments mappings
+          description: Environment unlinked from workspace.
           content:
             application/json:
               schema:
@@ -622,14 +678,19 @@ components:
       tags:
         - workspaces
       operationId: AssignEnvironmentToWorkspace
-      summary: Assign a environment to a workspace
-      description: Assigns a environment to a workspace
+      summary: Assign an environment to a workspace
+      description: |
+        Links an environment to this workspace. Creates an association allowing workspace members to access resources in the environment. Environments can belong to
+        multiple workspaces.
+      externalDocs:
+        description: Managing workspace environments
+        url: https://docs.meshery.io/concepts/logical/workspaces
       parameters:
         - $ref: '#/components/parameters/workspaceId'
         - $ref: '#/components/parameters/environmentId'
       responses:
         '200':
-          description: Workspaces environments mappings
+          description: Environment linked to workspace.
           content:
             application/json:
               schema:
@@ -638,6 +699,8 @@ components:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
   /api/workspaces/{workspaceId}/designs/{designId}:
@@ -646,13 +709,18 @@ components:
         - workspaces
       operationId: UnassignDesignFromWorkspace
       summary: Unassign a design from a workspace
-      description: Unassign a design from a workspace
+      description: |
+        Removes a design from this workspace. The design itself is not deleted
+        and remains available for other workspaces.
+      externalDocs:
+        description: Managing workspace designs
+        url: https://docs.meshery.io/concepts/logical/workspaces
       parameters:
         - $ref: '#/components/parameters/workspaceId'
         - $ref: '#/components/parameters/designId'
       responses:
         '200':
-          description: Workspaces designs mappings
+          description: Design unlinked from workspace.
           content:
             application/json:
               schema:
@@ -670,13 +738,18 @@ components:
         - workspaces
       operationId: AssignDesignToWorkspace
       summary: Assign a design to a workspace
-      description: Assigns a design to a workspace
+      description: |
+        Links a design to this workspace. Creates an association allowing workspace members to access the design. A design can belong to multiple
+        workspaces.
+      externalDocs:
+        description: Managing workspace designs
+        url: https://docs.meshery.io/concepts/logical/workspaces
       parameters:
         - $ref: '#/components/parameters/workspaceId'
         - $ref: '#/components/parameters/designId'
       responses:
         '200':
-          description: Workspaces designs mappings
+          description: Design linked to workspace.
           content:
             application/json:
               schema:
@@ -685,6 +758,8 @@ components:
           $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
 # /api/workspaces/{workspaceId}/designs:

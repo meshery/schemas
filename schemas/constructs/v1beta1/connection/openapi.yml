@@ -1,117 +1,217 @@
 openapi: 3.0.0
 info:
   title: connection
-  version: 1.0.0
+  description: API for managing Meshery Connections - resources tracked via MeshSync discovery or manual registration.
+  contact:
+    email: maintainers@meshery.io
+  version: v0.6.394
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+security:
+  - jwt: []
+tags:
+  - name: connection
+    description: APIs for managing connections to Kubernetes, Prometheus, Grafana, and other integrations. See [Connections documentation](https://docs.meshery.io/concepts/logical/connections).
 paths:
   /api/integrations/connections:
     get:
       tags:
         - connection
       summary: Get all connections
+      description: |
+        Returns a paginated list of all connections. Use filters to narrow results
+        by connection kind (e.g., kubernetes, prometheus, grafana).
       operationId: GetConnections
+      externalDocs:
+        description: Learn more about Connections
+        url: https://docs.meshery.io/concepts/logical/connections
       parameters:
-        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/page"
-        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesize"
-        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/search"
-        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/order"
-        - $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/filter"
-        - name: connection_kind
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+        - name: connectionKind
           in: query
-          description: Filter by connection kind
+          description: Filter by connection kind (e.g., kubernetes, prometheus)
           schema:
             type: string
           required: false
       responses:
         "200":
-          description: List of connections
+          description: Returns a list of connections with pagination metadata.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConnectionPage"
         "400":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+          $ref: "#/components/responses/500"
     post:
       tags:
         - connection
-      summary: Create a connection
+      summary: Register a new connection
+      description: |
+        Manually registers a new connection. Provide the connection details including
+        type, kind, and credentials. The connection will start in 'registered' state
+        and can then be transitioned to 'connected' for active management.
       operationId: CreateConnection
       requestBody:
+        description: Connection details including name, kind, type, and credential reference.
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/Connection"
+      externalDocs:
+        description: Learn more about Connections
+        url: https://docs.meshery.io/concepts/logical/connections
       responses:
         "201":
-          description: Connection created
+          description: Connection created. It starts in 'registered' state and can be transitioned to 'connected'.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
         "400":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+          $ref: "#/components/responses/500"
 
   /api/integrations/connections/{connectionId}:
     parameters:
-      - name: connectionId
-        in: path
-        required: true
-        schema:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+      - $ref: "#/components/parameters/connectionId"
     get:
       tags:
         - connection
       summary: Get connection by ID
+      description: |
+        Returns full connection details: name, kind, type, sub_type, credential_id,
+        current status, metadata, and linked environments. Use this to check a
+        connection's lifecycle state before performing operations.
       operationId: GetConnectionById
+      externalDocs:
+        description: Connection lifecycle states
+        url: https://docs.meshery.io/concepts/logical/connections
       responses:
         "200":
-          description: Connection details
+          description: Connection details including status, kind, and linked environments.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+          $ref: "#/components/responses/404"
         "500":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+          $ref: "#/components/responses/500"
     put:
       tags:
         - connection
       summary: Update connection
+      description: |
+        Modifies connection metadata (name, description) or status. Status changes
+        transition the connection through its lifecycle (e.g., connected → ignored).
+        The type, sub_type, and kind fields cannot be changed after creation.
       operationId: UpdateConnection
+      externalDocs:
+        description: Connection status transitions
+        url: https://docs.meshery.io/concepts/logical/connections
       requestBody:
+        description: Updated connection data. Only metadata and status can be modified.
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/Connection"
       responses:
         "200":
-          description: Connection updated
+          description: Connection updated. Immutable fields (type, sub_type, kind) remain unchanged.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+          $ref: "#/components/responses/404"
         "500":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+          $ref: "#/components/responses/500"
     delete:
       tags:
         - connection
       summary: Delete connection
+      description: |
+        Permanently removes a connection and its data. This also unlinks it from all
+        environments. Credentials are not deleted. If you need to temporarily disable
+        a connection, consider setting its status to 'ignored' or 'maintenance' instead.
       operationId: DeleteConnection
+      externalDocs:
+        description: Connection deletion behavior
+        url: https://docs.meshery.io/concepts/logical/connections
       responses:
         "200":
-          description: Connection deleted
+          description: Connection removed. All environment links are cleared but credentials remain.
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+          $ref: "#/components/responses/404"
         "500":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+          $ref: "#/components/responses/500"
 
 components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+
+  parameters:
+    connectionId:
+      name: connectionId
+      in: path
+      description: Unique identifier of the connection
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+    page:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/order"
+    filter:
+      $ref: "../../v1alpha1/core/openapi.yml#/components/parameters/filter"
+
+  responses:
+    "200":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/200"
+    "400":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+    "401":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+    "404":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/404"
+    "500":
+      $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+
   schemas:
     Connection:
       $ref: "./connection.json"
