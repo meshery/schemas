@@ -53,9 +53,10 @@ dist/
 
 yarn.lock
 
-# Generated binaries
+# Generated files
 **/bin
 *.Identifier
+_openapi_build
 
 default.profraw
 **errorutil_analyze_errors.json

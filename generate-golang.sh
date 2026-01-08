@@ -25,9 +25,10 @@ generate_schema_models() {
     fi
 
     local input_schema="${input_override:-schemas/constructs/${version}/${package}/openapi.yml}"
-    local merged_output="schemas/constructs/${version}/${package}/${merged_construct}"
+    local merged_output="_openapi_build/constructs/${version}/${package}/${merged_construct}"
     local output_go_file="models/${version}/${package}/${package}.go"
 
+    mkdir -p "_openapi_build/constructs/${version}/${package}"
     mkdir -p "models/${version}/${package}"
     touch "$output_go_file"
 
@@ -87,14 +88,15 @@ generate_schema_models "organization" "v1beta1"
 generate_schema_models "connection" "v1beta1"
 generate_schema_models "invitation" "v1beta1"
 
-v1beta1="schemas/constructs/v1beta1"
-v1alpha1="schemas/constructs/v1alpha1"
-v1alpha2="schemas/constructs/v1alpha2"
+v1beta1="_openapi_build/constructs/v1beta1"
+v1alpha1="_openapi_build/constructs/v1alpha1"
+v1alpha2="_openapi_build/constructs/v1alpha2"
 
 # version,construct
 # returns the {version}+{construct}+{merged_construct}
 
 # generate bundle for meshery cloud
+mkdir -p _openapi_build
 npx --yes @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/pattern/${merged_construct}" \
      "${v1beta1}/component/${merged_construct}" \
@@ -110,12 +112,14 @@ npx --yes @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/academy/${merged_construct}" \
      "${v1beta1}/invitation/${merged_construct}" \
      "${v1beta1}/badge/${merged_construct}" \
- -o schemas/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
+ -o _openapi_build/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
 
-node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/cloud_openapi.yml cloud
-node scripts/filterOpenapiByTag.js schemas/merged_openapi.yml schemas/meshery_openapi.yml  meshery
+node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/cloud_openapi.yml cloud
+node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/meshery_openapi.yml  meshery
 
 
 # Generate rtk query api
 npx --yes @rtk-query/codegen-openapi typescript/rtk/cloud-rtk-config.ts
 npx --yes @rtk-query/codegen-openapi typescript/rtk/meshery-rtk-config.ts
+
+echo -e "${GREEN}✅ Merged OpenAPI files generated in _openapi_build/${NC}"
