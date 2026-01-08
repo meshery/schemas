@@ -455,7 +455,7 @@ npx @redocly/cli lint schemas/constructs/v1beta1/pattern/openapi.yml
 | ----------------------- | ----------------------- |
 | Generate everything     | `make build`            |
 | Generate Go code only   | `make golang-generate`  |
-| Generate TS + templates | `make generate-types`   |
+| Generate TS + templates | `make generate-ts`      |
 | Lint OpenAPI            | `npx @redocly/cli lint` |
 
 ---
