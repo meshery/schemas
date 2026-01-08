@@ -676,8 +676,6 @@ const schema = {
             "content": {
               "application/json": {
                 "schema": {
-                  "$id": "https://schemas.meshery.io/component.json",
-                  "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                   "additionalProperties": false,
                   "type": "object",
@@ -934,8 +932,6 @@ const schema = {
                           "x-go-type-skip-optional-pointer": true,
                           "type": "array",
                           "items": {
-                            "$id": "https://schemas.meshery.io/component.json",
-                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                             "additionalProperties": false,
                             "type": "object",
@@ -1190,8 +1186,6 @@ const schema = {
             "content": {
               "application/json": {
                 "schema": {
-                  "$id": "https://schemas.meshery.io/component.json",
-                  "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                   "additionalProperties": false,
                   "type": "object",
@@ -1547,8 +1541,6 @@ const schema = {
             "content": {
               "application/json": {
                 "schema": {
-                  "$id": "https://schemas.meshery.io/component.json",
-                  "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                   "additionalProperties": false,
                   "type": "object",
@@ -4259,8 +4251,6 @@ const schema = {
                             "type": "string"
                           },
                           "category": {
-                            "$id": "https://schemas.meshery.io/category.json",
-                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "object",
                             "description": "Category of the model.",
                             "required": [
@@ -4322,8 +4312,6 @@ const schema = {
                             }
                           },
                           "subCategory": {
-                            "$id": "https://schemas.meshery.io/category.json",
-                            "$schema": "http://json-schema.org/draft-07/schema#",
                             "type": "string",
                             "title": "SubCategory",
                             "description": "Sub category of the model determines the secondary grouping.",
@@ -9630,8 +9618,6 @@ const schema = {
         "x-go-type-skip-optional-pointer": true
       },
       "connection": {
-        "$id": "https://schemas.meshery.io/component.json",
-        "$schema": "http://json-schema.org/draft-07/schema#",
         "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
         "additionalProperties": false,
         "type": "object",
@@ -9870,8 +9856,6 @@ const schema = {
                 "x-go-type-skip-optional-pointer": true,
                 "type": "array",
                 "items": {
-                  "$id": "https://schemas.meshery.io/component.json",
-                  "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                   "additionalProperties": false,
                   "type": "object",
@@ -11709,8 +11693,6 @@ const schema = {
                     "type": "string"
                   },
                   "category": {
-                    "$id": "https://schemas.meshery.io/category.json",
-                    "$schema": "http://json-schema.org/draft-07/schema#",
                     "type": "object",
                     "description": "Category of the model.",
                     "required": [
@@ -11772,8 +11754,6 @@ const schema = {
                     }
                   },
                   "subCategory": {
-                    "$id": "https://schemas.meshery.io/category.json",
-                    "$schema": "http://json-schema.org/draft-07/schema#",
                     "type": "string",
                     "title": "SubCategory",
                     "description": "Sub category of the model determines the secondary grouping.",
@@ -11932,8 +11912,6 @@ const schema = {
                 "type": "string"
               },
               "category": {
-                "$id": "https://schemas.meshery.io/category.json",
-                "$schema": "http://json-schema.org/draft-07/schema#",
                 "type": "object",
                 "description": "Category of the model.",
                 "required": [
@@ -11995,8 +11973,6 @@ const schema = {
                 }
               },
               "subCategory": {
-                "$id": "https://schemas.meshery.io/category.json",
-                "$schema": "http://json-schema.org/draft-07/schema#",
                 "type": "string",
                 "title": "SubCategory",
                 "description": "Sub category of the model determines the secondary grouping.",
@@ -12114,8 +12090,6 @@ const schema = {
             "type": "string"
           },
           "category": {
-            "$id": "https://schemas.meshery.io/category.json",
-            "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
             "description": "Category of the model.",
             "required": [
@@ -12177,8 +12151,6 @@ const schema = {
             }
           },
           "subCategory": {
-            "$id": "https://schemas.meshery.io/category.json",
-            "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "string",
             "title": "SubCategory",
             "description": "Sub category of the model determines the secondary grouping.",
@@ -12267,8 +12239,6 @@ const schema = {
         }
       },
       "category": {
-        "$id": "https://schemas.meshery.io/category.json",
-        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "description": "Category of the model.",
         "required": [
@@ -12330,8 +12300,6 @@ const schema = {
         }
       },
       "subcategory": {
-        "$id": "https://schemas.meshery.io/category.json",
-        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "string",
         "title": "SubCategory",
         "description": "Sub category of the model determines the secondary grouping.",
