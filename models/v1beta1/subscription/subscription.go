@@ -66,6 +66,9 @@ type CancelSubscriptionRequestPaymentProcessor string
 
 // CreateSubscriptionRequest defines model for CreateSubscriptionRequest.
 type CreateSubscriptionRequest struct {
+	// CouponId Coupon ID to apply
+	CouponId *string `json:"coupon_id,omitempty" yaml:"coupon_id,omitempty"`
+
 	// Email Email of the customer
 	Email *openapi_types.Email `json:"email,omitempty" yaml:"email,omitempty"`
 

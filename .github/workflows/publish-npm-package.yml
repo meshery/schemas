@@ -11,26 +11,35 @@ on:
         default: "v1.0.0"
         type: string
 
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 jobs:
-  publish-gpr:
+  publish:
     runs-on: ubuntu-latest
     permissions:
+      id-token: write  # Required for OIDC trusted publishing
       contents: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           ref: 'master'
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
-          registry-url: "https://registry.npmjs.org"
-          scope: "@meshery"
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          scope: "@meshery"          
 
       - name: Install Dependencies
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ''  # Explicitly empty for install
+          
 
       - name: Configure Git
         run: |
@@ -58,14 +67,12 @@ jobs:
       - name: Publish Package
         run: |
           set -e
-          npm publish --verbose
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish --provenance --access public --verbose
 
       - name: Pull changes from remote
         run: git pull origin master
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Update schema
           commit_options: '--signoff'
@@ -73,5 +80,8 @@ jobs:
           commit_user_name: meshery
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MESHERY_CI }}
+
+
+
 

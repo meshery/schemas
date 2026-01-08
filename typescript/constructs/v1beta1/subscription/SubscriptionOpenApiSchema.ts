@@ -713,6 +713,10 @@ const schema = {
                     "type": "string",
                     "description": "Price ID from the payment processor"
                   },
+                  "coupon_id": {
+                    "type": "string",
+                    "description": "Coupon ID to apply"
+                  },
                   "user_count": {
                     "type": "integer",
                     "description": "Number of users in the organization"
@@ -1262,6 +1266,10 @@ const schema = {
           "plan_id": {
             "type": "string",
             "description": "Price ID from the payment processor"
+          },
+          "coupon_id": {
+            "type": "string",
+            "description": "Coupon ID to apply"
           },
           "user_count": {
             "type": "integer",

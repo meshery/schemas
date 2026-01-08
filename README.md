@@ -126,8 +126,8 @@ schemas/
       <construct>/                  # e.g., model, component
         <construct>.json            # Schema definition for the construct (noun)
         openapi.yml                 # API operations (verbs: create, update, delete)
-        <construct>_template.json   # Generated JSON template from schema
-        <construct>_template.yaml   # Generated YAML template from schema
+        <construct>_template.json   # JSON template from schema
+        <construct>_template.yaml   # YAML template from schema
 ```
 
 ### 🧠 Explanation
@@ -136,8 +136,8 @@ schemas/
   * **`<schema-version>/`** – Represents a version (e.g., `v1alpha2`, `v1beta1`).
     * **`<construct>/`** – A directory to contain all files for any given construct like `pattern`, `component`, etc.
       * **`<construct>.json`** – Defines the **data model (noun)** for the construct.
-      * **`openapi.yml`** – Contains a package manifest of all schema files with respect to any given construct (used by openapi generator) AND defines **API operations** (verbs).
-      * **Templates** – `*_template.json` and `*_template.yaml` are auto-generated examples with resolved references and defaults.
+      * **`openapi.yml`** – Contains a package manifest of all schema files with respect to any given construct (used by oapi-codegen) AND defines **API operations** (verbs).
+      * **Templates** – `*_template.json` and `*_template.yaml` are  examples with defaults.
 
 ---
 
@@ -150,13 +150,13 @@ schemas/
 
 - OpenAPI schema names
   - PascalCase nouns under `components/schemas` (e.g., `Model`, `Component`).
-  - Files/folders are lowercase: `<construct>.yml, `openapi.yml`, `<construct>_template.(json|yaml)`.
+  - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `<construct>_template.(json|yaml)`.
 
 - Endpoints and operations
   - Paths are under `/api` with kebab-case , plural nouns (e.g., `/api/workspaces`, `/api/environments`).
   - Path params are camelCase  (e.g., `{subscriptionId}`, `{connectionId}`).
   - Non-CRUD actions append a verb segment (e.g., `.../register`, `.../export`, `.../cancel`); legacy lowerCamelCase may appear (e.g., `.../upgradePreview`).
-  - `operationId` is cascalCase VerbNoun (e.g., `registerMeshmodels`).
+  - `operationId` is camelCase VerbNoun (e.g., `registerMeshmodels`).
 
 - Versioning
   - `schemaVersion` uses group/version (e.g., `models.meshery.io/v1beta1`, `components.meshery.io/v1beta1`).
@@ -478,7 +478,7 @@ npx @redocly/cli lint schemas/constructs/v1beta1/pattern/openapi.yml
 | ----------------------- | ----------------------- |
 | Generate everything     | `make build`            |
 | Generate Go code only   | `make golang-generate`  |
-| Generate TS + templates | `make generate-types`   |
+| Generate TS + templates | `make generate-ts`      |
 | Lint OpenAPI            | `npx @redocly/cli lint` |
 
 ---

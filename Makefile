@@ -20,54 +20,52 @@ include build/Makefile.show-help.mk
 #-----------------------------------------------------------------------------
 .PHONY: site
 
-jekyll=bundle exec jekyll
+jekyll = bundle exec jekyll
 
+## Build and run schemas.meshery.io website
 site:
 	bundle install; $(jekyll) serve --drafts --incremental --livereload
-
-
-
-## Lint check Meshery Server.
-golangci: error dep-check
-	golangci-lint run
 
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: redocly-docs-build api-validate schemas-join docs-build
+.PHONY: setup docs-build generate-ts publish-ts generate-golang golangci
 
+## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
+setup:
+	go mod tidy
+	npm install
 
-
-## Building docs with redocly
-docs-build:
+## Build API docs with redocly
+docs-build: dep-check
 	redocly bundle --output openapi/bundled-schema.yml
 	redocly build-docs openapi/bundled-schema.yml --output=openapi/index.html
 	rm openapi/bundled-schema.yml
 
 ## Generate typescript library, json templates, yaml templates
-generate-types:
+generate-ts:
 	npm run generate:types
 
-## Generate typescript library
-generate-ts: generate-types
-
+## Bundle Typescript library, json templates, yaml templates
 build-ts: generate-ts
 	npm run build
 
+## Publish schemas package to @meshery/schemas on npmjs.com
 publish-ts: build-ts
 	npm run publish-ts-lib
 
-
-
-golang-generate:
+## Generate Golang Models
+golang-generate: dep-check
 	./generate-golang.sh
 
-setup:
-	go mod tidy
-	npm install
+## Lint check Meshery Server.
+golangci: dep-check
+	golangci-lint run
 
 # depends on order , golang-generate generates some artifacts that are used in the next step ( TODO: promote golang-generate to a parent build script)
-build:  golang-generate generate-ts  build-ts
+
+## Generate and bundle schema package
+build: golang-generate generate-ts build-ts
 
 #-----------------------------------------------------------------------------
 # Dependencies
@@ -75,15 +73,21 @@ build:  golang-generate generate-ts  build-ts
 .PHONY: dep-check
 #.SILENT: dep-check
 
-INSTALLED_GO_VERSION=$(shell go version)
+INSTALLED_GO_VERSION = $(shell go version)
 
+## Check local system for required dependencies
 dep-check:
 
+# golang
 ifeq (,$(findstring $(GOVERSION), $(INSTALLED_GO_VERSION)))
 # Only send a warning.
 	@echo "Dependency missing: go$(GOVERSION). Ensure 'go$(GOVERSION).x' is installed and available in your 'PATH'"
 	@echo "GOVERSION: " $(GOVERSION)
 	@echo "INSTALLED_GO_VERSION: " $(INSTALLED_GO_VERSION)
+# Force error and stop.
+#	$(error Found $(INSTALLED_GO_VERSION). \
+#	 Required golang version is: 'go$(GOVERSION).x'. \
+#	 Ensure go '$(GOVERSION).x' is installed and available in your 'PATH'.)
 endif
 
 # redocly cli
@@ -95,13 +99,8 @@ endif
 
 # oapi-codegen
 ifeq (,$(shell command -v oapi-codegen))
-	@echo "Dependency missing: oapi-codegen. Install oapi-codegen cli from
+	@echo "Dependency missing: oapi-codegen. Install oapi-codegen"
 	@echo "installing oapi-codegen"
 	# for the binary install
 	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 endif
-
-
-
-
-
