@@ -36,10 +36,6 @@ golangci: error dep-check
 #-----------------------------------------------------------------------------
 .PHONY: redocly-docs-build api-validate schemas-join docs-build
 
-## Validate Remote provider APIs against OpenAPI spec
-api-validate:
-	openapi-generator validate -i schemas/openapi.yml
-
 
 
 ## Building docs with redocly
