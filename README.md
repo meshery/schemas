@@ -156,7 +156,7 @@ schemas/
   - Paths are under `/api` with kebab-case , plural nouns (e.g., `/api/workspaces`, `/api/environments`).
   - Path params are camelCase  (e.g., `{subscriptionId}`, `{connectionId}`).
   - Non-CRUD actions append a verb segment (e.g., `.../register`, `.../export`, `.../cancel`); legacy lowerCamelCase may appear (e.g., `.../upgradePreview`).
-  - `operationId` is cascalCase VerbNoun (e.g., `registerMeshmodels`).
+  - `operationId` is camelCase VerbNoun (e.g., `registerMeshmodels`).
 
 - Versioning
   - `schemaVersion` uses group/version (e.g., `models.meshery.io/v1beta1`, `components.meshery.io/v1beta1`).
