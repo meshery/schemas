@@ -99,24 +99,155 @@ const injectedRtkApi = api
         }),
         providesTags: ["feature_Features"],
       }),
-      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
-        query: () => ({ url: `/api/workspaces` }),
+      getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            orgID: queryArg.orgId,
+          },
+        }),
         providesTags: ["workspace_workspaces"],
       }),
-      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
+      createWorkspace: build.mutation<CreateWorkspaceApiResponse, CreateWorkspaceApiArg>({
         query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["workspace_workspaces"],
       }),
-      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
+      getWorkspaceById: build.query<GetWorkspaceByIdApiResponse, GetWorkspaceByIdApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}`,
+          params: {
+            orgID: queryArg.orgId,
+          },
+        }),
         providesTags: ["workspace_workspaces"],
       }),
-      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
+      updateWorkspace: build.mutation<UpdateWorkspaceApiResponse, UpdateWorkspaceApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.workspaceId}`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["workspace_workspaces"],
       }),
-      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
+      deleteWorkspace: build.mutation<DeleteWorkspaceApiResponse, DeleteWorkspaceApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.workspaceId}`, method: "DELETE" }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getDesignsOfWorkspace: build.query<GetDesignsOfWorkspaceApiResponse, GetDesignsOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/designs`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      assignDesignToWorkspace: build.mutation<AssignDesignToWorkspaceApiResponse, AssignDesignToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/designs/${queryArg.designId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      unassignDesignFromWorkspace: build.mutation<
+        UnassignDesignFromWorkspaceApiResponse,
+        UnassignDesignFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/designs/${queryArg.designId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getEnvironmentsOfWorkspace: build.query<GetEnvironmentsOfWorkspaceApiResponse, GetEnvironmentsOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/environments`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      assignEnvironmentToWorkspace: build.mutation<
+        AssignEnvironmentToWorkspaceApiResponse,
+        AssignEnvironmentToWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/environments/${queryArg.environmentId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      unassignEnvironmentFromWorkspace: build.mutation<
+        UnassignEnvironmentFromWorkspaceApiResponse,
+        UnassignEnvironmentFromWorkspaceApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/environments/${queryArg.environmentId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getTeamsOfWorkspace: build.query<GetTeamsOfWorkspaceApiResponse, GetTeamsOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/teams`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      assignTeamToWorkspace: build.mutation<AssignTeamToWorkspaceApiResponse, AssignTeamToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/teams/${queryArg.teamId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      unassignTeamFromWorkspace: build.mutation<UnassignTeamFromWorkspaceApiResponse, UnassignTeamFromWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/teams/${queryArg.teamId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getViewsOfWorkspace: build.query<GetViewsOfWorkspaceApiResponse, GetViewsOfWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/views`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            filter: queryArg.filter,
+          },
+        }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      assignViewToWorkspace: build.mutation<AssignViewToWorkspaceApiResponse, AssignViewToWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/views/${queryArg.viewId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      unassignViewFromWorkspace: build.mutation<UnassignViewFromWorkspaceApiResponse, UnassignViewFromWorkspaceApiArg>({
+        query: (queryArg) => ({
+          url: `/api/workspaces/${queryArg.workspaceId}/views/${queryArg.viewId}`,
+          method: "DELETE",
+        }),
         invalidatesTags: ["workspace_workspaces"],
       }),
       createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
@@ -627,85 +758,341 @@ export type GetFeaturesByOrganizationApiArg = {
   /** The ID of the organization */
   organizationId: string;
 };
-export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
+export type GetWorkspacesApiResponse = /** status 200 List of workspaces */ {
   page?: number;
   page_size?: number;
   total_count?: number;
   workspaces?: {
-    ID?: string;
+    /** Unique identifier of the workspace */
+    id?: string;
+    /** Name of the workspace */
     name?: string;
+    /** Description of the workspace */
     description?: string;
+    /** Organization ID to which the workspace belongs */
     organization_id?: string;
+    /** Owner of the workspace (user ID) */
     owner?: string;
+    /** Additional metadata for the workspace */
+    metadata?: object;
+    /** Timestamp when the workspace was created */
     created_at?: string;
+    /** Timestamp when the workspace was last updated */
     updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
+    /** Timestamp when the workspace was deleted (soft delete) */
+    deleted_at?: any;
   }[];
 };
-export type GetApiWorkspacesApiArg = void;
-export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
+export type GetWorkspacesApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Organization ID */
+  orgId?: string;
 };
-export type PostApiWorkspacesApiArg = {
+export type CreateWorkspaceApiResponse = /** status 201 Workspace created successfully */ {
+  /** Unique identifier of the workspace */
+  id?: string;
+  /** Name of the workspace */
+  name?: string;
+  /** Description of the workspace */
+  description?: string;
+  /** Organization ID to which the workspace belongs */
+  organization_id?: string;
+  /** Owner of the workspace (user ID) */
+  owner?: string;
+  /** Additional metadata for the workspace */
+  metadata?: object;
+  /** Timestamp when the workspace was created */
+  created_at?: string;
+  /** Timestamp when the workspace was last updated */
+  updated_at?: string;
+  /** Timestamp when the workspace was deleted (soft delete) */
+  deleted_at?: any;
+};
+export type CreateWorkspaceApiArg = {
   /** Body for creating workspace */
   body: {
     /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
     name: string;
-    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
+    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more. Provide a detailed description to clarify the purpose of this workspace. Remember you can change the description of workspace after its creation too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
     description?: string;
     /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
     organization_id: string;
+    /** Additional metadata for the workspace */
+    metadata?: object;
   };
 };
-export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
-  ID?: string;
+export type GetWorkspaceByIdApiResponse = /** status 200 Workspace details */ {
+  /** Unique identifier of the workspace */
+  id?: string;
+  /** Name of the workspace */
   name?: string;
+  /** Description of the workspace */
   description?: string;
+  /** Organization ID to which the workspace belongs */
   organization_id?: string;
+  /** Owner of the workspace (user ID) */
   owner?: string;
+  /** Additional metadata for the workspace */
+  metadata?: object;
+  /** Timestamp when the workspace was created */
   created_at?: string;
+  /** Timestamp when the workspace was last updated */
   updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
+  /** Timestamp when the workspace was deleted (soft delete) */
+  deleted_at?: any;
 };
-export type GetApiWorkspacesByIdApiArg = {
-  id: string;
+export type GetWorkspaceByIdApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Organization ID */
+  orgId?: string;
 };
-export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
-  ID?: string;
+export type UpdateWorkspaceApiResponse = /** status 200 Workspace updated successfully */ {
+  /** Unique identifier of the workspace */
+  id?: string;
+  /** Name of the workspace */
   name?: string;
+  /** Description of the workspace */
   description?: string;
+  /** Organization ID to which the workspace belongs */
   organization_id?: string;
+  /** Owner of the workspace (user ID) */
   owner?: string;
+  /** Additional metadata for the workspace */
+  metadata?: object;
+  /** Timestamp when the workspace was created */
   created_at?: string;
+  /** Timestamp when the workspace was last updated */
   updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
+  /** Timestamp when the workspace was deleted (soft delete) */
+  deleted_at?: any;
 };
-export type PutApiWorkspacesByIdApiArg = {
-  id: string;
+export type UpdateWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
   /** Body for updating workspace */
   body: {
     /** Name of workspace */
     name?: string;
-    /** Environment description */
+    /** Description of the workspace */
     description?: string;
     /** Organization ID */
     organization_id: string;
+    /** Additional metadata for the workspace */
+    metadata?: object;
   };
 };
-export type DeleteApiWorkspacesByIdApiResponse = unknown;
-export type DeleteApiWorkspacesByIdApiArg = {
-  id: string;
+export type DeleteWorkspaceApiResponse = unknown;
+export type DeleteWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+};
+export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs list */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  designs?: object[];
+};
+export type GetDesignsOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get filtered responses */
+  filter?: string;
+};
+export type AssignDesignToWorkspaceApiResponse = /** status 200 Workspaces designs mapping */ {
+  ID?: string;
+  design_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type AssignDesignToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Design ID */
+  designId: string;
+};
+export type UnassignDesignFromWorkspaceApiResponse = /** status 200 Workspaces designs mapping */ {
+  ID?: string;
+  design_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UnassignDesignFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Design ID */
+  designId: string;
+};
+export type GetEnvironmentsOfWorkspaceApiResponse = /** status 200 Environments list */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  environments?: object[];
+};
+export type GetEnvironmentsOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get filtered responses */
+  filter?: string;
+};
+export type AssignEnvironmentToWorkspaceApiResponse = /** status 200 Workspaces environments mapping */ {
+  ID?: string;
+  environment_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type AssignEnvironmentToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Environment ID */
+  environmentId: string;
+};
+export type UnassignEnvironmentFromWorkspaceApiResponse = /** status 200 Workspaces environments mapping */ {
+  ID?: string;
+  environment_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UnassignEnvironmentFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Environment ID */
+  environmentId: string;
+};
+export type GetTeamsOfWorkspaceApiResponse = /** status 200 Teams list */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  teams?: object[];
+};
+export type GetTeamsOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get filtered responses */
+  filter?: string;
+};
+export type AssignTeamToWorkspaceApiResponse = /** status 200 Workspaces teams mapping */ {
+  ID?: string;
+  team_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type AssignTeamToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Team ID */
+  teamId: string;
+};
+export type UnassignTeamFromWorkspaceApiResponse = /** status 200 Workspaces teams mapping */ {
+  ID?: string;
+  team_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UnassignTeamFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Team ID */
+  teamId: string;
+};
+export type GetViewsOfWorkspaceApiResponse = /** status 200 Views list */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  views?: object[];
+};
+export type GetViewsOfWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get filtered responses */
+  filter?: string;
+};
+export type AssignViewToWorkspaceApiResponse = /** status 200 Workspaces views mapping */ {
+  ID?: string;
+  view_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type AssignViewToWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** View ID */
+  viewId: string;
+};
+export type UnassignViewFromWorkspaceApiResponse = /** status 200 Workspaces views mapping */ {
+  ID?: string;
+  view_id?: string;
+  workspace_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UnassignViewFromWorkspaceApiArg = {
+  /** Workspace ID */
+  workspaceId: string;
+  /** View ID */
+  viewId: string;
 };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
@@ -2391,11 +2778,23 @@ export const {
   useGetPlansQuery,
   useGetFeaturesQuery,
   useGetFeaturesByOrganizationQuery,
-  useGetApiWorkspacesQuery,
-  usePostApiWorkspacesMutation,
-  useGetApiWorkspacesByIdQuery,
-  usePutApiWorkspacesByIdMutation,
-  useDeleteApiWorkspacesByIdMutation,
+  useGetWorkspacesQuery,
+  useCreateWorkspaceMutation,
+  useGetWorkspaceByIdQuery,
+  useUpdateWorkspaceMutation,
+  useDeleteWorkspaceMutation,
+  useGetDesignsOfWorkspaceQuery,
+  useAssignDesignToWorkspaceMutation,
+  useUnassignDesignFromWorkspaceMutation,
+  useGetEnvironmentsOfWorkspaceQuery,
+  useAssignEnvironmentToWorkspaceMutation,
+  useUnassignEnvironmentFromWorkspaceMutation,
+  useGetTeamsOfWorkspaceQuery,
+  useAssignTeamToWorkspaceMutation,
+  useUnassignTeamFromWorkspaceMutation,
+  useGetViewsOfWorkspaceQuery,
+  useAssignViewToWorkspaceMutation,
+  useUnassignViewFromWorkspaceMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,
   useGetMyAcademyCirriculaQuery,
