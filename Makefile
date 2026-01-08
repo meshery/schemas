@@ -20,7 +20,7 @@ include build/Makefile.show-help.mk
 #-----------------------------------------------------------------------------
 .PHONY: site
 
-jekyll=bundle exec jekyll
+jekyll = bundle exec jekyll
 
 ## Build and run schemas.meshery.io website
 site:
@@ -43,7 +43,7 @@ docs-build: dep-check
 	rm openapi/bundled-schema.yml
 
 ## Generate typescript library, json templates, yaml templates
-generate-ts: 
+generate-ts:
 	npm run generate:types
 
 ## Bundle Typecript library, json templates, yaml templates
@@ -65,7 +65,7 @@ golangci: dep-check
 # depends on order , golang-generate generates some artifacts that are used in the next step ( TODO: promote golang-generate to a parent build script)
 
 ## Generate and bundle schema package
-build:  golang-generate generate-ts build-ts
+build: golang-generate generate-ts build-ts
 
 #-----------------------------------------------------------------------------
 # Dependencies
@@ -73,7 +73,7 @@ build:  golang-generate generate-ts build-ts
 .PHONY: dep-check
 #.SILENT: dep-check
 
-INSTALLED_GO_VERSION=$(shell go version)
+INSTALLED_GO_VERSION = $(shell go version)
 
 ## Check local system for required dependencies
 dep-check:
