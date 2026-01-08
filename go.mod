@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/lib/pq v1.10.9
-	github.com/meshery/meshkit v0.8.61
+	github.com/meshery/meshkit v0.8.63
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.11.1
