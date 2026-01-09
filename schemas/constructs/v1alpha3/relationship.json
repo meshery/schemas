@@ -2,14 +2,7 @@
   "$id": "https://schemas.meshery.io/relationship.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
-  "required": [
-    "schemaVersion",
-    "version",
-    "model",
-    "kind",
-    "type",
-    "subType"
-  ],
+  "required": ["schemaVersion", "version", "model", "kind", "type", "subType"],
   "additionalProperties": false,
   "type": "object",
   "properties": {
@@ -32,12 +25,7 @@
       "minLength": 2,
       "maxLength": 100,
       "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-      "example": [
-        "v1",
-        "v1alpha1",
-        "v2beta3",
-        "v1.custom-suffix"
-      ],
+      "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
         "json": "schemaVersion"
@@ -49,7 +37,7 @@
       "type": "string",
       "minLength": 5,
       "maxLength": 100,
-      "$ref": "../core.json#/definitions/semverString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/semverString",
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
         "json": "version"
@@ -68,11 +56,7 @@
 
     "kind": {
       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
-      "enum": [
-        "hierarchical",
-        "edge",
-        "sibling"
-      ],
+      "enum": ["hierarchical", "edge", "sibling"],
       "type": "string",
       "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
       "x-oapi-codegen-extra-tags": {
@@ -104,13 +88,7 @@
       "type": "string",
       "description": "Status of the relationship.",
       "default": "enabled",
-      "enum": [
-        "pending",
-        "approved",
-        "ignored",
-        "enabled",
-        "deleted"
-      ],
+      "enum": ["pending", "approved", "ignored", "enabled", "deleted"],
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
         "json": "status"
@@ -153,12 +131,7 @@
             "minLength": 2,
             "maxLength": 100,
             "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
-            "example": [
-              "v1",
-              "v1alpha1",
-              "v2beta3",
-              "v1.custom-suffix"
-            ],
+            "example": ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"],
             "x-oapi-codegen-extra-tags": {
               "yaml": "schemaVersion",
               "json": "schemaVersion"
@@ -252,10 +225,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": [
-                "declaration",
-                "instance"
-              ],
+              "enum": ["declaration", "instance"],
               "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
               "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed.",
               "x-oapi-codegen-extra-tags": {
@@ -268,10 +238,7 @@
             "type": "string",
             "description": "Status of the capability",
             "default": "enabled",
-            "enum": [
-              "enabled",
-              "disabled"
-            ],
+            "enum": ["enabled", "disabled"],
             "x-oapi-codegen-extra-tags": {
               "yaml": "status",
               "json": "status"
@@ -295,7 +262,7 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the Relationship.",
-      "additionalProperties" : true ,
+      "additionalProperties": true,
       "x-oapi-codegen-extra-tags": {
         "gorm": "foreignKey:ModelId;references:Id"
       },
@@ -311,14 +278,14 @@
         },
 
         "isAnnotation": {
-              "type": "boolean",
-              "description": "Indicates whether the relationship should be treated as a logical representation only",
-              "x-oapi-codegen-extra-tags": {
-                "yaml": "isAnnotation",
-                "json": "isAnnotation"
-              },
-              "default": false
-            },
+          "type": "boolean",
+          "description": "Indicates whether the relationship should be treated as a logical representation only",
+          "x-oapi-codegen-extra-tags": {
+            "yaml": "isAnnotation",
+            "json": "isAnnotation"
+          },
+          "default": false
+        },
         "styles": {
           "anyOf": [
             {
@@ -329,11 +296,7 @@
                   "type": "object",
                   "description": "Common styles for all entities",
                   "additionalProperties": false,
-                  "required": [
-                    "primaryColor",
-                    "svgColor",
-                    "svgWhite"
-                  ],
+                  "required": ["primaryColor", "svgColor", "svgWhite"],
                   "properties": {
                     "primaryColor": {
                       "type": "string",
@@ -384,11 +347,7 @@
                     "text-transform": {
                       "type": "string",
                       "description": "A transformation to apply to the label text",
-                      "enum": [
-                        "none",
-                        "uppercase",
-                        "lowercase"
-                      ]
+                      "enum": ["none", "uppercase", "lowercase"]
                     },
                     "opacity": {
                       "type": "number",
@@ -432,20 +391,12 @@
                     "line-style": {
                       "type": "string",
                       "description": "The style of the edge’s line.",
-                      "enum": [
-                        "solid",
-                        "dotted",
-                        "dashed"
-                      ]
+                      "enum": ["solid", "dotted", "dashed"]
                     },
                     "line-cap": {
                       "type": "string",
                       "description": "The cap style of the edge’s line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
-                      "enum": [
-                        "butt",
-                        "round",
-                        "square"
-                      ],
+                      "enum": ["butt", "round", "square"],
                       "default": "butt"
                     },
                     "line-opacity": {
@@ -480,10 +431,7 @@
                     "target-arrow-fill": {
                       "type": "string",
                       "description": "The fill state of the edge’s source arrow",
-                      "enum": [
-                        "filled",
-                        "hollow"
-                      ]
+                      "enum": ["filled", "hollow"]
                     },
                     "mid-target-arrow-color": {
                       "type": "string",
@@ -510,10 +458,7 @@
                     "mid-target-arrow-fill": {
                       "type": "string",
                       "description": "The fill state of the edge’s source arrow",
-                      "enum": [
-                        "filled",
-                        "hollow"
-                      ]
+                      "enum": ["filled", "hollow"]
                     },
                     "arrow-scale": {
                       "type": "number",
@@ -536,11 +481,7 @@
               "type": "object",
               "description": "Common styles for all entities",
               "additionalProperties": false,
-              "required": [
-                "primaryColor",
-                "svgColor",
-                "svgWhite"
-              ],
+              "required": ["primaryColor", "svgColor", "svgWhite"],
               "properties": {
                 "primaryColor": {
                   "type": "string",
@@ -591,11 +532,7 @@
                 "text-transform": {
                   "type": "string",
                   "description": "A transformation to apply to the label text",
-                  "enum": [
-                    "none",
-                    "uppercase",
-                    "lowercase"
-                  ]
+                  "enum": ["none", "uppercase", "lowercase"]
                 },
                 "opacity": {
                   "type": "number",
@@ -633,17 +570,12 @@
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
-        "required": [
-          "allow"
-        ],
+        "required": ["allow"],
         "properties": {
           "deny": {
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
             "type": "object",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
@@ -911,16 +843,16 @@
                       }
                     },
                     "model": {
-                            "$ref": "../v1beta1/model/openapi.yml#/components/schemas/ModelReference",
-                            "x-go-type": "model.ModelReference",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/model"
-                            },
-                            "x-order": 8,
-                            "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
-                            "x-oapi-codegen-extra-tags": {
-                              "gorm": "-"
-                            }
+                      "$ref": "../v1beta1/model/openapi.yml#/components/schemas/ModelReference",
+                      "x-go-type": "model.ModelReference",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                      },
+                      "x-order": 8,
+                      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "-"
+                      }
                     },
                     "id": {
                       "type": "string",
@@ -1151,12 +1083,8 @@
           "allow": {
             "description": "Selectors used to define relationships which are allowed.",
             "type": "object",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
-
               "from": {
                 "description": "Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.",
                 "type": "array",
@@ -1172,28 +1100,28 @@
                       }
                     },
 
-                   "match_strategy_matrix" : {
+                    "match_strategy_matrix": {
                       "description": "Strategy criterion for determing how to match the values at mutator/mutated paths",
-                      "type":"array",
-                      "items":{
-                        "type":"array",
-                        "items":{
-                          "type":"string"
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
                         }
                       }
                     },
                     "model": {
-                                    "$ref": "../v1beta1/model/openapi.yml#/components/schemas/ModelReference",
-                                    "x-go-type": "model.ModelReference",
-                                    "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
-                                    },
-                                    "x-order": 8,
-                                    "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
-                                    "x-oapi-codegen-extra-tags": {
-                                      "gorm": "-"
-                                    }
-                            },
+                      "$ref": "../v1beta1/model/openapi.yml#/components/schemas/ModelReference",
+                      "x-go-type": "model.ModelReference",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                      },
+                      "x-order": 8,
+                      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "-"
+                      }
+                    },
                     "id": {
                       "type": "string",
                       "format": "uuid",
@@ -1433,17 +1361,17 @@
                       }
                     },
                     "model": {
-                                            "$ref": "../v1beta1/model/openapi.yml#/components/schemas/ModelReference",
-                                            "x-go-type": "model.ModelReference",
-                                            "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1beta1/model"
-                                            },
-                                            "x-order": 8,
-                                            "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
-                                            "x-oapi-codegen-extra-tags": {
-                                              "gorm": "-"
-                                            }
-                                    },
+                      "$ref": "../v1beta1/model/openapi.yml#/components/schemas/ModelReference",
+                      "x-go-type": "model.ModelReference",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                      },
+                      "x-order": 8,
+                      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
+                      "x-oapi-codegen-extra-tags": {
+                        "gorm": "-"
+                      }
+                    },
                     "id": {
                       "type": "string",
                       "format": "uuid",

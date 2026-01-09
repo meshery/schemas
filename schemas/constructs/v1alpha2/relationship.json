@@ -15,33 +15,29 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "$ref": "../core.json#/definitions/versionString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/versionString",
       "description": "Specifies the version of the schema used for the definition.",
       "default": "v1alpha2"
     },
     "version": {
-      "$ref": "../core.json#/definitions/semverString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/semverString",
       "description": "Specifies the version of the definition."
     },
     "kind": {
-      "$ref": "../core.json#/definitions/inputString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/inputString",
       "description": "Kind of the Relationship.",
-      "enum": [
-        "hierarchical",
-        "edge",
-        "sibling"
-      ]
+      "enum": ["hierarchical", "edge", "sibling"]
     },
     "type": {
-      "$ref": "../core.json#/definitions/inputString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/inputString",
       "description": "Classification of relationships. Used to group relationships similar in nature."
     },
     "subType": {
-      "$ref": "../core.json#/definitions/inputString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/inputString",
       "description": "Used for further classification of Relationships. Type and SubType together identifies a Relationship."
     },
     "evaluationQuery": {
-      "$ref": "../core.json#/definitions/inputString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/inputString",
       "description": "Determines the policy rule to be used for the evaluation of the relationship."
     },
     "metadata": {
@@ -49,7 +45,7 @@
       "description": "Metadata contains additional information associated with the Relationship.",
       "properties": {
         "description": {
-          "$ref": "../core.json#/definitions/inputString",
+          "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/inputString",
           "description": "Description of the Relationship."
         }
       }
@@ -66,17 +62,12 @@
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
-        "required": [
-          "alllow"
-        ],
+        "required": ["alllow"],
         "properties": {
           "deny": {
             "type": "object",
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "$ref": "./selector.json#/from"
@@ -89,10 +80,7 @@
           "allow": {
             "type": "object",
             "description": "Selectors used to define relationships which are allowed.",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "$ref": "./selector.json#/from"

@@ -7,7 +7,7 @@
   "properties": {
     "id": {
       "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-      "$ref": "../../core.json#/definitions/uuid",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
       "x-order": 1,
       "x-oapi-codegen-extra-tags": {
         "yaml": "id",
@@ -16,7 +16,7 @@
     },
     "schemaVersion": {
       "description": "Specifies the version of the schema used for the definition.",
-      "$ref": "../../core.json#/definitions/versionString",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/versionString",
       "x-order": 2,
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",
@@ -27,7 +27,7 @@
     "version": {
       "description": "Version of the model definition.",
       "type": "string",
-      "$ref": "../../core.json#/definitions/semverString",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/semverString",
       "x-order": 3,
       "x-oapi-codegen-extra-tags": {
         "yaml": "version",
@@ -39,9 +39,7 @@
       "description": "The unique name for the model within the scope of a registrant.",
       "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
       "pattern": "^[a-z0-9-]+$",
-      "examples": [
-        "cert-manager"
-      ],
+      "examples": ["cert-manager"],
       "x-order": 4,
       "x-oapi-codegen-extra-tags": {
         "yaml": "name",
@@ -56,9 +54,7 @@
       "maxLength": 100,
       "type": "string",
       "pattern": "^[a-zA-Z0-9 ]+$",
-      "examples": [
-        "Cert Manager"
-      ],
+      "examples": ["Cert Manager"],
       "x-order": 5,
       "x-oapi-codegen-extra-tags": {
         "yaml": "displayName",
@@ -81,11 +77,7 @@
     "status": {
       "type": "string",
       "description": "Status of model, including:\n- duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.\n- maintenance: model is unavailable for a period of time.\n- enabled: model is available for use for all users of this Meshery Server.\n- ignored: model is unavailable for use for all users of this Meshery Server.",
-      "enum": [
-        "ignored",
-        "enabled",
-        "duplicate"
-      ],
+      "enum": ["ignored", "enabled", "duplicate"],
       "x-order": 7,
       "x-oapi-codegen-extra-tags": {
         "yaml": "status",
@@ -108,7 +100,7 @@
     },
     "registrantId": {
       "description": "ID of the registrant.",
-      "$ref": "../../core.json#/definitions/uuid",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
       "x-oapi-codegen-extra-tags": {
         "yaml": "connection_id",
         "json": "connection_id",
@@ -118,7 +110,7 @@
     },
     "categoryId": {
       "description": "ID of the category.",
-      "$ref": "../../core.json#/definitions/uuid",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
       "x-oapi-codegen-extra-tags": {
         "yaml": "-",
         "json": "-",
@@ -150,10 +142,7 @@
     "metadata": {
       "type": "object",
       "description": "Metadata containing additional information associated with the model.",
-      "required": [
-        "svgWhite",
-        "svgColor"
-      ],
+      "required": ["svgWhite", "svgColor"],
       "properties": {
         "capabilities": {
           "type": "array",
@@ -235,7 +224,7 @@
         },
         "shape": {
           "x-order": 8,
-          "$ref": "../../core.json#/definitions/shape"
+          "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/shape"
         }
       },
       "x-oapi-codegen-extra-tags": {

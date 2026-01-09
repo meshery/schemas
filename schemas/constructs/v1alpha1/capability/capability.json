@@ -22,15 +22,15 @@
   },
   "properties": {
     "schemaVersion": {
-      "$ref": "../../core.json#/definitions/versionString",
+      "$ref": "../core/openapi.yml#/components/schemas/versionString",
       "description": "Specifies the version of the schema to which the capability definition conforms."
     },
     "version": {
-      "$ref": "../../core.json#/definitions/semverString",
+      "$ref": "../core/openapi.yml#/components/schemas/semverString",
       "description": "Version of the capability definition."
     },
     "displayName": {
-      "$ref": "../../core.json#/definitions/inputString",
+      "$ref": "../core/openapi.yml#/components/schemas/inputString",
       "description": "Name of the capability in human-readible format."
     },
     "description": {
@@ -39,7 +39,7 @@
     },
 
     "kind": {
-      "$ref": "../../core.json#/definitions/inputString",
+      "$ref": "../core/openapi.yml#/components/schemas/inputString",
       "description": "Top-level categorization of the capability",
       "additionalProperties": false,
       "anyOf": [
@@ -65,17 +65,17 @@
     },
 
     "type": {
-      "$ref": "../../core.json#/definitions/inputString",
+      "$ref": "../core/openapi.yml#/components/schemas/inputString",
       "description": "Classification of capabilities. Used to group capabilities similar in nature."
     },
 
     "subType": {
-      "$ref": "../../core.json#/definitions/inputString",
+      "$ref": "../core/openapi.yml#/components/schemas/inputString",
       "description": "Most granular unit of capability classification. The combination of Kind, Type and SubType together uniquely identify a Capability."
     },
 
     "key": {
-      "$ref": "../../core.json#/definitions/inputString",
+      "$ref": "../core/openapi.yml#/components/schemas/inputString",
       "description": "Key that backs the capability."
     },
 
@@ -83,7 +83,7 @@
       "description": "State of the entity in which the capability is applicable.",
       "type": "array",
       "items": {
-        "$ref": "../../core.json#/definitions/inputString",
+        "$ref": "../core/openapi.yml#/components/schemas/inputString",
         "type": "string",
         "enum": ["declaration", "instance"]
       }
@@ -106,9 +106,7 @@
     {
       "description": "Configure the visual styles for the component",
       "displayName": "Styling",
-      "entityState": [
-        "declaration"
-      ],
+      "entityState": ["declaration"],
       "key": "",
       "kind": "mutate",
       "schemaVersion": "capability.meshery.io/v1alpha1",
@@ -120,9 +118,7 @@
     {
       "description": "Change the shape of the component",
       "displayName": "Change Shape",
-      "entityState": [
-        "declaration"
-      ],
+      "entityState": ["declaration"],
       "key": "",
       "kind": "mutate",
       "schemaVersion": "capability.meshery.io/v1alpha1",
@@ -134,9 +130,7 @@
     {
       "description": "Drag and Drop a component into a parent component in graph view",
       "displayName": "Compound Drag And Drop",
-      "entityState": [
-        "declaration"
-      ],
+      "entityState": ["declaration"],
       "key": "",
       "kind": "interaction",
       "schemaVersion": "capability.meshery.io/v1alpha1",
@@ -148,9 +142,7 @@
     {
       "description": "Add text to nodes body",
       "displayName": "Body Text",
-      "entityState": [
-        "declaration"
-      ],
+      "entityState": ["declaration"],
       "key": "",
       "kind": "mutate",
       "schemaVersion": "capability.meshery.io/v1alpha1",

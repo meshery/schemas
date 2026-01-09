@@ -15,7 +15,7 @@
           "type": "string"
         },
         "version": {
-          "$ref": "../core.json#/definitions/versionString"
+          "$ref": "core/openapi.yml#/components/schemas/versionString"
         },
         "match": {
           "type": "object",
@@ -43,9 +43,7 @@
           "properties": {
             "patchStrategy": {
               "type": "string",
-              "enum": [
-                "replace"
-              ]
+              "enum": ["replace"]
             },
             "mutatorRef": {
               "type": "array",
@@ -77,7 +75,7 @@
           "type": "string"
         },
         "version": {
-          "$ref": "../core.json#/definitions/versionString"
+          "$ref": "core/openapi.yml#/components/schemas/versionString"
         },
         "match": {
           "type": "object",
@@ -105,9 +103,7 @@
           "properties": {
             "patchStrategy": {
               "type": "string",
-              "enum": [
-                "replace"
-              ]
+              "enum": ["replace"]
             },
             "mutatedRef": {
               "type": "string",
