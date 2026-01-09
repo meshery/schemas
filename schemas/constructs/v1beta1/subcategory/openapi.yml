@@ -6,4 +6,4 @@ paths: {}
 components:
   schemas:
     SubCategoryDefinition:
-      $ref: "./subcategory.json"
+      $ref: "./subcategory.yaml"

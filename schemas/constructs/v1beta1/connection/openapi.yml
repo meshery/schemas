@@ -6,6 +6,6 @@ paths: {}
 components:
   schemas:
     Connection:
-      $ref: "./connection.json"
+      $ref: "./connection.yaml"
     ConnectionPage:
-      $ref: "./connection_page.json"
+      $ref: "./connection_page.yaml"

@@ -6,7 +6,7 @@ paths: {}
 components:
   schemas:
     ComponentDefinition:
-      $ref: "./component.json"
+      $ref: "./component.yaml"
 
     Component:
       description: "data related to the third party capability that Component Defintion wraps , this is herematicaly sealed an"

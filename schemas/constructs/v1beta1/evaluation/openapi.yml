@@ -36,7 +36,7 @@ components:
         - design
       properties:
         design:
-          $ref: ../design/design.json
+          $ref: ../design/design.yaml
 
           "x-go-type": "pattern.PatternFile"
           "x-go-type-import":
@@ -65,7 +65,7 @@ components:
           description: Specifies the version of the schema to which the evaluation response conforms.
 
         design:
-          $ref: ../design/design.json
+          $ref: ../design/design.yaml
 
           "x-go-type": "pattern.PatternFile"
           "x-go-type-import":
@@ -245,7 +245,7 @@ components:
     #       type: array
     #       description: List of new relationships added to the design.
     #       items:
-    #         $ref: ../v1alpha3/relationship.json
+    #         $ref: ../v1alpha3/relationship.yaml
     #     relationshipsUpdated:
     #       type: array
     #       description: List of relationships updated in the design.
@@ -253,22 +253,22 @@ components:
     #       type: array
     #       description: List of relationships removed from the design.
     #       items:
-    #         $ref: ../v1alpha3/relationship.json
+    #         $ref: ../v1alpha3/relationship.yaml
     #     componentsAdded:
     #       type: array
     #       description: List of new components added to the design.
     #       items:
-    #         $ref: ../v1beta1/component.json
+    #         $ref: ../v1beta1/component.yaml
     #     componentsUpdated:
     #       type: array
     #       description: List of components updated in the design.
     #       items:
-    #         $ref: ../v1beta1/component.json
+    #         $ref: ../v1beta1/component.yaml
     #     componentsRemoved:
     #       type: array
     #       description: List of components removed from the design.
     #       items:
-    #         $ref: ../v1beta1/component.json
+    #         $ref: ../v1beta1/component.yaml
 
     # required:
     #   - policyActions

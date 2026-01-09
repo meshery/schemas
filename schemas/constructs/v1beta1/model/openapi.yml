@@ -45,7 +45,7 @@ components:
           x-order: 1
 
     ModelDefinition:
-      $ref: "./model.json"
+      $ref: "./model.yaml"
 
     RegistrantReference:
       "type": "object"
@@ -63,13 +63,13 @@ components:
         id:
           "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
         name:
-          "$ref": "./model.json#/properties/name"
+          "$ref": "./model.yaml#/properties/name"
         version:
-          "$ref": "./model.json#/properties/version"
+          "$ref": "./model.yaml#/properties/version"
         displayName:
-          "$ref": "./model.json#/properties/displayName"
+          "$ref": "./model.yaml#/properties/displayName"
         model:
-          "$ref": "./model.json#/properties/model"
+          "$ref": "./model.yaml#/properties/model"
         registrant:
           "x-go-type": "RegistrantReference"
           "$ref": "#/components/schemas/RegistrantReference"

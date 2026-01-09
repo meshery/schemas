@@ -6,4 +6,4 @@ paths: {}
 components:
   schemas:
     Capability:
-      $ref: "./capability.json"
+      $ref: "./capability.yaml"

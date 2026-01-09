@@ -6,4 +6,4 @@ paths: {}
 components:
   schemas:
     CategoryDefinition:
-      $ref: "./category.json"
+      $ref: "./category.yaml"

@@ -38,7 +38,7 @@ components:
           $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
 
     PatternFile:
-      $ref: "./design.json"
+      $ref: "./design.yaml"
 
     MesheryPattern:
       type: object

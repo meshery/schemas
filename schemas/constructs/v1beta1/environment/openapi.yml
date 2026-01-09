@@ -61,7 +61,7 @@ components:
       bearerFormat: JWT
   schemas:
     environment:
-      $ref: "./environment.json"
+      $ref: "./environment.yaml"
     environmentConnectionMapping:
       properties:
         ID:

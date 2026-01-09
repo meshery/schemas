@@ -6,7 +6,7 @@ This document provides guidance for AI agents working on the meshery/schemas rep
 
 ### 1. DO NOT Commit Generated Code
 
-**CRITICAL**: When modifying schema JSON files, only commit the schema files themselves. Do NOT commit:
+**CRITICAL**: When modifying schema YAML files, only commit the schema files themselves. Do NOT commit:
 
 - Go files in `models/` directory
 - TypeScript files in `typescript/generated/` directory
@@ -55,17 +55,13 @@ The `core.json` file is deprecated. All references should use the OpenAPI YAML f
 
 When adding `created_at` and `updated_at` fields to schemas:
 
-```json
-{
-  "created_at": {
-    "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/created_at",
-    "x-order": 14
-  },
-  "updated_at": {
-    "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/updated_at",
-    "x-order": 15
-  }
-}
+```yaml
+created_at:
+  $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/created_at
+  x-order: 14
+updated_at:
+  $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/updated_at
+  x-order: 15
 ```
 
 **Do NOT include** additional `x-oapi-codegen-extra-tags` when using the reference - these are already defined in the core schema.
@@ -74,7 +70,7 @@ When adding `created_at` and `updated_at` fields to schemas:
 
 Templates are manually defined files located in the `templates/` subdirectory within each schema folder. You can have multiple template files for different variants or use cases.
 
-When updating schema JSON files, also update the corresponding template files in the `templates/` subdirectory (e.g., `templates/<construct>_template.json`) with default values:
+When updating schema YAML files, also update the corresponding template files in the `templates/` subdirectory (e.g., `templates/<construct>_template.json` or `templates/<construct>_template.yaml`) with default values:
 
 ```json
 {
@@ -89,15 +85,11 @@ You can add additional variant templates as needed (e.g., `<construct>_minimal_t
 
 For schemas in `v1alpha3` directory, adjust the path accordingly:
 
-```json
-{
-  "created_at": {
-    "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/created_at"
-  },
-  "updated_at": {
-    "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/updated_at"
-  }
-}
+```yaml
+created_at:
+  $ref: ../v1alpha1/core/openapi.yml#/components/schemas/created_at
+updated_at:
+  $ref: ../v1alpha1/core/openapi.yml#/components/schemas/updated_at
 ```
 
 ## Build and Test Process
@@ -119,7 +111,7 @@ go test ./...       # Run Go tests
 
 The build process automatically generates:
 
-1. **Go structs** from schema JSON files via `oapi-codegen` → `models/<version>/<package>/`
+1. **Go structs** from schema YAML files via `oapi-codegen` → `models/<version>/<package>/`
 2. **TypeScript type definitions** (`.d.ts` files) → `typescript/generated/<version>/<package>/`
 3. **TypeScript schema exports** (`*Schema.ts` files) → `typescript/generated/<version>/<package>/`
 4. **Merged OpenAPI YAML files** from individual schema components → `_openapi_build/`
@@ -137,16 +129,16 @@ schemas/
 │   │   ├── relationship/
 │   │   │   └── templates/
 │   │   │       └── relationship_template.json
-│   │   └── relationship.json        # Schema definitions
+│   │   └── relationship.yaml        # Schema definitions
 │   ├── v1beta1/
 │   │   ├── model/
-│   │   │   ├── model.json           # Schema definitions
+│   │   │   ├── model.yaml           # Schema definitions
 │   │   │   ├── openapi.yml          # API operations
 │   │   │   └── templates/           # Manually defined templates
 │   │   │       ├── model_template.json
 │   │   │       └── model_template.yaml
 │   │   └── component/
-│   │       ├── component.json
+│   │       ├── component.yaml
 │   │       ├── openapi.yml
 │   │       └── templates/
 │   │           ├── component_template.json
@@ -245,7 +237,7 @@ import ComponentSchema from "@meshery/schemas/dist/constructs/v1beta1/component/
 
 If you're unsure about any schema modification:
 
-1. Check existing schemas for patterns (e.g., `environment.json`, `connection.json`)
+1. Check existing schemas for patterns (e.g., `environment.yaml`, `connection.yaml`)
 2. Look at `v1alpha1/core/openapi.yml` for available schema definitions
 3. Check generated `.d.ts` files for actual type/property names
 4. Review this document for guidelines
