@@ -1,10 +1,12 @@
 import { mesheryBaseApi as api } from "./api";
 export const addTagTypes = [
   "design_other",
-  "model_other",
-  "workspace_workspaces",
   "environment_environments",
   "evaluation_other",
+  "events_other",
+  "model_other",
+  "Organization_other",
+  "workspace_workspaces",
 ] as const;
 const injectedRtkApi = api
   .enhanceEndpoints({
@@ -15,30 +17,6 @@ const injectedRtkApi = api
       importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
         query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["design_other"],
-      }),
-      registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
-        query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["model_other"],
-      }),
-      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
-        query: () => ({ url: `/api/workspaces` }),
-        providesTags: ["workspace_workspaces"],
-      }),
-      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["workspace_workspaces"],
-      }),
-      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
-        providesTags: ["workspace_workspaces"],
-      }),
-      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["workspace_workspaces"],
-      }),
-      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["workspace_workspaces"],
       }),
       createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
         query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
@@ -61,6 +39,59 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/evaluate`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["evaluation_other"],
       }),
+      deleteEventsById: build.mutation<DeleteEventsByIdApiResponse, DeleteEventsByIdApiArg>({
+        query: (queryArg) => ({ url: `/events/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["events_other"],
+      }),
+      postEvents: build.mutation<PostEventsApiResponse, PostEventsApiArg>({
+        query: (queryArg) => ({ url: `/events`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      deleteEvents: build.mutation<DeleteEventsApiResponse, DeleteEventsApiArg>({
+        query: (queryArg) => ({ url: `/events`, method: "DELETE", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      putEventsStatus: build.mutation<PutEventsStatusApiResponse, PutEventsStatusApiArg>({
+        query: (queryArg) => ({ url: `/events/status`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      putEventsByIdStatus: build.mutation<PutEventsByIdStatusApiResponse, PutEventsByIdStatusApiArg>({
+        query: (queryArg) => ({ url: `/events/${queryArg.id}/status`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
+        query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["model_other"],
+      }),
+      getOrgByDomain: build.query<GetOrgByDomainApiResponse, GetOrgByDomainApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/by-domain`,
+          params: {
+            domain: queryArg.domain,
+          },
+        }),
+        providesTags: ["Organization_other"],
+      }),
+      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
+        query: () => ({ url: `/api/workspaces` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
     }),
     overrideExisting: false,
   });
@@ -79,119 +110,6 @@ export type ImportDesignApiArg = {
     /** Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
     url?: string;
   };
-};
-export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
-  message?: string;
-};
-export type RegisterMeshmodelsApiArg = {
-  body: {
-    importBody:
-      | {
-          /** Name of the file being uploaded. */
-          fileName: string;
-          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          modelFile: string;
-        }
-      | {
-          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          url: string;
-        }
-      | {
-          /** Upload a CSV file containing model definitions */
-          modelCsv: Blob;
-          /** Upload a CSV file containing component definitions */
-          componentCsv: Blob;
-          /** Upload a CSV file containing relationship definitions */
-          relationshipCsv: Blob;
-        }
-      | {
-          /** URI to the source code or package of the model. */
-          url: string | string;
-        };
-    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
-    uploadType: "file" | "urlImport" | "csv" | "url";
-    register: boolean;
-  };
-};
-export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  workspaces?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
-    owner?: string;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
-  }[];
-};
-export type GetApiWorkspacesApiArg = void;
-export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PostApiWorkspacesApiArg = {
-  /** Body for creating workspace */
-  body: {
-    /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
-    name: string;
-    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
-    description?: string;
-    /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
-    organization_id: string;
-  };
-};
-export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type GetApiWorkspacesByIdApiArg = {
-  id: string;
-};
-export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PutApiWorkspacesByIdApiArg = {
-  id: string;
-  /** Body for updating workspace */
-  body: {
-    /** Name of workspace */
-    name?: string;
-    /** Environment description */
-    description?: string;
-    /** Organization ID */
-    organization_id: string;
-  };
-};
-export type DeleteApiWorkspacesByIdApiResponse = unknown;
-export type DeleteApiWorkspacesByIdApiArg = {
-  id: string;
 };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
@@ -2348,15 +2266,224 @@ export type PostEvaluateApiArg = {
     };
   };
 };
+export type DeleteEventsByIdApiResponse = /** status 200 Event deleted successfully */ {
+  message?: string;
+  event_id?: string;
+};
+export type DeleteEventsByIdApiArg = {
+  /** ID of the event to delete */
+  id: string;
+};
+export type PostEventsApiResponse = unknown;
+export type PostEventsApiArg = {
+  body: object;
+};
+export type DeleteEventsApiResponse = /** status 200 event deleted */ {
+  deleted?: string[];
+};
+export type DeleteEventsApiArg = {
+  body: {
+    ids: string[];
+  };
+};
+export type PutEventsStatusApiResponse = /** status 200 Events updated successfully */ {
+  updated?: string[];
+};
+export type PutEventsStatusApiArg = {
+  body: {
+    ids: string[];
+    status: string;
+  };
+};
+export type PutEventsByIdStatusApiResponse = /** status 200 Event status updated successfully */ {
+  message?: string;
+  event_id?: string;
+  status?: string;
+};
+export type PutEventsByIdStatusApiArg = {
+  /** ID of the event */
+  id: string;
+  body: {
+    status: string;
+  };
+};
+export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
+  message?: string;
+};
+export type RegisterMeshmodelsApiArg = {
+  body: {
+    importBody:
+      | {
+          /** Name of the file being uploaded. */
+          fileName: string;
+          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          modelFile: string;
+        }
+      | {
+          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          url: string;
+        }
+      | {
+          /** Upload a CSV file containing model definitions */
+          modelCsv: Blob;
+          /** Upload a CSV file containing component definitions */
+          componentCsv: Blob;
+          /** Upload a CSV file containing relationship definitions */
+          relationshipCsv: Blob;
+        }
+      | {
+          /** URI to the source code or package of the model. */
+          url: string | string;
+        };
+    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
+    uploadType: "file" | "urlImport" | "csv" | "url";
+    register: boolean;
+  };
+};
+export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  name: string;
+  country: string;
+  region: string;
+  description: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  owner: string;
+  metadata: {
+    preferences: {
+      theme: {
+        id: string;
+        logo: {
+          desktop_view: {
+            svg: string;
+            location: string;
+          };
+          mobile_view: {
+            svg: string;
+            location: string;
+          };
+          dark_desktop_view: {
+            svg: string;
+            location: string;
+          };
+          dark_mobile_view: {
+            svg: string;
+            location: string;
+          };
+        };
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior */
+      dashboard: {
+        [key: string]: any;
+      };
+    };
+  };
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+  domain?: string | null;
+};
+export type GetOrgByDomainApiArg = {
+  domain: string;
+};
+export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  workspaces?: {
+    ID?: string;
+    name?: string;
+    description?: string;
+    organization_id?: string;
+    owner?: string;
+    created_at?: string;
+    updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetApiWorkspacesApiArg = void;
+export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type PostApiWorkspacesApiArg = {
+  /** Body for creating workspace */
+  body: {
+    /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
+    name: string;
+    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
+    description?: string;
+    /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
+    organization_id: string;
+  };
+};
+export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type GetApiWorkspacesByIdApiArg = {
+  id: string;
+};
+export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type PutApiWorkspacesByIdApiArg = {
+  id: string;
+  /** Body for updating workspace */
+  body: {
+    /** Name of workspace */
+    name?: string;
+    /** Environment description */
+    description?: string;
+    /** Organization ID */
+    organization_id: string;
+  };
+};
+export type DeleteApiWorkspacesByIdApiResponse = unknown;
+export type DeleteApiWorkspacesByIdApiArg = {
+  id: string;
+};
 export const {
   useImportDesignMutation,
+  useCreateEnvironmentMutation,
+  useGetEnvironmentsQuery,
+  usePostEvaluateMutation,
+  useDeleteEventsByIdMutation,
+  usePostEventsMutation,
+  useDeleteEventsMutation,
+  usePutEventsStatusMutation,
+  usePutEventsByIdStatusMutation,
   useRegisterMeshmodelsMutation,
+  useGetOrgByDomainQuery,
   useGetApiWorkspacesQuery,
   usePostApiWorkspacesMutation,
   useGetApiWorkspacesByIdQuery,
   usePutApiWorkspacesByIdMutation,
   useDeleteApiWorkspacesByIdMutation,
-  useCreateEnvironmentMutation,
-  useGetEnvironmentsQuery,
-  usePostEvaluateMutation,
 } = injectedRtkApi;

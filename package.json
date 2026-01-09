@@ -22,8 +22,7 @@
     "build:golang": "node ./build/generate-golang.js",
     "build:rtk": "node ./build/generate-rtk.js",
     "build:all": "node ./build/index.js all",
-    "generate:types": "node ./build/compile-types.js ./schemas/ ./typescript ./schemas",
-    "generate:json": "node ./build/compile-json-schema.mjs",
+    "generate:types": "node ./build/generate-typescript.js",
     "publish-ts-lib": "node ./publish-npm-package.js"
   },
   "author": "",

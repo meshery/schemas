@@ -2,23 +2,21 @@
 // The generated modules are created in the dist folder and are named based on the constructs in the schema
 
 // v1alpha1
-import { CatalogData as CatalogDataT, CaveatsAndConsiderations } from "./constructs/v1alpha1/catalog_data";
-import { HttpsSchemasMesheryIoCapabilityJson } from "./constructs/v1alpha1/capability/capability";
-
-// v1alpha2
-import { DesignSchema } from "./constructs/v1alpha2/design";
-import { HttpsSchemasMesheryIoRelationshipJson } from "./constructs/v1alpha2/relationship";
-
-// v1alpha3
-import { HttpsSchemasMesheryIoRelationshipJson as V1alpha3Relationship } from "./constructs/v1alpha3/relationship";
-import { HttpsSchemasMesheryIoSelectorJson as V1alpha3Selectors } from "./constructs/v1alpha3/selector";
+import { components as CapabilityComponents } from "./generated/v1alpha1/capability/Capability";
+import { components as CatalogComponents } from "./generated/v1alpha2/catalog/Catalog";
 
 // v1beta1
-import { HttpsSchemasMesheryIoComponentJson } from "./constructs/v1beta1/component/component";
-import { HttpsSchemasMesheryIoModelJson } from "./constructs/v1beta1/model/model";
-import { DesignSchema as V1beta1DesignSchema } from "./constructs/v1beta1/design/design";
-import { HttpsSchemasMesheryIoComponentJson as V1beta1Connection } from "./constructs/v1beta1/connection";
-import { User as V1beta1User } from "./constructs/v1beta1/user/user";
+import { components as ComponentComponents } from "./generated/v1beta1/component/Component";
+import { components as ModelComponents } from "./generated/v1beta1/model/Model";
+import { components as ConnectionComponents } from "./generated/v1beta1/connection/Connection";
+import { components as UserComponents } from "./generated/v1beta1/user/User";
+import { components as PatternComponents } from "./generated/v1beta1/pattern/Pattern";
+import { components as CategoryComponents } from "./generated/v1beta1/category/Category";
+import { components as SubcategoryComponents } from "./generated/v1beta1/subcategory/Subcategory";
+import { components as EnvironmentComponents } from "./generated/v1beta1/environment/Environment";
+import { components as WorkspaceComponents } from "./generated/v1beta1/workspace/Workspace";
+import { components as InvitationComponents } from "./generated/v1beta1/invitation/Invitation";
+import { components as BadgeComponents } from "./generated/v1beta1/badge/Badge";
 
 /**
  * SCHEMA OPTIMIZATION NOTICE
@@ -33,74 +31,59 @@ import { User as V1beta1User } from "./constructs/v1beta1/user/user";
  * - Avoid using multiple versions of the same schema to prevent redundancy
  */
 
-//OpenAPI
+// OpenAPI Schemas
+// import CapabilityDefinitionV1Alpha1OpenApiSchema from "./generated/v1alpha1/capability/CapabilitySchema";
+// import CatalogDefinitionV1Alpha2OpenApiSchema from "./generated/v1alpha2/catalog/CatalogSchema";
+import CategoryDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/category/CategorySchema";
+import SubCategoryDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/subcategory/SubcategorySchema";
+import PatternDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/pattern/PatternSchema";
+import ComponentDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/component/ComponentSchema";
+import ModelDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/model/ModelSchema";
+// import PlanDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/plan/PlanSchema";
+// import SubscriptionDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/subscription/SubscriptionSchema";
+// import EvaluationDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/evaluation/EvaluationSchema";
+import EnvironmentDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/environment/EnvironmentSchema";
+import WorkspaceDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/workspace/WorkspaceSchema";
+import InvitationSchema from "./generated/v1beta1/invitation/InvitationSchema";
+import BadgeSchema from "./generated/v1beta1/badge/BadgeSchema";
 
-// import CapabilityDefinitionV1Alpha1OpenApiSchema from "./constructs/v1alpha1/capability/CapabilityOpenApiSchema";
-// import CatalogDefinitionV1Alpha2OpenApiSchema from "./constructs/v1alpha2/catalog/CatalogOpenApiSchema";
-// import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
-// import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
-import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
-// import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
-import CategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/category/CategoryOpenApiSchema";
-import SubCategoryDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subcategory/SubcategoryOpenApiSchema";
-// import DesignDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/design/DesignOpenApiSchema";
-import ComponentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/component/ComponentOpenApiSchema";
-import ModelDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/model/ModelOpenApiSchema";
-// import PlanDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/plan/PlanOpenApiSchema";
-// import SubscriptionDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/subscription/SubscriptionOpenApiSchema";
-// import EvaluationDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/evaluation/EvaluationOpenApiSchema";
-import EnvironmentDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/environment/EnvironmentOpenApiSchema";
-import WorkspaceDefinitionV1Beta1OpenApiSchema from "./constructs/v1beta1/workspace/WorkspaceOpenApiSchema";
+import type * as core from "./generated/v1alpha1/core/Core";
 
-import RelationshipDefinitionV1Alpha3OpenApiSchema from "./constructs/v1alpha3/V1alpha3OpenApiSchema";
-
-import InvitationSchema from "./constructs/v1beta1/invitation/InvitationOpenApiSchema"
-import BadgeSchema from "./constructs/v1beta1/badge/BadgeOpenApiSchema"
-
-import { components, paths } from "./openapi";
-import type * as core from "./constructs/core";
-
+// Export schemas
 export {
   core,
   EnvironmentDefinitionV1Beta1OpenApiSchema,
   WorkspaceDefinitionV1Beta1OpenApiSchema,
-  DesignDefinitionV1Beta1OpenApiSchema,
+  PatternDefinitionV1Beta1OpenApiSchema as DesignDefinitionV1Beta1OpenApiSchema,
   ComponentDefinitionV1Beta1OpenApiSchema,
   ModelDefinitionV1Beta1OpenApiSchema,
   CategoryDefinitionV1Beta1OpenApiSchema,
   SubCategoryDefinitionV1Beta1OpenApiSchema,
-  RelationshipDefinitionV1Alpha3OpenApiSchema,
   InvitationSchema,
-  BadgeSchema
+  BadgeSchema,
 };
 
-// Contructs
+// Constructs
 export namespace v1alpha1 {
-  export type CatalogData = CatalogDataT;
-  export type CatalogCaveatsAndConsiderations = CaveatsAndConsiderations;
-  export type Capability = HttpsSchemasMesheryIoCapabilityJson;
+  export type CatalogData = CatalogComponents["schemas"]["CatalogData"];
+  export type Capability = CapabilityComponents["schemas"];
 }
 
 export namespace v1alpha2 {
-  export type Design = DesignSchema;
-  export type Relationship = HttpsSchemasMesheryIoRelationshipJson;
-}
-
-export namespace v1alpha3 {
-  export type Relationship = V1alpha3Relationship;
-  export type Selectors = V1alpha3Selectors;
+  export type CatalogData = CatalogComponents["schemas"]["CatalogData"];
 }
 
 export namespace v1beta1 {
-  export type Component = HttpsSchemasMesheryIoComponentJson;
-  export type Model = HttpsSchemasMesheryIoModelJson;
-  export type Design = V1beta1DesignSchema;
-  export type Connection = V1beta1Connection;
-  export type User = V1beta1User;
-}
-
-// OpenAPI
-export namespace api {
-  export type Components = components;
-  export type Paths = paths;
+  export type Component = ComponentComponents["schemas"]["ComponentDefinition"];
+  export type Model = ModelComponents["schemas"]["ModelDefinition"];
+  export type Design = PatternComponents["schemas"]["PatternFile"];
+  export type Connection = ConnectionComponents["schemas"]["Connection"];
+  export type User = UserComponents["schemas"]["User"];
+  export type Category = CategoryComponents["schemas"]["CategoryDefinition"];
+  export type Subcategory =
+    SubcategoryComponents["schemas"]["SubCategoryDefinition"];
+  export type Environment = EnvironmentComponents["schemas"]["environment"];
+  export type Workspace = WorkspaceComponents["schemas"]["workspace"];
+  export type Invitation = InvitationComponents["schemas"]["Invitation"];
+  export type Badge = BadgeComponents["schemas"]["Badge"];
 }
