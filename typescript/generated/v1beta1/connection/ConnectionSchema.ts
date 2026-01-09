@@ -13,7 +13,7 @@ const ConnectionSchema = {
   "components": {
     "schemas": {
       "Connection": {
-        "$id": "https://schemas.meshery.io/component.json",
+        "$id": "https://schemas.meshery.io/component.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
         "additionalProperties": false,
@@ -173,7 +173,7 @@ const ConnectionSchema = {
             "type": "array",
             "items": {
               "x-go-type": "*environment.Environment",
-              "$id": "https://schemas.meshery.io/environment.json",
+              "$id": "https://schemas.meshery.io/environment.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
               "additionalProperties": false,
@@ -322,7 +322,7 @@ const ConnectionSchema = {
         }
       },
       "ConnectionPage": {
-        "$id": "https://schemas.meshery.io/component.json",
+        "$id": "https://schemas.meshery.io/component.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "description": "Represents a page of connections with a meta information about connections number",
         "additionalProperties": false,
@@ -337,7 +337,7 @@ const ConnectionSchema = {
           "connections": {
             "type": "array",
             "items": {
-              "$id": "https://schemas.meshery.io/component.json",
+              "$id": "https://schemas.meshery.io/component.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
               "additionalProperties": false,
@@ -497,7 +497,7 @@ const ConnectionSchema = {
                   "type": "array",
                   "items": {
                     "x-go-type": "*environment.Environment",
-                    "$id": "https://schemas.meshery.io/environment.json",
+                    "$id": "https://schemas.meshery.io/environment.yaml",
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
                     "additionalProperties": false,

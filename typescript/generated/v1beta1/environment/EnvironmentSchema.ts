@@ -148,7 +148,7 @@ const EnvironmentSchema = {
     },
     "schemas": {
       "environment": {
-        "$id": "https://schemas.meshery.io/environment.json",
+        "$id": "https://schemas.meshery.io/environment.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
         "additionalProperties": false,
@@ -372,7 +372,7 @@ const EnvironmentSchema = {
             "x-go-type-skip-optional-pointer": true,
             "items": {
               "x-go-type": "Environment",
-              "$id": "https://schemas.meshery.io/environment.json",
+              "$id": "https://schemas.meshery.io/environment.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
               "additionalProperties": false,
@@ -582,7 +582,7 @@ const EnvironmentSchema = {
             "content": {
               "application/json": {
                 "schema": {
-                  "$id": "https://schemas.meshery.io/environment.json",
+                  "$id": "https://schemas.meshery.io/environment.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
                   "additionalProperties": false,
@@ -799,7 +799,7 @@ const EnvironmentSchema = {
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
                         "x-go-type": "Environment",
-                        "$id": "https://schemas.meshery.io/environment.json",
+                        "$id": "https://schemas.meshery.io/environment.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
                         "additionalProperties": false,

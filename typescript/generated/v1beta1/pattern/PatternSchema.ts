@@ -239,7 +239,7 @@ const PatternSchema = {
               "x-go-type-import": {
                 "path": "github.com/meshery/schemas/models/v1beta1/component"
               },
-              "$id": "https://schemas.meshery.io/component.json",
+              "$id": "https://schemas.meshery.io/component.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components",
               "additionalProperties": false,
@@ -335,7 +335,7 @@ const PatternSchema = {
                     "json": "model,omitempty",
                     "yaml": "model,omitempty"
                   },
-                  "$id": "https://schemas.meshery.io/model.json",
+                  "$id": "https://schemas.meshery.io/model.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "additionalProperties": false,
                   "type": "object",
@@ -455,7 +455,7 @@ const PatternSchema = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/v1beta1/connection"
                       },
-                      "$id": "https://schemas.meshery.io/component.json",
+                      "$id": "https://schemas.meshery.io/component.yaml",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                       "additionalProperties": false,
@@ -615,7 +615,7 @@ const PatternSchema = {
                           "type": "array",
                           "items": {
                             "x-go-type": "*environment.Environment",
-                            "$id": "https://schemas.meshery.io/environment.json",
+                            "$id": "https://schemas.meshery.io/environment.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
                             "additionalProperties": false,
@@ -804,7 +804,7 @@ const PatternSchema = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/v1beta1/category"
                       },
-                      "$id": "https://schemas.meshery.io/category.json",
+                      "$id": "https://schemas.meshery.io/category.yaml",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "type": "object",
                       "description": "Category of the model.",
@@ -871,7 +871,7 @@ const PatternSchema = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
                       },
-                      "$id": "https://schemas.meshery.io/category.json",
+                      "$id": "https://schemas.meshery.io/category.yaml",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "type": "string",
                       "title": "SubCategory",
@@ -948,7 +948,7 @@ const PatternSchema = {
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                             },
-                            "$id": "https://schemas.meshery.io/capability.json",
+                            "$id": "https://schemas.meshery.io/capability.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                             "additionalProperties": false,
@@ -1877,7 +1877,7 @@ const PatternSchema = {
                     "x-go-type-import": {
                       "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                     },
-                    "$id": "https://schemas.meshery.io/capability.json",
+                    "$id": "https://schemas.meshery.io/capability.yaml",
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                     "additionalProperties": false,
@@ -2356,7 +2356,7 @@ const PatternSchema = {
               "x-go-type-import": {
                 "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
               },
-              "$id": "https://schemas.meshery.io/relationship.json",
+              "$id": "https://schemas.meshery.io/relationship.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
               "required": [
@@ -2593,7 +2593,7 @@ const PatternSchema = {
                   "type": "array",
                   "description": "Capabilities associated with the relationship.",
                   "items": {
-                    "$id": "https://schemas.meshery.io/capability.json",
+                    "$id": "https://schemas.meshery.io/capability.yaml",
                     "$schema": "http://json-schema.org/draft-07/schema#",
                     "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                     "additionalProperties": false,
@@ -4864,7 +4864,7 @@ const PatternSchema = {
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/v1beta1/component"
                   },
-                  "$id": "https://schemas.meshery.io/component.json",
+                  "$id": "https://schemas.meshery.io/component.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components",
                   "additionalProperties": false,
@@ -4960,7 +4960,7 @@ const PatternSchema = {
                         "json": "model,omitempty",
                         "yaml": "model,omitempty"
                       },
-                      "$id": "https://schemas.meshery.io/model.json",
+                      "$id": "https://schemas.meshery.io/model.yaml",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "additionalProperties": false,
                       "type": "object",
@@ -5080,7 +5080,7 @@ const PatternSchema = {
                           "x-go-type-import": {
                             "path": "github.com/meshery/schemas/models/v1beta1/connection"
                           },
-                          "$id": "https://schemas.meshery.io/component.json",
+                          "$id": "https://schemas.meshery.io/component.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                           "additionalProperties": false,
@@ -5240,7 +5240,7 @@ const PatternSchema = {
                               "type": "array",
                               "items": {
                                 "x-go-type": "*environment.Environment",
-                                "$id": "https://schemas.meshery.io/environment.json",
+                                "$id": "https://schemas.meshery.io/environment.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
                                 "additionalProperties": false,
@@ -5429,7 +5429,7 @@ const PatternSchema = {
                           "x-go-type-import": {
                             "path": "github.com/meshery/schemas/models/v1beta1/category"
                           },
-                          "$id": "https://schemas.meshery.io/category.json",
+                          "$id": "https://schemas.meshery.io/category.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "object",
                           "description": "Category of the model.",
@@ -5496,7 +5496,7 @@ const PatternSchema = {
                           "x-go-type-import": {
                             "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
                           },
-                          "$id": "https://schemas.meshery.io/category.json",
+                          "$id": "https://schemas.meshery.io/category.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "type": "string",
                           "title": "SubCategory",
@@ -5573,7 +5573,7 @@ const PatternSchema = {
                                 "x-go-type-import": {
                                   "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                                 },
-                                "$id": "https://schemas.meshery.io/capability.json",
+                                "$id": "https://schemas.meshery.io/capability.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "additionalProperties": false,
@@ -6502,7 +6502,7 @@ const PatternSchema = {
                         "x-go-type-import": {
                           "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                         },
-                        "$id": "https://schemas.meshery.io/capability.json",
+                        "$id": "https://schemas.meshery.io/capability.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                         "additionalProperties": false,
@@ -6981,7 +6981,7 @@ const PatternSchema = {
                   "x-go-type-import": {
                     "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
                   },
-                  "$id": "https://schemas.meshery.io/relationship.json",
+                  "$id": "https://schemas.meshery.io/relationship.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
                   "required": [
@@ -7218,7 +7218,7 @@ const PatternSchema = {
                       "type": "array",
                       "description": "Capabilities associated with the relationship.",
                       "items": {
-                        "$id": "https://schemas.meshery.io/capability.json",
+                        "$id": "https://schemas.meshery.io/capability.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                         "additionalProperties": false,
@@ -9521,7 +9521,7 @@ const PatternSchema = {
                         "x-go-type-import": {
                           "path": "github.com/meshery/schemas/models/v1beta1/component"
                         },
-                        "$id": "https://schemas.meshery.io/component.json",
+                        "$id": "https://schemas.meshery.io/component.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components",
                         "additionalProperties": false,
@@ -9617,7 +9617,7 @@ const PatternSchema = {
                               "json": "model,omitempty",
                               "yaml": "model,omitempty"
                             },
-                            "$id": "https://schemas.meshery.io/model.json",
+                            "$id": "https://schemas.meshery.io/model.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "additionalProperties": false,
                             "type": "object",
@@ -9737,7 +9737,7 @@ const PatternSchema = {
                                 "x-go-type-import": {
                                   "path": "github.com/meshery/schemas/models/v1beta1/connection"
                                 },
-                                "$id": "https://schemas.meshery.io/component.json",
+                                "$id": "https://schemas.meshery.io/component.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                                 "additionalProperties": false,
@@ -9897,7 +9897,7 @@ const PatternSchema = {
                                     "type": "array",
                                     "items": {
                                       "x-go-type": "*environment.Environment",
-                                      "$id": "https://schemas.meshery.io/environment.json",
+                                      "$id": "https://schemas.meshery.io/environment.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
                                       "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
                                       "additionalProperties": false,
@@ -10086,7 +10086,7 @@ const PatternSchema = {
                                 "x-go-type-import": {
                                   "path": "github.com/meshery/schemas/models/v1beta1/category"
                                 },
-                                "$id": "https://schemas.meshery.io/category.json",
+                                "$id": "https://schemas.meshery.io/category.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "type": "object",
                                 "description": "Category of the model.",
@@ -10153,7 +10153,7 @@ const PatternSchema = {
                                 "x-go-type-import": {
                                   "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
                                 },
-                                "$id": "https://schemas.meshery.io/category.json",
+                                "$id": "https://schemas.meshery.io/category.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "type": "string",
                                 "title": "SubCategory",
@@ -10230,7 +10230,7 @@ const PatternSchema = {
                                       "x-go-type-import": {
                                         "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                                       },
-                                      "$id": "https://schemas.meshery.io/capability.json",
+                                      "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
                                       "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                       "additionalProperties": false,
@@ -11159,7 +11159,7 @@ const PatternSchema = {
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                               },
-                              "$id": "https://schemas.meshery.io/capability.json",
+                              "$id": "https://schemas.meshery.io/capability.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
                               "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                               "additionalProperties": false,
@@ -11638,7 +11638,7 @@ const PatternSchema = {
                         "x-go-type-import": {
                           "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
                         },
-                        "$id": "https://schemas.meshery.io/relationship.json",
+                        "$id": "https://schemas.meshery.io/relationship.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
                         "required": [
@@ -11875,7 +11875,7 @@ const PatternSchema = {
                             "type": "array",
                             "description": "Capabilities associated with the relationship.",
                             "items": {
-                              "$id": "https://schemas.meshery.io/capability.json",
+                              "$id": "https://schemas.meshery.io/capability.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
                               "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                               "additionalProperties": false,
@@ -14210,7 +14210,7 @@ const PatternSchema = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/v1beta1/component"
                       },
-                      "$id": "https://schemas.meshery.io/component.json",
+                      "$id": "https://schemas.meshery.io/component.yaml",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "description": "Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components",
                       "additionalProperties": false,
@@ -14306,7 +14306,7 @@ const PatternSchema = {
                             "json": "model,omitempty",
                             "yaml": "model,omitempty"
                           },
-                          "$id": "https://schemas.meshery.io/model.json",
+                          "$id": "https://schemas.meshery.io/model.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "additionalProperties": false,
                           "type": "object",
@@ -14426,7 +14426,7 @@ const PatternSchema = {
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/v1beta1/connection"
                               },
-                              "$id": "https://schemas.meshery.io/component.json",
+                              "$id": "https://schemas.meshery.io/component.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
                               "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                               "additionalProperties": false,
@@ -14586,7 +14586,7 @@ const PatternSchema = {
                                   "type": "array",
                                   "items": {
                                     "x-go-type": "*environment.Environment",
-                                    "$id": "https://schemas.meshery.io/environment.json",
+                                    "$id": "https://schemas.meshery.io/environment.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
                                     "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
                                     "additionalProperties": false,
@@ -14775,7 +14775,7 @@ const PatternSchema = {
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/v1beta1/category"
                               },
-                              "$id": "https://schemas.meshery.io/category.json",
+                              "$id": "https://schemas.meshery.io/category.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
                               "type": "object",
                               "description": "Category of the model.",
@@ -14842,7 +14842,7 @@ const PatternSchema = {
                               "x-go-type-import": {
                                 "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
                               },
-                              "$id": "https://schemas.meshery.io/category.json",
+                              "$id": "https://schemas.meshery.io/category.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
                               "type": "string",
                               "title": "SubCategory",
@@ -14919,7 +14919,7 @@ const PatternSchema = {
                                     "x-go-type-import": {
                                       "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                                     },
-                                    "$id": "https://schemas.meshery.io/capability.json",
+                                    "$id": "https://schemas.meshery.io/capability.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
                                     "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                     "additionalProperties": false,
@@ -15848,7 +15848,7 @@ const PatternSchema = {
                             "x-go-type-import": {
                               "path": "github.com/meshery/schemas/models/v1alpha1/capability"
                             },
-                            "$id": "https://schemas.meshery.io/capability.json",
+                            "$id": "https://schemas.meshery.io/capability.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                             "additionalProperties": false,
@@ -16327,7 +16327,7 @@ const PatternSchema = {
                       "x-go-type-import": {
                         "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
                       },
-                      "$id": "https://schemas.meshery.io/relationship.json",
+                      "$id": "https://schemas.meshery.io/relationship.yaml",
                       "$schema": "http://json-schema.org/draft-07/schema#",
                       "description": "Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.",
                       "required": [
@@ -16564,7 +16564,7 @@ const PatternSchema = {
                           "type": "array",
                           "description": "Capabilities associated with the relationship.",
                           "items": {
-                            "$id": "https://schemas.meshery.io/capability.json",
+                            "$id": "https://schemas.meshery.io/capability.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
                             "description": "Meshery manages entities in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. Entities may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                             "additionalProperties": false,
