@@ -22,7 +22,7 @@ components:
         - deleted_at
       properties:
         id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: Unique identifier for the user
           x-go-name: ID
           x-oapi-codegen-extra-tags:
@@ -133,35 +133,35 @@ components:
             json: "preferences"
             yaml: "preferences"
         accepted_terms_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           description: Timestamp when user accepted terms and conditions
           x-oapi-codegen-extra-tags:
             db: "accepted_terms_at"
             json: "accepted_terms_at"
             yaml: "accepted_terms_at"
         first_login_time:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           description: Timestamp of user's first login
           x-oapi-codegen-extra-tags:
             db: "first_login_time"
             json: "first_login_time"
             yaml: "first_login_time"
         last_login_time:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           description: Timestamp of user's most recent login
           x-oapi-codegen-extra-tags:
             db: "last_login_time"
             json: "last_login_time"
             yaml: "last_login_time"
         created_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           description: Timestamp when the user record was created
           x-oapi-codegen-extra-tags:
             db: "created_at"
             json: "created_at"
             yaml: "created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           description: Timestamp when the user record was last updated
           x-oapi-codegen-extra-tags:
             db: "updated_at"

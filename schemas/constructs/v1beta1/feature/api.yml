@@ -24,11 +24,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/FeaturesPage"
         "400":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
         "401":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
         "500":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 
   /api/entitlement/subscriptions/organizations/{organizationId}/features:
     get:
@@ -49,11 +49,11 @@ paths:
                 $ref: "#/components/schemas/FeaturesPage"
 
         "400":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/400"
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
         "401":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/401"
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
         "500":
-          $ref: "../../v1alpha1/core/openapi.yml#/components/responses/500"
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 
 components:
   parameters:
@@ -97,15 +97,15 @@ components:
         - feature
       properties:
         id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           x-oapi-codegen-extra-tags:
             db: "id"
         plan_id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           x-oapi-codegen-extra-tags:
             db: "plan_id"
         plan:
-          $ref: "../plan/openapi.yml#/components/schemas/Plan"
+          $ref: "../plan/api.yml#/components/schemas/Plan"
           x-go-type: plan.Plan
           x-go-type-import:
             path: github.com/meshery/schemas/models/v1beta1/plan
@@ -125,11 +125,11 @@ components:
           x-oapi-codegen-extra-tags:
             db: "quantity"
         created_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "updated_at"
       additionalProperties: false

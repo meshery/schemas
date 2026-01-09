@@ -62,7 +62,7 @@ schemas/
 
 ### Code Generation Process
 
-The build system automatically discovers schemas from `constructs/<version>/<package>/openapi.yml` files.
+The build system automatically discovers schemas from `constructs/<version>/<package>/api.yml` files.
 
 **To add a new schema:**
 
@@ -131,7 +131,7 @@ Use the `x-order` tag in schema properties to ensure fields appear in a specific
 - `_openapi_build/` - Bundled OpenAPI specs
 
 Only commit:
-- Schema files (`constructs/<version>/<package>/openapi.yml`, `*.json`)
+- Schema files (`constructs/<version>/<package>/api.yml`, `*.json`)
 - Template files (`constructs/<version>/<package>/templates/`)
 - The manually maintained `typescript/index.ts`
 
@@ -170,7 +170,7 @@ npm run build
 go test ./...
 
 # Lint OpenAPI specs
-npx @redocly/cli lint schemas/constructs/v1beta1/model/openapi.yml
+npx @redocly/cli lint schemas/constructs/v1beta1/model/api.yml
 ```
 
 ## Getting Help

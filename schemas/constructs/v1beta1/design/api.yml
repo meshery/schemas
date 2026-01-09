@@ -33,9 +33,9 @@ components:
       type: object
       properties:
         id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
         name:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
 
     PatternFile:
       $ref: "./design.yaml"
@@ -44,29 +44,29 @@ components:
       type: object
       properties:
         catalog_data:
-          $ref: "../../v1alpha2/catalog/openapi.yml#/components/schemas/CatalogData"
+          $ref: "../../v1alpha2/catalog/api.yml#/components/schemas/CatalogData"
           x-go-type: catalog.CatalogData
           x-go-type-import:
             path: github.com/meshery/schemas/models/v1alpha2/catalog
 
         created_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
         user_id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
         location:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/MapObject"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/MapObject"
         name:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
         pattern_file:
           $ref: "#/components/schemas/PatternFile"
           x-go-type: PatternFile
 
         updated_at:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Time"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
         id:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Id"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
         visibility:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
 
     MesheryPatternPage:
       type: object
@@ -99,14 +99,14 @@ components:
       type: object
       properties:
         path:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Text"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
         pattern_data:
           $ref: "#/components/schemas/MesheryPattern"
           x-go-type: MesheryPattern
         save:
           type: boolean
         url:
-          $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/Endpoint"
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Endpoint"
         name:
           type: string
 

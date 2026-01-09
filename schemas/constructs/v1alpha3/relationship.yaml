@@ -41,12 +41,12 @@ properties:
     type: string
     minLength: 5
     maxLength: 100
-    $ref: ../v1alpha1/core/openapi.yml#/components/schemas/semverString
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/semverString
     x-oapi-codegen-extra-tags:
       yaml: version
       json: version
   model:
-    $ref: ../v1beta1/model/openapi.yml#/components/schemas/ModelReference
+    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
     x-go-type: model.ModelReference
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/model
@@ -93,7 +93,7 @@ properties:
       yaml: status
       json: status
   evaluationQuery:
-    description: 'Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.'
+    description: "Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs."
     type: string
     pattern: ^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$
     x-oapi-codegen-extra-tags:
@@ -160,13 +160,13 @@ properties:
           additionalProperties: false
           anyOf:
             - const: action
-              description: 'For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component.'
+              description: "For capabilities related to executing actions on entities. Example: initiate log streaming on a Pod. Example: initiate deployment of a component."
             - const: mutate
-              description: 'For capabilities related to mutating an entity. Example: the ability to change the configuration of a component.'
+              description: "For capabilities related to mutating an entity. Example: the ability to change the configuration of a component."
             - const: view
-              description: 'For capabilities related to viewing an entity. Example: the ability to view a components configuration.'
+              description: "For capabilities related to viewing an entity. Example: the ability to view a components configuration."
             - const: interaction
-              description: 'Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. '
+              description: "Catch all for capabilities related to interaction with entities. Example: the ability for a component to be dragged and dropped. Example: supports event bubbling to parent components. "
           type: string
           pattern: ^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$
           x-oapi-codegen-extra-tags:
@@ -276,7 +276,7 @@ properties:
                     description: Complete SVG of the entity used for UI representation, often inclusive of background.
                   color:
                     type: string
-                    description: 'The color of the element''s label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).'
+                    description: "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
                   text-opacity:
                     type: number
                     description: The opacity of the label text, including its outline.
@@ -329,7 +329,7 @@ properties:
                       - taxi
                   line-color:
                     type: string
-                    description: 'The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).'
+                    description: "The colour of the edge’s line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
                   line-style:
                     type: string
                     description: The style of the edge’s line.
@@ -353,7 +353,7 @@ properties:
                     description: The opacity of the edge’s line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
                   target-arrow-color:
                     type: string
-                    description: 'The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).'
+                    description: "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
                   target-arrow-shape:
                     type: string
                     description: The shape of the edge’s source arrow
@@ -378,7 +378,7 @@ properties:
                       - hollow
                   mid-target-arrow-color:
                     type: string
-                    description: 'The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).'
+                    description: "The colour of the edge’s source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
                   mid-target-arrow-shape:
                     type: string
                     description: The shape of the edge’s source arrow
@@ -436,7 +436,7 @@ properties:
                 description: Complete SVG of the entity used for UI representation, often inclusive of background.
               color:
                 type: string
-                description: 'The color of the element''s label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).'
+                description: "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%))."
               text-opacity:
                 type: number
                 description: The opacity of the label text, including its outline.
@@ -509,14 +509,14 @@ properties:
                       yaml: kind
                       json: kind
                   model:
-                    $ref: ../v1beta1/model/openapi.yml#/components/schemas/ModelReference
+                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
                     x-order: 8
                     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
                     x-oapi-codegen-extra-tags:
-                      gorm: '-'
+                      gorm: "-"
                   id:
                     type: string
                     format: uuid
@@ -564,7 +564,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -601,7 +601,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -641,7 +641,7 @@ properties:
                                   type: array
                                   items:
                                     type: string
-                                  description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                  description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                 description: JSON ref to value from where patch should be applied.
                           - properties:
                               mutatedRef:
@@ -668,14 +668,14 @@ properties:
                       yaml: kind
                       json: kind
                   model:
-                    $ref: ../v1beta1/model/openapi.yml#/components/schemas/ModelReference
+                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
                     x-order: 8
                     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
                     x-oapi-codegen-extra-tags:
-                      gorm: '-'
+                      gorm: "-"
                   id:
                     type: string
                     format: uuid
@@ -723,7 +723,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -760,7 +760,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -800,7 +800,7 @@ properties:
                                   type: array
                                   items:
                                     type: string
-                                  description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                  description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                 description: JSON ref to value from where patch should be applied.
                           - properties:
                               mutatedRef:
@@ -841,14 +841,14 @@ properties:
                       items:
                         type: string
                   model:
-                    $ref: ../v1beta1/model/openapi.yml#/components/schemas/ModelReference
+                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
                     x-order: 8
                     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
                     x-oapi-codegen-extra-tags:
-                      gorm: '-'
+                      gorm: "-"
                   id:
                     type: string
                     format: uuid
@@ -896,7 +896,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -933,7 +933,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -973,7 +973,7 @@ properties:
                                   type: array
                                   items:
                                     type: string
-                                  description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                  description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                 description: JSON ref to value from where patch should be applied.
                           - properties:
                               mutatedRef:
@@ -1000,14 +1000,14 @@ properties:
                       yaml: kind
                       json: kind
                   model:
-                    $ref: ../v1beta1/model/openapi.yml#/components/schemas/ModelReference
+                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
                     x-order: 8
                     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
                     x-oapi-codegen-extra-tags:
-                      gorm: '-'
+                      gorm: "-"
                   id:
                     type: string
                     format: uuid
@@ -1055,7 +1055,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -1092,7 +1092,7 @@ properties:
                                             type: array
                                             items:
                                               type: string
-                                            description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                            description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                           description: JSON ref to value from where patch should be applied.
                                     - properties:
                                         mutatedRef:
@@ -1132,7 +1132,7 @@ properties:
                                   type: array
                                   items:
                                     type: string
-                                  description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                                  description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                                 description: JSON ref to value from where patch should be applied.
                           - properties:
                               mutatedRef:
@@ -1147,6 +1147,6 @@ properties:
                       json: patch
                 description: Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning.
   created_at:
-    $ref: ../v1alpha1/core/openapi.yml#/components/schemas/created_at
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/created_at
   updated_at:
-    $ref: ../v1alpha1/core/openapi.yml#/components/schemas/updated_at
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/updated_at

@@ -29,16 +29,16 @@ properties:
         type: object
         description: Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions made define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
       name:
-        $ref: core/openapi.yml#/components/schemas/inputString
+        $ref: core/api.yml#/components/schemas/inputString
         description: Name of the component.
       version:
-        $ref: core/openapi.yml#/components/schemas/versionString
+        $ref: core/api.yml#/components/schemas/versionString
         description: Version of the component.
   model:
     $ref: ./model.yaml#
     description: Model of the component. Learn more at https://docs.meshery.io/concepts/models
   displayName:
-    $ref: core/openapi.yml#/components/schemas/inputString
+    $ref: core/api.yml#/components/schemas/inputString
     description: Display name of the component.
   format:
     type: string

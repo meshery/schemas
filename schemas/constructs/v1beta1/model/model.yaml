@@ -6,14 +6,14 @@ type: object
 properties:
   id:
     description: Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     x-order: 1
     x-oapi-codegen-extra-tags:
       yaml: id
       json: id
   schemaVersion:
     description: Specifies the version of the schema used for the definition.
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/versionString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
     x-order: 2
     x-oapi-codegen-extra-tags:
       yaml: schemaVersion
@@ -22,7 +22,7 @@ properties:
   version:
     description: Version of the model definition.
     type: string
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/semverString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
     x-order: 3
     x-oapi-codegen-extra-tags:
       yaml: version
@@ -92,7 +92,7 @@ properties:
     $ref: ../connection/connection.yaml
   registrantId:
     description: ID of the registrant.
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     x-oapi-codegen-extra-tags:
       yaml: connection_id
       json: connection_id
@@ -100,10 +100,10 @@ properties:
     x-order: 8
   categoryId:
     description: ID of the category.
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     x-oapi-codegen-extra-tags:
-      yaml: '-'
-      json: '-'
+      yaml: "-"
+      json: "-"
       gorm: categoryID
     x-order: 8
   category:
@@ -151,7 +151,7 @@ properties:
         description: Primary color associated with the model.
         minLength: 1
         maxLength: 50
-        default: '#00b39f'
+        default: "#00b39f"
         x-oapi-codegen-extra-tags:
           yaml: primaryColor
           json: primaryColor
@@ -161,7 +161,7 @@ properties:
         description: Secondary color associated with the model.
         minLength: 1
         maxLength: 50
-        default: '#00D3A9'
+        default: "#00D3A9"
         x-oapi-codegen-extra-tags:
           yaml: secondaryColor
           json: secondaryColor
@@ -194,7 +194,7 @@ properties:
         x-order: 7
       shape:
         x-order: 8
-        $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/shape
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/shape
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
       json: metadata
@@ -202,7 +202,7 @@ properties:
     x-order: 11
     additionalProperties: true
   model:
-    $ref: ./openapi.yml#/components/schemas/Model
+    $ref: ./api.yml#/components/schemas/Model
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
     x-order: 12
@@ -210,14 +210,14 @@ properties:
     type: array
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:
-      gorm: '-'
+      gorm: "-"
       json: relationships
       yaml: relationships
   components:
     type: array
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:
-      gorm: '-'
+      gorm: "-"
       json: components
       yaml: components
   componentsCount:
@@ -227,22 +227,22 @@ properties:
     x-oapi-codegen-extra-tags:
       json: components_count
       yaml: components_count
-      gorm: '-'
+      gorm: "-"
     default: 0
   relationshipsCount:
     type: integer
     description: Number of relationships associated with the model.
     x-order: 13
     x-oapi-codegen-extra-tags:
-      gorm: '-'
+      gorm: "-"
       json: relationships_count
       yaml: relationships_count
     default: 0
   created_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/created_at
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
     x-order: 14
   updated_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/updated_at
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
     x-order: 15
 required:
   - id

@@ -6,13 +6,13 @@ type: object
 properties:
   id:
     description: Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     x-order: 1
     x-oapi-codegen-extra-tags:
       yaml: id
       json: id
   schemaVersion:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/versionString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
     x-order: 2
     description: Specifies the version of the schema to which the component definition conforms.
     x-oapi-codegen-extra-tags:
@@ -20,7 +20,7 @@ properties:
       json: schemaVersion
     default: components.meshery.io/v1beta1
   version:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/semverString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
     x-order: 3
     description: Version of the component definition.
     minLength: 1
@@ -29,7 +29,7 @@ properties:
       yaml: version
       json: version
   displayName:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/inputString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/inputString
     x-order: 4
     description: Name of the component in human-readible format.
     x-oapi-codegen-extra-tags:
@@ -65,23 +65,23 @@ properties:
       json: model,omitempty
       yaml: model,omitempty
   modelReference:
-    $ref: ../model/openapi.yml#/components/schemas/ModelReference
+    $ref: ../model/api.yml#/components/schemas/ModelReference
     x-go-type: model.ModelReference
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/model
     x-order: 8
     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
     x-oapi-codegen-extra-tags:
-      gorm: '-'
+      gorm: "-"
   modelId:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: ModelId is the foreign key to the model to which the component belongs.
     x-oapi-codegen-extra-tags:
       gorm: index:idx_component_definition_dbs_model_id,column:model_id
-      yaml: '-'
-      json: '-'
+      yaml: "-"
+      json: "-"
   styles:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/componentStyles
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/componentStyles
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
       yaml: styles
@@ -131,7 +131,7 @@ properties:
       - schemaVersion: capability.meshery.io/v1alpha1
         version: 0.7.0
         displayName: Labels and Annotations Configuration
-        description: 'Configure Labels And Annotations for  the component '
+        description: "Configure Labels And Annotations for  the component "
         kind: mutate
         type: configuration
         subType: labels-and-annotations
@@ -156,7 +156,7 @@ properties:
       - schemaVersion: capability.meshery.io/v1alpha1
         version: 0.7.0
         displayName: Json Schema
-        description: 'View Component Definition '
+        description: "View Component Definition "
         kind: view
         type: configuration
         subType: definition
@@ -249,7 +249,7 @@ properties:
       published:
         x-order: 4
         type: boolean
-        description: '''published'' controls whether the component should be registered in Meshery Registry. When the same ''published'' property in Models, is set to ''false'', the Model property takes precedence with all Entities in the Model not being registered.'
+        description: "'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered."
       instanceDetails:
         x-order: 5
         type: object
@@ -257,7 +257,7 @@ properties:
       configurationUISchema:
         x-order: 6
         type: string
-        description: 'Defines the UI schema for rendering the component''s configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ .'
+        description: "Defines the UI schema for rendering the component's configuration. For more details, visit: https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/ ."
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
     additionalProperties: true
@@ -270,15 +270,15 @@ properties:
       gorm: type:bytes;serializer:json
   component:
     x-order: 13
-    $ref: ./openapi.yml#/components/schemas/Component
+    $ref: ./api.yml#/components/schemas/Component
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
     x-go-type: Component
   created_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/created_at
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
     x-order: 14
   updated_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/updated_at
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
     x-order: 15
 required:
   - id

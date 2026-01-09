@@ -4,18 +4,18 @@ description: Designs are your primary tool for collaborative authorship of your 
 type: object
 properties:
   id:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     x-order: 1
   name:
     type: string
     description: Name of the design; a descriptive, but concise title for the design document.
     x-order: 2
   schemaVersion:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/versionString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
     description: Specifies the version of the schema to which the design conforms.
     x-order: 3
   version:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/semverString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
     default: v0.0.1
     x-order: 4
     description: Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.
@@ -33,7 +33,7 @@ properties:
         x-go-type-import:
           path: github.com/meshery/schemas/models/v1alpha1/core
         additionalProperties:
-          $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/ResolvedAlias
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/ResolvedAlias
   components:
     description: A list of one or more component declarations.
     minItems: 0
@@ -41,11 +41,11 @@ properties:
     type: array
     items:
       $ref: ../component/component.yaml
-      x-go-type: '*component.ComponentDefinition'
+      x-go-type: "*component.ComponentDefinition"
       x-go-type-import:
         path: github.com/meshery/schemas/models/v1beta1/component
   preferences:
-    $ref: ./openapi.yml#/components/schemas/DesignPreferences
+    $ref: ./api.yml#/components/schemas/DesignPreferences
     x-go-type: DesignPreferences
   relationships:
     description: List of relationships between components
@@ -53,7 +53,7 @@ properties:
     x-order: 8
     items:
       $ref: ../../v1alpha3/relationship.yaml
-      x-go-type: '*relationship.RelationshipDefinition'
+      x-go-type: "*relationship.RelationshipDefinition"
       x-go-type-import:
         path: github.com/meshery/schemas/models/v1alpha3/relationship
 required:

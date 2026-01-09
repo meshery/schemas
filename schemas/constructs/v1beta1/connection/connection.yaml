@@ -13,7 +13,7 @@ required:
   - status
 properties:
   id:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: ID
     x-order: 1
     x-go-name: ID
@@ -33,7 +33,7 @@ properties:
       db: credential_id
       yaml: credential_id
     x-order: 3
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: Credential ID
   type:
     x-oapi-codegen-extra-tags:
@@ -86,21 +86,21 @@ properties:
       db: user_id
       yaml: user_id
     x-order: 9
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
   created_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: created_at
       yaml: created_at
     x-order: 10
   updated_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: updated_at
       yaml: updated_at
     x-order: 11
   deleted_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: deleted_at
       yaml: deleted_at
@@ -109,20 +109,20 @@ properties:
   environments:
     type: array
     items:
-      x-go-type: '*environment.Environment'
+      x-go-type: "*environment.Environment"
       $ref: ../environment/environment.yaml
     x-oapi-codegen-extra-tags:
-      db: '-'
+      db: "-"
       yaml: environments
-      gorm: '-'
+      gorm: "-"
     x-go-type-skip-optional-pointer: true
     x-order: 13
   schemaVersion:
     description: Specifies the version of the schema used for the definition.
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/versionString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
     x-order: 14
     x-oapi-codegen-extra-tags:
       yaml: schemaVersion
-      db: '-'
-      gorm: '-'
+      db: "-"
+      gorm: "-"
     default: connections.meshery.io/v1beta1

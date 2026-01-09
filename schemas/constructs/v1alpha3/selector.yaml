@@ -13,7 +13,7 @@ definitions:
             kind:
               type: string
             id:
-              $ref: ../v1alpha1/core/openapi.yml#/components/schemas/uuid
+              $ref: ../v1alpha1/core/api.yml#/components/schemas/uuid
         - oneOf:
             - properties:
                 mutatorRef:
@@ -22,7 +22,7 @@ definitions:
                     type: array
                     items:
                       type: string
-                    description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                    description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                   description: JSON ref to value from where patch should be applied.
             - properties:
                 mutatedRef:
@@ -45,7 +45,7 @@ definitions:
           $ref: ../v1beta1/model/model.yaml
           description: Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
         id:
-          $ref: ../v1alpha1/core/openapi.yml#/components/schemas/uuid
+          $ref: ../v1alpha1/core/api.yml#/components/schemas/uuid
         match:
           type: object
           additionalProperties: false
@@ -59,9 +59,9 @@ definitions:
                       type: string
             - properties:
                 from:
-                  $ref: '#/definitions/matchSelector'
+                  $ref: "#/definitions/matchSelector"
                 to:
-                  $ref: '#/definitions/matchSelector'
+                  $ref: "#/definitions/matchSelector"
         patch:
           allOf:
             - properties:
@@ -89,7 +89,7 @@ definitions:
                         type: array
                         items:
                           type: string
-                        description: 'The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name].'
+                        description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
                       description: JSON ref to value from where patch should be applied.
                 - properties:
                     mutatedRef:
@@ -119,9 +119,9 @@ definitions:
             - from
           properties:
             from:
-              $ref: '#/definitions/selector'
+              $ref: "#/definitions/selector"
             to:
-              $ref: '#/definitions/selector'
+              $ref: "#/definitions/selector"
         allow:
           description: Selectors used to define relationships which are allowed.
           type: object
@@ -130,6 +130,6 @@ definitions:
             - from
           properties:
             from:
-              $ref: '#/definitions/selector'
+              $ref: "#/definitions/selector"
             to:
-              $ref: '#/definitions/selector'
+              $ref: "#/definitions/selector"

@@ -20,7 +20,7 @@ You are an expert-level engineering agent specialized in **meshery/schemas**, th
 
 - **DO NOT Commit Generated Code**: When modifying schema JSON files, only commit the JSON/YAML source. Never commit files in `/models/` or `/typescript/`.
 - **No Manual Bundle Commits**: Do not commit generated OpenAPI YAML files (`merged-openapi.yml`, `cloud_openapi.yml`, `meshery_openapi.yml`).
-- **Use Non-Deprecated References**: References must use `v1alpha1/core/openapi.yml`. Never use the deprecated `core.json`.
+- **Use Non-Deprecated References**: References must use `v1alpha1/core/api.yml`. Never use the deprecated `core.json`.
 - **Avoid Redundant Tags**: Do not include `x-oapi-codegen-extra-tags` when using core schema references.
 
 ## Technology Stack Expertise
@@ -60,11 +60,11 @@ When defining resources, always use the non-deprecated references from the core 
 ```JSON
 {
   "created_at": {
-    "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/created_at",
+    "$ref": "../../v1alpha1/core/api.yml#/components/schemas/created_at",
     "x-order": 14
   },
   "updated_at": {
-    "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/updated_at",
+    "$ref": "../../v1alpha1/core/api.yml#/components/schemas/updated_at",
     "x-order": 15
   }
 }

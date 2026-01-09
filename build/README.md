@@ -416,7 +416,7 @@ Schemas are discovered automatically! Just:
 
 2. Add an `openapi.yml` file with your schema definitions:
    ```bash
-   touch schemas/constructs/v1beta1/mypackage/openapi.yml
+   touch schemas/constructs/v1beta1/mypackage/api.yml
    ```
 
 3. Run the build - it will be automatically discovered:

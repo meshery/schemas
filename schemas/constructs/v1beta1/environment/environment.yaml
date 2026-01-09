@@ -10,7 +10,7 @@ required:
   - organization_id
 properties:
   id:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: ID
     x-order: 1
     x-go-name: ID
@@ -37,17 +37,17 @@ properties:
       db: organization_id
       yaml: organization_id
     x-order: 4
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: Environment organization ID
   owner:
     x-oapi-codegen-extra-tags:
       db: owner
       yaml: owner
     x-order: 5
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/uuid
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: Environment owner
   created_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: created_at
       yaml: created_at
@@ -61,13 +61,13 @@ properties:
     x-go-type-skip-optional-pointer: true
     type: object
   updated_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: updated_at
       yaml: updated_at
     x-order: 8
   deleted_at:
-    $ref: ../../v1alpha1/core/openapi.yml#/components/schemas/Time
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: deleted_at
       yaml: deleted_at

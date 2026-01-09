@@ -11,7 +11,7 @@ properties:
     type: string
     description: Specifies the version of the component definition.
   displayName:
-    $ref: ../v1alpha1/core/openapi.yml#/components/schemas/inputString
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/inputString
     description: Name of the component in human-readible format.
   description:
     type: string
@@ -97,7 +97,7 @@ properties:
         description: Status of the component.
       published:
         type: boolean
-        description: '''published'' controls whether the component should be registered in Meshery Registry. When the same ''published'' property in Models, is set to ''false'', the Model property takes precedence with all Entities in the Model not being registered.'
+        description: "'published' controls whether the component should be registered in Meshery Registry. When the same 'published' property in Models, is set to 'false', the Model property takes precedence with all Entities in the Model not being registered."
     additionalProperties: true
   component:
     type: object
@@ -105,10 +105,10 @@ properties:
     properties:
       version:
         type: string
-        description: 'Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod.'
+        description: "Version of the component produced by the registrant. Example: APIVersion of a Kubernetes Pod."
       kind:
         type: string
-        description: 'The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind ''Pod''.'
+        description: "The unique identifier (name) assigned by the registrant to this component. Example: A Kubernetes Pod is of kind 'Pod'."
       schema:
         type: string
         description: JSON schema of the object as defined by the registrant.

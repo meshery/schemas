@@ -319,7 +319,7 @@ generate_schema_models <construct> <schema-version> [<openapi-file>]
 
 generate_schema_models "capability" "v1alpha1"
 generate_schema_models "category" "v1beta1"
-generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
+generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/api.yml"
 ```
 
 This maps to Go packages like:
@@ -530,7 +530,7 @@ make build
 Or validate a single file:
 
 ```bash
-npx @redocly/cli lint schemas/constructs/v1beta1/pattern/openapi.yml
+npx @redocly/cli lint schemas/constructs/v1beta1/pattern/api.yml
 ```
 
 ---

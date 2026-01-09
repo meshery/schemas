@@ -105,7 +105,7 @@ function discoverSchemaPackages() {
     });
 
     for (const dirName of packageDirs) {
-      const openapiPath = path.join(versionPath, dirName, "openapi.yml");
+      const openapiPath = path.join(versionPath, dirName, "api.yml");
       const packageKey = `${version}/${dirName}`;
 
       // Skip excluded packages

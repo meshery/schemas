@@ -1,10 +1,10 @@
 $schema: http://json-schema.org/draft-07/schema#
 type: object
-$comment: 'Any given catalog content will expose a version. It is the version # of the content at time of publshing.'
+$comment: "Any given catalog content will expose a version. It is the version # of the content at time of publshing."
 properties:
   publishedVersion:
     description: Tracks the specific content version that has been made available in the Catalog.
-    $ref: ../v1alpha1/core/openapi.yml#/components/schemas/versionString
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/versionString
   contentType:
     $comment: Based on the entity appropriate schema is selected and used by the system. Examples of different catalog item are Designs, Models, relationships. For designs compatibility only requires model, for Model compatability requires Registrant, version and name
     oneOf:
