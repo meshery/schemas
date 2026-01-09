@@ -2,6 +2,8 @@
 
 This directory contains build scripts and configuration files for generating code from Meshery schemas. The build system generates Go structs, TypeScript types, and RTK Query API clients from OpenAPI and JSON Schema definitions.
 
+All build scripts are written in JavaScript (Node.js) for consistency, cross-platform compatibility, and easier code sharing.
+
 ## Quick Start
 
 ```bash
@@ -10,246 +12,224 @@ make setup    # Install dependencies
 make build    # Generate all code (Go, TypeScript, RTK Query clients)
 ```
 
+Or using npm scripts:
+
+```bash
+npm install
+npm run build:all
+```
+
+## Build Pipeline
+
+The build process is organized into three main stages:
+
+```
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│  bundle-openapi.js  │────▶│  generate-golang.js │     │   generate-rtk.js   │
+│                     │     │                     │     │                     │
+│  Bundles & merges   │     │  Generates Go       │     │  Generates RTK      │
+│  OpenAPI specs      │     │  structs            │     │  Query clients      │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+         │                                                        │
+         │                                                        │
+         ▼                                                        │
+┌─────────────────────────────────────────────────────────────────┘
+│  _openapi_build/
+│  ├── constructs/<version>/<package>/merged-openapi.json
+│  ├── merged_openapi.yml
+│  ├── cloud_openapi.yml
+│  └── meshery_openapi.yml
+└──────────────────────────────────────────────────────────────────
+```
+
 ## Build Scripts Overview
 
-| Script | Purpose | Used By |
-|--------|---------|---------|
-| `generate-golang.sh` | Main Go code generation and OpenAPI bundling | `make build`, `make golang-generate` |
-| `compile-types.sh` | TypeScript type definition generation | `make generate-ts` |
-| `compile-json-schema.mjs` | JSON template generation from schemas | `npm run generate:json` |
-| `convert-openapi-yml-to-json.js` | OpenAPI YAML to TypeScript JSON export | `compile-types.sh` |
-| `filterOpenapiByTag.js` | Filter OpenAPI specs by x-internal tag | `generate-golang.sh` |
-| `latest_release.sh` | Git version/release information | CI/CD pipelines |
+| Script | Purpose | Depends On |
+|--------|---------|------------|
+| `bundle-openapi.js` | Bundles and merges OpenAPI specs | - |
+| `generate-golang.js` | Generates Go structs from OpenAPI | `bundle-openapi.js` |
+| `generate-rtk.js` | Generates RTK Query clients | `bundle-openapi.js` |
+| `compile-types.js` | Generates TypeScript type definitions | - |
+| `index.js` | CLI entry point for running build scripts | - |
+
+### Supporting Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `compile-json-schema.mjs` | Generates JSON templates from schemas |
+| `convert-openapi-yml-to-json.js` | Converts OpenAPI YAML to TypeScript JSON |
+| `filterOpenapiByTag.js` | Filters OpenAPI specs by x-internal tag |
+| `latest_release.sh` | Gets git version/release info (shell) |
+
+## Shared Libraries
+
+All build scripts share common utilities located in `build/lib/`:
+
+| Library | Purpose |
+|---------|---------|
+| `logger.js` | Colored console output and logging |
+| `config.js` | Schema package definitions and paths |
+| `exec.js` | Command execution utilities |
+| `paths.js` | Path resolution and file operations |
 
 ## Script Details
 
-### generate-golang.sh
+### bundle-openapi.js
 
-**Main Go Code Generation Script**
+**OpenAPI Schema Bundling and Merging Script**
 
-This is the primary build script that orchestrates the entire code generation pipeline.
+Prepares the `_openapi_build/` directory that other scripts depend on.
 
 **What it does:**
-1. Bundles individual OpenAPI YAML schemas into merged JSON files using `swagger-cli`
-2. Generates Go structs with JSON and YAML struct tags using `oapi-codegen`
-3. Merges all construct OpenAPI specs into a unified API specification
-4. Filters merged specs by `x-internal` tag to create `cloud_openapi.yml` and `meshery_openapi.yml`
-5. Generates RTK Query clients for both cloud and meshery APIs
+1. Bundles individual OpenAPI YAML schemas into dereferenced JSON files
+2. Merges all construct OpenAPI specs into a unified `merged_openapi.yml`
+3. Filters merged specs by `x-internal` tag to create `cloud_openapi.yml` and `meshery_openapi.yml`
 
 **Usage:**
 ```bash
-./build/generate-golang.sh
+node build/bundle-openapi.js
+# or
+npm run build:bundle
+# or
+make bundle-openapi
 ```
 
 **Output:**
-- `models/<version>/<package>/<package>.go` - Generated Go structs
-- `_openapi_build/merged_openapi.yml` - Combined OpenAPI specification
-- `_openapi_build/cloud_openapi.yml` - Cloud-specific API spec
-- `_openapi_build/meshery_openapi.yml` - Meshery-specific API spec
-- `typescript/rtk/*.ts` - RTK Query API clients
-
-**Dependencies:**
-- Node.js with npx
-- `swagger-cli`, `@redocly/cli`, `@rtk-query/codegen-openapi`
-- Go with `oapi-codegen` installed
+- `_openapi_build/constructs/<version>/<package>/merged-openapi.json`
+- `_openapi_build/merged_openapi.yml`
+- `_openapi_build/cloud_openapi.yml`
+- `_openapi_build/meshery_openapi.yml`
 
 ---
 
-### compile-types.sh
+### generate-golang.js
+
+**Go Code Generation Script**
+
+Generates Go structs from the bundled OpenAPI specifications.
+
+**What it does:**
+1. Reads bundled OpenAPI JSON files from `_openapi_build/constructs/`
+2. Generates Go structs with JSON and YAML struct tags using `oapi-codegen`
+3. Outputs Go files to `models/<version>/<package>/`
+
+**Usage:**
+```bash
+node build/generate-golang.js
+# or
+npm run build:golang
+# or
+make generate-golang  # Auto-runs bundle-openapi first
+```
+
+**Output:**
+- `models/<version>/<package>/<package>.go`
+
+**Prerequisites:**
+- Requires `_openapi_build/` directory (run `bundle-openapi.js` first)
+- Requires `oapi-codegen` Go tool
+
+---
+
+### generate-rtk.js
+
+**RTK Query Client Generation Script**
+
+Generates RTK Query API clients for TypeScript/React applications.
+
+**What it does:**
+1. Reads RTK Query configuration files from `typescript/rtk/`
+2. Generates type-safe API hooks from filtered OpenAPI specs
+3. Outputs TypeScript files for both cloud and meshery APIs
+
+**Usage:**
+```bash
+node build/generate-rtk.js
+# or
+npm run build:rtk
+# or
+make generate-rtk  # Auto-runs bundle-openapi first
+```
+
+**Configuration:**
+- `typescript/rtk/cloud-rtk-config.ts`
+- `typescript/rtk/meshery-rtk-config.ts`
+
+**Output:**
+- `typescript/rtk/cloudApi.ts`
+- `typescript/rtk/mesheryApi.ts`
+
+**Prerequisites:**
+- Requires `_openapi_build/` directory (run `bundle-openapi.js` first)
+
+---
+
+### compile-types.js
 
 **TypeScript Type Definition Generator**
 
-Generates TypeScript type definitions (`.d.ts` files) from JSON schema files.
-
-**What it does:**
-1. Traverses the input directory for JSON schema files
-2. Generates TypeScript type definitions using `json2ts`
-3. Converts OpenAPI YAML files to TypeScript JSON exports
-4. Skips template files (`*_template.json`, `*_template.yaml`)
+Generates TypeScript type definitions from JSON schema files.
 
 **Usage:**
 ```bash
-./build/compile-types.sh <input_directory> <output_directory> <templates_output_directory>
-
-# Example:
-./build/compile-types.sh schemas/constructs typescript/constructs typescript/templates
+node build/compile-types.js <input_dir> <output_dir> <templates_dir>
+# or
+npm run generate:types
+# or
+make generate-ts
 ```
 
 **Output:**
-- `<output_directory>/**/*.d.ts` - TypeScript type definitions
-- `<output_directory>/**/openapi.d.ts` - OpenAPI TypeScript definitions
-- `<output_directory>/**/*OpenApiSchema.ts` - OpenAPI JSON schema exports
-
-**Note:** Template generation (Step 2) is disabled. Templates are now manually maintained in `templates/` subdirectories.
+- `<output_dir>/**/*.d.ts` - TypeScript type definitions
+- `<output_dir>/**/*Schema.ts` - Schema exports
 
 ---
 
-### compile-json-schema.mjs
+### index.js
 
-**JSON Schema Template Generator**
+**CLI Entry Point**
 
-Generates JSON template files from JSON schema definitions by resolving all `$ref` references and populating default values.
-
-**What it does:**
-1. Loads a JSON schema file
-2. Resolves all `$ref` references (internal and external)
-3. Generates default values using `json-schema-default`
-4. Fills empty strings using `json-schema-empty-strings`
-5. Merges the results into a final template file
+Unified CLI for running build scripts with dependency resolution.
 
 **Usage:**
 ```bash
-node build/compile-json-schema.mjs <input_schema.json> <output_template.json>
-
-# Example:
-node build/compile-json-schema.mjs schemas/constructs/v1beta1/model/model.json templates/model_template.json
+node build/index.js <command>
 ```
 
-**Note:** This script can be used for initial template generation. Templates are now manually maintained in `templates/` subdirectories.
+**Commands:**
+- `bundle` - Bundle and merge OpenAPI specifications
+- `golang` - Generate Go structs (auto-runs bundle)
+- `rtk` - Generate RTK Query clients (auto-runs bundle)
+- `types` - Generate TypeScript type definitions
+- `all` - Run full build pipeline
+- `help` - Show help message
 
----
-
-### convert-openapi-yml-to-json.js
-
-**OpenAPI YAML to TypeScript JSON Converter**
-
-Converts OpenAPI YAML schema files to TypeScript files that export the schema as a JSON object.
-
-**What it does:**
-1. Reads an OpenAPI YAML file
-2. Resolves all `$ref` references
-3. Converts OpenAPI schema format to JSON Schema format
-4. Generates a TypeScript file exporting the schema as a const
-
-**Usage:**
+**Examples:**
 ```bash
-node build/convert-openapi-yml-to-json.js <input_openapi.yml> [output_directory]
-
-# Example:
-node build/convert-openapi-yml-to-json.js schemas/constructs/v1beta1/model/openapi.yml typescript/constructs/v1beta1/model
+node build/index.js bundle
+node build/index.js golang
+node build/index.js all
+npm run build:all
 ```
-
-**Output:** `<output_directory>/<PascalCaseName>OpenApiSchema.ts`
-
----
-
-### filterOpenapiByTag.js
-
-**OpenAPI Specification Filter by x-internal Tag**
-
-Filters an OpenAPI specification to include only operations that match a specified `x-internal` tag. Used to create separate API specs for different consumers.
-
-**What it does:**
-1. Reads an OpenAPI YAML specification
-2. Iterates through all paths and HTTP methods
-3. Filters operations based on the `x-internal` field
-4. Includes operations where `x-internal` is not set, or contains the specified tag
-
-**Usage:**
-```bash
-node build/filterOpenapiByTag.js <input.yml> <output.yml> [tag]
-
-# Examples:
-node build/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/cloud_openapi.yml cloud
-node build/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/meshery_openapi.yml meshery
-```
-
-**Arguments:**
-- `input.yml` - Path to the input OpenAPI specification
-- `output.yml` - Path to write the filtered specification
-- `tag` - Tag to filter by (default: "meshery")
-
----
-
-### latest_release.sh
-
-**Git Release Version Information Script**
-
-Retrieves version information from git tags for use in build and release processes.
-
-**What it does:**
-1. Determines if current git reference is a tag or branch
-2. Sets release channel to "stable" for tags, "edge" for branches
-3. Outputs latest version information in various formats
-
-**Usage:**
-```bash
-./build/latest_release.sh
-
-# Or source it to get environment variables:
-source ./build/latest_release.sh
-```
-
-**Output:**
-- `RELEASE_CHANNEL` - "stable" or "edge"
-- `LATEST_VERSION` - Full git describe output (e.g., v0.7.0)
-- `GIT_VERSION` - Same as LATEST_VERSION
-- `GIT_STRIPPED_VERSION` - Version without 'v' prefix (e.g., 0.7.0)
 
 ---
 
 ## Configuration Files
 
+### lib/config.js
+
+Central configuration for all schema packages. Edit this file to:
+- Add or remove schema packages
+- Change package versions
+- Modify build paths
+
 ### openapi.config.yml
 
-**Primary oapi-codegen Configuration**
-
-Used by `generate-golang.sh` for generating Go models from OpenAPI specifications.
-
-**Configures:**
-- Package name for generated Go code
-- Import mappings for cross-schema references
-- Generation options (models only, no client/server code)
-- Output options like tag exclusions
-
----
+Primary oapi-codegen configuration for Go code generation.
 
 ### oapi-codegen-config.yml
 
-**⚠️ Legacy/Example Configuration**
-
-This is an example configuration file for manual `oapi-codegen` usage, documented in `CONTRIBUTING.md`. The automated build process uses `openapi.config.yml` instead.
-
-**Known Issues:**
-- Contains outdated paths (e.g., "v1alphav3" should be "v1alpha3")
-- Import mappings may be out of sync with current schema structure
-
----
-
-### Makefile.core.mk
-
-**Core Build Configuration Variables**
-
-Defines global variables used across all Makefile targets:
-- Git version and commit information
-- Go environment configuration (GOPATH, GOBIN, GOVERSION)
-- Provider settings
-- Release channel settings
-
-**Usage:**
-```makefile
-include build/Makefile.core.mk
-```
-
----
-
-### Makefile.show-help.mk
-
-**Auto-generated Help Target**
-
-Provides a self-documenting help target that displays all available Makefile targets with their descriptions.
-
-**Usage:**
-```makefile
-include build/Makefile.show-help.mk
-```
-
-Document targets with `##` comments:
-```makefile
-## Build the project
-build:
-    @echo "Building..."
-```
+⚠️ **Legacy/Example** - Not used by automated builds. Kept for reference.
 
 ---
 
@@ -257,13 +237,11 @@ build:
 
 ### Node.js Packages
 
-Install via `npm install` or `make setup`:
+Install via `npm install`:
 - `@apidevtools/json-schema-ref-parser` - $ref resolution
 - `@openapi-contrib/openapi-schema-to-json-schema` - OpenAPI to JSON Schema
 - `js-yaml` - YAML parsing
 - `lodash.merge` - Deep object merging
-- `json-schema-default` - Default value extraction
-- `json-schema-empty-strings` - Empty string generation
 
 ### CLI Tools (via npx)
 
@@ -281,15 +259,26 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
 ---
 
-## Common Make Targets
+## Make Targets
 
 | Target | Description |
 |--------|-------------|
-| `make build` | Generate everything (Go, TypeScript, RTK Query) |
-| `make golang-generate` | Generate Go code only |
+| `make build` | Run full build pipeline |
+| `make bundle-openapi` | Bundle and merge OpenAPI specs |
+| `make generate-golang` | Generate Go code (auto-runs bundle) |
+| `make generate-rtk` | Generate RTK Query clients (auto-runs bundle) |
 | `make generate-ts` | Generate TypeScript types |
 | `make setup` | Install all dependencies |
-| `make clean` | Clean generated files |
+
+## NPM Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run build:all` | Run full build pipeline |
+| `npm run build:bundle` | Bundle OpenAPI specs |
+| `npm run build:golang` | Generate Go code |
+| `npm run build:rtk` | Generate RTK Query clients |
+| `npm run generate:types` | Generate TypeScript types |
 
 ---
 
@@ -297,6 +286,7 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 
 ### oapi-codegen not found
 ```bash
+go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 export PATH="${GOPATH:-$HOME/go}/bin:$PATH"
 ```
 
@@ -307,8 +297,37 @@ npm install
 make setup
 ```
 
+### _openapi_build directory missing
+```bash
+node build/bundle-openapi.js
+# or
+make bundle-openapi
+```
+
 ### Schema reference errors
-Ensure all `$ref` paths are correct and referenced schemas exist. Check for:
-- Relative path correctness
-- Schema file existence
-- Proper JSON/YAML syntax
+Ensure all `$ref` paths are correct and referenced schemas exist.
+
+---
+
+## Adding a New Schema Package
+
+1. Add the package to `build/lib/config.js`:
+   ```javascript
+   const schemaPackages = [
+     // ... existing packages
+     { name: "mypackage", version: "v1beta1" },
+   ];
+   ```
+
+2. If the package should be included in merged specs, add to `mergePackages`:
+   ```javascript
+   const mergePackages = [
+     // ... existing packages
+     { name: "mypackage", version: "v1beta1" },
+   ];
+   ```
+
+3. Run the build:
+   ```bash
+   make build
+   ```
