@@ -4,7 +4,7 @@ set -euo pipefail  # ✅ Exit on error, unset vars, and pipefail
 # Disable telemetry for @redocly/cli
 export REDOCLY_TELEMETRY=off
 
-merged_construct="merged-openapi.yml"
+merged_construct="merged-openapi.json"
 
 generate_schema_models() {
 
@@ -54,7 +54,7 @@ generate_schema_models() {
     # same for db tags
     # sed 's/\(json:"\([^"]*\)"\)\( db:"[^"]*"\)\?/\1 db:"\2"/g' "$output_go_file" > "$output_go_file.tmp" && mv "$output_go_file.tmp" "$output_go_file"
 
-    # npx @redocly/cli join $merged_output schemas/merged_openapi.yml -o schemas/merged_openapi.yml --without-x-tag-groups
+    # npx @redocly/cli join $merged_output _openapi_build/merged_openapi.json -o _openapi_build/merged_openapi.json --without-x-tag-groups
 
     # rm -f "$merged_output"
     echo -e "${GREEN}✅ Generated: $output_go_file${NC}"
@@ -112,10 +112,10 @@ npx --yes @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/academy/${merged_construct}" \
      "${v1beta1}/invitation/${merged_construct}" \
      "${v1beta1}/badge/${merged_construct}" \
- -o _openapi_build/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
+ -o _openapi_build/merged_openapi.json  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
 
-node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/cloud_openapi.yml cloud
-node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/meshery_openapi.yml  meshery
+node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.json _openapi_build/cloud_openapi.yml cloud
+node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.json _openapi_build/meshery_openapi.yml  meshery
 
 
 # Generate rtk query api
