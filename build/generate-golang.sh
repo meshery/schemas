@@ -4,6 +4,12 @@ set -euo pipefail  # ✅ Exit on error, unset vars, and pipefail
 # Disable telemetry for @redocly/cli
 export REDOCLY_TELEMETRY=off
 
+# Add Go bin directory to PATH for oapi-codegen
+export PATH="${GOPATH:-$HOME/go}/bin:$PATH"
+
+# Change to project root directory (parent of build/)
+cd "$(dirname "$0")/.."
+
 merged_construct="merged-openapi.yml"
 
 generate_schema_models() {
@@ -43,7 +49,7 @@ generate_schema_models() {
         echo -e "${RED}❌ Bundling failed!${NC}"; return 1;
     }
 
-    oapi-codegen --config openapi.config.yml --package "$package" -generate types --include-tags all -o "$output_go_file" "$merged_output" || {
+    oapi-codegen --config build/openapi.config.yml --package "$package" -generate types --include-tags all -o "$output_go_file" "$merged_output" || {
         echo -e "${RED}❌ Model generation failed!${NC}"; rm -f "$merged_output"; return 1;
     }
     # 🏆 Apply sed to inject YAML struct tags alongside JSON ones
@@ -114,8 +120,8 @@ npx --yes @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/badge/${merged_construct}" \
  -o _openapi_build/merged_openapi.yml  --prefix-tags-with-info-prop title --prefix-components-with-info-prop title
 
-node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/cloud_openapi.yml cloud
-node scripts/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/meshery_openapi.yml  meshery
+node build/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/cloud_openapi.yml cloud
+node build/filterOpenapiByTag.js _openapi_build/merged_openapi.yml _openapi_build/meshery_openapi.yml  meshery
 
 
 # Generate rtk query api

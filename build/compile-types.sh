@@ -53,7 +53,7 @@ resolve_references() {
 
   # Get the directory where this script is located
   local SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-  local RESOLVER_SCRIPT="$SCRIPT_DIR/scripts/ref-resolver.js"
+  local RESOLVER_SCRIPT="$SCRIPT_DIR/ref-resolver.js"
   SCHEMA_PATH="$TEMP_DIR" node "$RESOLVER_SCRIPT"
 }
 
@@ -184,7 +184,7 @@ convert_openapi_yaml_to_json() {
 
   # Get the directory where this script is located
   local SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-  local CONVERTER_SCRIPT="$SCRIPT_DIR/scripts/convert-openapi-yml-to-json.js"
+  local CONVERTER_SCRIPT="$SCRIPT_DIR/convert-openapi-yml-to-json.js"
 
   # Find all openapi.yaml or openapi.yml files
   for openapiPath in $(find "$INPUT_DIR" -name "openapi.yaml" -o -name "openapi.yml"); do
