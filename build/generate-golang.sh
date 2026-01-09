@@ -10,7 +10,8 @@ export PATH="${GOPATH:-$HOME/go}/bin:$PATH"
 # Change to project root directory (parent of build/)
 cd "$(dirname "$0")/.."
 
-merged_construct="merged-openapi.yml"
+# merged openapi needs to be in json format as it is workwith for rtk query generation and packaging as typescript
+merged_construct="merged-openapi.json"
 
 generate_schema_models() {
 
