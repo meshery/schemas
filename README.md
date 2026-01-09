@@ -126,8 +126,10 @@ schemas/
       <construct>/                  # e.g., model, component
         <construct>.json            # Schema definition for the construct (noun)
         openapi.yml                 # API operations (verbs: create, update, delete)
-        <construct>_template.json   # JSON template from schema
-        <construct>_template.yaml   # YAML template from schema
+        templates/                  # Manually defined templates directory
+          <construct>_template.json # JSON template from schema
+          <construct>_template.yaml # YAML template from schema
+          <variant>_template.json   # Additional variant templates (optional)
 ```
 
 ### 🧠 Explanation
@@ -137,7 +139,9 @@ schemas/
     * **`<construct>/`** – A directory to contain all files for any given construct like `pattern`, `component`, etc.
       * **`<construct>.json`** – Defines the **data model (noun)** for the construct.
       * **`openapi.yml`** – Contains a package manifest of all schema files with respect to any given construct (used by oapi-codegen) AND defines **API operations** (verbs).
-      * **Templates** – `*_template.json` and `*_template.yaml` are  examples with defaults.
+      * **`templates/`** – A subdirectory containing manually defined template files. You can add as many different templates here for different variants, use cases, or configurations. Templates are example instances of the schema with default or sample values.
+        * `<construct>_template.json` / `<construct>_template.yaml` – Default templates in JSON/YAML format.
+        * Additional variant templates can be added (e.g., `<construct>_minimal_template.json`, `<construct>_full_template.yaml`) for different use cases.
 
 ---
 
@@ -150,7 +154,7 @@ schemas/
 
 - OpenAPI schema names
   - PascalCase nouns under `components/schemas` (e.g., `Model`, `Component`).
-  - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `<construct>_template.(json|yaml)`.
+  - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `templates/<construct>_template.(json|yaml)`.
 
 - Endpoints and operations
   - Paths are under `/api` with kebab-case , plural nouns (e.g., `/api/workspaces`, `/api/environments`).
