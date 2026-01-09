@@ -29,7 +29,7 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup docs-build generate-ts publish-ts generate-golang golangci
+.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -54,18 +54,27 @@ build-ts: generate-ts
 publish-ts: build-ts
 	npm run publish-ts-lib
 
-## Generate Golang Models
-golang-generate: dep-check
-	./build/generate-golang.sh
+## Bundle and merge OpenAPI specifications into _openapi_build/
+bundle-openapi: dep-check
+	node build/bundle-openapi.js
+
+## Generate Golang Models (requires bundle-openapi)
+generate-golang: bundle-openapi
+	node build/generate-golang.js
+
+## Generate RTK Query clients (requires bundle-openapi)
+generate-rtk: bundle-openapi
+	node build/generate-rtk.js
+
+## Generate Golang Models (legacy alias for generate-golang)
+golang-generate: generate-golang
 
 ## Lint check Meshery Server.
 golangci: dep-check
 	golangci-lint run
 
-# depends on order , golang-generate generates some artifacts that are used in the next step ( TODO: promote golang-generate to a parent build script)
-
-## Generate and bundle schema package
-build: golang-generate generate-ts build-ts
+## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, and TypeScript)
+build: bundle-openapi generate-golang generate-rtk generate-ts build-ts
 
 #-----------------------------------------------------------------------------
 # Dependencies

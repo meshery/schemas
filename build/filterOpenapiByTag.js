@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * filterOpenapiByTag.js - OpenAPI Specification Filter by x-internal Tag
  *
@@ -32,7 +33,7 @@
  *   A filtered OpenAPI YAML file containing only operations matching the tag.
  *
  * NOTE:
- *   This script is called by generate-golang.sh to create cloud_openapi.yml
+ *   This script is called by bundle-openapi.js to create cloud_openapi.yml
  *   and meshery_openapi.yml from the merged OpenAPI specification.
  */
 

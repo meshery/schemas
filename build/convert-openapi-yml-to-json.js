@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * convert-openapi-yml-to-json.js - OpenAPI YAML to TypeScript JSON Converter
  *
