@@ -99,7 +99,9 @@ async function generateRtkClient(rtk) {
     await npx("@rtk-query/codegen-openapi", [configPath]);
     logger.success(`Generated: ${rtk.outputDescription}`);
   } catch (err) {
-    throw new Error(`Failed to generate ${rtk.name} API client: ${err.message}`);
+    throw new Error(
+      `Failed to generate ${rtk.name} API client: ${err.message}`,
+    );
   }
 }
 

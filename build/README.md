@@ -49,14 +49,13 @@ The build process is organized into three main stages:
 | `bundle-openapi.js` | Bundles and merges OpenAPI specs | - |
 | `generate-golang.js` | Generates Go structs from OpenAPI | `bundle-openapi.js` |
 | `generate-rtk.js` | Generates RTK Query clients | `bundle-openapi.js` |
-| `compile-types.js` | Generates TypeScript type definitions | - |
+| `generate-typescript.js` | Generates TypeScript type definitions | `bundle-openapi.js` |
 | `index.js` | CLI entry point for running build scripts | - |
 
 ### Supporting Scripts
 
 | Script | Purpose |
 |--------|---------|
-| `compile-json-schema.mjs` | Generates JSON templates from schemas |
 | `convert-openapi-yml-to-json.js` | Converts OpenAPI YAML to TypeScript JSON |
 | `filterOpenapiByTag.js` | Filters OpenAPI specs by x-internal tag |
 | `latest_release.sh` | Gets git version/release info (shell) |
@@ -199,24 +198,32 @@ make generate-rtk  # Auto-runs bundle-openapi first
 
 ---
 
-### compile-types.js
+### generate-typescript.js
 
 **TypeScript Type Definition Generator**
 
-Generates TypeScript type definitions from JSON schema files.
+Generates TypeScript type definitions from bundled OpenAPI specifications using openapi-typescript.
+This script focuses on TypeScript code generation and depends on the `_openapi_build/` directory
+being populated by `bundle-openapi.js`.
+
+Schemas are discovered dynamically by walking the `_openapi_build/constructs/` directory
+and looking for `merged-openapi.json` files.
 
 **Usage:**
 ```bash
-node build/compile-types.js <input_dir> <output_dir> <templates_dir>
+node build/generate-typescript.js
 # or
 npm run generate:types
 # or
 make generate-ts
 ```
 
+**Prerequisites:**
+- Requires `_openapi_build/` directory (run `bundle-openapi.js` first)
+
 **Output:**
-- `<output_dir>/**/*.d.ts` - TypeScript type definitions
-- `<output_dir>/**/*Schema.ts` - Schema exports
+- `typescript/<version>/<package>/<Package>.ts` - TypeScript type definitions
+- `typescript/<version>/<package>/<Package>.json` - Raw JSON schema
 
 ---
 

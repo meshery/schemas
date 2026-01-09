@@ -18,7 +18,7 @@ const paths = {
   schemasDir: "schemas/constructs",
   buildDir: "_openapi_build",
   modelsDir: "models",
-  typescriptDir: "typescript",
+  typescriptDir: "typescript/generated",
 
   // Build config files
   openapiConfig: "build/openapi.config.yml",

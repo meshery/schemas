@@ -49,8 +49,8 @@ const commands = {
   },
   types: {
     description: "Generate TypeScript type definitions",
-    script: "compile-types.js",
-    args: ["schemas/constructs", "typescript/constructs", "typescript/templates"],
+    script: "generate-typescript.js",
+    dependsOn: "bundle",
   },
   all: {
     description: "Run full build pipeline",
