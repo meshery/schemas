@@ -1,17 +1,19 @@
 import { cloudBaseApi as api } from "./api";
 export const addTagTypes = [
-  "design_other",
-  "model_other",
-  "subscription_subscription",
-  "subscription_other",
-  "plan_Plans",
-  "feature_Features",
-  "workspace_workspaces",
-  "environment_environments",
   "Academy_API_Academy",
   "Academy_API_other",
-  "invitation_Invitation",
   "badge_Badge",
+  "design_other",
+  "environment_environments",
+  "events_other",
+  "feature_Features",
+  "invitation_Invitation",
+  "model_other",
+  "Organization_other",
+  "plan_Plans",
+  "subscription_subscription",
+  "subscription_other",
+  "workspace_workspaces",
 ] as const;
 const injectedRtkApi = api
   .enhanceEndpoints({
@@ -19,123 +21,6 @@ const injectedRtkApi = api
   })
   .injectEndpoints({
     endpoints: (build) => ({
-      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
-        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["design_other"],
-      }),
-      registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
-        query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["model_other"],
-      }),
-      getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/entitlement/subscriptions`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            order: queryArg.order,
-            status: queryArg.status,
-          },
-        }),
-        providesTags: ["subscription_subscription"],
-      }),
-      postApiEntitlementSubscriptionsBySubscriptionIdCancel: build.mutation<
-        PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse,
-        PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/cancel`,
-          method: "POST",
-        }),
-        invalidatesTags: ["subscription_other"],
-      }),
-      postApiEntitlementSubscriptionsCreate: build.mutation<
-        PostApiEntitlementSubscriptionsCreateApiResponse,
-        PostApiEntitlementSubscriptionsCreateApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/create`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["subscription_other"],
-      }),
-      postApiEntitlementSubscriptionsBySubscriptionIdUpgrade: build.mutation<
-        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiResponse,
-        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgrade`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["subscription_other"],
-      }),
-      postApiEntitlementSubscriptionsBySubscriptionIdUpgradePreview: build.mutation<
-        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse,
-        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgradePreview`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["subscription_other"],
-      }),
-      postApiEntitlementSubscriptionsWebhooks: build.mutation<
-        PostApiEntitlementSubscriptionsWebhooksApiResponse,
-        PostApiEntitlementSubscriptionsWebhooksApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/webhooks`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["subscription_other"],
-      }),
-      getPlans: build.query<GetPlansApiResponse, GetPlansApiArg>({
-        query: () => ({ url: `/api/entitlement/plans` }),
-        providesTags: ["plan_Plans"],
-      }),
-      getFeatures: build.query<GetFeaturesApiResponse, GetFeaturesApiArg>({
-        query: () => ({ url: `/api/entitlement/features` }),
-        providesTags: ["feature_Features"],
-      }),
-      getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
-        query: (queryArg) => ({
-          url: `/api/entitlement/subscriptions/organizations/${queryArg.organizationId}/features`,
-        }),
-        providesTags: ["feature_Features"],
-      }),
-      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
-        query: () => ({ url: `/api/workspaces` }),
-        providesTags: ["workspace_workspaces"],
-      }),
-      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["workspace_workspaces"],
-      }),
-      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
-        providesTags: ["workspace_workspaces"],
-      }),
-      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["workspace_workspaces"],
-      }),
-      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["workspace_workspaces"],
-      }),
-      createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
-        query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["environment_environments"],
-      }),
-      getEnvironments: build.query<GetEnvironmentsApiResponse, GetEnvironmentsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/environments`,
-          params: {
-            search: queryArg.search,
-            order: queryArg.order,
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            orgID: queryArg.orgId,
-          },
-        }),
-        providesTags: ["environment_environments"],
-      }),
       getMyAcademyCirricula: build.query<GetMyAcademyCirriculaApiResponse, GetMyAcademyCirriculaApiArg>({
         query: (queryArg) => ({
           url: `/api/academy/cirricula/registered`,
@@ -288,6 +173,69 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/academy/certificates/${queryArg.certificateId}` }),
         providesTags: ["Academy_API_Academy"],
       }),
+      deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["badge_Badge"],
+      }),
+      getBadgeById: build.query<GetBadgeByIdApiResponse, GetBadgeByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.id}` }),
+        providesTags: ["badge_Badge"],
+      }),
+      createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
+        query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["badge_Badge"],
+      }),
+      importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
+        query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["design_other"],
+      }),
+      createEnvironment: build.mutation<CreateEnvironmentApiResponse, CreateEnvironmentApiArg>({
+        query: (queryArg) => ({ url: `/api/environments`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["environment_environments"],
+      }),
+      getEnvironments: build.query<GetEnvironmentsApiResponse, GetEnvironmentsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/environments`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            orgID: queryArg.orgId,
+          },
+        }),
+        providesTags: ["environment_environments"],
+      }),
+      deleteEventsById: build.mutation<DeleteEventsByIdApiResponse, DeleteEventsByIdApiArg>({
+        query: (queryArg) => ({ url: `/events/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["events_other"],
+      }),
+      postEvents: build.mutation<PostEventsApiResponse, PostEventsApiArg>({
+        query: (queryArg) => ({ url: `/events`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      deleteEvents: build.mutation<DeleteEventsApiResponse, DeleteEventsApiArg>({
+        query: (queryArg) => ({ url: `/events`, method: "DELETE", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      putEventsStatus: build.mutation<PutEventsStatusApiResponse, PutEventsStatusApiArg>({
+        query: (queryArg) => ({ url: `/events/status`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      putEventsByIdStatus: build.mutation<PutEventsByIdStatusApiResponse, PutEventsByIdStatusApiArg>({
+        query: (queryArg) => ({ url: `/events/${queryArg.id}/status`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["events_other"],
+      }),
+      getFeatures: build.query<GetFeaturesApiResponse, GetFeaturesApiArg>({
+        query: () => ({ url: `/api/entitlement/features` }),
+        providesTags: ["feature_Features"],
+      }),
+      getFeaturesByOrganization: build.query<GetFeaturesByOrganizationApiResponse, GetFeaturesByOrganizationApiArg>({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/organizations/${queryArg.organizationId}/features`,
+        }),
+        providesTags: ["feature_Features"],
+      }),
       getInvitation: build.query<GetInvitationApiResponse, GetInvitationApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/invitations/${queryArg.invitationId}` }),
         providesTags: ["invitation_Invitation"],
@@ -319,454 +267,105 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["invitation_Invitation"],
       }),
-      deleteBadgeById: build.mutation<DeleteBadgeByIdApiResponse, DeleteBadgeByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.id}`, method: "DELETE" }),
-        invalidatesTags: ["badge_Badge"],
+      registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
+        query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["model_other"],
       }),
-      getBadgeById: build.query<GetBadgeByIdApiResponse, GetBadgeByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/organizations/badges/${queryArg.id}` }),
-        providesTags: ["badge_Badge"],
+      getOrgByDomain: build.query<GetOrgByDomainApiResponse, GetOrgByDomainApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/by-domain`,
+          params: {
+            domain: queryArg.domain,
+          },
+        }),
+        providesTags: ["Organization_other"],
       }),
-      createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
-        query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["badge_Badge"],
+      getPlans: build.query<GetPlansApiResponse, GetPlansApiArg>({
+        query: () => ({ url: `/api/entitlement/plans` }),
+        providesTags: ["plan_Plans"],
+      }),
+      getSubscriptions: build.query<GetSubscriptionsApiResponse, GetSubscriptionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            order: queryArg.order,
+            status: queryArg.status,
+          },
+        }),
+        providesTags: ["subscription_subscription"],
+      }),
+      postApiEntitlementSubscriptionsBySubscriptionIdCancel: build.mutation<
+        PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse,
+        PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/cancel`,
+          method: "POST",
+        }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      postApiEntitlementSubscriptionsCreate: build.mutation<
+        PostApiEntitlementSubscriptionsCreateApiResponse,
+        PostApiEntitlementSubscriptionsCreateApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/create`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      postApiEntitlementSubscriptionsBySubscriptionIdUpgrade: build.mutation<
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiResponse,
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgrade`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      postApiEntitlementSubscriptionsBySubscriptionIdUpgradePreview: build.mutation<
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse,
+        PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/entitlement/subscriptions/${queryArg.subscriptionId}/upgradePreview`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      postApiEntitlementSubscriptionsWebhooks: build.mutation<
+        PostApiEntitlementSubscriptionsWebhooksApiResponse,
+        PostApiEntitlementSubscriptionsWebhooksApiArg
+      >({
+        query: (queryArg) => ({ url: `/api/entitlement/subscriptions/webhooks`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["subscription_other"],
+      }),
+      getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
+        query: () => ({ url: `/api/workspaces` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      postApiWorkspaces: build.mutation<PostApiWorkspacesApiResponse, PostApiWorkspacesApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      getApiWorkspacesById: build.query<GetApiWorkspacesByIdApiResponse, GetApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}` }),
+        providesTags: ["workspace_workspaces"],
+      }),
+      putApiWorkspacesById: build.mutation<PutApiWorkspacesByIdApiResponse, PutApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["workspace_workspaces"],
+      }),
+      deleteApiWorkspacesById: build.mutation<DeleteApiWorkspacesByIdApiResponse, DeleteApiWorkspacesByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/workspaces/${queryArg.id}`, method: "DELETE" }),
+        invalidatesTags: ["workspace_workspaces"],
       }),
     }),
     overrideExisting: false,
   });
 export { injectedRtkApi as cloudApi };
-export type ImportDesignApiResponse = /** status 200 Successful Import */ {
-  message?: string;
-};
-export type ImportDesignApiArg = {
-  body: {
-    /** Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    file?: string;
-    /** The name of the pattern file being imported. */
-    file_name?: string;
-    /** Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it. */
-    name?: string;
-    /** Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
-    url?: string;
-  };
-};
-export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
-  message?: string;
-};
-export type RegisterMeshmodelsApiArg = {
-  body: {
-    importBody:
-      | {
-          /** Name of the file being uploaded. */
-          fileName: string;
-          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          modelFile: string;
-        }
-      | {
-          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
-          url: string;
-        }
-      | {
-          /** Upload a CSV file containing model definitions */
-          modelCsv: Blob;
-          /** Upload a CSV file containing component definitions */
-          componentCsv: Blob;
-          /** Upload a CSV file containing relationship definitions */
-          relationshipCsv: Blob;
-        }
-      | {
-          /** URI to the source code or package of the model. */
-          url: string | string;
-        };
-    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
-    uploadType: "file" | "urlImport" | "csv" | "url";
-    register: boolean;
-  };
-};
-export type GetSubscriptionsApiResponse = /** status 200 Get subscription response */ {
-  page: number;
-  page_size: number;
-  total_count: number;
-  subscriptions: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    ID: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    org_id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    plan_id: string;
-    plan?: {
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      id: string;
-      /** Name of the plan */
-      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-      cadence: "monthly" | "yearly";
-      unit: "user" | "free";
-      /** Minimum number of units required for the plan */
-      minimum_units: number;
-      /** Price per unit of the plan */
-      price_per_unit: number;
-      currency: "usd";
-    };
-    quantity: number;
-    start_date?: string;
-    end_date?: string;
-    /** Possible statuses of a Stripe subscription. */
-    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-    billing_id: string;
-  }[];
-};
-export type GetSubscriptionsApiArg = {
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Filter subscriptions by status */
-  status?: string[];
-};
-export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse = /** status 200 undefined */ {
-  page: number;
-  page_size: number;
-  total_count: number;
-  subscriptions: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    ID: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    org_id: string;
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    plan_id: string;
-    plan?: {
-      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-      id: string;
-      /** Name of the plan */
-      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-      cadence: "monthly" | "yearly";
-      unit: "user" | "free";
-      /** Minimum number of units required for the plan */
-      minimum_units: number;
-      /** Price per unit of the plan */
-      price_per_unit: number;
-      currency: "usd";
-    };
-    quantity: number;
-    start_date?: string;
-    end_date?: string;
-    /** Possible statuses of a Stripe subscription. */
-    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-    billing_id: string;
-  }[];
-};
-export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiArg = {
-  /** Subscription ID */
-  subscriptionId: string;
-};
-export type PostApiEntitlementSubscriptionsCreateApiResponse = /** status 200 A new subscription has been created */ {
-  subscription_id?: string;
-  clientSecret?: string;
-};
-export type PostApiEntitlementSubscriptionsCreateApiArg = {
-  body: {
-    /** Organization ID */
-    org_id?: string;
-    /** Price ID from the payment processor */
-    plan_id?: string;
-    /** Coupon ID to apply */
-    coupon_id?: string;
-    /** Number of users in the organization */
-    user_count?: number;
-    /** Email of the customer */
-    email?: string;
-    /** Supported payment processors */
-    payment_processor?: "stripe" | "paypal" | "braintree";
-  };
-};
-export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiResponse = /** status 200 undefined */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  ID: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  org_id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  plan_id: string;
-  plan?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** Name of the plan */
-    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-    cadence: "monthly" | "yearly";
-    unit: "user" | "free";
-    /** Minimum number of units required for the plan */
-    minimum_units: number;
-    /** Price per unit of the plan */
-    price_per_unit: number;
-    currency: "usd";
-  };
-  quantity: number;
-  start_date?: string;
-  end_date?: string;
-  /** Possible statuses of a Stripe subscription. */
-  status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
-  created_at?: string;
-  updated_at?: string;
-  deleted_at?: string;
-  /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-  billing_id: string;
-};
-export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiArg = {
-  /** Subscription ID */
-  subscriptionId: string;
-  body: {
-    /** Old Plan id that is being changed */
-    old_plan_id?: string;
-    /** New Plan id that is being changed to */
-    new_plan_id?: string;
-  };
-};
-export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse =
-  /** status 200 Preview of the upgraded subscription invoice */ object;
-export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg = {
-  /** Subscription ID */
-  subscriptionId: string;
-  body: {
-    /** Old Plan id that is being changed */
-    old_plan_id?: string;
-    /** New Plan id that is being changed to */
-    new_plan_id?: string;
-  };
-};
-export type PostApiEntitlementSubscriptionsWebhooksApiResponse = unknown;
-export type PostApiEntitlementSubscriptionsWebhooksApiArg = {
-  body: object;
-};
-export type GetPlansApiResponse = /** status 200 Plans fetched successfully */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** Name of the plan */
-  name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-  cadence: "monthly" | "yearly";
-  unit: "user" | "free";
-  /** Minimum number of units required for the plan */
-  minimum_units: number;
-  /** Price per unit of the plan */
-  price_per_unit: number;
-  currency: "usd";
-}[];
-export type GetPlansApiArg = void;
-export type GetFeaturesApiResponse = /** status 200 Features fetched successfully */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  plan_id: string;
-  plan?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** Name of the plan */
-    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-    cadence: "monthly" | "yearly";
-    unit: "user" | "free";
-    /** Minimum number of units required for the plan */
-    minimum_units: number;
-    /** Price per unit of the plan */
-    price_per_unit: number;
-    currency: "usd";
-  };
-  /** Enumeration of possible feature types */
-  name?:
-    | "ComponentsInDesign"
-    | "RelationshipsInDesign"
-    | "DesignsInWorkspace"
-    | "WorkspacesInOrganization"
-    | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature allowed, use 9999999999 for unlimited */
-  quantity: number;
-  created_at?: string;
-  updated_at?: string;
-}[];
-export type GetFeaturesApiArg = void;
-export type GetFeaturesByOrganizationApiResponse = /** status 200 Features fetched successfully */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  plan_id: string;
-  plan?: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** Name of the plan */
-    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-    cadence: "monthly" | "yearly";
-    unit: "user" | "free";
-    /** Minimum number of units required for the plan */
-    minimum_units: number;
-    /** Price per unit of the plan */
-    price_per_unit: number;
-    currency: "usd";
-  };
-  /** Enumeration of possible feature types */
-  name?:
-    | "ComponentsInDesign"
-    | "RelationshipsInDesign"
-    | "DesignsInWorkspace"
-    | "WorkspacesInOrganization"
-    | "ImageSizeInDesign"
-    | "SizePerDesign";
-  /** Quantity of the feature allowed, use 9999999999 for unlimited */
-  quantity: number;
-  created_at?: string;
-  updated_at?: string;
-}[];
-export type GetFeaturesByOrganizationApiArg = {
-  /** The ID of the organization */
-  organizationId: string;
-};
-export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  workspaces?: {
-    ID?: string;
-    name?: string;
-    description?: string;
-    organization_id?: string;
-    owner?: string;
-    created_at?: string;
-    updated_at?: string;
-    /** SQL null Timestamp to handle null values of time. */
-    deleted_at?: string;
-  }[];
-};
-export type GetApiWorkspacesApiArg = void;
-export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PostApiWorkspacesApiArg = {
-  /** Body for creating workspace */
-  body: {
-    /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
-    name: string;
-    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
-    description?: string;
-    /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
-    organization_id: string;
-  };
-};
-export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type GetApiWorkspacesByIdApiArg = {
-  id: string;
-};
-export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
-  ID?: string;
-  name?: string;
-  description?: string;
-  organization_id?: string;
-  owner?: string;
-  created_at?: string;
-  updated_at?: string;
-  /** SQL null Timestamp to handle null values of time. */
-  deleted_at?: string;
-};
-export type PutApiWorkspacesByIdApiArg = {
-  id: string;
-  /** Body for updating workspace */
-  body: {
-    /** Name of workspace */
-    name?: string;
-    /** Environment description */
-    description?: string;
-    /** Organization ID */
-    organization_id: string;
-  };
-};
-export type DeleteApiWorkspacesByIdApiResponse = unknown;
-export type DeleteApiWorkspacesByIdApiArg = {
-  id: string;
-};
-export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
-  /** ID */
-  id: string;
-  /** Environment name */
-  name: string;
-  /** Environment description */
-  description: string;
-  /** Environment organization ID */
-  organization_id: string;
-  /** Environment owner */
-  owner?: string;
-  created_at?: string;
-  metadata?: object;
-  updated_at?: string;
-  deleted_at?: string;
-};
-export type CreateEnvironmentApiArg = {
-  /** Body for creating environment */
-  body: {
-    /** An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
-    name: string;
-    /** An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
-    description?: string;
-    /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
-    OrganizationID?: string;
-  };
-};
-export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  environments?: {
-    /** ID */
-    id: string;
-    /** Environment name */
-    name: string;
-    /** Environment description */
-    description: string;
-    /** Environment organization ID */
-    organization_id: string;
-    /** Environment owner */
-    owner?: string;
-    created_at?: string;
-    metadata?: object;
-    updated_at?: string;
-    deleted_at?: string;
-  }[];
-};
-export type GetEnvironmentsApiArg = {
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** User's organization ID */
-  orgId: string;
-};
 export type GetMyAcademyCirriculaApiResponse = unknown;
 export type GetMyAcademyCirriculaApiArg = {
   /** Filter content by content types */
@@ -2066,6 +1665,260 @@ export type GetCertificateByIdApiArg = {
   /** The ID of the certificate to retrieve */
   certificateId: string;
 };
+export type DeleteBadgeByIdApiResponse = unknown;
+export type DeleteBadgeByIdApiArg = {
+  /** Unique identifier */
+  id: string;
+};
+export type GetBadgeByIdApiResponse = /** status 200 undefined */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** The ID of the organization in which this badge is available . */
+  org_id: string;
+  /** unique identifier for the badge ( auto generated ) */
+  label: string;
+  /** Concise descriptor for the badge or certificate. */
+  name: string;
+  /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+  description: string;
+  /** URL to the badge image */
+  image_url: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** Timestamp when the resource was deleted, if applicable */
+  deleted_at: string;
+};
+export type GetBadgeByIdApiArg = {
+  /** Unique identifier */
+  id: string;
+};
+export type CreateOrUpdateBadgeApiResponse = /** status 201 undefined */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** The ID of the organization in which this badge is available . */
+  org_id: string;
+  /** unique identifier for the badge ( auto generated ) */
+  label: string;
+  /** Concise descriptor for the badge or certificate. */
+  name: string;
+  /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+  description: string;
+  /** URL to the badge image */
+  image_url: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** Timestamp when the resource was deleted, if applicable */
+  deleted_at: string;
+};
+export type CreateOrUpdateBadgeApiArg = {
+  body: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** The ID of the organization in which this badge is available . */
+    org_id: string;
+    /** unique identifier for the badge ( auto generated ) */
+    label: string;
+    /** Concise descriptor for the badge or certificate. */
+    name: string;
+    /** A description of the milestone achieved, often including criteria for receiving this recognition. */
+    description: string;
+    /** URL to the badge image */
+    image_url: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** Timestamp when the resource was deleted, if applicable */
+    deleted_at: string;
+  };
+};
+export type ImportDesignApiResponse = /** status 200 Successful Import */ {
+  message?: string;
+};
+export type ImportDesignApiArg = {
+  body: {
+    /** Supported formats: Kubernetes Manifests, Helm Charts, Docker Compose, and Meshery Designs. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
+    file?: string;
+    /** The name of the pattern file being imported. */
+    file_name?: string;
+    /** Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it. */
+    name?: string;
+    /** Provide the URL of the file you want to import. This should be a direct URL to a single file, for example: https://raw.github.com/your-design-file.yaml. Also, ensure that design is in a supported format: Kubernetes Manifest, Helm Chart, Docker Compose, or Meshery Design. See [Import Designs Documentation](https://docs.meshery.io/guides/configuration-management/importing-designs#import-designs-using-meshery-ui) for details */
+    url?: string;
+  };
+};
+export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
+  /** ID */
+  id: string;
+  /** Environment name */
+  name: string;
+  /** Environment description */
+  description: string;
+  /** Environment organization ID */
+  organization_id: string;
+  /** Environment owner */
+  owner?: string;
+  created_at?: string;
+  metadata?: object;
+  updated_at?: string;
+  deleted_at?: string;
+};
+export type CreateEnvironmentApiArg = {
+  /** Body for creating environment */
+  body: {
+    /** An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation. */
+    name: string;
+    /** An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments). */
+    description?: string;
+    /** Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation. */
+    OrganizationID?: string;
+  };
+};
+export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+};
+export type GetEnvironmentsApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** User's organization ID */
+  orgId: string;
+};
+export type DeleteEventsByIdApiResponse = /** status 200 Event deleted successfully */ {
+  message?: string;
+  event_id?: string;
+};
+export type DeleteEventsByIdApiArg = {
+  /** ID of the event to delete */
+  id: string;
+};
+export type PostEventsApiResponse = unknown;
+export type PostEventsApiArg = {
+  body: object;
+};
+export type DeleteEventsApiResponse = /** status 200 event deleted */ {
+  deleted?: string[];
+};
+export type DeleteEventsApiArg = {
+  body: {
+    ids: string[];
+  };
+};
+export type PutEventsStatusApiResponse = /** status 200 Events updated successfully */ {
+  updated?: string[];
+};
+export type PutEventsStatusApiArg = {
+  body: {
+    ids: string[];
+    status: string;
+  };
+};
+export type PutEventsByIdStatusApiResponse = /** status 200 Event status updated successfully */ {
+  message?: string;
+  event_id?: string;
+  status?: string;
+};
+export type PutEventsByIdStatusApiArg = {
+  /** ID of the event */
+  id: string;
+  body: {
+    status: string;
+  };
+};
+export type GetFeaturesApiResponse = /** status 200 Features fetched successfully */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  plan_id: string;
+  plan?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Name of the plan */
+    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+    cadence: "monthly" | "yearly";
+    unit: "user" | "free";
+    /** Minimum number of units required for the plan */
+    minimum_units: number;
+    /** Price per unit of the plan */
+    price_per_unit: number;
+    currency: "usd";
+  };
+  /** Enumeration of possible feature types */
+  name?:
+    | "ComponentsInDesign"
+    | "RelationshipsInDesign"
+    | "DesignsInWorkspace"
+    | "WorkspacesInOrganization"
+    | "ImageSizeInDesign"
+    | "SizePerDesign";
+  /** Quantity of the feature allowed, use 9999999999 for unlimited */
+  quantity: number;
+  created_at?: string;
+  updated_at?: string;
+}[];
+export type GetFeaturesApiArg = void;
+export type GetFeaturesByOrganizationApiResponse = /** status 200 Features fetched successfully */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  plan_id: string;
+  plan?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Name of the plan */
+    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+    cadence: "monthly" | "yearly";
+    unit: "user" | "free";
+    /** Minimum number of units required for the plan */
+    minimum_units: number;
+    /** Price per unit of the plan */
+    price_per_unit: number;
+    currency: "usd";
+  };
+  /** Enumeration of possible feature types */
+  name?:
+    | "ComponentsInDesign"
+    | "RelationshipsInDesign"
+    | "DesignsInWorkspace"
+    | "WorkspacesInOrganization"
+    | "ImageSizeInDesign"
+    | "SizePerDesign";
+  /** Quantity of the feature allowed, use 9999999999 for unlimited */
+  quantity: number;
+  created_at?: string;
+  updated_at?: string;
+}[];
+export type GetFeaturesByOrganizationApiArg = {
+  /** The ID of the organization */
+  organizationId: string;
+};
 export type GetInvitationApiResponse = /** status 200 undefined */ {
   /** Unique identifier for the invitation , is also used as the invitation code */
   id: string;
@@ -2308,96 +2161,346 @@ export type AcceptInvitationApiArg = {
   /** The ID of the invitation */
   invitationId: string;
 };
-export type DeleteBadgeByIdApiResponse = unknown;
-export type DeleteBadgeByIdApiArg = {
-  /** Unique identifier */
-  id: string;
+export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
+  message?: string;
 };
-export type GetBadgeByIdApiResponse = /** status 200 undefined */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** The ID of the organization in which this badge is available . */
-  org_id: string;
-  /** unique identifier for the badge ( auto generated ) */
-  label: string;
-  /** Concise descriptor for the badge or certificate. */
-  name: string;
-  /** A description of the milestone achieved, often including criteria for receiving this recognition. */
-  description: string;
-  /** URL to the badge image */
-  image_url: string;
-  /** Timestamp when the resource was created. */
-  created_at: string;
-  /** Timestamp when the resource was updated. */
-  updated_at: string;
-  /** Timestamp when the resource was deleted, if applicable */
-  deleted_at: string;
-};
-export type GetBadgeByIdApiArg = {
-  /** Unique identifier */
-  id: string;
-};
-export type CreateOrUpdateBadgeApiResponse = /** status 201 undefined */ {
-  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-  id: string;
-  /** The ID of the organization in which this badge is available . */
-  org_id: string;
-  /** unique identifier for the badge ( auto generated ) */
-  label: string;
-  /** Concise descriptor for the badge or certificate. */
-  name: string;
-  /** A description of the milestone achieved, often including criteria for receiving this recognition. */
-  description: string;
-  /** URL to the badge image */
-  image_url: string;
-  /** Timestamp when the resource was created. */
-  created_at: string;
-  /** Timestamp when the resource was updated. */
-  updated_at: string;
-  /** Timestamp when the resource was deleted, if applicable */
-  deleted_at: string;
-};
-export type CreateOrUpdateBadgeApiArg = {
+export type RegisterMeshmodelsApiArg = {
   body: {
-    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-    id: string;
-    /** The ID of the organization in which this badge is available . */
-    org_id: string;
-    /** unique identifier for the badge ( auto generated ) */
-    label: string;
-    /** Concise descriptor for the badge or certificate. */
-    name: string;
-    /** A description of the milestone achieved, often including criteria for receiving this recognition. */
-    description: string;
-    /** URL to the badge image */
-    image_url: string;
-    /** Timestamp when the resource was created. */
-    created_at: string;
-    /** Timestamp when the resource was updated. */
-    updated_at: string;
-    /** Timestamp when the resource was deleted, if applicable */
-    deleted_at: string;
+    importBody:
+      | {
+          /** Name of the file being uploaded. */
+          fileName: string;
+          /** Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          modelFile: string;
+        }
+      | {
+          /** A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details */
+          url: string;
+        }
+      | {
+          /** Upload a CSV file containing model definitions */
+          modelCsv: Blob;
+          /** Upload a CSV file containing component definitions */
+          componentCsv: Blob;
+          /** Upload a CSV file containing relationship definitions */
+          relationshipCsv: Blob;
+        }
+      | {
+          /** URI to the source code or package of the model. */
+          url: string | string;
+        };
+    /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
+    uploadType: "file" | "urlImport" | "csv" | "url";
+    register: boolean;
   };
 };
+export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  name: string;
+  country: string;
+  region: string;
+  description: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  owner: string;
+  metadata: {
+    preferences: {
+      theme: {
+        id: string;
+        logo: {
+          desktop_view: {
+            svg: string;
+            location: string;
+          };
+          mobile_view: {
+            svg: string;
+            location: string;
+          };
+          dark_desktop_view: {
+            svg: string;
+            location: string;
+          };
+          dark_mobile_view: {
+            svg: string;
+            location: string;
+          };
+        };
+        vars?: {
+          [key: string]: any;
+        };
+      };
+      /** Preferences specific to dashboard behavior */
+      dashboard: {
+        [key: string]: any;
+      };
+    };
+  };
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+  domain?: string | null;
+};
+export type GetOrgByDomainApiArg = {
+  domain: string;
+};
+export type GetPlansApiResponse = /** status 200 Plans fetched successfully */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** Name of the plan */
+  name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+  cadence: "monthly" | "yearly";
+  unit: "user" | "free";
+  /** Minimum number of units required for the plan */
+  minimum_units: number;
+  /** Price per unit of the plan */
+  price_per_unit: number;
+  currency: "usd";
+}[];
+export type GetPlansApiArg = void;
+export type GetSubscriptionsApiResponse = /** status 200 Get subscription response */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    ID: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    org_id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    plan_id: string;
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Name of the plan */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      cadence: "monthly" | "yearly";
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan */
+      minimum_units: number;
+      /** Price per unit of the plan */
+      price_per_unit: number;
+      currency: "usd";
+    };
+    quantity: number;
+    start_date?: string;
+    end_date?: string;
+    /** Possible statuses of a Stripe subscription. */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+    billing_id: string;
+  }[];
+};
+export type GetSubscriptionsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Filter subscriptions by status */
+  status?: string[];
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiResponse = /** status 200 undefined */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  subscriptions: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    ID: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    org_id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    plan_id: string;
+    plan?: {
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+      id: string;
+      /** Name of the plan */
+      name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+      cadence: "monthly" | "yearly";
+      unit: "user" | "free";
+      /** Minimum number of units required for the plan */
+      minimum_units: number;
+      /** Price per unit of the plan */
+      price_per_unit: number;
+      currency: "usd";
+    };
+    quantity: number;
+    start_date?: string;
+    end_date?: string;
+    /** Possible statuses of a Stripe subscription. */
+    status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+    /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+    billing_id: string;
+  }[];
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdCancelApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+};
+export type PostApiEntitlementSubscriptionsCreateApiResponse = /** status 200 A new subscription has been created */ {
+  subscription_id?: string;
+  clientSecret?: string;
+};
+export type PostApiEntitlementSubscriptionsCreateApiArg = {
+  body: {
+    /** Organization ID */
+    org_id?: string;
+    /** Price ID from the payment processor */
+    plan_id?: string;
+    /** Coupon ID to apply */
+    coupon_id?: string;
+    /** Number of users in the organization */
+    user_count?: number;
+    /** Email of the customer */
+    email?: string;
+    /** Supported payment processors */
+    payment_processor?: "stripe" | "paypal" | "braintree";
+  };
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiResponse = /** status 200 undefined */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  ID: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  org_id: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  plan_id: string;
+  plan?: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Name of the plan */
+    name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+    cadence: "monthly" | "yearly";
+    unit: "user" | "free";
+    /** Minimum number of units required for the plan */
+    minimum_units: number;
+    /** Price per unit of the plan */
+    price_per_unit: number;
+    currency: "usd";
+  };
+  quantity: number;
+  start_date?: string;
+  end_date?: string;
+  /** Possible statuses of a Stripe subscription. */
+  status: "incomplete" | "incomplete_expired" | "trialing" | "active" | "past_due" | "canceled" | "unpaid";
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  /** Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+  billing_id: string;
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradeApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+  body: {
+    /** Old Plan id that is being changed */
+    old_plan_id?: string;
+    /** New Plan id that is being changed to */
+    new_plan_id?: string;
+  };
+};
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiResponse =
+  /** status 200 Preview of the upgraded subscription invoice */ object;
+export type PostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewApiArg = {
+  /** Subscription ID */
+  subscriptionId: string;
+  body: {
+    /** Old Plan id that is being changed */
+    old_plan_id?: string;
+    /** New Plan id that is being changed to */
+    new_plan_id?: string;
+  };
+};
+export type PostApiEntitlementSubscriptionsWebhooksApiResponse = unknown;
+export type PostApiEntitlementSubscriptionsWebhooksApiArg = {
+  body: object;
+};
+export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  workspaces?: {
+    ID?: string;
+    name?: string;
+    description?: string;
+    organization_id?: string;
+    owner?: string;
+    created_at?: string;
+    updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetApiWorkspacesApiArg = void;
+export type PostApiWorkspacesApiResponse = /** status 201 Workspace created successfully */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type PostApiWorkspacesApiArg = {
+  /** Body for creating workspace */
+  body: {
+    /** Provide a name that meaningfully represents this workspace. You can change the name of the workspace even after its creation. */
+    name: string;
+    /** Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces) */
+    description?: string;
+    /** Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation. */
+    organization_id: string;
+  };
+};
+export type GetApiWorkspacesByIdApiResponse = /** status 200 Workspace details */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type GetApiWorkspacesByIdApiArg = {
+  id: string;
+};
+export type PutApiWorkspacesByIdApiResponse = /** status 200 Workspace updated successfully */ {
+  ID?: string;
+  name?: string;
+  description?: string;
+  organization_id?: string;
+  owner?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type PutApiWorkspacesByIdApiArg = {
+  id: string;
+  /** Body for updating workspace */
+  body: {
+    /** Name of workspace */
+    name?: string;
+    /** Environment description */
+    description?: string;
+    /** Organization ID */
+    organization_id: string;
+  };
+};
+export type DeleteApiWorkspacesByIdApiResponse = unknown;
+export type DeleteApiWorkspacesByIdApiArg = {
+  id: string;
+};
 export const {
-  useImportDesignMutation,
-  useRegisterMeshmodelsMutation,
-  useGetSubscriptionsQuery,
-  usePostApiEntitlementSubscriptionsBySubscriptionIdCancelMutation,
-  usePostApiEntitlementSubscriptionsCreateMutation,
-  usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradeMutation,
-  usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewMutation,
-  usePostApiEntitlementSubscriptionsWebhooksMutation,
-  useGetPlansQuery,
-  useGetFeaturesQuery,
-  useGetFeaturesByOrganizationQuery,
-  useGetApiWorkspacesQuery,
-  usePostApiWorkspacesMutation,
-  useGetApiWorkspacesByIdQuery,
-  usePutApiWorkspacesByIdMutation,
-  useDeleteApiWorkspacesByIdMutation,
-  useCreateEnvironmentMutation,
-  useGetEnvironmentsQuery,
   useGetMyAcademyCirriculaQuery,
   useCreateAcademyCurriculaMutation,
   useGetAcademyCirriculaQuery,
@@ -2416,13 +2519,37 @@ export const {
   useGetAcademyAdminSummaryQuery,
   useGetAcademyAdminRegistrationsQuery,
   useGetCertificateByIdQuery,
+  useDeleteBadgeByIdMutation,
+  useGetBadgeByIdQuery,
+  useCreateOrUpdateBadgeMutation,
+  useImportDesignMutation,
+  useCreateEnvironmentMutation,
+  useGetEnvironmentsQuery,
+  useDeleteEventsByIdMutation,
+  usePostEventsMutation,
+  useDeleteEventsMutation,
+  usePutEventsStatusMutation,
+  usePutEventsByIdStatusMutation,
+  useGetFeaturesQuery,
+  useGetFeaturesByOrganizationQuery,
   useGetInvitationQuery,
   useDeleteInvitationMutation,
   useUpdateInvitationMutation,
   useGetInvitationsQuery,
   useCreateInvitationMutation,
   useAcceptInvitationMutation,
-  useDeleteBadgeByIdMutation,
-  useGetBadgeByIdQuery,
-  useCreateOrUpdateBadgeMutation,
+  useRegisterMeshmodelsMutation,
+  useGetOrgByDomainQuery,
+  useGetPlansQuery,
+  useGetSubscriptionsQuery,
+  usePostApiEntitlementSubscriptionsBySubscriptionIdCancelMutation,
+  usePostApiEntitlementSubscriptionsCreateMutation,
+  usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradeMutation,
+  usePostApiEntitlementSubscriptionsBySubscriptionIdUpgradePreviewMutation,
+  usePostApiEntitlementSubscriptionsWebhooksMutation,
+  useGetApiWorkspacesQuery,
+  usePostApiWorkspacesMutation,
+  useGetApiWorkspacesByIdQuery,
+  usePutApiWorkspacesByIdMutation,
+  useDeleteApiWorkspacesByIdMutation,
 } = injectedRtkApi;

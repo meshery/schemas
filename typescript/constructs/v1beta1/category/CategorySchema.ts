@@ -6,26 +6,11 @@ const schema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "description": "Category of the model.",
-  "required": [
-    "id",
-    "name",
-    "metadata"
-  ],
+  "required": ["id", "name", "metadata"],
   "properties": {
     "id": {
-      "x-order": 1,
-      "type": "string",
-      "format": "uuid",
-      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
-      "x-go-type": "uuid.UUID",
-      "x-go-type-import": {
-        "path": "github.com/gofrs/uuid"
-      },
-      "default": "00000000-00000000-00000000-00000000",
-      "x-oapi-codegen-extra-tags": {
-        "yaml": "id",
-        "json": "id"
-      }
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
+      "x-order": 1
     },
     "name": {
       "type": "string",
@@ -60,13 +45,14 @@ const schema = {
     "metadata": {
       "type": "object",
       "x-oapi-codegen-extra-tags": {
-        "yaml": "metadata",
-        "json": "metadata",
+        "yaml": "metadata,omitempty",
+        "json": "metadata,omitempty",
         "gorm": "type:bytes;serializer:json"
       },
       "x-order": 3
     }
   }
 }
+
 
 export default schema;
