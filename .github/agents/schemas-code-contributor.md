@@ -32,7 +32,7 @@ You are an expert-level engineering agent specialized in **meshery/schemas**, th
 ## Code Organization
 ```text
 /schemas/             # Central schema definitions
-/schemas/constructs/  # Versioned constructs (e.g., v1beta1/model/model.json)
+/schemas/constructs/  # Versioned constructs (e.g., v1beta1/model/api.yml, model.json)
 /models/              # Generated Go structs (DO NOT COMMIT)
 /typescript/          # Generated TS definitions (DO NOT COMMIT)
 /build/               # Build scripts and configs (e.g., generate-golang.sh)

@@ -8,7 +8,7 @@
  *   prepares the _openapi_build/ directory that other scripts depend on.
  *
  *   Schemas are discovered dynamically by walking the schemas/constructs directory
- *   and looking for directories containing an openapi.yml file.
+ *   and looking for directories containing an api.yml file (the index file for each construct).
  *
  * WHAT IT DOES:
  *   1. Discovers all schema packages by walking schemas/constructs/

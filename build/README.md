@@ -108,13 +108,22 @@ All build scripts share common utilities located in `build/lib/`:
 
 ## Dynamic Schema Discovery
 
-Schemas are discovered automatically by walking the `schemas/constructs/` directory and looking for subdirectories containing an `openapi.yml` file. This eliminates the need to manually maintain a list of packages.
+Schemas are discovered automatically by walking the `schemas/constructs/` directory and looking for subdirectories containing an `api.yml` file. This eliminates the need to manually maintain a list of packages.
 
 **How it works:**
 1. Scans `schemas/constructs/<version>/<package>/` directories
-2. Includes any directory containing an `openapi.yml` file
+2. Includes any directory containing an `api.yml` file
 3. Uses directory name as package name (with configurable overrides)
 4. Filters out excluded packages from merge operations
+
+**Understanding `api.yml`:**
+
+The `api.yml` file serves as the **index file** for each construct. It:
+- References all subschemas for the construct (via `$ref`)
+- Defines all API endpoints/operations for the construct (CRUD and custom actions)
+- Acts as the entry point for code generation tools
+
+Other YAML files in the same directory (e.g., `model.yaml`, `component.yaml`) can house individual subschemas that are referenced by `api.yml`.
 
 **Configuration in `lib/config.js`:**
 
@@ -138,8 +147,9 @@ const excludeFromMerge = [
 
 **Adding a new schema:**
 1. Create a new directory: `schemas/constructs/<version>/<package>/`
-2. Add an `openapi.yml` file
-3. Run `make build` - it will be automatically discovered!
+2. Add an `api.yml` file (the index file for this construct)
+3. Optionally add additional `*.yaml` files for subschemas referenced by `api.yml`
+4. Run `make build` - it will be automatically discovered!
 
 ## Script Details
 
@@ -414,12 +424,24 @@ Schemas are discovered automatically! Just:
    mkdir -p schemas/constructs/v1beta1/mypackage
    ```
 
-2. Add an `openapi.yml` file with your schema definitions:
+2. Add an `api.yml` file as the index for your construct:
    ```bash
    touch schemas/constructs/v1beta1/mypackage/api.yml
    ```
 
-3. Run the build - it will be automatically discovered:
+   The `api.yml` file should:
+   - Reference all subschemas via `$ref` (e.g., `$ref: "./myschema.yaml#/..."`)
+   - Define all API endpoints for this construct
+   - Serve as the single entry point for code generation
+
+3. Optionally add subschema files:
+   ```bash
+   touch schemas/constructs/v1beta1/mypackage/mypackage.yaml
+   ```
+
+   Subschema files contain individual schema definitions that are referenced by `api.yml`.
+
+4. Run the build - it will be automatically discovered:
    ```bash
    make build
    npm run build  # Build TypeScript distribution
