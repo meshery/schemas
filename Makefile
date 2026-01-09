@@ -56,7 +56,7 @@ publish-ts: build-ts
 
 ## Generate Golang Models
 golang-generate: dep-check
-	./generate-golang.sh
+	./build/generate-golang.sh
 
 ## Lint check Meshery Server.
 golangci: dep-check

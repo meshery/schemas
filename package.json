@@ -18,8 +18,8 @@
   },
   "scripts": {
     "build": "tsup",
-    "generate:types": "./compile-types.sh ./schemas/  ./typescript ./schemas",
-    "generate:json": "node ./compile-json-schema.mjs",
+    "generate:types": "./build/compile-types.sh ./schemas/  ./typescript ./schemas",
+    "generate:json": "node ./build/compile-json-schema.mjs",
     "publish-ts-lib": "node ./publish-npm-package.js"
   },
   "author": "",

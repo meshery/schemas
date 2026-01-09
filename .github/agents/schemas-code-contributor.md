@@ -35,7 +35,7 @@ You are an expert-level engineering agent specialized in **meshery/schemas**, th
 /schemas/constructs/  # Versioned constructs (e.g., v1beta1/model/model.json)
 /models/              # Generated Go structs (DO NOT COMMIT)
 /typescript/          # Generated TS definitions (DO NOT COMMIT)
-/scripts/             # Helper scripts (e.g., generate-golang.sh)
+/build/               # Build scripts and configs (e.g., generate-golang.sh)
 /.github/agents/      # Custom agents for schema contributions
 /tests/               # Validation tests for schemas
 ```
