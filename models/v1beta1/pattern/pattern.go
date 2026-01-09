@@ -84,7 +84,7 @@ type MesheryPatternRequestBody struct {
 
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type PatternFile struct {
-	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Id uuid.UUID `json:"id" yaml:"id"`
 
 	// Name Name of the design; a descriptive, but concise title for the design document.

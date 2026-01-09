@@ -642,7 +642,7 @@ export interface HttpsSchemasMesheryIoRelationshipJson {
  */
 export interface ModelReference {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -731,7 +731,7 @@ export interface HttpsSchemasMesheryIoCapabilityJson {
  */
 export interface ModelReference1 {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -755,7 +755,7 @@ export interface ModelReference1 {
  */
 export interface ModelReference2 {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -779,7 +779,7 @@ export interface ModelReference2 {
  */
 export interface ModelReference3 {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -803,7 +803,7 @@ export interface ModelReference3 {
  */
 export interface ModelReference4 {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**

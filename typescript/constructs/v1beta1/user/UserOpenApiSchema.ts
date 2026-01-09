@@ -42,8 +42,7 @@ const schema = {
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "default": "00000000-0000-0000-0000-000000000000"
+            }
           },
           "user_id": {
             "type": "string",
@@ -448,8 +447,7 @@ const schema = {
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
                   "path": "github.com/gofrs/uuid"
-                },
-                "default": "00000000-0000-0000-0000-000000000000"
+                }
               },
               "user_id": {
                 "type": "string",

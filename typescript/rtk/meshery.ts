@@ -258,7 +258,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
   schemaVersion: string;
   /** The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed. */
   design: {
-    /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
     /** Name of the design; a descriptive, but concise title for the design document. */
     name: string;
@@ -287,7 +287,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
     };
     /** A list of one or more component declarations. */
     components: {
-      /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
       /** Specifies the version of the schema to which the component definition conforms. */
       schemaVersion: string;
@@ -301,7 +301,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
       format: "JSON" | "CUE";
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
       model?: {
-        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
         /** Specifies the version of the schema used for the definition. */
         schemaVersion: string;
@@ -321,11 +321,11 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
         status: "ignored" | "enabled" | "duplicate";
         /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
         registrant: {
-          /** ID */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           id: string;
           /** Connection Name */
           name: string;
-          /** Credential ID */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           credential_id?: string;
           /** Connection Type */
           type: string;
@@ -344,21 +344,21 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             | "disconnected"
             | "deleted"
             | "not found";
-          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           user_id?: string;
           created_at?: string;
           updated_at?: string;
           deleted_at?: string;
           environments?: {
-            /** ID */
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             id: string;
             /** Environment name */
             name: string;
             /** Environment description */
             description: string;
-            /** Environment organization ID */
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             organization_id: string;
-            /** Environment owner */
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             owner?: string;
             created_at?: string;
             metadata?: object;
@@ -368,13 +368,13 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Specifies the version of the schema used for the definition. */
           schemaVersion: string;
         };
-        /** ID of the registrant. */
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         registrantId: string;
-        /** ID of the category. */
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         categoryId: string;
         /** Category of the model. */
         category: {
-          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           id: string;
           /** The category of the model that determines the main grouping. */
           name:
@@ -484,9 +484,8 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           svgColor: string;
           /** SVG representation of the complete model. */
           svgComplete?: string;
-          /** The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+          /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
           shape?:
-            | "circle"
             | "ellipse"
             | "triangle"
             | "round-triangle"
@@ -532,7 +531,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
       };
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
       modelReference: {
-        /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
@@ -549,7 +548,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           kind: string;
         };
       };
-      /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       modelId: string;
       /** Visualization styles for a component */
       styles?: {
@@ -792,7 +791,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
       version: string;
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
       model: {
-        /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
@@ -983,7 +982,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             kind?: string;
             /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
@@ -1059,7 +1058,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             kind?: string;
             /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
@@ -1140,7 +1139,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             match_strategy_matrix?: string[][];
             /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
@@ -1216,7 +1215,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
             kind?: string;
             /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
             model?: {
-              /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+              /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
@@ -1305,7 +1304,7 @@ export type PostEvaluateApiArg = {
   body: {
     /** Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes. */
     design: {
-      /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+      /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
       id: string;
       /** Name of the design; a descriptive, but concise title for the design document. */
       name: string;
@@ -1334,7 +1333,7 @@ export type PostEvaluateApiArg = {
       };
       /** A list of one or more component declarations. */
       components: {
-        /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
         /** Specifies the version of the schema to which the component definition conforms. */
         schemaVersion: string;
@@ -1348,7 +1347,7 @@ export type PostEvaluateApiArg = {
         format: "JSON" | "CUE";
         /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
         model?: {
-          /** Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design). */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           id: string;
           /** Specifies the version of the schema used for the definition. */
           schemaVersion: string;
@@ -1368,11 +1367,11 @@ export type PostEvaluateApiArg = {
           status: "ignored" | "enabled" | "duplicate";
           /** Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections */
           registrant: {
-            /** ID */
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             id: string;
             /** Connection Name */
             name: string;
-            /** Credential ID */
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             credential_id?: string;
             /** Connection Type */
             type: string;
@@ -1391,21 +1390,21 @@ export type PostEvaluateApiArg = {
               | "disconnected"
               | "deleted"
               | "not found";
-            /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             user_id?: string;
             created_at?: string;
             updated_at?: string;
             deleted_at?: string;
             environments?: {
-              /** ID */
+              /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               id: string;
               /** Environment name */
               name: string;
               /** Environment description */
               description: string;
-              /** Environment organization ID */
+              /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               organization_id: string;
-              /** Environment owner */
+              /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               owner?: string;
               created_at?: string;
               metadata?: object;
@@ -1415,13 +1414,13 @@ export type PostEvaluateApiArg = {
             /** Specifies the version of the schema used for the definition. */
             schemaVersion: string;
           };
-          /** ID of the registrant. */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           registrantId: string;
-          /** ID of the category. */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           categoryId: string;
           /** Category of the model. */
           category: {
-            /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+            /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             id: string;
             /** The category of the model that determines the main grouping. */
             name:
@@ -1531,9 +1530,8 @@ export type PostEvaluateApiArg = {
             svgColor: string;
             /** SVG representation of the complete model. */
             svgComplete?: string;
-            /** The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
+            /** The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes) */
             shape?:
-              | "circle"
               | "ellipse"
               | "triangle"
               | "round-triangle"
@@ -1579,7 +1577,7 @@ export type PostEvaluateApiArg = {
         };
         /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
         modelReference: {
-          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           id: string;
           /** The unique name for the model within the scope of a registrant. */
           name: string;
@@ -1596,7 +1594,7 @@ export type PostEvaluateApiArg = {
             kind: string;
           };
         };
-        /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+        /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         modelId: string;
         /** Visualization styles for a component */
         styles?: {
@@ -1839,7 +1837,7 @@ export type PostEvaluateApiArg = {
         version: string;
         /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
         model: {
-          /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+          /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           id: string;
           /** The unique name for the model within the scope of a registrant. */
           name: string;
@@ -2030,7 +2028,7 @@ export type PostEvaluateApiArg = {
               kind?: string;
               /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
@@ -2106,7 +2104,7 @@ export type PostEvaluateApiArg = {
               kind?: string;
               /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
@@ -2187,7 +2185,7 @@ export type PostEvaluateApiArg = {
               match_strategy_matrix?: string[][];
               /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
@@ -2263,7 +2261,7 @@ export type PostEvaluateApiArg = {
               kind?: string;
               /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
               model?: {
-                /** A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas. */
+                /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;

@@ -41,8 +41,7 @@ const schema = {
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "default": "00000000-0000-0000-0000-000000000000"
+            }
           },
           "name": {
             "x-oapi-codegen-extra-tags": {
@@ -66,8 +65,7 @@ const schema = {
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "default": "00000000-0000-0000-0000-000000000000"
+            }
           },
           "type": {
             "x-oapi-codegen-extra-tags": {
@@ -134,12 +132,11 @@ const schema = {
             "x-order": 9,
             "type": "string",
             "format": "uuid",
-            "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "default": "00000000-0000-0000-0000-000000000000"
+            }
           },
           "created_at": {
             "x-oapi-codegen-extra-tags": {
@@ -201,8 +198,7 @@ const schema = {
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "default": "00000000-0000-0000-0000-000000000000"
+                  }
                 },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
@@ -235,8 +231,7 @@ const schema = {
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "default": "00000000-0000-0000-0000-000000000000"
+                  }
                 },
                 "owner": {
                   "x-oapi-codegen-extra-tags": {
@@ -250,8 +245,7 @@ const schema = {
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "default": "00000000-0000-0000-0000-000000000000"
+                  }
                 },
                 "created_at": {
                   "x-oapi-codegen-extra-tags": {
@@ -317,7 +311,7 @@ const schema = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
@@ -371,8 +365,7 @@ const schema = {
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "default": "00000000-0000-0000-0000-000000000000"
+                  }
                 },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
@@ -396,8 +389,7 @@ const schema = {
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "default": "00000000-0000-0000-0000-000000000000"
+                  }
                 },
                 "type": {
                   "x-oapi-codegen-extra-tags": {
@@ -464,12 +456,11 @@ const schema = {
                   "x-order": 9,
                   "type": "string",
                   "format": "uuid",
-                  "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                   "x-go-type": "uuid.UUID",
                   "x-go-type-import": {
                     "path": "github.com/gofrs/uuid"
-                  },
-                  "default": "00000000-0000-0000-0000-000000000000"
+                  }
                 },
                 "created_at": {
                   "x-oapi-codegen-extra-tags": {
@@ -531,8 +522,7 @@ const schema = {
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
-                        },
-                        "default": "00000000-0000-0000-0000-000000000000"
+                        }
                       },
                       "name": {
                         "x-oapi-codegen-extra-tags": {
@@ -565,8 +555,7 @@ const schema = {
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
-                        },
-                        "default": "00000000-0000-0000-0000-000000000000"
+                        }
                       },
                       "owner": {
                         "x-oapi-codegen-extra-tags": {
@@ -580,8 +569,7 @@ const schema = {
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
-                        },
-                        "default": "00000000-0000-0000-0000-000000000000"
+                        }
                       },
                       "created_at": {
                         "x-oapi-codegen-extra-tags": {
@@ -647,7 +635,7 @@ const schema = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                  "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",

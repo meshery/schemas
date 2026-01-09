@@ -36,7 +36,6 @@ const (
 const (
 	Barrel               ModelDefinitionMetadataShape = "barrel"
 	BottomRoundRectangle ModelDefinitionMetadataShape = "bottom-round-rectangle"
-	Circle               ModelDefinitionMetadataShape = "circle"
 	ConcaveHexagon       ModelDefinitionMetadataShape = "concave-hexagon"
 	CutRectangle         ModelDefinitionMetadataShape = "cut-rectangle"
 	Diamond              ModelDefinitionMetadataShape = "diamond"
@@ -229,7 +228,7 @@ type ModelDefinition struct {
 // - ignored: model is unavailable for use for all users of this Meshery Server.
 type ModelDefinitionStatus string
 
-// ModelDefinitionMetadataShape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+// ModelDefinitionMetadataShape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
 type ModelDefinitionMetadataShape string
 
 // ModelDefinition_Metadata Metadata containing additional information associated with the model.
@@ -255,7 +254,7 @@ type ModelDefinition_Metadata struct {
 	// SvgComplete SVG representation of the complete model.
 	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
 
-	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+	// Shape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
 	Shape                *ModelDefinitionMetadataShape `json:"shape,omitempty" yaml:"shape,omitempty"`
 	AdditionalProperties map[string]interface{}        `json:"-" yaml:"-"`
 }
@@ -271,7 +270,7 @@ type ModelReference struct {
 	// DisplayName Human-readable name for the model.
 	DisplayName string `json:"displayName" yaml:"displayName"`
 
-	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Id         uuid.UUID           `json:"id" yaml:"id"`
 	Registrant RegistrantReference `json:"registrant" yaml:"registrant"`
 

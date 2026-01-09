@@ -12,7 +12,7 @@
 export type MatchSelector = ({
   kind?: string;
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id?: string;
   [k: string]: unknown;
@@ -89,7 +89,7 @@ export type Selector = {
   kind?: string;
   model?: HttpsSchemasMesheryIoModelJson;
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id?: string;
   match?:
@@ -167,7 +167,7 @@ export interface HttpsSchemasMesheryIoSelectorJson {
  */
 export interface HttpsSchemasMesheryIoModelJson {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -200,11 +200,11 @@ export interface HttpsSchemasMesheryIoModelJson {
   status: "ignored" | "enabled" | "duplicate";
   registrant: HttpsSchemasMesheryIoComponentJson;
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   registrantId: string;
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   categoryId: string;
   category: HttpsSchemasMesheryIoCategoryJson;
@@ -242,10 +242,9 @@ export interface HttpsSchemasMesheryIoModelJson {
      */
     svgComplete?: string;
     /**
-     * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+     * The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
      */
     shape?:
-      | "circle"
       | "ellipse"
       | "triangle"
       | "round-triangle"
@@ -298,7 +297,7 @@ export interface HttpsSchemasMesheryIoModelJson {
  */
 export interface HttpsSchemasMesheryIoComponentJson {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -306,7 +305,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
    */
   name: string;
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   credential_id?: string;
   /**
@@ -337,7 +336,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
     | "deleted"
     | "not found";
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   user_id?: string;
   created_at?: string;
@@ -354,7 +353,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
  */
 export interface HttpsSchemasMesheryIoEnvironmentJson {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -366,11 +365,11 @@ export interface HttpsSchemasMesheryIoEnvironmentJson {
    */
   description: string;
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   organization_id: string;
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   owner?: string;
   created_at?: string;
@@ -385,7 +384,7 @@ export interface HttpsSchemasMesheryIoEnvironmentJson {
  */
 export interface HttpsSchemasMesheryIoCategoryJson {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
