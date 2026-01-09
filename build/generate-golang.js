@@ -7,8 +7,11 @@
  *   This script focuses solely on Go code generation and depends on the
  *   _openapi_build/ directory being populated by bundle-openapi.js.
  *
+ *   Schemas are discovered dynamically by walking the schemas/constructs directory
+ *   and looking for directories containing an openapi.yml file.
+ *
  * WHAT IT DOES:
- *   1. Reads bundled OpenAPI JSON files from _openapi_build/constructs/
+ *   1. Discovers all schema packages from _openapi_build/constructs/
  *   2. Generates Go structs with JSON and YAML struct tags using oapi-codegen
  *   3. Outputs Go files to models/<version>/<package>/
  *
@@ -44,7 +47,7 @@ function addYamlTags(filePath) {
   // Pattern: json:"fieldName" -> json:"fieldName" yaml:"fieldName"
   content = content.replace(
     /json:"([^"]*)"(\s+yaml:"[^"]*")?/g,
-    'json:"$1" yaml:"$1"'
+    'json:"$1" yaml:"$1"',
   );
 
   fs.writeFileSync(filePath, content, "utf-8");
@@ -62,10 +65,8 @@ async function generateGoModels(pkg) {
 
   // Verify input exists
   if (!paths.fileExists(inputPath)) {
-    throw new Error(
-      `Bundled schema not found: ${inputPath}\n` +
-        `Run 'node build/bundle-openapi.js' first.`
-    );
+    logger.warn(`Bundled schema not found: ${inputPath}, skipping ${pkg.name}`);
+    return;
   }
 
   // Ensure output directory exists
@@ -81,7 +82,7 @@ async function generateGoModels(pkg) {
         `--include-tags all ` +
         `-o "${outputPath}" ` +
         `"${inputPath}"`,
-      { stdio: "inherit" }
+      { stdio: "inherit" },
     );
 
     // Add YAML struct tags
@@ -89,7 +90,9 @@ async function generateGoModels(pkg) {
 
     logger.success(`Generated: ${paths.relativePath(outputPath)}`);
   } catch (err) {
-    throw new Error(`Go model generation failed for ${pkg.name}: ${err.message}`);
+    throw new Error(
+      `Go model generation failed for ${pkg.name}: ${err.message}`,
+    );
   }
 }
 
@@ -101,7 +104,7 @@ function checkPrerequisites() {
   if (!commandExists("oapi-codegen")) {
     logger.error("oapi-codegen not found.");
     logger.info(
-      "Install it with: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest"
+      "Install it with: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest",
     );
     process.exit(1);
   }
@@ -134,8 +137,17 @@ async function main() {
     // Check prerequisites
     checkPrerequisites();
 
+    // Discover packages dynamically
+    const schemaPackages = config.getSchemaPackages();
+    logger.info(`Discovered ${schemaPackages.length} schema packages`);
+
+    if (schemaPackages.length === 0) {
+      logger.error("No schema packages found!");
+      process.exit(1);
+    }
+
     // Generate Go models for all packages
-    for (const pkg of config.schemaPackages) {
+    for (const pkg of schemaPackages) {
       await generateGoModels(pkg);
     }
 

@@ -7,10 +7,14 @@
  *   unified API specifications for cloud and meshery consumers. This script
  *   prepares the _openapi_build/ directory that other scripts depend on.
  *
+ *   Schemas are discovered dynamically by walking the schemas/constructs directory
+ *   and looking for directories containing an openapi.yml file.
+ *
  * WHAT IT DOES:
- *   1. Bundles individual OpenAPI YAML schemas into dereferenced JSON files
- *   2. Merges all construct OpenAPI specs into a unified merged_openapi.yml
- *   3. Filters merged specs by x-internal tag to create cloud_openapi.yml and meshery_openapi.yml
+ *   1. Discovers all schema packages by walking schemas/constructs/
+ *   2. Bundles individual OpenAPI YAML schemas into dereferenced JSON files
+ *   3. Merges eligible construct OpenAPI specs into a unified merged_openapi.yml
+ *   4. Filters merged specs by x-internal tag to create cloud_openapi.yml and meshery_openapi.yml
  *
  * USAGE:
  *   node build/bundle-openapi.js
@@ -27,6 +31,7 @@
  */
 
 const path = require("path");
+const { execSync } = require("child_process");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
@@ -54,7 +59,13 @@ async function bundleSchema(pkg) {
 
   logger.step(`Bundling: ${pkg.name} (${pkg.version})...`);
 
-  await npx("swagger-cli", ["bundle", "--dereference", inputPath, "-o", outputPath]);
+  await npx("swagger-cli", [
+    "bundle",
+    "--dereference",
+    inputPath,
+    "-o",
+    outputPath,
+  ]);
 
   logger.success(`Bundled: ${paths.relativePath(outputPath)}`);
 }
@@ -69,9 +80,19 @@ async function mergeSchemas() {
   const baseSpec = paths.fromRoot(config.paths.baseCloudSpec);
   const outputPath = paths.fromRoot(config.paths.mergedOpenapi);
 
+  // Get packages to merge (dynamically discovered, excluding those in excludeFromMerge)
+  const mergePackages = config.getMergePackages();
+
+  if (mergePackages.length === 0) {
+    logger.warn("No packages found to merge!");
+    return;
+  }
+
+  logger.info(`Merging ${mergePackages.length} packages...`);
+
   // Build list of bundled specs to merge
-  const specsToMerge = config.mergePackages.map((pkg) =>
-    paths.fromRoot(config.getBundledOutputPath(pkg))
+  const specsToMerge = mergePackages.map((pkg) =>
+    paths.fromRoot(config.getBundledOutputPath(pkg)),
   );
 
   // Verify all specs exist
@@ -111,10 +132,9 @@ async function filterByTag(tag, outputFile) {
   // Use the existing filterOpenapiByTag.js script
   const filterScript = paths.fromRoot("build/filterOpenapiByTag.js");
 
-  await require("child_process").execSync(
-    `node "${filterScript}" "${inputPath}" "${outputPath}" ${tag}`,
-    { stdio: "inherit" }
-  );
+  execSync(`node "${filterScript}" "${inputPath}" "${outputPath}" ${tag}`, {
+    stdio: "inherit",
+  });
 }
 
 /**
@@ -129,8 +149,17 @@ async function main() {
 
     logger.header("📦 Starting OpenAPI bundling...");
 
+    // Discover and display packages
+    const schemaPackages = config.getSchemaPackages();
+    logger.info(`Discovered ${schemaPackages.length} schema packages`);
+
+    if (schemaPackages.length === 0) {
+      logger.error("No schema packages found!");
+      process.exit(1);
+    }
+
     // Bundle all schemas
-    for (const pkg of config.schemaPackages) {
+    for (const pkg of schemaPackages) {
       await bundleSchema(pkg);
     }
 

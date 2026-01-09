@@ -68,9 +68,44 @@ All build scripts share common utilities located in `build/lib/`:
 | Library | Purpose |
 |---------|---------|
 | `logger.js` | Colored console output and logging |
-| `config.js` | Schema package definitions and paths |
+| `config.js` | Dynamic schema discovery and path configuration |
 | `exec.js` | Command execution utilities |
 | `paths.js` | Path resolution and file operations |
+
+## Dynamic Schema Discovery
+
+Schemas are discovered automatically by walking the `schemas/constructs/` directory and looking for subdirectories containing an `openapi.yml` file. This eliminates the need to manually maintain a list of packages.
+
+**How it works:**
+1. Scans `schemas/constructs/<version>/<package>/` directories
+2. Includes any directory containing an `openapi.yml` file
+3. Uses directory name as package name (with configurable overrides)
+4. Filters out excluded packages from merge operations
+
+**Configuration in `lib/config.js`:**
+
+```javascript
+// Package name overrides (directory name → Go package name)
+const packageNameOverrides = {
+  "v1beta1/design": "pattern",  // design/ folder generates "pattern" package
+};
+
+// Packages to skip entirely
+const excludePackages = [
+  // "v1beta2-draft/somepkg"
+];
+
+// Packages to exclude from merged OpenAPI spec (but still generate Go code)
+const excludeFromMerge = [
+  "v1alpha1/core",
+  "v1alpha1/capability",
+];
+```
+
+**Adding a new schema:**
+1. Create a new directory: `schemas/constructs/<version>/<package>/`
+2. Add an `openapi.yml` file
+3. Run `make build` - it will be automatically discovered!
 
 ## Script Details
 
@@ -311,23 +346,42 @@ Ensure all `$ref` paths are correct and referenced schemas exist.
 
 ## Adding a New Schema Package
 
-1. Add the package to `build/lib/config.js`:
-   ```javascript
-   const schemaPackages = [
-     // ... existing packages
-     { name: "mypackage", version: "v1beta1" },
-   ];
+Schemas are discovered automatically! Just:
+
+1. Create a new directory:
+   ```bash
+   mkdir -p schemas/constructs/v1beta1/mypackage
    ```
 
-2. If the package should be included in merged specs, add to `mergePackages`:
-   ```javascript
-   const mergePackages = [
-     // ... existing packages
-     { name: "mypackage", version: "v1beta1" },
-   ];
+2. Add an `openapi.yml` file with your schema definitions:
+   ```bash
+   touch schemas/constructs/v1beta1/mypackage/openapi.yml
    ```
 
-3. Run the build:
+3. Run the build - it will be automatically discovered:
    ```bash
    make build
    ```
+
+**Optional configurations in `build/lib/config.js`:**
+
+- **Override package name:** If the Go package name should differ from the directory name:
+  ```javascript
+  const packageNameOverrides = {
+    "v1beta1/mypackage": "differentname",
+  };
+  ```
+
+- **Exclude from processing:** To skip a package entirely:
+  ```javascript
+  const excludePackages = [
+    "v1beta1/mypackage",
+  ];
+  ```
+
+- **Exclude from merge:** To generate Go code but not include in merged OpenAPI:
+  ```javascript
+  const excludeFromMerge = [
+    "v1beta1/mypackage",
+  ];
+  ```
