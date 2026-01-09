@@ -47,16 +47,6 @@ generate_schema_export() {
   } > "$output_file"
 }
 
-# Function to resolve references in JSON schemas
-resolve_references() {
-  echo "Resolving references in JSON schemas..."
-
-  # Get the directory where this script is located
-  local SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-  local RESOLVER_SCRIPT="$SCRIPT_DIR/ref-resolver.js"
-  SCHEMA_PATH="$TEMP_DIR" node "$RESOLVER_SCRIPT"
-}
-
 is_template_file() {
   local file="$1"
   if [[ "$file" == *_template.json || "$file" == *_template.yaml || "$file" == *_template.yml ]]; then
