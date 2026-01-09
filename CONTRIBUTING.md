@@ -20,70 +20,6 @@ go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 
 ## Development Workflow
 
-### Schema Resolution Process
-
-When you work with the schemas, you'll frequently use this essential command:
-
-```
-make resolve-ref path="./schemas/constructs/[version]"
-```
-
-**Key functions:**
-
-1. Resolves `$ref` references between schema files
-2. Adds code generation metadata tags
-3. Creates complete, self-contained schemas
-4. Validates reference consistency
-
-**Example:**
-Consider this schema snippet with an external reference:
-
-```json
-"capabilities": {
-  "type": "array",
-  "description": "Meshery manages components...",
-  "items": {
-    "$ref": "../v1alpha1/capability/capability.json" // reference here
-  }
-}
-```
-
-After running the command, it becomes a complete, self-contained schema:
-
-```json
-"capabilities": {
-  "type": "array",
-  "description": "Meshery manages components...",
-  "items": {
-    "$id": "https://schemas.meshery.io/capability.json",
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Meshery manages entities...",
-    "additionalProperties": false,
-    "type": "object",
-    "required": [
-      "schemaVersion",
-      "version",
-      "displayName",
-      "kind",
-      "type",
-      "entityState",
-      "status"
-    ],
-    "x-oapi-codegen-extra-tags": { // additional metadata tag
-      "gorm": "type:bytes;serializer:json" 
-    }
-  }
-}
-```
-
-**When to run this command?**
-Whenever you:
-
-- Modify schema files
-- Add new schema references
-- Before generating Go code
-- When troubleshooting code generation issues
-
 ### Code Generation and Configuration
 
 The code generation process uses two key configuration files:
@@ -135,7 +71,6 @@ oapi-codegen -config oapi-codegen-config.yml  schemas/constructs/openapi/models.
 
 **Key Points:**
 
-- Run `make resolve-ref` before code generation
 - Keep import mappings synchronized with schema references
 - Generated code inherits package name from config
 - Use tags to filter generated structs
@@ -172,13 +107,7 @@ When modifying schema structs or their fields, there are two common scenarios:
 
 Let's walk through a practical example, you made some changes in the **component.json**
 
-1. First, ensure your schema references are resolved:
-
-```yml
-make resolve-ref path="./schemas/constructs/v1beta1"
-```
-
-2. Update `schemas/constructs/openapi/models.yml` to reference component.json:
+1. Update `schemas/constructs/openapi/models.yml` to reference component.json:
 
 ```yml
 openapi: 3.0.0
@@ -188,7 +117,7 @@ components:
       $ref: ../v1beta1/component.json
 ```
 
-3. Configure **oapi-codegen-config.yml**:
+2. Configure **oapi-codegen-config.yml**:
 
 ```yml
 package: component
@@ -207,7 +136,7 @@ output-options:
   - components
 ```
 
-4. Generate code
+3. Generate code
 
 ```yml
 oapi-codegen -config oapi-codegen-config.yml schemas/constructs/openapi/models.yml
