@@ -1,3 +1,28 @@
+# openapi.config.yml - oapi-codegen Configuration for Go Code Generation
+#
+# DESCRIPTION:
+#   Configuration file for oapi-codegen, defining how OpenAPI schemas are
+#   converted to Go structs. This is the primary configuration used by
+#   generate-golang.sh for generating Go models.
+#
+# WHAT IT CONFIGURES:
+#   - Package name for generated Go code
+#   - Import mappings for cross-schema references
+#   - Generation options (models only, no client/server code)
+#   - Output options like tag exclusions and pruning behavior
+#
+# USAGE:
+#   Used by oapi-codegen via:
+#   oapi-codegen --config build/openapi.config.yml --package <pkg> -o <output> <input>
+#
+# IMPORT MAPPINGS:
+#   Maps schema $ref paths to Go import paths, enabling proper cross-package
+#   references when schemas reference other schemas.
+#
+# NOTE:
+#   This file is used by generate-golang.sh. For schema-specific overrides,
+#   the --package flag is passed directly to oapi-codegen.
+#
 # yaml-language-server: $schema=https://raw.githubusercontent.com/oapi-codegen/oapi-codegen/HEAD/configuration-schema.json
 package: v1beta1
 

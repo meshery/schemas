@@ -1,4 +1,41 @@
 #!/usr/bin/env bash
+#
+# compile-types.sh - TypeScript Type Definition Generator
+#
+# DESCRIPTION:
+#   Generates TypeScript type definitions (.d.ts files) from JSON schema files.
+#   Also converts OpenAPI YAML files to TypeScript-compatible JSON exports.
+#
+# WHAT IT DOES:
+#   1. Traverses the input directory for JSON schema files
+#   2. Generates TypeScript type definitions using json2ts
+#   3. Converts OpenAPI YAML files to TypeScript JSON exports
+#   4. Skips template files (*_template.json, *_template.yaml)
+#
+# USAGE:
+#   ./build/compile-types.sh <input_directory> <output_directory> <templates_output_directory>
+#
+#   Example:
+#   ./build/compile-types.sh schemas/constructs typescript/constructs typescript/templates
+#
+# DEPENDENCIES:
+#   - Node.js with npx
+#   - json2ts (installed via npx)
+#   - openapi-typescript (installed via npx)
+#   - js-yaml (npm package)
+#   - rsync
+#
+# OUTPUT:
+#   - <output_directory>/**/*.d.ts - TypeScript type definitions
+#   - <output_directory>/**/openapi.d.ts - OpenAPI TypeScript definitions
+#   - <output_directory>/**/*OpenApiSchema.ts - OpenAPI JSON schema exports
+#
+# NOTE:
+#   Template generation (Step 2) is currently disabled in this script.
+#   Templates are now manually maintained in templates/ subdirectories.
+#   This script is typically invoked via `make generate-ts`
+#
+
 # Check if both input and output directories are provided
 if [ $# -ne 3 ]; then
   echo "Usage: $0 <input_directory> <output_directory> <output_directory_for_json_yaml_templates>"

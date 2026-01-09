@@ -1,4 +1,40 @@
 #!/usr/bin/env bash
+#
+# generate-golang.sh - Main Go Code Generation Script
+#
+# DESCRIPTION:
+#   This is the primary build script for generating Go structs from OpenAPI schemas.
+#   It bundles OpenAPI specifications, generates Go types using oapi-codegen, and
+#   creates RTK Query API clients for TypeScript consumers.
+#
+# WHAT IT DOES:
+#   1. Bundles individual OpenAPI YAML schemas into merged JSON files
+#   2. Generates Go structs with JSON and YAML struct tags using oapi-codegen
+#   3. Merges all construct OpenAPI specs into unified API specifications
+#   4. Filters merged specs by x-internal tag to create cloud_openapi.yml and meshery_openapi.yml
+#   5. Generates RTK Query clients for both cloud and meshery APIs
+#
+# USAGE:
+#   ./build/generate-golang.sh
+#
+# DEPENDENCIES:
+#   - Node.js with npx (for swagger-cli, @redocly/cli, @rtk-query/codegen-openapi)
+#   - Go with oapi-codegen installed (go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest)
+#   - js-yaml package
+#
+# OUTPUT:
+#   - models/<version>/<package>/<package>.go - Generated Go structs
+#   - _openapi_build/merged_openapi.yml - Combined OpenAPI specification
+#   - _openapi_build/cloud_openapi.yml - Cloud-specific API spec
+#   - _openapi_build/meshery_openapi.yml - Meshery-specific API spec
+#   - typescript/rtk/*.ts - RTK Query API clients
+#
+# CONFIGURATION:
+#   Uses build/openapi.config.yml for oapi-codegen settings
+#
+# NOTE:
+#   This script is typically invoked via `make build` or `make golang-generate`
+#
 set -euo pipefail  # ✅ Exit on error, unset vars, and pipefail
 
 # Disable telemetry for @redocly/cli
