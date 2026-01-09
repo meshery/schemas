@@ -42,12 +42,11 @@ const schema = {
                         "x-order": 1,
                         "type": "string",
                         "format": "uuid",
-                        "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                         "x-go-type": "uuid.UUID",
                         "x-go-type-import": {
                           "path": "github.com/gofrs/uuid"
-                        },
-                        "default": "00000000-0000-0000-0000-000000000000"
+                        }
                       },
                       "name": {
                         "type": "string",
@@ -60,7 +59,7 @@ const schema = {
                         "type": "string",
                         "minLength": 2,
                         "maxLength": 100,
-                        "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                        "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                         "example": [
                           "v1",
                           "v1alpha1",
@@ -183,19 +182,18 @@ const schema = {
                           "type": "object",
                           "properties": {
                             "id": {
-                              "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                              "x-order": 1,
-                              "x-oapi-codegen-extra-tags": {
-                                "yaml": "id",
-                                "json": "id"
-                              },
                               "type": "string",
                               "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              "x-order": 1,
+                              "x-oapi-codegen-extra-tags": {
+                                "yaml": "id",
+                                "json": "id"
+                              }
                             },
                             "schemaVersion": {
                               "x-order": 2,
@@ -208,7 +206,7 @@ const schema = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                              "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -226,8 +224,7 @@ const schema = {
                                 "json": "version"
                               },
                               "type": "string",
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                              "default": "v0.0.1"
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                             },
                             "displayName": {
                               "x-order": 4,
@@ -280,19 +277,18 @@ const schema = {
                               "type": "object",
                               "properties": {
                                 "id": {
-                                  "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                                  "x-order": 1,
-                                  "x-oapi-codegen-extra-tags": {
-                                    "yaml": "id",
-                                    "json": "id"
-                                  },
                                   "type": "string",
                                   "format": "uuid",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
                                     "path": "github.com/gofrs/uuid"
                                   },
-                                  "default": "00000000-0000-0000-0000-000000000000"
+                                  "x-order": 1,
+                                  "x-oapi-codegen-extra-tags": {
+                                    "yaml": "id",
+                                    "json": "id"
+                                  }
                                 },
                                 "schemaVersion": {
                                   "description": "Specifies the version of the schema used for the definition.",
@@ -305,7 +301,7 @@ const schema = {
                                   "type": "string",
                                   "minLength": 2,
                                   "maxLength": 100,
-                                  "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                  "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                   "example": [
                                     "v1",
                                     "v1alpha1",
@@ -323,8 +319,7 @@ const schema = {
                                   },
                                   "minLength": 5,
                                   "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "default": "v0.0.1"
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 },
                                 "name": {
                                   "type": "string",
@@ -412,20 +407,19 @@ const schema = {
                                   ],
                                   "properties": {
                                     "id": {
-                                      "description": "ID",
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      },
                                       "x-order": 1,
                                       "x-go-name": "ID",
                                       "x-oapi-codegen-extra-tags": {
                                         "db": "id",
                                         "yaml": "id"
-                                      },
-                                      "type": "string",
-                                      "format": "uuid",
-                                      "x-go-type": "uuid.UUID",
-                                      "x-go-type-import": {
-                                        "path": "github.com/gofrs/uuid"
-                                      },
-                                      "default": "00000000-0000-0000-0000-000000000000"
+                                      }
                                     },
                                     "name": {
                                       "x-oapi-codegen-extra-tags": {
@@ -437,20 +431,19 @@ const schema = {
                                       "description": "Connection Name"
                                     },
                                     "credential_id": {
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      },
                                       "x-go-name": "CredentialID",
                                       "x-oapi-codegen-extra-tags": {
                                         "db": "credential_id",
                                         "yaml": "credential_id"
                                       },
-                                      "x-order": 3,
-                                      "description": "Credential ID",
-                                      "type": "string",
-                                      "format": "uuid",
-                                      "x-go-type": "uuid.UUID",
-                                      "x-go-type-import": {
-                                        "path": "github.com/gofrs/uuid"
-                                      },
-                                      "default": "00000000-0000-0000-0000-000000000000"
+                                      "x-order": 3
                                     },
                                     "type": {
                                       "x-oapi-codegen-extra-tags": {
@@ -509,20 +502,19 @@ const schema = {
                                       ]
                                     },
                                     "user_id": {
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                      "x-go-type": "uuid.UUID",
+                                      "x-go-type-import": {
+                                        "path": "github.com/gofrs/uuid"
+                                      },
                                       "x-go-name": "UserID",
                                       "x-oapi-codegen-extra-tags": {
                                         "db": "user_id",
                                         "yaml": "user_id"
                                       },
-                                      "x-order": 9,
-                                      "type": "string",
-                                      "format": "uuid",
-                                      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
-                                      "x-go-type": "uuid.UUID",
-                                      "x-go-type-import": {
-                                        "path": "github.com/gofrs/uuid"
-                                      },
-                                      "default": "00000000-0000-0000-0000-000000000000"
+                                      "x-order": 9
                                     },
                                     "created_at": {
                                       "x-oapi-codegen-extra-tags": {
@@ -572,20 +564,19 @@ const schema = {
                                         ],
                                         "properties": {
                                           "id": {
-                                            "description": "ID",
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            },
                                             "x-order": 1,
                                             "x-go-name": "ID",
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "id",
                                               "yaml": "id"
-                                            },
-                                            "type": "string",
-                                            "format": "uuid",
-                                            "x-go-type": "uuid.UUID",
-                                            "x-go-type-import": {
-                                              "path": "github.com/gofrs/uuid"
-                                            },
-                                            "default": "00000000-0000-0000-0000-000000000000"
+                                            }
                                           },
                                           "name": {
                                             "x-oapi-codegen-extra-tags": {
@@ -606,35 +597,33 @@ const schema = {
                                             "description": "Environment description"
                                           },
                                           "organization_id": {
+                                            "type": "string",
+                                            "format": "uuid",
+                                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                            "x-go-type": "uuid.UUID",
+                                            "x-go-type-import": {
+                                              "path": "github.com/gofrs/uuid"
+                                            },
                                             "x-go-name": "OrganizationID",
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "organization_id",
                                               "yaml": "organization_id"
                                             },
-                                            "x-order": 4,
-                                            "description": "Environment organization ID",
+                                            "x-order": 4
+                                          },
+                                          "owner": {
                                             "type": "string",
                                             "format": "uuid",
+                                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                             "x-go-type": "uuid.UUID",
                                             "x-go-type-import": {
                                               "path": "github.com/gofrs/uuid"
                                             },
-                                            "default": "00000000-0000-0000-0000-000000000000"
-                                          },
-                                          "owner": {
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "owner",
                                               "yaml": "owner"
                                             },
-                                            "x-order": 5,
-                                            "description": "Environment owner",
-                                            "type": "string",
-                                            "format": "uuid",
-                                            "x-go-type": "uuid.UUID",
-                                            "x-go-type-import": {
-                                              "path": "github.com/gofrs/uuid"
-                                            },
-                                            "default": "00000000-0000-0000-0000-000000000000"
+                                            "x-order": 5
                                           },
                                           "created_at": {
                                             "x-oapi-codegen-extra-tags": {
@@ -700,7 +689,7 @@ const schema = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -711,36 +700,34 @@ const schema = {
                                   }
                                 },
                                 "registrantId": {
-                                  "description": "ID of the registrant.",
+                                  "type": "string",
+                                  "format": "uuid",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                  "x-go-type": "uuid.UUID",
+                                  "x-go-type-import": {
+                                    "path": "github.com/gofrs/uuid"
+                                  },
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "connection_id",
                                     "json": "connection_id",
                                     "gorm": "column:connection_id"
                                   },
-                                  "x-order": 8,
+                                  "x-order": 8
+                                },
+                                "categoryId": {
                                   "type": "string",
                                   "format": "uuid",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
                                     "path": "github.com/gofrs/uuid"
                                   },
-                                  "default": "00000000-0000-0000-0000-000000000000"
-                                },
-                                "categoryId": {
-                                  "description": "ID of the category.",
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "-",
                                     "json": "-",
                                     "gorm": "categoryID"
                                   },
-                                  "x-order": 8,
-                                  "type": "string",
-                                  "format": "uuid",
-                                  "x-go-type": "uuid.UUID",
-                                  "x-go-type-import": {
-                                    "path": "github.com/gofrs/uuid"
-                                  },
-                                  "default": "00000000-0000-0000-0000-000000000000"
+                                  "x-order": 8
                                 },
                                 "category": {
                                   "x-order": 9,
@@ -764,15 +751,14 @@ const schema = {
                                   ],
                                   "properties": {
                                     "id": {
-                                      "x-order": 1,
                                       "type": "string",
                                       "format": "uuid",
-                                      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                       "x-go-type": "uuid.UUID",
                                       "x-go-type-import": {
                                         "path": "github.com/gofrs/uuid"
                                       },
-                                      "default": "00000000-0000-0000-0000-000000000000"
+                                      "x-order": 1
                                     },
                                     "name": {
                                       "type": "string",
@@ -924,7 +910,7 @@ const schema = {
                                             "type": "string",
                                             "minLength": 2,
                                             "maxLength": 100,
-                                            "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                             "example": [
                                               "v1",
                                               "v1alpha1",
@@ -937,8 +923,7 @@ const schema = {
                                             "type": "string",
                                             "minLength": 5,
                                             "maxLength": 100,
-                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "default": "v0.0.1"
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           },
                                           "displayName": {
                                             "description": "Name of the capability in human-readible format.",
@@ -1146,10 +1131,8 @@ const schema = {
                                     "shape": {
                                       "x-order": 8,
                                       "type": "string",
-                                      "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                                      "default": "circle",
+                                      "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
                                       "enum": [
-                                        "circle",
                                         "ellipse",
                                         "triangle",
                                         "round-triangle",
@@ -1205,8 +1188,7 @@ const schema = {
                                           "minLength": 5,
                                           "maxLength": 100,
                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                          "default": "v0.0.1"
+                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                         }
                                       ],
                                       "x-oapi-codegen-extra-tags": {
@@ -1327,12 +1309,11 @@ const schema = {
                                 "id": {
                                   "type": "string",
                                   "format": "uuid",
-                                  "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
                                     "path": "github.com/gofrs/uuid"
-                                  },
-                                  "default": "00000000-0000-0000-0000-000000000000"
+                                  }
                                 },
                                 "name": {
                                   "type": "string",
@@ -1359,8 +1340,7 @@ const schema = {
                                   },
                                   "minLength": 5,
                                   "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "default": "v0.0.1"
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 },
                                 "displayName": {
                                   "description": "Human-readable name for the model.",
@@ -1398,8 +1378,7 @@ const schema = {
                                           "minLength": 5,
                                           "maxLength": 100,
                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                          "default": "v0.0.1"
+                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                         }
                                       ],
                                       "x-oapi-codegen-extra-tags": {
@@ -1431,12 +1410,11 @@ const schema = {
                             "modelId": {
                               "type": "string",
                               "format": "uuid",
-                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "default": "00000000-0000-0000-0000-000000000000",
                               "x-oapi-codegen-extra-tags": {
                                 "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
                                 "yaml": "-",
@@ -1861,7 +1839,7 @@ const schema = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -1874,8 +1852,7 @@ const schema = {
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "default": "v0.0.1"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -2366,7 +2343,6 @@ const schema = {
                               "maxLength": 100,
                               "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                               "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                              "default": "v0.0.1",
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
@@ -2392,12 +2368,11 @@ const schema = {
                                 "id": {
                                   "type": "string",
                                   "format": "uuid",
-                                  "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                   "x-go-type": "uuid.UUID",
                                   "x-go-type-import": {
                                     "path": "github.com/gofrs/uuid"
-                                  },
-                                  "default": "00000000-0000-0000-0000-000000000000"
+                                  }
                                 },
                                 "name": {
                                   "type": "string",
@@ -2424,8 +2399,7 @@ const schema = {
                                   },
                                   "minLength": 5,
                                   "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "default": "v0.0.1"
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 },
                                 "displayName": {
                                   "description": "Human-readable name for the model.",
@@ -2463,8 +2437,7 @@ const schema = {
                                           "minLength": 5,
                                           "maxLength": 100,
                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                          "default": "v0.0.1"
+                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                         }
                                       ],
                                       "x-oapi-codegen-extra-tags": {
@@ -3108,12 +3081,11 @@ const schema = {
                                                 "id": {
                                                   "type": "string",
                                                   "format": "uuid",
-                                                  "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  },
-                                                  "default": "00000000-0000-0000-0000-000000000000"
+                                                  }
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -3140,8 +3112,7 @@ const schema = {
                                                   },
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "default": "v0.0.1"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "description": "Human-readable name for the model.",
@@ -3179,8 +3150,7 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                          "default": "v0.0.1"
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -3470,12 +3440,11 @@ const schema = {
                                                 "id": {
                                                   "type": "string",
                                                   "format": "uuid",
-                                                  "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  },
-                                                  "default": "00000000-0000-0000-0000-000000000000"
+                                                  }
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -3502,8 +3471,7 @@ const schema = {
                                                   },
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "default": "v0.0.1"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "description": "Human-readable name for the model.",
@@ -3541,8 +3509,7 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                          "default": "v0.0.1"
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -3852,12 +3819,11 @@ const schema = {
                                                 "id": {
                                                   "type": "string",
                                                   "format": "uuid",
-                                                  "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  },
-                                                  "default": "00000000-0000-0000-0000-000000000000"
+                                                  }
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -3884,8 +3850,7 @@ const schema = {
                                                   },
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "default": "v0.0.1"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "description": "Human-readable name for the model.",
@@ -3923,8 +3888,7 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                          "default": "v0.0.1"
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -4214,12 +4178,11 @@ const schema = {
                                                 "id": {
                                                   "type": "string",
                                                   "format": "uuid",
-                                                  "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                   "x-go-type": "uuid.UUID",
                                                   "x-go-type-import": {
                                                     "path": "github.com/gofrs/uuid"
-                                                  },
-                                                  "default": "00000000-0000-0000-0000-000000000000"
+                                                  }
                                                 },
                                                 "name": {
                                                   "type": "string",
@@ -4246,8 +4209,7 @@ const schema = {
                                                   },
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "default": "v0.0.1"
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "description": "Human-readable name for the model.",
@@ -4285,8 +4247,7 @@ const schema = {
                                                           "minLength": 5,
                                                           "maxLength": 100,
                                                           "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                          "default": "v0.0.1"
+                                                          "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                         }
                                                       ],
                                                       "x-oapi-codegen-extra-tags": {
@@ -4631,12 +4592,11 @@ const schema = {
                           "x-order": 1,
                           "type": "string",
                           "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          }
                         },
                         "name": {
                           "type": "string",
@@ -4649,7 +4609,7 @@ const schema = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -4772,19 +4732,18 @@ const schema = {
                             "type": "object",
                             "properties": {
                               "id": {
-                                "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                                "x-order": 1,
-                                "x-oapi-codegen-extra-tags": {
-                                  "yaml": "id",
-                                  "json": "id"
-                                },
                                 "type": "string",
                                 "format": "uuid",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
                                   "path": "github.com/gofrs/uuid"
                                 },
-                                "default": "00000000-0000-0000-0000-000000000000"
+                                "x-order": 1,
+                                "x-oapi-codegen-extra-tags": {
+                                  "yaml": "id",
+                                  "json": "id"
+                                }
                               },
                               "schemaVersion": {
                                 "x-order": 2,
@@ -4797,7 +4756,7 @@ const schema = {
                                 "type": "string",
                                 "minLength": 2,
                                 "maxLength": 100,
-                                "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                 "example": [
                                   "v1",
                                   "v1alpha1",
@@ -4815,8 +4774,7 @@ const schema = {
                                   "json": "version"
                                 },
                                 "type": "string",
-                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                "default": "v0.0.1"
+                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                               },
                               "displayName": {
                                 "x-order": 4,
@@ -4869,19 +4827,18 @@ const schema = {
                                 "type": "object",
                                 "properties": {
                                   "id": {
-                                    "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                                    "x-order": 1,
-                                    "x-oapi-codegen-extra-tags": {
-                                      "yaml": "id",
-                                      "json": "id"
-                                    },
                                     "type": "string",
                                     "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
                                     },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    "x-order": 1,
+                                    "x-oapi-codegen-extra-tags": {
+                                      "yaml": "id",
+                                      "json": "id"
+                                    }
                                   },
                                   "schemaVersion": {
                                     "description": "Specifies the version of the schema used for the definition.",
@@ -4894,7 +4851,7 @@ const schema = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -4912,8 +4869,7 @@ const schema = {
                                     },
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "default": "v0.0.1"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "name": {
                                     "type": "string",
@@ -5001,20 +4957,19 @@ const schema = {
                                     ],
                                     "properties": {
                                       "id": {
-                                        "description": "ID",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        },
                                         "x-order": 1,
                                         "x-go-name": "ID",
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "id",
                                           "yaml": "id"
-                                        },
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "x-go-type": "uuid.UUID",
-                                        "x-go-type-import": {
-                                          "path": "github.com/gofrs/uuid"
-                                        },
-                                        "default": "00000000-0000-0000-0000-000000000000"
+                                        }
                                       },
                                       "name": {
                                         "x-oapi-codegen-extra-tags": {
@@ -5026,20 +4981,19 @@ const schema = {
                                         "description": "Connection Name"
                                       },
                                       "credential_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        },
                                         "x-go-name": "CredentialID",
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "credential_id",
                                           "yaml": "credential_id"
                                         },
-                                        "x-order": 3,
-                                        "description": "Credential ID",
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "x-go-type": "uuid.UUID",
-                                        "x-go-type-import": {
-                                          "path": "github.com/gofrs/uuid"
-                                        },
-                                        "default": "00000000-0000-0000-0000-000000000000"
+                                        "x-order": 3
                                       },
                                       "type": {
                                         "x-oapi-codegen-extra-tags": {
@@ -5098,20 +5052,19 @@ const schema = {
                                         ]
                                       },
                                       "user_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                        "x-go-type": "uuid.UUID",
+                                        "x-go-type-import": {
+                                          "path": "github.com/gofrs/uuid"
+                                        },
                                         "x-go-name": "UserID",
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "user_id",
                                           "yaml": "user_id"
                                         },
-                                        "x-order": 9,
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
-                                        "x-go-type": "uuid.UUID",
-                                        "x-go-type-import": {
-                                          "path": "github.com/gofrs/uuid"
-                                        },
-                                        "default": "00000000-0000-0000-0000-000000000000"
+                                        "x-order": 9
                                       },
                                       "created_at": {
                                         "x-oapi-codegen-extra-tags": {
@@ -5161,20 +5114,19 @@ const schema = {
                                           ],
                                           "properties": {
                                             "id": {
-                                              "description": "ID",
+                                              "type": "string",
+                                              "format": "uuid",
+                                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                              "x-go-type": "uuid.UUID",
+                                              "x-go-type-import": {
+                                                "path": "github.com/gofrs/uuid"
+                                              },
                                               "x-order": 1,
                                               "x-go-name": "ID",
                                               "x-oapi-codegen-extra-tags": {
                                                 "db": "id",
                                                 "yaml": "id"
-                                              },
-                                              "type": "string",
-                                              "format": "uuid",
-                                              "x-go-type": "uuid.UUID",
-                                              "x-go-type-import": {
-                                                "path": "github.com/gofrs/uuid"
-                                              },
-                                              "default": "00000000-0000-0000-0000-000000000000"
+                                              }
                                             },
                                             "name": {
                                               "x-oapi-codegen-extra-tags": {
@@ -5195,35 +5147,33 @@ const schema = {
                                               "description": "Environment description"
                                             },
                                             "organization_id": {
+                                              "type": "string",
+                                              "format": "uuid",
+                                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                              "x-go-type": "uuid.UUID",
+                                              "x-go-type-import": {
+                                                "path": "github.com/gofrs/uuid"
+                                              },
                                               "x-go-name": "OrganizationID",
                                               "x-oapi-codegen-extra-tags": {
                                                 "db": "organization_id",
                                                 "yaml": "organization_id"
                                               },
-                                              "x-order": 4,
-                                              "description": "Environment organization ID",
+                                              "x-order": 4
+                                            },
+                                            "owner": {
                                               "type": "string",
                                               "format": "uuid",
+                                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                               "x-go-type": "uuid.UUID",
                                               "x-go-type-import": {
                                                 "path": "github.com/gofrs/uuid"
                                               },
-                                              "default": "00000000-0000-0000-0000-000000000000"
-                                            },
-                                            "owner": {
                                               "x-oapi-codegen-extra-tags": {
                                                 "db": "owner",
                                                 "yaml": "owner"
                                               },
-                                              "x-order": 5,
-                                              "description": "Environment owner",
-                                              "type": "string",
-                                              "format": "uuid",
-                                              "x-go-type": "uuid.UUID",
-                                              "x-go-type-import": {
-                                                "path": "github.com/gofrs/uuid"
-                                              },
-                                              "default": "00000000-0000-0000-0000-000000000000"
+                                              "x-order": 5
                                             },
                                             "created_at": {
                                               "x-oapi-codegen-extra-tags": {
@@ -5289,7 +5239,7 @@ const schema = {
                                         "type": "string",
                                         "minLength": 2,
                                         "maxLength": 100,
-                                        "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                        "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                         "example": [
                                           "v1",
                                           "v1alpha1",
@@ -5300,36 +5250,34 @@ const schema = {
                                     }
                                   },
                                   "registrantId": {
-                                    "description": "ID of the registrant.",
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    },
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "connection_id",
                                       "json": "connection_id",
                                       "gorm": "column:connection_id"
                                     },
-                                    "x-order": 8,
+                                    "x-order": 8
+                                  },
+                                  "categoryId": {
                                     "type": "string",
                                     "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
                                     },
-                                    "default": "00000000-0000-0000-0000-000000000000"
-                                  },
-                                  "categoryId": {
-                                    "description": "ID of the category.",
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "-",
                                       "json": "-",
                                       "gorm": "categoryID"
                                     },
-                                    "x-order": 8,
-                                    "type": "string",
-                                    "format": "uuid",
-                                    "x-go-type": "uuid.UUID",
-                                    "x-go-type-import": {
-                                      "path": "github.com/gofrs/uuid"
-                                    },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    "x-order": 8
                                   },
                                   "category": {
                                     "x-order": 9,
@@ -5353,15 +5301,14 @@ const schema = {
                                     ],
                                     "properties": {
                                       "id": {
-                                        "x-order": 1,
                                         "type": "string",
                                         "format": "uuid",
-                                        "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                         "x-go-type": "uuid.UUID",
                                         "x-go-type-import": {
                                           "path": "github.com/gofrs/uuid"
                                         },
-                                        "default": "00000000-0000-0000-0000-000000000000"
+                                        "x-order": 1
                                       },
                                       "name": {
                                         "type": "string",
@@ -5513,7 +5460,7 @@ const schema = {
                                               "type": "string",
                                               "minLength": 2,
                                               "maxLength": 100,
-                                              "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                              "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                               "example": [
                                                 "v1",
                                                 "v1alpha1",
@@ -5526,8 +5473,7 @@ const schema = {
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                              "default": "v0.0.1"
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             },
                                             "displayName": {
                                               "description": "Name of the capability in human-readible format.",
@@ -5735,10 +5681,8 @@ const schema = {
                                       "shape": {
                                         "x-order": 8,
                                         "type": "string",
-                                        "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                                        "default": "circle",
+                                        "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
                                         "enum": [
-                                          "circle",
                                           "ellipse",
                                           "triangle",
                                           "round-triangle",
@@ -5794,8 +5738,7 @@ const schema = {
                                             "minLength": 5,
                                             "maxLength": 100,
                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                            "default": "v0.0.1"
+                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                           }
                                         ],
                                         "x-oapi-codegen-extra-tags": {
@@ -5916,12 +5859,11 @@ const schema = {
                                   "id": {
                                     "type": "string",
                                     "format": "uuid",
-                                    "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
-                                    },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    }
                                   },
                                   "name": {
                                     "type": "string",
@@ -5948,8 +5890,7 @@ const schema = {
                                     },
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "default": "v0.0.1"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "displayName": {
                                     "description": "Human-readable name for the model.",
@@ -5987,8 +5928,7 @@ const schema = {
                                             "minLength": 5,
                                             "maxLength": 100,
                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                            "default": "v0.0.1"
+                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                           }
                                         ],
                                         "x-oapi-codegen-extra-tags": {
@@ -6020,12 +5960,11 @@ const schema = {
                               "modelId": {
                                 "type": "string",
                                 "format": "uuid",
-                                "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                 "x-go-type": "uuid.UUID",
                                 "x-go-type-import": {
                                   "path": "github.com/gofrs/uuid"
                                 },
-                                "default": "00000000-0000-0000-0000-000000000000",
                                 "x-oapi-codegen-extra-tags": {
                                   "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
                                   "yaml": "-",
@@ -6450,7 +6389,7 @@ const schema = {
                                       "type": "string",
                                       "minLength": 2,
                                       "maxLength": 100,
-                                      "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                       "example": [
                                         "v1",
                                         "v1alpha1",
@@ -6463,8 +6402,7 @@ const schema = {
                                       "type": "string",
                                       "minLength": 5,
                                       "maxLength": 100,
-                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                      "default": "v0.0.1"
+                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                     },
                                     "displayName": {
                                       "description": "Name of the capability in human-readible format.",
@@ -6955,7 +6893,6 @@ const schema = {
                                 "maxLength": 100,
                                 "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                                 "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                "default": "v0.0.1",
                                 "x-oapi-codegen-extra-tags": {
                                   "yaml": "version",
                                   "json": "version"
@@ -6981,12 +6918,11 @@ const schema = {
                                   "id": {
                                     "type": "string",
                                     "format": "uuid",
-                                    "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
-                                    },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    }
                                   },
                                   "name": {
                                     "type": "string",
@@ -7013,8 +6949,7 @@ const schema = {
                                     },
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "default": "v0.0.1"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "displayName": {
                                     "description": "Human-readable name for the model.",
@@ -7052,8 +6987,7 @@ const schema = {
                                             "minLength": 5,
                                             "maxLength": 100,
                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                            "default": "v0.0.1"
+                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                           }
                                         ],
                                         "x-oapi-codegen-extra-tags": {
@@ -7697,12 +7631,11 @@ const schema = {
                                                   "id": {
                                                     "type": "string",
                                                     "format": "uuid",
-                                                    "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    },
-                                                    "default": "00000000-0000-0000-0000-000000000000"
+                                                    }
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -7729,8 +7662,7 @@ const schema = {
                                                     },
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "default": "v0.0.1"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "description": "Human-readable name for the model.",
@@ -7768,8 +7700,7 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                            "default": "v0.0.1"
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -8059,12 +7990,11 @@ const schema = {
                                                   "id": {
                                                     "type": "string",
                                                     "format": "uuid",
-                                                    "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    },
-                                                    "default": "00000000-0000-0000-0000-000000000000"
+                                                    }
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -8091,8 +8021,7 @@ const schema = {
                                                     },
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "default": "v0.0.1"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "description": "Human-readable name for the model.",
@@ -8130,8 +8059,7 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                            "default": "v0.0.1"
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -8441,12 +8369,11 @@ const schema = {
                                                   "id": {
                                                     "type": "string",
                                                     "format": "uuid",
-                                                    "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    },
-                                                    "default": "00000000-0000-0000-0000-000000000000"
+                                                    }
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -8473,8 +8400,7 @@ const schema = {
                                                     },
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "default": "v0.0.1"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "description": "Human-readable name for the model.",
@@ -8512,8 +8438,7 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                            "default": "v0.0.1"
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -8803,12 +8728,11 @@ const schema = {
                                                   "id": {
                                                     "type": "string",
                                                     "format": "uuid",
-                                                    "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                                     "x-go-type": "uuid.UUID",
                                                     "x-go-type-import": {
                                                       "path": "github.com/gofrs/uuid"
-                                                    },
-                                                    "default": "00000000-0000-0000-0000-000000000000"
+                                                    }
                                                   },
                                                   "name": {
                                                     "type": "string",
@@ -8835,8 +8759,7 @@ const schema = {
                                                     },
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "default": "v0.0.1"
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "description": "Human-readable name for the model.",
@@ -8874,8 +8797,7 @@ const schema = {
                                                             "minLength": 5,
                                                             "maxLength": 100,
                                                             "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                            "default": "v0.0.1"
+                                                            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                           }
                                                         ],
                                                         "x-oapi-codegen-extra-tags": {
@@ -9244,12 +9166,11 @@ const schema = {
                 "x-order": 1,
                 "type": "string",
                 "format": "uuid",
-                "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
                   "path": "github.com/gofrs/uuid"
-                },
-                "default": "00000000-0000-0000-0000-000000000000"
+                }
               },
               "name": {
                 "type": "string",
@@ -9262,7 +9183,7 @@ const schema = {
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
-                "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                 "example": [
                   "v1",
                   "v1alpha1",
@@ -9385,19 +9306,18 @@ const schema = {
                   "type": "object",
                   "properties": {
                     "id": {
-                      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                      "x-order": 1,
-                      "x-oapi-codegen-extra-tags": {
-                        "yaml": "id",
-                        "json": "id"
-                      },
                       "type": "string",
                       "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "default": "00000000-0000-0000-0000-000000000000"
+                      "x-order": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "id",
+                        "json": "id"
+                      }
                     },
                     "schemaVersion": {
                       "x-order": 2,
@@ -9410,7 +9330,7 @@ const schema = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -9428,8 +9348,7 @@ const schema = {
                         "json": "version"
                       },
                       "type": "string",
-                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "default": "v0.0.1"
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                     },
                     "displayName": {
                       "x-order": 4,
@@ -9482,19 +9401,18 @@ const schema = {
                       "type": "object",
                       "properties": {
                         "id": {
-                          "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                          "x-order": 1,
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "id",
-                            "json": "id"
-                          },
                           "type": "string",
                           "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
                           },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          }
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -9507,7 +9425,7 @@ const schema = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -9525,8 +9443,7 @@ const schema = {
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "default": "v0.0.1"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "name": {
                           "type": "string",
@@ -9614,20 +9531,19 @@ const schema = {
                           ],
                           "properties": {
                             "id": {
-                              "description": "ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
                               "x-order": 1,
                               "x-go-name": "ID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "id",
                                 "yaml": "id"
-                              },
-                              "type": "string",
-                              "format": "uuid",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              }
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -9639,20 +9555,19 @@ const schema = {
                               "description": "Connection Name"
                             },
                             "credential_id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
                               "x-go-name": "CredentialID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "credential_id",
                                 "yaml": "credential_id"
                               },
-                              "x-order": 3,
-                              "description": "Credential ID",
-                              "type": "string",
-                              "format": "uuid",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              "x-order": 3
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -9711,20 +9626,19 @@ const schema = {
                               ]
                             },
                             "user_id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
                               "x-go-name": "UserID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "user_id",
                                 "yaml": "user_id"
                               },
-                              "x-order": 9,
-                              "type": "string",
-                              "format": "uuid",
-                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              "x-order": 9
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -9774,20 +9688,19 @@ const schema = {
                                 ],
                                 "properties": {
                                   "id": {
-                                    "description": "ID",
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    },
                                     "x-order": 1,
                                     "x-go-name": "ID",
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "id",
                                       "yaml": "id"
-                                    },
-                                    "type": "string",
-                                    "format": "uuid",
-                                    "x-go-type": "uuid.UUID",
-                                    "x-go-type-import": {
-                                      "path": "github.com/gofrs/uuid"
-                                    },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    }
                                   },
                                   "name": {
                                     "x-oapi-codegen-extra-tags": {
@@ -9808,35 +9721,33 @@ const schema = {
                                     "description": "Environment description"
                                   },
                                   "organization_id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    },
                                     "x-go-name": "OrganizationID",
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "organization_id",
                                       "yaml": "organization_id"
                                     },
-                                    "x-order": 4,
-                                    "description": "Environment organization ID",
+                                    "x-order": 4
+                                  },
+                                  "owner": {
                                     "type": "string",
                                     "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
                                     },
-                                    "default": "00000000-0000-0000-0000-000000000000"
-                                  },
-                                  "owner": {
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "owner",
                                       "yaml": "owner"
                                     },
-                                    "x-order": 5,
-                                    "description": "Environment owner",
-                                    "type": "string",
-                                    "format": "uuid",
-                                    "x-go-type": "uuid.UUID",
-                                    "x-go-type-import": {
-                                      "path": "github.com/gofrs/uuid"
-                                    },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    "x-order": 5
                                   },
                                   "created_at": {
                                     "x-oapi-codegen-extra-tags": {
@@ -9902,7 +9813,7 @@ const schema = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                              "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -9913,36 +9824,34 @@ const schema = {
                           }
                         },
                         "registrantId": {
-                          "description": "ID of the registrant.",
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "connection_id",
                             "json": "connection_id",
                             "gorm": "column:connection_id"
                           },
-                          "x-order": 8,
+                          "x-order": 8
+                        },
+                        "categoryId": {
                           "type": "string",
                           "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
                           },
-                          "default": "00000000-0000-0000-0000-000000000000"
-                        },
-                        "categoryId": {
-                          "description": "ID of the category.",
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "-",
                             "json": "-",
                             "gorm": "categoryID"
                           },
-                          "x-order": 8,
-                          "type": "string",
-                          "format": "uuid",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          "x-order": 8
                         },
                         "category": {
                           "x-order": 9,
@@ -9966,15 +9875,14 @@ const schema = {
                           ],
                           "properties": {
                             "id": {
-                              "x-order": 1,
                               "type": "string",
                               "format": "uuid",
-                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              "x-order": 1
                             },
                             "name": {
                               "type": "string",
@@ -10126,7 +10034,7 @@ const schema = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -10139,8 +10047,7 @@ const schema = {
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "default": "v0.0.1"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -10348,10 +10255,8 @@ const schema = {
                             "shape": {
                               "x-order": 8,
                               "type": "string",
-                              "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                              "default": "circle",
+                              "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
                               "enum": [
-                                "circle",
                                 "ellipse",
                                 "triangle",
                                 "round-triangle",
@@ -10407,8 +10312,7 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                  "default": "v0.0.1"
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -10529,12 +10433,11 @@ const schema = {
                         "id": {
                           "type": "string",
                           "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          }
                         },
                         "name": {
                           "type": "string",
@@ -10561,8 +10464,7 @@ const schema = {
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "default": "v0.0.1"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -10600,8 +10502,7 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                  "default": "v0.0.1"
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -10633,12 +10534,11 @@ const schema = {
                     "modelId": {
                       "type": "string",
                       "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "default": "00000000-0000-0000-0000-000000000000",
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
                         "yaml": "-",
@@ -11063,7 +10963,7 @@ const schema = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -11076,8 +10976,7 @@ const schema = {
                             "type": "string",
                             "minLength": 5,
                             "maxLength": 100,
-                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                            "default": "v0.0.1"
+                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                           },
                           "displayName": {
                             "description": "Name of the capability in human-readible format.",
@@ -11568,7 +11467,6 @@ const schema = {
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                       "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                      "default": "v0.0.1",
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
                         "json": "version"
@@ -11594,12 +11492,11 @@ const schema = {
                         "id": {
                           "type": "string",
                           "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          }
                         },
                         "name": {
                           "type": "string",
@@ -11626,8 +11523,7 @@ const schema = {
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "default": "v0.0.1"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -11665,8 +11561,7 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                  "default": "v0.0.1"
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -12310,12 +12205,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -12342,8 +12236,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -12381,8 +12274,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -12672,12 +12564,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -12704,8 +12595,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -12743,8 +12633,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -13054,12 +12943,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -13086,8 +12974,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -13125,8 +13012,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -13416,12 +13302,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -13448,8 +13333,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -13487,8 +13371,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -13825,12 +13708,11 @@ const schema = {
                 "x-order": 1,
                 "type": "string",
                 "format": "uuid",
-                "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
                   "path": "github.com/gofrs/uuid"
-                },
-                "default": "00000000-0000-0000-0000-000000000000"
+                }
               },
               "name": {
                 "type": "string",
@@ -13843,7 +13725,7 @@ const schema = {
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
-                "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                 "example": [
                   "v1",
                   "v1alpha1",
@@ -13966,19 +13848,18 @@ const schema = {
                   "type": "object",
                   "properties": {
                     "id": {
-                      "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                      "x-order": 1,
-                      "x-oapi-codegen-extra-tags": {
-                        "yaml": "id",
-                        "json": "id"
-                      },
                       "type": "string",
                       "format": "uuid",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "default": "00000000-0000-0000-0000-000000000000"
+                      "x-order": 1,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "id",
+                        "json": "id"
+                      }
                     },
                     "schemaVersion": {
                       "x-order": 2,
@@ -13991,7 +13872,7 @@ const schema = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
@@ -14009,8 +13890,7 @@ const schema = {
                         "json": "version"
                       },
                       "type": "string",
-                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "default": "v0.0.1"
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                     },
                     "displayName": {
                       "x-order": 4,
@@ -14063,19 +13943,18 @@ const schema = {
                       "type": "object",
                       "properties": {
                         "id": {
-                          "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-                          "x-order": 1,
-                          "x-oapi-codegen-extra-tags": {
-                            "yaml": "id",
-                            "json": "id"
-                          },
                           "type": "string",
                           "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
                           },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          "x-order": 1,
+                          "x-oapi-codegen-extra-tags": {
+                            "yaml": "id",
+                            "json": "id"
+                          }
                         },
                         "schemaVersion": {
                           "description": "Specifies the version of the schema used for the definition.",
@@ -14088,7 +13967,7 @@ const schema = {
                           "type": "string",
                           "minLength": 2,
                           "maxLength": 100,
-                          "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                          "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                           "example": [
                             "v1",
                             "v1alpha1",
@@ -14106,8 +13985,7 @@ const schema = {
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "default": "v0.0.1"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "name": {
                           "type": "string",
@@ -14195,20 +14073,19 @@ const schema = {
                           ],
                           "properties": {
                             "id": {
-                              "description": "ID",
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
                               "x-order": 1,
                               "x-go-name": "ID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "id",
                                 "yaml": "id"
-                              },
-                              "type": "string",
-                              "format": "uuid",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              }
                             },
                             "name": {
                               "x-oapi-codegen-extra-tags": {
@@ -14220,20 +14097,19 @@ const schema = {
                               "description": "Connection Name"
                             },
                             "credential_id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
                               "x-go-name": "CredentialID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "credential_id",
                                 "yaml": "credential_id"
                               },
-                              "x-order": 3,
-                              "description": "Credential ID",
-                              "type": "string",
-                              "format": "uuid",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              "x-order": 3
                             },
                             "type": {
                               "x-oapi-codegen-extra-tags": {
@@ -14292,20 +14168,19 @@ const schema = {
                               ]
                             },
                             "user_id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                              "x-go-type": "uuid.UUID",
+                              "x-go-type-import": {
+                                "path": "github.com/gofrs/uuid"
+                              },
                               "x-go-name": "UserID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "user_id",
                                 "yaml": "user_id"
                               },
-                              "x-order": 9,
-                              "type": "string",
-                              "format": "uuid",
-                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
-                              "x-go-type": "uuid.UUID",
-                              "x-go-type-import": {
-                                "path": "github.com/gofrs/uuid"
-                              },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              "x-order": 9
                             },
                             "created_at": {
                               "x-oapi-codegen-extra-tags": {
@@ -14355,20 +14230,19 @@ const schema = {
                                 ],
                                 "properties": {
                                   "id": {
-                                    "description": "ID",
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    },
                                     "x-order": 1,
                                     "x-go-name": "ID",
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "id",
                                       "yaml": "id"
-                                    },
-                                    "type": "string",
-                                    "format": "uuid",
-                                    "x-go-type": "uuid.UUID",
-                                    "x-go-type-import": {
-                                      "path": "github.com/gofrs/uuid"
-                                    },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    }
                                   },
                                   "name": {
                                     "x-oapi-codegen-extra-tags": {
@@ -14389,35 +14263,33 @@ const schema = {
                                     "description": "Environment description"
                                   },
                                   "organization_id": {
+                                    "type": "string",
+                                    "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                                    "x-go-type": "uuid.UUID",
+                                    "x-go-type-import": {
+                                      "path": "github.com/gofrs/uuid"
+                                    },
                                     "x-go-name": "OrganizationID",
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "organization_id",
                                       "yaml": "organization_id"
                                     },
-                                    "x-order": 4,
-                                    "description": "Environment organization ID",
+                                    "x-order": 4
+                                  },
+                                  "owner": {
                                     "type": "string",
                                     "format": "uuid",
+                                    "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                     "x-go-type": "uuid.UUID",
                                     "x-go-type-import": {
                                       "path": "github.com/gofrs/uuid"
                                     },
-                                    "default": "00000000-0000-0000-0000-000000000000"
-                                  },
-                                  "owner": {
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "owner",
                                       "yaml": "owner"
                                     },
-                                    "x-order": 5,
-                                    "description": "Environment owner",
-                                    "type": "string",
-                                    "format": "uuid",
-                                    "x-go-type": "uuid.UUID",
-                                    "x-go-type-import": {
-                                      "path": "github.com/gofrs/uuid"
-                                    },
-                                    "default": "00000000-0000-0000-0000-000000000000"
+                                    "x-order": 5
                                   },
                                   "created_at": {
                                     "x-oapi-codegen-extra-tags": {
@@ -14483,7 +14355,7 @@ const schema = {
                               "type": "string",
                               "minLength": 2,
                               "maxLength": 100,
-                              "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                              "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                               "example": [
                                 "v1",
                                 "v1alpha1",
@@ -14494,36 +14366,34 @@ const schema = {
                           }
                         },
                         "registrantId": {
-                          "description": "ID of the registrant.",
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                          "x-go-type": "uuid.UUID",
+                          "x-go-type-import": {
+                            "path": "github.com/gofrs/uuid"
+                          },
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "connection_id",
                             "json": "connection_id",
                             "gorm": "column:connection_id"
                           },
-                          "x-order": 8,
+                          "x-order": 8
+                        },
+                        "categoryId": {
                           "type": "string",
                           "format": "uuid",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
                           },
-                          "default": "00000000-0000-0000-0000-000000000000"
-                        },
-                        "categoryId": {
-                          "description": "ID of the category.",
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "-",
                             "json": "-",
                             "gorm": "categoryID"
                           },
-                          "x-order": 8,
-                          "type": "string",
-                          "format": "uuid",
-                          "x-go-type": "uuid.UUID",
-                          "x-go-type-import": {
-                            "path": "github.com/gofrs/uuid"
-                          },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          "x-order": 8
                         },
                         "category": {
                           "x-order": 9,
@@ -14547,15 +14417,14 @@ const schema = {
                           ],
                           "properties": {
                             "id": {
-                              "x-order": 1,
                               "type": "string",
                               "format": "uuid",
-                              "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                               "x-go-type": "uuid.UUID",
                               "x-go-type-import": {
                                 "path": "github.com/gofrs/uuid"
                               },
-                              "default": "00000000-0000-0000-0000-000000000000"
+                              "x-order": 1
                             },
                             "name": {
                               "type": "string",
@@ -14707,7 +14576,7 @@ const schema = {
                                     "type": "string",
                                     "minLength": 2,
                                     "maxLength": 100,
-                                    "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                                    "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                                     "example": [
                                       "v1",
                                       "v1alpha1",
@@ -14720,8 +14589,7 @@ const schema = {
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "default": "v0.0.1"
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "displayName": {
                                     "description": "Name of the capability in human-readible format.",
@@ -14929,10 +14797,8 @@ const schema = {
                             "shape": {
                               "x-order": 8,
                               "type": "string",
-                              "description": "The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
-                              "default": "circle",
+                              "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
                               "enum": [
-                                "circle",
                                 "ellipse",
                                 "triangle",
                                 "round-triangle",
@@ -14988,8 +14854,7 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                  "default": "v0.0.1"
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -15110,12 +14975,11 @@ const schema = {
                         "id": {
                           "type": "string",
                           "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          }
                         },
                         "name": {
                           "type": "string",
@@ -15142,8 +15006,7 @@ const schema = {
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "default": "v0.0.1"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -15181,8 +15044,7 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                  "default": "v0.0.1"
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -15214,12 +15076,11 @@ const schema = {
                     "modelId": {
                       "type": "string",
                       "format": "uuid",
-                      "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                      "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                       "x-go-type": "uuid.UUID",
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       },
-                      "default": "00000000-0000-0000-0000-000000000000",
                       "x-oapi-codegen-extra-tags": {
                         "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",
                         "yaml": "-",
@@ -15644,7 +15505,7 @@ const schema = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "^(([a-z.])+/?)*v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
@@ -15657,8 +15518,7 @@ const schema = {
                             "type": "string",
                             "minLength": 5,
                             "maxLength": 100,
-                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                            "default": "v0.0.1"
+                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                           },
                           "displayName": {
                             "description": "Name of the capability in human-readible format.",
@@ -16149,7 +16009,6 @@ const schema = {
                       "maxLength": 100,
                       "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
                       "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                      "default": "v0.0.1",
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
                         "json": "version"
@@ -16175,12 +16034,11 @@ const schema = {
                         "id": {
                           "type": "string",
                           "format": "uuid",
-                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                           "x-go-type": "uuid.UUID",
                           "x-go-type-import": {
                             "path": "github.com/gofrs/uuid"
-                          },
-                          "default": "00000000-0000-0000-0000-000000000000"
+                          }
                         },
                         "name": {
                           "type": "string",
@@ -16207,8 +16065,7 @@ const schema = {
                           },
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "default": "v0.0.1"
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "displayName": {
                           "description": "Human-readable name for the model.",
@@ -16246,8 +16103,7 @@ const schema = {
                                   "minLength": 5,
                                   "maxLength": 100,
                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                  "default": "v0.0.1"
+                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                 }
                               ],
                               "x-oapi-codegen-extra-tags": {
@@ -16891,12 +16747,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -16923,8 +16778,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -16962,8 +16816,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -17253,12 +17106,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -17285,8 +17137,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -17324,8 +17175,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -17635,12 +17485,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -17667,8 +17516,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -17706,8 +17554,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {
@@ -17997,12 +17844,11 @@ const schema = {
                                         "id": {
                                           "type": "string",
                                           "format": "uuid",
-                                          "description": "A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.",
+                                          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                                           "x-go-type": "uuid.UUID",
                                           "x-go-type-import": {
                                             "path": "github.com/gofrs/uuid"
-                                          },
-                                          "default": "00000000-0000-0000-0000-000000000000"
+                                          }
                                         },
                                         "name": {
                                           "type": "string",
@@ -18029,8 +17875,7 @@ const schema = {
                                           },
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "default": "v0.0.1"
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "description": "Human-readable name for the model.",
@@ -18068,8 +17913,7 @@ const schema = {
                                                   "minLength": 5,
                                                   "maxLength": 100,
                                                   "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-                                                  "default": "v0.0.1"
+                                                  "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
                                                 }
                                               ],
                                               "x-oapi-codegen-extra-tags": {

@@ -28,7 +28,7 @@ const (
 
 // CategoryDefinition Category of the model.
 type CategoryDefinition struct {
-	// Id A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Id uuid.UUID `json:"id" yaml:"id"`
 
 	// Name The category of the model that determines the main grouping.

@@ -247,10 +247,9 @@ export interface HttpsSchemasMesheryIoModelJson {
      */
     svgComplete?: string;
     /**
-     * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+     * The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
      */
     shape?:
-      | "circle"
       | "ellipse"
       | "triangle"
       | "round-triangle"
@@ -342,7 +341,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
     | "deleted"
     | "not found";
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   user_id?: string;
   created_at?: string;
@@ -390,7 +389,7 @@ export interface HttpsSchemasMesheryIoEnvironmentJson {
  */
 export interface HttpsSchemasMesheryIoCategoryJson {
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   id: string;
   /**
@@ -558,10 +557,9 @@ export interface HttpsSchemasMesheryIoModelJson1 {
      */
     svgComplete?: string;
     /**
-     * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+     * The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
      */
     shape?:
-      | "circle"
       | "ellipse"
       | "triangle"
       | "round-triangle"
@@ -689,10 +687,9 @@ export interface HttpsSchemasMesheryIoModelJson2 {
      */
     svgComplete?: string;
     /**
-     * The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
+     * The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
      */
     shape?:
-      | "circle"
       | "ellipse"
       | "triangle"
       | "round-triangle"

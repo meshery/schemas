@@ -158,7 +158,7 @@ type ComponentDefinition struct {
 	// UpdatedAt Timestamp when the resource was updated.
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
-	// ModelId A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+	// ModelId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ModelId uuid.UUID `gorm:"index:idx_component_definition_dbs_model_id,column:model_id" json:"-" yaml:"-"`
 }
 

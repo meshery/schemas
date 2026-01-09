@@ -49,7 +49,7 @@ export interface HttpsSchemasMesheryIoComponentJson {
     | "deleted"
     | "not found";
   /**
-   * A Universally Unique Identifier used to uniquely identify entites in Meshery. The UUID core defintion is used across different schemas.
+   * A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
    */
   user_id?: string;
   created_at?: string;
