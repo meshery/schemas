@@ -38,7 +38,7 @@ components:
         version:
           description: "Version of the model as defined by the registrant."
           allOf:
-            - $ref: "../../core.json#/definitions/semverString"
+            - $ref: "../../v1alpha1/core/openapi.yml#/components/schemas/semverString"
           x-oapi-codegen-extra-tags:
             yaml: "version"
             json: "version"
@@ -48,27 +48,28 @@ components:
       $ref: "./model.json"
 
     RegistrantReference:
-       "type": "object"
-       required:
-         - "kind"
-       "properties":
-         "kind":
-           "type": "string"
+      "type": "object"
+      required:
+        - "kind"
+      "properties":
+        "kind":
+          "type": "string"
 
     ModelReference:
       type: "object"
-      "required": ["id", "name", "version", "displayName","model", "registrant"]
+      "required":
+        ["id", "name", "version", "displayName", "model", "registrant"]
       "properties":
         id:
-          "$ref": "../../core.json#/definitions/uuid"
+          "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
         name:
-            "$ref": "../model/model.json#/properties/name"
+          "$ref": "./model.json#/properties/name"
         version:
-            "$ref": "../model/model.json#/properties/version"
+          "$ref": "./model.json#/properties/version"
         displayName:
-            "$ref": "../model/model.json#/properties/displayName"
+          "$ref": "./model.json#/properties/displayName"
         model:
-          "$ref": "../model/model.json#/properties/model"
+          "$ref": "./model.json#/properties/model"
         registrant:
           "x-go-type": "RegistrantReference"
           "$ref": "#/components/schemas/RegistrantReference"

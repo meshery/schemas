@@ -15,7 +15,7 @@
   ],
   "properties": {
     "id": {
-      "$ref": "../../core.json#/definitions/uuid",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
       "description": "ID",
       "x-order": 1,
       "x-go-name": "ID",
@@ -40,7 +40,7 @@
         "yaml": "credential_id"
       },
       "x-order": 3,
-      "$ref": "../../core.json#/definitions/uuid",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
       "description": "Credential ID"
     },
     "type": {
@@ -106,10 +106,10 @@
         "yaml": "user_id"
       },
       "x-order": 9,
-      "$ref": "../../core.json#/definitions/uuid"
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid"
     },
     "created_at": {
-      "$ref": "../../core.json#/definitions/time",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/Time",
       "x-oapi-codegen-extra-tags": {
         "db": "created_at",
         "yaml": "created_at"
@@ -117,7 +117,7 @@
       "x-order": 10
     },
     "updated_at": {
-      "$ref": "../../core.json#/definitions/time",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/Time",
       "x-oapi-codegen-extra-tags": {
         "db": "updated_at",
         "yaml": "updated_at"
@@ -125,7 +125,7 @@
       "x-order": 11
     },
     "deleted_at": {
-      "$ref": "../../core.json#/definitions/time",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/Time",
       "x-oapi-codegen-extra-tags": {
         "db": "deleted_at",
         "yaml": "deleted_at"
@@ -149,7 +149,7 @@
     },
     "schemaVersion": {
       "description": "Specifies the version of the schema used for the definition.",
-      "$ref": "../../core.json#/definitions/versionString",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/versionString",
       "x-order": 14,
       "x-oapi-codegen-extra-tags": {
         "yaml": "schemaVersion",

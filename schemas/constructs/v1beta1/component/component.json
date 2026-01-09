@@ -7,7 +7,7 @@
   "properties": {
     "id": {
       "description": "Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).",
-      "$ref": "../../core.json#/definitions/uuid",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
       "x-order": 1,
       "x-oapi-codegen-extra-tags": {
         "yaml": "id",
@@ -15,7 +15,7 @@
       }
     },
     "schemaVersion": {
-      "$ref": "../../core.json#/definitions/versionString",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/versionString",
       "x-order": 2,
       "description": "Specifies the version of the schema to which the component definition conforms.",
       "x-oapi-codegen-extra-tags": {
@@ -25,7 +25,7 @@
       "default": "components.meshery.io/v1beta1"
     },
     "version": {
-      "$ref": "../../core.json#/definitions/semverString",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/semverString",
       "x-order": 3,
       "description": "Version of the component definition.",
       "minLength": 1,
@@ -36,7 +36,7 @@
       }
     },
     "displayName": {
-      "$ref": "../../core.json#/definitions/inputString",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/inputString",
       "x-order": 4,
       "description": "Name of the component in human-readible format.",
       "x-oapi-codegen-extra-tags": {
@@ -91,7 +91,7 @@
       }
     },
     "modelId": {
-      "$ref": "../../core.json#/definitions/uuid",
+      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
       "description": "ModelId is the foreign key to the model to which the component belongs.",
       "x-oapi-codegen-extra-tags": {
         "gorm": "index:idx_component_definition_dbs_model_id,column:model_id",

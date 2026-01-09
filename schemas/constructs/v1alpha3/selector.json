@@ -16,7 +16,7 @@
                 "type": "string"
               },
               "id": {
-                "$ref": "../core.json#/definitions/uuid"
+                "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/uuid"
               }
             }
           },
@@ -71,7 +71,7 @@
             "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models"
           },
           "id": {
-            "$ref": "../core.json#/definitions/uuid"
+            "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/uuid"
           },
           "match": {
             "type": "object",
@@ -170,17 +170,12 @@
         "type": "object",
         "description": "Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.",
         "additionalProperties": false,
-        "required": [
-          "allow"
-        ],
+        "required": ["allow"],
         "properties": {
           "deny": {
             "description": "Optional selectors used to define relationships which should not be created / is restricted.",
             "type": "object",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "$ref": "#/definitions/selector"
@@ -193,10 +188,7 @@
           "allow": {
             "description": "Selectors used to define relationships which are allowed.",
             "type": "object",
-            "required": [
-              "to",
-              "from"
-            ],
+            "required": ["to", "from"],
             "properties": {
               "from": {
                 "$ref": "#/definitions/selector"

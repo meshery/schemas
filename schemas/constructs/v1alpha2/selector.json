@@ -17,7 +17,7 @@
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {
-          "$ref": "../core.json#/definitions/semverString"
+          "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/semverString"
         },
         "match": {
           "type": "object",
@@ -45,9 +45,7 @@
           "properties": {
             "patchStrategy": {
               "type": "string",
-              "enum": [
-                "replace"
-              ]
+              "enum": ["replace"]
             },
             "mutatorRef": {
               "type": "array",
@@ -80,7 +78,7 @@
           "description": "Model of the component. Learn more at https://docs.meshery.io/concepts/models"
         },
         "version": {
-          "$ref": "../core.json#/definitions/semverString"
+          "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/semverString"
         },
         "match": {
           "type": "object",
@@ -108,9 +106,7 @@
           "properties": {
             "patchStrategy": {
               "type": "string",
-              "enum": [
-                "replace"
-              ]
+              "enum": ["replace"]
             },
             "mutatedRef": {
               "type": "string",

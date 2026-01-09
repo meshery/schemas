@@ -14,7 +14,7 @@
       "description": "Specifies the version of the component definition."
     },
     "displayName": {
-      "$ref": "../core.json#/definitions/inputString",
+      "$ref": "../v1alpha1/core/openapi.yml#/components/schemas/inputString",
       "description": "Name of the component in human-readible format."
     },
     "description": {
@@ -23,10 +23,7 @@
     },
     "format": {
       "type": "string",
-      "enum": [
-        "JSON",
-        "CUE"
-      ],
+      "enum": ["JSON", "CUE"],
       "default": "JSON",
       "description": "Format specifies the format used in the `component.schema` field. JSON is the default."
     },
@@ -37,12 +34,7 @@
     "metadata": {
       "type": "object",
       "description": "Metadata contains additional information associated with the component.",
-      "required": [
-        "shape",
-        "primaryColor",
-        "svgColor",
-        "svgWhite"
-      ],
+      "required": ["shape", "primaryColor", "svgColor", "svgWhite"],
       "properties": {
         "capabilities": {
           "type": "object",
@@ -108,12 +100,7 @@
         },
         "status": {
           "type": "string",
-          "enum": [
-            "ignore",
-            "publish",
-            "duplicate",
-            "maintenance"
-          ],
+          "enum": ["ignore", "publish", "duplicate", "maintenance"],
           "description": "Status of the component."
         },
         "published": {
@@ -140,17 +127,8 @@
           "description": "JSON schema of the object as defined by the registrant."
         }
       },
-      "required": [
-        "version",
-        "kind",
-        "schema"
-      ]
+      "required": ["version", "kind", "schema"]
     }
   },
-  "required": [
-    "schemaVersion",
-    "version",
-    "model",
-    "component"
-  ]
+  "required": ["schemaVersion", "version", "model", "component"]
 }
