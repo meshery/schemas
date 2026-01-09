@@ -130,6 +130,28 @@ schemas/
           <construct>_template.json # JSON template from schema
           <construct>_template.yaml # YAML template from schema
           <variant>_template.json   # Additional variant templates (optional)
+  
+  typescript/                       # TypeScript source and generated files
+    index.ts                        # Manually maintained - public API surface
+    generated/                      # Auto-generated (do NOT commit)
+      <schema-version>/
+        <construct>/
+          <Construct>.d.ts          # TypeScript type definitions
+          <Construct>Schema.ts      # OpenAPI schema as JS object
+    rtk/                            # RTK Query client configurations
+      cloud.ts
+      meshery.ts
+  
+  dist/                             # Built distribution (do NOT commit)
+    index.js, index.d.ts
+    cloudApi.js, mesheryApi.js
+    constructs/                     # Built schema exports (renamed from 'generated')
+      <schema-version>/<construct>/<Construct>Schema.js
+  
+  models/                           # Auto-generated Go code (do NOT commit)
+    <schema-version>/
+      <construct>/
+        <construct>.go
 ```
 
 ### 🧠 Explanation
@@ -172,10 +194,40 @@ schemas/
 
 Meshery supports **automated code generation** from schemas for:
 
-* **Go**: Strongly-typed models for backend.
-* **TypeScript**: Interfaces and types for frontend use.
-* **RTK Query**: Clients generated from OpenAPI for use with Redux.
+* **Go**: Strongly-typed models for backend → `models/<version>/<package>/`
+* **TypeScript Types**: Interfaces and type definitions → `typescript/generated/<version>/<package>/<Package>.d.ts`
+* **TypeScript Schemas**: OpenAPI schemas as const JS objects → `typescript/generated/<version>/<package>/<Package>Schema.ts`
+* **RTK Query**: Clients generated from OpenAPI for use with Redux → `typescript/rtk/`
 * **JSON/YAML**: Templates with defaults and resolved references.
+
+### TypeScript Schema Exports
+
+Each construct's OpenAPI schema is exported as a const JavaScript object for runtime use:
+
+```typescript
+// Import from main index
+import {
+  ModelDefinitionV1Beta1OpenApiSchema,
+  ComponentDefinitionV1Beta1OpenApiSchema,
+  DesignDefinitionV1Beta1OpenApiSchema,
+} from "@meshery/schemas";
+
+// Or import individual schemas directly
+import ModelSchema from "@meshery/schemas/dist/constructs/v1beta1/model/ModelSchema";
+import ComponentSchema from "@meshery/schemas/dist/constructs/v1beta1/component/ComponentSchema";
+```
+
+### TypeScript Type Namespaces
+
+Types are organized by version in namespaces:
+
+```typescript
+import { v1beta1, v1alpha1 } from "@meshery/schemas";
+
+const component: v1beta1.Component = { /* ... */ };
+const model: v1beta1.Model = { /* ... */ };
+const design: v1beta1.Design = { /* ... */ };
+```
 
 ---
 
@@ -185,6 +237,7 @@ Use the following command to perform the **entire schema-driven generation workf
 
 ```bash
 make build
+npm run build  # Build TypeScript distribution with tsup
 ```
 
 ### 🔧 What `make build` does:
@@ -197,10 +250,16 @@ make build
    
 2. **Generates:**
 
-   * Golang structs
-   * TypeScript types
-   * JSON & YAML templates
-   * RTK Query clients
+   * Golang structs → `models/`
+   * TypeScript type definitions (`.d.ts`) → `typescript/generated/`
+   * TypeScript schema exports (`*Schema.ts`) → `typescript/generated/`
+   * RTK Query clients → `typescript/rtk/`
+
+3. **After `npm run build`:**
+
+   * Builds distribution files → `dist/`
+   * Creates CJS and ESM bundles
+   * Generates declaration files
 
 > ⚠️ This is the recommended way to stay in sync with schema changes.
 
@@ -478,12 +537,27 @@ npx @redocly/cli lint schemas/constructs/v1beta1/pattern/openapi.yml
 
 ## ✅ Summary
 
-| Task                    | Command                 |
-| ----------------------- | ----------------------- |
-| Generate everything     | `make build`            |
-| Generate Go code only   | `make golang-generate`  |
-| Generate TS + templates | `make generate-ts`      |
-| Lint OpenAPI            | `npx @redocly/cli lint` |
+| Task                         | Command                 |
+| ---------------------------- | ----------------------- |
+| Generate everything          | `make build`            |
+| Build TypeScript dist        | `npm run build`         |
+| Generate Go code only        | `make golang-generate`  |
+| Generate TS types + schemas  | `make generate-ts`      |
+| Lint OpenAPI                 | `npx @redocly/cli lint` |
+
+### Importing Schemas
+
+```typescript
+// Via namespaces (types)
+import { v1beta1 } from "@meshery/schemas";
+const model: v1beta1.Model = { /* ... */ };
+
+// Via schema exports (runtime)
+import { ModelDefinitionV1Beta1OpenApiSchema } from "@meshery/schemas";
+
+// Direct schema import
+import ModelSchema from "@meshery/schemas/dist/constructs/v1beta1/model/ModelSchema";
+```
 
 ---
 

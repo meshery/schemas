@@ -6,141 +6,134 @@ Meshery follows schema-driven development. As a project, Meshery has different t
 
 The schemas follow a versioned approach to maintain backward compatibility while allowing for evolution of the definitions.
 
-> To better understand how schemas fit into Meshery's architecture, read about Meshery's core concepts in the [Meshery documentation](https://docs.meshery.io/concepts/logical).`
+> To better understand how schemas fit into Meshery's architecture, read about Meshery's core concepts in the [Meshery documentation](https://docs.meshery.io/concepts/logical).
 
 ## Prerequisites
 
 1. **oapi-codegen**: This tool is essential for generating Go code from OpenAPI specifications. Install it using:
 
 ```bash
-go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
+go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 ```
 
-2. **make**: The repository uses Makefiles to automate various tasks. Ensure you have make installed on your system.
+2. **Node.js & npm**: Required for TypeScript generation and build process.
+
+3. **make**: The repository uses Makefiles to automate various tasks. Ensure you have make installed on your system.
+
+## Quick Start
+
+```bash
+# Install dependencies
+make setup
+npm install
+
+# Generate all code (Go, TypeScript, RTK Query)
+make build
+
+# Build TypeScript distribution
+npm run build
+```
 
 ## Development Workflow
 
-### Code Generation and Configuration
+### Generated Output Structure
 
-The code generation process uses two key configuration files:
+After running the build process, the following files are generated:
 
-1. **oapi-codegen-config.yml**: Controls oapi-codegen behavior
-
-```yml
-package: organization  # Set your desired package name
-
-generate:
-  models: true  # Generate model structs
-
-import-mapping:  # Map schema references to Go imports
-  "../v1beta1/model.json": "github.com/meshery/schemas/models/v1beta1/model"
-  "../v1alpha1/capability/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
-
-output: models/v1beta1/organization.go  # Specify output file
-output-options:
-  skip-prune: true
-  include-tags:  # Filter generated code by tags
-  - organizations
+```
+schemas/
+├── models/                          # Generated Go code
+│   └── <version>/<package>/<package>.go
+├── typescript/
+│   ├── index.ts                     # Manually maintained public API
+│   └── generated/                   # Generated TypeScript (do NOT commit)
+│       └── <version>/<package>/
+│           ├── <Package>.d.ts       # Type definitions
+│           └── <Package>Schema.ts   # Schema as JS object
+├── dist/                            # Built distribution (do NOT commit)
+│   ├── index.js, index.d.ts
+│   ├── cloudApi.js, mesheryApi.js
+│   └── generated/<version>/<package>/<Package>Schema.js
+└── _openapi_build/                  # Bundled OpenAPI specs
+    ├── merged_openapi.yml
+    ├── cloud_openapi.yml
+    └── meshery_openapi.yml
 ```
 
-2. **schemas/constructs/openapi/models.yml**: Defines OpenAPI schema references
+### Code Generation Process
 
-```yml
-openapi: 3.0.0
-components:
-  schemas:
-    component_definition:
-      $ref: ../[version]/component.json
-```
+The build system automatically discovers schemas from `constructs/<version>/<package>/openapi.yml` files.
 
-### Workflow
+**To add a new schema:**
 
-1. Update schema references in **models.yml**:
-    - Uncomment/add needed schema references
-    - Each reference generates corresponding Go structs
-2. Modify **oapi-codegen-config.yml**:
-    - Set appropriate package name
-    - Update output file path
-    - Add required import mappings
-    - Configure include-tags if needed
-3. Generate code:
+1. Create directory: `schemas/constructs/<version>/<package>/`
+2. Add `openapi.yml` with your schema definitions
+3. Run `make build` - it will be automatically discovered
+
+**To regenerate after schema changes:**
 
 ```bash
-oapi-codegen -config oapi-codegen-config.yml  schemas/constructs/openapi/models.yml
+# Full build (Go + TypeScript + RTK)
+make build
+
+# Build TypeScript distribution
+npm run build
 ```
 
-**Key Points:**
+### TypeScript Index File
 
-- Keep import mappings synchronized with schema references
-- Generated code inherits package name from config
-- Use tags to filter generated structs
+The `typescript/index.ts` file is **manually maintained** and defines the public API surface. When adding new constructs:
 
-### Handling Schema Changes and Field Ordering
+1. Import the components from the generated `.d.ts` file
+2. Import the schema from the generated `*Schema.ts` file
+3. Add type exports to the appropriate namespace
 
-When modifying schema structs or their fields, there are two common scenarios:
+Example:
+```typescript
+// Type imports (no .d.ts extension)
+import { components as ModelComponents } from "./generated/v1beta1/model/Model";
 
-#### 1. Adding a New Field or Struct
+// Schema imports
+import ModelDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/model/ModelSchema";
 
-- **Revert Logic:** If you add a new field, the entire file may change due to automated code generation. **What to do:**
-
-  - Identify the new field or struct you have added.
-
-  - Copy this new addition.
-
-  - Revert the rest of the file to its original state.
-
-  - Re-insert the new field or struct into its appropriate location.
-
->**Note:** We are working on streamlining this process, any contributions to improve automation are welcome! 🚀
-
-#### 2. Preserving Field Order with x-order Tag
-
-- **x-order Tag Usage:** If you only add an `x-order` tag, it ensures fields remain in a specific order. **Steps:**
-
-  - Run the usual commands to resolve references and generate the code.
-
-  - If the field order changes unexpectedly, manually rearrange them.
-
-  - Commit the changes, ensuring the `x-order` tag is included to maintain order in future generations.
-
-## Example
-
-Let's walk through a practical example, you made some changes in the **component.json**
-
-1. Update `schemas/constructs/openapi/models.yml` to reference component.json:
-
-```yml
-openapi: 3.0.0
-components:
-  schemas:
-    component_definition:
-      $ref: ../v1beta1/component.json
+// Export in namespace
+export namespace v1beta1 {
+  export type Model = ModelComponents["schemas"]["ModelDefinition"];
+}
 ```
 
-2. Configure **oapi-codegen-config.yml**:
+### Preserving Field Order with x-order Tag
 
-```yml
-package: component
+Use the `x-order` tag in schema properties to ensure fields appear in a specific order in generated code:
 
-generate:
-  models: true
-
-import-mapping:
-  "../v1beta1/model.json": "github.com/meshery/schemas/models/v1beta1/model"
-  "../v1alpha1/capability/capability.json": "github.com/meshery/schemas/models/v1alpha1/capability"
-
-output: models/v1beta1/component/component.go
-output-options:
-  skip-prune: true
-  include-tags:
-  - components
+```json
+{
+  "properties": {
+    "id": {
+      "type": "string",
+      "x-order": 1
+    },
+    "name": {
+      "type": "string",
+      "x-order": 2
+    }
+  }
+}
 ```
 
-3. Generate code
+## What NOT to Commit
 
-```yml
-oapi-codegen -config oapi-codegen-config.yml schemas/constructs/openapi/models.yml
-```
+**CRITICAL**: Do not commit generated files:
+
+- `models/` - Generated Go code
+- `typescript/generated/` - Generated TypeScript
+- `dist/` - Built distribution
+- `_openapi_build/` - Bundled OpenAPI specs
+
+Only commit:
+- Schema files (`constructs/<version>/<package>/openapi.yml`, `*.json`)
+- Template files (`constructs/<version>/<package>/templates/`)
+- The manually maintained `typescript/index.ts`
 
 ## Contributing to Documentation
 
@@ -154,12 +147,30 @@ oapi-codegen -config oapi-codegen-config.yml schemas/constructs/openapi/models.y
 {
   "displayName": {
     "type": "string",
-    "description": "Human-readable name for the component.", // <-- description here
+    "description": "Human-readable name for the component.",
     "minLength": 1,
     "maxLength": 100,
-    "examples": ["nginx-deployment"] // <-- examples
+    "examples": ["nginx-deployment"]
   }
 }
+```
+
+## Testing Your Changes
+
+Before submitting a PR, verify your changes:
+
+```bash
+# Run full build
+make build
+
+# Build TypeScript distribution
+npm run build
+
+# Run Go tests
+go test ./...
+
+# Lint OpenAPI specs
+npx @redocly/cli lint schemas/constructs/v1beta1/model/openapi.yml
 ```
 
 ## Getting Help

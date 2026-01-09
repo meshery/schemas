@@ -30,15 +30,31 @@ The build process is organized into three main stages:
 │  Bundles & merges   │     │  Generates Go       │     │  Generates RTK      │
 │  OpenAPI specs      │     │  structs            │     │  Query clients      │
 └─────────────────────┘     └─────────────────────┘     └─────────────────────┘
-         │                                                        │
-         │                                                        │
-         ▼                                                        │
+         │                           │                            │
+         │                           ▼                            │
+         │                  ┌─────────────────────┐               │
+         │                  │ generate-typescript │               │
+         │                  │                     │               │
+         │                  │ Generates TS types  │               │
+         │                  │ & schema exports    │               │
+         │                  └─────────────────────┘               │
+         │                           │                            │
+         ▼                           ▼                            │
 ┌─────────────────────────────────────────────────────────────────┘
 │  _openapi_build/
 │  ├── constructs/<version>/<package>/merged-openapi.json
 │  ├── merged_openapi.yml
 │  ├── cloud_openapi.yml
 │  └── meshery_openapi.yml
+│
+│  typescript/generated/
+│  ├── <version>/<package>/<Package>.d.ts      (type definitions)
+│  └── <version>/<package>/<Package>Schema.ts  (schema as JS object)
+│
+│  dist/  (after npm run build / tsup)
+│  ├── index.js, index.d.ts
+│  ├── cloudApi.js, mesheryApi.js
+│  └── generated/<version>/<package>/<Package>Schema.js
 └──────────────────────────────────────────────────────────────────
 ```
 
@@ -49,8 +65,27 @@ The build process is organized into three main stages:
 | `bundle-openapi.js` | Bundles and merges OpenAPI specs | - |
 | `generate-golang.js` | Generates Go structs from OpenAPI | `bundle-openapi.js` |
 | `generate-rtk.js` | Generates RTK Query clients | `bundle-openapi.js` |
-| `generate-typescript.js` | Generates TypeScript type definitions | `bundle-openapi.js` |
+| `generate-typescript.js` | Generates TypeScript types and schema exports | `bundle-openapi.js` |
 | `index.js` | CLI entry point for running build scripts | - |
+
+## TypeScript Build with tsup
+
+After generating TypeScript files, the project uses `tsup` to build the final distribution:
+
+```bash
+npm run build  # Runs tsup to build dist/
+```
+
+The `tsup.config.ts` automatically discovers all `*Schema.ts` files under `typescript/generated/`
+and creates individual entry points for each, allowing consumers to import schemas directly:
+
+```typescript
+// Import from main index
+import { v1beta1, ModelDefinitionV1Beta1OpenApiSchema } from "@meshery/schemas";
+
+// Or import individual schemas directly
+import ModelSchema from "@meshery/schemas/dist/constructs/v1beta1/model/ModelSchema";
+```
 
 ### Supporting Scripts
 
@@ -202,9 +237,9 @@ make generate-rtk  # Auto-runs bundle-openapi first
 
 **TypeScript Type Definition Generator**
 
-Generates TypeScript type definitions from bundled OpenAPI specifications using openapi-typescript.
-This script focuses on TypeScript code generation and depends on the `_openapi_build/` directory
-being populated by `bundle-openapi.js`.
+Generates TypeScript type definitions and schema exports from bundled OpenAPI specifications.
+This script uses `openapi-typescript` to generate `.d.ts` files and creates `*Schema.ts` files
+that export the OpenAPI schema as a const JavaScript object for runtime use.
 
 Schemas are discovered dynamically by walking the `_openapi_build/constructs/` directory
 and looking for `merged-openapi.json` files.
@@ -222,8 +257,26 @@ make generate-ts
 - Requires `_openapi_build/` directory (run `bundle-openapi.js` first)
 
 **Output:**
-- `typescript/<version>/<package>/<Package>.ts` - TypeScript type definitions
-- `typescript/<version>/<package>/<Package>.json` - Raw JSON schema
+- `typescript/generated/<version>/<package>/<Package>.d.ts` - TypeScript type definitions
+- `typescript/generated/<version>/<package>/<Package>Schema.ts` - OpenAPI schema as const JS object
+
+**Schema Export Format:**
+
+Each `*Schema.ts` file exports the schema as a const object:
+
+```typescript
+/**
+ * This file was automatically generated from OpenAPI schema.
+ * Do not manually modify this file.
+ */
+
+const ModelSchema = {
+  "openapi": "3.0.0",
+  // ... schema content
+} as const;
+
+export default ModelSchema;
+```
 
 ---
 
@@ -309,7 +362,7 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 | `make bundle-openapi` | Bundle and merge OpenAPI specs |
 | `make generate-golang` | Generate Go code (auto-runs bundle) |
 | `make generate-rtk` | Generate RTK Query clients (auto-runs bundle) |
-| `make generate-ts` | Generate TypeScript types |
+| `make generate-ts` | Generate TypeScript types and schema exports |
 | `make setup` | Install all dependencies |
 
 ## NPM Scripts
@@ -321,6 +374,7 @@ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
 | `npm run build:golang` | Generate Go code |
 | `npm run build:rtk` | Generate RTK Query clients |
 | `npm run generate:types` | Generate TypeScript types |
+| `npm run build` | Build TypeScript with tsup (generates dist/) |
 
 ---
 
@@ -368,6 +422,7 @@ Schemas are discovered automatically! Just:
 3. Run the build - it will be automatically discovered:
    ```bash
    make build
+   npm run build  # Build TypeScript distribution
    ```
 
 **Optional configurations in `build/lib/config.js`:**
