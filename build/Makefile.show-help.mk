@@ -1,3 +1,36 @@
+#-----------------------------------------------------------------------------
+# Makefile.show-help.mk - Auto-generated Help Target for Makefiles
+#-----------------------------------------------------------------------------
+#
+# DESCRIPTION:
+#   Provides a self-documenting help target that extracts and displays
+#   all available Makefile targets with their descriptions. Targets are
+#   documented using ## comments above the target definition.
+#
+# WHAT IT DOES:
+#   1. Sets the default goal to show-help (runs when `make` is called without args)
+#   2. Parses all Makefiles for ## comments and target names
+#   3. Formats and displays available targets with descriptions
+#
+# USAGE:
+#   Include this file in your Makefile:
+#   include build/Makefile.show-help.mk
+#
+#   Document targets like this:
+#   ## Build the project
+#   build:
+#       @echo "Building..."
+#
+#   Then run:
+#   make          # Shows help (default)
+#   make show-help # Explicitly shows help
+#
+# NOTE:
+#   This is a common Makefile pattern for self-documenting build systems.
+#   See: https://gist.github.com/klmr/575726c7e05d8780505a
+#
+#-----------------------------------------------------------------------------
+
 .DEFAULT_GOAL := show-help
 # See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
 .PHONY: show-help

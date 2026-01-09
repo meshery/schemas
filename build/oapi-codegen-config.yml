@@ -1,3 +1,30 @@
+# oapi-codegen-config.yml - Legacy/Example Configuration for Manual Code Generation
+#
+# ⚠️  STATUS: LEGACY/EXAMPLE - NOT USED BY AUTOMATED BUILD
+#
+# DESCRIPTION:
+#   This is an example/template configuration file for manual oapi-codegen usage.
+#   It is documented in CONTRIBUTING.md for developers who want to manually
+#   generate Go code for specific schemas.
+#
+#   The automated build process (generate-golang.sh) uses openapi.config.yml instead.
+#
+# KNOWN ISSUES:
+#   - Contains outdated paths (e.g., "v1alphav3" should be "v1alpha3")
+#   - Import mappings may be out of sync with current schema structure
+#   - The 'generate' section at the bottom is commented out/incomplete
+#
+# FOR AUTOMATED BUILDS:
+#   Use `make build` or `make golang-generate` which uses openapi.config.yml
+#
+# FOR MANUAL GENERATION (as documented in CONTRIBUTING.md):
+#   1. Update this file with your specific package/output settings
+#   2. Run: oapi-codegen -config oapi-codegen-config.yml <schema_file>
+#
+# SEE ALSO:
+#   - build/openapi.config.yml - Primary config used by automated builds
+#   - CONTRIBUTING.md - Manual code generation workflow documentation
+#
 # yaml-language-server: $schema=https://raw.githubusercontent.com/deepmap/oapi-codegen/HEAD/configuration-schema.json
 package: schemas
 

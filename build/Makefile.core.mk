@@ -13,6 +13,33 @@
 # limitations under the License.
 
 #-----------------------------------------------------------------------------
+# Makefile.core.mk - Core Build Configuration Variables
+#-----------------------------------------------------------------------------
+#
+# DESCRIPTION:
+#   Defines global variables and configuration settings used across all
+#   Makefile targets in the schemas build system. This file is included
+#   by the main Makefile to provide common settings.
+#
+# WHAT IT PROVIDES:
+#   - Git version and commit information variables
+#   - Go environment configuration (GOPATH, GOBIN, GOVERSION)
+#   - Provider settings (remote/local)
+#   - Adapter URLs configuration
+#   - Release channel settings
+#
+# USAGE:
+#   Include this file in your Makefile:
+#   include build/Makefile.core.mk
+#
+# VARIABLES:
+#   GIT_VERSION         - Latest git tag version
+#   GIT_COMMITSHA       - Current commit SHA
+#   GIT_STRIPPED_VERSION - Version without 'v' prefix
+#   GOPATH/GOBIN        - Go environment paths
+#   RELEASE_CHANNEL     - "stable" or "edge"
+#
+#-----------------------------------------------------------------------------
 # Global Variables
 #-----------------------------------------------------------------------------
 GIT_VERSION	= $(shell git describe --tags `git rev-list --tags --max-count=1`)
