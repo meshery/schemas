@@ -30,7 +30,7 @@ The `core.json` file is deprecated. All references should use the OpenAPI YAML f
 
 - OpenAPI schema names
   - PascalCase nouns under `components/schemas` (e.g., `Model`, `Component`).
-  - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `<construct>_template.(json|yaml)`.
+  - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `templates/<construct>_template.(json|yaml)`.
 
 - Endpoints and operations
   - Paths are under `/api` with kebab-case, plural nouns (e.g., `/api/workspaces`, `/api/environments`).
@@ -71,7 +71,9 @@ When adding `created_at` and `updated_at` fields to schemas:
 
 ### 5. Template File Updates
 
-When updating schema JSON files, also update the corresponding template files (e.g., `*_template.json`) with default values:
+Templates are manually defined files located in the `templates/` subdirectory within each schema folder. You can have multiple template files for different variants or use cases.
+
+When updating schema JSON files, also update the corresponding template files in the `templates/` subdirectory (e.g., `templates/<construct>_template.json`) with default values:
 
 ```json
 {
@@ -79,6 +81,8 @@ When updating schema JSON files, also update the corresponding template files (e
   "updated_at": "0001-01-01T00:00:00Z"
 }
 ```
+
+You can add additional variant templates as needed (e.g., `<construct>_minimal_template.json`, `<construct>_full_template.yaml`).
 
 ### 6. Path Adjustments for v1alpha3
 
@@ -127,15 +131,23 @@ schemas/
 │   │   └── core/
 │   │       └── openapi.yml          # Core schema definitions (use this!)
 │   ├── v1alpha3/
-│   │   ├── relationship.json        # Schema definitions
-│   │   └── relationship_template.json
+│   │   ├── relationship/
+│   │   │   └── templates/
+│   │   │       └── relationship_template.json
+│   │   └── relationship.json        # Schema definitions
 │   ├── v1beta1/
 │   │   ├── model/
 │   │   │   ├── model.json           # Schema definitions
-│   │   │   └── model_template.json
+│   │   │   ├── openapi.yml          # API operations
+│   │   │   └── templates/           # Manually defined templates
+│   │   │       ├── model_template.json
+│   │   │       └── model_template.yaml
 │   │   └── component/
 │   │       ├── component.json
-│   │       └── component_template.json
+│   │       ├── openapi.yml
+│   │       └── templates/
+│   │           ├── component_template.json
+│   │           └── component_template.yaml
 │   └── core.json                     # DEPRECATED - do not use
 ├── models/                           # Auto-generated Go code (do NOT commit)
 └── typescript/                       # Auto-generated TypeScript (do NOT commit)
@@ -147,13 +159,14 @@ schemas/
 2. ❌ Committing generated TypeScript code in `typescript/` directory
 3. ❌ Using deprecated `core.json` references
 4. ❌ Adding redundant `x-oapi-codegen-extra-tags` when using schema references
-5. ❌ Forgetting to update template files with default values
+5. ❌ Forgetting to update template files in the `templates/` subdirectory with default values
 6. ❌ Not testing the build process after schema changes
+7. ❌ Placing template files outside the `templates/` subdirectory
 
 ## Checklist for Schema Changes
 
 - [ ] Modified only schema JSON files (not generated code)
-- [ ] Updated corresponding template files with default values
+- [ ] Updated corresponding template files in `templates/` subdirectory with default values
 - [ ] Used non-deprecated `v1alpha1/core/openapi.yml` references
 - [ ] Removed redundant tags when using schema references
 - [ ] Ran `make build` successfully
