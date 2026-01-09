@@ -278,7 +278,7 @@ npx @redocly/cli join schemas/base_cloud.yml \
      "${v1beta1}/component/${merged_construct}" \
      "${v1beta1}/model/${merged_construct}" \
      ... \
-     -o schemas/merged_openapi.yml \
+     -o _openapi_build/merged_openapi.yml \
      --prefix-tags-with-info-prop title \
      --prefix-components-with-info-prop title
 ```
