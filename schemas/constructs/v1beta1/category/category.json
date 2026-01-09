@@ -6,7 +6,7 @@
   "required": ["id", "name", "metadata"],
   "properties": {
     "id": {
-      "$ref": "../../v1alpha1/core/openapi.yml#/components/schemas/uuid",
+      "$ref": "../../v1alpha1/core/api.yml#/components/schemas/uuid",
       "x-order": 1
     },
     "name": {

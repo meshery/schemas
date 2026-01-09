@@ -62,13 +62,14 @@ schemas/
 
 ### Code Generation Process
 
-The build system automatically discovers schemas from `constructs/<version>/<package>/openapi.yml` files.
+The build system automatically discovers schemas from `constructs/<version>/<package>/api.yml` files.
 
 **To add a new schema:**
 
 1. Create directory: `schemas/constructs/<version>/<package>/`
-2. Add `openapi.yml` with your schema definitions
-3. Run `make build` - it will be automatically discovered
+2. Add `api.yml` - the index file that references all subschemas and defines API endpoints
+3. Optionally add additional `*.yaml` or `*.json` files for subschemas
+4. Run `make build` - it will be automatically discovered
 
 **To regenerate after schema changes:**
 
@@ -131,9 +132,29 @@ Use the `x-order` tag in schema properties to ensure fields appear in a specific
 - `_openapi_build/` - Bundled OpenAPI specs
 
 Only commit:
-- Schema files (`constructs/<version>/<package>/openapi.yml`, `*.json`)
+- Schema files:
+  - `constructs/<version>/<package>/api.yml` - The index file for each construct (required)
+  - `constructs/<version>/<package>/*.yaml` or `*.json` - Subschema files (optional)
 - Template files (`constructs/<version>/<package>/templates/`)
 - The manually maintained `typescript/index.ts`
+
+### Understanding `api.yml`
+
+Each construct has an `api.yml` file that serves as the **index file** for that construct:
+
+1. **References all subschemas**: Uses `$ref` to include schemas defined in other YAML/JSON files within the same directory
+2. **Defines API endpoints**: Contains all REST API operations (paths) for the construct (e.g., GET, POST, PUT, DELETE)
+3. **Aggregates components**: Lists all schema components under `components/schemas` for code generation
+
+Example structure:
+```
+constructs/v1beta1/model/
+├── api.yml              # Index file: refs subschemas + defines /api/models endpoints
+├── model.yaml           # Subschema: ModelDefinition properties
+├── model_core.yml       # Subschema: Core model types
+└── templates/
+    └── model_template.json
+```
 
 ## Contributing to Documentation
 
@@ -170,8 +191,17 @@ npm run build
 go test ./...
 
 # Lint OpenAPI specs
-npx @redocly/cli lint schemas/constructs/v1beta1/model/openapi.yml
+npx @redocly/cli lint schemas/constructs/v1beta1/model/api.yml
 ```
+
+### Schema File Roles
+
+| File | Purpose |
+|------|---------|
+| `api.yml` | **Index file** - aggregates all subschemas via `$ref` and defines API endpoints for the construct |
+| `<construct>.yaml` | **Subschema** - defines the main data model (noun) for the construct |
+| `<construct>_core.yml` | **Subschema** - defines core/shared types used by the main schema |
+| `templates/*.json` | **Templates** - example instances with default values |
 
 ## Getting Help
 

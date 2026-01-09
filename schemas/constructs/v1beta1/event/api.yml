@@ -1,0 +1,191 @@
+openapi: 3.0.0
+info:
+  title: events
+  version: 1.0.0
+
+paths:
+  /events/{id}:
+    delete:
+      summary: Delete a single event
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the event to delete
+      responses:
+        "200":
+          description: Event deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  event_id:
+                    type: string
+                    format: uuid
+        "400":
+          description: Invalid event ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+
+  /events:
+    post:
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+
+    delete:
+      summary: Bulk delete events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkDeleteRequest"
+      responses:
+        "200":
+          description: event deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+
+  /events/status:
+    put:
+      summary: Bulk update event status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkUpdateStatusRequest"
+      responses:
+        "200":
+          description: Events updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+
+  /events/{id}/status:
+    put:
+      summary: Update status of a single event
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEventStatusRequest"
+      responses:
+        "200":
+          description: Event status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  event_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+        "400":
+          description: Invalid request or status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+
+components:
+  schemas:
+    UpdateEventStatusRequest:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: "completed"
+
+    BulkDeleteRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+
+    BulkUpdateStatusRequest:
+      type: object
+      required:
+        - ids
+        - status
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+        status:
+          type: string
+          example: "failed"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string

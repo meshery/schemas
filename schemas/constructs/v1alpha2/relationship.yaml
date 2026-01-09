@@ -1,0 +1,80 @@
+$id: https://schemas.meshery.io/relationship.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
+required:
+  - schemaVersion
+  - version
+  - kind
+  - type
+  - subType
+  - model
+  - evaluationQuery
+additionalProperties: false
+type: object
+properties:
+  schemaVersion:
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/versionString
+    description: Specifies the version of the schema used for the definition.
+    default: v1alpha2
+  version:
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/semverString
+    description: Specifies the version of the definition.
+  kind:
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/inputString
+    description: Kind of the Relationship.
+    enum:
+      - hierarchical
+      - edge
+      - sibling
+  type:
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/inputString
+    description: Classification of relationships. Used to group relationships similar in nature.
+  subType:
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/inputString
+    description: Used for further classification of Relationships. Type and SubType together identifies a Relationship.
+  evaluationQuery:
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/inputString
+    description: Determines the policy rule to be used for the evaluation of the relationship.
+  metadata:
+    type: object
+    description: Metadata contains additional information associated with the Relationship.
+    properties:
+      description:
+        $ref: ../v1alpha1/core/api.yml#/components/schemas/inputString
+        description: Description of the Relationship.
+  model:
+    $ref: ../v1beta1/model/model.yaml
+    description: Model of the Relationship.
+  selectors:
+    type: array
+    description: Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.
+    $comment: Sets of selectors are interpreted as a locical OR, while sets of allow/deny are interpreted a logical AND.
+    items:
+      type: object
+      description: Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
+      additionalProperties: false
+      required:
+        - alllow
+      properties:
+        deny:
+          type: object
+          description: Optional selectors used to define relationships which should not be created / is restricted.
+          required:
+            - to
+            - from
+          properties:
+            from:
+              $ref: ./selector.yaml#/from
+            to:
+              $ref: ./selector.yaml#/to
+        allow:
+          type: object
+          description: Selectors used to define relationships which are allowed.
+          required:
+            - to
+            - from
+          properties:
+            from:
+              $ref: ./selector.yaml#/from
+            to:
+              $ref: ./selector.yaml#/to

@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: model
+  version: 1.0.0
+paths:
+  /api/meshmodels/register:
+    post:
+      summary: Register mesh models
+      operationId: RegisterMeshmodels
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ImportRequest"
+      responses:
+        "200":
+          description: Successful registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Invalid request format
+        "500":
+          description: Internal server error
+components:
+  schemas:
+    Model:
+      type: object
+      description: "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)."
+      required:
+        - version
+      properties:
+        version:
+          description: "Version of the model as defined by the registrant."
+          allOf:
+            - $ref: "../../v1alpha1/core/api.yml#/components/schemas/semverString"
+          x-oapi-codegen-extra-tags:
+            yaml: "version"
+            json: "version"
+          x-order: 1
+
+    ModelDefinition:
+      $ref: "./model.yaml"
+
+    RegistrantReference:
+      "type": "object"
+      required:
+        - "kind"
+      "properties":
+        "kind":
+          "type": "string"
+
+    ModelReference:
+      type: "object"
+      "required":
+        ["id", "name", "version", "displayName", "model", "registrant"]
+      "properties":
+        id:
+          "$ref": "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+        name:
+          "$ref": "./model.yaml#/properties/name"
+        version:
+          "$ref": "./model.yaml#/properties/version"
+        displayName:
+          "$ref": "./model.yaml#/properties/displayName"
+        model:
+          "$ref": "./model.yaml#/properties/model"
+        registrant:
+          "x-go-type": "RegistrantReference"
+          "$ref": "#/components/schemas/RegistrantReference"
+          x-oapi-codegen-extra-tags:
+            yaml: "registrant"
+            json: "registrant"
+
+      "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
+
+    ImportRequest:
+      type: object
+      required:
+        - importBody
+        - uploadType
+        - register
+      properties:
+        importBody:
+          $ref: "#/components/schemas/ImportBody"
+        uploadType:
+          type: string
+          title: "Upload method"
+          enum: ["file", "urlImport", "csv", "url"]
+          enumDescriptions:
+            [
+              "Upload a model file (.tar, .tar.gz, .tgz) from your local system",
+              "Import a model file using a direct URL to the source",
+              "Upload separate CSV files for model definitions, components, and their relationships",
+            ]
+          description: "Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online."
+        register:
+          type: boolean
+          nullable: false
+
+    ImportBody:
+      oneOf:
+        - title: File Import
+          type: object
+          required: [fileName, modelFile]
+          properties:
+            fileName:
+              type: string
+              description: "Name of the file being uploaded."
+            modelFile:
+              type: string
+              format: file
+              description: "Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details"
+
+        - title: URL Import
+          type: object
+          required: [url]
+          properties:
+            url:
+              type: string
+              format: uri
+              description: 'A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details'
+
+        - title: CSV Import
+          type: object
+          required: [modelCsv, componentCsv, relationshipCsv]
+          properties:
+            modelCsv:
+              type: string
+              format: binary
+              description: Upload a CSV file containing model definitions
+            componentCsv:
+              type: string
+              format: binary
+              description: Upload a CSV file containing component definitions
+            relationshipCsv:
+              type: string
+              format: binary
+              description: Upload a CSV file containing relationship definitions
+
+        - title: Model Create
+          type: object
+          required: [model, url]
+          properties:
+            url:
+              type: string
+              description: "URI to the source code or package of the model."
+              format: uri
+              oneOf:
+                - title: "GitHub"
+                  type: string
+                  pattern: "^git://github\\.com/[\\w.-]+/[\\w.-]+(/[\\w.-]+/[\\w/-]+)?$"
+                  description: "Git protocol URL for GitHub repository or specific resource path"
+                  example: "git://github.com/cert-manager/cert-manager/master/deploy/crds"
+                  x-metadata:
+                    uiType: "url"
+                    validationHint: "Enter a git protocol URL (e.g., git://github.com/owner/repo)"
+                - title: "Artifact Hub"
+                  type: string
+                  pattern: "^https:\\/\\/artifacthub\\.io\\/packages\\/(search\\?ts_query_web=[\\w.-]+|[\\w.-]+\\/[\\w.-]+\\/[\\w.-]+)$"
+                  description: "Artifact Hub package URL or search query URL with model name parameter"
+                  example: "https://artifacthub.io/packages/search?ts_query_web={model-name}"
+                  x-metadata:
+                    uiType: "url"
+                    validationHint: "Enter an Artifact Hub URL (e.g., https://artifacthub.io/packages/search?ts_query_web={meshery-operator})"

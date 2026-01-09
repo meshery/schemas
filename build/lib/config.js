@@ -2,7 +2,12 @@
  * config.js - Shared Configuration for Build Scripts
  *
  * Dynamically discovers schema packages by walking the schemas/constructs directory.
- * Looks for directories containing an openapi.yml file.
+ * Looks for directories containing an api.yml file (the index file for each construct).
+ *
+ * The api.yml file serves as the index for each construct:
+ * - References all subschemas via $ref
+ * - Defines all API endpoints for the construct
+ * - Acts as the entry point for code generation tools
  *
  * Special cases and merge configuration can be defined in the overrides section.
  */
@@ -50,7 +55,7 @@ const packageNameOverrides = {
 
 /**
  * Packages to EXCLUDE from processing
- * These directories will be skipped even if they contain openapi.yml
+ * These directories will be skipped even if they contain api.yml
  */
 const excludePackages = [
   // Add any packages to exclude here
@@ -77,7 +82,7 @@ function getProjectRoot() {
 
 /**
  * Discover all schema packages by walking the schemas directory
- * Looks for directories containing an openapi.yml file
+ * Looks for directories containing an api.yml file (the construct index file)
  *
  * @returns {Array<{name: string, version: string, dirName: string, openapiPath: string}>}
  */
@@ -105,7 +110,7 @@ function discoverSchemaPackages() {
     });
 
     for (const dirName of packageDirs) {
-      const openapiPath = path.join(versionPath, dirName, "openapi.yml");
+      const openapiPath = path.join(versionPath, dirName, "api.yml");
       const packageKey = `${version}/${dirName}`;
 
       // Skip excluded packages
@@ -113,7 +118,7 @@ function discoverSchemaPackages() {
         continue;
       }
 
-      // Check if openapi.yml exists
+      // Check if api.yml exists (the construct index file)
       if (fs.existsSync(openapiPath)) {
         // Get package name (use override if exists, otherwise use directory name)
         const packageName = packageNameOverrides[packageKey] || dirName;

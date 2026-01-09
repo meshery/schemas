@@ -124,8 +124,9 @@ schemas/
   constructs/
     <schema-version>/               # e.g., v1beta1
       <construct>/                  # e.g., model, component
-        <construct>.json            # Schema definition for the construct (noun)
-        openapi.yml                 # API operations (verbs: create, update, delete)
+        api.yml                     # Index file: references all subschemas + defines API endpoints
+        <construct>.yaml            # Subschema: data model definition for the construct
+        <other_subschema>.yaml      # Additional subschemas (optional)
         templates/                  # Manually defined templates directory
           <construct>_template.json # JSON template from schema
           <construct>_template.yaml # YAML template from schema
@@ -159,8 +160,12 @@ schemas/
 * **`constructs/`** – Holds schemas for various versions.
   * **`<schema-version>/`** – Represents a version (e.g., `v1alpha2`, `v1beta1`).
     * **`<construct>/`** – A directory to contain all files for any given construct like `pattern`, `component`, etc.
-      * **`<construct>.json`** – Defines the **data model (noun)** for the construct.
-      * **`openapi.yml`** – Contains a package manifest of all schema files with respect to any given construct (used by oapi-codegen) AND defines **API operations** (verbs).
+      * **`api.yml`** – The **index file** for the construct. This file:
+        1. References all subschemas (via `$ref`) to bundle them together
+        2. Defines all **API endpoints** (REST operations: GET, POST, PUT, DELETE) for the construct
+        3. Serves as the entry point for code generation tools (oapi-codegen, openapi-typescript)
+      * **`<construct>.yaml`** – A **subschema** that defines the data model (noun) for the construct. Contains the schema properties, types, and validation rules.
+      * **Other `.yaml` files** – Additional subschemas can be defined in separate files (e.g., `model_core.yml`, `component_metadata.yml`) and referenced from `api.yml`.
       * **`templates/`** – A subdirectory containing manually defined template files. You can add as many different templates here for different variants, use cases, or configurations. Templates are example instances of the schema with default or sample values.
         * `<construct>_template.json` / `<construct>_template.yaml` – Default templates in JSON/YAML format.
         * Additional variant templates can be added (e.g., `<construct>_minimal_template.json`, `<construct>_full_template.yaml`) for different use cases.
@@ -176,7 +181,7 @@ schemas/
 
 - OpenAPI schema names
   - PascalCase nouns under `components/schemas` (e.g., `Model`, `Component`).
-  - Files/folders are lowercase: `<construct>.yml`, `openapi.yml`, `templates/<construct>_template.(json|yaml)`.
+  - Files/folders are lowercase: `api.yml` (index), `<construct>.yaml` (subschemas), `templates/<construct>_template.(json|yaml)`.
 
 - Endpoints and operations
   - Paths are under `/api` with kebab-case , plural nouns (e.g., `/api/workspaces`, `/api/environments`).
@@ -319,7 +324,7 @@ generate_schema_models <construct> <schema-version> [<openapi-file>]
 
 generate_schema_models "capability" "v1alpha1"
 generate_schema_models "category" "v1beta1"
-generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/openapi.yml"
+generate_schema_models "pattern" "v1beta1" "schemas/constructs/v1beta1/design/api.yml"
 ```
 
 This maps to Go packages like:
@@ -530,7 +535,7 @@ make build
 Or validate a single file:
 
 ```bash
-npx @redocly/cli lint schemas/constructs/v1beta1/pattern/openapi.yml
+npx @redocly/cli lint schemas/constructs/v1beta1/pattern/api.yml
 ```
 
 ---

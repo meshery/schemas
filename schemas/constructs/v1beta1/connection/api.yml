@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  title: connection
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    Connection:
+      $ref: "./connection.yaml"
+    ConnectionPage:
+      $ref: "./connection_page.yaml"
