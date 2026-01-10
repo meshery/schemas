@@ -1,0 +1,9 @@
+type: object
+description: Payload for creating or updating a keychain.
+properties:
+  name:
+    type: string
+    description: Name of the keychain.
+    x-order: 1
+required:
+  - name

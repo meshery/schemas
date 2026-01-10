@@ -8,6 +8,8 @@ export const addTagTypes = [
   "events_other",
   "feature_Features",
   "invitation_Invitation",
+  "keys_Keys",
+  "keys_Keychains",
   "model_other",
   "Organization_other",
   "plan_Plans",
@@ -266,6 +268,85 @@ const injectedRtkApi = api
           method: "POST",
         }),
         invalidatesTags: ["invitation_Invitation"],
+      }),
+      getKeys: build.query<GetKeysApiResponse, GetKeysApiArg>({
+        query: (queryArg) => ({
+          url: `/api/auth/keys`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+          },
+        }),
+        providesTags: ["keys_Keys"],
+      }),
+      upsertKey: build.mutation<UpsertKeyApiResponse, UpsertKeyApiArg>({
+        query: (queryArg) => ({ url: `/api/auth/keys`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["keys_Keys"],
+      }),
+      getKeyById: build.query<GetKeyByIdApiResponse, GetKeyByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}` }),
+        providesTags: ["keys_Keys"],
+      }),
+      deleteKey: build.mutation<DeleteKeyApiResponse, DeleteKeyApiArg>({
+        query: (queryArg) => ({ url: `/api/auth/keys/${queryArg.keyId}`, method: "DELETE" }),
+        invalidatesTags: ["keys_Keys"],
+      }),
+      getKeychains: build.query<GetKeychainsApiResponse, GetKeychainsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/auth/keychains`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+          },
+        }),
+        providesTags: ["keys_Keychains"],
+      }),
+      createKeychain: build.mutation<CreateKeychainApiResponse, CreateKeychainApiArg>({
+        query: (queryArg) => ({ url: `/api/auth/keychains`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["keys_Keychains"],
+      }),
+      getKeychainById: build.query<GetKeychainByIdApiResponse, GetKeychainByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/auth/keychains/${queryArg.keychainId}` }),
+        providesTags: ["keys_Keychains"],
+      }),
+      updateKeychain: build.mutation<UpdateKeychainApiResponse, UpdateKeychainApiArg>({
+        query: (queryArg) => ({
+          url: `/api/auth/keychains/${queryArg.keychainId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["keys_Keychains"],
+      }),
+      deleteKeychain: build.mutation<DeleteKeychainApiResponse, DeleteKeychainApiArg>({
+        query: (queryArg) => ({ url: `/api/auth/keychains/${queryArg.keychainId}`, method: "DELETE" }),
+        invalidatesTags: ["keys_Keychains"],
+      }),
+      addKeyToKeychain: build.mutation<AddKeyToKeychainApiResponse, AddKeyToKeychainApiArg>({
+        query: (queryArg) => ({ url: `/api/auth/keychains/${queryArg.keychainId}/${queryArg.keyId}`, method: "POST" }),
+        invalidatesTags: ["keys_Keychains"],
+      }),
+      removeKeyFromKeychain: build.mutation<RemoveKeyFromKeychainApiResponse, RemoveKeyFromKeychainApiArg>({
+        query: (queryArg) => ({
+          url: `/api/auth/keychains/${queryArg.keychainId}/${queryArg.keyId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["keys_Keychains"],
+      }),
+      getKeysOfKeychain: build.query<GetKeysOfKeychainApiResponse, GetKeysOfKeychainApiArg>({
+        query: (queryArg) => ({
+          url: `/api/auth/keychains/${queryArg.keychainId}/keys`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+          },
+        }),
+        providesTags: ["keys_Keychains"],
       }),
       registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
         query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
@@ -2161,6 +2242,249 @@ export type AcceptInvitationApiArg = {
   /** The ID of the invitation */
   invitationId: string;
 };
+export type GetKeysApiResponse = /** status 200 Keys fetched successfully */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  keys: {
+    /** Unique identifier for the key. */
+    id: string;
+    /** Owner of the key. */
+    owner: string;
+    /** Operation permitted by the key. */
+    function: string;
+    /** Category for the key. */
+    category: string;
+    /** Subcategory for the key. */
+    subcategory: string;
+    /** Human readable description of the key. */
+    description: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetKeysApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type UpsertKeyApiResponse = /** status 200 Key upserted successfully */ {
+  /** Unique identifier for the key. */
+  id: string;
+  /** Owner of the key. */
+  owner: string;
+  /** Operation permitted by the key. */
+  function: string;
+  /** Category for the key. */
+  category: string;
+  /** Subcategory for the key. */
+  subcategory: string;
+  /** Human readable description of the key. */
+  description: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UpsertKeyApiArg = {
+  body: {
+    /** Existing key identifier for updates. */
+    id?: string;
+    /** Operation permitted by the key. */
+    function?: string;
+    /** Category for the key. */
+    category?: string;
+    /** Subcategory for the key. */
+    subcategory?: string;
+    /** Human readable description of the key. */
+    description?: string;
+  };
+};
+export type GetKeyByIdApiResponse = /** status 200 Key fetched successfully */ {
+  /** Unique identifier for the key. */
+  id: string;
+  /** Owner of the key. */
+  owner: string;
+  /** Operation permitted by the key. */
+  function: string;
+  /** Category for the key. */
+  category: string;
+  /** Subcategory for the key. */
+  subcategory: string;
+  /** Human readable description of the key. */
+  description: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type GetKeyByIdApiArg = {
+  /** Key ID */
+  keyId: string;
+};
+export type DeleteKeyApiResponse = unknown;
+export type DeleteKeyApiArg = {
+  /** Key ID */
+  keyId: string;
+};
+export type GetKeychainsApiResponse = /** status 200 Keychains fetched successfully */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  keychains: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** Name of the keychain. */
+    name: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetKeychainsApiArg = {
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
+export type CreateKeychainApiResponse = /** status 200 Keychain created successfully */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** Name of the keychain. */
+  name: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  owner: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type CreateKeychainApiArg = {
+  body: {
+    /** Name of the keychain. */
+    name: string;
+  };
+};
+export type GetKeychainByIdApiResponse = /** status 200 Keychain fetched successfully */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** Name of the keychain. */
+  name: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  owner: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type GetKeychainByIdApiArg = {
+  /** Keychain ID */
+  keychainId: string;
+};
+export type UpdateKeychainApiResponse = /** status 200 Keychain updated successfully */ {
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  id: string;
+  /** Name of the keychain. */
+  name: string;
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+  owner: string;
+  /** Timestamp when the resource was created. */
+  created_at: string;
+  /** Timestamp when the resource was updated. */
+  updated_at: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type UpdateKeychainApiArg = {
+  /** Keychain ID */
+  keychainId: string;
+  body: {
+    /** Name of the keychain. */
+    name: string;
+  };
+};
+export type DeleteKeychainApiResponse = unknown;
+export type DeleteKeychainApiArg = {
+  /** Keychain ID */
+  keychainId: string;
+};
+export type AddKeyToKeychainApiResponse = unknown;
+export type AddKeyToKeychainApiArg = {
+  /** Keychain ID */
+  keychainId: string;
+  /** Key ID */
+  keyId: string;
+};
+export type RemoveKeyFromKeychainApiResponse = unknown;
+export type RemoveKeyFromKeychainApiArg = {
+  /** Keychain ID */
+  keychainId: string;
+  /** Key ID */
+  keyId: string;
+};
+export type GetKeysOfKeychainApiResponse = /** status 200 Keys fetched successfully */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  keys: {
+    /** Unique identifier for the key. */
+    id: string;
+    /** Owner of the key. */
+    owner: string;
+    /** Operation permitted by the key. */
+    function: string;
+    /** Category for the key. */
+    category: string;
+    /** Subcategory for the key. */
+    subcategory: string;
+    /** Human readable description of the key. */
+    description: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetKeysOfKeychainApiArg = {
+  /** Keychain ID */
+  keychainId: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+};
 export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
   message?: string;
 };
@@ -2538,6 +2862,18 @@ export const {
   useGetInvitationsQuery,
   useCreateInvitationMutation,
   useAcceptInvitationMutation,
+  useGetKeysQuery,
+  useUpsertKeyMutation,
+  useGetKeyByIdQuery,
+  useDeleteKeyMutation,
+  useGetKeychainsQuery,
+  useCreateKeychainMutation,
+  useGetKeychainByIdQuery,
+  useUpdateKeychainMutation,
+  useDeleteKeychainMutation,
+  useAddKeyToKeychainMutation,
+  useRemoveKeyFromKeychainMutation,
+  useGetKeysOfKeychainQuery,
   useRegisterMeshmodelsMutation,
   useGetOrgByDomainQuery,
   useGetPlansQuery,

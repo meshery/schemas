@@ -1,0 +1,359 @@
+openapi: 3.0.0
+info:
+  title: keys
+  version: 1.0.0
+
+security:
+  - jwt: []
+
+tags:
+  - name: Keys
+    description: Operations related to authorization keys
+  - name: Keychains
+    description: Operations related to keychains
+
+paths:
+  /api/auth/keys:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Keys
+      summary: List keys
+      operationId: getKeys
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Keys fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeysPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Keys
+      summary: Create or update a key
+      operationId: upsertKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyPayload"
+      responses:
+        "200":
+          description: Key upserted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Key"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/auth/keys/{keyId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Keys
+      summary: Get key by ID
+      operationId: getKeyById
+      parameters:
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "200":
+          description: Key fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Key"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Keys
+      summary: Delete key
+      operationId: deleteKey
+      parameters:
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "204":
+          description: Key deleted successfully
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/auth/keychains:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: List keychains
+      operationId: getKeychains
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Keychains fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeychainsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: Create a keychain
+      operationId: createKeychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainPayload"
+      responses:
+        "200":
+          description: Keychain created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Keychain"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/auth/keychains/{keychainId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: Get keychain by ID
+      operationId: getKeychainById
+      parameters:
+        - $ref: "#/components/parameters/keychainId"
+      responses:
+        "200":
+          description: Keychain fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Keychain"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: Update keychain
+      operationId: updateKeychain
+      parameters:
+        - $ref: "#/components/parameters/keychainId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainPayload"
+      responses:
+        "200":
+          description: Keychain updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Keychain"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: Delete keychain
+      operationId: deleteKeychain
+      parameters:
+        - $ref: "#/components/parameters/keychainId"
+      responses:
+        "204":
+          description: Keychain deleted successfully
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/auth/keychains/{keychainId}/{keyId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: Add key to keychain
+      operationId: addKeyToKeychain
+      parameters:
+        - $ref: "#/components/parameters/keychainId"
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "204":
+          description: Key added to keychain
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: Remove key from keychain
+      operationId: removeKeyFromKeychain
+      parameters:
+        - $ref: "#/components/parameters/keychainId"
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "204":
+          description: Key removed from keychain
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/auth/keychains/{keychainId}/keys:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Keychains
+      summary: List keys in a keychain
+      operationId: getKeysOfKeychain
+      parameters:
+        - $ref: "#/components/parameters/keychainId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Keys fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeysPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    keyId:
+      name: keyId
+      in: path
+      description: Key ID
+      required: true
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    keychainId:
+      name: keychainId
+      in: path
+      description: Keychain ID
+      required: true
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    page:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+    order:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+    search:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Key:
+      $ref: "./key.yaml"
+    KeyPayload:
+      $ref: "./key_payload.yaml"
+    KeysPage:
+      $ref: "./keys_page.yaml"
+    Keychain:
+      $ref: "./keychain.yaml"
+    KeychainPayload:
+      $ref: "./keychain_payload.yaml"
+    KeychainsPage:
+      $ref: "./keychains_page.yaml"

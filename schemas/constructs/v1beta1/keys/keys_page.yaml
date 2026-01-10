@@ -1,0 +1,21 @@
+type: object
+required:
+  - page
+  - page_size
+  - total_count
+  - keys
+properties:
+  page:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+    x-order: 1
+  page_size:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+    x-order: 2
+  total_count:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+    x-order: 3
+  keys:
+    type: array
+    items:
+      $ref: "./key.yaml"
+    x-order: 4

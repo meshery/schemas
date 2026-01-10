@@ -1,0 +1,61 @@
+type: object
+description: Represents an authorization key used for access control.
+required:
+  - id
+  - owner
+  - function
+  - category
+  - subcategory
+  - description
+  - created_at
+  - updated_at
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Unique identifier for the key.
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+    x-order: 1
+  owner:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Owner of the key.
+    x-go-name: Owner
+    x-oapi-codegen-extra-tags:
+      db: owner
+    x-order: 2
+  function:
+    type: string
+    description: Operation permitted by the key.
+    x-oapi-codegen-extra-tags:
+      db: function
+    x-order: 3
+  category:
+    type: string
+    description: Category for the key.
+    x-oapi-codegen-extra-tags:
+      db: category
+    x-order: 4
+  subcategory:
+    type: string
+    description: Subcategory for the key.
+    x-oapi-codegen-extra-tags:
+      db: subcategory
+    x-order: 5
+  description:
+    type: string
+    description: Human readable description of the key.
+    x-oapi-codegen-extra-tags:
+      db: description
+    x-order: 6
+  created_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+    x-order: 7
+  updated_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+    x-order: 8
+  deleted_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+    x-order: 9
