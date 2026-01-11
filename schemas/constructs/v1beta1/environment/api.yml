@@ -1,74 +1,721 @@
 openapi: 3.0.0
 info:
-  title: environment
-  description: Documentation for meshery Cloud REST APIs
+  title: Meshery Environment API
+  description: |
+    REST API specification for Meshery Environment resource management.
+    
+    ## Overview
+    
+    Environments are logical groupings of related [Connections](https://docs.meshery.io/concepts/logical/connections)
+    and their associated [Credentials](https://docs.meshery.io/concepts/logical/credentials).
+    They provide a structured way to organize and manage infrastructure resources across different
+    deployment contexts such as development, staging, and production.
+    
+    ## Key Concepts
+    
+    - **Environment**: A named container that groups related infrastructure connections
+    - **Connection**: A configured link to an external system (Kubernetes cluster, cloud provider, etc.)
+    - **Organization**: The parent entity that owns environments
+    
+    ## Use Cases
+    
+    - Separate development, staging, and production infrastructure
+    - Group connections by team, project, or geography
+    - Apply consistent policies across related resources
+    
+    ## Documentation
+    
+    - [Environments Concept](https://docs.meshery.io/concepts/logical/environments)
+    - [Connections Guide](https://docs.meshery.io/concepts/logical/connections)
+    - [Meshery Architecture](https://docs.meshery.io/concepts/architecture)
   contact:
+    name: Meshery Community
+    url: https://meshery.io/community
     email: maintainers@meshery.io
-  version: v0.6.394
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: v1beta1
+  x-logo:
+    url: https://raw.githubusercontent.com/meshery/meshery/master/docs/assets/img/meshery-logo.svg
+
+externalDocs:
+  description: Meshery Documentation
+  url: https://docs.meshery.io
+
 servers:
   - url: https://cloud.meshery.io
-    description: Meshery Cloud production server URL
+    description: Meshery Cloud (Production)
   - url: https://staging-cloud.meshery.io
-    description: Meshery Cloud staging server URL
+    description: Meshery Cloud (Staging)
   - url: http://localhost:9876
-    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+    description: Local Development Server
 
 security:
   - jwt: []
 
 tags:
   - name: environments
-    description: APIs for environments
+    description: |
+      Environment management endpoints. Environments logically group infrastructure
+      [Connections](https://docs.meshery.io/concepts/logical/connections) and
+      [Credentials](https://docs.meshery.io/concepts/logical/credentials) to simplify
+      resource organization and access control.
+    externalDocs:
+      description: Environments Documentation
+      url: https://docs.meshery.io/concepts/logical/environments
+
+paths:
+  # ===========================================================================
+  # Environment Collection Endpoints
+  # ===========================================================================
+  /api/environments:
+    get:
+      tags:
+        - environments
+      operationId: GetEnvironments
+      summary: Get all environments
+      description: |
+        Retrieves a paginated list of all environments accessible to the authenticated user
+        within the specified organization.
+        
+        ## Query Parameters
+        
+        - **search**: Filter environments by name or description (case-insensitive)
+        - **order**: Sort results (e.g., `name asc`, `created_at desc`)
+        - **page/pagesize**: Control pagination
+        - **filter**: Advanced filtering options
+        
+        ## Response
+        
+        Returns a paginated list of environments with metadata including total count
+        for building pagination controls.
+        
+        ## Related Documentation
+        
+        - [Environments Concept](https://docs.meshery.io/concepts/logical/environments)
+      externalDocs:
+        description: Environments documentation
+        url: https://docs.meshery.io/concepts/logical/environments
+      parameters:
+        - $ref: "#/components/parameters/orgIDQuery"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Successfully retrieved environments list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    post:
+      tags:
+        - environments
+      operationId: CreateEnvironment
+      summary: Create a new environment
+      description: |
+        Creates a new environment within the specified organization.
+        
+        ## Request Body
+        
+        - **name** (required): A descriptive name for the environment
+        - **description**: Optional detailed description of the environment's purpose
+        - **organization_id** (required): The organization that will own this environment
+        
+        ## Behavior
+        
+        - Validates that the organization exists and user has permission
+        - Creates the environment with a unique ID
+        - Returns the created environment with all fields populated
+        
+        ## Next Steps
+        
+        After creating an environment, you can:
+        1. Assign connections using `POST /api/environments/{id}/connections/{connectionId}`
+        2. Add the environment to workspaces for team access
+        
+        ## Related Documentation
+        
+        - [Creating Environments](https://docs.meshery.io/concepts/logical/environments)
+        - [Connections Guide](https://docs.meshery.io/concepts/logical/connections)
+      externalDocs:
+        description: Creating environments
+        url: https://docs.meshery.io/concepts/logical/environments
+      requestBody:
+        $ref: "#/components/requestBodies/environmentPayload"
+      responses:
+        "201":
+          description: Environment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  # ===========================================================================
+  # Single Environment Endpoints
+  # ===========================================================================
+  /api/environments/{environmentId}:
+    get:
+      tags:
+        - environments
+      operationId: GetEnvironmentByID
+      summary: Get environment by ID
+      description: |
+        Retrieves detailed information about a specific environment by its unique identifier.
+        
+        ## Response
+        
+        Returns the complete environment object including:
+        - Basic metadata (id, name, description)
+        - Organization association
+        - Timestamps (created_at, updated_at)
+        - Owner information
+        
+        ## Error Cases
+        
+        - **404**: Environment not found or user lacks access permission
+        - **400**: Invalid environment ID format
+        
+        ## Related Documentation
+        
+        - [Environments Concept](https://docs.meshery.io/concepts/logical/environments)
+      externalDocs:
+        description: Environments documentation
+        url: https://docs.meshery.io/concepts/logical/environments
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/orgIDQuery"
+      responses:
+        "200":
+          description: Successfully retrieved environment details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    put:
+      tags:
+        - environments
+      operationId: UpdateEnvironment
+      summary: Update an environment
+      description: |
+        Updates the properties of an existing environment.
+        
+        ## Modifiable Fields
+        
+        - **name**: Can be updated to any valid string
+        - **description**: Can be updated or cleared
+        
+        ## Immutable Fields
+        
+        The following cannot be changed after creation:
+        - **organization_id**: Environment cannot be moved between organizations
+        - **id**: System-generated identifier
+        
+        ## Behavior
+        
+        - Partial updates are supported (only specified fields are modified)
+        - Updated `updated_at` timestamp is set automatically
+        
+        ## Related Documentation
+        
+        - [Managing Environments](https://docs.meshery.io/concepts/logical/environments)
+      externalDocs:
+        description: Managing environments
+        url: https://docs.meshery.io/concepts/logical/environments
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      requestBody:
+        $ref: "#/components/requestBodies/environmentUpdatePayload"
+      responses:
+        "200":
+          description: Environment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environment"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - environments
+      operationId: DeleteEnvironment
+      summary: Delete an environment
+      description: |
+        Permanently deletes an environment and removes all connection associations.
+        
+        ## Warning
+        
+        **This action cannot be undone.** Before deleting an environment:
+        
+        1. Ensure no critical connections depend solely on this environment
+        2. Consider whether connections should be reassigned
+        3. Verify the environment is not referenced by active workspaces
+        
+        ## Behavior
+        
+        - All connection-environment mappings are removed
+        - The connections themselves are **not deleted**
+        - Workspace-environment associations are removed
+        
+        ## Related Documentation
+        
+        - [Managing Environments](https://docs.meshery.io/concepts/logical/environments)
+      externalDocs:
+        description: Managing environments
+        url: https://docs.meshery.io/concepts/logical/environments
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      responses:
+        "204":
+          description: Environment deleted successfully
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  # ===========================================================================
+  # Environment Connection Management Endpoints
+  # ===========================================================================
+  /api/environments/{environmentId}/connections:
+    get:
+      tags:
+        - environments
+      operationId: GetConnectionsOfEnvironment
+      summary: Get connections assigned to an environment
+      description: |
+        Retrieves a paginated list of all [Connections](https://docs.meshery.io/concepts/logical/connections)
+        that are currently assigned to the specified environment.
+        
+        ## Use Cases
+        
+        - View all infrastructure connections in an environment
+        - Audit connection assignments
+        - Build UI for environment management
+        
+        ## Filtering
+        
+        Use the `filter` parameter to show:
+        - `assigned`: Connections currently in this environment (default)
+        - `unassigned`: Connections available but not yet assigned
+        
+        ## Related Documentation
+        
+        - [Connections Concept](https://docs.meshery.io/concepts/logical/connections)
+        - [Environments Guide](https://docs.meshery.io/concepts/logical/environments)
+      externalDocs:
+        description: Environment connections
+        url: https://docs.meshery.io/concepts/logical/connections
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/environmentFilter"
+      responses:
+        "200":
+          description: Successfully retrieved connections list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/connectionPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}/connections/{connectionId}:
+    post:
+      tags:
+        - environments
+      operationId: AssignConnectionToEnvironment
+      summary: Assign a connection to an environment
+      description: |
+        Creates an association between a [Connection](https://docs.meshery.io/concepts/logical/connections)
+        and an environment.
+        
+        ## Behavior
+        
+        - **Idempotent**: Calling multiple times with same parameters has no side effects
+        - A connection can be assigned to **multiple environments** simultaneously
+        - Both the environment and connection must exist
+        
+        ## Use Cases
+        
+        - Organize connections by deployment stage (dev/staging/prod)
+        - Group connections by team or project
+        - Enable workspace-level access through environment assignments
+        
+        ## Related Documentation
+        
+        - [Connections Guide](https://docs.meshery.io/concepts/logical/connections)
+        - [Environments Concept](https://docs.meshery.io/concepts/logical/environments)
+      externalDocs:
+        description: Managing environment connections
+        url: https://docs.meshery.io/concepts/logical/environments
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection assigned to environment successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentConnectionMapping"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - environments
+      operationId: UnassignConnectionFromEnvironment
+      summary: Unassign a connection from an environment
+      description: |
+        Removes the association between a [Connection](https://docs.meshery.io/concepts/logical/connections)
+        and an environment.
+        
+        ## Behavior
+        
+        - **Only the mapping is removed** — the connection itself is not deleted
+        - The connection remains usable and may still be assigned to other environments
+        - After removal, the connection will no longer appear in this environment's list
+        
+        ## Related Documentation
+        
+        - [Connections Guide](https://docs.meshery.io/concepts/logical/connections)
+        - [Environments Concept](https://docs.meshery.io/concepts/logical/environments)
+      externalDocs:
+        description: Managing environment connections
+        url: https://docs.meshery.io/concepts/logical/environments
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection unassigned from environment successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/environmentConnectionMapping"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+# =============================================================================
+# Components
+# =============================================================================
 components:
-  responses:
-    200:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
-    400:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
-    401:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
-    500:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT Bearer token authentication. Obtain tokens via the authentication flow.
+        See [Authentication Guide](https://docs.meshery.io/extensibility/api#authentication) for details.
 
   parameters:
     environmentId:
       name: environmentId
       in: path
-      description: Environment ID
-      schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
       required: true
-    search:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
-    order:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
-    page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
-    pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      description: |
+        Unique identifier of the environment (UUID v4 format).
+        Example: `550e8400-e29b-41d4-a716-446655440000`
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+
+    connectionId:
+      name: connectionId
+      in: path
+      required: true
+      description: |
+        Unique identifier of the connection (UUID v4 format).
+        Example: `f47ac10b-58cc-4372-a567-0e02b2c3d479`
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+
     orgIDQuery:
-      name: orgID
+      name: orgId
       in: query
-      description: User's organization ID
+      required: true
+      description: |
+        Organization ID to scope the request. All operations are scoped to a single organization.
+        Users can only access environments within organizations they belong to.
       schema:
         type: string
-      required: true
+        format: uuid
+        example: "123e4567-e89b-12d3-a456-426614174000"
 
-  securitySchemes:
-    jwt:
-      type: http
-      scheme: Bearer
-      bearerFormat: JWT
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+
+    page:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+
+    pagesize:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+
+    filter:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/filter"
+
+    environmentFilter:
+      name: filter
+      in: query
+      description: |
+        Filter connections by assignment status:
+        - `assigned`: Only connections currently assigned to this environment
+        - `unassigned`: Only connections available but not yet assigned
+      schema:
+        type: string
+        enum:
+          - assigned
+          - unassigned
+        default: assigned
+
+  responses:
+    "400":
+      description: |
+        **Bad Request**
+        
+        The request was malformed or contained invalid parameters. Common causes:
+        - Invalid UUID format for IDs
+        - Missing required fields in request body
+        - Invalid query parameter values
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+
+    "401":
+      description: |
+        **Unauthorized**
+        
+        Authentication failed. Possible causes:
+        - Missing Authorization header
+        - Expired JWT token
+        - Invalid or malformed token
+        
+        See [Authentication Guide](https://docs.meshery.io/extensibility/api#authentication).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+
+    "404":
+      description: |
+        **Not Found**
+        
+        The requested resource does not exist or you lack permission to access it.
+        Possible causes:
+        - Environment, connection, or workspace ID does not exist
+        - Resource belongs to a different organization
+        - Resource was deleted
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+
+    "500":
+      description: |
+        **Internal Server Error**
+        
+        An unexpected error occurred. If this persists:
+        1. Check [Meshery Status](https://meshery.io/status) for outages
+        2. Report the issue on [GitHub](https://github.com/meshery/meshery/issues)
+        3. Join [Meshery Slack](https://slack.meshery.io) for support
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+
+  requestBodies:
+    environmentPayload:
+      description: |
+        Request body for creating a new environment.
+        
+        **Required fields**: `name`, `organization_id`
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/environmentPayload"
+          example:
+            name: "Production Environment"
+            description: "Production infrastructure connections for the main application"
+            organization_id: "123e4567-e89b-12d3-a456-426614174000"
+
+    environmentUpdatePayload:
+      description: |
+        Request body for updating an existing environment.
+        
+        Only include fields you want to update. Omitted fields remain unchanged.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/environmentUpdatePayload"
+          example:
+            name: "Production Environment (Updated)"
+            description: "Updated description for production infrastructure"
+
   schemas:
     environment:
       $ref: "./environment.yaml"
-    environmentConnectionMapping:
+
+    environmentPayload:
+      type: object
+      description: |
+        Payload for creating a new environment. See [Environments](https://docs.meshery.io/concepts/logical/environments)
+        for conceptual documentation.
+      required:
+        - name
+        - organization_id
       properties:
-        ID:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: |
+            A human-readable name for the environment. Best practices:
+            - Use descriptive names (e.g., "Production US-East", "Development Team-A")
+            - Avoid special characters that may cause issues in URLs
+            - Keep names concise but meaningful
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          maxLength: 1000
+          description: |
+            A detailed description of the environment's purpose. Include:
+            - What types of connections this environment contains
+            - Which team or project owns it
+            - Any relevant policies or guidelines
+          x-go-type-skip-optional-pointer: true
+        organization_id:
+          type: string
+          format: uuid
+          description: |
+            The UUID of the organization that will own this environment.
+            **Cannot be changed after creation** — environments are permanently
+            bound to their parent organization.
+          x-go-type-skip-optional-pointer: true
+          x-go-name: OrganizationID
+          x-oapi-codegen-extra-tags:
+            json: organization_id
+
+    environmentUpdatePayload:
+      type: object
+      description: Payload for updating an existing environment. Only specified fields are modified.
+      required:
+        - organization_id
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Updated name for the environment
+          x-go-type-skip-optional-pointer: true
+        description:
+          type: string
+          maxLength: 1000
+          description: Updated description for the environment
+          x-go-type-skip-optional-pointer: true
+        organization_id:
+          type: string
+          format: uuid
+          description: Organization ID (required for authorization verification)
+          x-go-type-skip-optional-pointer: true
+          x-go-name: OrganizationID
+          x-oapi-codegen-extra-tags:
+            json: organization_id
+
+    environmentPage:
+      type: object
+      description: |
+        Paginated response containing a list of environments.
+        Use `page` and `page_size` to implement pagination controls.
+      properties:
+        page:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+        page_size:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+        total_count:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+        environments:
+          type: array
+          description: List of environments for the current page
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/environment"
+            x-go-type: Environment
+
+    environmentConnectionMapping:
+      type: object
+      description: |
+        Represents the association between an environment and a connection.
+        This mapping enables organizing connections into logical groups.
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
         environment_id:
           type: string
           format: uuid
+          description: The environment in this association
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
@@ -79,6 +726,7 @@ components:
         connection_id:
           type: string
           format: uuid
+          description: The connection in this association
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
@@ -87,94 +735,46 @@ components:
             json: connection_id
           x-go-type-skip-optional-pointer: true
         created_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
         updated_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
         deleted_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
-    environmentPayload:
-      properties:
-        name:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
-          description: An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.
-        description:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
-          description: "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
-        OrganizationID:
-          type: string
-          description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-          x-go-type-skip-optional-pointer: true
-          x-go-name: OrgId
-          x-oapi-codegen-extra-tags:
-            json: organization_id
-      required:
-        - name
-        - organizationID
-    environmentPage:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+
+    connectionPage:
+      type: object
+      description: |
+        Paginated response containing a list of connections.
+        See [Connections](https://docs.meshery.io/concepts/logical/connections) for details.
       properties:
         page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
         page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
         total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        environments:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+        connections:
           type: array
+          description: List of connections for the current page
           x-go-type-skip-optional-pointer: true
           items:
-            x-go-type: Environment
-            $ref: "#/components/schemas/environment"
+            $ref: "../connection/api.yml#/components/schemas/Connection"
 
-  requestBodies:
-    environmentPayload:
-      description: Body for creating environment
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/environmentPayload"
-
-paths:
-  /api/environments:
-    post:
-      tags:
-        - environments
-      operationId: CreateEnvironment
-      summary: Create an environment
-      description: Creates a new environment
-      requestBody:
-        $ref: "#/components/requestBodies/environmentPayload"
-      responses:
-        "201":
-          description: Created environment
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/environment"
-        "400":
-          $ref: "#/components/responses/400"
-        "500":
-          $ref: "#/components/responses/500"
-    get:
-      tags:
-        - environments
-      operationId: GetEnvironments
-      summary: Get all environments
-      description: Gets all environments
-      parameters:
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/orgIDQuery"
-      responses:
-        "200":
-          description: Environments
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/environmentPage"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
+    errorResponse:
+      type: object
+      description: |
+        Standard error response format for all API errors.
+        Use the `code` field to programmatically handle different error types.
+      properties:
+        code:
+          type: integer
+          description: HTTP status code
+          example: 400
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid environment ID format"
+        details:
+          type: string
+          description: Additional context or troubleshooting information
+          example: "Expected UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
