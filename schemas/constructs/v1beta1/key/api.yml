@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  title: key
+  version: 1.0.0
+
+security:
+  - jwt: []
+
+tags:
+  - name: Key
+    description: Operations related to authorization keys
+
+paths:
+  /api/auth/key:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: List key
+      operationId: getKey
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Key fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: Create or update a key
+      operationId: upsertKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeyPayload"
+      responses:
+        "200":
+          description: Key upserted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Key"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/auth/key/{keyId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: Get key by ID
+      operationId: getKeyById
+      parameters:
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "200":
+          description: Key fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Key"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Key
+      summary: Delete key
+      operationId: deleteKey
+      parameters:
+        - $ref: "#/components/parameters/keyId"
+      responses:
+        "204":
+          description: Key deleted successfully
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    keyId:
+      name: keyId
+      in: path
+      description: Key ID
+      required: true
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    page:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+    order:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+    search:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Key:
+      $ref: "./key.yaml"
+    KeyPayload:
+      type: object
+      description: Payload for creating or updating a key.
+      properties:
+        id:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Existing key identifier for updates.
+          x-order: 1
+        function:
+          type: string
+          description: Operation permitted by the key.
+          x-order: 2
+        category:
+          type: string
+          description: Category for the key.
+          x-order: 3
+        subcategory:
+          type: string
+          description: Subcategory for the key.
+          x-order: 4
+        description:
+          type: string
+          description: Human readable description of the key.
+          x-order: 5
+    KeyPage:
+      type: object
+      required:
+        - page
+        - page_size
+        - total_count
+        - keys
+      properties:
+        page:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          x-order: 1
+        page_size:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          x-order: 2
+        total_count:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          x-order: 3
+        keys:
+          type: array
+          items:
+            $ref: "./key.yaml"
+            x-go-type: Key
+          x-order: 4
+
