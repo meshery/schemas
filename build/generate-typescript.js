@@ -55,7 +55,7 @@ function toPascalCase(str) {
  */
 function getTypescriptOutputPath(pkg) {
   const pascalName = toPascalCase(pkg.name);
-  return `${config.paths.typescriptDir}/${pkg.version}/${pkg.name}/${pascalName}.d.ts`;
+  return `${config.paths.typescriptDir}/${pkg.version}/${pkg.name}/${pascalName}.ts`;
 }
 
 /**
