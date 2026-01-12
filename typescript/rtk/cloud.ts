@@ -2385,8 +2385,18 @@ export type CreateKeychainApiResponse = /** status 200 Keychain created */ {
 };
 export type CreateKeychainApiArg = {
   body: {
+    /** Unique identifier for the keychain. */
+    id: string;
     /** Name of the keychain. */
     name: string;
+    /** Owner of the keychain. */
+    owner: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
   };
 };
 export type GetKeychainByIdApiResponse = /** status 200 Keychain fetched */ {
@@ -2425,8 +2435,18 @@ export type UpdateKeychainApiArg = {
   /** Keychain ID */
   keychainId: string;
   body: {
+    /** Unique identifier for the keychain. */
+    id: string;
     /** Name of the keychain. */
     name: string;
+    /** Owner of the keychain. */
+    owner: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
   };
 };
 export type DeleteKeychainApiResponse = unknown;
