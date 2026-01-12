@@ -31,6 +31,7 @@
     "@apidevtools/json-schema-ref-parser": "^11.9.3",
     "@openapi-contrib/openapi-schema-to-json-schema": "^5.1.0",
     "@rtk-query/codegen-openapi": "^2.0.0",
+    "csv-parse": "^6.1.0",
     "esbuild-runner": "^2.2.2",
     "js-yaml": "^4.1.1",
     "json-schema-default": "^1.0.2",
@@ -44,8 +45,8 @@
   },
   "peerDependencies": {
     "@reduxjs/toolkit": "^2.2.5",
-    "react-dom": "17.0.2",
     "react": "17.0.2",
+    "react-dom": "17.0.2",
     "react-redux": "^8.1.0"
   }
 }

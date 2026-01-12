@@ -69,12 +69,33 @@ generate-rtk: bundle-openapi
 ## Generate Golang Models (legacy alias for generate-golang)
 golang-generate: generate-golang
 
+#-----------------------------------------------------------------------------
+# Permissions
+#-----------------------------------------------------------------------------
+.PHONY: generate-permissions generate-permissions-go generate-permissions-ts test-golang
+
+## Generate Go permission key constants from permissions.csv
+generate-permissions-go:
+	node build/generate-permission-golang.js
+
+## Generate TypeScript permission key constants from permissions.csv
+generate-permissions-ts:
+	node build/generate-permissions-ts.js
+
+## Generate both Go and TypeScript permission key constants
+generate-permissions: generate-permissions-go generate-permissions-ts
+
+## Run Go tests
+test-golang:
+	go build ./...
+	go test ./... -v
+
 ## Lint check Meshery Server.
 golangci: dep-check
 	golangci-lint run
 
-## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, and TypeScript)
-build: bundle-openapi generate-golang generate-rtk generate-ts build-ts
+## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
+build: bundle-openapi generate-golang generate-rtk generate-ts generate-permissions build-ts test-golang
 
 #-----------------------------------------------------------------------------
 # Dependencies
