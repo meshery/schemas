@@ -1,11 +1,479 @@
 openapi: 3.0.0
 info:
   title: connection
+  description: Documentation for REST APIs for Connections
   version: 1.0.0
-paths: {}
+security:
+  - jwt: []
+
+tags:
+  - name: connection
+    description: APIs for connections
+
 components:
+  responses:
+    200:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    connectionId:
+      name: connectionId
+      in: path
+      description: Connection ID
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+      required: true
+    connectionKind:
+      name: connectionKind
+      in: path
+      description: Connection Kind (e.g., meshery, kubernetes, prometheus, grafana)
+      schema:
+        type: string
+      required: true
+    search:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+    order:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+    page:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+    filter:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/filter
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Connection:
       $ref: "./connection.yaml"
     ConnectionPage:
-      $ref: "./connection_page.yaml"
+      description: Represents a page of connections with a meta information about connections number
+      additionalProperties: false
+      type: object
+      required:
+        - connections
+        - total_count
+        - page
+        - page_size
+      properties:
+        connections:
+          type: array
+          items:
+            $ref: ./connection.yaml
+            description: List of connections on this page
+            x-go-type: '*Connection'
+          x-order: 1
+        total_count:
+          type: integer
+          description: Total number of connections on all pages
+          x-order: 2
+        page:
+          type: integer
+          description: Page number
+          x-order: 3
+        page_size:
+          type: integer
+          description: Number of elements per page
+          x-order: 4
+    ConnectionPayload:
+      type: object
+      description: Payload for creating or updating a connection
+      properties:
+        id:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+          x-go-name: ConnectionID
+          x-oapi-codegen-extra-tags:
+            json: id,omitempty
+        name:
+          type: string
+          description: Connection Name
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: name
+        kind:
+          type: string
+          description: Connection Kind
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: kind
+        type:
+          type: string
+          description: Connection Type
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: type
+        sub_type:
+          type: string
+          description: Connection Subtype
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: sub_type
+        credential_secret:
+          type: object
+          additionalProperties: true
+          description: Credential secret data
+          x-go-type: slices.Map
+          x-go-type-import:
+            path: github.com/gobuffalo/pop/slices
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: credential_secret
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Connection metadata
+          x-go-type: slices.Map
+          x-go-type-import:
+            path: github.com/gobuffalo/pop/slices
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: metadata
+        status:
+          type: string
+          description: Connection Status
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: status
+        credential_id:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+          x-go-name: CredentialID
+          x-oapi-codegen-extra-tags:
+            json: credential_id,omitempty
+    ConnectionStatusInfo:
+      type: object
+      description: Connection status summary info
+      properties:
+        status:
+          type: string
+          description: Status value
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: status
+            db: status
+        count:
+          type: integer
+          description: Count of connections with this status
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: count
+            db: count
+    ConnectionsStatusPage:
+      type: object
+      description: Paginated list of connection status summaries
+      properties:
+        total_count:
+          type: integer
+          description: Total count of connections
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: total_count
+        page:
+          type: integer
+          description: Current page number
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: page
+        page_size:
+          type: integer
+          description: Number of items per page
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: page_size
+        connections_status:
+          type: array
+          description: List of connection status summaries
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/ConnectionStatusInfo"
+            x-go-type: "*ConnectionStatusInfo"
+          x-oapi-codegen-extra-tags:
+            json: connections_status
+
+  requestBodies:
+    connectionPayload:
+      description: Body for creating or updating a connection
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ConnectionPayload"
+
+paths:
+  /api/integrations/connections:
+    post:
+      tags:
+        - connections
+      operationId: RegisterConnection
+      summary: Register a connection
+      description: Registers a new connection
+      requestBody:
+        $ref: "#/components/requestBodies/connectionPayload"
+      responses:
+        "201":
+          description: Created connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+    get:
+      tags:
+        - connections
+      operationId: GetConnections
+      summary: Get all connections
+      description: Gets all connections for the user
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/filter"
+        - name: kind
+          in: query
+          description: Filter by connection kind(s)
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+        - name: status
+          in: query
+          description: Filter by connection status(es)
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+      responses:
+        "200":
+          description: Connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/status:
+    get:
+      tags:
+        - connections
+      operationId: GetConnectionsStatus
+      summary: Get connections status summary
+      description: Gets a summary of connection statuses
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Connection status summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionsStatusPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/status/{connectionId}:
+    put:
+      tags:
+        - connections
+      operationId: UpdateConnectionStatusById
+      summary: Update connection status
+      description: Updates the status of a connection by ID
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        description: New status value
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              description: Connection status
+      responses:
+        "200":
+          description: Updated connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionKind}:
+    get:
+      tags:
+        - connections
+      operationId: GetConnectionsByKind
+      summary: Get connections by kind
+      description: Gets connections filtered by kind (e.g., meshery, kubernetes)
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - name: status
+          in: query
+          description: Filter by connection status
+          schema:
+            type: string
+        - name: meshery_instance_id
+          in: query
+          description: Filter by meshery instance ID (for kubernetes kind)
+          schema:
+            type: string
+        - name: with_credentials
+          in: query
+          description: Include credentials in response (for kubernetes kind)
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionKind}/{connectionId}:
+    get:
+      tags:
+        - connections
+      operationId: GetConnectionById
+      summary: Get connection by ID
+      description: Gets a specific connection by kind and ID
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          description: Connection not found
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionId}:
+    put:
+      tags:
+        - connections
+      operationId: EditConnectionById
+      summary: Edit connection by ID
+      description: Updates an existing connection by ID
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        $ref: "#/components/requestBodies/connectionPayload"
+      responses:
+        "200":
+          description: Updated connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - connections
+      operationId: DeleteConnection
+      summary: Delete connection
+      description: Deletes a connection by ID
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Deleted connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/meshery/{mesheryServerId}:
+    delete:
+      tags:
+        - connections
+      operationId: DeleteMesheryConnection
+      summary: Delete meshery connection by server ID
+      description: Deletes a meshery connection using the meshery server ID
+      parameters:
+        - name: mesheryServerId
+          in: path
+          description: Meshery Server ID
+          schema:
+            $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+          required: true
+      responses:
+        "200":
+          description: Deleted connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionKind}/{connectionId}/context:
+    get:
+      tags:
+        - connections
+      operationId: GetK8sContextByConnectionId
+      summary: Get kubernetes context by connection ID
+      description: Gets the kubernetes context for a specific connection (kubernetes kind only)
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Kubernetes context
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"

@@ -1,4 +1,4 @@
-$id: https://schemas.meshery.io/component.yaml
+$id: https://schemas.meshery.io/connection.yaml
 $schema: http://json-schema.org/draft-07/schema#
 description: Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 additionalProperties: false
@@ -125,4 +125,4 @@ properties:
       yaml: schemaVersion
       db: "-"
       gorm: "-"
-    default: connections.meshery.io/v1beta1
+    default: connection.meshery.io/v1beta1
