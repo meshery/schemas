@@ -178,6 +178,7 @@ schemas/
   - Use camelCase for property fields (e.g., `schemaVersion`, `displayName`, `componentsCount`).
   - Identifier fields use lowerCamelCase with "Id" suffix (e.g., `modelId`, `registrantId`, `categoryId`).
   - Enums use lowercase words (e.g., `enabled`, `ignored`, `duplicate`).
+  - Use singular nouns for object names (e.g., `model`, `component`, `design`).
 
 - OpenAPI schema names
   - PascalCase nouns under `components/schemas` (e.g., `Model`, `Component`).

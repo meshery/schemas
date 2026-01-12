@@ -10,7 +10,6 @@ properties:
   id:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: Unique identifier for the keychain.
-    x-go-name: ID
     x-oapi-codegen-extra-tags:
       db: id
     x-order: 1
@@ -23,7 +22,6 @@ properties:
   owner:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: Owner of the keychain.
-    x-go-name: Owner
     x-oapi-codegen-extra-tags:
       db: owner
     x-order: 3
