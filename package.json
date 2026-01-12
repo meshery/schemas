@@ -17,7 +17,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "NODE_OPTIONS=--max-old-space-size=4096 tsup",
     "build:bundle": "node ./build/bundle-openapi.js",
     "build:golang": "node ./build/generate-golang.js",
     "build:rtk": "node ./build/generate-rtk.js",
