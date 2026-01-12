@@ -25,6 +25,7 @@ export default defineConfig({
     cloudApi: "typescript/rtk/cloud.ts",
     mesheryApi: "typescript/rtk/meshery.ts",
     api: "typescript/rtk/api.ts",
+    permissions: "typescript/permissions.ts",
     ...generatedEntries,
   },
   format: ["cjs", "esm"],
