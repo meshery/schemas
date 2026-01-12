@@ -13,7 +13,7 @@ const CategorySchema = {
   "components": {
     "schemas": {
       "CategoryDefinition": {
-        "$id": "https://schemas.meshery.io/category.json",
+        "$id": "https://schemas.meshery.io/category.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "description": "Category of the model.",
