@@ -11,13 +11,33 @@ tags:
     description: Operations related to authorization keys
 
 paths:
-  /api/auth/key:
+  /api/identity/orgs/{orgID}/users/keys:
+    get:
+      tags:
+        - users
+      operationId: getUserKeys
+      summary: Get User Keys
+      description: Get all keys based on roles assigned to user
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+      responses:
+        "200":
+          description: Returns user keys based on roles assigned to user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KeyPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+  /api/auth/keys:
     get:
       x-internal: ["cloud"]
       tags:
         - Key
       summary: List key
-      operationId: getKey
+      operationId: getKeys
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pagesize"
@@ -25,7 +45,7 @@ paths:
         - $ref: "#/components/parameters/order"
       responses:
         "200":
-          description: Key fetched successfully
+          description: Keys fetched
           content:
             application/json:
               schema:
@@ -118,6 +138,13 @@ components:
       $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 
   parameters:
+    orgID:
+      name: orgID
+      in: path
+      description: Organization ID
+      required: true
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     keyId:
       name: keyId
       in: path
@@ -190,4 +217,3 @@ components:
             $ref: "./key.yaml"
             x-go-type: Key
           x-order: 4
-
