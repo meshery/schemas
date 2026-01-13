@@ -3,6 +3,8 @@ module github.com/meshery/schemas
 go 1.25.5
 
 require (
+	github.com/gobuffalo/nulls v0.4.2
+	github.com/gobuffalo/pop v4.13.1+incompatible
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/lib/pq v1.10.9
 	github.com/meshery/meshkit v0.8.63
