@@ -3,6 +3,7 @@ export const addTagTypes = [
   "Academy_API_Academy",
   "Academy_API_other",
   "badge_Badge",
+  "Capability_API_Capability",
   "design_other",
   "environment_environments",
   "events_other",
@@ -187,6 +188,26 @@ const injectedRtkApi = api
       createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["badge_Badge"],
+      }),
+      getCapability: build.query<GetCapabilityApiResponse, GetCapabilityApiArg>({
+        query: (queryArg) => ({
+          url: `/capabilities`,
+          params: {
+            os: queryArg.os,
+            playground: queryArg.playground,
+          },
+        }),
+        providesTags: ["Capability_API_Capability"],
+      }),
+      getCapabilityByVersion: build.query<GetCapabilityByVersionApiResponse, GetCapabilityByVersionApiArg>({
+        query: (queryArg) => ({
+          url: `/${queryArg.mesheryVersion}/capabilities`,
+          params: {
+            os: queryArg.os,
+            playground: queryArg.playground,
+          },
+        }),
+        providesTags: ["Capability_API_Capability"],
       }),
       importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
         query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
@@ -1822,6 +1843,254 @@ export type CreateOrUpdateBadgeApiArg = {
     deleted_at: string;
   };
 };
+export type GetCapabilityApiResponse = /** status 200 Provider capability */ {
+  /** Type of provider (e.g., remote, local) */
+  providerType?: string;
+  /** Version of the extensions package */
+  packageVersion?: string;
+  /** URL to download the extensions package */
+  packageUrl?: string;
+  /** Name of the provider */
+  providerName?: string;
+  /** List of provider feature descriptions */
+  providerDescription?: string[];
+  /** Extension points for Meshery UI and backend */
+  extensions?: {
+    navigator?: {
+      title?: string;
+      onClickCallback?: number;
+      /** Href configuration for navigator extensions */
+      href?: {
+        uri?: string;
+        external?: boolean | null;
+      };
+      component?: string;
+      icon?: string;
+      link?: boolean | null;
+      show?: boolean | null;
+      type?: string;
+      /** Component set for MeshMap permissions */
+      allowedTo?: {
+        /** Designer component permissions */
+        designer?: {
+          design?: boolean;
+          application?: boolean;
+          filter?: boolean;
+          save?: boolean;
+          new?: boolean;
+          saveAs?: boolean;
+          validate?: boolean;
+          deploy?: boolean;
+          undeploy?: boolean;
+        };
+        visualizer?: boolean;
+      };
+      isBeta?: boolean | null;
+    }[];
+    userPrefs?: {
+      component?: string;
+      type?: string;
+    }[];
+    graphql?: {
+      component?: string;
+      path?: string;
+      type?: string;
+    }[];
+    account?: {
+      title?: string;
+      onClickCallback?: number;
+      /** Href configuration for account extensions */
+      href?: {
+        uri?: string;
+        external?: boolean | null;
+      };
+      component?: string;
+      link?: boolean | null;
+      show?: boolean | null;
+      type?: string;
+    }[];
+    collaborator?: {
+      component?: string;
+      type?: string;
+    }[];
+  };
+  capabilities?: {
+    feature?: string;
+    endpoint?: string;
+  }[];
+  /** Restricted access configuration for Meshery UI */
+  restrictedAccess?: {
+    isMesheryUIRestricted?: boolean;
+    /** Meshery UI component capability */
+    allowedComponents?: {
+      /** Navigator component visibility settings */
+      navigator?: {
+        dashboard?: boolean;
+        performance?: boolean;
+        conformance?: boolean;
+        extensions?: boolean;
+        toggler?: boolean;
+        help?: boolean;
+        /** Service mesh adapter visibility settings */
+        lifecycle?: {
+          istio?: boolean;
+          citrix?: boolean;
+          consul?: boolean;
+          cilium?: boolean;
+          appMesh?: boolean;
+          kuma?: boolean;
+          linkerd?: boolean;
+          nginx?: boolean;
+          nsm?: boolean;
+        };
+        /** Configuration component visibility settings */
+        configuration?: {
+          designs?: boolean;
+          applications?: boolean;
+          filters?: boolean;
+        };
+      };
+      /** Header component visibility settings */
+      header?: {
+        contextSwitcher?: boolean;
+        settings?: boolean;
+        notifications?: boolean;
+        profile?: boolean;
+      };
+    };
+  };
+};
+export type GetCapabilityApiArg = {
+  /** Operating system for package URL */
+  os?: string;
+  /** Whether this is a playground build */
+  playground?: boolean;
+};
+export type GetCapabilityByVersionApiResponse = /** status 200 Provider capability */ {
+  /** Type of provider (e.g., remote, local) */
+  providerType?: string;
+  /** Version of the extensions package */
+  packageVersion?: string;
+  /** URL to download the extensions package */
+  packageUrl?: string;
+  /** Name of the provider */
+  providerName?: string;
+  /** List of provider feature descriptions */
+  providerDescription?: string[];
+  /** Extension points for Meshery UI and backend */
+  extensions?: {
+    navigator?: {
+      title?: string;
+      onClickCallback?: number;
+      /** Href configuration for navigator extensions */
+      href?: {
+        uri?: string;
+        external?: boolean | null;
+      };
+      component?: string;
+      icon?: string;
+      link?: boolean | null;
+      show?: boolean | null;
+      type?: string;
+      /** Component set for MeshMap permissions */
+      allowedTo?: {
+        /** Designer component permissions */
+        designer?: {
+          design?: boolean;
+          application?: boolean;
+          filter?: boolean;
+          save?: boolean;
+          new?: boolean;
+          saveAs?: boolean;
+          validate?: boolean;
+          deploy?: boolean;
+          undeploy?: boolean;
+        };
+        visualizer?: boolean;
+      };
+      isBeta?: boolean | null;
+    }[];
+    userPrefs?: {
+      component?: string;
+      type?: string;
+    }[];
+    graphql?: {
+      component?: string;
+      path?: string;
+      type?: string;
+    }[];
+    account?: {
+      title?: string;
+      onClickCallback?: number;
+      /** Href configuration for account extensions */
+      href?: {
+        uri?: string;
+        external?: boolean | null;
+      };
+      component?: string;
+      link?: boolean | null;
+      show?: boolean | null;
+      type?: string;
+    }[];
+    collaborator?: {
+      component?: string;
+      type?: string;
+    }[];
+  };
+  capabilities?: {
+    feature?: string;
+    endpoint?: string;
+  }[];
+  /** Restricted access configuration for Meshery UI */
+  restrictedAccess?: {
+    isMesheryUIRestricted?: boolean;
+    /** Meshery UI component capability */
+    allowedComponents?: {
+      /** Navigator component visibility settings */
+      navigator?: {
+        dashboard?: boolean;
+        performance?: boolean;
+        conformance?: boolean;
+        extensions?: boolean;
+        toggler?: boolean;
+        help?: boolean;
+        /** Service mesh adapter visibility settings */
+        lifecycle?: {
+          istio?: boolean;
+          citrix?: boolean;
+          consul?: boolean;
+          cilium?: boolean;
+          appMesh?: boolean;
+          kuma?: boolean;
+          linkerd?: boolean;
+          nginx?: boolean;
+          nsm?: boolean;
+        };
+        /** Configuration component visibility settings */
+        configuration?: {
+          designs?: boolean;
+          applications?: boolean;
+          filters?: boolean;
+        };
+      };
+      /** Header component visibility settings */
+      header?: {
+        contextSwitcher?: boolean;
+        settings?: boolean;
+        notifications?: boolean;
+        profile?: boolean;
+      };
+    };
+  };
+};
+export type GetCapabilityByVersionApiArg = {
+  /** Meshery version string */
+  mesheryVersion: string;
+  /** Operating system for package URL */
+  os?: string;
+  /** Whether this is a playground build */
+  playground?: boolean;
+};
 export type ImportDesignApiResponse = /** status 200 Successful Import */ {
   message?: string;
 };
@@ -2900,6 +3169,8 @@ export const {
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
+  useGetCapabilityQuery,
+  useGetCapabilityByVersionQuery,
   useImportDesignMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,

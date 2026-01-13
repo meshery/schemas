@@ -1,0 +1,52 @@
+{
+  "providerType": "remote",
+  "packageVersion": "",
+  "packageUrl": "",
+  "providerName": "Layer5",
+  "providerDescription": [
+    "User Identity with Multi-tenancy: Orgs, Teams, Users",
+    "Environments, Workspaces, and private catalogs",
+    "GitHub integration and design snapshots",
+    "Performance test profiles and result history",
+    "Learning Academy and Challenges",
+    "Free, Team, and Enterprise subscription plans"
+  ],
+  "extensions": {
+    "navigator": [],
+    "userPrefs": [],
+    "graphql": [],
+    "account": [],
+    "collaborator": []
+  },
+  "capabilities": [
+    {
+      "feature": "sync-prefs",
+      "endpoint": "/api/identity/users/preferences"
+    },
+    {
+      "feature": "persist-results",
+      "endpoint": "/api/performance/results"
+    }
+  ],
+  "restrictedAccess": {
+    "isMesheryUIRestricted": false,
+    "allowedComponents": {
+      "navigator": {
+        "dashboard": true,
+        "performance": true,
+        "conformance": true,
+        "extensions": true,
+        "toggler": true,
+        "help": true,
+        "lifecycle": {},
+        "configuration": {}
+      },
+      "header": {
+        "contextSwitcher": true,
+        "settings": true,
+        "notifications": true,
+        "profile": true
+      }
+    }
+  }
+}
