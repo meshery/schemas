@@ -51,19 +51,19 @@ type Role struct {
 	ID uuid.UUID `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// RoleName Unique name of the role
-	RoleName string `db:"role_name" json:"role_name,omitempty" yaml:"role_name,omitempty"`
+	RoleName string `db:"role_name" json:"roleName,omitempty" yaml:"roleName,omitempty"`
 
 	// Description Human readable description of the role
 	Description string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+	CreatedAt time.Time `db:"created_at" json:"createdAt" yaml:"createdAt"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updatedAt" yaml:"updatedAt"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt sql.NullTime `db:"deleted_at" json:"deletedAt,omitempty" yaml:"deletedAt,omitempty"`
 }
 
 // RoleHolderRequest defines model for RoleHolderRequest.
