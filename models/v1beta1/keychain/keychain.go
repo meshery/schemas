@@ -12,8 +12,8 @@ import (
 
 // Keychain Represents a collection of keys.
 type Keychain struct {
-	// Id Unique identifier for the keychain.
-	Id uuid.UUID `db:"id" json:"id" yaml:"id"`
+	// ID Unique identifier for the keychain.
+	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
 	// Name Name of the keychain.
 	Name string `db:"name" json:"name" yaml:"name"`

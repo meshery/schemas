@@ -110,6 +110,7 @@ const KeychainSchema = {
                         "properties": {
                           "id": {
                             "description": "Unique identifier for the keychain.",
+                            "x-go-name": "ID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "id"
                             },
@@ -245,6 +246,7 @@ const KeychainSchema = {
                 "properties": {
                   "id": {
                     "description": "Unique identifier for the keychain.",
+                    "x-go-name": "ID",
                     "x-oapi-codegen-extra-tags": {
                       "db": "id"
                     },
@@ -336,6 +338,7 @@ const KeychainSchema = {
                   "properties": {
                     "id": {
                       "description": "Unique identifier for the keychain.",
+                      "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id"
                       },
@@ -487,6 +490,7 @@ const KeychainSchema = {
                   "properties": {
                     "id": {
                       "description": "Unique identifier for the keychain.",
+                      "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id"
                       },
@@ -645,6 +649,7 @@ const KeychainSchema = {
                 "properties": {
                   "id": {
                     "description": "Unique identifier for the keychain.",
+                    "x-go-name": "ID",
                     "x-oapi-codegen-extra-tags": {
                       "db": "id"
                     },
@@ -736,6 +741,7 @@ const KeychainSchema = {
                   "properties": {
                     "id": {
                       "description": "Unique identifier for the keychain.",
+                      "x-go-name": "ID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "id"
                       },
@@ -1482,6 +1488,7 @@ const KeychainSchema = {
         "properties": {
           "id": {
             "description": "Unique identifier for the keychain.",
+            "x-go-name": "ID",
             "x-oapi-codegen-extra-tags": {
               "db": "id"
             },
@@ -1592,6 +1599,7 @@ const KeychainSchema = {
               "properties": {
                 "id": {
                   "description": "Unique identifier for the keychain.",
+                  "x-go-name": "ID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "id"
                   },
