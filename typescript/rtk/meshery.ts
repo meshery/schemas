@@ -4,6 +4,7 @@ export const addTagTypes = [
   "environment_environments",
   "evaluation_other",
   "events_other",
+  "key_users",
   "model_other",
   "Organization_other",
   "workspace_workspaces",
@@ -58,6 +59,10 @@ const injectedRtkApi = api
       putEventsByIdStatus: build.mutation<PutEventsByIdStatusApiResponse, PutEventsByIdStatusApiArg>({
         query: (queryArg) => ({ url: `/events/${queryArg.id}/status`, method: "PUT", body: queryArg.body }),
         invalidatesTags: ["events_other"],
+      }),
+      getUserKeys: build.query<GetUserKeysApiResponse, GetUserKeysApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/keys` }),
+        providesTags: ["key_users"],
       }),
       registerMeshmodels: build.mutation<RegisterMeshmodelsApiResponse, RegisterMeshmodelsApiArg>({
         query: (queryArg) => ({ url: `/api/meshmodels/register`, method: "POST", body: queryArg.body }),
@@ -2307,6 +2312,35 @@ export type PutEventsByIdStatusApiArg = {
     status: string;
   };
 };
+export type GetUserKeysApiResponse = /** status 200 Returns user keys based on roles assigned to user */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  keys: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner: string;
+    /** Operation permitted by the key. */
+    function: string;
+    /** Category for the key. */
+    category: string;
+    /** Subcategory for the key. */
+    subcategory: string;
+    /** Human readable description of the key. */
+    description: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetUserKeysApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
 export type RegisterMeshmodelsApiResponse = /** status 200 Successful registration */ {
   message?: string;
 };
@@ -2479,6 +2513,7 @@ export const {
   useDeleteEventsMutation,
   usePutEventsStatusMutation,
   usePutEventsByIdStatusMutation,
+  useGetUserKeysQuery,
   useRegisterMeshmodelsMutation,
   useGetOrgByDomainQuery,
   useGetApiWorkspacesQuery,

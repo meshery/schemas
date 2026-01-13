@@ -4,8 +4,12 @@
  */
 
 export interface paths {
-  "/api/auth/key": {
-    get: operations["getKey"];
+  "/api/identity/orgs/{orgID}/users/keys": {
+    /** Get all keys based on roles assigned to user */
+    get: operations["getUserKeys"];
+  };
+  "/api/auth/keys": {
+    get: operations["getKeys"];
     post: operations["upsertKey"];
   };
   "/api/auth/key/{keyId}": {
@@ -20,12 +24,12 @@ export interface components {
     Key: {
       /**
        * Format: uuid
-       * @description Unique identifier for the key.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       id: string;
       /**
        * Format: uuid
-       * @description Owner of the key.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       owner: string;
       /** @description Operation permitted by the key. */
@@ -53,7 +57,7 @@ export interface components {
     KeyPayload: {
       /**
        * Format: uuid
-       * @description Existing key identifier for updates.
+       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       id?: string;
       /** @description Operation permitted by the key. */
@@ -72,12 +76,12 @@ export interface components {
       keys: {
         /**
          * Format: uuid
-         * @description Unique identifier for the key.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         id: string;
         /**
          * Format: uuid
-         * @description Owner of the key.
+         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         owner: string;
         /** @description Operation permitted by the key. */
@@ -130,6 +134,8 @@ export interface components {
     };
   };
   parameters: {
+    /** @description Organization ID */
+    orgID: string;
     /** @description Key ID */
     keyId: string;
     /** @description Get responses by page */
@@ -144,7 +150,72 @@ export interface components {
 }
 
 export interface operations {
-  getKey: {
+  /** Get all keys based on roles assigned to user */
+  getUserKeys: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgID: string;
+      };
+    };
+    responses: {
+      /** Returns user keys based on roles assigned to user */
+      200: {
+        content: {
+          "application/json": {
+            page: number;
+            page_size: number;
+            total_count: number;
+            keys: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              owner: string;
+              /** @description Operation permitted by the key. */
+              function: string;
+              /** @description Category for the key. */
+              category: string;
+              /** @description Subcategory for the key. */
+              subcategory: string;
+              /** @description Human readable description of the key. */
+              description: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
+              updated_at: string;
+              /** @description SQL null Timestamp to handle null values of time. */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  getKeys: {
     parameters: {
       query: {
         /** Get responses by page */
@@ -158,7 +229,7 @@ export interface operations {
       };
     };
     responses: {
-      /** Key fetched successfully */
+      /** Keys fetched */
       200: {
         content: {
           "application/json": {
@@ -168,12 +239,12 @@ export interface operations {
             keys: {
               /**
                * Format: uuid
-               * @description Unique identifier for the key.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               id: string;
               /**
                * Format: uuid
-               * @description Owner of the key.
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               owner: string;
               /** @description Operation permitted by the key. */
@@ -228,12 +299,12 @@ export interface operations {
           "application/json": {
             /**
              * Format: uuid
-             * @description Unique identifier for the key.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
             /**
              * Format: uuid
-             * @description Owner of the key.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             owner: string;
             /** @description Operation permitted by the key. */
@@ -283,7 +354,7 @@ export interface operations {
         "application/json": {
           /**
            * Format: uuid
-           * @description Existing key identifier for updates.
+           * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
           id?: string;
           /** @description Operation permitted by the key. */
@@ -312,12 +383,12 @@ export interface operations {
           "application/json": {
             /**
              * Format: uuid
-             * @description Unique identifier for the key.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
             /**
              * Format: uuid
-             * @description Owner of the key.
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             owner: string;
             /** @description Operation permitted by the key. */

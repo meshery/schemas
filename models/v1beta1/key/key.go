@@ -12,10 +12,10 @@ import (
 
 // Key Represents an authorization key used for access control.
 type Key struct {
-	// ID Unique identifier for the key.
+	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
-	// Owner Owner of the key.
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
 
 	// Function Operation permitted by the key.
@@ -50,7 +50,7 @@ type KeyPage struct {
 
 // KeyPayload Payload for creating or updating a key.
 type KeyPayload struct {
-	// Id Existing key identifier for updates.
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	Id *uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Function Operation permitted by the key.
@@ -71,6 +71,9 @@ type KeyId = uuid.UUID
 
 // Order defines model for order.
 type Order = string
+
+// OrgID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type OrgID = uuid.UUID
 
 // Page defines model for page.
 type Page = string

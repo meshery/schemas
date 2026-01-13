@@ -8,6 +8,7 @@ export const addTagTypes = [
   "events_other",
   "feature_Features",
   "invitation_Invitation",
+  "key_users",
   "key_Key",
   "keychain_Keychain",
   "model_other",
@@ -269,9 +270,13 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["invitation_Invitation"],
       }),
-      getKey: build.query<GetKeyApiResponse, GetKeyApiArg>({
+      getUserKeys: build.query<GetUserKeysApiResponse, GetUserKeysApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/users/keys` }),
+        providesTags: ["key_users"],
+      }),
+      getKeys: build.query<GetKeysApiResponse, GetKeysApiArg>({
         query: (queryArg) => ({
-          url: `/api/auth/key`,
+          url: `/api/auth/keys`,
           params: {
             page: queryArg.page,
             pagesize: queryArg.pagesize,
@@ -282,7 +287,7 @@ const injectedRtkApi = api
         providesTags: ["key_Key"],
       }),
       upsertKey: build.mutation<UpsertKeyApiResponse, UpsertKeyApiArg>({
-        query: (queryArg) => ({ url: `/api/auth/key`, method: "POST", body: queryArg.body }),
+        query: (queryArg) => ({ url: `/api/auth/keys`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["key_Key"],
       }),
       getKeyById: build.query<GetKeyByIdApiResponse, GetKeyByIdApiArg>({
@@ -2242,14 +2247,14 @@ export type AcceptInvitationApiArg = {
   /** The ID of the invitation */
   invitationId: string;
 };
-export type GetKeyApiResponse = /** status 200 Key fetched successfully */ {
+export type GetUserKeysApiResponse = /** status 200 Returns user keys based on roles assigned to user */ {
   page: number;
   page_size: number;
   total_count: number;
   keys: {
-    /** Unique identifier for the key. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id: string;
-    /** Owner of the key. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     owner: string;
     /** Operation permitted by the key. */
     function: string;
@@ -2267,7 +2272,36 @@ export type GetKeyApiResponse = /** status 200 Key fetched successfully */ {
     deleted_at?: string;
   }[];
 };
-export type GetKeyApiArg = {
+export type GetUserKeysApiArg = {
+  /** Organization ID */
+  orgId: string;
+};
+export type GetKeysApiResponse = /** status 200 Keys fetched */ {
+  page: number;
+  page_size: number;
+  total_count: number;
+  keys: {
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    owner: string;
+    /** Operation permitted by the key. */
+    function: string;
+    /** Category for the key. */
+    category: string;
+    /** Subcategory for the key. */
+    subcategory: string;
+    /** Human readable description of the key. */
+    description: string;
+    /** Timestamp when the resource was created. */
+    created_at: string;
+    /** Timestamp when the resource was updated. */
+    updated_at: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetKeysApiArg = {
   /** Get responses by page */
   page?: string;
   /** Get responses by pagesize */
@@ -2278,9 +2312,9 @@ export type GetKeyApiArg = {
   order?: string;
 };
 export type UpsertKeyApiResponse = /** status 200 Key upserted successfully */ {
-  /** Unique identifier for the key. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owner of the key. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   owner: string;
   /** Operation permitted by the key. */
   function: string;
@@ -2299,7 +2333,7 @@ export type UpsertKeyApiResponse = /** status 200 Key upserted successfully */ {
 };
 export type UpsertKeyApiArg = {
   body: {
-    /** Existing key identifier for updates. */
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     id?: string;
     /** Operation permitted by the key. */
     function?: string;
@@ -2312,9 +2346,9 @@ export type UpsertKeyApiArg = {
   };
 };
 export type GetKeyByIdApiResponse = /** status 200 Key fetched successfully */ {
-  /** Unique identifier for the key. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   id: string;
-  /** Owner of the key. */
+  /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
   owner: string;
   /** Operation permitted by the key. */
   function: string;
@@ -2882,7 +2916,8 @@ export const {
   useGetInvitationsQuery,
   useCreateInvitationMutation,
   useAcceptInvitationMutation,
-  useGetKeyQuery,
+  useGetUserKeysQuery,
+  useGetKeysQuery,
   useUpsertKeyMutation,
   useGetKeyByIdQuery,
   useDeleteKeyMutation,
