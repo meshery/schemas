@@ -1,0 +1,572 @@
+openapi: 3.0.0
+info:
+  title: Capability API
+  description: API for provider capability configuration
+  version: v1beta1
+
+paths:
+  /capabilities:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Capability
+      operationId: getCapability
+      summary: Get provider capability (deprecated)
+      deprecated: true
+      description: Returns provider capability. Use /{meshery-version}/capabilities instead.
+      parameters:
+        - name: os
+          in: query
+          description: Operating system for package URL
+          required: false
+          schema:
+            type: string
+        - name: playground
+          in: query
+          description: Whether this is a playground build
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Provider capability
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capability"
+        "500":
+          description: Server error
+
+  /{mesheryVersion}/capabilities:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Capability
+      operationId: getCapabilityByVersion
+      summary: Get provider capability for a specific Meshery version
+      description: Returns provider capability based on Meshery version, user roles, and environment.
+      parameters:
+        - name: mesheryVersion
+          in: path
+          description: Meshery version string
+          required: true
+          schema:
+            type: string
+        - name: os
+          in: query
+          description: Operating system for package URL
+          required: false
+          schema:
+            type: string
+        - name: playground
+          in: query
+          description: Whether this is a playground build
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Provider capability
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capability"
+        "500":
+          description: Server error
+
+components:
+  schemas:
+    Capability:
+      type: object
+      description: Provider capability configuration
+      properties:
+        providerType:
+          type: string
+          description: Type of provider (e.g., remote, local)
+          x-oapi-codegen-extra-tags:
+            json: provider_type,omitempty
+            yaml: provider_type,omitempty
+        packageVersion:
+          type: string
+          description: Version of the extensions package
+          x-oapi-codegen-extra-tags:
+            json: package_version,omitempty
+            yaml: package_version,omitempty
+        packageUrl:
+          type: string
+          description: URL to download the extensions package
+          x-oapi-codegen-extra-tags:
+            json: package_url,omitempty
+            yaml: package_url,omitempty
+        providerName:
+          type: string
+          description: Name of the provider
+          x-oapi-codegen-extra-tags:
+            json: provider_name,omitempty
+            yaml: provider_name,omitempty
+        providerDescription:
+          type: array
+          items:
+            type: string
+          description: List of provider feature descriptions
+          x-oapi-codegen-extra-tags:
+            json: provider_description,omitempty
+            yaml: provider_description,omitempty
+        extensions:
+          $ref: '#/components/schemas/CapabilityExtension'
+        capabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapabilityGeneralCapability'
+          x-oapi-codegen-extra-tags:
+            json: capabilities,omitempty
+            yaml: capabilities,omitempty
+        restrictedAccess:
+          $ref: '#/components/schemas/RestrictedAccess'
+
+    CapabilityExtension:
+      type: object
+      description: Extension points for Meshery UI and backend
+      properties:
+        navigator:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapabilityNavigatorExtension'
+          x-oapi-codegen-extra-tags:
+            json: navigator,omitempty
+            yaml: navigator,omitempty
+        userPrefs:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapabilityUserPrefExtension'
+          x-oapi-codegen-extra-tags:
+            json: user_prefs,omitempty
+            yaml: user_prefs,omitempty
+        graphql:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapabilityGraphQLExtension'
+          x-oapi-codegen-extra-tags:
+            json: graphql,omitempty
+            yaml: graphql,omitempty
+        account:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapabilityAccountExtension'
+          x-oapi-codegen-extra-tags:
+            json: account,omitempty
+            yaml: account,omitempty
+        collaborator:
+          type: array
+          items:
+            $ref: '#/components/schemas/CapabilityCollaboratorsExtension'
+          x-oapi-codegen-extra-tags:
+            json: collaborator,omitempty
+            yaml: collaborator,omitempty
+
+    CapabilityNavigatorExtension:
+      type: object
+      description: Navigator extension for Meshery UI sidebar
+      properties:
+        title:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: title,omitempty
+            yaml: title,omitempty
+        onClickCallback:
+          type: integer
+          x-oapi-codegen-extra-tags:
+            json: on_click_callback,omitempty
+            yaml: on_click_callback,omitempty
+        href:
+          $ref: '#/components/schemas/CapabilityNavigatorExtensionHref'
+        component:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: component,omitempty
+            yaml: component,omitempty
+        icon:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: icon,omitempty
+            yaml: icon,omitempty
+        link:
+          type: boolean
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: link,omitempty
+            yaml: link,omitempty
+        show:
+          type: boolean
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: show,omitempty
+            yaml: show,omitempty
+        type:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: type,omitempty
+            yaml: type,omitempty
+        allowedTo:
+          $ref: '#/components/schemas/MeshMapComponentSet'
+        isBeta:
+          type: boolean
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: isBeta,omitempty
+            yaml: isBeta,omitempty
+
+    CapabilityNavigatorExtensionHref:
+      type: object
+      description: Href configuration for navigator extensions
+      properties:
+        uri:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: uri,omitempty
+            yaml: uri,omitempty
+        external:
+          type: boolean
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: external,omitempty
+            yaml: external,omitempty
+
+    CapabilityUserPrefExtension:
+      type: object
+      description: User preferences extension
+      properties:
+        component:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: component,omitempty
+            yaml: component,omitempty
+        type:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: type,omitempty
+            yaml: type,omitempty
+
+    CapabilityGraphQLExtension:
+      type: object
+      description: GraphQL backend extension
+      properties:
+        component:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: component,omitempty
+            yaml: component,omitempty
+        path:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: path,omitempty
+            yaml: path,omitempty
+        type:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: type,omitempty
+            yaml: type,omitempty
+
+    CapabilityAccountExtension:
+      type: object
+      description: Account extension for user profile area
+      properties:
+        title:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: title,omitempty
+            yaml: title,omitempty
+        onClickCallback:
+          type: integer
+          x-oapi-codegen-extra-tags:
+            json: on_click_callback,omitempty
+            yaml: on_click_callback,omitempty
+        href:
+          $ref: '#/components/schemas/CapabilityAccountExtensionHref'
+        component:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: component,omitempty
+            yaml: component,omitempty
+        link:
+          type: boolean
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: link,omitempty
+            yaml: link,omitempty
+        show:
+          type: boolean
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: show,omitempty
+            yaml: show,omitempty
+        type:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: type,omitempty
+            yaml: type,omitempty
+
+    CapabilityAccountExtensionHref:
+      type: object
+      description: Href configuration for account extensions
+      properties:
+        uri:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: uri,omitempty
+            yaml: uri,omitempty
+        external:
+          type: boolean
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            json: external,omitempty
+            yaml: external,omitempty
+
+    CapabilityCollaboratorsExtension:
+      type: object
+      description: Collaborators extension
+      properties:
+        component:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: component,omitempty
+            yaml: component,omitempty
+        type:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: type,omitempty
+            yaml: type,omitempty
+
+    CapabilityGeneralCapability:
+      type: object
+      description: General capability defining a feature and its endpoint
+      properties:
+        feature:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: feature,omitempty
+            yaml: feature,omitempty
+        endpoint:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: endpoint,omitempty
+            yaml: endpoint,omitempty
+
+    MeshMapComponentSet:
+      type: object
+      description: Component set for MeshMap permissions
+      properties:
+        designer:
+          $ref: '#/components/schemas/DesignerComponents'
+        visualizer:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: visualizer,omitempty
+            yaml: visualizer,omitempty
+
+    DesignerComponents:
+      type: object
+      description: Designer component permissions
+      properties:
+        design:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: design,omitempty
+            yaml: design,omitempty
+        application:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: application,omitempty
+            yaml: application,omitempty
+        filter:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: filter,omitempty
+            yaml: filter,omitempty
+        save:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: save,omitempty
+            yaml: save,omitempty
+        new:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: new,omitempty
+            yaml: new,omitempty
+        saveAs:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: saveAs,omitempty
+            yaml: saveAs,omitempty
+        validate:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: validate,omitempty
+            yaml: validate,omitempty
+        deploy:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: deploy,omitempty
+            yaml: deploy,omitempty
+        undeploy:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: unDeploy,omitempty
+            yaml: unDeploy,omitempty
+
+    RestrictedAccess:
+      type: object
+      description: Restricted access configuration for Meshery UI
+      properties:
+        isMesheryUIRestricted:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: isMesheryUIRestricted
+            yaml: isMesheryUIRestricted
+        allowedComponents:
+          $ref: '#/components/schemas/MesheryUICapability'
+
+    MesheryUICapability:
+      type: object
+      description: Meshery UI component capability
+      properties:
+        navigator:
+          $ref: '#/components/schemas/NavigatorComponents'
+        header:
+          $ref: '#/components/schemas/HeaderComponents'
+
+    NavigatorComponents:
+      type: object
+      description: Navigator component visibility settings
+      properties:
+        dashboard:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: dashboard,omitempty
+            yaml: dashboard,omitempty
+        performance:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: performance,omitempty
+            yaml: performance,omitempty
+        conformance:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: conformance,omitempty
+            yaml: conformance,omitempty
+        extensions:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: extensions,omitempty
+            yaml: extensions,omitempty
+        toggler:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: toggler,omitempty
+            yaml: toggler,omitempty
+        help:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: help,omitempty
+            yaml: help,omitempty
+        lifecycle:
+          $ref: '#/components/schemas/Adapters'
+        configuration:
+          $ref: '#/components/schemas/Configuration'
+
+    HeaderComponents:
+      type: object
+      description: Header component visibility settings
+      properties:
+        contextSwitcher:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: contextSwitcher,omitempty
+            yaml: contextSwitcher,omitempty
+        settings:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: settings,omitempty
+            yaml: settings,omitempty
+        notifications:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: notifications,omitempty
+            yaml: notifications,omitempty
+        profile:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: profile,omitempty
+            yaml: profile,omitempty
+
+    Adapters:
+      type: object
+      description: Service mesh adapter visibility settings
+      properties:
+        istio:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: istio,omitempty
+            yaml: istio,omitempty
+        citrix:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: citrix,omitempty
+            yaml: citrix,omitempty
+        consul:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: consul,omitempty
+            yaml: consul,omitempty
+        cilium:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: cilium,omitempty
+            yaml: cilium,omitempty
+        appMesh:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: appMesh,omitempty
+            yaml: appMesh,omitempty
+        kuma:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: kuma,omitempty
+            yaml: kuma,omitempty
+        linkerd:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: linkerd,omitempty
+            yaml: linkerd,omitempty
+        nginx:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: nginx,omitempty
+            yaml: nginx,omitempty
+        nsm:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: nsm,omitempty
+            yaml: nsm,omitempty
+
+    Configuration:
+      type: object
+      description: Configuration component visibility settings
+      properties:
+        designs:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: designs,omitempty
+            yaml: designs,omitempty
+        applications:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: applications,omitempty
+            yaml: applications,omitempty
+        filters:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: filters,omitempty
+            yaml: filters,omitempty
