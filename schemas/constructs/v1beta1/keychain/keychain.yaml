@@ -10,6 +10,7 @@ properties:
   id:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
     description: Unique identifier for the keychain.
+    x-go-name: ID
     x-oapi-codegen-extra-tags:
       db: id
     x-order: 1
