@@ -1,120 +1,194 @@
 openapi: 3.0.0
 info:
   title: Organization
-  version: 1.0.0
+  description: Documentation for Meshery Cloud Organization REST APIs
+  contact:
+    email: maintainers@meshery.io
+  version: v0.6.394
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
 
-paths:
-  /api/identity/orgs/by-domain:
-    get:
-      summary: Get organization by domain
-      operationId: getOrgByDomain
-      parameters:
-        - name: domain
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Organization"
+security:
+  - jwt: []
 
-        "404":
-          description: Organization not found
-
-        "500":
-          description: Internal server error
+tags:
+  - name: organizations
+    description: APIs for managing organizations. Organizations allow for multi-tenancy in Meshery. Learn more at https://docs.meshery.io/concepts/logical/organizations
 
 components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+
+  responses:
+    200:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    404:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    orgId:
+      name: orgID
+      in: path
+      description: Organization ID
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+      required: true
+    search:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+    order:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+    page:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+    all:
+      name: all
+      in: query
+      description: If true, returns all organizations (admin only)
+      schema:
+        type: boolean
+
   schemas:
+    # Core type references
     UUID:
       $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-
     NullableTime:
       $ref: "../../v1alpha1/core/api.yml#/components/schemas/SqlNullTime"
-
     Time:
       $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
 
+    # Organization sub-schemas
     Location:
       type: object
-      required:
-        - svg
-        - location
+      description: Location contains URL path for an image asset
       properties:
-        svg:
-          type: string
         location:
           type: string
+          description: Path or URL to the image asset
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "location,omitempty"
 
     Logo:
       type: object
-      required:
-        - desktop_view
-        - mobile_view
-        - dark_desktop_view
-        - dark_mobile_view
+      description: Logo configuration for desktop and mobile views in light and dark modes
       properties:
         desktop_view:
-          x-go-type: "Location"
           $ref: "#/components/schemas/Location"
+          x-go-type: Location
+          x-go-name: Desktop
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "desktop_view,omitempty"
         mobile_view:
-          x-go-type: "Location"
           $ref: "#/components/schemas/Location"
+          x-go-type: Location
+          x-go-name: Mobile
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "mobile_view,omitempty"
         dark_desktop_view:
-          x-go-type: "Location"
           $ref: "#/components/schemas/Location"
+          x-go-type: Location
+          x-go-name: DarkDesktop
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "dark_desktop_view,omitempty"
         dark_mobile_view:
-          x-go-type: "Location"
           $ref: "#/components/schemas/Location"
+          x-go-type: Location
+          x-go-name: DarkMobile
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "dark_mobile_view,omitempty"
 
     Theme:
       type: object
-      required:
-        - id
-        - logo
+      description: Theme configuration for the organization
       properties:
         id:
           type: string
+          description: Theme identifier
+          x-go-name: ID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
         logo:
-          x-go-type: "Logo"
           $ref: "#/components/schemas/Logo"
+          x-go-type: Logo
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "logo,omitempty"
         vars:
           type: object
           additionalProperties: true
+          description: Theme variables for customization
+          x-go-type: "map[string]interface{}"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "vars,omitempty"
 
     DashboardPrefs:
       type: object
-      description: Preferences specific to dashboard behavior
-      additionalProperties: true
+      description: Dashboard layout preferences
+      properties:
+        layout:
+          type: object
+          additionalProperties: true
+          description: Dashboard layout configuration
+          x-go-type: slices.Map
+          x-go-type-import:
+            path: github.com/gobuffalo/pop/slices
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "layout"
 
     Preferences:
       type: object
-      required:
-        - theme
-        - dashboard
+      description: Organization preferences including theme and dashboard settings
       properties:
         theme:
-          x-go-type: "Theme"
           $ref: "#/components/schemas/Theme"
+          x-go-type: Theme
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "theme"
         dashboard:
-          x-go-type: "DashboardPrefs"
           $ref: "#/components/schemas/DashboardPrefs"
+          x-go-type: DashboardPrefs
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "dashboard"
 
     OrgMetadata:
       type: object
-      required:
-        - preferences
+      description: Organization metadata containing preferences
       properties:
         preferences:
-          x-go-type: "Preferences"
           $ref: "#/components/schemas/Preferences"
+          x-go-type: Preferences
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "preferences"
 
+    # Main Organization schema
     Organization:
       type: object
+      description: Organization represents a Meshery organization
       required:
         - id
         - name
@@ -127,48 +201,568 @@ components:
         - updated_at
       properties:
         id:
-          $ref: "#/components/schemas/UUID"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: ID
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "id"
+            json: "id,omitempty"
         name:
           type: string
+          description: Name of the organization
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "name"
+            json: "name"
         country:
           type: string
+          description: Country where the organization is based
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "country"
+            json: "country,omitempty"
         region:
           type: string
+          description: Region where the organization is based
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "region"
+            json: "region,omitempty"
         description:
           type: string
+          description: Description of the organization
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "description"
+            json: "description,omitempty"
         owner:
-          $ref: "#/components/schemas/UUID"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          description: UUID of the organization owner
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "owner"
+            json: "owner,omitempty"
         metadata:
-          x-go-type: "OrgMetadata"
+          x-go-type: OrgMetadata
           $ref: "#/components/schemas/OrgMetadata"
+          description: Organization metadata containing preferences
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "metadata"
+            json: "metadata"
         created_at:
-          $ref: "#/components/schemas/Time"
+          type: string
+          format: date-time
+          x-go-type: time.Time
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "created_at"
+            json: "created_at,omitempty"
         updated_at:
-          $ref: "#/components/schemas/Time"
+          type: string
+          format: date-time
+          x-go-type: time.Time
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "updated_at"
+            json: "updated_at,omitempty"
         deleted_at:
-          $ref: "#/components/schemas/NullableTime"
+          type: string
+          format: date-time
+          x-go-type: sql.NullTime
+          x-go-type-import:
+            path: database/sql
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
+            json: "deleted_at,omitempty"
+        invite_id:
+          type: string
+          format: uuid
+          description: Open organization invite ID
+          x-go-type: "*uuid.UUID"
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "invite_id"
+            json: "invite_id,omitempty"
         domain:
           type: string
-          nullable: true
+          description: Custom domain for the organization
+          x-go-type: "*string"
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "domain"
+            json: "domain,omitempty"
+
+    # AvailableOrganization is what gets returned in organization list responses
+    AvailableOrganization:
+      type: object
+      description: Organization data returned in list responses
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-name: ID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "id"
+            json: "id,omitempty"
+        name:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "name"
+            json: "name,omitempty"
+        description:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "description"
+            json: "description,omitempty"
+        country:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "country"
+            json: "country,omitempty"
+        region:
+          type: string
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "region"
+            json: "region,omitempty"
+        owner:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "owner"
+            json: "owner,omitempty"
+        metadata:
+          x-go-type: OrgMetadata
+          $ref: "#/components/schemas/OrgMetadata"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "metadata"
+            json: "metadata"
+        created_at:
+          type: string
+          format: date-time
+          x-go-type: time.Time
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "created_at"
+            json: "created_at,omitempty"
+        updated_at:
+          type: string
+          format: date-time
+          x-go-type: time.Time
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "updated_at"
+            json: "updated_at,omitempty"
+        deleted_at:
+          type: string
+          format: date-time
+          x-go-type: sql.NullTime
+          x-go-type-import:
+            path: database/sql
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+            json: "deleted_at,omitempty"
+        domain:
+          type: string
+          x-go-type: "*string"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "domain"
+            json: "domain,omitempty"
+        invite_id:
+          type: string
+          format: uuid
+          x-go-type: "*uuid.UUID"
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: "invite_id"
+            json: "invite_id,omitempty"
+
+    # Payload schemas for create/update operations
+    LogoPayload:
+      type: object
+      description: Payload for uploading organization logo
+      properties:
+        data:
+          type: array
+          items:
+            type: integer
+            format: byte
+          x-go-type: "[]byte"
+          x-go-type-skip-optional-pointer: true
+          description: Binary data of the logo image
+          x-oapi-codegen-extra-tags:
+            json: "data,omitempty"
+        filename:
+          type: string
+          description: Filename of the logo image
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "filename,omitempty"
+
+    ThemePayload:
+      type: object
+      description: Theme configuration payload for organization update
+      properties:
+        id:
+          type: string
+          x-go-name: ID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        vars:
+          type: object
+          additionalProperties: true
+          x-go-type: "map[string]interface{}"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "vars,omitempty"
+        logo:
+          type: object
+          x-go-type-skip-optional-pointer: true
+          properties:
+            desktop_view:
+              $ref: "#/components/schemas/LogoPayload"
+              x-go-type: "*LogoPayload"
+              x-go-name: DesktopView
+              x-go-type-skip-optional-pointer: true
+              x-oapi-codegen-extra-tags:
+                json: "desktop_view,omitempty"
+            mobile_view:
+              $ref: "#/components/schemas/LogoPayload"
+              x-go-type: "*LogoPayload"
+              x-go-name: MobileView
+              x-go-type-skip-optional-pointer: true
+              x-oapi-codegen-extra-tags:
+                json: "mobile_view,omitempty"
+            dark_desktop_view:
+              $ref: "#/components/schemas/LogoPayload"
+              x-go-type: "*LogoPayload"
+              x-go-name: DarkDesktopView
+              x-go-type-skip-optional-pointer: true
+              x-oapi-codegen-extra-tags:
+                json: "dark_desktop_view,omitempty"
+            dark_mobile_view:
+              $ref: "#/components/schemas/LogoPayload"
+              x-go-type: "*LogoPayload"
+              x-go-name: DarkMobileView
+              x-go-type-skip-optional-pointer: true
+              x-oapi-codegen-extra-tags:
+                json: "dark_mobile_view,omitempty"
+          x-oapi-codegen-extra-tags:
+            json: "logo,omitempty"
+
+    PreferencesPayload:
+      type: object
+      description: Preferences payload for organization update
+      properties:
+        theme:
+          $ref: "#/components/schemas/ThemePayload"
+          x-go-type: ThemePayload
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "theme"
+        dashboard:
+          $ref: "#/components/schemas/DashboardPrefs"
+          x-go-type: DashboardPrefs
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "dashboard"
+
+    OrganizationPayload:
+      type: object
+      description: Payload for creating or updating an organization
+      properties:
+        name:
+          type: string
+          description: Name of the organization
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+        country:
+          type: string
+          description: Country where the organization is based
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "country,omitempty"
+        region:
+          type: string
+          description: Region where the organization is based
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "region,omitempty"
+        description:
+          type: string
+          description: Description of the organization
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
+        notify_org_update:
+          type: boolean
+          description: Whether to notify members of organization update
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "notify_org_update,omitempty"
+        domain:
+          type: string
+          description: Custom domain for the organization
+          x-go-type: "*string"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "domain,omitempty"
+        preferences:
+          $ref: "#/components/schemas/PreferencesPayload"
+          x-go-type: PreferencesPayload
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "preferences,omitempty"
+        invite_id:
+          type: string
+          format: uuid
+          x-go-type: "*uuid.UUID"
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "invite_id,omitempty"
+
+    # Page schema for paginated responses
+    OrganizationsPage:
+      type: object
+      description: Paginated response for organizations
+      properties:
+        page:
+          type: integer
+          description: Current page number
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "page"
+        page_size:
+          type: integer
+          description: Number of items per page
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "page_size"
+        total_count:
+          type: integer
+          description: Total number of items
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "total_count"
+        organizations:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          items:
+            $ref: "#/components/schemas/AvailableOrganization"
+            x-go-type: AvailableOrganization
+          x-oapi-codegen-extra-tags:
+            json: "organizations"
+
+  requestBodies:
+    organizationPayload:
+      description: Body for creating or updating an organization
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrganizationPayload"
+
+paths:
+  /api/identity/orgs:
+    get:
+      tags:
+        - organizations
+      operationId: getOrganizations
+      summary: Get all organizations
+      description: Gets all organizations for the authenticated user
+      x-internal: ["cloud"]
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/all"
+      responses:
+        "200":
+          description: Organizations retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationsPage"
+        "204":
+          description: No organizations found
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      tags:
+        - organizations
+      operationId: createOrganization
+      summary: Create an organization
+      description: Creates a new organization
+      x-internal: ["cloud"]
+      requestBody:
+        $ref: "#/components/requestBodies/organizationPayload"
+      responses:
+        "201":
+          description: Organization created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}:
+    get:
+      tags:
+        - organizations
+      operationId: getOrganizationById
+      summary: Get organization by ID
+      description: Gets an organization by its ID
+      x-internal: ["cloud"]
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - organizations
+      operationId: updateOrganization
+      summary: Update an organization
+      description: Updates an existing organization
+      x-internal: ["cloud"]
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        $ref: "#/components/requestBodies/organizationPayload"
+      responses:
+        "200":
+          description: Organization updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - organizations
+      operationId: deleteOrganization
+      summary: Delete an organization
+      description: Deletes an organization by its ID
+      x-internal: ["cloud"]
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Organization deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrganizationsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/by-domain:
+    get:
+      tags:
+        - organizations
+      operationId: getOrganizationByDomain
+      summary: Get organization by domain
+      description: Gets an organization by its custom domain
+      parameters:
+        - name: domain
+          in: query
+          description: Custom domain of the organization
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}/preferences:
+    get:
+      tags:
+        - organizations
+      operationId: getOrganizationPreferences
+      summary: Get organization preferences
+      description: Gets the preferences/metadata for an organization
+      x-internal: ["cloud"]
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      responses:
+        "200":
+          description: Organization preferences retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrgMetadata"
+        "204":
+          description: Organization not found
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
