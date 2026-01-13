@@ -7,7 +7,9 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/gobuffalo/nulls"
 	"github.com/gofrs/uuid"
+	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
