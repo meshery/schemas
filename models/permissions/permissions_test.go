@@ -14,6 +14,6 @@ func TestPermissionKeysInitialization(t *testing.T) {
 	t.Run("package should initialize without panic", func(t *testing.T) {
 		// If we reach this point, all uuid.Must() calls succeeded
 		// Just verify one key to ensure the package is properly loaded
-		assert.NotEqual(t, uuid.Nil, CatalogShareDesign.UUID())
+		assert.NotEqual(t, uuid.Nil, CatalogManagementApproveCatalogRequest.UUID())
 	})
 }
