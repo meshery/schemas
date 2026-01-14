@@ -9,10 +9,10 @@ const logger = require("./logger");
 const { parseCSV, loadCSV, toPascalCase, isValidUUID } = require("./csv");
 
 // CSV column indices (0-based)
-const COL_CATEGORY = 0;
-const COL_FUNCTION = 1;
-const COL_FEATURE = 2;
-const COL_KEY_ID = 12;
+const COL_CATEGORY = 1;
+const COL_FUNCTION = 2;
+const COL_FEATURE = 3;
+const COL_KEY_ID = 29;
 
 // Default number of header rows to skip in permissions CSV
 const DEFAULT_SKIP_ROWS = 2;
