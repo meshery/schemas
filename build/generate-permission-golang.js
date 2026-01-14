@@ -43,7 +43,7 @@
 const fs = require("fs");
 const logger = require("./lib/logger");
 const paths = require("./lib/paths");
-const { loadPermissions, generateGoFile } = require("./lib/permissions");
+const { loadPermissions, generateGoFile, buildIndex, saveIndex } = require("./lib/permissions");
 
 // Default values
 const DEFAULT_SOURCE = "build/permissions.csv";
@@ -157,10 +157,15 @@ async function main() {
       process.exit(1);
     }
 
-    // Generate Go file
-    const goContent = generateGoFile(permissions);
+// Phase 1: build and save index (hash-based id)
+const index = buildIndex(permissions);
+const indexPath = saveIndex(index);
+logger.info(`Saved permissions index: ${paths.relativePath(indexPath)}`);
 
-    // Resolve output path
+// Phase 2: generate Go file from index
+const goContent = generateGoFile(index.items, index.id);
+
+// Resolve output path
     let outputPath = options.output;
     if (!outputPath.startsWith("/")) {
       outputPath = paths.fromRoot(outputPath);

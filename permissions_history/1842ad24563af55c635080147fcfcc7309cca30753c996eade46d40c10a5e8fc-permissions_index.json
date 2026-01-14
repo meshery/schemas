@@ -1,0 +1,827 @@
+{
+  "id": "1842ad24563af55c635080147fcfcc7309cca30753c996eade46d40c10a5e8fc",
+  "createdAt": "2026-01-14T13:48:36.760Z",
+  "count": 164,
+  "items": [
+    {
+      "name": "AccountManagementViewProfile",
+      "uuid": "fa7de118-2d08-4b07-b9d7-3e0baead6d04",
+      "feature": "View your profile."
+    },
+    {
+      "name": "AccountManagementEditAccount",
+      "uuid": "f5e6bb39-c89a-4172-86f9-14a4a59792c1",
+      "feature": "Update details of your user account."
+    },
+    {
+      "name": "AccountManagementResetPasword",
+      "uuid": "ec8a4b2e-8323-4a96-86ef-ec7be8f58ef1",
+      "feature": "Perform a password reset for your user account."
+    },
+    {
+      "name": "AccountManagementDeleteAccount",
+      "uuid": "bbcb024b-78eb-48b0-8e99-f74d3862fe0f",
+      "feature": "Delete your user account."
+    },
+    {
+      "name": "AccountManagementConnectYourGithubAccount",
+      "uuid": "9ea3070a-f2a4-4655-8660-5dba692f3138",
+      "feature": "Link your social sign-in with GitHub to your existing user account."
+    },
+    {
+      "name": "AccountManagementConnectYourGoogleAccount",
+      "uuid": "bab2c574-d4e8-4e1e-a9f8-48c10be66b62",
+      "feature": "Link your social sign-in with Google to your existing user account."
+    },
+    {
+      "name": "AccountManagementViewSubcription",
+      "uuid": "9098e61d-deaa-43da-960c-1bc3d5a00495",
+      "feature": "List and see details of active and inactive subscriptions."
+    },
+    {
+      "name": "AccountManagementManageSubcriptions",
+      "uuid": "01462c43-dfa8-4a5e-805a-267c9b0ec7ec",
+      "feature": "Create new subscriptions and update existing subscriptions"
+    },
+    {
+      "name": "AccountManagementViewPlans",
+      "uuid": "1907bd7a-5055-4e9b-98f6-7e8b720af887",
+      "feature": "Explore subscription plans and compare their features."
+    },
+    {
+      "name": "ChargebackDeployDesign",
+      "uuid": "7a7d3cad-4cf4-48fa-b69c-e6a5abc97a07",
+      "feature": "Export a copy of a design to your local system."
+    },
+    {
+      "name": "CatalogManagementShareDesign",
+      "uuid": "d9ae2b08-762f-418f-916f-43de736b53e2",
+      "feature": "Share design with anyone within your organization, and make your design easily accessible to all relevant team members."
+    },
+    {
+      "name": "CatalogManagementCloneDesign",
+      "uuid": "94a12f80-3c45-4a1f-afb2-a68b909d0d7f",
+      "feature": "Clone any published design to customise it according to your use cases"
+    },
+    {
+      "name": "ChargebackOpenInPlayground",
+      "uuid": "c4d6c676-6e26-4b0c-9fdd-5eea1b780e98",
+      "feature": "Opens design in a Kanvas (currently, specifically in the playground.meshery.io Kanvas)"
+    },
+    {
+      "name": "InstallExtensionViewApplications",
+      "uuid": "bfb200b6-0ba9-4783-95d4-eaf1c8fe004c",
+      "feature": ""
+    },
+    {
+      "name": "CatalogManagementViewDesigns",
+      "uuid": "3798736d-1f5d-41b3-876f-f3f01453dd15",
+      "feature": "View all public and published designs of other team members and private of signed-in user"
+    },
+    {
+      "name": "CatalogManagementViewFilters",
+      "uuid": "df41c45f-7c73-49c2-a055-0584fdcec1c1",
+      "feature": "View all public and published filters of other team members and private of signed-in user"
+    },
+    {
+      "name": "ChargebackViewCatalogRequests",
+      "uuid": "30b68d69-d199-48fd-b4ff-54b5282c5c03",
+      "feature": "View the catalog publication request queue"
+    },
+    {
+      "name": "ChargebackApproveCatalogRequest",
+      "uuid": "66fbc8c0-b08a-494b-8c60-68ee1b607176",
+      "feature": "Approve catalog publication requests"
+    },
+    {
+      "name": "ChargebackDenyCatalogRequest",
+      "uuid": "b9137717-a20a-44e8-a2f9-94dc3d1a6dcb",
+      "feature": "Deny catalog publication requests"
+    },
+    {
+      "name": "CatalogManagementViewPrivateDesigns",
+      "uuid": "bedb8e5b-56bf-4caf-9e8b-258d30b9229b",
+      "feature": "View private designs of the org"
+    },
+    {
+      "name": "CatalogManagementViewPublicDesigns",
+      "uuid": "3f7cfb90-4267-4acf-868d-6ca0c24fb774",
+      "feature": "View public designs of the org"
+    },
+    {
+      "name": "CatalogManagementViewPublishedDesigns",
+      "uuid": "061e6194-d398-4d7e-94be-3a8bbf019b69",
+      "feature": "View published designs of the org"
+    },
+    {
+      "name": "CatalogManagementCreateNewDesign",
+      "uuid": "14bd933e-83b7-464d-9a4d-d8c8eb9682ab",
+      "feature": "Create new Meshery design"
+    },
+    {
+      "name": "CatalogManagementImportDesign",
+      "uuid": "cc040d21-3160-4a96-8efa-833487a234cd",
+      "feature": "Import a design"
+    },
+    {
+      "name": "CatalogManagementExportDesign",
+      "uuid": "9a783f51-3b4a-47a6-a02e-b0db9e78cd85",
+      "feature": "Export a design in source type format (Kubernetes Manifest, Helm Chart, Docker Compose)"
+    },
+    {
+      "name": "CatalogManagementPublishDesign",
+      "uuid": "9e66bdec-4177-42f9-8cec-d9eb52a12c38",
+      "feature": "Publish a design"
+    },
+    {
+      "name": "CatalogManagementUnpublishDesign",
+      "uuid": "c1595c90-b85b-4ac7-b921-f08959926db3",
+      "feature": "Unpublish a design"
+    },
+    {
+      "name": "CatalogManagementValidateDesign",
+      "uuid": "da5339dd-a4bc-4b91-8865-d8a703656516",
+      "feature": "Validate a design"
+    },
+    {
+      "name": "CatalogManagementDeployDesign",
+      "uuid": "595b921a-ea1e-4611-83f0-503db0eeb94d",
+      "feature": "Deploy a design"
+    },
+    {
+      "name": "CatalogManagementUndeployDesign",
+      "uuid": "16b11ffa-7b92-4666-a0ff-191df9cd18b2",
+      "feature": "Retract all resources used in a Meshery design from the cluster"
+    },
+    {
+      "name": "CatalogManagementDetailsOfDesign",
+      "uuid": "10a03036-53a0-40b3-9f69-6daab852e434",
+      "feature": "Set design information or details of a design"
+    },
+    {
+      "name": "CatalogManagementEditDesign",
+      "uuid": "7f2b7084-4533-4824-b688-50cf35de7ef8",
+      "feature": "Edit a design"
+    },
+    {
+      "name": "CatalogManagementDeleteADesign",
+      "uuid": "f024fcf7-3c3d-4521-b83e-6d659353ca0e",
+      "feature": "Delete a design"
+    },
+    {
+      "name": "CatalogManagementDownloadADesign",
+      "uuid": "64de96b7-60db-4aab-b311-afc64066b2c4",
+      "feature": "Download a Meshery design in OCI or YAML format"
+    },
+    {
+      "name": "CatalogManagementImportFilter",
+      "uuid": "cb79d7fb-19de-45fa-aaf5-0a0afc832bf8",
+      "feature": "Import a filter"
+    },
+    {
+      "name": "CatalogManagementPublishWasmFilter",
+      "uuid": "173d99b7-3820-4c0c-88b2-a8455bd7a6b5",
+      "feature": "Publish WASM Filter"
+    },
+    {
+      "name": "CatalogManagementUnpublishWasmFilter",
+      "uuid": "773f0a4d-ba04-40ed-9298-59ac8749804a",
+      "feature": "Unpublish WASM Filter"
+    },
+    {
+      "name": "CatalogManagementDownloadAWasmFilter",
+      "uuid": "24325b2c-5e08-4ba8-809f-8a4a1bf91084",
+      "feature": "Download a WASM filter"
+    },
+    {
+      "name": "CatalogManagementDetailsOfWasmFilter",
+      "uuid": "86c457b5-b9ec-4223-af1f-30a5be67d69d",
+      "feature": "Check information or details of a WASM filter"
+    },
+    {
+      "name": "CatalogManagementEditWasmFilter",
+      "uuid": "88cd144e-806e-472a-a31a-ef6d64643291",
+      "feature": "Edit WASM filter"
+    },
+    {
+      "name": "CatalogManagementCloneWasmFilter",
+      "uuid": "c84718ca-7479-4ad9-a2b7-a5784baa51fb",
+      "feature": "Clone WASM filter from catalog, which allows customizing filter and use it in design"
+    },
+    {
+      "name": "CatalogManagementDeleteWasmFilter",
+      "uuid": "9225d5a7-7255-49be-9233-daeabefae306",
+      "feature": "Delete WASM filter permanently from catalog."
+    },
+    {
+      "name": "CatalogManagementWasmFilterAndFilter",
+      "uuid": "9225d5a7-7255-49be-9233-daeabefae306",
+      "feature": "Import, Unpublish, Publish, Download, Edit, Clone, Delete, Details of WASM Filter"
+    },
+    {
+      "name": "CollaborationInviteAnyMesheryCloudUserOrAllMesheryUsers",
+      "uuid": "ccc4bc8d-f484-42b3-8a62-2667284605c3",
+      "feature": "Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions."
+    },
+    {
+      "name": "CollaborationInviteAnyMesheryCloudUserToOnAPrivateDesign",
+      "uuid": "e28b851f-9a49-4ecf-a86e-493db1a27540",
+      "feature": "Invite any Meshery Cloud user to work with you on a private design that control – including making changes and releasing new versions."
+    },
+    {
+      "name": "CollaborationMessageInRealTime",
+      "uuid": "c42d08b2-c3e0-47b6-9e47-cfb149c0a5af",
+      "feature": "Message in real-time, unattached to a specific design. Control who can pariticpate in the discussion."
+    },
+    {
+      "name": "CollaborationDiscussAnyDesignByLeavingReviewComments",
+      "uuid": "da5adf96-9fb5-49b2-a55e-dec9c9c4acba",
+      "feature": "Discuss any design by leaving review comments or notes on a specific design. Control who has access, notify discussion participants with updates, and link from anywhere."
+    },
+    {
+      "name": "CollaborationManageAccessToDesigns",
+      "uuid": "7a17c8d3-bba2-474b-bb1e-be5b5eee5dad",
+      "feature": "Manage access to designs on a team-by-team, or individual user, basis."
+    },
+    {
+      "name": "CollaborationCreateAndCollaborateInOnlineDesignsInRealTime",
+      "uuid": "d5267c04-b3ee-43fe-8b97-2a3321eb7f8e",
+      "feature": "Create and collaborate in online designs in real-time."
+    },
+    {
+      "name": "AcceptAccessRequestViewStatistics",
+      "uuid": "d5fd3a6f-23a6-429c-b9b3-7ffa75d3f381",
+      "feature": ""
+    },
+    {
+      "name": "AcceptAccessRequestViewEvents",
+      "uuid": "4fe3e6b9-3363-4e9d-bfd4-9cd5bd168e5a",
+      "feature": ""
+    },
+    {
+      "name": "AcceptAccessRequestViewSummary",
+      "uuid": "82c04345-f7ba-4696-bddd-da7bd0046f38",
+      "feature": ""
+    },
+    {
+      "name": "AcceptAccessRequestViewAudit",
+      "uuid": "80bb9c66-0657-49ff-a064-667e9875bb3f",
+      "feature": ""
+    },
+    {
+      "name": "ExtensionPointManagementInstallExtension",
+      "uuid": "24f41e98-7ce1-40c4-a82d-4ae0294d237d",
+      "feature": "Install or enable or disabble extensions in Meshery"
+    },
+    {
+      "name": "ExtensionPointManagementViewMesheryUserPreferences",
+      "uuid": "cdec6212-bbbf-4cab-b10d-76d12bee7e56",
+      "feature": "View all user preferences in Meshery UI"
+    },
+    {
+      "name": "ExtensionPointManagementViewExtensions",
+      "uuid": "c1330df4-1bbe-4d5d-8828-f4bd9ee989e5",
+      "feature": "View all extensions on the extension page"
+    },
+    {
+      "name": "UserManagementViewUserPublicProfile",
+      "uuid": "daded1e9-ff0f-4259-86ac-e168fd5565d4",
+      "feature": "See public user profile details, public activities and public resources. "
+    },
+    {
+      "name": "UserManagementViewUserSettings",
+      "uuid": "e00cae57-6dc6-41ac-b174-f3b01b4adce0",
+      "feature": "See private user profile details, private activities and private resources. "
+    },
+    {
+      "name": "OrganizationManagementViewAllUsers",
+      "uuid": "382da488-9a92-4a5b-958d-c4bfe1e80253",
+      "feature": "See all teams within an organization. See all members of all teams."
+    },
+    {
+      "name": "TeamManagementUpdateUserProfile",
+      "uuid": "b9a86a74-d6e9-46e4-abae-fe5235ba0e26",
+      "feature": "Directly create a new user account within a team."
+    },
+    {
+      "name": "TeamManagementInviteUserToTeam",
+      "uuid": "d3478829-9281-468e-9d49-f7aa659d0f89",
+      "feature": "Send a request for a user to join a team."
+    },
+    {
+      "name": "TeamManagementRemoveUserFromTeam",
+      "uuid": "8b41825f-e840-42bf-81a8-2f962a6d134b",
+      "feature": "Discontinue user membership of a team and team resources."
+    },
+    {
+      "name": "TeamManagementCreateTeam",
+      "uuid": "8608355a-bf35-4bd6-b339-2384d34ae2ed",
+      "feature": "Establish new team for organizing groups of users and resource access."
+    },
+    {
+      "name": "TeamManagementDeleteTeam",
+      "uuid": "44ce4333-a138-42a3-9695-c6c1fcd2c301",
+      "feature": "Dissolve a team and all user memberships. Leave associated resources intact."
+    },
+    {
+      "name": "UserManagementDeleteUser",
+      "uuid": "8e077f96-c957-478f-aae1-0e96232dc3e7",
+      "feature": "Delete a user account"
+    },
+    {
+      "name": "UserManagementEditUser",
+      "uuid": "eb4dff91-a7c6-4167-aa2d-2e81539e6b62",
+      "feature": "Edit user role, name, email etc"
+    },
+    {
+      "name": "UserManagementCreateUser",
+      "uuid": "032582e1-c406-4c75-8732-4f2ada0191b3",
+      "feature": "Create a new user"
+    },
+    {
+      "name": "UserManagementLeaveTeam",
+      "uuid": "680b9fcb-6d8d-448d-8012-4b792d71c52e",
+      "feature": "Leave a team"
+    },
+    {
+      "name": "LifecycleManagementViewAllKubernetesClusters",
+      "uuid": "b99a9a0a-2cb9-4be7-8251-14a249e4038e",
+      "feature": "View all configured Kubernetes clusters"
+    },
+    {
+      "name": "TeamManagementViewTeam",
+      "uuid": "27447fb0-be46-4497-8366-c34e24920f22",
+      "feature": "See only teams to which you are a member. See all other members within those teams."
+    },
+    {
+      "name": "TeamManagementViewTeams",
+      "uuid": "6ecbbe79-c392-43bd-b7b6-ecdec019e24c",
+      "feature": "See all teams of which you are an administrator. See all members of those teams."
+    },
+    {
+      "name": "OrganizationManagementViewAllTeams",
+      "uuid": "8b94dd6b-234f-4c89-86cf-b029e0090255",
+      "feature": "See all teams within an organization. See all members of all teams."
+    },
+    {
+      "name": "TeamManagementAddUserToTeam",
+      "uuid": "88b9a857-d012-4c6d-a129-4ce65b63b018",
+      "feature": "Directly create a new user account within a team."
+    },
+    {
+      "name": "TeamManagementEditTeam",
+      "uuid": "6cf69881-0be0-4723-b5f0-031b7847509a",
+      "feature": "Edit a team and add new members to it."
+    },
+    {
+      "name": "TeamManagementRemoveRolesFromTeamMembers",
+      "uuid": "ed3dbd2d-52f8-4608-87e0-7f2999a4518c",
+      "feature": "Remove roles from users in a team."
+    },
+    {
+      "name": "TeamManagementAssignRolesToTeamMembers",
+      "uuid": "06f33eca-950c-4daa-b46d-e73af39e0868",
+      "feature": "Assign roles to users in a team"
+    },
+    {
+      "name": "OrganizationManagementOpenTeamInvite",
+      "uuid": "6086c0a5-cd79-48ca-8c9f-a0e0ad75343c",
+      "feature": "This governs the team's invitation permissions, determining whether the team is allowed to extend invitations to new individuals to join through open invite link."
+    },
+    {
+      "name": "OrganizationManagementCreateOrganization",
+      "uuid": "17a6fa82-cdab-46db-a7ce-a9d0a1bbf40f",
+      "feature": "Establish new organization for organizing teams, users, and resource access."
+    },
+    {
+      "name": "OrganizationManagementEditOrganization",
+      "uuid": "d39a34fb-0ccf-4c80-8a6c-b545c8db869a",
+      "feature": "Edit organiaztions and add teams to it"
+    },
+    {
+      "name": "OrganizationManagementAddUserToOrganization",
+      "uuid": "33bf7a57-f787-4208-b01c-ad9b9d9c6b6c",
+      "feature": "Directly create a new user account within an organization."
+    },
+    {
+      "name": "OrganizationManagementInviteUserToOrganization",
+      "uuid": "c8489026-11ab-4753-a445-8e20fc032c38",
+      "feature": "Send a request for a user to join an organization."
+    },
+    {
+      "name": "OrganizationManagementRemoveUserFromOrganization",
+      "uuid": "3ed858e4-418d-4220-9d4c-a217fd466d86",
+      "feature": "Discontinue user access to organization, teams and resources; cease billing accrual."
+    },
+    {
+      "name": "OrganizationManagementPromoteOrDemoteUserToOrgAdmin",
+      "uuid": "0ddd82df-27ed-4781-a91a-ec1dbeb620d0",
+      "feature": "Elevate or remove organization level administrative privileges."
+    },
+    {
+      "name": "OrganizationManagementViewOrg",
+      "uuid": "49f02947-0c8d-4b2d-af53-f50ce18f8861",
+      "feature": "See only organizations to which you are a member. See all other members within your membership teams."
+    },
+    {
+      "name": "OrganizationManagementViewOrganizations",
+      "uuid": "172fa7d3-0d8a-4646-a789-bf64f52ba40b",
+      "feature": "See all organizations of which you are an administrator. See all members of those organizations."
+    },
+    {
+      "name": "OrganizationManagementViewAllOrganizations",
+      "uuid": "e996c998-a50f-4cb8-ae7b-f2f1b523c971",
+      "feature": "See all organizations within a Layer5 Cloud deployment. See all organizations, teams, and users."
+    },
+    {
+      "name": "OrganizationManagementRemoveRolesFromOrganizationMembers",
+      "uuid": "8a003a11-a909-425a-bd23-d8ba14972c89",
+      "feature": "Remove roles from users in an organization"
+    },
+    {
+      "name": "OrganizationManagementAssignRolesToOrganizationMembers",
+      "uuid": "0d455711-6205-422b-9de7-05933fe2aeb2",
+      "feature": "Assign roles to users in an organization"
+    },
+    {
+      "name": "OrganizationManagementTransferOrganizationOwnership",
+      "uuid": "c81764a3-9fb1-451e-8e80-693cba6f79bf",
+      "feature": "Transfer organization ownership to another member of the organization."
+    },
+    {
+      "name": "OrganizationManagementDeleteOrganization",
+      "uuid": "b3dc083c-fe8e-43a9-9bcd-ed93d4584f55",
+      "feature": "Decommission organization and suspend account from additional accruals."
+    },
+    {
+      "name": "OrganizationManagementLeaveOrganization",
+      "uuid": "b249fb5f-bdae-4008-8aa6-862f9d911656",
+      "feature": "Leave an organization"
+    },
+    {
+      "name": "OrganizationManagementCustomDomain",
+      "uuid": "0c9da04b-9b9a-4b97-8c5d-3137df5d684f",
+      "feature": "Organizations can be assigned unique, validated custom domains through settings."
+    },
+    {
+      "name": "OrganizationManagementDomainRoutingAndRemoval",
+      "uuid": "88fc2f27-f9b2-42c8-99b5-e36389398796",
+      "feature": "Assigned domains direct user traffic to organizations; clearing the field removes the assignment."
+    },
+    {
+      "name": "OrganizationManagementManageRecognitions",
+      "uuid": "0a887b7f-b6c2-4a33-b080-bec9c3894d0c",
+      "feature": "Create, update , delete and manage recogntions awarded by your organization"
+    },
+    {
+      "name": "OrganizationManagementManageInvitations",
+      "uuid": "0204fb47-b120-4074-83db-984d595d9f69",
+      "feature": "Create, update , delete and manage invitations to your organization"
+    },
+    {
+      "name": "UserViewRoles",
+      "uuid": "9a84a5d0-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "UserManagementAssignUserRoles",
+      "uuid": "9a84a76a-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "UserManagementAssignKeychainsToRoles",
+      "uuid": "9a84abb6-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "UserManagementCreateCustomRoles",
+      "uuid": "9a84ad00-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "UserManagementUpdateCustomRoles",
+      "uuid": "9a84ad07-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "UserManagementDeleteCustomRoles",
+      "uuid": "19b3b3a3-7dc9-4e2f-b984-69241ec90fc8",
+      "feature": "Delete a user's role permanently"
+    },
+    {
+      "name": "UserManagementExportCustomRoles",
+      "uuid": "9274af31-5166-4876-ab44-27f458c5082c",
+      "feature": ""
+    },
+    {
+      "name": "OrganizationManagementViewAllAccessRequests",
+      "uuid": "070153eb-6dd5-4aad-95b4-fb0444c88a89",
+      "feature": "Browse the list of open entitlement requests"
+    },
+    {
+      "name": "OrganizationManagementAcceptAccessRequest",
+      "uuid": "afded44a-8b17-4d4d-bfc3-a76eadcc37fe",
+      "feature": "Entitle user. Approve access request."
+    },
+    {
+      "name": "OrganizationManagementDenyAccessRequest",
+      "uuid": "f25bea25-a33b-40e9-9621-bbc30888c11b",
+      "feature": "Restrict user access to requested resource."
+    },
+    {
+      "name": "LifecycleManagementAddCluster",
+      "uuid": "fce15b20-78ac-42af-b79c-b8f19bdb0802",
+      "feature": "Add Kubernetes cluster"
+    },
+    {
+      "name": "LifecycleManagementChangeConnectionState",
+      "uuid": "14ac9622-3170-4580-8403-ed7a584f90ef",
+      "feature": "Change connection state"
+    },
+    {
+      "name": "LifecycleManagementFlushMeshsyncData",
+      "uuid": "8dd4c54a-bccd-4fb3-a18c-269195653a91",
+      "feature": "Clearing the database by clicking on the `Flush MeshSync`"
+    },
+    {
+      "name": "LifecycleManagementRegisterDiscoveredMeshsyncResource",
+      "uuid": "214ad6b1-df4d-44a6-8872-8ad1f751ef68",
+      "feature": "Register discovered Meshsync resource to change state to connection"
+    },
+    {
+      "name": "LifecycleManagementDeleteAConnection",
+      "uuid": "61afb8c2-cda6-4175-aad9-74ff87fed323",
+      "feature": "Delete a connection"
+    },
+    {
+      "name": "SettingsManagementViewSettings",
+      "uuid": "fdc038e3-1fdf-403a-af8a-53c0de8d7820",
+      "feature": "View settings in Meshery"
+    },
+    {
+      "name": "SettingsManagementConnectAdapter",
+      "uuid": "c93bd211-1dac-42cc-9086-859288826d1b",
+      "feature": "Configure and connect to Meshery adapters"
+    },
+    {
+      "name": "SettingsManagementConnectMetrics",
+      "uuid": "b0aee906-c549-445f-be0c-b98b04d47d09",
+      "feature": "Configure and connect to metrics like Grafana and Promethues"
+    },
+    {
+      "name": "SettingsManagementViewMetrics",
+      "uuid": "7fe36f60-fd0a-4fda-84e5-c64a04c3ad06",
+      "feature": "View already configured metrics"
+    },
+    {
+      "name": "SettingsManagementViewRegistry",
+      "uuid": "cc069117-08cc-44e3-9c61-ae0eeca0bcf1",
+      "feature": "Explore entities within capabilities registry"
+    },
+    {
+      "name": "SettingsManagementResetDatabase",
+      "uuid": "84fc402c-f33e-4a21-a0e3-e14f9e20b125",
+      "feature": "Reset Meshery database"
+    },
+    {
+      "name": "ViewManagementViewViews",
+      "uuid": "93cba7f8-82ec-4a64-b384-f81d6acc8db3",
+      "feature": "See all views withing a workspace"
+    },
+    {
+      "name": "ViewManagementCreateView",
+      "uuid": "47ba32dc-aaa3-4c75-afdd-07fb40f38f4f",
+      "feature": "Create a new view"
+    },
+    {
+      "name": "ViewManagementDeleteView",
+      "uuid": "48076416-bc07-456b-bbea-49bdca239d0f",
+      "feature": "Dissolve environment and all connection memberships. Leave associated resources intact."
+    },
+    {
+      "name": "ViewManagementEditView",
+      "uuid": "2f8354bb-6855-4a42-8086-8d55c1c7e638",
+      "feature": "Edit environment and it connection membership"
+    },
+    {
+      "name": "WorkspaceManagementAssignViewsToWorkspace",
+      "uuid": "fb6c987b-e54c-4016-b3f3-0488228ee998",
+      "feature": "Add new views to workspace"
+    },
+    {
+      "name": "WorkspaceManagementUnassignViewsFromWorkspace",
+      "uuid": "f77d74ef-1cae-4527-b45e-ecc1431681df",
+      "feature": "Remove views from workspace"
+    },
+    {
+      "name": "ViewManagementExportViews",
+      "uuid": "3bb16c17-79bb-4673-8287-e818b8aece5c",
+      "feature": "Export views to JSON format"
+    },
+    {
+      "name": "ViewManagementViewViewComponentDetails",
+      "uuid": "d363b6a3-7ae5-4be0-a35f-91d9e5136b1a",
+      "feature": "View detailed information about a view and it's comopnent"
+    },
+    {
+      "name": "ViewManagementOpenView",
+      "uuid": "c47d29bc-7d23-433e-8140-ab273734b7df",
+      "feature": "Open a pre-existing view"
+    },
+    {
+      "name": "ViewManagementSaveViews",
+      "uuid": "93250075-0994-4ff8-8ff3-7ecc74ca7956",
+      "feature": "Saved view"
+    },
+    {
+      "name": "ViewManagementShareViews",
+      "uuid": "631ebd8c-a084-4df0-be9b-de5abd2d8468",
+      "feature": "Share Views"
+    },
+    {
+      "name": "ViewManagementCloneViews",
+      "uuid": "258c7e18-9ac4-41d7-a637-7f12a7f24df7",
+      "feature": "Clone Views"
+    },
+    {
+      "name": "PerformanceManagementAddPerformaceProfile",
+      "uuid": "b2861578-c573-45fe-a95e-0356d56e1d1b",
+      "feature": "Add a new performace profile"
+    },
+    {
+      "name": "PerformanceManagementRunTest",
+      "uuid": "06de2b07-b4f4-4701-b87f-d92ebb66ba42",
+      "feature": "Run a test on performance profile"
+    },
+    {
+      "name": "PerformanceManagementViewResults",
+      "uuid": "0c757cc7-4038-4d9b-9b60-fa8d9fc9d27e",
+      "feature": "View results of performance tests"
+    },
+    {
+      "name": "PerformanceManagementEditPerformanceTest",
+      "uuid": "33aa5c47-a8aa-4ad5-9950-7c17042c001d",
+      "feature": "Edit performance test"
+    },
+    {
+      "name": "PerformanceManagementDeletePerformanceTest",
+      "uuid": "84aa9d3c-3d4b-4587-947d-ae17b2dcd5f5",
+      "feature": "Delete performance test"
+    },
+    {
+      "name": "PerformanceManagementViewPerformanceProfiles",
+      "uuid": "6593ac26-820b-4e87-be32-64ee740ea204",
+      "feature": "View all performance profiles"
+    },
+    {
+      "name": "InfrastructureManagementManageCloudNativeInfrastructureLifeCycle",
+      "uuid": "255fd148-e3fd-4408-a48c-0d157a57d4d9",
+      "feature": "This permission grants the user the ability to manage infrastructure life cycles within meshery. Meshery allows users to visualize, work on and manage various cloud native technologies."
+    },
+    {
+      "name": "InfrastructureManagementManageCloudNativeInfrastructureConfiguration",
+      "uuid": "0eb0558d-9b21-4e50-b4c6-bd8e9e3414f5",
+      "feature": "Manage configuration for applications like EmojiVoto, HTTPBin, Image Hub, Istio Book Info"
+    },
+    {
+      "name": "InfrastructureManagementApplyCloudNativeInfrastructureConfiguration",
+      "uuid": "3f20a106-24f5-4da6-a8eb-6eddaad50944",
+      "feature": "Configure infrastructure with some predefined options like Automatic Sidecar injection, Envoy Filter, Policy"
+    },
+    {
+      "name": "InfrastructureManagementValidateCloudNativeInfrastructureConfiguration",
+      "uuid": "8bb93f97-fcfb-4827-9fed-f931fdca7b95",
+      "feature": "Validate cloud native infrastructure  configuration against best practices like Analyze Running Configuration, SMI conformance"
+    },
+    {
+      "name": "InfrastructureManagementApplyCustomCloudNativeConfiguration",
+      "uuid": "2f4e2300-4c7e-4d48-95aa-74614a4826fe",
+      "feature": "This permission grants the user the ability to apply custom configuration and customize existing configuration of thier cloud native infrastructure"
+    },
+    {
+      "name": "InfrastructureManagementDeployCloudNativeInfrastructure",
+      "uuid": "f7e70ffb-333d-43b3-a76e-0e6c63b9fbfa",
+      "feature": "This permission grants the user the ability to deploy their infrastructure to a cluster through Meshery. Meshery allows users to visualize, work on and manage various cloud native technologies"
+    },
+    {
+      "name": "InfrastructureManagementUndeployCloudNativeInfrastructure",
+      "uuid": "6e7f6f4f-4321-4e42-9eff-6a8323f32e84",
+      "feature": "This permission grants the user the ability to undeploy their infrastructure from a cluster through Meshery. Meshery allows users to visualize, work on and manage various cloud native technologies"
+    },
+    {
+      "name": "InfrastructureManagementViewCloudNativeInfrastructure",
+      "uuid": "fdc485dc-f68b-405c-9e54-7b9a7254c282",
+      "feature": "This permission grants the user the ability to view all cloud native infrastructure in Meshery. Meshery allows users to visualize, work on and manage various cloud native technologies."
+    },
+    {
+      "name": "WorkspaceManagementViewWorkspace",
+      "uuid": "bc9379e8-dc18-4655-b53c-c641271c4ba3",
+      "feature": "See all workspaces within an organization"
+    },
+    {
+      "name": "WorkspaceManagementDeleteWorkspace",
+      "uuid": "09eb0507-2f14-4bc4-92c5-9e26a4efbd5e",
+      "feature": "Dissolve workspace and all team and environment memberships. Leave associated resources intact"
+    },
+    {
+      "name": "WorkspaceManagementEditWorkspace",
+      "uuid": "4112230f-5d1e-4d30-9790-942ad5c1dc50",
+      "feature": "Edit workspace and it's team and environment membership"
+    },
+    {
+      "name": "WorkspaceManagementCreateWorkspace",
+      "uuid": "eb42ac41-a883-465e-843c-d64e962a3a0e",
+      "feature": "Create new workspace"
+    },
+    {
+      "name": "WorkspaceManagementAssignTeamToWorkspace",
+      "uuid": "6ab4263b-0bb3-492e-9878-6936a5b6312f",
+      "feature": "Add new team to workspace"
+    },
+    {
+      "name": "WorkspaceManagementRemoveTeamFromWorkspace",
+      "uuid": "c4ed82f5-783d-4451-9b34-44f50cae71df",
+      "feature": "Remove team from workspace"
+    },
+    {
+      "name": "WorkspaceManagementAssignEnvironmentToWorkspace",
+      "uuid": "f421fc20-c14a-4282-b526-776c6cacfd99",
+      "feature": "Add new environment to workspace"
+    },
+    {
+      "name": "WorkspaceManagementRemoveEnvironmentFromWorkspace",
+      "uuid": "d0657715-80fb-4b00-af27-b78bb0fa56df",
+      "feature": "Remove environment from workspace"
+    },
+    {
+      "name": "WorkspaceManagementAssignDesignsToWorkspaces",
+      "uuid": "64a1bad5-30f1-431a-aea0-8073d14a0262",
+      "feature": "Assign designs to workspaces"
+    },
+    {
+      "name": "WorkspaceManagementRemoveDesignsFromWorkspaces",
+      "uuid": "076515f1-f696-4211-ae27-58d5463a229e",
+      "feature": "Remove designs from workspaces"
+    },
+    {
+      "name": "LifecycleManagementViewConnections",
+      "uuid": "b35c9ce0-e787-4de6-8560-631007b0b947",
+      "feature": "View all connections within an environment"
+    },
+    {
+      "name": "OrganizationManagementViewEnvironment",
+      "uuid": "e3656bbc-fba2-483d-9996-34f8614cd21b",
+      "feature": "See all environments within an workspace."
+    },
+    {
+      "name": "OrganizationManagementCreateEnvironment",
+      "uuid": "a97b7f3b-3349-4a86-b917-2ce0b64a540b",
+      "feature": "Create a new environment"
+    },
+    {
+      "name": "OrganizationManagementDeleteEnvironment",
+      "uuid": "70747966-dfad-4523-93ce-bd7421258955",
+      "feature": "Dissolve environment and all connection memberships. Leave associated resources intact."
+    },
+    {
+      "name": "OrganizationManagementEditEnvironment",
+      "uuid": "145ab6ed-b4b6-4e34-ada5-78dada250f89",
+      "feature": "Edit environment and it connection membership"
+    },
+    {
+      "name": "OrganizationManagementAssignConnectionsToEnvironment",
+      "uuid": "52cbe0b8-9aa7-4605-8eed-aa37e595adbb",
+      "feature": "Add new connections to environments"
+    },
+    {
+      "name": "OrganizationManagementRemoveConnectionsFromEnvironments",
+      "uuid": "65648682-e47f-43d7-a5ad-dc042803f951",
+      "feature": "Remove connections from environment, "
+    },
+    {
+      "name": "UserViewViewCatalog",
+      "uuid": "0cd05106-36b6-4393-a08e-4222fc10c8de",
+      "feature": "View all items in catalog"
+    },
+    {
+      "name": "AcademyManagementViewAcademyContent",
+      "uuid": "40eb4949-ca16-4b7b-a9ae-4fe18f26fe1d",
+      "feature": "Browse the public catalog of learning paths, challenges, and certifications."
+    },
+    {
+      "name": "AcademyManagementAccessTheAcademyConsole",
+      "uuid": "045fad17-d2cc-46e8-bb10-f9ee026c799f",
+      "feature": "View and assess the performance of learners and of your organization's academy content."
+    },
+    {
+      "name": "AcademyManagementAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics",
+      "uuid": "045fad17-d2cc-46e8-bb10-f9ee026c799f",
+      "feature": ""
+    },
+    {
+      "name": "ChallengesManagementViewChallenges",
+      "uuid": "5996d6c9-4037-404c-af83-92a0895ff7f0",
+      "feature": "View all challenges"
+    }
+  ]
+}

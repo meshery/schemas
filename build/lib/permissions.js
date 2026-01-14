@@ -9,7 +9,7 @@ const logger = require("./logger");
 const { parseCSV, loadCSV, toPascalCase, isValidUUID } = require("./csv");
 
 // CSV column indices (0-based)
-const COL_CATEGORY = 1;
+const COL_KEYCHAIN_ID = 0;
 const COL_FUNCTION = 2;
 const COL_FEATURE = 3;
 const COL_KEY_ID = 29;
@@ -46,7 +46,7 @@ function parsePermissions(csvContent, options = {}) {
     const fields = rows[i];
     const rowNum = i + skipRows + 1; // 1-based row number for logging
 
-    const category = fields[COL_CATEGORY] || "";
+    const category = fields[COL_KEYCHAIN_ID] || "";
     const func = fields[COL_FUNCTION] || "";
     const feature = fields[COL_FEATURE] || "";
     const keyId = fields[COL_KEY_ID] || "";
@@ -103,14 +103,16 @@ async function loadPermissions(source, options = {}) {
  * @param {Array<{name: string, uuid: string, feature: string}>} permissions - Parsed permissions
  * @returns {string} Go file content
  */
-function generateGoFile(permissions) {
+function generateGoFile(permissions, indexId) {
   const lines = [
     "// Package permissions contains auto-generated permission key constants.",
     "// This file is generated from permissions.csv - DO NOT EDIT MANUALLY.",
     "// To regenerate, run: node build/generate-permission-golang.js",
     "package permissions",
-    "",
     'import "github.com/gofrs/uuid"',
+    "",
+    `// Index ID used to generate this file\nconst IndexID = "${indexId}"`,
+    "",
     "",
     "// PermissionKey represents a permission key identifier.",
     "type PermissionKey uuid.UUID",
@@ -163,7 +165,7 @@ function escapeJSDocComment(str) {
  * @param {Array<{name: string, uuid: string, feature: string}>} permissions - Parsed permissions
  * @returns {string} TypeScript file content
  */
-function generateTypeScriptFile(permissions) {
+function generateTypeScriptFile(permissions, indexId) {
   const lines = [
     "/**",
     " * Permission key constants generated from permissions.csv",
@@ -176,6 +178,11 @@ function generateTypeScriptFile(permissions) {
     " * This provides type safety while remaining compatible with string operations.",
     " */",
     "export type PermissionKey = string & { readonly __brand: 'PermissionKey' };",
+    "",
+    "/**",
+    " * Permissions Index ID used for this generated file.",
+    " */",
+    `export const PERMISSIONS_INDEX_ID = "${indexId}" as const;`,
     "",
     "/**",
     " * Creates a PermissionKey from a UUID string.",
@@ -239,8 +246,85 @@ function generateTypeScriptFile(permissions) {
   return lines.join("\n");
 }
 
+const path = require("path");
+const fs = require("fs");
+const paths = require("./paths");
+
+const crypto = require("crypto");
+
+function computeIndexId(permissions) {
+  // Stable canonical string using sorted name+uuid, ignoring feature
+  const entries = permissions
+    .map((p) => ({ name: p.name, uuid: p.uuid }))
+    .sort((a, b) =>
+      a.name === b.name
+        ? a.uuid.localeCompare(b.uuid)
+        : a.name.localeCompare(b.name),
+    )
+    .map((e) => `${e.name}:${e.uuid}`)
+    .join("\n");
+  return crypto.createHash("sha256").update(entries).digest("hex");
+}
+
+function buildIndex(permissions) {
+  const id = computeIndexId(permissions);
+  return {
+    id,
+    createdAt: new Date().toISOString(),
+    count: permissions.length,
+    items: permissions.map((p) => ({
+      name: p.name,
+      uuid: p.uuid,
+      feature: p.feature,
+    })),
+  };
+}
+
+function saveIndex(index) {
+  const dir = paths.fromRoot("permissions_history");
+  paths.ensureDir(dir);
+  const file = path.join(dir, `${index.id}-permissions_index.json`);
+  fs.writeFileSync(file, JSON.stringify(index, null, 2), "utf-8");
+  return file;
+}
+
+function loadIndex(filePath) {
+  const data = fs.readFileSync(filePath, "utf-8");
+  return JSON.parse(data);
+}
+
+function diffIndexes(oldIndex, newIndex) {
+  const oldById = new Map(oldIndex.items.map((i) => [i.uuid, i]));
+  const newById = new Map(newIndex.items.map((i) => [i.uuid, i]));
+
+  const added = [];
+  const removed = [];
+  const updated = [];
+
+  // Added and updated (by id)
+  for (const [id, item] of newById.entries()) {
+    if (!oldById.has(id)) {
+      added.push({ id, name: item.name });
+    } else {
+      const prev = oldById.get(id);
+      if (prev.name !== item.name) {
+        updated.push({ id, old_name: prev.name, new_name: item.name });
+      }
+    }
+  }
+
+  // Removed (by id)
+  for (const [id, item] of oldById.entries()) {
+    if (!newById.has(id)) {
+      removed.push({ id, name: item.name });
+    }
+  }
+
+  return { added, removed, updated };
+}
+
 module.exports = {
-  COL_CATEGORY,
+  COL_CATEGORY: COL_KEYCHAIN_ID,
   COL_FUNCTION,
   COL_FEATURE,
   COL_KEY_ID,
@@ -251,4 +335,9 @@ module.exports = {
   generateGoFile,
   generateTypeScriptFile,
   escapeJSDocComment,
+  computeIndexId,
+  buildIndex,
+  saveIndex,
+  loadIndex,
+  diffIndexes,
 };
