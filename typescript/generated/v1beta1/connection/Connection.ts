@@ -3,7 +3,50 @@
  * Do not make direct changes to the file.
  */
 
-export interface paths {}
+export interface paths {
+  "/api/integrations/connections": {
+    /** Returns a paginated list of connections for the authenticated user */
+    get: operations["GetConnections"];
+    /** Register a new connection with credentials */
+    post: operations["RegisterConnection"];
+  };
+  "/api/integrations/connections/{connectionKind}": {
+    /** Returns connections filtered by kind (meshery, kubernetes, etc.) */
+    get: operations["GetConnectionsByKind"];
+  };
+  "/api/integrations/connections/status": {
+    /** Returns aggregated status information for all connections */
+    get: operations["GetConnectionsStatus"];
+  };
+  "/api/integrations/connections/status/{connectionId}": {
+    /** Update the status of a specific connection */
+    put: operations["UpdateConnectionStatusByID"];
+  };
+  "/api/integrations/connections/{connectionKind}/{connectionId}": {
+    /** Returns a specific connection by kind and ID */
+    get: operations["GetConnectionByID"];
+  };
+  "/api/integrations/connections/{connectionId}": {
+    /** Update an existing connection */
+    put: operations["UpdateConnection"];
+    /** Delete a specific connection */
+    delete: operations["DeleteConnection"];
+  };
+  "/api/integrations/connections/meshery/{mesheryServerId}": {
+    /** Delete a Meshery server connection by server ID */
+    delete: operations["DeleteMesheryConnection"];
+  };
+  "/api/integrations/connections/kubernetes/{connectionId}/context": {
+    /** Get Kubernetes context for a specific connection */
+    get: operations["GetKubernetesContext"];
+  };
+  "/api/environments/{environmentId}/connections/{connectionId}": {
+    /** Associate a connection with an environment */
+    post: operations["AddConnectionToEnvironment"];
+    /** Disassociate a connection from an environment */
+    delete: operations["RemoveConnectionFromEnvironment"];
+  };
+}
 
 export interface components {
   schemas: {
@@ -11,22 +54,23 @@ export interface components {
     Connection: {
       /**
        * Format: uuid
-       * @description ID
+       * @description Connection ID
        */
       id: string;
       /** @description Connection Name */
       name: string;
       /**
        * Format: uuid
-       * @description Credential ID
+       * @description Associated Credential ID
        */
       credential_id?: string;
-      /** @description Connection Type */
+      /** @description Connection Type (platform, telemetry, collaboration) */
       type: string;
-      /** @description Connection Subtype */
+      /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
       sub_type: string;
-      /** @description Connection Kind */
+      /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
       kind: string;
+      /** @description Additional connection metadata */
       metadata?: { [key: string]: unknown };
       /**
        * @description Connection Status
@@ -43,7 +87,7 @@ export interface components {
         | "not found";
       /**
        * Format: uuid
-       * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+       * @description User ID who owns this connection
        */
       user_id?: string;
       /** Format: date-time */
@@ -52,6 +96,7 @@ export interface components {
       updated_at?: string;
       /** Format: date-time */
       deleted_at?: string;
+      /** @description Associated environments for this connection */
       environments?: {
         /**
          * Format: uuid
@@ -92,27 +137,29 @@ export interface components {
        */
       schemaVersion: string;
     };
-    /** @description Represents a page of connections with a meta information about connections number */
+    /** @description Represents a page of connections with meta information about connections count */
     ConnectionPage: {
+      /** @description List of connections on this page */
       connections: {
         /**
          * Format: uuid
-         * @description ID
+         * @description Connection ID
          */
         id: string;
         /** @description Connection Name */
         name: string;
         /**
          * Format: uuid
-         * @description Credential ID
+         * @description Associated Credential ID
          */
         credential_id?: string;
-        /** @description Connection Type */
+        /** @description Connection Type (platform, telemetry, collaboration) */
         type: string;
-        /** @description Connection Subtype */
+        /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
         sub_type: string;
-        /** @description Connection Kind */
+        /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
         kind: string;
+        /** @description Additional connection metadata */
         metadata?: { [key: string]: unknown };
         /**
          * @description Connection Status
@@ -129,7 +176,7 @@ export interface components {
           | "not found";
         /**
          * Format: uuid
-         * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+         * @description User ID who owns this connection
          */
         user_id?: string;
         /** Format: date-time */
@@ -138,6 +185,7 @@ export interface components {
         updated_at?: string;
         /** Format: date-time */
         deleted_at?: string;
+        /** @description Associated environments for this connection */
         environments?: {
           /**
            * Format: uuid
@@ -180,14 +228,1087 @@ export interface components {
       }[];
       /** @description Total number of connections on all pages */
       total_count: number;
-      /** @description Page number */
+      /** @description Current page number */
       page: number;
       /** @description Number of elements per page */
       page_size: number;
     };
+    /**
+     * @description Connection Status Value
+     * @enum {string}
+     */
+    ConnectionStatusValue:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** @description Payload for creating or updating a connection */
+    ConnectionPayload: {
+      /**
+       * Format: uuid
+       * @description Connection ID
+       */
+      id?: string;
+      /** @description Connection name */
+      name: string;
+      /** @description Connection kind */
+      kind: string;
+      /** @description Connection type */
+      type: string;
+      /** @description Connection sub-type */
+      sub_type: string;
+      /** @description Credential secret data */
+      credential_secret?: { [key: string]: unknown };
+      /** @description Connection metadata */
+      metadata?: { [key: string]: unknown };
+      /** @description Connection status */
+      status: string;
+      /**
+       * Format: uuid
+       * @description Associated credential ID
+       */
+      credential_id?: string;
+    };
+    /** @description Status count information for connections */
+    ConnectionStatusInfo: {
+      /** @description Status value */
+      status: string;
+      /** @description Number of connections with this status */
+      count: number;
+    };
+    /** @description Paginated list of connection status counts */
+    ConnectionsStatusPage: {
+      /** @description Total number of status entries */
+      total_count: number;
+      /** @description Current page number */
+      page: number;
+      /** @description Number of items per page */
+      page_size: number;
+      /** @description List of status counts */
+      connections_status: {
+        /** @description Status value */
+        status: string;
+        /** @description Number of connections with this status */
+        count: number;
+      }[];
+    };
+    /** @description Meshery server instance information */
+    MesheryInstance: {
+      /** @description Instance ID */
+      id?: string;
+      /** @description Instance name */
+      name?: string;
+      /** @description Server ID */
+      server_id?: string;
+      /** @description Meshery server version */
+      server_version?: string;
+      /** @description Server location URL */
+      server_location?: string;
+      /** @description Server build SHA */
+      server_build_sha?: string;
+      /** @description Creation timestamp */
+      created_at?: string;
+      /** @description Last update timestamp */
+      updated_at?: string;
+      /** @description Deletion timestamp */
+      deleted_at?: string;
+    };
+    /** @description Paginated list of Meshery instances */
+    MesheryInstancePage: {
+      /** @description List of Meshery instances */
+      meshery_instances: {
+        /** @description Instance ID */
+        id?: string;
+        /** @description Instance name */
+        name?: string;
+        /** @description Server ID */
+        server_id?: string;
+        /** @description Meshery server version */
+        server_version?: string;
+        /** @description Server location URL */
+        server_location?: string;
+        /** @description Server build SHA */
+        server_build_sha?: string;
+        /** @description Creation timestamp */
+        created_at?: string;
+        /** @description Last update timestamp */
+        updated_at?: string;
+        /** @description Deletion timestamp */
+        deleted_at?: string;
+      }[];
+      /** @description Current page number */
+      page: number;
+      /** @description Number of items per page */
+      page_size: number;
+      /** @description Total number of instances */
+      total_count: number;
+    };
+    /** @description Meshery version compatibility check */
+    MesheryCompatibility: {
+      /** @description Meshery version string */
+      meshery_version?: string;
+      /** @description Whether to check compatibility */
+      check_compatibility?: boolean;
+    };
+  };
+  parameters: {
+    /** @description Connection ID */
+    connectionId: string;
+    /** @description Connection kind (meshery, kubernetes, prometheus, grafana, etc.) */
+    connectionKind: string;
+    /** @description Environment ID */
+    environmentId: string;
+    /** @description Page number */
+    page: number;
+    /** @description Number of items per page */
+    pagesize: number;
+    /** @description Search term */
+    search: string;
+    /** @description Sort order */
+    order: string;
   };
 }
 
-export interface operations {}
+export interface operations {
+  /** Returns a paginated list of connections for the authenticated user */
+  GetConnections: {
+    parameters: {
+      query: {
+        /** Page number */
+        page?: number;
+        /** Number of items per page */
+        pagesize?: number;
+        /** Search term */
+        search?: string;
+        /** Sort order */
+        order?: string;
+        /** Filter connections */
+        filter?: string;
+        /** Filter by connection kind */
+        kind?: string[];
+        /** Filter by connection status */
+        status?: (
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found"
+        )[];
+      };
+    };
+    responses: {
+      /** List of connections */
+      200: {
+        content: {
+          "application/json": {
+            /** @description List of connections on this page */
+            connections: {
+              /**
+               * Format: uuid
+               * @description Connection ID
+               */
+              id: string;
+              /** @description Connection Name */
+              name: string;
+              /**
+               * Format: uuid
+               * @description Associated Credential ID
+               */
+              credential_id?: string;
+              /** @description Connection Type (platform, telemetry, collaboration) */
+              type: string;
+              /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+              sub_type: string;
+              /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+              kind: string;
+              /** @description Additional connection metadata */
+              metadata?: { [key: string]: unknown };
+              /**
+               * @description Connection Status
+               * @enum {string}
+               */
+              status:
+                | "discovered"
+                | "registered"
+                | "connected"
+                | "ignored"
+                | "maintenance"
+                | "disconnected"
+                | "deleted"
+                | "not found";
+              /**
+               * Format: uuid
+               * @description User ID who owns this connection
+               */
+              user_id?: string;
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+              /** @description Associated environments for this connection */
+              environments?: {
+                /**
+                 * Format: uuid
+                 * @description ID
+                 */
+                id: string;
+                /** @description Environment name */
+                name: string;
+                /** @description Environment description */
+                description: string;
+                /**
+                 * Format: uuid
+                 * @description Environment organization ID
+                 */
+                organization_id: string;
+                /**
+                 * Format: uuid
+                 * @description Environment owner
+                 */
+                owner?: string;
+                /** Format: date-time */
+                created_at?: string;
+                metadata?: { [key: string]: unknown };
+                /** Format: date-time */
+                updated_at?: string;
+                /** Format: date-time */
+                deleted_at?: string;
+              }[];
+              /**
+               * @description Specifies the version of the schema used for the definition.
+               * @default connections.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix"
+               * ]
+               */
+              schemaVersion: string;
+            }[];
+            /** @description Total number of connections on all pages */
+            total_count: number;
+            /** @description Current page number */
+            page: number;
+            /** @description Number of elements per page */
+            page_size: number;
+          };
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Register a new connection with credentials */
+  RegisterConnection: {
+    responses: {
+      /** Connection registered successfully */
+      201: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Connection ID
+             */
+            id: string;
+            /** @description Connection Name */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Associated Credential ID
+             */
+            credential_id?: string;
+            /** @description Connection Type (platform, telemetry, collaboration) */
+            type: string;
+            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+            sub_type: string;
+            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+            kind: string;
+            /** @description Additional connection metadata */
+            metadata?: { [key: string]: unknown };
+            /**
+             * @description Connection Status
+             * @enum {string}
+             */
+            status:
+              | "discovered"
+              | "registered"
+              | "connected"
+              | "ignored"
+              | "maintenance"
+              | "disconnected"
+              | "deleted"
+              | "not found";
+            /**
+             * Format: uuid
+             * @description User ID who owns this connection
+             */
+            user_id?: string;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            /** Format: date-time */
+            deleted_at?: string;
+            /** @description Associated environments for this connection */
+            environments?: {
+              /**
+               * Format: uuid
+               * @description ID
+               */
+              id: string;
+              /** @description Environment name */
+              name: string;
+              /** @description Environment description */
+              description: string;
+              /**
+               * Format: uuid
+               * @description Environment organization ID
+               */
+              organization_id: string;
+              /**
+               * Format: uuid
+               * @description Environment owner
+               */
+              owner?: string;
+              /** Format: date-time */
+              created_at?: string;
+              metadata?: { [key: string]: unknown };
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+            /**
+             * @description Specifies the version of the schema used for the definition.
+             * @default connections.meshery.io/v1beta1
+             * @example [
+             *   "v1",
+             *   "v1alpha1",
+             *   "v2beta3",
+             *   "v1.custom-suffix"
+             * ]
+             */
+            schemaVersion: string;
+          };
+        };
+      };
+      /** Invalid request parameters */
+      400: unknown;
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Connection ID
+           */
+          id?: string;
+          /** @description Connection name */
+          name: string;
+          /** @description Connection kind */
+          kind: string;
+          /** @description Connection type */
+          type: string;
+          /** @description Connection sub-type */
+          sub_type: string;
+          /** @description Credential secret data */
+          credential_secret?: { [key: string]: unknown };
+          /** @description Connection metadata */
+          metadata?: { [key: string]: unknown };
+          /** @description Connection status */
+          status: string;
+          /**
+           * Format: uuid
+           * @description Associated credential ID
+           */
+          credential_id?: string;
+        };
+      };
+    };
+  };
+  /** Returns connections filtered by kind (meshery, kubernetes, etc.) */
+  GetConnectionsByKind: {
+    parameters: {
+      path: {
+        /** Connection kind (meshery, kubernetes, prometheus, grafana, etc.) */
+        connectionKind: string;
+      };
+      query: {
+        /** Page number */
+        page?: number;
+        /** Number of items per page */
+        pagesize?: number;
+        /** Search term */
+        search?: string;
+        /** Sort order */
+        order?: string;
+        /** Filter by connection status */
+        status?:
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+        /** Filter by Meshery instance ID (for kubernetes connections) */
+        meshery_instance_id?: string;
+        /** Include credentials in response (for kubernetes connections) */
+        with_credentials?: boolean;
+      };
+    };
+    responses: {
+      /** List of connections by kind */
+      200: {
+        content: {
+          "application/json":
+            | {
+                /** @description List of connections on this page */
+                connections: {
+                  /**
+                   * Format: uuid
+                   * @description Connection ID
+                   */
+                  id: string;
+                  /** @description Connection Name */
+                  name: string;
+                  /**
+                   * Format: uuid
+                   * @description Associated Credential ID
+                   */
+                  credential_id?: string;
+                  /** @description Connection Type (platform, telemetry, collaboration) */
+                  type: string;
+                  /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+                  sub_type: string;
+                  /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+                  kind: string;
+                  /** @description Additional connection metadata */
+                  metadata?: { [key: string]: unknown };
+                  /**
+                   * @description Connection Status
+                   * @enum {string}
+                   */
+                  status:
+                    | "discovered"
+                    | "registered"
+                    | "connected"
+                    | "ignored"
+                    | "maintenance"
+                    | "disconnected"
+                    | "deleted"
+                    | "not found";
+                  /**
+                   * Format: uuid
+                   * @description User ID who owns this connection
+                   */
+                  user_id?: string;
+                  /** Format: date-time */
+                  created_at?: string;
+                  /** Format: date-time */
+                  updated_at?: string;
+                  /** Format: date-time */
+                  deleted_at?: string;
+                  /** @description Associated environments for this connection */
+                  environments?: {
+                    /**
+                     * Format: uuid
+                     * @description ID
+                     */
+                    id: string;
+                    /** @description Environment name */
+                    name: string;
+                    /** @description Environment description */
+                    description: string;
+                    /**
+                     * Format: uuid
+                     * @description Environment organization ID
+                     */
+                    organization_id: string;
+                    /**
+                     * Format: uuid
+                     * @description Environment owner
+                     */
+                    owner?: string;
+                    /** Format: date-time */
+                    created_at?: string;
+                    metadata?: { [key: string]: unknown };
+                    /** Format: date-time */
+                    updated_at?: string;
+                    /** Format: date-time */
+                    deleted_at?: string;
+                  }[];
+                  /**
+                   * @description Specifies the version of the schema used for the definition.
+                   * @default connections.meshery.io/v1beta1
+                   * @example [
+                   *   "v1",
+                   *   "v1alpha1",
+                   *   "v2beta3",
+                   *   "v1.custom-suffix"
+                   * ]
+                   */
+                  schemaVersion: string;
+                }[];
+                /** @description Total number of connections on all pages */
+                total_count: number;
+                /** @description Current page number */
+                page: number;
+                /** @description Number of elements per page */
+                page_size: number;
+              }
+            | {
+                /** @description List of Meshery instances */
+                meshery_instances: {
+                  /** @description Instance ID */
+                  id?: string;
+                  /** @description Instance name */
+                  name?: string;
+                  /** @description Server ID */
+                  server_id?: string;
+                  /** @description Meshery server version */
+                  server_version?: string;
+                  /** @description Server location URL */
+                  server_location?: string;
+                  /** @description Server build SHA */
+                  server_build_sha?: string;
+                  /** @description Creation timestamp */
+                  created_at?: string;
+                  /** @description Last update timestamp */
+                  updated_at?: string;
+                  /** @description Deletion timestamp */
+                  deleted_at?: string;
+                }[];
+                /** @description Current page number */
+                page: number;
+                /** @description Number of items per page */
+                page_size: number;
+                /** @description Total number of instances */
+                total_count: number;
+              };
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Returns aggregated status information for all connections */
+  GetConnectionsStatus: {
+    parameters: {
+      query: {
+        /** Page number */
+        page?: number;
+        /** Number of items per page */
+        pagesize?: number;
+        /** Search term */
+        search?: string;
+        /** Sort order */
+        order?: string;
+      };
+    };
+    responses: {
+      /** Connection status summary */
+      200: {
+        content: {
+          "application/json": {
+            /** @description Total number of status entries */
+            total_count: number;
+            /** @description Current page number */
+            page: number;
+            /** @description Number of items per page */
+            page_size: number;
+            /** @description List of status counts */
+            connections_status: {
+              /** @description Status value */
+              status: string;
+              /** @description Number of connections with this status */
+              count: number;
+            }[];
+          };
+        };
+      };
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Update the status of a specific connection */
+  UpdateConnectionStatusByID: {
+    parameters: {
+      path: {
+        /** Connection ID */
+        connectionId: string;
+      };
+    };
+    responses: {
+      /** Connection status updated successfully */
+      200: {
+        content: {
+          "application/json": {
+            /** @description List of connections on this page */
+            connections: {
+              /**
+               * Format: uuid
+               * @description Connection ID
+               */
+              id: string;
+              /** @description Connection Name */
+              name: string;
+              /**
+               * Format: uuid
+               * @description Associated Credential ID
+               */
+              credential_id?: string;
+              /** @description Connection Type (platform, telemetry, collaboration) */
+              type: string;
+              /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+              sub_type: string;
+              /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+              kind: string;
+              /** @description Additional connection metadata */
+              metadata?: { [key: string]: unknown };
+              /**
+               * @description Connection Status
+               * @enum {string}
+               */
+              status:
+                | "discovered"
+                | "registered"
+                | "connected"
+                | "ignored"
+                | "maintenance"
+                | "disconnected"
+                | "deleted"
+                | "not found";
+              /**
+               * Format: uuid
+               * @description User ID who owns this connection
+               */
+              user_id?: string;
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+              /** @description Associated environments for this connection */
+              environments?: {
+                /**
+                 * Format: uuid
+                 * @description ID
+                 */
+                id: string;
+                /** @description Environment name */
+                name: string;
+                /** @description Environment description */
+                description: string;
+                /**
+                 * Format: uuid
+                 * @description Environment organization ID
+                 */
+                organization_id: string;
+                /**
+                 * Format: uuid
+                 * @description Environment owner
+                 */
+                owner?: string;
+                /** Format: date-time */
+                created_at?: string;
+                metadata?: { [key: string]: unknown };
+                /** Format: date-time */
+                updated_at?: string;
+                /** Format: date-time */
+                deleted_at?: string;
+              }[];
+              /**
+               * @description Specifies the version of the schema used for the definition.
+               * @default connections.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix"
+               * ]
+               */
+              schemaVersion: string;
+            }[];
+            /** @description Total number of connections on all pages */
+            total_count: number;
+            /** @description Current page number */
+            page: number;
+            /** @description Number of elements per page */
+            page_size: number;
+          };
+        };
+      };
+      /** Connection not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "text/plain":
+          | "discovered"
+          | "registered"
+          | "connected"
+          | "ignored"
+          | "maintenance"
+          | "disconnected"
+          | "deleted"
+          | "not found";
+      };
+    };
+  };
+  /** Returns a specific connection by kind and ID */
+  GetConnectionByID: {
+    parameters: {
+      path: {
+        /** Connection kind (meshery, kubernetes, prometheus, grafana, etc.) */
+        connectionKind: string;
+        /** Connection ID */
+        connectionId: string;
+      };
+    };
+    responses: {
+      /** Connection details */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Connection ID
+             */
+            id: string;
+            /** @description Connection Name */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Associated Credential ID
+             */
+            credential_id?: string;
+            /** @description Connection Type (platform, telemetry, collaboration) */
+            type: string;
+            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+            sub_type: string;
+            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+            kind: string;
+            /** @description Additional connection metadata */
+            metadata?: { [key: string]: unknown };
+            /**
+             * @description Connection Status
+             * @enum {string}
+             */
+            status:
+              | "discovered"
+              | "registered"
+              | "connected"
+              | "ignored"
+              | "maintenance"
+              | "disconnected"
+              | "deleted"
+              | "not found";
+            /**
+             * Format: uuid
+             * @description User ID who owns this connection
+             */
+            user_id?: string;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            /** Format: date-time */
+            deleted_at?: string;
+            /** @description Associated environments for this connection */
+            environments?: {
+              /**
+               * Format: uuid
+               * @description ID
+               */
+              id: string;
+              /** @description Environment name */
+              name: string;
+              /** @description Environment description */
+              description: string;
+              /**
+               * Format: uuid
+               * @description Environment organization ID
+               */
+              organization_id: string;
+              /**
+               * Format: uuid
+               * @description Environment owner
+               */
+              owner?: string;
+              /** Format: date-time */
+              created_at?: string;
+              metadata?: { [key: string]: unknown };
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+            /**
+             * @description Specifies the version of the schema used for the definition.
+             * @default connections.meshery.io/v1beta1
+             * @example [
+             *   "v1",
+             *   "v1alpha1",
+             *   "v2beta3",
+             *   "v1.custom-suffix"
+             * ]
+             */
+            schemaVersion: string;
+          };
+        };
+      };
+      /** Connection not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Update an existing connection */
+  UpdateConnection: {
+    parameters: {
+      path: {
+        /** Connection ID */
+        connectionId: string;
+      };
+    };
+    responses: {
+      /** Connection updated successfully */
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description Connection ID
+             */
+            id: string;
+            /** @description Connection Name */
+            name: string;
+            /**
+             * Format: uuid
+             * @description Associated Credential ID
+             */
+            credential_id?: string;
+            /** @description Connection Type (platform, telemetry, collaboration) */
+            type: string;
+            /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+            sub_type: string;
+            /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+            kind: string;
+            /** @description Additional connection metadata */
+            metadata?: { [key: string]: unknown };
+            /**
+             * @description Connection Status
+             * @enum {string}
+             */
+            status:
+              | "discovered"
+              | "registered"
+              | "connected"
+              | "ignored"
+              | "maintenance"
+              | "disconnected"
+              | "deleted"
+              | "not found";
+            /**
+             * Format: uuid
+             * @description User ID who owns this connection
+             */
+            user_id?: string;
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            /** Format: date-time */
+            deleted_at?: string;
+            /** @description Associated environments for this connection */
+            environments?: {
+              /**
+               * Format: uuid
+               * @description ID
+               */
+              id: string;
+              /** @description Environment name */
+              name: string;
+              /** @description Environment description */
+              description: string;
+              /**
+               * Format: uuid
+               * @description Environment organization ID
+               */
+              organization_id: string;
+              /**
+               * Format: uuid
+               * @description Environment owner
+               */
+              owner?: string;
+              /** Format: date-time */
+              created_at?: string;
+              metadata?: { [key: string]: unknown };
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+            /**
+             * @description Specifies the version of the schema used for the definition.
+             * @default connections.meshery.io/v1beta1
+             * @example [
+             *   "v1",
+             *   "v1alpha1",
+             *   "v2beta3",
+             *   "v1.custom-suffix"
+             * ]
+             */
+            schemaVersion: string;
+          };
+        };
+      };
+      /** Connection not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Connection ID
+           */
+          id?: string;
+          /** @description Connection name */
+          name: string;
+          /** @description Connection kind */
+          kind: string;
+          /** @description Connection type */
+          type: string;
+          /** @description Connection sub-type */
+          sub_type: string;
+          /** @description Credential secret data */
+          credential_secret?: { [key: string]: unknown };
+          /** @description Connection metadata */
+          metadata?: { [key: string]: unknown };
+          /** @description Connection status */
+          status: string;
+          /**
+           * Format: uuid
+           * @description Associated credential ID
+           */
+          credential_id?: string;
+        };
+      };
+    };
+  };
+  /** Delete a specific connection */
+  DeleteConnection: {
+    parameters: {
+      path: {
+        /** Connection ID */
+        connectionId: string;
+      };
+    };
+    responses: {
+      /** Connection deleted successfully */
+      204: never;
+      /** Connection not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Delete a Meshery server connection by server ID */
+  DeleteMesheryConnection: {
+    parameters: {
+      path: {
+        /** Meshery server ID */
+        mesheryServerId: string;
+      };
+    };
+    responses: {
+      /** Meshery connection deleted successfully */
+      204: never;
+      /** Connection not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Get Kubernetes context for a specific connection */
+  GetKubernetesContext: {
+    parameters: {
+      path: {
+        /** Connection ID */
+        connectionId: string;
+      };
+    };
+    responses: {
+      /** Kubernetes context */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Connection not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Associate a connection with an environment */
+  AddConnectionToEnvironment: {
+    parameters: {
+      path: {
+        /** Environment ID */
+        environmentId: string;
+        /** Connection ID */
+        connectionId: string;
+      };
+    };
+    responses: {
+      /** Connection added to environment successfully */
+      200: unknown;
+      /** Connection or environment not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  /** Disassociate a connection from an environment */
+  RemoveConnectionFromEnvironment: {
+    parameters: {
+      path: {
+        /** Environment ID */
+        environmentId: string;
+        /** Connection ID */
+        connectionId: string;
+      };
+    };
+    responses: {
+      /** Connection removed from environment successfully */
+      204: never;
+      /** Connection or environment not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+}
 
 export interface external {}
