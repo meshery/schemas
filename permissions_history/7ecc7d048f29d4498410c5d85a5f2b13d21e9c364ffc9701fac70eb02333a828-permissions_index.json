@@ -1,0 +1,2217 @@
+{
+  "id": "7ecc7d048f29d4498410c5d85a5f2b13d21e9c364ffc9701fac70eb02333a828",
+  "createdAt": "2026-01-14T13:48:06.496Z",
+  "count": 442,
+  "items": [
+    {
+      "name": "ProfileViewProfile",
+      "uuid": "fa7de118-2d08-4b07-b9d7-3e0baead6d04",
+      "feature": "View your profile."
+    },
+    {
+      "name": "ProfileEditAccount",
+      "uuid": "f5e6bb39-c89a-4172-86f9-14a4a59792c1",
+      "feature": "Update details of your user account."
+    },
+    {
+      "name": "ProfileResetPasword",
+      "uuid": "ec8a4b2e-8323-4a96-86ef-ec7be8f58ef1",
+      "feature": "Perform a password reset for your user account."
+    },
+    {
+      "name": "ProfileDeleteAccount",
+      "uuid": "bbcb024b-78eb-48b0-8e99-f74d3862fe0f",
+      "feature": "Delete your user account."
+    },
+    {
+      "name": "ProfileConnectYourGithubAccount",
+      "uuid": "9ea3070a-f2a4-4655-8660-5dba692f3138",
+      "feature": "Link your social sign-in with GitHub to your existing user account."
+    },
+    {
+      "name": "ProfileConnectYourGoogleAccount",
+      "uuid": "bab2c574-d4e8-4e1e-a9f8-48c10be66b62",
+      "feature": "Link your social sign-in with Google to your existing user account."
+    },
+    {
+      "name": "SubscriptionViewSubcription",
+      "uuid": "9098e61d-deaa-43da-960c-1bc3d5a00495",
+      "feature": "List and see details of active and inactive subscriptions."
+    },
+    {
+      "name": "SubscriptionManageSubcriptions",
+      "uuid": "01462c43-dfa8-4a5e-805a-267c9b0ec7ec",
+      "feature": "Create new subscriptions and update existing subscriptions"
+    },
+    {
+      "name": "PlansViewPlans",
+      "uuid": "1907bd7a-5055-4e9b-98f6-7e8b720af887",
+      "feature": "Explore subscription plans and compare their features."
+    },
+    {
+      "name": "CatalogDeployDesign",
+      "uuid": "7a7d3cad-4cf4-48fa-b69c-e6a5abc97a07",
+      "feature": "Export a copy of a design to your local system."
+    },
+    {
+      "name": "CatalogShareDesign",
+      "uuid": "d9ae2b08-762f-418f-916f-43de736b53e2",
+      "feature": "Share design with anyone within your organization, and make your design easily accessible to all relevant team members."
+    },
+    {
+      "name": "CatalogCloneDesign",
+      "uuid": "94a12f80-3c45-4a1f-afb2-a68b909d0d7f",
+      "feature": "Clone any published design to customise it according to your use cases"
+    },
+    {
+      "name": "CatalogOpenInPlayground",
+      "uuid": "c4d6c676-6e26-4b0c-9fdd-5eea1b780e98",
+      "feature": "Opens design in a Kanvas (currently, specifically in the playground.meshery.io Kanvas)"
+    },
+    {
+      "name": "ApplicationsViewApplications",
+      "uuid": "bfb200b6-0ba9-4783-95d4-eaf1c8fe004c",
+      "feature": ""
+    },
+    {
+      "name": "DesignsViewDesigns",
+      "uuid": "3798736d-1f5d-41b3-876f-f3f01453dd15",
+      "feature": "View all public and published designs of other team members and private of signed-in user"
+    },
+    {
+      "name": "FiltersViewFilters",
+      "uuid": "df41c45f-7c73-49c2-a055-0584fdcec1c1",
+      "feature": "View all public and published filters of other team members and private of signed-in user"
+    },
+    {
+      "name": "CatalogRequestsViewCatalogRequests",
+      "uuid": "30b68d69-d199-48fd-b4ff-54b5282c5c03",
+      "feature": "View the catalog publication request queue"
+    },
+    {
+      "name": "CatalogRequestsApproveCatalogRequest",
+      "uuid": "66fbc8c0-b08a-494b-8c60-68ee1b607176",
+      "feature": "Approve catalog publication requests"
+    },
+    {
+      "name": "CatalogRequestsDenyCatalogRequest",
+      "uuid": "b9137717-a20a-44e8-a2f9-94dc3d1a6dcb",
+      "feature": "Deny catalog publication requests"
+    },
+    {
+      "name": "DesignsViewPrivateDesigns",
+      "uuid": "bedb8e5b-56bf-4caf-9e8b-258d30b9229b",
+      "feature": "View private designs of the org"
+    },
+    {
+      "name": "DesignsViewPublicDesigns",
+      "uuid": "3f7cfb90-4267-4acf-868d-6ca0c24fb774",
+      "feature": "View public designs of the org"
+    },
+    {
+      "name": "DesignsViewPublishedDesigns",
+      "uuid": "061e6194-d398-4d7e-94be-3a8bbf019b69",
+      "feature": "View published designs of the org"
+    },
+    {
+      "name": "DesignsCreateNewDesign",
+      "uuid": "14bd933e-83b7-464d-9a4d-d8c8eb9682ab",
+      "feature": "Create new Meshery design"
+    },
+    {
+      "name": "DesignsImportDesign",
+      "uuid": "cc040d21-3160-4a96-8efa-833487a234cd",
+      "feature": "Import a design"
+    },
+    {
+      "name": "DesignsExportDesign",
+      "uuid": "9a783f51-3b4a-47a6-a02e-b0db9e78cd85",
+      "feature": "Export a design in source type format (Kubernetes Manifest, Helm Chart, Docker Compose)"
+    },
+    {
+      "name": "DesignsPublishDesign",
+      "uuid": "9e66bdec-4177-42f9-8cec-d9eb52a12c38",
+      "feature": "Publish a design"
+    },
+    {
+      "name": "DesignsUnpublishDesign",
+      "uuid": "c1595c90-b85b-4ac7-b921-f08959926db3",
+      "feature": "Unpublish a design"
+    },
+    {
+      "name": "DesignsValidateDesign",
+      "uuid": "da5339dd-a4bc-4b91-8865-d8a703656516",
+      "feature": "Validate a design"
+    },
+    {
+      "name": "DesignsDeployDesign",
+      "uuid": "595b921a-ea1e-4611-83f0-503db0eeb94d",
+      "feature": "Deploy a design"
+    },
+    {
+      "name": "DesignsUndeployDesign",
+      "uuid": "16b11ffa-7b92-4666-a0ff-191df9cd18b2",
+      "feature": "Retract all resources used in a Meshery design from the cluster"
+    },
+    {
+      "name": "DesignsDetailsOfDesign",
+      "uuid": "10a03036-53a0-40b3-9f69-6daab852e434",
+      "feature": "Set design information or details of a design"
+    },
+    {
+      "name": "DesignsEditDesign",
+      "uuid": "7f2b7084-4533-4824-b688-50cf35de7ef8",
+      "feature": "Edit a design"
+    },
+    {
+      "name": "DesignsDeleteADesign",
+      "uuid": "f024fcf7-3c3d-4521-b83e-6d659353ca0e",
+      "feature": "Delete a design"
+    },
+    {
+      "name": "DesignsDownloadADesign",
+      "uuid": "64de96b7-60db-4aab-b311-afc64066b2c4",
+      "feature": "Download a Meshery design in OCI or YAML format"
+    },
+    {
+      "name": "FiltersImportFilter",
+      "uuid": "cb79d7fb-19de-45fa-aaf5-0a0afc832bf8",
+      "feature": "Import a filter"
+    },
+    {
+      "name": "FiltersPublishWasmFilter",
+      "uuid": "173d99b7-3820-4c0c-88b2-a8455bd7a6b5",
+      "feature": "Publish WASM Filter"
+    },
+    {
+      "name": "FiltersUnpublishWasmFilter",
+      "uuid": "773f0a4d-ba04-40ed-9298-59ac8749804a",
+      "feature": "Unpublish WASM Filter"
+    },
+    {
+      "name": "FiltersDownloadAWasmFilter",
+      "uuid": "24325b2c-5e08-4ba8-809f-8a4a1bf91084",
+      "feature": "Download a WASM filter"
+    },
+    {
+      "name": "FiltersDetailsOfWasmFilter",
+      "uuid": "86c457b5-b9ec-4223-af1f-30a5be67d69d",
+      "feature": "Check information or details of a WASM filter"
+    },
+    {
+      "name": "FiltersEditWasmFilter",
+      "uuid": "88cd144e-806e-472a-a31a-ef6d64643291",
+      "feature": "Edit WASM filter"
+    },
+    {
+      "name": "FiltersCloneWasmFilter",
+      "uuid": "c84718ca-7479-4ad9-a2b7-a5784baa51fb",
+      "feature": "Clone WASM filter from catalog, which allows customizing filter and use it in design"
+    },
+    {
+      "name": "FiltersDeleteWasmFilter",
+      "uuid": "9225d5a7-7255-49be-9233-daeabefae306",
+      "feature": "Delete WASM filter permanently from catalog."
+    },
+    {
+      "name": "FiltersWasmFilterAndFilter",
+      "uuid": "9225d5a7-7255-49be-9233-daeabefae306",
+      "feature": "Import, Unpublish, Publish, Download, Edit, Clone, Delete, Details of WASM Filter"
+    },
+    {
+      "name": "CollaboratorsForPublicDesignsInviteAnyMesheryCloudUserOrAllMesheryUsers",
+      "uuid": "ccc4bc8d-f484-42b3-8a62-2667284605c3",
+      "feature": "Invite any Meshery Cloud user, or all Meshery users, to work with you on a public design that control – including making changes and releasing new versions."
+    },
+    {
+      "name": "CollaboratorsForPrivateDesignsInviteAnyMesheryCloudUserToOnAPrivateDesign",
+      "uuid": "e28b851f-9a49-4ecf-a86e-493db1a27540",
+      "feature": "Invite any Meshery Cloud user to work with you on a private design that control – including making changes and releasing new versions."
+    },
+    {
+      "name": "TeamChatMessageInRealTime",
+      "uuid": "c42d08b2-c3e0-47b6-9e47-cfb149c0a5af",
+      "feature": "Message in real-time, unattached to a specific design. Control who can pariticpate in the discussion."
+    },
+    {
+      "name": "DesignReviewsDiscussAnyDesignByLeavingReviewComments",
+      "uuid": "da5adf96-9fb5-49b2-a55e-dec9c9c4acba",
+      "feature": "Discuss any design by leaving review comments or notes on a specific design. Control who has access, notify discussion participants with updates, and link from anywhere."
+    },
+    {
+      "name": "OrganizationAndTeamManagementManageAccessToDesigns",
+      "uuid": "7a17c8d3-bba2-474b-bb1e-be5b5eee5dad",
+      "feature": "Manage access to designs on a team-by-team, or individual user, basis."
+    },
+    {
+      "name": "CollaborativeDesignCreateAndCollaborateInOnlineDesignsInRealTime",
+      "uuid": "d5267c04-b3ee-43fe-8b97-2a3321eb7f8e",
+      "feature": "Create and collaborate in online designs in real-time."
+    },
+    {
+      "name": "BestPracticesIstioVirtualServiceDestinationRules",
+      "uuid": "81e90a7a-fac7-40d1-bf7d-e8250d36fe5d",
+      "feature": ""
+    },
+    {
+      "name": "BestPracticesConsul",
+      "uuid": "bb345c3a-22f0-4377-8f55-8f6ebef5524d",
+      "feature": ""
+    },
+    {
+      "name": "BestPracticesKuma",
+      "uuid": "425d0113-0363-48fb-9698-4f392a4b7b48",
+      "feature": ""
+    },
+    {
+      "name": "StatisticsViewStatistics",
+      "uuid": "d5fd3a6f-23a6-429c-b9b3-7ffa75d3f381",
+      "feature": ""
+    },
+    {
+      "name": "EventsViewEvents",
+      "uuid": "4fe3e6b9-3363-4e9d-bfd4-9cd5bd168e5a",
+      "feature": ""
+    },
+    {
+      "name": "SummaryViewSummary",
+      "uuid": "82c04345-f7ba-4696-bddd-da7bd0046f38",
+      "feature": ""
+    },
+    {
+      "name": "AuditViewAudit",
+      "uuid": "80bb9c66-0657-49ff-a064-667e9875bb3f",
+      "feature": ""
+    },
+    {
+      "name": "FrameworkDynamicInjectionViaRemoteProvider",
+      "uuid": "aee2b910-ab6b-4af5-b405-38fdbe11790d",
+      "feature": ""
+    },
+    {
+      "name": "RestApiNamespacedCustomEndpoints",
+      "uuid": "ee6562f9-eb5e-4978-9239-fc1ac18a06a2",
+      "feature": ""
+    },
+    {
+      "name": "RestApiSwaggerIntegration",
+      "uuid": "045f4c47-95d7-4ee7-923e-b069faa75640",
+      "feature": ""
+    },
+    {
+      "name": "GraphqlApiNamespacedCustomResolvers",
+      "uuid": "192cd281-234a-4127-b8a8-3e6f10d9e730",
+      "feature": ""
+    },
+    {
+      "name": "ExtensionPointAdapters",
+      "uuid": "65150884-c617-4aa4-bb0f-09dd0532bb83",
+      "feature": "Extend Meshery's capabilities behind a gRPC interface for Model registration and operation invocation"
+    },
+    {
+      "name": "ExtensionPointLoadGenerators",
+      "uuid": "d63d7908-0699-4548-8493-bc3cb1b32699",
+      "feature": ""
+    },
+    {
+      "name": "ExtensionPointAuthentication",
+      "uuid": "3073abac-9b60-4c9e-b8af-0bc3adeeb5a5",
+      "feature": ""
+    },
+    {
+      "name": "ExtensionPointAuthorization",
+      "uuid": "e750108f-7659-48a8-8b24-a811f1852819",
+      "feature": ""
+    },
+    {
+      "name": "ExtensionPointRemoteProviders",
+      "uuid": "be4505ae-b83e-479f-81f7-8f59eeae251d",
+      "feature": ""
+    },
+    {
+      "name": "ExtensionPointUserPreferences",
+      "uuid": "39da55c3-68eb-4510-a115-bff559e648ef",
+      "feature": ""
+    },
+    {
+      "name": "ExtensionPointPeerToPeer",
+      "uuid": "66f311bf-6b7e-41ee-bab6-5e671dd2f0e6",
+      "feature": "Propagate document updates peer-to-peer using WebRTC."
+    },
+    {
+      "name": "ExtensionsInstallExtension",
+      "uuid": "24f41e98-7ce1-40c4-a82d-4ae0294d237d",
+      "feature": "Install or enable or disabble extensions in Meshery"
+    },
+    {
+      "name": "ExtensionsViewMesheryUserPreferences",
+      "uuid": "cdec6212-bbbf-4cab-b10d-76d12bee7e56",
+      "feature": "View all user preferences in Meshery UI"
+    },
+    {
+      "name": "ExtensionsViewExtensions",
+      "uuid": "c1330df4-1bbe-4d5d-8828-f4bd9ee989e5",
+      "feature": "View all extensions on the extension page"
+    },
+    {
+      "name": "AccountingShowback",
+      "uuid": "f1a4d8b0-a4f0-413f-83be-9f7fb9e48a08",
+      "feature": ""
+    },
+    {
+      "name": "BillingChargeback",
+      "uuid": "3a1c684a-dbde-4833-b592-e64f9c35a50e",
+      "feature": "Per service, per authenticated user"
+    },
+    {
+      "name": "ReviewSnapshots",
+      "uuid": "81287ea7-5e3f-480c-8b2e-211d62d08797",
+      "feature": "Visual insights in your pull requests in GitLab"
+    },
+    {
+      "name": "PipelineBitbucket",
+      "uuid": "9f236c99-b2ec-4474-9ec8-7c3f8a09e63e",
+      "feature": "Initiate deployment with creation of pull request"
+    },
+    {
+      "name": "PipelineGithub",
+      "uuid": "9f236c99-b2ec-4474-9ec8-7c3f8a09e63e",
+      "feature": "Initiate deployment with creation of pull request"
+    },
+    {
+      "name": "PipelineGitlab",
+      "uuid": "9f236c99-b2ec-4474-9ec8-7c3f8a09e63e",
+      "feature": "Initiate deployment with creation of pull request"
+    },
+    {
+      "name": "PipelineArgoevents",
+      "uuid": "81287ea7-5e3f-480c-8b2e-211d62d08797",
+      "feature": "Initiate deployment with creation of pull request"
+    },
+    {
+      "name": "PipelineWebhook",
+      "uuid": "b2b183bd-9aff-469e-9c65-8027b75999aa",
+      "feature": "Signal pass or fail: to proceed or rollback a deployment"
+    },
+    {
+      "name": "PipelineAssessAndCharacterizeServicePerformance",
+      "uuid": "b869fa3d-bace-4e7a-9403-99e0b280ed56",
+      "feature": "Signal pass or fail: to proceed or rollback a deployment"
+    },
+    {
+      "name": "SmiConformanceVerifyConformanceReturnResultsAndGreenRedLight",
+      "uuid": "995e6bbd-1015-4213-a859-14e983e42e7b",
+      "feature": ""
+    },
+    {
+      "name": "SingleUserImplicitUserImplicitRoleAdmin",
+      "uuid": "d5591874-986c-471f-8631-0b0d87989b41",
+      "feature": ""
+    },
+    {
+      "name": "MultipleUsersMultiTenancy",
+      "uuid": "18771b5f-6550-4ef2-ab95-cc7a93a12d16",
+      "feature": ""
+    },
+    {
+      "name": "IndividualUserPreferencesAllowsPreferencesToBeSetPerUser",
+      "uuid": "9032e8f8-414e-462c-afa9-81c4e45f3eec",
+      "feature": ""
+    },
+    {
+      "name": "BuiltInRolesBuiltInRoles",
+      "uuid": "99d7881c-ca1a-41f9-9c0a-fd36a619a110",
+      "feature": "Static - out of the box"
+    },
+    {
+      "name": "UserDefinedRolesUserDefinedRoles",
+      "uuid": "4b46c866-0d9e-43e6-8810-b0f8df9d0f8c",
+      "feature": "Customizable roles for specific permission assignments"
+    },
+    {
+      "name": "MultipleOrganizationsEnforcementOfTenancy",
+      "uuid": "6a31b997-9162-4022-87ae-c031bfba53d5",
+      "feature": ""
+    },
+    {
+      "name": "MultipleOrganizationsHierarchicalPermissioning",
+      "uuid": "36372d4f-5aea-4c2e-9938-59d7534bfc1b",
+      "feature": ""
+    },
+    {
+      "name": "AuthenticationAuthenticationOauth",
+      "uuid": "db96233e-047b-4e2f-b4e3-419c038e4b26",
+      "feature": ""
+    },
+    {
+      "name": "AuthenticationLdapAuthenticationLdap",
+      "uuid": "4d7cccf0-1831-4814-a5eb-2358b99c2870",
+      "feature": "Access Meshery Server using your existing accounts and centrally manage repository access."
+    },
+    {
+      "name": "AuthenticationSamlAuthenticationSaml",
+      "uuid": "59a839ba-277c-4e69-a559-2659a355bfa5",
+      "feature": "Use an identity provider to manage the identities of GitHub users and applications."
+    },
+    {
+      "name": "AuthenticationAzureActiveDirectory",
+      "uuid": "e013aebc-b245-451d-a330-423f629fa072",
+      "feature": ""
+    },
+    {
+      "name": "AuthorizationMesheryAsAnIdp",
+      "uuid": "0b3313eb-5c77-4dba-9074-122cfb01bf55",
+      "feature": "Own and control the user accounts of your enterprise members through your identity provider (IdP)."
+    },
+    {
+      "name": "UsersViewUserPublicProfile",
+      "uuid": "daded1e9-ff0f-4259-86ac-e168fd5565d4",
+      "feature": "See public user profile details, public activities and public resources. "
+    },
+    {
+      "name": "UsersViewUserSettings",
+      "uuid": "e00cae57-6dc6-41ac-b174-f3b01b4adce0",
+      "feature": "See private user profile details, private activities and private resources. "
+    },
+    {
+      "name": "UsersViewAllUsers",
+      "uuid": "382da488-9a92-4a5b-958d-c4bfe1e80253",
+      "feature": "See all teams within an organization. See all members of all teams."
+    },
+    {
+      "name": "UsersUpdateUserProfile",
+      "uuid": "b9a86a74-d6e9-46e4-abae-fe5235ba0e26",
+      "feature": "Directly create a new user account within a team."
+    },
+    {
+      "name": "UsersInviteUserToTeam",
+      "uuid": "d3478829-9281-468e-9d49-f7aa659d0f89",
+      "feature": "Send a request for a user to join a team."
+    },
+    {
+      "name": "UsersRemoveUserFromTeam",
+      "uuid": "8b41825f-e840-42bf-81a8-2f962a6d134b",
+      "feature": "Discontinue user membership of a team and team resources."
+    },
+    {
+      "name": "UsersCreateTeam",
+      "uuid": "8608355a-bf35-4bd6-b339-2384d34ae2ed",
+      "feature": "Establish new team for organizing groups of users and resource access."
+    },
+    {
+      "name": "UsersDeleteTeam",
+      "uuid": "44ce4333-a138-42a3-9695-c6c1fcd2c301",
+      "feature": "Dissolve a team and all user memberships. Leave associated resources intact."
+    },
+    {
+      "name": "UsersDeleteUser",
+      "uuid": "8e077f96-c957-478f-aae1-0e96232dc3e7",
+      "feature": "Delete a user account"
+    },
+    {
+      "name": "UsersEditUser",
+      "uuid": "eb4dff91-a7c6-4167-aa2d-2e81539e6b62",
+      "feature": "Edit user role, name, email etc"
+    },
+    {
+      "name": "UsersCreateUser",
+      "uuid": "032582e1-c406-4c75-8732-4f2ada0191b3",
+      "feature": "Create a new user"
+    },
+    {
+      "name": "UsersLeaveTeam",
+      "uuid": "680b9fcb-6d8d-448d-8012-4b792d71c52e",
+      "feature": "Leave a team"
+    },
+    {
+      "name": "UsersViewAllKubernetesClusters",
+      "uuid": "b99a9a0a-2cb9-4be7-8251-14a249e4038e",
+      "feature": "View all configured Kubernetes clusters"
+    },
+    {
+      "name": "TeamsViewTeam",
+      "uuid": "27447fb0-be46-4497-8366-c34e24920f22",
+      "feature": "See only teams to which you are a member. See all other members within those teams."
+    },
+    {
+      "name": "TeamsViewTeams",
+      "uuid": "6ecbbe79-c392-43bd-b7b6-ecdec019e24c",
+      "feature": "See all teams of which you are an administrator. See all members of those teams."
+    },
+    {
+      "name": "TeamsViewAllTeams",
+      "uuid": "8b94dd6b-234f-4c89-86cf-b029e0090255",
+      "feature": "See all teams within an organization. See all members of all teams."
+    },
+    {
+      "name": "TeamsAddUserToTeam",
+      "uuid": "88b9a857-d012-4c6d-a129-4ce65b63b018",
+      "feature": "Directly create a new user account within a team."
+    },
+    {
+      "name": "TeamsInviteUserToTeam",
+      "uuid": "f224ecf3-b105-4d81-9886-77127073a6ca",
+      "feature": "Send a request for a user to join a team."
+    },
+    {
+      "name": "TeamsRemoveUserFromTeam",
+      "uuid": "e996c998-a50f-4cb8-ae7b-77127073a6ca",
+      "feature": "Discontinue user membership of a team and team resources."
+    },
+    {
+      "name": "TeamsCreateTeam",
+      "uuid": "41a9eb36-b99b-4715-8140-780f97d3c6a0",
+      "feature": "Establish new team for organizing groups of users and resource access."
+    },
+    {
+      "name": "TeamsDeleteTeam",
+      "uuid": "bbb691b6-8664-44c7-8ea7-9c46b1ca1e8b",
+      "feature": "Dissolve a team and all user memberships. Leave associated resources intact."
+    },
+    {
+      "name": "TeamsEditTeam",
+      "uuid": "6cf69881-0be0-4723-b5f0-031b7847509a",
+      "feature": "Edit a team and add new members to it."
+    },
+    {
+      "name": "TeamsRemoveRolesFromTeamMembers",
+      "uuid": "ed3dbd2d-52f8-4608-87e0-7f2999a4518c",
+      "feature": "Remove roles from users in a team."
+    },
+    {
+      "name": "TeamsAssignRolesToTeamMembers",
+      "uuid": "06f33eca-950c-4daa-b46d-e73af39e0868",
+      "feature": "Assign roles to users in a team"
+    },
+    {
+      "name": "TeamsOpenTeamInvite",
+      "uuid": "6086c0a5-cd79-48ca-8c9f-a0e0ad75343c",
+      "feature": "This governs the team's invitation permissions, determining whether the team is allowed to extend invitations to new individuals to join through open invite link."
+    },
+    {
+      "name": "OrganizationsCreateOrganization",
+      "uuid": "17a6fa82-cdab-46db-a7ce-a9d0a1bbf40f",
+      "feature": "Establish new organization for organizing teams, users, and resource access."
+    },
+    {
+      "name": "OrganizationsEditOrganization",
+      "uuid": "d39a34fb-0ccf-4c80-8a6c-b545c8db869a",
+      "feature": "Edit organiaztions and add teams to it"
+    },
+    {
+      "name": "OrganizationsAddUserToOrganization",
+      "uuid": "33bf7a57-f787-4208-b01c-ad9b9d9c6b6c",
+      "feature": "Directly create a new user account within an organization."
+    },
+    {
+      "name": "OrganizationsInviteUserToOrganization",
+      "uuid": "c8489026-11ab-4753-a445-8e20fc032c38",
+      "feature": "Send a request for a user to join an organization."
+    },
+    {
+      "name": "OrganizationsRemoveUserFromOrganization",
+      "uuid": "3ed858e4-418d-4220-9d4c-a217fd466d86",
+      "feature": "Discontinue user access to organization, teams and resources; cease billing accrual."
+    },
+    {
+      "name": "OrganizationsPromoteOrDemoteUserToOrgAdmin",
+      "uuid": "0ddd82df-27ed-4781-a91a-ec1dbeb620d0",
+      "feature": "Elevate or remove organization level administrative privileges."
+    },
+    {
+      "name": "OrganizationsViewOrg",
+      "uuid": "49f02947-0c8d-4b2d-af53-f50ce18f8861",
+      "feature": "See only organizations to which you are a member. See all other members within your membership teams."
+    },
+    {
+      "name": "OrganizationsViewOrganizations",
+      "uuid": "172fa7d3-0d8a-4646-a789-bf64f52ba40b",
+      "feature": "See all organizations of which you are an administrator. See all members of those organizations."
+    },
+    {
+      "name": "OrganizationsViewAllOrganizations",
+      "uuid": "e996c998-a50f-4cb8-ae7b-f2f1b523c971",
+      "feature": "See all organizations within a Layer5 Cloud deployment. See all organizations, teams, and users."
+    },
+    {
+      "name": "OrganizationsRemoveRolesFromOrganizationMembers",
+      "uuid": "8a003a11-a909-425a-bd23-d8ba14972c89",
+      "feature": "Remove roles from users in an organization"
+    },
+    {
+      "name": "OrganizationsAssignRolesToOrganizationMembers",
+      "uuid": "0d455711-6205-422b-9de7-05933fe2aeb2",
+      "feature": "Assign roles to users in an organization"
+    },
+    {
+      "name": "OrganizationsTransferOrganizationOwnership",
+      "uuid": "c81764a3-9fb1-451e-8e80-693cba6f79bf",
+      "feature": "Transfer organization ownership to another member of the organization."
+    },
+    {
+      "name": "OrganizationsDeleteOrganization",
+      "uuid": "b3dc083c-fe8e-43a9-9bcd-ed93d4584f55",
+      "feature": "Decommission organization and suspend account from additional accruals."
+    },
+    {
+      "name": "OrganizationsLeaveOrganization",
+      "uuid": "b249fb5f-bdae-4008-8aa6-862f9d911656",
+      "feature": "Leave an organization"
+    },
+    {
+      "name": "OrganizationCustomDomain",
+      "uuid": "0c9da04b-9b9a-4b97-8c5d-3137df5d684f",
+      "feature": "Organizations can be assigned unique, validated custom domains through settings."
+    },
+    {
+      "name": "OrganizationDomainRoutingAndRemoval",
+      "uuid": "88fc2f27-f9b2-42c8-99b5-e36389398796",
+      "feature": "Assigned domains direct user traffic to organizations; clearing the field removes the assignment."
+    },
+    {
+      "name": "OrganizationManageRecognitions",
+      "uuid": "0a887b7f-b6c2-4a33-b080-bec9c3894d0c",
+      "feature": "Create, update , delete and manage recogntions awarded by your organization"
+    },
+    {
+      "name": "OrganizationManageInvitations",
+      "uuid": "0204fb47-b120-4074-83db-984d595d9f69",
+      "feature": "Create, update , delete and manage invitations to your organization"
+    },
+    {
+      "name": "RolesRoles",
+      "uuid": "9a84a5d0-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "RolesAssignUserRoles",
+      "uuid": "9a84a76a-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "RolesAssignKeychainsToRoles",
+      "uuid": "9a84abb6-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "RolesCreateCustomRoles",
+      "uuid": "9a84ad00-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "RolesUpdateCustomRoles",
+      "uuid": "9a84ad07-0a16-11ee-be56-0242ac120002",
+      "feature": ""
+    },
+    {
+      "name": "RolesDeleteCustomRoles",
+      "uuid": "19b3b3a3-7dc9-4e2f-b984-69241ec90fc8",
+      "feature": "Delete a user's role permanently"
+    },
+    {
+      "name": "RolesExportCustomRoles",
+      "uuid": "9274af31-5166-4876-ab44-27f458c5082c",
+      "feature": ""
+    },
+    {
+      "name": "AccessRequestsViewAllAccessRequests",
+      "uuid": "070153eb-6dd5-4aad-95b4-fb0444c88a89",
+      "feature": "Browse the list of open entitlement requests"
+    },
+    {
+      "name": "AccessRequestsAcceptAccessRequest",
+      "uuid": "afded44a-8b17-4d4d-bfc3-a76eadcc37fe",
+      "feature": "Entitle user. Approve access request."
+    },
+    {
+      "name": "AccessRequestsDenyAccessRequest",
+      "uuid": "f25bea25-a33b-40e9-9621-bbc30888c11b",
+      "feature": "Restrict user access to requested resource."
+    },
+    {
+      "name": "DryRunDryRun",
+      "uuid": "161c2b67-ce61-4b4d-b47e-38fcd2e87b13",
+      "feature": "Test and verify configuration changes in a separate environment."
+    },
+    {
+      "name": "ConfigureAndDeployAnyServiceMeshMesheryAdaptersProvisionConfigureAndManage10DifferentServiceMeshes",
+      "uuid": "9cbc1827-7650-4e5b-8259-0823fd11ba9d",
+      "feature": "Istio, Linkerd, Consul, Kuma, Traefik Mesh, AWS App Mesh, NGINX Service Mesh, Network Service Mesh, Cilium Service Mesh, VMware Tanzu Service Mesh"
+    },
+    {
+      "name": "OperationsProvisioningDeprovisioning",
+      "uuid": "ad2af8de-e4e6-4e4d-98e0-014220658e23",
+      "feature": ""
+    },
+    {
+      "name": "OperationsSimpleConfiguration",
+      "uuid": "89bab590-3f0c-44aa-a8f1-04ebb877e506",
+      "feature": "MeshOpsv1"
+    },
+    {
+      "name": "OperationsAdvancedConfiguration",
+      "uuid": "dd6d980c-23f2-4245-9f07-551de833c39a",
+      "feature": "MeshOpsv2"
+    },
+    {
+      "name": "OperationsManagedUpgrades",
+      "uuid": "7e0fe9a7-aae0-409a-9eec-08dc2ff2af21",
+      "feature": ""
+    },
+    {
+      "name": "SidecarAdHocAddOrRemove",
+      "uuid": "2399ea30-118d-4495-93b9-c53c961b5cb7",
+      "feature": ""
+    },
+    {
+      "name": "SidecarParseLogs",
+      "uuid": "1e927029-59db-4ede-88fc-ec0cb2756a79",
+      "feature": ""
+    },
+    {
+      "name": "SidecarExecShell",
+      "uuid": "e0c5f744-13e1-4bd2-bdb2-83f90581fdc2",
+      "feature": ""
+    },
+    {
+      "name": "FilterDynamicLoadUnload",
+      "uuid": "4d4b7c26-4378-4e14-9741-edeb46789a71",
+      "feature": ""
+    },
+    {
+      "name": "ClusterDiscoveryClusterDiscovery",
+      "uuid": "64a36679-68b2-4328-bb1c-7c577ef5267a",
+      "feature": "Day 2 support for ongoing synchronization of Kubernetes configuration, workloads and service mesh changes."
+    },
+    {
+      "name": "MultipleKubernetesClustersMultipleKubernetesClusters",
+      "uuid": "53c2c0e8-2403-475b-9ffc-0dd501bef8f6",
+      "feature": "Ongoing synchronization of Kubernetes configuration, workloads and service mesh changes across any number of Kubernetes clusters."
+    },
+    {
+      "name": "MeshFederationEnvironments",
+      "uuid": "7953c71b-22a2-4b12-bead-8b3bf54ef3c6",
+      "feature": ""
+    },
+    {
+      "name": "ServiceCatalogFederationAnnouncementAndSynchronization",
+      "uuid": "f59af5fd-b571-46f0-b8d1-09194434a38e",
+      "feature": ""
+    },
+    {
+      "name": "ServiceCatalogFederationOrganizationalPermissioning",
+      "uuid": "0ad304a3-973e-4855-aaed-f445870bbb35",
+      "feature": ""
+    },
+    {
+      "name": "ConnectionsAddCluster",
+      "uuid": "fce15b20-78ac-42af-b79c-b8f19bdb0802",
+      "feature": "Add Kubernetes cluster"
+    },
+    {
+      "name": "ConnectionsChangeConnectionState",
+      "uuid": "14ac9622-3170-4580-8403-ed7a584f90ef",
+      "feature": "Change connection state"
+    },
+    {
+      "name": "ConnectionsFlushMeshsyncData",
+      "uuid": "8dd4c54a-bccd-4fb3-a18c-269195653a91",
+      "feature": "Clearing the database by clicking on the `Flush MeshSync`"
+    },
+    {
+      "name": "ConnectionsRegisterDiscoveredMeshsyncResource",
+      "uuid": "214ad6b1-df4d-44a6-8872-8ad1f751ef68",
+      "feature": "Register discovered Meshsync resource to change state to connection"
+    },
+    {
+      "name": "ConnectionsDeleteAConnection",
+      "uuid": "61afb8c2-cda6-4175-aad9-74ff87fed323",
+      "feature": "Delete a connection"
+    },
+    {
+      "name": "BuildReleaseStreamlinedCi",
+      "uuid": "ff2ea71f-2e28-4b21-89ef-352c509b1247",
+      "feature": ""
+    },
+    {
+      "name": "BuildReleaseIntegrationTests",
+      "uuid": "1852b847-4906-442a-9887-76bdedfcc4da",
+      "feature": ""
+    },
+    {
+      "name": "BuildReleaseReleaseChannelsStableAndEdge",
+      "uuid": "f17bb4cc-8d99-4443-858b-201cb9d77be8",
+      "feature": ""
+    },
+    {
+      "name": "ConfigurationWizardTimeToValueEasySetupOfMeshery",
+      "uuid": "f75ee33b-914f-4d80-bfe4-da83764cb45d",
+      "feature": ""
+    },
+    {
+      "name": "PlatformSupportMesheryctl",
+      "uuid": "a80495bb-1c2d-4b93-bffe-2ee5720fba90",
+      "feature": "Windows, Linux, MacOS"
+    },
+    {
+      "name": "PlatformSupportMesheryServer",
+      "uuid": "f1399331-15ac-495a-b315-2afa5027288c",
+      "feature": "Minikube, Docker, OpenShift"
+    },
+    {
+      "name": "ServiceMeshDiscoveryMeshsync",
+      "uuid": "424abe7b-c0e3-4a0d-88cb-44114ae5a465",
+      "feature": ""
+    },
+    {
+      "name": "PackageManagersScriptHomebrewScoop",
+      "uuid": "b850d27a-bcca-4400-b656-7ccac8f94bc4",
+      "feature": ""
+    },
+    {
+      "name": "ErrorReportingFacilitateCollectionOfDebugForEaseOfIssueReporting",
+      "uuid": "eac85b45-2aef-4297-b1f4-286d8f5fb7ce",
+      "feature": ""
+    },
+    {
+      "name": "UpgradesEachComponent",
+      "uuid": "e9ed93eb-1c43-4aba-869f-ca780d491071",
+      "feature": ""
+    },
+    {
+      "name": "MesheryctlCli",
+      "uuid": "55d44b27-10e2-4f23-a7c5-eefce75cfd69",
+      "feature": "Seamlessly manage your configurations, deployments, and interactions through our intuitive and powerful command-line interface: mesheryctl"
+    },
+    {
+      "name": "SettingsViewSettings",
+      "uuid": "fdc038e3-1fdf-403a-af8a-53c0de8d7820",
+      "feature": "View settings in Meshery"
+    },
+    {
+      "name": "SettingsConnectAdapter",
+      "uuid": "c93bd211-1dac-42cc-9086-859288826d1b",
+      "feature": "Configure and connect to Meshery adapters"
+    },
+    {
+      "name": "SettingsConnectMetrics",
+      "uuid": "b0aee906-c549-445f-be0c-b98b04d47d09",
+      "feature": "Configure and connect to metrics like Grafana and Promethues"
+    },
+    {
+      "name": "SettingsViewMetrics",
+      "uuid": "7fe36f60-fd0a-4fda-84e5-c64a04c3ad06",
+      "feature": "View already configured metrics"
+    },
+    {
+      "name": "SettingsViewRegistry",
+      "uuid": "cc069117-08cc-44e3-9c61-ae0eeca0bcf1",
+      "feature": "Explore entities within capabilities registry"
+    },
+    {
+      "name": "SettingsResetDatabase",
+      "uuid": "84fc402c-f33e-4a21-a0e3-e14f9e20b125",
+      "feature": "Reset Meshery database"
+    },
+    {
+      "name": "TimelineDvrPlaybackServiceTransactionsScrubOverTheHistoryOfChangesToYourDeployments",
+      "uuid": "83784db9-bb58-4e15-aede-cbac7d01f431",
+      "feature": ""
+    },
+    {
+      "name": "OperatorRepresentationOfInfrastructureConfigurationAndServices",
+      "uuid": "51481036-07fa-425b-89fb-cb6141a8d7b5",
+      "feature": ""
+    },
+    {
+      "name": "ServicePerformanceServicePerformance",
+      "uuid": "54112584-8ba3-4a0e-b930-b32d0d054ae2",
+      "feature": "Continuous visibility across all of your clusters and workloads."
+    },
+    {
+      "name": "DesignPatternsDragNDropPatternMergeWithExistingNodesOnCanvas",
+      "uuid": "f8434605-cf0d-44ae-8b5a-31bca20c3d06",
+      "feature": "Like a Google Doc, Designs are a user's primary tool for collaborative authorship of their infrastructure and services. A Design describes all the resources and their properties that users wants for a single deployment based on Meshery’s declarative syntax. This permission grants the user the ability to drag and drop a design onto the canvas to merge with exisitng nodes on canvas."
+    },
+    {
+      "name": "DesignPatternsLoadDesignPatternDisplaceCurrentNodesOnCanvas",
+      "uuid": "ccd8e0eb-5e2a-45e3-9b3d-3941b60dfed8",
+      "feature": "Like a Google Doc, Designs are a user's primary tool for collaborative authorship of their infrastructure and services. A Design describes all the resources and their properties that users wants for a single deployment based on Meshery’s declarative syntax. This permission grants the user the ability to drag and drop a design onto the canvas to displace the exisitng nodes on canvas."
+    },
+    {
+      "name": "DesignPatternsEditComponentConfugurationRjsfTooltips",
+      "uuid": "8154fa61-aca9-4274-bcdd-6f551e9b17eb",
+      "feature": "In Meshery, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure a component currently present on canvas."
+    },
+    {
+      "name": "DesignPatternsConfigureFieldrefs",
+      "uuid": "4770f8cc-8f58-4da9-89e2-a7e7c2ea4e2f",
+      "feature": ""
+    },
+    {
+      "name": "ComponentsDeleteComponents",
+      "uuid": "9f2264fa-9e40-4625-8bc0-5c9162d617a7",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to delete a component from canvas."
+    },
+    {
+      "name": "ComponentsCloneComponents",
+      "uuid": "8d640c90-8a8e-4ac0-a4bb-010f81cfc00a",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas."
+    },
+    {
+      "name": "ComponentsCopyComponents",
+      "uuid": "fbeacff4-9eed-4f55-aee3-9c3da53bdc9b",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to clone a component, along with it's configuration, on canvas."
+    },
+    {
+      "name": "ComponentsLockComponents",
+      "uuid": "08ebbd83-870f-4267-b3b7-7e50669b1e26",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to lock a component's state present on canvas."
+    },
+    {
+      "name": "ComponentsAddComponents",
+      "uuid": "3a345a78-2ac7-4916-bc99-91769f5c4959",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to copy a component present on canvas. The canvas is where the design and all it's components are displayed and configured. This permission grants the user the ability to cofigure/edit/update a design by adding new components to the canvas."
+    },
+    {
+      "name": "ComponentsConfigureComponentStyles",
+      "uuid": "af9f2e20-1cae-41ac-94b2-379fddc2660f",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to configure the style of a component."
+    },
+    {
+      "name": "ComponentsResetComponentStyles",
+      "uuid": "faa0cb66-af78-4a6f-84f0-3bfae7254276",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style."
+    },
+    {
+      "name": "ComponentsResizeComponents",
+      "uuid": "faa0cb66-af78-4a6f-84f0-3bfae7254276",
+      "feature": "In Kanvas, a Component is a fundamental building block used to represent and define the infrastructure under management. Each component provides granular and specific support for your infrastructure and applications. This permission grants the user the ability to reset a component to it's initial style."
+    },
+    {
+      "name": "ShapesDeleteShapes",
+      "uuid": "436d24e5-4a0d-4298-b94d-394d6e489ec3",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to delete a shape from canvas."
+    },
+    {
+      "name": "ShapesCloneShapes",
+      "uuid": "74a27b19-1614-46ca-94f2-c1cc96b1e610",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to clone a shape  on canvas."
+    },
+    {
+      "name": "ShapesCopyShapes",
+      "uuid": "7f5dd8ef-eef0-4693-b918-9571c1214ad3",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to clone a shape on canvas."
+    },
+    {
+      "name": "ShapesLockShapes",
+      "uuid": "6f196e4d-0626-47af-8721-1364f5f2f5f2",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to lock a shape on canvas."
+    },
+    {
+      "name": "ShapesAddShapes",
+      "uuid": "35ce3654-7d96-4898-9398-364bcbe49c45",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add new shapes on canvas."
+    },
+    {
+      "name": "ShapesConfigureShapeStyles",
+      "uuid": "461c58a2-293d-40ef-bd85-16df143feea1",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to configure the styles of shapes present on canvas."
+    },
+    {
+      "name": "ShapesResetShapeStyles",
+      "uuid": "73d6fda8-8ea8-4b0f-ad89-ad6b549b28d0",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to reset the styles of shapes present on canvas."
+    },
+    {
+      "name": "TextboxesDeleteTextboxes",
+      "uuid": "67132e28-d52a-4fbd-a697-16d19f3505bd",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to delete a textbox from canvas."
+    },
+    {
+      "name": "TextboxesCloneTextboxes",
+      "uuid": "7dea5e81-a2cb-4f95-8855-b19e3756c0ab",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to clone a textbox on canvas."
+    },
+    {
+      "name": "TextboxesCopyTextboxes",
+      "uuid": "6dbd7813-a9c4-454b-b3a6-c1eae313c791",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to clone a textbox on canvas."
+    },
+    {
+      "name": "TextboxesLockTextboxes",
+      "uuid": "56c1ae0d-cf71-43ce-9453-6dd447e6dd8f",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to lock a textbox on canvas."
+    },
+    {
+      "name": "TextboxesAddTextboxes",
+      "uuid": "9366be38-96f4-4a84-aff0-e17148a8a358",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add new textboxes on canvas."
+    },
+    {
+      "name": "TextboxesConfigureTextboxStyles",
+      "uuid": "0653814a-0266-4d55-bc52-6ef17ebcf03d",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to configure the styles of textboxes present on canvas."
+    },
+    {
+      "name": "TextboxesResetTextboxStyles",
+      "uuid": "26815ca4-1fec-43fc-a8aa-9669719632a4",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to reset the styles of textboxes present on canvas."
+    },
+    {
+      "name": "SectionsDeleteSections",
+      "uuid": "7b7377c8-2160-42eb-a130-4a69ab1225ed",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to delete a section from canvas."
+    },
+    {
+      "name": "SectionsCloneSections",
+      "uuid": "41de8c25-71c1-4fc5-9230-c018af8f1e41",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to clone a section on canvas."
+    },
+    {
+      "name": "SectionsCopySections",
+      "uuid": "c05ca2ed-262d-4dc1-aa10-69b93dbe4e39",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to clone a section on canvas."
+    },
+    {
+      "name": "SectionsLockSections",
+      "uuid": "fcfbc9ee-3824-45e9-ba50-c4c6ec52779b",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to lock a section on canvas."
+    },
+    {
+      "name": "SectionsAddSections",
+      "uuid": "d15a960c-d4d5-4656-94e5-7a1e116fa610",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add new sections on canvas."
+    },
+    {
+      "name": "SectionsConfigureSectionStyles",
+      "uuid": "66c06b53-c174-415d-b88b-0d8c858c4034",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to configure the styles of sections present on canvas."
+    },
+    {
+      "name": "SectionsResetSectionStyles",
+      "uuid": "21bce984-73c1-4025-acd5-f18cdbd796db",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to reset the styles of sections present on canvas."
+    },
+    {
+      "name": "DesignPatternsAddTextToTextboxes",
+      "uuid": "e0fabc93-1566-4780-934d-adddf2275f64",
+      "feature": "Kanvas Designer allows users to draw shapes, lines, text, add custom styles, images and icons to represent the components and relationships of Kubernetes clusters as they see fit. This permission grants the user the ability to add text to the textboxes currently on canvas."
+    },
+    {
+      "name": "DesignPatternsCreateDynamicFieldrefs",
+      "uuid": "2a2a61b6-9fda-4cc6-86e9-1a71a54863c7",
+      "feature": ""
+    },
+    {
+      "name": "DesignPatternsConfigureEdgeHandles",
+      "uuid": "23f7adfe-de4b-42be-a3cd-f7f34d83c319",
+      "feature": ""
+    },
+    {
+      "name": "DesignPatternsDeleteEdgeHandles",
+      "uuid": "3e1b0633-06a9-4be9-a6fb-c15cc453834f",
+      "feature": ""
+    },
+    {
+      "name": "DesignPatternsUseHeirarchicalRelationships",
+      "uuid": "a6552d56-1712-45cc-8b96-05ba419c357c",
+      "feature": ""
+    },
+    {
+      "name": "DesignPatternsUseInventoryRelationships",
+      "uuid": "ab2bbc88-b0e2-4267-9663-a554cd0a7e26",
+      "feature": ""
+    },
+    {
+      "name": "DesignPatternsChangeDesignLayout",
+      "uuid": "e4fcd40d-4e5d-4c2b-9d76-1f92ccfe8edd",
+      "feature": "Like a Google Doc, Designs are a user's primary tool for collaborative authorship of their infrastructure and services. A Design describes all the resources and their properties that users wants for a single deployment based on Meshery’s declarative syntax. This permission grants the user the ability to change the layout of the components in the design."
+    },
+    {
+      "name": "DesignPatternsUndoOrRedo",
+      "uuid": "1ae55743-0496-45f7-9a42-aabb7f0d6c70",
+      "feature": "This permission grants the user the ability to undo/redo any action in done in Kanvas"
+    },
+    {
+      "name": "DesignPatternsUsePencil",
+      "uuid": "02c7afe9-44b2-4fe7-8c8b-1c12a0da600f",
+      "feature": "Pencil is mouse/tool mode available in Kanvas that allows users to draw freehand shapes. This permission grants user the ability to use the pencil mode in Kanvas."
+    },
+    {
+      "name": "DesignPatternsUsePen",
+      "uuid": "b5aaeaf2-a563-4e7a-a556-7670a41cc946",
+      "feature": "Pen is a mouse/tool mode available in Kanvas that allows users to draw edges from one component to another. This permission grants user the ability to use the pencil mode in Kanvas."
+    },
+    {
+      "name": "DesignPatternsWhiteboarding",
+      "uuid": "dd64b24d-fd22-4123-94fc-a1f235f7f514",
+      "feature": "Ability to freeform draw any shapes, draw edges"
+    },
+    {
+      "name": "VisualDesignVisualDesign",
+      "uuid": "5ea237bb-013e-412f-9dbf-394a6d27a027",
+      "feature": "Drag-n-drop cloud native infrastructure designer to configure, model, and deploy your workloads"
+    },
+    {
+      "name": "MesheryModelModels",
+      "uuid": "8a10b666-b5f8-4310-90da-9c33ceae4058",
+      "feature": "Generator for GCP via K8s CRDs"
+    },
+    {
+      "name": "KanvasActionsViewHelpCenter",
+      "uuid": "1a7eab59-2f09-45a5-9ad3-b02faf0f8f6a",
+      "feature": "Help center houses various ways through which the users might try to learn more about the Kanvas and it's features or reach out through various channels for help. This permission grants the user the ability to view the help center and use it's features"
+    },
+    {
+      "name": "KanvasActionsScreenshotCanvas",
+      "uuid": "31994492-1bae-400d-835b-1a4ff63e9e15",
+      "feature": "The canvas is where the design and all it's components are displayed. This permission grants the user the ability to take a screenshot of the current state of canvas"
+    },
+    {
+      "name": "KanvasActionsConfigureVisibleLayers",
+      "uuid": "5417ccdb-46fe-467d-b408-d4705cd4d78b",
+      "feature": "Layers refer to the collection of various entities present on the canvas, for example, components, relationships, component badges, etc. This permission grants the user the ability to decide which entities to display/hide on the canvas."
+    },
+    {
+      "name": "DesignPatternsCreateBlankDesignInKanvas",
+      "uuid": "958e68aa-c8d4-4965-b094-636289d855f9",
+      "feature": "The canvas is where the design and all it's components are displayed and configured. This permission grants the user the ability to remove all current entities from the canvas and create a new one to start from scratch"
+    },
+    {
+      "name": "DesignPatternsSaveDesignInKanvas",
+      "uuid": "31096e00-0142-41fd-8680-d5212bc13c2c",
+      "feature": "Like a Google Doc, Designs are your primary tool for collaborative authorship of your infrastructure and services. A Design describes all the resources and their properties that you want for a single deployment based on Meshery’s declarative syntax. This permission grants the user the ability to save a design (while logged in)"
+    },
+    {
+      "name": "DesignReviewViewComments",
+      "uuid": "3c72993d-7ebe-4ce2-bbc5-64d9b0fbb65e",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to view comments in a design on canvas."
+    },
+    {
+      "name": "DesignReviewResolveAComment",
+      "uuid": "1ba1822d-d6c0-4595-92e6-63d92f02e3a5",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to resolve a comment thread in a design on canvas."
+    },
+    {
+      "name": "DesignReviewDeleteComments",
+      "uuid": "6ff22145-7fa1-4a06-a986-5a3f5d5718ca",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to delete a comment on canvas."
+    },
+    {
+      "name": "DesignReviewCloneComments",
+      "uuid": "f325d8ec-d6c6-4367-9fe8-3affd9ba33b7",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to clone a comment on canvas."
+    },
+    {
+      "name": "DesignReviewCopyComments",
+      "uuid": "cfa66488-21aa-4f9c-8e98-bf6cf9ceb02d",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to copy a comment on canvas."
+    },
+    {
+      "name": "DesignReviewLockComments",
+      "uuid": "8f6e9ffa-8d7b-48ab-b0b2-f017fa6a99fe",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to lock a comment on canvas."
+    },
+    {
+      "name": "DesignReviewAddComments",
+      "uuid": "2c47e53b-aea9-471f-8048-bd618c86418d",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to add a comment on canvas."
+    },
+    {
+      "name": "DesignReviewConfigureCommentStyles",
+      "uuid": "4366c965-2914-4c3c-a52d-0f2b3a8eb22c",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to configure the styles of a comment on canvas."
+    },
+    {
+      "name": "DesignReviewResetCommentStyles",
+      "uuid": "c9c6d2bf-e566-49c8-bee0-bc6cf84cb8a8",
+      "feature": "Kanvas’s Designer enables users to place comments “inline” within designs. Comments can be used to offer feedback to team members, take detailed design notes, capture helpful tips for team members, and include justification as to infrastructure and application configuration decisions. This permission grants the user the ability to reset the styles of a comment on canvas."
+    },
+    {
+      "name": "OperatorViewViews",
+      "uuid": "93cba7f8-82ec-4a64-b384-f81d6acc8db3",
+      "feature": "See all views withing a workspace"
+    },
+    {
+      "name": "OperatorCreateView",
+      "uuid": "47ba32dc-aaa3-4c75-afdd-07fb40f38f4f",
+      "feature": "Create a new view"
+    },
+    {
+      "name": "OperatorDeleteView",
+      "uuid": "48076416-bc07-456b-bbea-49bdca239d0f",
+      "feature": "Dissolve environment and all connection memberships. Leave associated resources intact."
+    },
+    {
+      "name": "OperatorEditView",
+      "uuid": "2f8354bb-6855-4a42-8086-8d55c1c7e638",
+      "feature": "Edit environment and it connection membership"
+    },
+    {
+      "name": "OperatorAssignViewsToWorkspace",
+      "uuid": "fb6c987b-e54c-4016-b3f3-0488228ee998",
+      "feature": "Add new views to workspace"
+    },
+    {
+      "name": "OperatorUnassignViewsFromWorkspace",
+      "uuid": "f77d74ef-1cae-4527-b45e-ecc1431681df",
+      "feature": "Remove views from workspace"
+    },
+    {
+      "name": "OperatorExportViews",
+      "uuid": "3bb16c17-79bb-4673-8287-e818b8aece5c",
+      "feature": "Export views to JSON format"
+    },
+    {
+      "name": "OperatorViewViewComponentDetails",
+      "uuid": "d363b6a3-7ae5-4be0-a35f-91d9e5136b1a",
+      "feature": "View detailed information about a view and it's comopnent"
+    },
+    {
+      "name": "OperatorOpenView",
+      "uuid": "c47d29bc-7d23-433e-8140-ab273734b7df",
+      "feature": "Open a pre-existing view"
+    },
+    {
+      "name": "OperatorSaveViews",
+      "uuid": "93250075-0994-4ff8-8ff3-7ecc74ca7956",
+      "feature": "Saved view"
+    },
+    {
+      "name": "OperatorShareViews",
+      "uuid": "631ebd8c-a084-4df0-be9b-de5abd2d8468",
+      "feature": "Share Views"
+    },
+    {
+      "name": "OperatorCloneViews",
+      "uuid": "258c7e18-9ac4-41d7-a637-7f12a7f24df7",
+      "feature": "Clone Views"
+    },
+    {
+      "name": "OperatorWebBasedTerminal",
+      "uuid": "4726da45-2108-409b-b94f-45bd1e199a78",
+      "feature": "Direct terminal access to one ore more pods/containers simultaneously. Integrated experience."
+    },
+    {
+      "name": "OperatorViewInteractiveTerminal",
+      "uuid": "4726da45-2108-409b-b94f-45bd1e199a78",
+      "feature": "View Interactive Terminal"
+    },
+    {
+      "name": "OperatorViewComponentDetails",
+      "uuid": "5d1e226b-cc0c-407c-8fa7-37159d06698d",
+      "feature": "View managed infrastructure resources details in Kanvas Operator"
+    },
+    {
+      "name": "OperatorViewObservabilityMetrics",
+      "uuid": "2988a366-a743-48e7-9946-daff9b2ab0a1",
+      "feature": "View real-time resource metrics in Kanvas Operator"
+    },
+    {
+      "name": "OperatorPerformConformanceTest",
+      "uuid": "901ca054-0656-4db5-8d58-d618e0b82b39",
+      "feature": "Perform a conformance test in Kanvas Operator"
+    },
+    {
+      "name": "OperatorStreamContainerLogs",
+      "uuid": "c1ff0f0d-95b5-4765-8c64-d77af99e5d4f",
+      "feature": "Stream container logs in Kanvas Operator"
+    },
+    {
+      "name": "OperatorPerformPerformanceTestInVisualizer",
+      "uuid": "88fe3781-bd53-4bfb-bab9-27e3ad06a9f5",
+      "feature": "Perform performance test in Kanvas Operator"
+    },
+    {
+      "name": "OperatorSelectPerformanceProfileInVisualizer",
+      "uuid": "16d80ca9-c245-4622-9482-45303b963811",
+      "feature": "Select a performance profile to run tests using"
+    },
+    {
+      "name": "OnPremiseDeploymentsHelmBased",
+      "uuid": "bfcc083f-7918-4229-a20e-758661ed73b2",
+      "feature": "Meshery Cloud"
+    },
+    {
+      "name": "PerformanceTestsSmpCompatibleImportExport",
+      "uuid": "293cf5a4-512a-42aa-86e9-12882ec79a5e",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceProfilesPersistenceOfTestResults",
+      "uuid": "fc36a4cc-9f31-4784-8b9f-b38772d05425",
+      "feature": "Baseline and track your service mesh performance from release to release."
+    },
+    {
+      "name": "LoadGenerationLoadGeneratorInterfaceCommonInterfaceUsedAsAnExtensionPointForSupportingDifferentTypesOfLoadGenerators",
+      "uuid": "cd18ca8d-11e3-47cc-a68f-381c0a2561c5",
+      "feature": ""
+    },
+    {
+      "name": "LoadGenerationLoadGeneration",
+      "uuid": "826e1994-0bc3-4553-b20c-c62cabad98e6",
+      "feature": "Single Load Generator: Support testing multiple endpoints simultaneously."
+    },
+    {
+      "name": "LoadGenerationDistributedLoadGenerator",
+      "uuid": "13a4dab9-018c-45ce-ac17-66721aa83ff0",
+      "feature": "Multiple Meshery Servers or Meshery Adapters generating load, collecting and coalescing results into a single report."
+    },
+    {
+      "name": "PerformanceProfilesDefineNameAndSavePerformanceProfiles",
+      "uuid": "679c7956-e1be-4f97-8400-f1d8fe90f856",
+      "feature": ""
+    },
+    {
+      "name": "GitopsServiceMeshPerformaceGithubActionIntegratePerformanceAnalysisAsAGateInYourGitopsPipelineUsingPerformanceProfilesToRunRepeatableTestsAndAvoidRegressionIssuesBeforeTheyStartConfigureThisActionToTriggerWithEachOfYourReleasesOnEveryPullRequestOrAnyGithubWorkflowTriggerEvent",
+      "uuid": "872dca45-cb80-4dfb-9421-1da1ffb6a265",
+      "feature": ""
+    },
+    {
+      "name": "ServiceMeshInterfaceConformanceGithubActionsUsingMesheryAsTheOfficalSmiConformanceValidationToolConfigureThisActionToTriggerWithEachOfYourReleasesOnEveryPullRequestOrAnyGithubWorkflowTriggerEvent",
+      "uuid": "b7128770-7dda-4556-be33-991d4173c546",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceProfilesPerformanceProfiles",
+      "uuid": "add7825b-355c-4d98-a706-ab8ce273ea21",
+      "feature": "Share performance profiles and test results with individual users or teams."
+    },
+    {
+      "name": "ComparativeTestingComparativeTesting",
+      "uuid": "f480c87e-dc39-4877-9c6f-5e5d4f8f760a",
+      "feature": "Historical views: Infrastructure-centric"
+    },
+    {
+      "name": "PerformanceIndexExportableReport",
+      "uuid": "83cdf8a9-27cf-4020-86eb-98865a2a4c4c",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceIndexSocialShare",
+      "uuid": "4ef3d7a9-23d6-4254-9ba9-e515edafe3da",
+      "feature": ""
+    },
+    {
+      "name": "ContinuousQualityOfServiceMonitoringContinuousQualityOfServiceMonitoring",
+      "uuid": "bd26b342-2f5c-4985-97e5-aca532327951",
+      "feature": "Experience uninterrupted oversight of your service quality with our Continuous Quality of Service Monitoring."
+    },
+    {
+      "name": "AutoTuningAdaptiveLoadControlOptimizeRps",
+      "uuid": "28c80137-f726-4366-940d-53f8d2feed13",
+      "feature": ""
+    },
+    {
+      "name": "SchedulingSchedulingOfTests",
+      "uuid": "b1201553-c4b3-4212-9ac1-af11eaee6931",
+      "feature": "Schedule one-time or reoccurring performance tests."
+    },
+    {
+      "name": "SchedulingSophisticatedRecurringSchedulesOfPerformanceTestsOfConfigurationAnalyzers",
+      "uuid": "78e3febd-0003-4ac2-8c4f-3d4fefed69d7",
+      "feature": ""
+    },
+    {
+      "name": "SchedulingCalendarIntegration",
+      "uuid": "b4791193-0944-430d-b889-f3000e2dc885",
+      "feature": "Schedule tests from your calendar"
+    },
+    {
+      "name": "MeshmarkListenAndLearnAverageRequestResponseTime",
+      "uuid": "4a5e66d1-a4cc-4aad-8e8a-ce605a3baef5",
+      "feature": ""
+    },
+    {
+      "name": "MeshmarkFormulaAndMeasurementScaleUsedToGaugeServiceMeshPerformanceInContextOfTheValueItSProvidingTheEnvironmentAndWorkloadsItSRunning",
+      "uuid": "cb10fc07-a626-4d25-801c-3fbb9f458206",
+      "feature": ""
+    },
+    {
+      "name": "MeshmarkAbilityToMonitorSignalsDefinedInSmpAndGenerateAMeshmarkInRealTime",
+      "uuid": "eaedcc22-198e-4714-9c77-ba84a84dc471",
+      "feature": ""
+    },
+    {
+      "name": "MeshmarkMeshmark",
+      "uuid": "e5620cc6-6a98-4146-966f-562114342aae",
+      "feature": "Identify the cost of a specific network function."
+    },
+    {
+      "name": "PerformanceTestProtocolsHttp",
+      "uuid": "1364948f-3e28-4853-84a7-452ba1e7ee13",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestProtocolsGrpc",
+      "uuid": "3ab50aa9-6860-4618-b97e-b6144da69f12",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestProtocolsTcp",
+      "uuid": "3eab632b-0392-4bb8-8564-89e21166d902",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestDuration",
+      "uuid": "6ad02dc5-7e1d-443d-ba82-e4b63c91a402",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestMultipleThreads",
+      "uuid": "acfeaecf-ca09-43cb-8aa2-31ca688596a4",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestDefaultProfilesToFacilitateCapacitySoakAndOtherTesting",
+      "uuid": "d0a8cc17-5101-467b-bf7b-ac5b7346cee1",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestComparisonOfTwoOrMoreReports",
+      "uuid": "8f3061a3-a31d-4c61-9be6-cc002b713853",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestPersistInSmpFormat",
+      "uuid": "ca1200da-d3f3-4274-831a-2cd6102c5a1b",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestExportSingleOrMultipleResultsInSmpFormat",
+      "uuid": "0fe311a6-71cb-49d5-8971-b5eb164d973a",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceTestHistoricalView",
+      "uuid": "e5b12687-5fc8-49f5-8833-3e43ca652d80",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceResultsAnalysisLatencyThroughput",
+      "uuid": "68730e20-3174-4ac9-9e7b-d3c1bd179b8b",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceResultsAnalysisThresholdSettingsForPassFailWhenIntegratedIntoCiPipelines",
+      "uuid": "ed61627f-6736-4331-8d6d-dddcce98272a",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceResultsAnalysisIdentificationOfOpportunitiesToImprove",
+      "uuid": "37de75c5-b1d7-4358-946d-0a4d72a9d587",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceResultsAnalysisTrend",
+      "uuid": "2a5aedd5-095f-47ad-b4fb-9e9d9f97e8aa",
+      "feature": ""
+    },
+    {
+      "name": "PerformanceResultsAnalysisAnomalyDetection",
+      "uuid": "5b9b0cc2-6ea9-45d3-b989-8bd034768a19",
+      "feature": ""
+    },
+    {
+      "name": "DistributedPerformanceAnalysisAnalysis",
+      "uuid": "d9e286d5-54f1-446f-9c1a-ece361e5aca1",
+      "feature": "Automatically suggest timeout settings for a given service."
+    },
+    {
+      "name": "DistributedPerformanceAnalysisMesheryAdapterForNighthawk",
+      "uuid": "72066352-d09b-494a-b02e-846676bd7a0a",
+      "feature": "Creation of Meshery Nighthawk Adapter. Refactoring of Nighhawk and decoupling it from Meshery container. Lifecycle management of adapter. Definition and registration of adapter capabilities."
+    },
+    {
+      "name": "DistributedPerformanceAnalysisDistributedTests",
+      "uuid": "72066352-d09b-494a-b02e-846676bd7a0a",
+      "feature": "Allow users to identity Kubernetes clusters"
+    },
+    {
+      "name": "DistributedPerformanceAnalysisPerformanceProfiles",
+      "uuid": "72066352-d09b-494a-b02e-846676bd7a0a",
+      "feature": "Storage of n result sets in Provider for a given Performance Profile."
+    },
+    {
+      "name": "PerformanceAddPerformaceProfile",
+      "uuid": "b2861578-c573-45fe-a95e-0356d56e1d1b",
+      "feature": "Add a new performace profile"
+    },
+    {
+      "name": "PerformanceRunTest",
+      "uuid": "06de2b07-b4f4-4701-b87f-d92ebb66ba42",
+      "feature": "Run a test on performance profile"
+    },
+    {
+      "name": "PerformanceViewResults",
+      "uuid": "0c757cc7-4038-4d9b-9b60-fa8d9fc9d27e",
+      "feature": "View results of performance tests"
+    },
+    {
+      "name": "PerformanceEditPerformanceTest",
+      "uuid": "33aa5c47-a8aa-4ad5-9950-7c17042c001d",
+      "feature": "Edit performance test"
+    },
+    {
+      "name": "PerformanceDeletePerformanceTest",
+      "uuid": "84aa9d3c-3d4b-4587-947d-ae17b2dcd5f5",
+      "feature": "Delete performance test"
+    },
+    {
+      "name": "PerformanceViewPerformanceProfiles",
+      "uuid": "6593ac26-820b-4e87-be32-64ee740ea204",
+      "feature": "View all performance profiles"
+    },
+    {
+      "name": "AlertManagementNotificationSuppression",
+      "uuid": "5a3096b7-d7ce-497e-87f0-afc91fa7666e",
+      "feature": ""
+    },
+    {
+      "name": "AlertManagementNotificationCorrelation",
+      "uuid": "3876eaf6-d02f-41d1-a8be-9887e8522334",
+      "feature": ""
+    },
+    {
+      "name": "PoliciesVersioned",
+      "uuid": "068257b7-348a-4f4b-96d1-e4606ef45c93",
+      "feature": ""
+    },
+    {
+      "name": "AuditTrailLogOfAllActionsInvokedByUsers",
+      "uuid": "8465ed0b-63d4-4a28-944b-4cab4cd5bc7f",
+      "feature": ""
+    },
+    {
+      "name": "RbacViolationsNotificationOfAttemptsToInvokeUnauthorizedActions",
+      "uuid": "cc25afd4-777d-4768-a43f-d8c09ce978cf",
+      "feature": ""
+    },
+    {
+      "name": "OpenPolicyAgentIntegrationAdmissionControlForSpecificWorkloadsOnTheMesh",
+      "uuid": "7dccf200-eacc-4057-b3d7-ac15ccf70a38",
+      "feature": ""
+    },
+    {
+      "name": "OpenPolicyAgentIntegrationServiceRequestAuthorizationWithJwt",
+      "uuid": "cae1f1b8-2a88-4bc6-adb4-8e7b80d449ef",
+      "feature": ""
+    },
+    {
+      "name": "OpenPolicyAgentIntegrationPerformanceBudgetSupportInPatterns",
+      "uuid": "783e4277-4c89-4495-9e50-bbb6c2cd42fb",
+      "feature": ""
+    },
+    {
+      "name": "OverviewViewOverview",
+      "uuid": "12dc96f1-a3fa-4bae-9c5a-a280666f9fdb",
+      "feature": ""
+    },
+    {
+      "name": "CredentialsViewCredentials",
+      "uuid": "96759f76-4add-45f8-b4ef-d4ace5ab1bc4",
+      "feature": ""
+    },
+    {
+      "name": "CredentialsCreateCredential",
+      "uuid": "30023b1b-01a7-4613-8364-38d3487d1789",
+      "feature": ""
+    },
+    {
+      "name": "CredentialsEditCredential",
+      "uuid": "e4cd5bb0-8afb-4b35-8716-0e2ead13c9b7",
+      "feature": ""
+    },
+    {
+      "name": "CredentialsDeleteCredential",
+      "uuid": "cb09f530-aa87-4a18-b3d3-bbcc2d6ca1a6",
+      "feature": ""
+    },
+    {
+      "name": "SessionsViewSessions",
+      "uuid": "26cf042a-91db-4237-8644-4d617a0d49e1",
+      "feature": ""
+    },
+    {
+      "name": "SessionsLogoutFromASession",
+      "uuid": "177b928b-71ee-4ecd-a30b-3154ff4ba0d9",
+      "feature": ""
+    },
+    {
+      "name": "TokensViewTokens",
+      "uuid": "46d914bc-18c1-438f-aa74-fb78823aa25c",
+      "feature": ""
+    },
+    {
+      "name": "TokensDownloadToken",
+      "uuid": "ee5fc23e-d629-4c7b-8169-27e526394e8b",
+      "feature": ""
+    },
+    {
+      "name": "TokensCreateToken",
+      "uuid": "8aa0df56-57e8-44b7-9d6e-7df413048ed5",
+      "feature": ""
+    },
+    {
+      "name": "KeysViewKeys",
+      "uuid": "3cf506df-8398-49d2-b4e2-f06e3a0f87f0",
+      "feature": ""
+    },
+    {
+      "name": "KeysEditKey",
+      "uuid": "605512d3-ff7f-456c-9230-b1d01c606d47",
+      "feature": ""
+    },
+    {
+      "name": "KeysDeleteKey",
+      "uuid": "efa19dc3-02a3-49b7-a0ff-e4554a2da337",
+      "feature": ""
+    },
+    {
+      "name": "KeychainsViewKeychains",
+      "uuid": "9e930568-6b55-43d2-91d8-abeafedc1550",
+      "feature": ""
+    },
+    {
+      "name": "KeychainsCreateKeychain",
+      "uuid": "ec292de6-b62d-421b-94bf-ec5983faa6ff",
+      "feature": ""
+    },
+    {
+      "name": "KeychainsEditKeychain",
+      "uuid": "163e807d-f508-49ca-9ba6-cc3badb22bb0",
+      "feature": ""
+    },
+    {
+      "name": "KeychainsDeleteKeychain",
+      "uuid": "503a6b28-bd91-4dde-86ac-641567777515",
+      "feature": ""
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleManageCloudNativeInfrastructureLifeCycle",
+      "uuid": "255fd148-e3fd-4408-a48c-0d157a57d4d9",
+      "feature": "This permission grants the user the ability to manage infrastructure life cycles within meshery. Meshery allows users to visualize, work on and manage various cloud native technologies."
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleManageCloudNativeInfrastructureConfiguration",
+      "uuid": "0eb0558d-9b21-4e50-b4c6-bd8e9e3414f5",
+      "feature": "Manage configuration for applications like EmojiVoto, HTTPBin, Image Hub, Istio Book Info"
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleApplyCloudNativeInfrastructureConfiguration",
+      "uuid": "3f20a106-24f5-4da6-a8eb-6eddaad50944",
+      "feature": "Configure infrastructure with some predefined options like Automatic Sidecar injection, Envoy Filter, Policy"
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleValidateCloudNativeInfrastructureConfiguration",
+      "uuid": "8bb93f97-fcfb-4827-9fed-f931fdca7b95",
+      "feature": "Validate cloud native infrastructure  configuration against best practices like Analyze Running Configuration, SMI conformance"
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleApplyCustomCloudNativeConfiguration",
+      "uuid": "2f4e2300-4c7e-4d48-95aa-74614a4826fe",
+      "feature": "This permission grants the user the ability to apply custom configuration and customize existing configuration of thier cloud native infrastructure"
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleDeployCloudNativeInfrastructure",
+      "uuid": "f7e70ffb-333d-43b3-a76e-0e6c63b9fbfa",
+      "feature": "This permission grants the user the ability to deploy their infrastructure to a cluster through Meshery. Meshery allows users to visualize, work on and manage various cloud native technologies"
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleUndeployCloudNativeInfrastructure",
+      "uuid": "6e7f6f4f-4321-4e42-9eff-6a8323f32e84",
+      "feature": "This permission grants the user the ability to undeploy their infrastructure from a cluster through Meshery. Meshery allows users to visualize, work on and manage various cloud native technologies"
+    },
+    {
+      "name": "CloudNativeInfrastructureLifecycleViewCloudNativeInfrastructure",
+      "uuid": "fdc485dc-f68b-405c-9e54-7b9a7254c282",
+      "feature": "This permission grants the user the ability to view all cloud native infrastructure in Meshery. Meshery allows users to visualize, work on and manage various cloud native technologies."
+    },
+    {
+      "name": "WorkspaceViewWorkspace",
+      "uuid": "bc9379e8-dc18-4655-b53c-c641271c4ba3",
+      "feature": "See all workspaces within an organization"
+    },
+    {
+      "name": "WorkspaceDeleteWorkspace",
+      "uuid": "09eb0507-2f14-4bc4-92c5-9e26a4efbd5e",
+      "feature": "Dissolve workspace and all team and environment memberships. Leave associated resources intact"
+    },
+    {
+      "name": "WorkspaceEditWorkspace",
+      "uuid": "4112230f-5d1e-4d30-9790-942ad5c1dc50",
+      "feature": "Edit workspace and it's team and environment membership"
+    },
+    {
+      "name": "WorkspaceCreateWorkspace",
+      "uuid": "eb42ac41-a883-465e-843c-d64e962a3a0e",
+      "feature": "Create new workspace"
+    },
+    {
+      "name": "WorkspaceAssignTeamToWorkspace",
+      "uuid": "6ab4263b-0bb3-492e-9878-6936a5b6312f",
+      "feature": "Add new team to workspace"
+    },
+    {
+      "name": "WorkspaceRemoveTeamFromWorkspace",
+      "uuid": "c4ed82f5-783d-4451-9b34-44f50cae71df",
+      "feature": "Remove team from workspace"
+    },
+    {
+      "name": "WorkspaceAssignEnvironmentToWorkspace",
+      "uuid": "f421fc20-c14a-4282-b526-776c6cacfd99",
+      "feature": "Add new environment to workspace"
+    },
+    {
+      "name": "WorkspaceRemoveEnvironmentFromWorkspace",
+      "uuid": "d0657715-80fb-4b00-af27-b78bb0fa56df",
+      "feature": "Remove environment from workspace"
+    },
+    {
+      "name": "WorkspaceAssignDesignsToWorkspaces",
+      "uuid": "64a1bad5-30f1-431a-aea0-8073d14a0262",
+      "feature": "Assign designs to workspaces"
+    },
+    {
+      "name": "WorkspaceRemoveDesignsFromWorkspaces",
+      "uuid": "076515f1-f696-4211-ae27-58d5463a229e",
+      "feature": "Remove designs from workspaces"
+    },
+    {
+      "name": "WorkspaceConnectGithubAccountToWorkspace",
+      "uuid": "410b2d3c-8194-44d1-9f80-7b5fea689b4f",
+      "feature": ""
+    },
+    {
+      "name": "ConnectionsViewConnections",
+      "uuid": "b35c9ce0-e787-4de6-8560-631007b0b947",
+      "feature": "View all connections within an environment"
+    },
+    {
+      "name": "EnvironmentsViewEnvironment",
+      "uuid": "e3656bbc-fba2-483d-9996-34f8614cd21b",
+      "feature": "See all environments within an workspace."
+    },
+    {
+      "name": "EnvironmentsCreateEnvironment",
+      "uuid": "a97b7f3b-3349-4a86-b917-2ce0b64a540b",
+      "feature": "Create a new environment"
+    },
+    {
+      "name": "EnvironmentsDeleteEnvironment",
+      "uuid": "70747966-dfad-4523-93ce-bd7421258955",
+      "feature": "Dissolve environment and all connection memberships. Leave associated resources intact."
+    },
+    {
+      "name": "EnvironmentsEditEnvironment",
+      "uuid": "145ab6ed-b4b6-4e34-ada5-78dada250f89",
+      "feature": "Edit environment and it connection membership"
+    },
+    {
+      "name": "EnvironmentsAssignConnectionsToEnvironment",
+      "uuid": "52cbe0b8-9aa7-4605-8eed-aa37e595adbb",
+      "feature": "Add new connections to environments"
+    },
+    {
+      "name": "EnvironmentsRemoveConnectionsFromEnvironments",
+      "uuid": "65648682-e47f-43d7-a5ad-dc042803f951",
+      "feature": "Remove connections from environment, "
+    },
+    {
+      "name": "CatalogViewCatalog",
+      "uuid": "0cd05106-36b6-4393-a08e-4222fc10c8de",
+      "feature": "View all items in catalog"
+    },
+    {
+      "name": "CatalogDeleteCatalogItems",
+      "uuid": "3264c9e7-d172-4b9f-bb5d-fe1bda1cdb20",
+      "feature": "Delete catalog items"
+    },
+    {
+      "name": "CatalogEditCatalogItems",
+      "uuid": "86a43f77-9e7d-441a-8fc5-68ea521ea43a",
+      "feature": "Edit catalog items"
+    },
+    {
+      "name": "CatalogUnpublishCatalogItems",
+      "uuid": "03824b03-a61e-403a-b17f-d8f4aea854d2",
+      "feature": "Unpublish items from catalog"
+    },
+    {
+      "name": "CatalogDetailsOfCatalogItem",
+      "uuid": "a52ee7bd-496c-4877-830e-f8812cd8d4b7",
+      "feature": "Set item information or details of a catalog item"
+    },
+    {
+      "name": "CatalogDownloadCatalogItem",
+      "uuid": "7b04ebf8-744e-426f-8075-828cdfe44d51",
+      "feature": "Download a catalog item"
+    },
+    {
+      "name": "CatalogCloneCatalogItem",
+      "uuid": "091e083b-78ae-4f03-b028-e36354460c5b",
+      "feature": "Clone any item from catalog"
+    },
+    {
+      "name": "CurriculaViewAcademyContent",
+      "uuid": "40eb4949-ca16-4b7b-a9ae-4fe18f26fe1d",
+      "feature": "Browse the public catalog of learning paths, challenges, and certifications."
+    },
+    {
+      "name": "AdministrationAccessTheAcademyConsole",
+      "uuid": "045fad17-d2cc-46e8-bb10-f9ee026c799f",
+      "feature": "View and assess the performance of learners and of your organization's academy content."
+    },
+    {
+      "name": "AcademyInstructorConsoleGuideAComprehensiveGuideToUsingTheInstructorConsoleLearnHowToTrackLearnerProgressAnalyzeTestPerformanceAndManageYourAcademySContentAndMetrics",
+      "uuid": "045fad17-d2cc-46e8-bb10-f9ee026c799f",
+      "feature": ""
+    },
+    {
+      "name": "ChallengesViewChallenges",
+      "uuid": "5996d6c9-4037-404c-af83-92a0895ff7f0",
+      "feature": "View all challenges"
+    },
+    {
+      "name": "CertificationCreateCertifications",
+      "uuid": "efd922b6-daff-4857-aaee-840637a5f696",
+      "feature": ""
+    },
+    {
+      "name": "EnterpriseApiWebhooks",
+      "uuid": "df2c9b99-fad3-405b-9733-6cf10e1909ed",
+      "feature": "Layer5 Cloud uses webhooks to automate approval flows and email notifications. This guide will help you customize and add your own custom webhooks."
+    },
+    {
+      "name": "CloudApiRestApiUserDocumentation",
+      "uuid": "90c75125-6506-496b-8704-91bf74532bd2",
+      "feature": "Provides a powerful and flexible way to interact with the platform, enabling automation, integration, and customization to optimize your cloud native development and management processes."
+    },
+    {
+      "name": "CloudApiRestApiReference",
+      "uuid": "776ec711-26aa-47b1-a822-b1b14192b1e7",
+      "feature": "Provides a powerful and flexible way to interact with the platform, enabling automation, integration, and customization to optimize your cloud native development and management processes."
+    },
+    {
+      "name": "WhiteLabelWhiteLabel",
+      "uuid": "a27a55af-b71b-400f-a8b1-3f3b1afff4f6",
+      "feature": "Customize the appearance and branding of your engineering platform powered by Layer5 Cloud."
+    },
+    {
+      "name": "CommunitySupportCommunitySupport",
+      "uuid": "1ae12fbe-32d9-46ef-9ae6-897f9a0017d6",
+      "feature": "Get help with most of your Meshery questions and issues in our Community Forum."
+    },
+    {
+      "name": "StandardSupportStandardSupport",
+      "uuid": "e2131b18-fe30-47c2-84e7-0207bdc89f0e",
+      "feature": "Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via the web."
+    },
+    {
+      "name": "PremiumAndPremiumPlusSupportPremiumAndPremiumPlusSupport",
+      "uuid": "e49c8c16-58e5-465e-be6d-a81b115c31ee",
+      "feature": "With Premium, get a 30-minute SLA and 24/7 web and phone support. With Premium Plus, get everything in Premium plus your own Support Account Manager and more."
+    },
+    {
+      "name": "SelfHostedDeploymentSelfHostedDeployment",
+      "uuid": "3e0aa2da-ca58-4109-a0cc-0dece0ec47c3",
+      "feature": "Self-hosted Layer5 Cloud for on-prem appliances or self-managed cloud tenants. Keep your Kanvas designs internal to your workplace. Get remote support from Layer5 when you need it."
+    },
+    {
+      "name": "PhoneSupportPhoneSupport",
+      "uuid": "4e7cf974-7f6e-461c-989b-1176f2d46448",
+      "feature": "Layer5 Support can help you troubleshoot issues you run into while using Meshery. Get support via phone."
+    },
+    {
+      "name": "InvoiceBillingPayBillsViaInvoiceRatherThanUsingYourCreditCard",
+      "uuid": "f2d10bd7-62e3-4cc1-b376-a19e29d73b40",
+      "feature": ""
+    },
+    {
+      "name": "TrafficCaptureFacilitateANetworkTapOfAnyRequestTraffic",
+      "uuid": "5e5c5f1e-8bf5-4eaa-8f4e-78e7fabf857e",
+      "feature": ""
+    },
+    {
+      "name": "TrafficConfigurationVisualDefinitionsOfTrafficRules",
+      "uuid": "9468ef99-04c5-43dc-b188-bd8fe03e4564",
+      "feature": ""
+    },
+    {
+      "name": "TrafficFiltersDynamicLoadUnloadOfWasmFilters",
+      "uuid": "cf3355b2-5bbc-43db-b464-4eb3a4c1a7c1",
+      "feature": ""
+    },
+    {
+      "name": "TrafficFiltersConfigurationOfWasmFilters",
+      "uuid": "a921366e-f158-479c-bfa7-6b8ec38016da",
+      "feature": ""
+    },
+    {
+      "name": "FeatureFlaggingViaWasmFilter",
+      "uuid": "aef9dd7f-139f-497c-b601-41177a054f2a",
+      "feature": ""
+    },
+    {
+      "name": "CanaryRolloutFlaggerIntegration",
+      "uuid": "9278cea4-ff9b-4d76-a2e8-5002059aba05",
+      "feature": ""
+    },
+    {
+      "name": "CanaryRolloutArgoIntegration",
+      "uuid": "5d1e560b-d56c-4a56-b5f4-35ea18ab7a83",
+      "feature": ""
+    },
+    {
+      "name": "ClientLibraryMigrationGolangNativeExponentialBackoff",
+      "uuid": "ec9db4e8-671e-41ff-a0de-842c25d6f421",
+      "feature": ""
+    },
+    {
+      "name": "ClientLibraryMigrationGokit",
+      "uuid": "1b3e39ba-8d44-4d93-bd3c-202f6d111912",
+      "feature": ""
+    },
+    {
+      "name": "ClientLibraryMigrationSpringBoot",
+      "uuid": "39f0cb17-0d30-41c0-b305-04dd63f546cb",
+      "feature": ""
+    },
+    {
+      "name": "ClientLibraryMigrationHystrix",
+      "uuid": "d65229d7-341b-4986-8f1f-8dfb1673b909",
+      "feature": ""
+    },
+    {
+      "name": "BestPracticesAnalyzerOpenListOfBestPracticesForIstio",
+      "uuid": "2af886a2-c2a2-44e9-ba62-ba256c7634b0",
+      "feature": "Open list of best practices for Istio"
+    },
+    {
+      "name": "BestPracticesAnalyzerProprietaryListOfBestPracticesForIstio",
+      "uuid": "46f00b76-06ae-4b5c-9df5-3311e9fc4823",
+      "feature": "Proprietary list of best practices for Istio"
+    },
+    {
+      "name": "PatternSupportIstioVirtualservice",
+      "uuid": "9a84a5d0-0a16-11ee-be56-0242ac120002",
+      "feature": "VirtualService"
+    },
+    {
+      "name": "PatternSupportIstioDestinationrule",
+      "uuid": "12c5dbca-cdb4-4554-8a71-8c67c118071d",
+      "feature": "DestinationRule"
+    },
+    {
+      "name": "PatternSupportIstioMtlsPeerauthentication",
+      "uuid": "2e66a6b3-7ed5-4010-b1d2-f4d7035f0991",
+      "feature": "mTLS (PeerAuthentication)"
+    },
+    {
+      "name": "PatternSupportIstioAutomaticSidecarInjectionOnANamespace",
+      "uuid": "21bd0f2b-0ab6-4aac-a1aa-e4a02eb66b3c",
+      "feature": "Automatic Sidecar Injection on a Namespace"
+    },
+    {
+      "name": "PatternSupportIstioSidecars",
+      "uuid": "34b68c99-8ef9-4542-8c34-bf7587bfa1b0",
+      "feature": "Sidecars"
+    },
+    {
+      "name": "PatternSupportIstioAuthorizationpolicy",
+      "uuid": "d2eef103-0a0d-471f-b262-46af4f620826",
+      "feature": "AuthorizationPolicy"
+    },
+    {
+      "name": "PatternSupportIstioEnvoyfilters",
+      "uuid": "c4b1a799-0ab0-4262-b832-9a3d53cfd185",
+      "feature": "EnvoyFilters"
+    },
+    {
+      "name": "PatternSupportIstioPeerauthentication",
+      "uuid": "b8a9ad4b-1ee2-4460-a8c8-2d55fe47bbfd",
+      "feature": "PeerAuthentication"
+    },
+    {
+      "name": "PatternSupportIstioIstioOperator",
+      "uuid": "2209d9a6-c93b-4db1-894e-fdaacfcfc2d8",
+      "feature": "Istio Operator"
+    },
+    {
+      "name": "PatternSupportIstioIngressGatewayGateways",
+      "uuid": "00b3c489-b923-40e4-aba7-8742aed3c63c",
+      "feature": "Ingress Gateway (Gateways)"
+    },
+    {
+      "name": "PatternSupportIstioEgressGatewayGateways",
+      "uuid": "3c22fb24-e768-4000-a6f4-1bf1b9a1aa83",
+      "feature": "Egress Gateway (Gateways)"
+    },
+    {
+      "name": "PatternSupportIstioAddOnPrometheus",
+      "uuid": "a4d06ed9-958d-4a04-8d56-6658ebb9529e",
+      "feature": "Add-on: Prometheus"
+    },
+    {
+      "name": "PatternSupportIstioAddOnKiali",
+      "uuid": "bcbc9ee9-cde6-4671-9317-bedd655dde83",
+      "feature": "Add-on: Kiali"
+    },
+    {
+      "name": "PatternSupportIstioAddOnGrafana",
+      "uuid": "d64b7b6b-5931-4b61-85a1-664d62da8ffe",
+      "feature": "Add-on: Grafana"
+    },
+    {
+      "name": "PatternSupportIstioAddOnZipkin",
+      "uuid": "e1d939c7-de43-4d85-8ad4-eaada093467d",
+      "feature": "Add-on: Zipkin"
+    },
+    {
+      "name": "PatternSupportIstioAddOnJaeger",
+      "uuid": "0054fc37-636d-46d4-b5b9-b0f8c20b777c",
+      "feature": "Add-on: Jaeger"
+    },
+    {
+      "name": "PatternSupportIstioCustomConfiguration",
+      "uuid": "2e32a426-c5a4-4ae3-83f1-1bd53b3adbe4",
+      "feature": "Custom Configuration"
+    },
+    {
+      "name": "PatternSupportKubernetesIngress",
+      "uuid": "08872df8-e557-4cf2-85ce-1699a5ef5a65",
+      "feature": "Ingress"
+    },
+    {
+      "name": "MultiMeshCanaryRollout",
+      "uuid": "7258df9f-72d1-4491-9f06-a1e5fccbf3a4",
+      "feature": "Canary Rollout"
+    },
+    {
+      "name": "ChangeManagementSingleAndMultipleApprovers",
+      "uuid": "8b8b8eb2-00d5-4501-8c94-529f1b0b0f27",
+      "feature": ""
+    },
+    {
+      "name": "InProductInsightShoppingCartBasedRealTimeDiscount",
+      "uuid": "b1e81301-0726-4d62-a920-c10ee5d563b0",
+      "feature": ""
+    },
+    {
+      "name": "ServerlessPricingServerlessPricing",
+      "uuid": "15d6ae21-7618-4511-afb8-044b7cd8249d",
+      "feature": "Subscription plan management. Transformation of workflow pricing model."
+    },
+    {
+      "name": "InProductInsightLikePendoTellingUsersWhatTheyAreMissingHowToUseTheProduct",
+      "uuid": "41239cec-2e8b-48d8-959b-f595f9bcf3ab",
+      "feature": ""
+    },
+    {
+      "name": "SyntheticsSimple",
+      "uuid": "fd9752ed-ce05-41b7-953c-e841e2697ae9",
+      "feature": ""
+    },
+    {
+      "name": "SyntheticsAdvanced",
+      "uuid": "488d1bf0-44dc-401b-a1c6-dfe0e334891f",
+      "feature": ""
+    },
+    {
+      "name": "ScreenshotsScreenshots",
+      "uuid": "dfe77e40-9263-4345-9288-4da24f0352ba",
+      "feature": "Capture and share visual snapshots of your work with ease using our Screenshots feature."
+    },
+    {
+      "name": "NotificationCenterEventsReportingOfAsynchronousEvents",
+      "uuid": "2ccbcdf6-5aa0-43f2-b725-80e14003fc0b",
+      "feature": ""
+    },
+    {
+      "name": "AuditTrailAuditTrail",
+      "uuid": "27e30849-3184-4dd3-b9c3-17ce256c088e",
+      "feature": "Detailed accounting of user activity. Historical record or each action taken."
+    },
+    {
+      "name": "AlertGenerationAlertGeneration",
+      "uuid": "92bb8a04-8eb2-4486-bef9-1895ee6d6364",
+      "feature": "Dismiss individual; Dismiss bulk."
+    },
+    {
+      "name": "AlertGenerationPolicyBased",
+      "uuid": "41897757-9d14-42df-b21d-aed6f83b2743",
+      "feature": ""
+    },
+    {
+      "name": "AlertGenerationSlackNotifications",
+      "uuid": "9f5250ff-c67b-432f-95bc-e2f369f45a47",
+      "feature": "Threaded Slack Notifications"
+    },
+    {
+      "name": "EventCorrelationPolicyBased",
+      "uuid": "9eb56700-766d-470b-bd0e-3d419bba13d1",
+      "feature": ""
+    },
+    {
+      "name": "CalendaringMesheryCloudNative",
+      "uuid": "d936a286-cc39-4fd2-9b55-ff2179d9e11b",
+      "feature": ""
+    },
+    {
+      "name": "CalendaringIntegrationWGsuite",
+      "uuid": "3b03ce99-e380-4ee7-888d-adb7c076d4b8",
+      "feature": ""
+    },
+    {
+      "name": "CalendaringIntegrationWMicrosoftOutlook",
+      "uuid": "83d4bc06-3e41-452f-bdb7-30a542330923",
+      "feature": ""
+    },
+    {
+      "name": "AlertIntegrationDatadog",
+      "uuid": "c0629e3a-767d-4ad2-9b75-219b08fd970a",
+      "feature": ""
+    },
+    {
+      "name": "TrafficCaptureEventRecording",
+      "uuid": "6d2799b7-640c-4ae9-8a37-2564077cc525",
+      "feature": ""
+    },
+    {
+      "name": "TrafficReplayEventReplay",
+      "uuid": "3449fa41-bd7d-41c1-9533-af11d9eaff72",
+      "feature": ""
+    },
+    {
+      "name": "TrafficReplayTrafficReplay",
+      "uuid": "8f6d3691-e7ce-46fc-9311-b51447c3a54e",
+      "feature": "Visual event replay in Kanvas"
+    },
+    {
+      "name": "DiagnosticsComponentLogging",
+      "uuid": "1a10bf40-e17c-4498-8131-f54268eb870b",
+      "feature": ""
+    },
+    {
+      "name": "MeshmonkeyLibraryOfExperiments",
+      "uuid": "599efa8b-0249-465b-8e68-bf65dcd58f72",
+      "feature": ""
+    },
+    {
+      "name": "MeshmonkeyAsWasmFilters",
+      "uuid": "6060683b-fe85-4ae4-9cf7-97e6eeab1d4f",
+      "feature": ""
+    },
+    {
+      "name": "MeshmonkeyAsSidecars",
+      "uuid": "c9bf2c2b-5095-49ac-9f78-8369e78e69a6",
+      "feature": ""
+    },
+    {
+      "name": "MeshmonkeyAsDaemonsets",
+      "uuid": "b73d71ec-f5b2-4d0b-83de-6e2dccff5041",
+      "feature": ""
+    }
+  ]
+}

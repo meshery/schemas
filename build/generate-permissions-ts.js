@@ -46,6 +46,8 @@ const paths = require("./lib/paths");
 const {
   loadPermissions,
   generateTypeScriptFile,
+  buildIndex,
+  saveIndex,
 } = require("./lib/permissions");
 
 // Default values
@@ -160,10 +162,15 @@ async function main() {
       process.exit(1);
     }
 
-    // Generate TypeScript file
-    const tsContent = generateTypeScriptFile(permissions);
+// Phase 1: build and save index (hash-based id)
+const index = buildIndex(permissions);
+const indexPath = saveIndex(index);
+logger.info(`Saved permissions index: ${paths.relativePath(indexPath)}`);
 
-    // Resolve output path
+// Phase 2: generate TypeScript file from index
+const tsContent = generateTypeScriptFile(index.items, index.id);
+
+// Resolve output path
     let outputPath = options.output;
     if (!outputPath.startsWith("/")) {
       outputPath = paths.fromRoot(outputPath);

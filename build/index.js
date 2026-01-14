@@ -52,6 +52,22 @@ const commands = {
     script: "generate-typescript.js",
     dependsOn: "bundle",
   },
+  perms_ts: {
+    description: "Generate TS permission keys from CSV (2-phase)",
+    script: "generate-permissions-ts.js",
+  },
+  perms_go: {
+    description: "Generate Go permission keys from CSV (2-phase)",
+    script: "generate-permission-golang.js",
+  },
+  perms_diff: {
+    description: "Diff two permissions index files",
+    script: "diff-permissions.js",
+  },
+  perms_apply: {
+    description: "Apply permission renames from diff JSON",
+    script: "apply-permissions-updates.js",
+  },
   all: {
     description: "Run full build pipeline",
     pipeline: ["bundle", "golang", "rtk", "types"],
