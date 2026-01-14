@@ -95,7 +95,7 @@ golangci: dep-check
 	golangci-lint run
 
 ## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
-build: bundle-openapi generate-golang generate-rtk generate-ts build-ts test-golang
+build: bundle-openapi generate-golang  generate-rtk generate-ts generate-permissions build-ts test-golang
 
 #-----------------------------------------------------------------------------
 # Dependencies
