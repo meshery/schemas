@@ -160,12 +160,13 @@ export interface paths {
                        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                        */
                       credential_id?: string;
-                      /** @description Connection Type */
+                      /** @description Connection Type (platform, telemetry, collaboration) */
                       type: string;
-                      /** @description Connection Subtype */
+                      /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
                       sub_type: string;
-                      /** @description Connection Kind */
+                      /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
                       kind: string;
+                      /** @description Additional connection metadata */
                       metadata?: { [key: string]: unknown };
                       /**
                        * @description Connection Status
@@ -191,6 +192,7 @@ export interface paths {
                       updated_at?: string;
                       /** Format: date-time */
                       deleted_at?: string;
+                      /** @description Associated environments for this connection */
                       environments?: {
                         /**
                          * Format: uuid
@@ -1777,12 +1779,13 @@ export interface paths {
                      * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
                     credential_id?: string;
-                    /** @description Connection Type */
+                    /** @description Connection Type (platform, telemetry, collaboration) */
                     type: string;
-                    /** @description Connection Subtype */
+                    /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
                     sub_type: string;
-                    /** @description Connection Kind */
+                    /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
                     kind: string;
+                    /** @description Additional connection metadata */
                     metadata?: { [key: string]: unknown };
                     /**
                      * @description Connection Status
@@ -1808,6 +1811,7 @@ export interface paths {
                     updated_at?: string;
                     /** Format: date-time */
                     deleted_at?: string;
+                    /** @description Associated environments for this connection */
                     environments?: {
                       /**
                        * Format: uuid
@@ -3388,12 +3392,13 @@ export interface components {
                * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               credential_id?: string;
-              /** @description Connection Type */
+              /** @description Connection Type (platform, telemetry, collaboration) */
               type: string;
-              /** @description Connection Subtype */
+              /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
               sub_type: string;
-              /** @description Connection Kind */
+              /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
               kind: string;
+              /** @description Additional connection metadata */
               metadata?: { [key: string]: unknown };
               /**
                * @description Connection Status
@@ -3419,6 +3424,7 @@ export interface components {
               updated_at?: string;
               /** Format: date-time */
               deleted_at?: string;
+              /** @description Associated environments for this connection */
               environments?: {
                 /**
                  * Format: uuid
@@ -4984,12 +4990,13 @@ export interface components {
                * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
               credential_id?: string;
-              /** @description Connection Type */
+              /** @description Connection Type (platform, telemetry, collaboration) */
               type: string;
-              /** @description Connection Subtype */
+              /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
               sub_type: string;
-              /** @description Connection Kind */
+              /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
               kind: string;
+              /** @description Additional connection metadata */
               metadata?: { [key: string]: unknown };
               /**
                * @description Connection Status
@@ -5015,6 +5022,7 @@ export interface components {
               updated_at?: string;
               /** Format: date-time */
               deleted_at?: string;
+              /** @description Associated environments for this connection */
               environments?: {
                 /**
                  * Format: uuid
