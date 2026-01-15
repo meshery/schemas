@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/meshery/schemas/models/v1alpha1/core"
+	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 	"github.com/meshery/schemas/models/v1alpha2/catalog"
 	"github.com/meshery/schemas/models/v1alpha3/relationship"
 	"github.com/meshery/schemas/models/v1beta1/component"
@@ -110,8 +110,8 @@ type PatternFile struct {
 // PatternFile_Metadata defines model for PatternFile.Metadata.
 type PatternFile_Metadata struct {
 	// ResolvedAliases Map of resolved aliases present in the design
-	ResolvedAliases      *map[string]core.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
-	AdditionalProperties map[string]interface{}         `json:"-" yaml:"-"`
+	ResolvedAliases      *map[string]corev1alpha1.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
+	AdditionalProperties map[string]interface{}                 `json:"-" yaml:"-"`
 }
 
 // Getter for additional properties for PatternFile_Metadata. Returns the specified
