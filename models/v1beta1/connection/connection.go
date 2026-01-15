@@ -96,7 +96,7 @@ type ConnectionPage struct {
 // ConnectionPayload Payload for creating or updating a connection
 type ConnectionPayload struct {
 	// CredentialID Associated credential ID
-	CredentialID **uuid.UUID `json:"credential_id,omitempty" yaml:"credential_id,omitempty"`
+	CredentialID *openapi_types.UUID `json:"credential_id,omitempty" yaml:"credential_id,omitempty"`
 
 	// CredentialSecret Credential secret data
 	CredentialSecret core.Map `json:"credential_secret" yaml:"credential_secret"`

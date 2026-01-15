@@ -579,10 +579,6 @@ const ConnectionSchema = {
                     "format": "uuid",
                     "description": "Associated credential ID",
                     "x-go-name": "CredentialID",
-                    "x-go-type": "*uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    },
                     "x-oapi-codegen-extra-tags": {
                       "json": "credential_id,omitempty"
                     }
@@ -2575,10 +2571,6 @@ const ConnectionSchema = {
                     "format": "uuid",
                     "description": "Associated credential ID",
                     "x-go-name": "CredentialID",
-                    "x-go-type": "*uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
-                    },
                     "x-oapi-codegen-extra-tags": {
                       "json": "credential_id,omitempty"
                     }
@@ -3987,10 +3979,6 @@ const ConnectionSchema = {
             "format": "uuid",
             "description": "Associated credential ID",
             "x-go-name": "CredentialID",
-            "x-go-type": "*uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
             "x-oapi-codegen-extra-tags": {
               "json": "credential_id,omitempty"
             }
