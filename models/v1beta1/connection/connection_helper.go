@@ -99,3 +99,7 @@ func MeshsyncDeploymentModeFromMetadata(metadata core.Map) MeshsyncDeploymentMod
 func SetMeshsyncDeploymentModeToMetadata(metadata core.Map, value MeshsyncDeploymentMode) {
 	metadata[MeshsyncDeploymentModeMetadataKey] = value
 }
+
+func (*MesheryInstance) EventCategory() string {
+	return "connection"
+}

@@ -250,12 +250,13 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           name: string;
           /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           credential_id?: string;
-          /** Connection Type */
+          /** Connection Type (platform, telemetry, collaboration) */
           type: string;
-          /** Connection Subtype */
+          /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
           sub_type: string;
-          /** Connection Kind */
+          /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
           kind: string;
+          /** Additional connection metadata */
           metadata?: object;
           /** Connection Status */
           status:
@@ -272,6 +273,7 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           created_at?: string;
           updated_at?: string;
           deleted_at?: string;
+          /** Associated environments for this connection */
           environments?: {
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             id: string;
@@ -1296,12 +1298,13 @@ export type PostEvaluateApiArg = {
             name: string;
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             credential_id?: string;
-            /** Connection Type */
+            /** Connection Type (platform, telemetry, collaboration) */
             type: string;
-            /** Connection Subtype */
+            /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
             sub_type: string;
-            /** Connection Kind */
+            /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
+            /** Additional connection metadata */
             metadata?: object;
             /** Connection Status */
             status:
@@ -1318,6 +1321,7 @@ export type PostEvaluateApiArg = {
             created_at?: string;
             updated_at?: string;
             deleted_at?: string;
+            /** Associated environments for this connection */
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               id: string;
