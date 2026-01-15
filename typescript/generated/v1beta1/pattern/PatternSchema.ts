@@ -148,9 +148,10 @@ const PatternSchema = {
               "resolvedAliases": {
                 "description": "Map of resolved aliases present in the design",
                 "type": "object",
-                "x-go-type": "map[string]core.ResolvedAlias",
+                "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                  "name": "corev1alpha1"
                 },
                 "additionalProperties": {
                   "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -4784,9 +4785,10 @@ const PatternSchema = {
                   "resolvedAliases": {
                     "description": "Map of resolved aliases present in the design",
                     "type": "object",
-                    "x-go-type": "map[string]core.ResolvedAlias",
+                    "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                      "name": "corev1alpha1"
                     },
                     "additionalProperties": {
                       "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -9452,9 +9454,10 @@ const PatternSchema = {
                         "resolvedAliases": {
                           "description": "Map of resolved aliases present in the design",
                           "type": "object",
-                          "x-go-type": "map[string]core.ResolvedAlias",
+                          "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                            "name": "corev1alpha1"
                           },
                           "additionalProperties": {
                             "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
@@ -14152,9 +14155,10 @@ const PatternSchema = {
                       "resolvedAliases": {
                         "description": "Map of resolved aliases present in the design",
                         "type": "object",
-                        "x-go-type": "map[string]core.ResolvedAlias",
+                        "x-go-type": "map[string]corev1alpha1.ResolvedAlias",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                          "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                          "name": "corev1alpha1"
                         },
                         "additionalProperties": {
                           "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
