@@ -1,0 +1,18 @@
+openapi: 3.0.0
+info:
+  title: Selector Schema
+  description: Reusable selector schema definitions for relationships
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    # Reference to main relationship schemas since selectors are primarily used there
+    # This file exists for organizational purposes but the actual definitions
+    # are in the relationship schema to avoid circular dependencies
+    SelectorReference:
+      description: "Selectors are defined in the relationship schema. See schemas/constructs/v1alpha3/relationship/api.yml for SelectorItem, Selector, SelectorPair, and SelectorSet definitions."
+      type: object
+      properties:
+        note:
+          type: string
+          description: "This is a placeholder. Actual selector types are defined in relationship/api.yml"
