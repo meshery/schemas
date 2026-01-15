@@ -592,7 +592,7 @@ components:
           description: Capabilities associated with the relationship.
           x-order: 2
           items:
-            $ref: "../../v1alpha1/capability/capability_core.yml#/components/schemas/Capability"
+            $ref: "../../v1alpha1/capability/api.yml#/components/schemas/Capability"
             x-go-type: "capability.Capability"
             x-go-type-import:
               path: "github.com/meshery/schemas/models/v1alpha1/capability"
