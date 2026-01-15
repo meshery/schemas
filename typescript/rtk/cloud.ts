@@ -1949,6 +1949,10 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
   page: number;
   /** Number of elements per page */
   page_size: number;
+  /** Aggregate count of connections grouped by status */
+  status_summary?: {
+    [key: string]: number;
+  };
 };
 export type GetConnectionsApiArg = {
   /** Page number */

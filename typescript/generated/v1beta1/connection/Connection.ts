@@ -218,6 +218,8 @@ export interface components {
       page: number;
       /** @description Number of elements per page */
       page_size: number;
+      /** @description Aggregate count of connections grouped by status */
+      status_summary?: { [key: string]: number };
     };
     /**
      * @description Connection Status Value
@@ -491,6 +493,8 @@ export interface operations {
             page: number;
             /** @description Number of elements per page */
             page_size: number;
+            /** @description Aggregate count of connections grouped by status */
+            status_summary?: { [key: string]: number };
           };
         };
       };

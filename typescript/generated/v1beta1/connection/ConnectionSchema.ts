@@ -498,6 +498,19 @@ const ConnectionSchema = {
                         "yaml": "page_size"
                       },
                       "x-order": 4
+                    },
+                    "status_summary": {
+                      "type": "object",
+                      "description": "Aggregate count of connections grouped by status",
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "x-go-type": "map[ConnectionStatus]int",
+                      "x-oapi-codegen-extra-tags": {
+                        "json": "status_summary,omitempty",
+                        "yaml": "status_summary,omitempty"
+                      },
+                      "x-order": 5
                     }
                   }
                 }
@@ -2728,6 +2741,19 @@ const ConnectionSchema = {
               "yaml": "page_size"
             },
             "x-order": 4
+          },
+          "status_summary": {
+            "type": "object",
+            "description": "Aggregate count of connections grouped by status",
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "x-go-type": "map[ConnectionStatus]int",
+            "x-oapi-codegen-extra-tags": {
+              "json": "status_summary,omitempty",
+              "yaml": "status_summary,omitempty"
+            },
+            "x-order": 5
           }
         }
       },
