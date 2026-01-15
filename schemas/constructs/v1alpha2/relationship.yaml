@@ -17,7 +17,7 @@ definitions:
     description: Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
     additionalProperties: false
     required:
-      - alllow
+      - allow
     properties:
       deny:
         type: object

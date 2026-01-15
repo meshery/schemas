@@ -32,7 +32,7 @@ definitions:
                     items:
                       type: string
                     description: JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched.
-  selectorItem:
+  SelectorItem:
     type: object
     additionalProperties: false
     description: Optional fields that are a part of the selector. Absence of a field has an implied * meaning.
@@ -101,8 +101,8 @@ definitions:
     description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
     type: array
     items:
-      $ref: "#/definitions/selectorItem"
-  selectorsPair:
+      $ref: "#/definitions/SelectorItem"
+  SelectorPair:
     type: object
     description: Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
     additionalProperties: false
@@ -136,4 +136,4 @@ definitions:
     description: Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.
     $comment: Sets of selectors are interpreted as a logical UNION. Properties within a selector `allow` and `deny` are interpreted as logical AND, while 'from' and 'to' represents a UNION of set of combinatorial pairs.
     items:
-      $ref: "#/definitions/selectorsPair"
+      $ref: "#/definitions/SelectorPair"
