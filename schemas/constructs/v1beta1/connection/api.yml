@@ -12,7 +12,7 @@ paths:
         - Connections
       operationId: GetConnections
       summary: Get all connections
-      description: Returns a paginated list of connections for the authenticated user
+      description: Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pagesize"
@@ -20,13 +20,13 @@ paths:
         - $ref: "#/components/parameters/order"
         - name: filter
           in: query
-          description: Filter connections
+          description: Filter connections (general filter string)
           required: false
           schema:
             type: string
         - name: kind
           in: query
-          description: Filter by connection kind
+          description: Filter by connection kind (e.g., kubernetes, prometheus, grafana)
           required: false
           schema:
             type: array
@@ -40,9 +40,23 @@ paths:
             type: array
             items:
               $ref: "#/components/schemas/ConnectionStatusValue"
+        - name: type
+          in: query
+          description: Filter by connection type
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          description: Filter by connection name (partial match supported)
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: List of connections
+          description: Paginated list of connections with summary information
           content:
             application/json:
               schema:
@@ -72,124 +86,6 @@ paths:
                 $ref: "#/components/schemas/Connection"
         "400":
           description: Invalid request parameters
-        "500":
-          description: Server error
-
-  /api/integrations/connections/{connectionKind}:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - Connections
-      operationId: GetConnectionsByKind
-      summary: Get connections by kind
-      description: Returns connections filtered by kind (meshery, kubernetes, etc.)
-      parameters:
-        - $ref: "#/components/parameters/connectionKind"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-        - name: status
-          in: query
-          description: Filter by connection status
-          required: false
-          schema:
-            $ref: "#/components/schemas/ConnectionStatusValue"
-        - name: meshery_instance_id
-          in: query
-          description: Filter by Meshery instance ID (for kubernetes connections)
-          required: false
-          schema:
-            type: string
-        - name: with_credentials
-          in: query
-          description: Include credentials in response (for kubernetes connections)
-          required: false
-          schema:
-            type: boolean
-      responses:
-        "200":
-          description: List of connections by kind
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ConnectionPage"
-                  - $ref: "#/components/schemas/MesheryInstancePage"
-        "500":
-          description: Server error
-
-  /api/integrations/connections/status:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - Connections
-      operationId: GetConnectionsStatus
-      summary: Get connections status summary
-      description: Returns aggregated status information for all connections
-      parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-      responses:
-        "200":
-          description: Connection status summary
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ConnectionsStatusPage"
-        "500":
-          description: Server error
-
-  /api/integrations/connections/status/{connectionId}:
-    put:
-      x-internal: ["cloud"]
-      tags:
-        - Connections
-      operationId: UpdateConnectionStatusByID
-      summary: Update connection status
-      description: Update the status of a specific connection
-      parameters:
-        - $ref: "#/components/parameters/connectionId"
-      requestBody:
-        required: true
-        content:
-          text/plain:
-            schema:
-              $ref: "#/components/schemas/ConnectionStatusValue"
-      responses:
-        "200":
-          description: Connection status updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ConnectionPage"
-        "404":
-          description: Connection not found
-        "500":
-          description: Server error
-
-  /api/integrations/connections/{connectionKind}/{connectionId}:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - Connections
-      operationId: GetConnectionByID
-      summary: Get connection by ID
-      description: Returns a specific connection by kind and ID
-      parameters:
-        - $ref: "#/components/parameters/connectionKind"
-        - $ref: "#/components/parameters/connectionId"
-      responses:
-        "200":
-          description: Connection details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Connection"
-        "404":
-          description: Connection not found
         "500":
           description: Server error
 
