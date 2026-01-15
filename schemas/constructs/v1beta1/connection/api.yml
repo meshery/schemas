@@ -194,6 +194,27 @@ paths:
           description: Server error
 
   /api/integrations/connections/{connectionId}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Connections
+      operationId: GetConnectionById
+      summary: Get connection by ID
+      description: Returns a specific connection by its ID
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "404":
+          description: Connection not found
+        "500":
+          description: Server error
+
     put:
       x-internal: ["cloud"]
       tags:
