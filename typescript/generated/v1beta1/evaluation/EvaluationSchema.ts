@@ -391,7 +391,7 @@ const EvaluationSchema = {
                                   "x-go-type-import": {
                                     "path": "github.com/meshery/schemas/models/v1beta1/connection"
                                   },
-                                  "$id": "https://schemas.meshery.io/component.yaml",
+                                  "$id": "https://schemas.meshery.io/connection.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
                                   "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                                   "additionalProperties": false,
@@ -452,7 +452,7 @@ const EvaluationSchema = {
                                       },
                                       "x-order": 4,
                                       "type": "string",
-                                      "description": "Connection Type"
+                                      "description": "Connection Type (platform, telemetry, collaboration)"
                                     },
                                     "sub_type": {
                                       "x-oapi-codegen-extra-tags": {
@@ -461,7 +461,7 @@ const EvaluationSchema = {
                                       },
                                       "x-order": 5,
                                       "type": "string",
-                                      "description": "Connection Subtype"
+                                      "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)"
                                     },
                                     "kind": {
                                       "x-oapi-codegen-extra-tags": {
@@ -470,7 +470,7 @@ const EvaluationSchema = {
                                       },
                                       "x-order": 6,
                                       "type": "string",
-                                      "description": "Connection Kind"
+                                      "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)"
                                     },
                                     "metadata": {
                                       "x-oapi-codegen-extra-tags": {
@@ -479,8 +479,12 @@ const EvaluationSchema = {
                                       },
                                       "x-order": 7,
                                       "x-go-type": "core.Map",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/core"
+                                      },
                                       "x-go-type-skip-optional-pointer": true,
-                                      "type": "object"
+                                      "type": "object",
+                                      "description": "Additional connection metadata"
                                     },
                                     "status": {
                                       "x-oapi-codegen-extra-tags": {
@@ -542,6 +546,9 @@ const EvaluationSchema = {
                                         "yaml": "deleted_at"
                                       },
                                       "x-go-type": "core.NullTime",
+                                      "x-go-type-import": {
+                                        "path": "github.com/meshery/schemas/models/core"
+                                      },
                                       "x-order": 12,
                                       "type": "string",
                                       "format": "date-time",
@@ -549,8 +556,12 @@ const EvaluationSchema = {
                                     },
                                     "environments": {
                                       "type": "array",
+                                      "description": "Associated environments for this connection",
                                       "items": {
                                         "x-go-type": "*environment.Environment",
+                                        "x-go-type-import": {
+                                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                        },
                                         "$id": "https://schemas.meshery.io/environment.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
                                         "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
@@ -4941,7 +4952,7 @@ const EvaluationSchema = {
                                     "x-go-type-import": {
                                       "path": "github.com/meshery/schemas/models/v1beta1/connection"
                                     },
-                                    "$id": "https://schemas.meshery.io/component.yaml",
+                                    "$id": "https://schemas.meshery.io/connection.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
                                     "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                                     "additionalProperties": false,
@@ -5002,7 +5013,7 @@ const EvaluationSchema = {
                                         },
                                         "x-order": 4,
                                         "type": "string",
-                                        "description": "Connection Type"
+                                        "description": "Connection Type (platform, telemetry, collaboration)"
                                       },
                                       "sub_type": {
                                         "x-oapi-codegen-extra-tags": {
@@ -5011,7 +5022,7 @@ const EvaluationSchema = {
                                         },
                                         "x-order": 5,
                                         "type": "string",
-                                        "description": "Connection Subtype"
+                                        "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)"
                                       },
                                       "kind": {
                                         "x-oapi-codegen-extra-tags": {
@@ -5020,7 +5031,7 @@ const EvaluationSchema = {
                                         },
                                         "x-order": 6,
                                         "type": "string",
-                                        "description": "Connection Kind"
+                                        "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)"
                                       },
                                       "metadata": {
                                         "x-oapi-codegen-extra-tags": {
@@ -5029,8 +5040,12 @@ const EvaluationSchema = {
                                         },
                                         "x-order": 7,
                                         "x-go-type": "core.Map",
+                                        "x-go-type-import": {
+                                          "path": "github.com/meshery/schemas/models/core"
+                                        },
                                         "x-go-type-skip-optional-pointer": true,
-                                        "type": "object"
+                                        "type": "object",
+                                        "description": "Additional connection metadata"
                                       },
                                       "status": {
                                         "x-oapi-codegen-extra-tags": {
@@ -5092,6 +5107,9 @@ const EvaluationSchema = {
                                           "yaml": "deleted_at"
                                         },
                                         "x-go-type": "core.NullTime",
+                                        "x-go-type-import": {
+                                          "path": "github.com/meshery/schemas/models/core"
+                                        },
                                         "x-order": 12,
                                         "type": "string",
                                         "format": "date-time",
@@ -5099,8 +5117,12 @@ const EvaluationSchema = {
                                       },
                                       "environments": {
                                         "type": "array",
+                                        "description": "Associated environments for this connection",
                                         "items": {
                                           "x-go-type": "*environment.Environment",
+                                          "x-go-type-import": {
+                                            "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                          },
                                           "$id": "https://schemas.meshery.io/environment.yaml",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
                                           "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
@@ -9515,7 +9537,7 @@ const EvaluationSchema = {
                           "x-go-type-import": {
                             "path": "github.com/meshery/schemas/models/v1beta1/connection"
                           },
-                          "$id": "https://schemas.meshery.io/component.yaml",
+                          "$id": "https://schemas.meshery.io/connection.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                           "additionalProperties": false,
@@ -9576,7 +9598,7 @@ const EvaluationSchema = {
                               },
                               "x-order": 4,
                               "type": "string",
-                              "description": "Connection Type"
+                              "description": "Connection Type (platform, telemetry, collaboration)"
                             },
                             "sub_type": {
                               "x-oapi-codegen-extra-tags": {
@@ -9585,7 +9607,7 @@ const EvaluationSchema = {
                               },
                               "x-order": 5,
                               "type": "string",
-                              "description": "Connection Subtype"
+                              "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)"
                             },
                             "kind": {
                               "x-oapi-codegen-extra-tags": {
@@ -9594,7 +9616,7 @@ const EvaluationSchema = {
                               },
                               "x-order": 6,
                               "type": "string",
-                              "description": "Connection Kind"
+                              "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)"
                             },
                             "metadata": {
                               "x-oapi-codegen-extra-tags": {
@@ -9603,8 +9625,12 @@ const EvaluationSchema = {
                               },
                               "x-order": 7,
                               "x-go-type": "core.Map",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/core"
+                              },
                               "x-go-type-skip-optional-pointer": true,
-                              "type": "object"
+                              "type": "object",
+                              "description": "Additional connection metadata"
                             },
                             "status": {
                               "x-oapi-codegen-extra-tags": {
@@ -9666,6 +9692,9 @@ const EvaluationSchema = {
                                 "yaml": "deleted_at"
                               },
                               "x-go-type": "core.NullTime",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/core"
+                              },
                               "x-order": 12,
                               "type": "string",
                               "format": "date-time",
@@ -9673,8 +9702,12 @@ const EvaluationSchema = {
                             },
                             "environments": {
                               "type": "array",
+                              "description": "Associated environments for this connection",
                               "items": {
                                 "x-go-type": "*environment.Environment",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                },
                                 "$id": "https://schemas.meshery.io/environment.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
@@ -14057,7 +14090,7 @@ const EvaluationSchema = {
                           "x-go-type-import": {
                             "path": "github.com/meshery/schemas/models/v1beta1/connection"
                           },
-                          "$id": "https://schemas.meshery.io/component.yaml",
+                          "$id": "https://schemas.meshery.io/connection.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
                           "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
                           "additionalProperties": false,
@@ -14118,7 +14151,7 @@ const EvaluationSchema = {
                               },
                               "x-order": 4,
                               "type": "string",
-                              "description": "Connection Type"
+                              "description": "Connection Type (platform, telemetry, collaboration)"
                             },
                             "sub_type": {
                               "x-oapi-codegen-extra-tags": {
@@ -14127,7 +14160,7 @@ const EvaluationSchema = {
                               },
                               "x-order": 5,
                               "type": "string",
-                              "description": "Connection Subtype"
+                              "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)"
                             },
                             "kind": {
                               "x-oapi-codegen-extra-tags": {
@@ -14136,7 +14169,7 @@ const EvaluationSchema = {
                               },
                               "x-order": 6,
                               "type": "string",
-                              "description": "Connection Kind"
+                              "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)"
                             },
                             "metadata": {
                               "x-oapi-codegen-extra-tags": {
@@ -14145,8 +14178,12 @@ const EvaluationSchema = {
                               },
                               "x-order": 7,
                               "x-go-type": "core.Map",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/core"
+                              },
                               "x-go-type-skip-optional-pointer": true,
-                              "type": "object"
+                              "type": "object",
+                              "description": "Additional connection metadata"
                             },
                             "status": {
                               "x-oapi-codegen-extra-tags": {
@@ -14208,6 +14245,9 @@ const EvaluationSchema = {
                                 "yaml": "deleted_at"
                               },
                               "x-go-type": "core.NullTime",
+                              "x-go-type-import": {
+                                "path": "github.com/meshery/schemas/models/core"
+                              },
                               "x-order": 12,
                               "type": "string",
                               "format": "date-time",
@@ -14215,8 +14255,12 @@ const EvaluationSchema = {
                             },
                             "environments": {
                               "type": "array",
+                              "description": "Associated environments for this connection",
                               "items": {
                                 "x-go-type": "*environment.Environment",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                },
                                 "$id": "https://schemas.meshery.io/environment.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
                                 "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
