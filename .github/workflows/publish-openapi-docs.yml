@@ -69,5 +69,4 @@ jobs:
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           file_pattern: docs/_data/openapi.yml
-          push_options: '--force'
           branch: master
