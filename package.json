@@ -28,25 +28,25 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@apidevtools/json-schema-ref-parser": "^11.9.3",
+    "@apidevtools/json-schema-ref-parser": "^15.2.0",
     "@openapi-contrib/openapi-schema-to-json-schema": "^5.1.0",
-    "@rtk-query/codegen-openapi": "^2.0.0",
+    "@rtk-query/codegen-openapi": "^2.2.0",
     "csv-parse": "^6.1.0",
     "esbuild-runner": "^2.2.2",
     "js-yaml": "^4.1.1",
     "json-schema-default": "^1.0.2",
-    "json-schema-empty-strings": "^1.0.2",
-    "json-schema-faker": "^0.5.8",
-    "json-schema-to-typescript": "^14.1.0",
+    "json-schema-empty-strings": "^1.0.5",
+    "json-schema-faker": "^0.5.9",
+    "json-schema-to-typescript": "^15.0.4",
     "lodash.merge": "^4.6.2",
     "ts-node": "^10.9.2",
-    "tsup": "^8.4.0",
-    "typescript": "^4.9.5"
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "@reduxjs/toolkit": "^2.8.1",
     "react": "^18.3.1",
-    "react-dom": "18.3.1",
+    "react-dom": "^18.3.1",
     "react-redux": "^8.1.3"
   }
 }
