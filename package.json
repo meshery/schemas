@@ -33,6 +33,7 @@
     "@rtk-query/codegen-openapi": "^2.2.0",
     "csv-parse": "^6.1.0",
     "esbuild-runner": "^2.2.2",
+    "glob": "^11.1.0",
     "js-yaml": "^4.1.1",
     "json-schema-default": "^1.0.2",
     "json-schema-empty-strings": "^1.0.5",
