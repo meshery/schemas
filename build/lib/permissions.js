@@ -270,7 +270,7 @@ function buildIndex(permissions) {
   const id = computeIndexId(permissions);
   return {
     id,
-    createdAt: new Date().toISOString(),
+    // createdAt: new Date().toISOString(),
     count: permissions.length,
     items: permissions.map((p) => ({
       name: p.name,
