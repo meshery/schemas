@@ -64,7 +64,7 @@ Generated outputs (never edit or commit):
 ## Build System
 
 ```bash
-make setup && npm install     # Install all dependencies (first time)
+make setup                    # Install all dependencies (first time)
 make build                    # Full build: Go + TypeScript + OpenAPI bundles
 npm run build                 # Build TypeScript distribution
 go test ./...                 # Run validation tests
@@ -101,10 +101,18 @@ id:
 4. Add templates in `templates/` folder (e.g., `<construct>_template.json`)
 5. Run `make build`
 6. Update `typescript/index.ts`:
-   ```typescript
-   import { components as NewComponents } from "./generated/v1beta1/<construct>/<Construct>";
-   export type <Construct> = NewComponents["schemas"]["<Construct>Definition"];
-   ```
+   - Import the components and schema:
+     ```typescript
+     import { components as NewComponents } from "./generated/v1beta1/<construct>/<Construct>";
+     import <Construct>Schema from "./generated/v1beta1/<construct>/<Construct>Schema";
+     ```
+   - Export the schema object.
+   - Export the type in the versioned namespace:
+     ```typescript
+     export namespace v1beta1 {
+       export type <Construct> = NewComponents["schemas"]["<Construct>Definition"];
+     }
+     ```
 7. Verify `git status` — only source files should be staged
 
 ## Modifying Existing Schemas
