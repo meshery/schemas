@@ -34,7 +34,7 @@ site:
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
 	go mod tidy
-	npm install
+	npm install --legacy-peer-deps
 
 ## Build API docs with redocly
 docs-build: dep-check
