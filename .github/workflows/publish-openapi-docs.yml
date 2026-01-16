@@ -1,3 +1,15 @@
+# This workflow automatically publishes the OpenAPI documentation to the meshery/meshery repository
+# It runs on:
+# 1. Release publication (when a new release is published)
+# 2. Manual trigger via workflow_dispatch
+#
+# What it does:
+# - Builds the OpenAPI specifications from schemas
+# - Copies the merged_openapi.yml to meshery/meshery repo at docs/_data/openapi.yml
+# - Commits and pushes the changes directly to the master branch
+#
+# This ensures that the Meshery REST API documentation stays in sync with the schemas repository.
+
 name: Publish OpenAPI Docs to Meshery
 
 on:
