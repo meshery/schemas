@@ -505,7 +505,6 @@ const ConnectionSchema = {
                       "additionalProperties": {
                         "type": "integer"
                       },
-                      "x-go-type": "map[ConnectionStatus]int",
                       "x-oapi-codegen-extra-tags": {
                         "json": "status_summary,omitempty",
                         "yaml": "status_summary,omitempty"
@@ -2748,7 +2747,6 @@ const ConnectionSchema = {
             "additionalProperties": {
               "type": "integer"
             },
-            "x-go-type": "map[ConnectionStatus]int",
             "x-oapi-codegen-extra-tags": {
               "json": "status_summary,omitempty",
               "yaml": "status_summary,omitempty"
