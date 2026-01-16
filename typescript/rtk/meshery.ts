@@ -2371,7 +2371,7 @@ export type RegisterMeshmodelsApiArg = {
         }
       | {
           /** URI to the source code or package of the model. */
-          url: string | string;
+          url: string;
         };
     /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
     uploadType: "file" | "urlImport" | "csv" | "url";
