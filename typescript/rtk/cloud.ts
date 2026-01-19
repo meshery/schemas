@@ -1949,6 +1949,10 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
   page: number;
   /** Number of elements per page */
   page_size: number;
+  /** Aggregate count of connections grouped by status */
+  status_summary?: {
+    [key: string]: number;
+  };
 };
 export type GetConnectionsApiArg = {
   /** Page number */
@@ -2951,7 +2955,7 @@ export type RegisterMeshmodelsApiArg = {
         }
       | {
           /** URI to the source code or package of the model. */
-          url: string | string;
+          url: string;
         };
     /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
     uploadType: "file" | "urlImport" | "csv" | "url";
