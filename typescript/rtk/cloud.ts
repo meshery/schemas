@@ -3,6 +3,7 @@ export const addTagTypes = [
   "Academy_API_Academy",
   "Academy_API_other",
   "badge_Badge",
+  "Connection_API_Connections",
   "design_other",
   "environment_environments",
   "events_other",
@@ -187,6 +188,74 @@ const injectedRtkApi = api
       createOrUpdateBadge: build.mutation<CreateOrUpdateBadgeApiResponse, CreateOrUpdateBadgeApiArg>({
         query: (queryArg) => ({ url: `/api/organizations/badges`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["badge_Badge"],
+      }),
+      getConnections: build.query<GetConnectionsApiResponse, GetConnectionsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections`,
+          params: {
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            search: queryArg.search,
+            order: queryArg.order,
+            filter: queryArg.filter,
+            kind: queryArg.kind,
+            status: queryArg.status,
+            type: queryArg["type"],
+            name: queryArg.name,
+          },
+        }),
+        providesTags: ["Connection_API_Connections"],
+      }),
+      registerConnection: build.mutation<RegisterConnectionApiResponse, RegisterConnectionApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}` }),
+        providesTags: ["Connection_API_Connections"],
+      }),
+      updateConnection: build.mutation<UpdateConnectionApiResponse, UpdateConnectionApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/${queryArg.connectionId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      deleteConnection: build.mutation<DeleteConnectionApiResponse, DeleteConnectionApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}`, method: "DELETE" }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      deleteMesheryConnection: build.mutation<DeleteMesheryConnectionApiResponse, DeleteMesheryConnectionApiArg>({
+        query: (queryArg) => ({
+          url: `/api/integrations/connections/meshery/${queryArg.mesheryServerId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      getKubernetesContext: build.query<GetKubernetesContextApiResponse, GetKubernetesContextApiArg>({
+        query: (queryArg) => ({ url: `/api/integrations/connections/kubernetes/${queryArg.connectionId}/context` }),
+        providesTags: ["Connection_API_Connections"],
+      }),
+      addConnectionToEnvironment: build.mutation<
+        AddConnectionToEnvironmentApiResponse,
+        AddConnectionToEnvironmentApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
+      }),
+      removeConnectionFromEnvironment: build.mutation<
+        RemoveConnectionFromEnvironmentApiResponse,
+        RemoveConnectionFromEnvironmentApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/api/environments/${queryArg.environmentId}/connections/${queryArg.connectionId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Connection_API_Connections"],
       }),
       importDesign: build.mutation<ImportDesignApiResponse, ImportDesignApiArg>({
         query: (queryArg) => ({ url: `/api/pattern/import`, method: "POST", body: queryArg.body }),
@@ -1822,6 +1891,327 @@ export type CreateOrUpdateBadgeApiArg = {
     deleted_at: string;
   };
 };
+export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
+  /** List of connections on this page */
+  connections: {
+    /** Connection ID */
+    id: string;
+    /** Connection Name */
+    name: string;
+    /** Associated Credential ID */
+    credential_id?: string;
+    /** Connection Type (platform, telemetry, collaboration) */
+    type: string;
+    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+    sub_type: string;
+    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+    kind: string;
+    /** Additional connection metadata */
+    metadata?: object;
+    /** Connection Status */
+    status:
+      | "discovered"
+      | "registered"
+      | "connected"
+      | "ignored"
+      | "maintenance"
+      | "disconnected"
+      | "deleted"
+      | "not found";
+    /** User ID who owns this connection */
+    user_id?: string;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+    /** Associated environments for this connection */
+    environments?: {
+      /** ID */
+      id: string;
+      /** Environment name */
+      name: string;
+      /** Environment description */
+      description: string;
+      /** Environment organization ID */
+      organization_id: string;
+      /** Environment owner */
+      owner?: string;
+      created_at?: string;
+      metadata?: object;
+      updated_at?: string;
+      deleted_at?: string;
+    }[];
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion: string;
+  }[];
+  /** Total number of connections on all pages */
+  total_count: number;
+  /** Current page number */
+  page: number;
+  /** Number of elements per page */
+  page_size: number;
+  /** Aggregate count of connections grouped by status */
+  status_summary?: {
+    [key: string]: number;
+  };
+};
+export type GetConnectionsApiArg = {
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pagesize?: number;
+  /** Search term */
+  search?: string;
+  /** Sort order */
+  order?: string;
+  /** Filter connections (general filter string) */
+  filter?: string;
+  /** Filter by connection kind (e.g., kubernetes, prometheus, grafana) */
+  kind?: string[];
+  /** Filter by connection status */
+  status?: (
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found"
+  )[];
+  /** Filter by connection type */
+  type?: string[];
+  /** Filter by connection name (partial match supported) */
+  name?: string;
+};
+export type RegisterConnectionApiResponse = /** status 201 Connection registered successfully */ {
+  /** Connection ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Associated Credential ID */
+  credential_id?: string;
+  /** Connection Type (platform, telemetry, collaboration) */
+  type: string;
+  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+  sub_type: string;
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  kind: string;
+  /** Additional connection metadata */
+  metadata?: object;
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** User ID who owns this connection */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  /** Associated environments for this connection */
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type RegisterConnectionApiArg = {
+  body: {
+    /** Connection ID */
+    id?: string;
+    /** Connection name */
+    name: string;
+    /** Connection kind */
+    kind: string;
+    /** Connection type */
+    type: string;
+    /** Connection sub-type */
+    sub_type: string;
+    /** Credential secret data */
+    credential_secret?: object;
+    /** Connection metadata */
+    metadata?: object;
+    /** Connection status */
+    status: string;
+    /** Associated credential ID */
+    credential_id?: string;
+  };
+};
+export type GetConnectionByIdApiResponse = /** status 200 Connection details */ {
+  /** Connection ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Associated Credential ID */
+  credential_id?: string;
+  /** Connection Type (platform, telemetry, collaboration) */
+  type: string;
+  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+  sub_type: string;
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  kind: string;
+  /** Additional connection metadata */
+  metadata?: object;
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** User ID who owns this connection */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  /** Associated environments for this connection */
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type GetConnectionByIdApiArg = {
+  /** Connection ID */
+  connectionId: string;
+};
+export type UpdateConnectionApiResponse = /** status 200 Connection updated successfully */ {
+  /** Connection ID */
+  id: string;
+  /** Connection Name */
+  name: string;
+  /** Associated Credential ID */
+  credential_id?: string;
+  /** Connection Type (platform, telemetry, collaboration) */
+  type: string;
+  /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
+  sub_type: string;
+  /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
+  kind: string;
+  /** Additional connection metadata */
+  metadata?: object;
+  /** Connection Status */
+  status:
+    | "discovered"
+    | "registered"
+    | "connected"
+    | "ignored"
+    | "maintenance"
+    | "disconnected"
+    | "deleted"
+    | "not found";
+  /** User ID who owns this connection */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+  /** Associated environments for this connection */
+  environments?: {
+    /** ID */
+    id: string;
+    /** Environment name */
+    name: string;
+    /** Environment description */
+    description: string;
+    /** Environment organization ID */
+    organization_id: string;
+    /** Environment owner */
+    owner?: string;
+    created_at?: string;
+    metadata?: object;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion: string;
+};
+export type UpdateConnectionApiArg = {
+  /** Connection ID */
+  connectionId: string;
+  body: {
+    /** Connection ID */
+    id?: string;
+    /** Connection name */
+    name: string;
+    /** Connection kind */
+    kind: string;
+    /** Connection type */
+    type: string;
+    /** Connection sub-type */
+    sub_type: string;
+    /** Credential secret data */
+    credential_secret?: object;
+    /** Connection metadata */
+    metadata?: object;
+    /** Connection status */
+    status: string;
+    /** Associated credential ID */
+    credential_id?: string;
+  };
+};
+export type DeleteConnectionApiResponse = unknown;
+export type DeleteConnectionApiArg = {
+  /** Connection ID */
+  connectionId: string;
+};
+export type DeleteMesheryConnectionApiResponse = unknown;
+export type DeleteMesheryConnectionApiArg = {
+  /** Meshery server ID */
+  mesheryServerId: string;
+};
+export type GetKubernetesContextApiResponse = /** status 200 Kubernetes context */ object;
+export type GetKubernetesContextApiArg = {
+  /** Connection ID */
+  connectionId: string;
+};
+export type AddConnectionToEnvironmentApiResponse = unknown;
+export type AddConnectionToEnvironmentApiArg = {
+  /** Environment ID */
+  environmentId: string;
+  /** Connection ID */
+  connectionId: string;
+};
+export type RemoveConnectionFromEnvironmentApiResponse = unknown;
+export type RemoveConnectionFromEnvironmentApiArg = {
+  /** Environment ID */
+  environmentId: string;
+  /** Connection ID */
+  connectionId: string;
+};
 export type ImportDesignApiResponse = /** status 200 Successful Import */ {
   message?: string;
 };
@@ -2565,7 +2955,7 @@ export type RegisterMeshmodelsApiArg = {
         }
       | {
           /** URI to the source code or package of the model. */
-          url: string | string;
+          url: string;
         };
     /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
     uploadType: "file" | "urlImport" | "csv" | "url";
@@ -2900,6 +3290,15 @@ export const {
   useDeleteBadgeByIdMutation,
   useGetBadgeByIdQuery,
   useCreateOrUpdateBadgeMutation,
+  useGetConnectionsQuery,
+  useRegisterConnectionMutation,
+  useGetConnectionByIdQuery,
+  useUpdateConnectionMutation,
+  useDeleteConnectionMutation,
+  useDeleteMesheryConnectionMutation,
+  useGetKubernetesContextQuery,
+  useAddConnectionToEnvironmentMutation,
+  useRemoveConnectionFromEnvironmentMutation,
   useImportDesignMutation,
   useCreateEnvironmentMutation,
   useGetEnvironmentsQuery,

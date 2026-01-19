@@ -329,7 +329,7 @@ const ModelSchema = {
             "x-go-type-import": {
               "path": "github.com/meshery/schemas/models/v1beta1/connection"
             },
-            "$id": "https://schemas.meshery.io/component.yaml",
+            "$id": "https://schemas.meshery.io/connection.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
             "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
             "additionalProperties": false,
@@ -345,7 +345,7 @@ const ModelSchema = {
             ],
             "properties": {
               "id": {
-                "description": "ID",
+                "description": "Connection ID",
                 "x-order": 1,
                 "x-go-name": "ID",
                 "x-oapi-codegen-extra-tags": {
@@ -375,7 +375,7 @@ const ModelSchema = {
                   "yaml": "credential_id"
                 },
                 "x-order": 3,
-                "description": "Credential ID",
+                "description": "Associated Credential ID",
                 "type": "string",
                 "format": "uuid",
                 "x-go-type": "uuid.UUID",
@@ -390,7 +390,7 @@ const ModelSchema = {
                 },
                 "x-order": 4,
                 "type": "string",
-                "description": "Connection Type"
+                "description": "Connection Type (platform, telemetry, collaboration)"
               },
               "sub_type": {
                 "x-oapi-codegen-extra-tags": {
@@ -399,7 +399,7 @@ const ModelSchema = {
                 },
                 "x-order": 5,
                 "type": "string",
-                "description": "Connection Subtype"
+                "description": "Connection Subtype (cloud, identity, metrics, chat, git, orchestration)"
               },
               "kind": {
                 "x-oapi-codegen-extra-tags": {
@@ -408,7 +408,7 @@ const ModelSchema = {
                 },
                 "x-order": 6,
                 "type": "string",
-                "description": "Connection Kind"
+                "description": "Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github)"
               },
               "metadata": {
                 "x-oapi-codegen-extra-tags": {
@@ -417,8 +417,12 @@ const ModelSchema = {
                 },
                 "x-order": 7,
                 "x-go-type": "core.Map",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/core"
+                },
                 "x-go-type-skip-optional-pointer": true,
-                "type": "object"
+                "type": "object",
+                "description": "Additional connection metadata"
               },
               "status": {
                 "x-oapi-codegen-extra-tags": {
@@ -446,9 +450,9 @@ const ModelSchema = {
                   "yaml": "user_id"
                 },
                 "x-order": 9,
+                "description": "User ID who owns this connection",
                 "type": "string",
                 "format": "uuid",
-                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
                 "x-go-type": "uuid.UUID",
                 "x-go-type-import": {
                   "path": "github.com/gofrs/uuid"
@@ -480,6 +484,9 @@ const ModelSchema = {
                   "yaml": "deleted_at"
                 },
                 "x-go-type": "core.NullTime",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/core"
+                },
                 "x-order": 12,
                 "type": "string",
                 "format": "date-time",
@@ -487,8 +494,12 @@ const ModelSchema = {
               },
               "environments": {
                 "type": "array",
+                "description": "Associated environments for this connection",
                 "items": {
                   "x-go-type": "*environment.Environment",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                  },
                   "$id": "https://schemas.meshery.io/environment.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
                   "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
