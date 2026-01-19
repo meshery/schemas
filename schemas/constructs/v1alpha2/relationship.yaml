@@ -11,6 +11,36 @@ required:
   - evaluationQuery
 additionalProperties: false
 type: object
+definitions:
+  SelectorPair:
+    type: object
+    description: Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
+    additionalProperties: false
+    required:
+      - allow
+    properties:
+      deny:
+        type: object
+        description: Optional selectors used to define relationships which should not be created / is restricted.
+        required:
+          - to
+          - from
+        properties:
+          from:
+            $ref: ./selector.yaml#/from
+          to:
+            $ref: ./selector.yaml#/to
+      allow:
+        type: object
+        description: Selectors used to define relationships which are allowed.
+        required:
+          - to
+          - from
+        properties:
+          from:
+            $ref: ./selector.yaml#/from
+          to:
+            $ref: ./selector.yaml#/to
 properties:
   schemaVersion:
     $ref: ../v1alpha1/core/api.yml#/components/schemas/versionString
@@ -50,31 +80,4 @@ properties:
     description: Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.
     $comment: Sets of selectors are interpreted as a locical OR, while sets of allow/deny are interpreted a logical AND.
     items:
-      type: object
-      description: Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
-      additionalProperties: false
-      required:
-        - alllow
-      properties:
-        deny:
-          type: object
-          description: Optional selectors used to define relationships which should not be created / is restricted.
-          required:
-            - to
-            - from
-          properties:
-            from:
-              $ref: ./selector.yaml#/from
-            to:
-              $ref: ./selector.yaml#/to
-        allow:
-          type: object
-          description: Selectors used to define relationships which are allowed.
-          required:
-            - to
-            - from
-          properties:
-            from:
-              $ref: ./selector.yaml#/from
-            to:
-              $ref: ./selector.yaml#/to
+      $ref: "#/definitions/SelectorPair"
