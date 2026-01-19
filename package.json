@@ -23,6 +23,10 @@
     "build:rtk": "node ./build/generate-rtk.js",
     "build:all": "node ./build/index.js all",
     "generate:types": "node ./build/generate-typescript.js",
+    "generate:permissions:ts": "node ./build/generate-permissions-ts.js",
+    "generate:permissions:go": "node ./build/generate-permission-golang.js",
+    "diff:permissions": "node ./build/diff-permissions.js",
+    "apply:permissions": "node ./build/apply-permissions-updates.js",
     "publish-ts-lib": "node ./publish-npm-package.js"
   },
   "author": "",
