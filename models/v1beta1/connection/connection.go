@@ -91,6 +91,9 @@ type ConnectionPage struct {
 
 	// PageSize Number of elements per page
 	PageSize int `json:"page_size" yaml:"page_size"`
+
+	// StatusSummary Aggregate count of connections grouped by status
+	StatusSummary *map[ConnectionStatus]int `json:"status_summary,omitempty" yaml:"status_summary,omitempty"`
 }
 
 // ConnectionPayload Payload for creating or updating a connection

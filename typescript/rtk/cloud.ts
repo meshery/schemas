@@ -200,6 +200,8 @@ const injectedRtkApi = api
             filter: queryArg.filter,
             kind: queryArg.kind,
             status: queryArg.status,
+            type: queryArg["type"],
+            name: queryArg.name,
           },
         }),
         providesTags: ["Connection_API_Connections"],
@@ -208,48 +210,8 @@ const injectedRtkApi = api
         query: (queryArg) => ({ url: `/api/integrations/connections`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["Connection_API_Connections"],
       }),
-      getConnectionsByKind: build.query<GetConnectionsByKindApiResponse, GetConnectionsByKindApiArg>({
-        query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionKind}`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-            status: queryArg.status,
-            meshery_instance_id: queryArg.mesheryInstanceId,
-            with_credentials: queryArg.withCredentials,
-          },
-        }),
-        providesTags: ["Connection_API_Connections"],
-      }),
-      getConnectionsStatus: build.query<GetConnectionsStatusApiResponse, GetConnectionsStatusApiArg>({
-        query: (queryArg) => ({
-          url: `/api/integrations/connections/status`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            search: queryArg.search,
-            order: queryArg.order,
-          },
-        }),
-        providesTags: ["Connection_API_Connections"],
-      }),
-      updateConnectionStatusById: build.mutation<
-        UpdateConnectionStatusByIdApiResponse,
-        UpdateConnectionStatusByIdApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/integrations/connections/status/${queryArg.connectionId}`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["Connection_API_Connections"],
-      }),
       getConnectionById: build.query<GetConnectionByIdApiResponse, GetConnectionByIdApiArg>({
-        query: (queryArg) => ({
-          url: `/api/integrations/connections/${queryArg.connectionKind}/${queryArg.connectionId}`,
-        }),
+        query: (queryArg) => ({ url: `/api/integrations/connections/${queryArg.connectionId}` }),
         providesTags: ["Connection_API_Connections"],
       }),
       updateConnection: build.mutation<UpdateConnectionApiResponse, UpdateConnectionApiArg>({
@@ -1929,7 +1891,7 @@ export type CreateOrUpdateBadgeApiArg = {
     deleted_at: string;
   };
 };
-export type GetConnectionsApiResponse = /** status 200 List of connections */ {
+export type GetConnectionsApiResponse = /** status 200 Paginated list of connections with summary information */ {
   /** List of connections on this page */
   connections: {
     /** Connection ID */
@@ -1987,6 +1949,10 @@ export type GetConnectionsApiResponse = /** status 200 List of connections */ {
   page: number;
   /** Number of elements per page */
   page_size: number;
+  /** Aggregate count of connections grouped by status */
+  status_summary?: {
+    [key: string]: number;
+  };
 };
 export type GetConnectionsApiArg = {
   /** Page number */
@@ -1997,9 +1963,9 @@ export type GetConnectionsApiArg = {
   search?: string;
   /** Sort order */
   order?: string;
-  /** Filter connections */
+  /** Filter connections (general filter string) */
   filter?: string;
-  /** Filter by connection kind */
+  /** Filter by connection kind (e.g., kubernetes, prometheus, grafana) */
   kind?: string[];
   /** Filter by connection status */
   status?: (
@@ -2012,6 +1978,10 @@ export type GetConnectionsApiArg = {
     | "deleted"
     | "not found"
   )[];
+  /** Filter by connection type */
+  type?: string[];
+  /** Filter by connection name (partial match supported) */
+  name?: string;
 };
 export type RegisterConnectionApiResponse = /** status 201 Connection registered successfully */ {
   /** Connection ID */
@@ -2085,218 +2055,6 @@ export type RegisterConnectionApiArg = {
     credential_id?: string;
   };
 };
-export type GetConnectionsByKindApiResponse = /** status 200 List of connections by kind */
-  | {
-      /** List of connections on this page */
-      connections: {
-        /** Connection ID */
-        id: string;
-        /** Connection Name */
-        name: string;
-        /** Associated Credential ID */
-        credential_id?: string;
-        /** Connection Type (platform, telemetry, collaboration) */
-        type: string;
-        /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-        sub_type: string;
-        /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-        kind: string;
-        /** Additional connection metadata */
-        metadata?: object;
-        /** Connection Status */
-        status:
-          | "discovered"
-          | "registered"
-          | "connected"
-          | "ignored"
-          | "maintenance"
-          | "disconnected"
-          | "deleted"
-          | "not found";
-        /** User ID who owns this connection */
-        user_id?: string;
-        created_at?: string;
-        updated_at?: string;
-        deleted_at?: string;
-        /** Associated environments for this connection */
-        environments?: {
-          /** ID */
-          id: string;
-          /** Environment name */
-          name: string;
-          /** Environment description */
-          description: string;
-          /** Environment organization ID */
-          organization_id: string;
-          /** Environment owner */
-          owner?: string;
-          created_at?: string;
-          metadata?: object;
-          updated_at?: string;
-          deleted_at?: string;
-        }[];
-        /** Specifies the version of the schema used for the definition. */
-        schemaVersion: string;
-      }[];
-      /** Total number of connections on all pages */
-      total_count: number;
-      /** Current page number */
-      page: number;
-      /** Number of elements per page */
-      page_size: number;
-    }
-  | {
-      /** List of Meshery instances */
-      meshery_instances: {
-        /** Instance ID */
-        id?: string;
-        /** Instance name */
-        name?: string;
-        /** Server ID */
-        server_id?: string;
-        /** Meshery server version */
-        server_version?: string;
-        /** Server location URL */
-        server_location?: string;
-        /** Server build SHA */
-        server_build_sha?: string;
-        /** Creation timestamp */
-        created_at?: string;
-        /** Last update timestamp */
-        updated_at?: string;
-        /** Deletion timestamp */
-        deleted_at?: string;
-      }[];
-      /** Current page number */
-      page: number;
-      /** Number of items per page */
-      page_size: number;
-      /** Total number of instances */
-      total_count: number;
-    };
-export type GetConnectionsByKindApiArg = {
-  /** Connection kind (meshery, kubernetes, prometheus, grafana, etc.) */
-  connectionKind: string;
-  /** Page number */
-  page?: number;
-  /** Number of items per page */
-  pagesize?: number;
-  /** Search term */
-  search?: string;
-  /** Sort order */
-  order?: string;
-  /** Filter by connection status */
-  status?:
-    | "discovered"
-    | "registered"
-    | "connected"
-    | "ignored"
-    | "maintenance"
-    | "disconnected"
-    | "deleted"
-    | "not found";
-  /** Filter by Meshery instance ID (for kubernetes connections) */
-  mesheryInstanceId?: string;
-  /** Include credentials in response (for kubernetes connections) */
-  withCredentials?: boolean;
-};
-export type GetConnectionsStatusApiResponse = /** status 200 Connection status summary */ {
-  /** Total number of status entries */
-  total_count: number;
-  /** Current page number */
-  page: number;
-  /** Number of items per page */
-  page_size: number;
-  /** List of status counts */
-  connections_status: {
-    /** Status value */
-    status: string;
-    /** Number of connections with this status */
-    count: number;
-  }[];
-};
-export type GetConnectionsStatusApiArg = {
-  /** Page number */
-  page?: number;
-  /** Number of items per page */
-  pagesize?: number;
-  /** Search term */
-  search?: string;
-  /** Sort order */
-  order?: string;
-};
-export type UpdateConnectionStatusByIdApiResponse = /** status 200 Connection status updated successfully */ {
-  /** List of connections on this page */
-  connections: {
-    /** Connection ID */
-    id: string;
-    /** Connection Name */
-    name: string;
-    /** Associated Credential ID */
-    credential_id?: string;
-    /** Connection Type (platform, telemetry, collaboration) */
-    type: string;
-    /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-    sub_type: string;
-    /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
-    kind: string;
-    /** Additional connection metadata */
-    metadata?: object;
-    /** Connection Status */
-    status:
-      | "discovered"
-      | "registered"
-      | "connected"
-      | "ignored"
-      | "maintenance"
-      | "disconnected"
-      | "deleted"
-      | "not found";
-    /** User ID who owns this connection */
-    user_id?: string;
-    created_at?: string;
-    updated_at?: string;
-    deleted_at?: string;
-    /** Associated environments for this connection */
-    environments?: {
-      /** ID */
-      id: string;
-      /** Environment name */
-      name: string;
-      /** Environment description */
-      description: string;
-      /** Environment organization ID */
-      organization_id: string;
-      /** Environment owner */
-      owner?: string;
-      created_at?: string;
-      metadata?: object;
-      updated_at?: string;
-      deleted_at?: string;
-    }[];
-    /** Specifies the version of the schema used for the definition. */
-    schemaVersion: string;
-  }[];
-  /** Total number of connections on all pages */
-  total_count: number;
-  /** Current page number */
-  page: number;
-  /** Number of elements per page */
-  page_size: number;
-};
-export type UpdateConnectionStatusByIdApiArg = {
-  /** Connection ID */
-  connectionId: string;
-  body:
-    | "discovered"
-    | "registered"
-    | "connected"
-    | "ignored"
-    | "maintenance"
-    | "disconnected"
-    | "deleted"
-    | "not found";
-};
 export type GetConnectionByIdApiResponse = /** status 200 Connection details */ {
   /** Connection ID */
   id: string;
@@ -2348,8 +2106,6 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   schemaVersion: string;
 };
 export type GetConnectionByIdApiArg = {
-  /** Connection kind (meshery, kubernetes, prometheus, grafana, etc.) */
-  connectionKind: string;
   /** Connection ID */
   connectionId: string;
 };
@@ -3199,7 +2955,7 @@ export type RegisterMeshmodelsApiArg = {
         }
       | {
           /** URI to the source code or package of the model. */
-          url: string | string;
+          url: string;
         };
     /** Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online. */
     uploadType: "file" | "urlImport" | "csv" | "url";
@@ -3536,9 +3292,6 @@ export const {
   useCreateOrUpdateBadgeMutation,
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
-  useGetConnectionsByKindQuery,
-  useGetConnectionsStatusQuery,
-  useUpdateConnectionStatusByIdMutation,
   useGetConnectionByIdQuery,
   useUpdateConnectionMutation,
   useDeleteConnectionMutation,
