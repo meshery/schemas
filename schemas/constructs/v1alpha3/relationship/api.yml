@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: Relationship Definition
+  description: Schema for Meshery Relationship definitions
+  version: v1alpha3
+paths: {}
+components:
+  schemas:
+    RelationshipDefinition:
+      $ref: "./relationship_core.yml#/components/schemas/RelationshipDefinition"
+    Selector:
+      $ref: "./relationship_core.yml#/components/schemas/Selector"
+    SelectorSet:
+      $ref: "./relationship_core.yml#/components/schemas/SelectorSet"
+    SelectorItem:
+      $ref: "./relationship_core.yml#/components/schemas/SelectorItem"
+    SelectorSetItem:
+      $ref: "./relationship_core.yml#/components/schemas/SelectorSetItem"
+    MatchSelector:
+      $ref: "./relationship_core.yml#/components/schemas/MatchSelector"
+    MatchSelectorItem:
+      $ref: "./relationship_core.yml#/components/schemas/MatchSelectorItem"
+    RelationshipDefinition_Selectors_Patch:
+      $ref: "./relationship_core.yml#/components/schemas/RelationshipDefinition_Selectors_Patch"
+    Relationship_Metadata:
+      $ref: "./relationship_core.yml#/components/schemas/Relationship_Metadata"
+    RelationshipDefinitionMetadataStyles:
+      $ref: "./relationship_core.yml#/components/schemas/RelationshipDefinitionMetadataStyles"

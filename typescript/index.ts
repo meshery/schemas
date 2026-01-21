@@ -46,6 +46,7 @@ import EnvironmentDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/envir
 import WorkspaceDefinitionV1Beta1OpenApiSchema from "./generated/v1beta1/workspace/WorkspaceSchema";
 import InvitationSchema from "./generated/v1beta1/invitation/InvitationSchema";
 import BadgeSchema from "./generated/v1beta1/badge/BadgeSchema";
+import RelationshipDefinitionV1Alpha3OpenApiSchema from "./generated/v1alpha3/relationship/RelationshipSchema";
 
 import type * as core from "./generated/v1alpha1/core/Core";
 
