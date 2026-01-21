@@ -77,6 +77,21 @@ const injectedRtkApi = api
         }),
         providesTags: ["Organization_other"],
       }),
+      addTeamToOrg: build.mutation<AddTeamToOrgApiResponse, AddTeamToOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["Organization_other"],
+      }),
+      removeTeamFromOrg: build.mutation<RemoveTeamFromOrgApiResponse, RemoveTeamFromOrgApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Organization_other"],
+      }),
       getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
         query: () => ({ url: `/api/workspaces` }),
         providesTags: ["workspace_workspaces"],
@@ -2427,6 +2442,62 @@ export type GetOrgByDomainApiResponse = /** status 200 Successful response */ {
 export type GetOrgByDomainApiArg = {
   domain: string;
 };
+export type AddTeamToOrgApiResponse = /** status 200 Team added to organization or team tombstoned */
+  | {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      teams_organizations_mapping?: {
+        ID?: string;
+        org_id?: string;
+        team_id?: string;
+        created_at?: string;
+        updated_at?: string;
+        deleted_at?: string;
+      }[];
+    }
+  | {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      teams?: {
+        ID?: string;
+        name?: string;
+        description?: string;
+        owner?: string;
+        metadata?: {
+          [key: string]: string;
+        };
+        created_at?: string;
+        updated_at?: string;
+        deleted_at?: string;
+      }[];
+    };
+export type AddTeamToOrgApiArg = {
+  orgId: string;
+  teamId: string;
+  body: {
+    /** Internal action to perform on the team resource. */
+    action?: "delete";
+  };
+};
+export type RemoveTeamFromOrgApiResponse = /** status 200 Team removed from organization */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  teams_organizations_mapping?: {
+    ID?: string;
+    org_id?: string;
+    team_id?: string;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+};
+export type RemoveTeamFromOrgApiArg = {
+  orgId: string;
+  teamId: string;
+};
 export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
   page?: number;
   page_size?: number;
@@ -2520,6 +2591,8 @@ export const {
   useGetUserKeysQuery,
   useRegisterMeshmodelsMutation,
   useGetOrgByDomainQuery,
+  useAddTeamToOrgMutation,
+  useRemoveTeamFromOrgMutation,
   useGetApiWorkspacesQuery,
   usePostApiWorkspacesMutation,
   useGetApiWorkspacesByIdQuery,

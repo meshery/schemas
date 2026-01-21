@@ -11,6 +11,23 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// Defines values for OrgTeamActionPayloadAction.
+const (
+	Delete OrgTeamActionPayloadAction = "delete"
+)
+
+// AvailableTeam defines model for AvailableTeam.
+type AvailableTeam struct {
+	ID          uuid.UUID         `db:"id" json:"id" yaml:"id"`
+	CreatedAt   time.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt   sql.NullTime      `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description string            `json:"description,omitempty" yaml:"description,omitempty"`
+	Metadata    map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name        string            `json:"name,omitempty" yaml:"name,omitempty"`
+	Owner       string            `json:"owner,omitempty" yaml:"owner,omitempty"`
+	UpdatedAt   time.Time         `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+}
+
 // DashboardPrefs Preferences specific to dashboard behavior
 type DashboardPrefs map[string]interface{}
 
@@ -28,6 +45,9 @@ type Logo struct {
 	MobileView      Location `json:"mobile_view" yaml:"mobile_view"`
 }
 
+// MapObject defines model for MapObject.
+type MapObject map[string]string
+
 // NullableTime defines model for NullableTime.
 type NullableTime = sql.NullTime
 
@@ -35,6 +55,15 @@ type NullableTime = sql.NullTime
 type OrgMetadata struct {
 	Preferences Preferences `json:"preferences" yaml:"preferences"`
 }
+
+// OrgTeamActionPayload Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.
+type OrgTeamActionPayload struct {
+	// Action Internal action to perform on the team resource.
+	Action *OrgTeamActionPayloadAction `json:"action,omitempty" yaml:"action,omitempty"`
+}
+
+// OrgTeamActionPayloadAction Internal action to perform on the team resource.
+type OrgTeamActionPayloadAction string
 
 // Organization defines model for Organization.
 type Organization struct {
@@ -62,6 +91,51 @@ type Preferences struct {
 	Theme     Theme          `json:"theme" yaml:"theme"`
 }
 
+// TeamsOrganizationsMapping defines model for TeamsOrganizationsMapping.
+type TeamsOrganizationsMapping struct {
+	ID        uuid.UUID    `db:"id" json:"id" yaml:"id"`
+	CreatedAt time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	OrgId     uuid.UUID    `db:"org_id" json:"org_id" yaml:"org_id"`
+	TeamId    uuid.UUID    `db:"team_id" json:"team_id" yaml:"team_id"`
+	UpdatedAt time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+}
+
+// TeamsOrganizationsMappingPage defines model for TeamsOrganizationsMappingPage.
+type TeamsOrganizationsMappingPage struct {
+	Page                      *int `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize                  *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TeamsOrganizationsMapping *[]struct {
+		ID        uuid.UUID    `db:"id" json:"id" yaml:"id"`
+		CreatedAt time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		DeletedAt sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+		OrgId     uuid.UUID    `db:"org_id" json:"org_id" yaml:"org_id"`
+		TeamId    uuid.UUID    `db:"team_id" json:"team_id" yaml:"team_id"`
+		UpdatedAt time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	} `json:"teams_organizations_mapping,omitempty" yaml:"teams_organizations_mapping,omitempty"`
+	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// TeamsPage defines model for TeamsPage.
+type TeamsPage struct {
+	Page     *int `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Teams    *[]struct {
+		ID          uuid.UUID         `db:"id" json:"id" yaml:"id"`
+		CreatedAt   time.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		DeletedAt   sql.NullTime      `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+		Description string            `json:"description,omitempty" yaml:"description,omitempty"`
+		Metadata    map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+		Name        string            `json:"name,omitempty" yaml:"name,omitempty"`
+		Owner       string            `json:"owner,omitempty" yaml:"owner,omitempty"`
+		UpdatedAt   time.Time         `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	} `json:"teams,omitempty" yaml:"teams,omitempty"`
+	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// Text defines model for Text.
+type Text = string
+
 // Theme defines model for Theme.
 type Theme struct {
 	Id   string                  `json:"id" yaml:"id"`
@@ -74,3 +148,9 @@ type Time = time.Time
 
 // UUID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type UUID = uuid.UUID
+
+// OrgID defines model for orgID.
+type OrgID = uuid.UUID
+
+// TeamId defines model for teamId.
+type TeamId = uuid.UUID

@@ -7,6 +7,12 @@ export interface paths {
   "/api/identity/orgs/by-domain": {
     get: operations["getOrgByDomain"];
   };
+  "/api/identity/orgs/{orgID}/teams/{teamId}": {
+    /** Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact. */
+    post: operations["AddTeamToOrg"];
+    /** Removes (unassigns) a team from an organization. */
+    delete: operations["RemoveTeamFromOrg"];
+  };
 }
 
 export interface components {
@@ -20,6 +26,16 @@ export interface components {
     NullableTime: string;
     /** Format: date-time */
     Time: string;
+    Text: string;
+    MapObject: { [key: string]: string };
+    /** @description Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}. */
+    OrgTeamActionPayload: {
+      /**
+       * @description Internal action to perform on the team resource.
+       * @enum {string}
+       */
+      action?: "delete";
+    };
     Location: {
       svg: string;
       location: string;
@@ -171,6 +187,76 @@ export interface components {
       deleted_at?: string;
       domain?: string | null;
     };
+    AvailableTeam: {
+      /** Format: uuid */
+      ID?: string;
+      name?: string;
+      description?: string;
+      owner?: string;
+      metadata?: { [key: string]: string };
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
+      /** Format: date-time */
+      deleted_at?: string;
+    };
+    TeamsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      teams?: {
+        /** Format: uuid */
+        ID?: string;
+        name?: string;
+        description?: string;
+        owner?: string;
+        metadata?: { [key: string]: string };
+        /** Format: date-time */
+        created_at?: string;
+        /** Format: date-time */
+        updated_at?: string;
+        /** Format: date-time */
+        deleted_at?: string;
+      }[];
+    };
+    TeamsOrganizationsMapping: {
+      /** Format: uuid */
+      ID?: string;
+      /** Format: uuid */
+      org_id?: string;
+      /** Format: uuid */
+      team_id?: string;
+      /** Format: date-time */
+      created_at?: string;
+      /** Format: date-time */
+      updated_at?: string;
+      /** Format: date-time */
+      deleted_at?: string;
+    };
+    TeamsOrganizationsMappingPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      teams_organizations_mapping?: {
+        /** Format: uuid */
+        ID?: string;
+        /** Format: uuid */
+        org_id?: string;
+        /** Format: uuid */
+        team_id?: string;
+        /** Format: date-time */
+        created_at?: string;
+        /** Format: date-time */
+        updated_at?: string;
+        /** Format: date-time */
+        deleted_at?: string;
+      }[];
+    };
+  };
+  parameters: {
+    orgID: string;
+    teamId: string;
   };
 }
 
@@ -239,6 +325,123 @@ export interface operations {
         };
       };
       /** Organization not found */
+      404: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+  };
+  /** Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact. */
+  AddTeamToOrg: {
+    parameters: {
+      path: {
+        orgID: string;
+        teamId: string;
+      };
+    };
+    responses: {
+      /** Team added to organization or team tombstoned */
+      200: {
+        content: {
+          "application/json":
+            | {
+                page?: number;
+                page_size?: number;
+                total_count?: number;
+                teams_organizations_mapping?: {
+                  /** Format: uuid */
+                  ID?: string;
+                  /** Format: uuid */
+                  org_id?: string;
+                  /** Format: uuid */
+                  team_id?: string;
+                  /** Format: date-time */
+                  created_at?: string;
+                  /** Format: date-time */
+                  updated_at?: string;
+                  /** Format: date-time */
+                  deleted_at?: string;
+                }[];
+              }
+            | {
+                page?: number;
+                page_size?: number;
+                total_count?: number;
+                teams?: {
+                  /** Format: uuid */
+                  ID?: string;
+                  name?: string;
+                  description?: string;
+                  owner?: string;
+                  metadata?: { [key: string]: string };
+                  /** Format: date-time */
+                  created_at?: string;
+                  /** Format: date-time */
+                  updated_at?: string;
+                  /** Format: date-time */
+                  deleted_at?: string;
+                }[];
+              };
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Internal server error */
+      500: unknown;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * @description Internal action to perform on the team resource.
+           * @enum {string}
+           */
+          action?: "delete";
+        };
+      };
+    };
+  };
+  /** Removes (unassigns) a team from an organization. */
+  RemoveTeamFromOrg: {
+    parameters: {
+      path: {
+        orgID: string;
+        teamId: string;
+      };
+    };
+    responses: {
+      /** Team removed from organization */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            teams_organizations_mapping?: {
+              /** Format: uuid */
+              ID?: string;
+              /** Format: uuid */
+              org_id?: string;
+              /** Format: uuid */
+              team_id?: string;
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Bad request */
+      400: unknown;
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
       404: unknown;
       /** Internal server error */
       500: unknown;
