@@ -53,7 +53,7 @@ properties:
     type: array
     x-order: 8
     items:
-      $ref: ../../v1alpha3/relationship.yaml
+      $ref: ../../v1alpha3/relationship/relationship.yaml
       x-go-type: "*relationship.RelationshipDefinition"
       x-go-type-import:
         path: github.com/meshery/schemas/models/v1alpha3/relationship

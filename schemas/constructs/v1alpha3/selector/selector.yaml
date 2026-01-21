@@ -13,7 +13,7 @@ definitions:
             kind:
               type: string
             id:
-              $ref: ../v1alpha1/core/api.yml#/components/schemas/uuid
+              $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
         - oneOf:
             - properties:
                 mutatorRef:
@@ -42,10 +42,10 @@ definitions:
         kind:
           type: string
         model:
-          $ref: ../v1beta1/model/model.yaml
+          $ref: "../../v1beta1/model/api.yml#/components/schemas/ModelReference"
           description: Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
         id:
-          $ref: ../v1alpha1/core/api.yml#/components/schemas/uuid
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
         match:
           type: object
           additionalProperties: false

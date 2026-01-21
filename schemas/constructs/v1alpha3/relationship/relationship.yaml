@@ -41,12 +41,12 @@ properties:
     type: string
     minLength: 5
     maxLength: 100
-    $ref: ../v1alpha1/core/api.yml#/components/schemas/semverString
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
     x-oapi-codegen-extra-tags:
       yaml: version
       json: version
   model:
-    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
+    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
     x-go-type: model.ModelReference
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/model
@@ -509,7 +509,7 @@ properties:
                       yaml: kind
                       json: kind
                   model:
-                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
+                    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
@@ -668,7 +668,7 @@ properties:
                       yaml: kind
                       json: kind
                   model:
-                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
+                    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
@@ -841,7 +841,7 @@ properties:
                       items:
                         type: string
                   model:
-                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
+                    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
@@ -1000,7 +1000,7 @@ properties:
                       yaml: kind
                       json: kind
                   model:
-                    $ref: ../v1beta1/model/api.yml#/components/schemas/ModelReference
+                    $ref: ../../v1beta1/model/api.yml#/components/schemas/ModelReference
                     x-go-type: model.ModelReference
                     x-go-type-import:
                       path: github.com/meshery/schemas/models/v1beta1/model
@@ -1147,6 +1147,6 @@ properties:
                       json: patch
                 description: Optional fields that are a part of the `from` selector. Absence of a field has an implied * meaning.
   created_at:
-    $ref: ../v1alpha1/core/api.yml#/components/schemas/created_at
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
   updated_at:
-    $ref: ../v1alpha1/core/api.yml#/components/schemas/updated_at
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
