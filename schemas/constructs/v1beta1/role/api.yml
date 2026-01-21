@@ -1,0 +1,617 @@
+openapi: 3.0.0
+info:
+  title: role
+  version: 1.0.0
+
+security:
+  - jwt: []
+
+tags:
+  - name: Role
+    description: Operations related to roles and role-keychain mappings
+
+paths:
+  /api/identity/roles:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Assign role to user
+      operationId: addRoleHolder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleHolderRequest"
+      responses:
+        "201":
+          description: Role assignment request accepted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}/roles:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Get all roles
+      operationId: getRoles
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/all"
+        - $ref: "#/components/parameters/selector"
+        - $ref: "#/components/parameters/teamID"
+      responses:
+        "200":
+          description: Roles retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolesPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Create or update a role
+      description: A new role is created if id is not provided. Pass id to update an existing role.
+      operationId: upsertRole
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: Role upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Bulk edit user roles
+      operationId: bulkEditRoleHolder
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserRoleUpdateRequest"
+      responses:
+        "201":
+          description: Bulk role update processed
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}/roles/{roleID}/keychains:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Get keychains for role
+      operationId: getKeychainsForRole
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/roleID"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Keychains fetched
+          content:
+            application/json:
+              schema:
+                $ref: "../keychain/api.yml#/components/schemas/KeychainPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}/roles/{roleID}/keychains/{keychainID}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Assign keychain to role
+      operationId: addKeychainToRole
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/roleID"
+        - $ref: "#/components/parameters/keychainID"
+      responses:
+        "200":
+          description: Keychain mapped to role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolesKeychainsMapping"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Remove keychain from role
+      operationId: deleteKeychainFromRole
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/roleID"
+        - $ref: "#/components/parameters/keychainID"
+      responses:
+        "200":
+          description: Keychain unmapped from role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolesKeychainsMapping"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/roles/{id}:
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - Role
+      summary: Delete role assignment
+      operationId: deleteRole
+      parameters:
+        - $ref: "#/components/parameters/id"
+        - $ref: "#/components/parameters/teamID"
+      responses:
+        "201":
+          description: Role assignment deleted
+          content:
+            application/json:
+              schema:
+                $ref: "../user/api.yml#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    id:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/id"
+    orgID:
+      name: orgID
+      in: path
+      description: Organization ID
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+    roleID:
+      name: roleID
+      in: path
+      description: Role ID
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+    keychainID:
+      name: keychainID
+      in: path
+      description: Keychain ID
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+    page:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+    all:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/all"
+    selector:
+      name: selector
+      in: query
+      description: Role scope selector (provider|organization|team)
+      schema:
+        type: string
+    teamID:
+      name: teamID
+      in: query
+      description: Team ID filter used with selector=team
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Role:
+      $ref: "./role.yaml"
+
+    RolesPage:
+      type: object
+      required:
+        - page
+        - page_size
+        - total_count
+        - roles
+      properties:
+        page:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+          x-order: 1
+        roles:
+          type: array
+          items:
+            $ref: "./role.yaml"
+            x-go-type: Role
+          x-order: 2
+        total_count:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+          x-order: 3
+        page_size:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/number"
+          x-order: 4
+
+    RolesKeychainsMapping:
+      type: object
+      required:
+        - id
+        - keychain_id
+        - role_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id,omitempty
+            x-order: 1
+        keychain_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          x-go-name: KeychainId
+          x-oapi-codegen-extra-tags:
+            db: keychain_id
+            json: keychain_id,omitempty
+            x-order: 2
+        role_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          x-go-name: RoleId
+          x-oapi-codegen-extra-tags:
+            db: role_id
+            json: role_id,omitempty
+            x-order: 3
+        created_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
+          x-order: 4
+        updated_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
+          x-order: 5
+        deleted_at:
+          type: string
+          format: date-time
+          description: Soft deletion timestamp
+          x-go-type: nulls.Time
+          x-go-import-path: github.com/gobuffalo/nulls
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at,omitempty
+          x-order: 6
+
+    RoleHolderRequest:
+      type: object
+      required:
+        - email
+        - role_names
+      properties:
+        email:
+          type: string
+          format: email
+          x-go-type: string
+          x-oapi-codegen-extra-tags:
+            json: email
+          x-order: 1
+        role_names:
+          type: array
+          items:
+            type: string
+          x-go-type: pq.StringArray
+          x-go-import-path: github.com/lib/pq
+          x-oapi-codegen-extra-tags:
+            json: role_names
+          x-order: 2
+
+    UserRoleUpdateRequest:
+      type: object
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          nullable: true
+          x-go-name: ID
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+        user_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          nullable: true
+          x-go-name: UserID
+          x-oapi-codegen-extra-tags:
+            db: user_id
+            json: user_id
+        username:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: username
+            json: username
+        email:
+          type: string
+          format: email
+          x-oapi-codegen-extra-tags:
+            db: email
+            json: email
+        first_name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: first_name
+            json: first_name
+        last_name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: last_name
+            json: last_name
+        status:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: status
+        role_names:
+          type: array
+          items:
+            type: string
+          x-go-type: pq.StringArray
+          x-go-import-path: github.com/lib/pq
+          x-oapi-codegen-extra-tags:
+            db: role_names
+            json: role_names
+        created_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
+        updated_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
+        last_login_time:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          x-oapi-codegen-extra-tags:
+            db: last_login_time
+            json: last_login_time
+        deleted_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
+        prefs:
+          type: object
+          $ref: "#/components/schemas/Preference"
+          x-oapi-codegen-extra-tags:
+            json: prefs
+            db: "-"
+        avatar_url:
+          type: string
+          format: uri
+          x-oapi-codegen-extra-tags:
+            db: avatar_url
+            json: avatar_url
+        preferences:
+          type: object
+          additionalProperties: true
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: preferences
+            json: preferences
+        organization_with_user_roles:
+          $ref: "#/components/schemas/OrganizationWithUserRoles"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: organization_with_user_roles
+            json: organization_with_user_roles
+        teams_with_user_roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamWithUserRoles"
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: teams_with_user_roles
+            json: teams_with_user_roles
+        update_provider_roles:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: update_provider_roles
+
+    Preference:
+      type: object
+      required:
+        - welcome_email
+        - notify_role_change
+      properties:
+        welcome_email:
+          type: boolean
+        notify_role_change:
+          type: boolean
+
+    OrganizationWithUserRoles:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - country
+        - region
+        - owner
+        - metadata
+        - created_at
+        - updated_at
+        - deleted_at
+        - role_names
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: name
+        description:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: description
+            json: description
+        country:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: country
+            json: country
+        region:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: region
+            json: region
+        owner:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: owner
+        metadata:
+          type: object
+          additionalProperties: true
+          x-go-type: core.Map
+          x-oapi-codegen-extra-tags:
+            db: metadata
+            json: metadata
+        created_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
+        updated_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
+        deleted_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
+        role_names:
+          type: array
+          items:
+            type: string
+          x-go-type: pq.StringArray
+          x-go-import-path: github.com/lib/pq
+          x-oapi-codegen-extra-tags:
+            db: role_names
+            json: role_names
+
+    TeamWithUserRoles:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - owner
+        - metadata
+        - created_at
+        - updated_at
+        - deleted_at
+        - role_names
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: id
+            json: id
+        name:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: name
+        description:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: description
+            json: description
+        owner:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: owner
+        metadata:
+          type: object
+          additionalProperties: true
+          x-go-type: core.Map
+          x-oapi-codegen-extra-tags:
+            db: metadata
+            json: metadata
+        created_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/created_at"
+        updated_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/updated_at"
+        deleted_at:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
+            json: deleted_at
+        role_names:
+          type: array
+          items:
+            type: string
+          x-go-type: pq.StringArray
+          x-go-import-path: github.com/lib/pq
+          x-oapi-codegen-extra-tags:
+            db: role_names
+            json: role_names
