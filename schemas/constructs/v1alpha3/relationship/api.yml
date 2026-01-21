@@ -1,0 +1,9 @@
+openapi: 3.0.0
+info:
+  title: relationship
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    RelationshipDefinition:
+      $ref: "./relationship.yaml"
