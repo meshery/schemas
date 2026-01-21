@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery,
-  BaseQueryFn,} from "@reduxjs/toolkit/query/react";
+  BaseQueryFn, EndpointBuilder } from "@reduxjs/toolkit/query/react";
 
 declare global {
   interface Window {
@@ -18,7 +18,7 @@ export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 const baseQueryCloud :BaseQueryFn = fetchBaseQuery({
   baseUrl: process.env.RTK_CLOUD_ENDPOINT_PREFIX,
   credentials: "include",
-  prepareHeaders: (headers, { getState }) => {
+  prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
     const state = getState() as unknown as any
     const currentOrg = state.organization.value
     headers.set(CURRENT_ORG_KEY, currentOrg?.id);
@@ -38,7 +38,7 @@ export const cloudBaseApi = createApi({
   // reducerPath: "cloudRtkSchemasApi",
   baseQuery: baseQueryWithLogging,
   tagTypes:[],
-  endpoints: (build) => ({
+  endpoints: (build: EndpointBuilder<BaseQueryFn, never, "api">) => ({
     
   }), // Required
 });
