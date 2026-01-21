@@ -109,7 +109,7 @@ components:
         from:
           type: array
           items:
-            $ref: "./api.yml#/components/schemas/MatchSelectorItem"
+            $ref: "#/components/schemas/MatchSelectorItem"
             x-go-type: MatchSelectorItem
           x-oapi-codegen-extra-tags:
             yaml: "from,omitempty"
@@ -117,7 +117,7 @@ components:
         to:
           type: array
           items:
-            $ref: "./api.yml#/components/schemas/MatchSelectorItem"
+            $ref: "#/components/schemas/MatchSelectorItem"
             x-go-type: MatchSelectorItem
           x-oapi-codegen-extra-tags:
             yaml: "to,omitempty"
@@ -141,7 +141,7 @@ components:
             yaml: "kind"
             json: "kind"
         match:
-          $ref: "./api.yml#/components/schemas/MatchSelector"
+          $ref: "#/components/schemas/MatchSelector"
           x-go-type: MatchSelector
           x-oapi-codegen-extra-tags:
             yaml: "match,omitempty"
@@ -166,7 +166,7 @@ components:
             yaml: "model"
             json: "model,omitempty"
         patch:
-          $ref: "./api.yml#/components/schemas/RelationshipDefinition_Selectors_Patch"
+          $ref: "#/components/schemas/RelationshipDefinition_Selectors_Patch"
           x-go-type: RelationshipDefinition_Selectors_Patch
           x-oapi-codegen-extra-tags:
             yaml: "patch"
@@ -183,7 +183,7 @@ components:
           description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
           type: array
           items:
-            $ref: "./api.yml#/components/schemas/SelectorItem"
+            $ref: "#/components/schemas/SelectorItem"
             x-go-type: SelectorItem
           x-oapi-codegen-extra-tags:
             yaml: "from"
@@ -192,7 +192,7 @@ components:
           description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
           type: array
           items:
-            $ref: "./api.yml#/components/schemas/SelectorItem"
+            $ref: "#/components/schemas/SelectorItem"
             x-go-type: SelectorItem
           x-oapi-codegen-extra-tags:
             yaml: "to"
@@ -206,14 +206,14 @@ components:
       properties:
         allow:
           description: Selectors used to define relationships which are allowed.
-          $ref: "./api.yml#/components/schemas/Selector"
+          $ref: "#/components/schemas/Selector"
           x-go-type: Selector
           x-oapi-codegen-extra-tags:
             yaml: "allow"
             json: "allow"
         deny:
           description: Optional selectors used to define relationships which should not be created / is restricted.
-          $ref: "./api.yml#/components/schemas/Selector"
+          $ref: "#/components/schemas/Selector"
           x-go-type: Selector
           x-oapi-codegen-extra-tags:
             yaml: "deny,omitempty"
@@ -225,7 +225,7 @@ components:
       x-oapi-codegen-extra-tags:
         gorm: "type:bytes;serializer:json"
       items:
-        $ref: "./api.yml#/components/schemas/SelectorSetItem"
+        $ref: "#/components/schemas/SelectorSetItem"
         x-go-type: SelectorSetItem
 
     # Relationship Metadata Styles
@@ -554,7 +554,7 @@ components:
             yaml: "description"
             json: "description"
         styles:
-          $ref: "./api.yml#/components/schemas/RelationshipDefinitionMetadataStyles"
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStyles"
           x-go-type: RelationshipDefinitionMetadataStyles
           x-oapi-codegen-extra-tags:
             yaml: "styles"
@@ -592,7 +592,7 @@ components:
           description: Capabilities associated with the relationship.
           x-order: 2
           items:
-            $ref: "../../v1alpha1/capability/capability_core.yml#/components/schemas/Capability"
+            $ref: "../../v1alpha1/capability/api.yml#/components/schemas/Capability"
             x-go-type: "capability.Capability"
             x-go-type-import:
               path: "github.com/meshery/schemas/models/v1alpha1/capability"
@@ -619,7 +619,7 @@ components:
             yaml: "kind"
             json: "kind"
         metadata:
-          $ref: "./api.yml#/components/schemas/Relationship_Metadata"
+          $ref: "#/components/schemas/Relationship_Metadata"
           x-go-type: Relationship_Metadata
           x-order: 5
           x-oapi-codegen-extra-tags:
@@ -656,7 +656,7 @@ components:
             yaml: "schemaVersion"
             json: "schemaVersion"
         selectors:
-          $ref: "./api.yml#/components/schemas/SelectorSet"
+          $ref: "#/components/schemas/SelectorSet"
           x-go-type: SelectorSet
           x-order: 9
           x-oapi-codegen-extra-tags:
