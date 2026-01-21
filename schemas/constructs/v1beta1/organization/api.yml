@@ -28,7 +28,70 @@ paths:
         "500":
           description: Internal server error
 
+  /api/identity/orgs/{orgID}/teams/{teamId}:
+    delete:
+      summary: Remove team from organization
+      description: Removes (unassigns) a team from an organization.
+      operationId: RemoveTeamFromOrg
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Team removed from organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsOrganizationsMappingPage"
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
+  /api/identity/orgs/{orgID}/teams/{teamId}/delete:
+    delete:
+      summary: Delete team
+      description: Permanently deletes a team within an organization.
+      operationId: DeleteTeam
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Team deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsPage"
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+        "500":
+          description: Internal server error
+
 components:
+  parameters:
+    orgID:
+      name: orgID
+      in: path
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+
+    teamId:
+      name: teamId
+      in: path
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+
   schemas:
     UUID:
       $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
@@ -38,6 +101,12 @@ components:
 
     Time:
       $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+
+    Text:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
+
+    MapObject:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/MapObject"
 
     Location:
       type: object
@@ -172,3 +241,67 @@ components:
           nullable: true
           x-oapi-codegen-extra-tags:
             db: "domain"
+
+    AvailableTeam:
+      type: object
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        name:
+          $ref: "#/components/schemas/Text"
+        description:
+          $ref: "#/components/schemas/Text"
+        owner:
+          $ref: "#/components/schemas/Text"
+        metadata:
+          $ref: "#/components/schemas/MapObject"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/Time"
+
+    TeamsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/AvailableTeam"
+
+    TeamsOrganizationsMapping:
+      type: object
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        org_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+        team_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/Time"
+
+    TeamsOrganizationsMappingPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        teams_organizations_mapping:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamsOrganizationsMapping"
