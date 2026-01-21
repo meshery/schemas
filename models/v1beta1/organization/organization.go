@@ -8,65 +8,190 @@ import (
 
 	"database/sql"
 
+	"github.com/gobuffalo/pop/slices"
 	"github.com/gofrs/uuid"
 )
 
-// DashboardPrefs Preferences specific to dashboard behavior
-type DashboardPrefs map[string]interface{}
+// AvailableOrganization Organization data returned in list responses
+type AvailableOrganization struct {
+	Country     string       `db:"country" json:"country,omitempty" yaml:"country,omitempty"`
+	CreatedAt   time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt   sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description string       `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+	Domain      *string      `db:"domain" json:"domain,omitempty" yaml:"domain,omitempty"`
+	ID          uuid.UUID    `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	InviteId    *uuid.UUID   `db:"invite_id" json:"invite_id,omitempty" yaml:"invite_id,omitempty"`
 
-// Location defines model for Location.
-type Location struct {
-	Location string `json:"location" yaml:"location"`
-	Svg      string `json:"svg" yaml:"svg"`
+	// Metadata Organization metadata containing preferences
+	Metadata  OrgMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
+	Name      string      `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+	Owner     uuid.UUID   `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	Region    string      `db:"region" json:"region,omitempty" yaml:"region,omitempty"`
+	UpdatedAt time.Time   `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
-// Logo defines model for Logo.
+// DashboardPrefs Dashboard layout preferences
+type DashboardPrefs struct {
+	// Layout Dashboard layout configuration
+	Layout slices.Map `json:"layout" yaml:"layout"`
+}
+
+// Location Location contains URL path for an image asset
+type Location struct {
+	// Location Path or URL to the image asset
+	Location string `json:"location,omitempty" yaml:"location,omitempty"`
+}
+
+// Logo Logo configuration for desktop and mobile views in light and dark modes
 type Logo struct {
-	DarkDesktopView Location `json:"dark_desktop_view" yaml:"dark_desktop_view"`
-	DarkMobileView  Location `json:"dark_mobile_view" yaml:"dark_mobile_view"`
-	DesktopView     Location `json:"desktop_view" yaml:"desktop_view"`
-	MobileView      Location `json:"mobile_view" yaml:"mobile_view"`
+	// DarkDesktop Location contains URL path for an image asset
+	DarkDesktop Location `json:"dark_desktop_view,omitempty" yaml:"dark_desktop_view,omitempty"`
+
+	// DarkMobile Location contains URL path for an image asset
+	DarkMobile Location `json:"dark_mobile_view,omitempty" yaml:"dark_mobile_view,omitempty"`
+
+	// Desktop Location contains URL path for an image asset
+	Desktop Location `json:"desktop_view,omitempty" yaml:"desktop_view,omitempty"`
+
+	// Mobile Location contains URL path for an image asset
+	Mobile Location `json:"mobile_view,omitempty" yaml:"mobile_view,omitempty"`
+}
+
+// LogoPayload Payload for uploading organization logo
+type LogoPayload struct {
+	// Data Binary data of the logo image
+	Data []byte `json:"data,omitempty" yaml:"data,omitempty"`
+
+	// Filename Filename of the logo image
+	Filename string `json:"filename,omitempty" yaml:"filename,omitempty"`
 }
 
 // NullableTime defines model for NullableTime.
 type NullableTime = sql.NullTime
 
-// OrgMetadata defines model for OrgMetadata.
+// OrgMetadata Organization metadata containing preferences
 type OrgMetadata struct {
+	// Preferences Organization preferences including theme and dashboard settings
 	Preferences Preferences `json:"preferences" yaml:"preferences"`
 }
 
-// Organization defines model for Organization.
+// Organization Organization represents a Meshery organization
 type Organization struct {
-	Country     string       `db:"country" json:"country" yaml:"country"`
-	CreatedAt   time.Time    `db:"created_at" json:"created_at" yaml:"created_at"`
-	DeletedAt   sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Description string       `db:"description" json:"description" yaml:"description"`
-	Domain      *string      `db:"domain" json:"domain" yaml:"domain"`
+	// Country Country where the organization is based
+	Country   string       `db:"country" json:"country,omitempty" yaml:"country,omitempty"`
+	CreatedAt time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
-	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id       uuid.UUID   `db:"id" json:"id" yaml:"id"`
+	// Description Description of the organization
+	Description string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Domain Custom domain for the organization
+	Domain *string   `db:"domain" json:"domain,omitempty" yaml:"domain,omitempty"`
+	ID     uuid.UUID `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+
+	// InviteId Open organization invite ID
+	InviteId *uuid.UUID `db:"invite_id" json:"invite_id,omitempty" yaml:"invite_id,omitempty"`
+
+	// Metadata Organization metadata containing preferences
 	Metadata OrgMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
-	Name     string      `db:"name" json:"name" yaml:"name"`
 
-	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner     uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
-	Region    string    `db:"region" json:"region" yaml:"region"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	// Name Name of the organization
+	Name string `db:"name" json:"name" yaml:"name"`
+
+	// Owner UUID of the organization owner
+	Owner uuid.UUID `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// Region Region where the organization is based
+	Region    string    `db:"region" json:"region,omitempty" yaml:"region,omitempty"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
-// Preferences defines model for Preferences.
+// OrganizationPayload Payload for creating or updating an organization
+type OrganizationPayload struct {
+	// Country Country where the organization is based
+	Country string `json:"country,omitempty" yaml:"country,omitempty"`
+
+	// Description Description of the organization
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Domain Custom domain for the organization
+	Domain   *string    `json:"domain,omitempty" yaml:"domain,omitempty"`
+	InviteId *uuid.UUID `json:"invite_id,omitempty" yaml:"invite_id,omitempty"`
+
+	// Name Name of the organization
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// NotifyOrgUpdate Whether to notify members of organization update
+	NotifyOrgUpdate bool `json:"notify_org_update,omitempty" yaml:"notify_org_update,omitempty"`
+
+	// Preferences Preferences payload for organization update
+	Preferences PreferencesPayload `json:"preferences,omitempty" yaml:"preferences,omitempty"`
+
+	// Region Region where the organization is based
+	Region string `json:"region,omitempty" yaml:"region,omitempty"`
+}
+
+// OrganizationsPage Paginated response for organizations
+type OrganizationsPage struct {
+	Organizations []AvailableOrganization `json:"organizations" yaml:"organizations"`
+
+	// Page Current page number
+	Page int `json:"page" yaml:"page"`
+
+	// PageSize Number of items per page
+	PageSize int `json:"page_size" yaml:"page_size"`
+
+	// TotalCount Total number of items
+	TotalCount int `json:"total_count" yaml:"total_count"`
+}
+
+// Preferences Organization preferences including theme and dashboard settings
 type Preferences struct {
-	// Dashboard Preferences specific to dashboard behavior
+	// Dashboard Dashboard layout preferences
 	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
-	Theme     Theme          `json:"theme" yaml:"theme"`
+
+	// Theme Theme configuration for the organization
+	Theme Theme `json:"theme" yaml:"theme"`
 }
 
-// Theme defines model for Theme.
+// PreferencesPayload Preferences payload for organization update
+type PreferencesPayload struct {
+	// Dashboard Dashboard layout preferences
+	Dashboard DashboardPrefs `json:"dashboard" yaml:"dashboard"`
+
+	// Theme Theme configuration payload for organization update
+	Theme ThemePayload `json:"theme" yaml:"theme"`
+}
+
+// Theme Theme configuration for the organization
 type Theme struct {
-	Id   string                  `json:"id" yaml:"id"`
-	Logo Logo                    `json:"logo" yaml:"logo"`
-	Vars *map[string]interface{} `json:"vars,omitempty" yaml:"vars,omitempty"`
+	// ID Theme identifier
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// Logo Logo configuration for desktop and mobile views in light and dark modes
+	Logo Logo `json:"logo,omitempty" yaml:"logo,omitempty"`
+
+	// Vars Theme variables for customization
+	Vars map[string]interface{} `json:"vars,omitempty" yaml:"vars,omitempty"`
+}
+
+// ThemePayload Theme configuration payload for organization update
+type ThemePayload struct {
+	ID   string `json:"id,omitempty" yaml:"id,omitempty"`
+	Logo struct {
+		// DarkDesktopView Payload for uploading organization logo
+		DarkDesktopView *LogoPayload `json:"dark_desktop_view,omitempty" yaml:"dark_desktop_view,omitempty"`
+
+		// DarkMobileView Payload for uploading organization logo
+		DarkMobileView *LogoPayload `json:"dark_mobile_view,omitempty" yaml:"dark_mobile_view,omitempty"`
+
+		// DesktopView Payload for uploading organization logo
+		DesktopView *LogoPayload `json:"desktop_view,omitempty" yaml:"desktop_view,omitempty"`
+
+		// MobileView Payload for uploading organization logo
+		MobileView *LogoPayload `json:"mobile_view,omitempty" yaml:"mobile_view,omitempty"`
+	} `json:"logo,omitempty" yaml:"logo,omitempty"`
+	Vars map[string]interface{} `json:"vars,omitempty" yaml:"vars,omitempty"`
 }
 
 // Time defines model for Time.
@@ -74,3 +199,21 @@ type Time = time.Time
 
 // UUID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type UUID = uuid.UUID
+
+// All defines model for all.
+type All = bool
+
+// Order defines model for order.
+type Order = string
+
+// OrgId defines model for orgId.
+type OrgId = uuid.UUID
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
