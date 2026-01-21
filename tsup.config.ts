@@ -29,7 +29,7 @@ export default defineConfig({
     ...generatedEntries,
   },
   format: ["cjs", "esm"],
-  external: ["react", "react-redux", "@reduxjs/toolkit"],
+  external: ["react", "react-redux"],
   dts: true,
   splitting: false,
   sourcemap: false,
