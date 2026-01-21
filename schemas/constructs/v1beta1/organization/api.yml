@@ -53,16 +53,16 @@ paths:
           description: Internal server error
 
   /api/identity/orgs/{orgID}/teams/{teamId}/delete:
-    delete:
-      summary: Delete team
-      description: Permanently deletes a team within an organization.
+    post:
+      summary: Soft delete team
+      description: Tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.
       operationId: DeleteTeam
       parameters:
         - $ref: "#/components/parameters/orgID"
         - $ref: "#/components/parameters/teamId"
       responses:
         "200":
-          description: Team deleted
+          description: Team tombstoned
           content:
             application/json:
               schema:
