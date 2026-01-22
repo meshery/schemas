@@ -1,0 +1,67 @@
+$id: https://schemas.meshery.io/team.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams
+additionalProperties: false
+type: object
+required:
+  - id
+  - name
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Team ID
+    x-order: 1
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      yaml: id
+  name:
+    x-oapi-codegen-extra-tags:
+      db: name
+      yaml: name
+    x-order: 2
+    type: string
+    description: Team name
+  description:
+    x-oapi-codegen-extra-tags:
+      db: description
+      yaml: description
+    x-order: 3
+    type: string
+    description: Team description
+  owner:
+    x-oapi-codegen-extra-tags:
+      db: owner
+      yaml: owner
+    x-order: 4
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: User ID of the owner of the team
+  metadata:
+    x-oapi-codegen-extra-tags:
+      db: metadata
+      yaml: metadata
+    x-order: 5
+    x-go-type: core.Map
+    x-go-type-skip-optional-pointer: true
+    type: object
+    description: Additional metadata for the team
+  created_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      yaml: created_at
+    x-order: 6
+  updated_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      yaml: updated_at
+    x-order: 7
+  deleted_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      yaml: deleted_at
+    x-go-type: core.NullTime
+    x-go-import: database/sql
+    x-order: 8
