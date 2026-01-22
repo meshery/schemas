@@ -7,6 +7,7 @@ export const addTagTypes = [
   "key_users",
   "model_other",
   "Organization_other",
+  "team_teams",
   "workspace_workspaces",
 ] as const;
 const injectedRtkApi = api
@@ -91,6 +92,71 @@ const injectedRtkApi = api
           method: "DELETE",
         }),
         invalidatesTags: ["Organization_other"],
+      }),
+      getTeams: build.query<GetTeamsApiResponse, GetTeamsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+          },
+        }),
+        providesTags: ["team_teams"],
+      }),
+      createTeam: build.mutation<CreateTeamApiResponse, CreateTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams`,
+          method: "POST",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["team_teams"],
+      }),
+      getTeamById: build.query<GetTeamByIdApiResponse, GetTeamByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}` }),
+        providesTags: ["team_teams"],
+      }),
+      updateTeam: build.mutation<UpdateTeamApiResponse, UpdateTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "PUT",
+          body: queryArg.body,
+        }),
+        invalidatesTags: ["team_teams"],
+      }),
+      deleteTeam: build.mutation<DeleteTeamApiResponse, DeleteTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["team_teams"],
+      }),
+      getTeamUsers: build.query<GetTeamUsersApiResponse, GetTeamUsersApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+          },
+        }),
+        providesTags: ["team_teams"],
+      }),
+      addUserToTeam: build.mutation<AddUserToTeamApiResponse, AddUserToTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users/${queryArg.userId}`,
+          method: "POST",
+        }),
+        invalidatesTags: ["team_teams"],
+      }),
+      removeUserFromTeam: build.mutation<RemoveUserFromTeamApiResponse, RemoveUserFromTeamApiArg>({
+        query: (queryArg) => ({
+          url: `/api/identity/orgs/${queryArg.orgId}/teams/${queryArg.teamId}/users/${queryArg.userId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["team_teams"],
       }),
       getApiWorkspaces: build.query<GetApiWorkspacesApiResponse, GetApiWorkspacesApiArg>({
         query: () => ({ url: `/api/workspaces` }),
@@ -2498,6 +2564,185 @@ export type RemoveTeamFromOrgApiArg = {
   orgId: string;
   teamId: string;
 };
+export type GetTeamsApiResponse = /** status 200 Teams */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  teams?: {
+    /** Team ID */
+    id: string;
+    /** Team name */
+    name: string;
+    /** Team description */
+    description?: string;
+    /** User ID of the owner of the team */
+    owner?: string;
+    /** Additional metadata for the team */
+    metadata?: object;
+    created_at?: string;
+    updated_at?: string;
+    deleted_at?: string;
+  }[];
+};
+export type GetTeamsApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+};
+export type CreateTeamApiResponse = /** status 201 Created team */ {
+  /** Team ID */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Team description */
+  description?: string;
+  /** User ID of the owner of the team */
+  owner?: string;
+  /** Additional metadata for the team */
+  metadata?: object;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+};
+export type CreateTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Body for creating a team */
+  body: {
+    /** Team name. Provide a meaningful name that represents this team. */
+    name: string;
+    /** A detailed description of the team's purpose and responsibilities. */
+    description?: string;
+  };
+};
+export type GetTeamByIdApiResponse = /** status 200 Team */ {
+  /** Team ID */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Team description */
+  description?: string;
+  /** User ID of the owner of the team */
+  owner?: string;
+  /** Additional metadata for the team */
+  metadata?: object;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+};
+export type GetTeamByIdApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+};
+export type UpdateTeamApiResponse = /** status 200 Updated team */ {
+  /** Team ID */
+  id: string;
+  /** Team name */
+  name: string;
+  /** Team description */
+  description?: string;
+  /** User ID of the owner of the team */
+  owner?: string;
+  /** Additional metadata for the team */
+  metadata?: object;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+};
+export type UpdateTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+  /** Body for updating a team */
+  body: {
+    /** Updated team name */
+    name?: string;
+    /** Updated team description */
+    description?: string;
+  };
+};
+export type DeleteTeamApiResponse = unknown;
+export type DeleteTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+};
+export type GetTeamUsersApiResponse = /** status 200 Team users mapping */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  teams_users_mapping?: {
+    id?: string;
+    team_id?: string;
+    /** user's email or username */
+    user_id?: string;
+    created_at?: string;
+    updated_at?: string;
+    /** SQL null Timestamp to handle null values of time. */
+    deleted_at?: string;
+  }[];
+};
+export type GetTeamUsersApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+};
+export type AddUserToTeamApiResponse = /** status 200 User added to team */ {
+  id?: string;
+  team_id?: string;
+  /** user's email or username */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type AddUserToTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+  /** User ID */
+  userId: string;
+};
+export type RemoveUserFromTeamApiResponse = /** status 200 User removed from team */ {
+  id?: string;
+  team_id?: string;
+  /** user's email or username */
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /** SQL null Timestamp to handle null values of time. */
+  deleted_at?: string;
+};
+export type RemoveUserFromTeamApiArg = {
+  /** Organization ID */
+  orgId: string;
+  /** Team ID */
+  teamId: string;
+  /** User ID */
+  userId: string;
+};
 export type GetApiWorkspacesApiResponse = /** status 200 List of workspaces */ {
   page?: number;
   page_size?: number;
@@ -2593,6 +2838,14 @@ export const {
   useGetOrgByDomainQuery,
   useAddTeamToOrgMutation,
   useRemoveTeamFromOrgMutation,
+  useGetTeamsQuery,
+  useCreateTeamMutation,
+  useGetTeamByIdQuery,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
+  useGetTeamUsersQuery,
+  useAddUserToTeamMutation,
+  useRemoveUserFromTeamMutation,
   useGetApiWorkspacesQuery,
   usePostApiWorkspacesMutation,
   useGetApiWorkspacesByIdQuery,
