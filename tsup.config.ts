@@ -22,7 +22,7 @@ const generatedEntries = generatedFiles.reduce(
 export default defineConfig({
   entry: {
     index: "typescript/index.ts",
-    cloudApi: "typescript/rtk/cloud.ts",
+    cloudApi: "typescript/rtk/cloud-api.ts",
     mesheryApi: "typescript/rtk/meshery.ts",
     api: "typescript/rtk/api.ts",
     permissions: "typescript/permissions.ts",

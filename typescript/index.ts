@@ -17,6 +17,7 @@ import { components as EnvironmentComponents } from "./generated/v1beta1/environ
 import { components as WorkspaceComponents } from "./generated/v1beta1/workspace/Workspace";
 import { components as InvitationComponents } from "./generated/v1beta1/invitation/Invitation";
 import { components as BadgeComponents } from "./generated/v1beta1/badge/Badge";
+import { components as TeamComponents } from "./generated/v1beta1/team/Team";
 
 /**
  * SCHEMA OPTIMIZATION NOTICE
@@ -88,4 +89,5 @@ export namespace v1beta1 {
   export type Workspace = WorkspaceComponents["schemas"]["workspace"];
   export type Invitation = InvitationComponents["schemas"]["Invitation"];
   export type Badge = BadgeComponents["schemas"]["Badge"];
+  export type Team = TeamComponents["schemas"]["Team"];
 }

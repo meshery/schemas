@@ -110,7 +110,6 @@ function discoverSchemaPackages() {
     });
 
     for (const dirName of packageDirs) {
-      const openapiPath = path.join(versionPath, dirName, "api.yml");
       const packageKey = `${version}/${dirName}`;
 
       // Skip excluded packages
@@ -118,18 +117,30 @@ function discoverSchemaPackages() {
         continue;
       }
 
-      // Check if api.yml exists (the construct index file)
-      if (fs.existsSync(openapiPath)) {
-        // Get package name (use override if exists, otherwise use directory name)
-        const packageName = packageNameOverrides[packageKey] || dirName;
+      const indexFileCandidates = ["api.yml", "team.yaml"];
+      let openapiPath = null;
 
-        packages.push({
-          name: packageName,
-          version: version,
-          dirName: dirName,
-          openapiPath: path.relative(projectRoot, openapiPath),
-        });
+      for (const candidate of indexFileCandidates) {
+        const candidatePath = path.join(versionPath, dirName, candidate);
+        if (fs.existsSync(candidatePath)) {
+          openapiPath = candidatePath;
+          break;
+        }
       }
+
+      if (!openapiPath) {
+        continue;
+      }
+
+      // Get package name (use override if exists, otherwise use directory name)
+      const packageName = packageNameOverrides[packageKey] || dirName;
+
+      packages.push({
+        name: packageName,
+        version: version,
+        dirName: dirName,
+        openapiPath: path.relative(projectRoot, openapiPath),
+      });
     }
   }
 

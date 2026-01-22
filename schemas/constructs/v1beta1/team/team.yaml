@@ -1,0 +1,618 @@
+openapi: 3.0.0
+info:
+  title: Team
+  description: Documentation for Meshery Cloud Team APIs
+  contact:
+    email: maintainers@meshery.io
+  version: v1beta1
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+security:
+  - jwt: []
+
+tags:
+  - name: teams
+    description: User Team Management
+
+components:
+  responses:
+    "200":
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
+    "201":
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/201"
+    "400":
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    "401":
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    "404":
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+    "500":
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+  parameters:
+    orgID:
+      name: orgID
+      in: path
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+    teamId:
+      name: teamId
+      in: path
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+    userId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_id"
+    roleId:
+      name: roleId
+      in: path
+      required: true
+      schema:
+        $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+    page:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+  schemas:
+    Time:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+    NullableTime:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/SqlNullTime"
+    Text:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
+    MapObject:
+      $ref: "../../v1alpha1/core/api.yml#/components/schemas/MapObject"
+    RoleNames:
+      type: array
+      items:
+        type: string
+    EmailPreference:
+      type: object
+      properties:
+        welcome_email:
+          type: boolean
+        notify_role_change:
+          type: boolean
+    Role:
+      type: object
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        role_name:
+          $ref: "#/components/schemas/Text"
+        description:
+          $ref: "#/components/schemas/Text"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+    Roles:
+      type: array
+      items:
+        $ref: "#/components/schemas/Role"
+    Team:
+      type: object
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        name:
+          $ref: "#/components/schemas/Text"
+        description:
+          $ref: "#/components/schemas/Text"
+        owner:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        metadata:
+          $ref: "#/components/schemas/MapObject"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/NullableTime"
+    AvailableTeam:
+      type: object
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        name:
+          $ref: "#/components/schemas/Text"
+        description:
+          $ref: "#/components/schemas/Text"
+        owner:
+          $ref: "#/components/schemas/Text"
+        metadata:
+          $ref: "#/components/schemas/MapObject"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/NullableTime"
+    TeamsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/AvailableTeam"
+    TeamPayload:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/Text"
+          description: Team name
+        description:
+          $ref: "#/components/schemas/Text"
+          description: Team description
+        notify_team_update:
+          type: boolean
+          description: Notify team members about team update
+        metadata:
+          $ref: "#/components/schemas/MapObject"
+    OrgTeamActionPayload:
+      type: object
+      description: Action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.
+      additionalProperties: false
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          description: Internal action to perform.
+          enum:
+            - delete
+    UsersTeamsMapping:
+      type: object
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        user_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_id"
+        team_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+        role_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/NullableTime"
+    UsersTeamsMappingPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        users_teams_mapping:
+          type: array
+          items:
+            $ref: "#/components/schemas/UsersTeamsMapping"
+    TeamMember:
+      type: object
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        user_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_id"
+        username:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/username"
+        email:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/email"
+        first_name:
+          $ref: "#/components/schemas/Text"
+          description: First Name
+        last_name:
+          $ref: "#/components/schemas/Text"
+          description: Last Name
+        status:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/status"
+        role_names:
+          $ref: "#/components/schemas/RoleNames"
+        joined_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        last_login_time:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/NullableTime"
+        prefs:
+          $ref: "#/components/schemas/EmailPreference"
+        avatar_url:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/avatar_url"
+    TeamMembersPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamMember"
+    TeamsOrganizationsMapping:
+      type: object
+      properties:
+        ID:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
+        org_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+        team_id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/team_id"
+        created_at:
+          $ref: "#/components/schemas/Time"
+        updated_at:
+          $ref: "#/components/schemas/Time"
+        deleted_at:
+          $ref: "#/components/schemas/NullableTime"
+    TeamsOrganizationsMappingPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        teams_organizations_mapping:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamsOrganizationsMapping"
+
+paths:
+  /api/identity/orgs/{orgID}/teams:
+    get:
+      tags:
+        - teams
+      operationId: GetTeams
+      summary: Read Teams
+      description: Returns all teams belonging to an organization
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Teams response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsPage"
+        "204":
+          description: No content
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      tags:
+        - teams
+      operationId: CreateTeam
+      summary: Create Team
+      description: Creates a new team
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamPayload"
+      responses:
+        "201":
+          description: Created team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}/teams/{teamId}:
+    get:
+      tags:
+        - teams
+      operationId: GetTeam
+      summary: Read Team
+      description: Returns the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/orgID"
+      responses:
+        "200":
+          description: Team response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvailableTeam"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - teams
+      operationId: UpdateTeam
+      summary: Update the specified team
+      description: Updates the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/orgID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamPayload"
+      responses:
+        "200":
+          description: Updated team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      tags:
+        - teams
+      summary: Add team to organization or soft delete team
+      description: Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.
+      operationId: AddTeamToOrg
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/teamId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrgTeamActionPayload"
+      responses:
+        "200":
+          description: Team added to organization or team tombstoned
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/TeamsOrganizationsMappingPage"
+                  - $ref: "#/components/schemas/TeamsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - teams
+      summary: Remove team from organization
+      description: Removes (unassigns) a team from an organization.
+      operationId: RemoveTeamFromOrg
+      parameters:
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Team removed from organization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsOrganizationsMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/teams/{teamId}/users:
+    get:
+      tags:
+        - teams
+      operationId: ListUsersInTeam
+      summary: List users in Team
+      description: Lists the users in the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamMembersPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}/teams/{teamId}/users/{userId}:
+    post:
+      tags:
+        - teams
+      operationId: AddUserToTeam
+      summary: Add user to team
+      description: Adds the user to the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/userId"
+        - $ref: "#/components/parameters/orgID"
+      responses:
+        "200":
+          description: UserTeamMapping
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersTeamsMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - teams
+      operationId: RemoveUserFromTeam
+      summary: Remove user membership from team
+      description: Remove the user from the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/userId"
+        - $ref: "#/components/parameters/orgID"
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersTeamsMappingPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgID}/teams/{teamId}/users:
+    get:
+      tags:
+        - teams
+      operationId: ListUsersNotInTeam
+      summary: List users not in Team
+      description: Lists the users not in the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamMembersPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/teams/{teamId}/roles:
+    get:
+      tags:
+        - teams
+      operationId: ListTeamRoles
+      summary: List Team roles
+      description: Lists the roles associated with the team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Roles assigned to team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Roles"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/teams/{teamId}/roles/{roleId}:
+    post:
+      tags:
+        - teams
+      operationId: AddRoleToTeam
+      summary: Add role to team
+      description: Adds role to the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/roleId"
+      responses:
+        "200":
+          description: Role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - teams
+      operationId: RemoveRoleFromTeam
+      summary: Remove role from team
+      description: Removes role from the specified team
+      parameters:
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/roleId"
+      responses:
+        "200":
+          description: Role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
