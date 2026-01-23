@@ -127,12 +127,8 @@ components:
 
     Location:
       type: object
-      required:
-        - svg
-        - location
+      x-go-type: "Location"
       properties:
-        svg:
-          type: string
         location:
           type: string
 
@@ -159,9 +155,6 @@ components:
 
     Theme:
       type: object
-      required:
-        - id
-        - logo
       properties:
         id:
           type: string
@@ -171,11 +164,18 @@ components:
         vars:
           type: object
           additionalProperties: true
+          x-go-type: "map[string]interface{}"
 
     DashboardPrefs:
       type: object
       description: Preferences specific to dashboard behavior
-      additionalProperties: true
+      required:
+        - layout
+      properties:
+        layout:
+          type: object
+          additionalProperties: true
+      x-go-type: "DashboardPrefs"
 
     Preferences:
       type: object
@@ -202,15 +202,8 @@ components:
     Organization:
       type: object
       required:
-        - id
         - name
-        - country
-        - region
-        - description
-        - owner
         - metadata
-        - created_at
-        - updated_at
       properties:
         id:
           $ref: "#/components/schemas/UUID"
@@ -258,6 +251,11 @@ components:
           nullable: true
           x-oapi-codegen-extra-tags:
             db: "domain"
+        invite_id:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
+          x-oapi-codegen-extra-tags:
+            db: "invite_id"
 
     AvailableTeam:
       type: object
@@ -322,3 +320,67 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/TeamsOrganizationsMapping"
+
+    LogoPayload:
+      type: object
+      properties:
+        data:
+          type: string
+          format: byte
+        filename:
+          type: string
+
+    ThemePayload:
+      type: object
+      properties:
+        id:
+          type: string
+        vars:
+          type: object
+          additionalProperties: true
+        logo:
+          type: object
+          properties:
+            desktop_view:
+              $ref: "#/components/schemas/LogoPayload"
+            mobile_view:
+              $ref: "#/components/schemas/LogoPayload"
+            dark_desktop_view:
+              $ref: "#/components/schemas/LogoPayload"
+            dark_mobile_view:
+              $ref: "#/components/schemas/LogoPayload"
+
+    PreferencesPayload:
+      type: object
+      required:
+        - theme
+        - dashboard
+      properties:
+        theme:
+          $ref: "#/components/schemas/ThemePayload"
+        dashboard:
+          $ref: "#/components/schemas/DashboardPrefs"
+
+    OrganizationPayload:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        region:
+          type: string
+        description:
+          type: string
+        notify_org_update:
+          type: boolean
+        domain:
+          type: string
+          nullable: true
+        preferences:
+          $ref: "#/components/schemas/PreferencesPayload"
+        invite_id:
+          $ref: "#/components/schemas/UUID"
+          nullable: true
