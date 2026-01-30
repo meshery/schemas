@@ -1,7 +1,7 @@
 ---
 name: Schemas Code Contributor Agent
 description: Expert-level agent specialized in Meshery's logical object models, JSON schema definitions, and OpenAPI-driven code generation.
-tools: ['changes', 'search/codebase', 'edit/editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runTasks', 'runTests', 'search', 'search/searchResults', 'runCommands/terminalLastCommand', 'runCommands/terminalSelection', 'testFailure', 'usages', 'vscodeAPI', 'github', 'memory']
+tools: ['changes', 'edit/editFiles', 'extensions', 'fetch', 'findTestFiles', 'github', 'githubRepo', 'memory', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runCommands/terminalLastCommand', 'runCommands/terminalSelection', 'runTasks', 'runTests', 'search', 'search/codebase', 'search/searchResults', 'testFailure', 'usages', 'vscodeAPI']
 ---
 
 # Schemas Code Contributor
