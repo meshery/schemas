@@ -121,8 +121,8 @@ github.com/mailru/easyjson v0.9.0 h1:PrnmzHw7262yW8sTBwxi1PdJA3Iw/EKBa8psRf7d9a4
 github.com/mailru/easyjson v0.9.0/go.mod h1:1+xMtQp2MRNVL/V1bOzuP3aP8VNwRW55fQUto+XFtTU=
 github.com/mattn/go-sqlite3 v1.14.32 h1:JD12Ag3oLy1zQA+BNn74xRgaBbdhbNIDYvQUEuuErjs=
 github.com/mattn/go-sqlite3 v1.14.32/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
-github.com/meshery/meshkit v0.8.63 h1:2R/hKyXhIjzx5i/qfgO5xChJyf6oLumHe3FxMx8nV+k=
-github.com/meshery/meshkit v0.8.63/go.mod h1:p51cnhlf9UsNxhjNvB2+13ZtiRx4Br6j0cXXhU98Qmc=
+github.com/meshery/meshkit v0.8.64 h1:tBDAS1tO2iwEOiLEnmjGInalcyL3hf0RHGZ0xkRvxDQ=
+github.com/meshery/meshkit v0.8.64/go.mod h1:6FPiF7QshnwH4yFb5gOqbE8x4DpEddqZPuXj9knrzTE=
 github.com/mitchellh/go-wordwrap v1.0.1 h1:TLuKupo69TCn6TQSyGxwI1EblZZEsQ0vMlAFQflz0v0=
 github.com/mitchellh/go-wordwrap v1.0.1/go.mod h1:R62XHJLzvMFRBbcrT7m7WgmE1eOyTSsCt+hzestvNj0=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
