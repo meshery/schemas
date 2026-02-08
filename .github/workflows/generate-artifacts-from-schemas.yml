@@ -36,8 +36,21 @@ jobs:
         run: |
           make build
 
+      - name: Sanitize generated files
+        shell: bash
+        run: |
+          find . -name "*.ts" -type f -exec sed -i "s|$GITHUB_WORKSPACE|.|g" {} +
+
       - name: Pull changes from remote
         run: git pull origin master
+
+      - name: Verify no path leakage
+        shell: bash
+        run: |
+          if grep -r "/home/runner" ./typescript; then
+            echo "::error::1001-CI-PATH-LEAK-ERR: Absolute paths found in generated files. Path leakage detected!"
+            exit 1
+          fi
 
       - uses: stefanzweifel/git-auto-commit-action@v7
         with:
