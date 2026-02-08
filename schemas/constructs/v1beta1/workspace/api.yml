@@ -17,88 +17,88 @@ security:
 tags:
   - name: workspaces
     description: Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces).
+paths:
+  /api/workspaces:
+    get:
+      summary: Get all workspaces
+      tags:
+        - workspaces
+      responses:
+        "200":
+          description: List of workspaces
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspacePage"
+    post:
+      summary: Create a workspace
+      tags:
+        - workspaces
+      requestBody:
+        $ref: "#/components/requestBodies/workspacePayload"
+      responses:
+        "201":
+          description: Workspace created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+  /api/workspaces/{id}:
+    get:
+      summary: Get workspace by ID
+      tags:
+        - workspaces
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspace details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+    put:
+      summary: Update workspace
+      tags:
+        - workspaces
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/workspaceUpdatePayload"
+      responses:
+        "200":
+          description: Workspace updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+    delete:
+      summary: Delete workspace
+      tags:
+        - workspaces
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspace deleted successfully
 components:
   securitySchemes:
     jwt:
       type: http
       scheme: Bearer
       bearerFormat: JWT
-  responses:
-    200:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
-    400:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
-    401:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
-    404:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
-    500:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
-  parameters:
-    workspaceId:
-      name: workspaceId
-      in: path
-      description: Workspace ID
-      schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/workspace_id
-      required: true
-    teamId:
-      name: teamId
-      in: path
-      description: Team ID
-      schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/team_id
-      required: true
-    environmentId:
-      name: environmentId
-      in: path
-      description: Environment ID
-      schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/environment_id
-      required: true
-    designId:
-      name: designId
-      in: path
-      description: Design ID
-      schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/design_id
-      required: true
-    viewId:
-      name: viewId
-      in: path
-      description: View ID
-      schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/view_id
-      required: true
-    search:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
-    order:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
-    page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
-    pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
-    filter:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/filter
-    orgIDQuery:
-      name: orgID
-      in: query
-      description: User's organization ID
-      schema:
-        type: string
-      required: true
-    workspaceFilter:
-      name: filter
-      in: query
-      description: Filter for retrieving Workspaces
-      schema:
-        properties:
-          assigned:
-            type: boolean
-            description: Pass true to get assigned workspaces, false to get unassigned workspaces
-          deleted_at:
-            type: boolean
-            description: pass true to get deleted workspaces, false to get undeleted workspaces
   schemas:
     workspace:
       properties:
@@ -174,172 +174,6 @@ components:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
         deleted_at:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/nullTime"
-    teamPage:
-      type: object
-      description: Paginated list of teams
-      properties:
-        page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        teams:
-          type: array
-          x-go-type-skip-optional-pointer: true
-            items:
-              x-go-type: Team
-              $ref: ../../v1beta1/team/api.yml#/components/schemas/availableTeam
-    environmentPage:
-      type: object
-      description: Paginated list of environments
-      properties:
-        page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        environments:
-          type: array
-          x-go-type-skip-optional-pointer: true
-          items:
-            x-go-type: Environment
-            $ref: ../../v1beta1/environment/api.yml#/components/schemas/environment
-    eventsPage:
-      allOf:
-        - $ref: ../../v1alpha1/core/api.yml#/components/schemas/recordsPage
-        - type: object
-          properties:
-            data:
-              type: array
-              items:
-                $ref: "#/components/schemas/eventResult"
-    eventResult:
-      description: Defines model for event_result
-      properties:
-        user_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/user_id"
-          description: |
-            UUID of the user that initiated the event. In most cases this would be present, but not always.
-        system_id:
-          description: |
-            The system from which the request is sourced. In the case of Meshery Server,
-            the ID is meshery_instance_id of Meshery Server (which can be found in the metadata of`Connections` table).
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/system_id"
-        category:
-          description: |
-            Resource name on which the operation is invoked.
-          type: string
-          example: pattern
-        action:
-          description: |
-            Action taken on the resource.
-          type: string
-          example: deployed
-        description:
-          description: |
-            A summary/receipt of event that occured.
-          type: string
-          example: "Prometheus pattern deployed in K8s ctx Layer5 Cloud."
-        first_name:
-          description: First name of the user that initiated the event.
-          type: string
-        last_name:
-          description: Last name of the user that initiated the event.
-          type: string
-        email:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Email"
-        provider:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/provider"
-        created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-    mesheryDesignPage:
-      type: object
-      description: Paginated list of designs
-      properties:
-        page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        designs:
-          type: array
-          items:
-            x-go-type: MesheryPattern
-            $ref: ../../v1beta1/design/api.yml#/components/schemas/MesheryPattern
-    mesheryView:
-      type: object
-      properties:
-        ID:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
-        name:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
-        filters:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/MapObject
-        visibility:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
-        metadata:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/MapObject
-        user_id:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/user_id
-        created_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
-        updated_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
-        deleted_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
-    mesheryViewPage:
-      type: object
-      description: Paginated list of views
-      properties:
-        page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        views:
-          type: array
-          items:
-            $ref: "#/components/schemas/mesheryView"
-    workspacesDesignsMappingPage:
-      allOf:
-        - $ref: ../../v1alpha1/core/api.yml#/components/schemas/resultsPage
-        - type: object
-          properties:
-            workspaces_designs_mapping:
-              type: array
-              items:
-                $ref: "#/components/schemas/workspacesDesignsMapping"
-    workspacesViewsMappingPage:
-      allOf:
-        - $ref: ../../v1alpha1/core/api.yml#/components/schemas/resultsPage
-        - type: object
-          properties:
-            workspaces_views_mapping:
-              type: array
-              items:
-                $ref: "#/components/schemas/workspacesViewsMapping"
-    workspacesEnvironmentsMappingPage:
-      allOf:
-        - $ref: ../../v1alpha1/core/api.yml#/components/schemas/resultsPage
-        - type: object
-          properties:
-            workspaces_environments_mapping:
-              type: array
-              items:
-                $ref: "#/components/schemas/workspacesEnvironmentsMapping"
-    workspacesTeamsMappingPage:
-      allOf:
-        - $ref: ../../v1alpha1/core/api.yml#/components/schemas/resultsPage
-        - type: object
-          properties:
-            workspaces_teams_mapping:
-              type: array
-              items:
-                $ref: "#/components/schemas/workspacesTeamsMapping"
     workspaceUpdatePayload:
       properties:
         name:
@@ -820,3 +654,4 @@ components:
 #       '500':
 #         $ref: '#/components/responses/500'
 # /api/workspaces/{workspaceId}/events:
+
