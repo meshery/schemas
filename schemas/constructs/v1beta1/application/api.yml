@@ -1,0 +1,294 @@
+openapi: 3.0.0
+info:
+  title: application
+  version: 1.0.0
+paths:
+  /api/application:
+    get:
+      tags:
+        - ApplicationsAPI
+      summary: Handle GET request for Application File
+      description: Returns the list of all the applications with the filter content
+      operationId: idGetApplicationFile
+      parameters:
+        - name: id
+          in: query
+          description: id for a specific application
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: file type
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: name
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryApplicationPage"
+        "500":
+          description: Internal Server Error
+
+    post:
+      tags:
+        - ApplicationsAPI
+      summary: Handle POST request for Application File
+      description: Save application file
+      operationId: idPostApplicationFile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryApplicationRequestBody"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryApplication"
+        "500":
+          description: Internal Server Error
+
+  /api/application/{id}:
+    get:
+      tags:
+        - ApplicationsAPI
+      summary: Handle GET request for Application File with ID
+      description: Returns the application with the given ID
+      operationId: idGetApplicationFileID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryApplication"
+        "404":
+          description: Application not found
+        "500":
+          description: Internal Server Error
+    
+    delete:
+      tags:
+        - ApplicationsAPI
+      summary: Handle DELETE request for Application File
+      description: Delete the application with the given ID
+      operationId: idDeleteApplicationFileID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+        "404":
+          description: Application not found
+        "500":
+          description: Internal Server Error
+      
+  /api/application/deploy:
+    post:
+      tags:
+        - ApplicationsAPI
+      summary: Handle POST request for Application File Deploy
+      description: Deploy an attached application file with the request
+      operationId: idPostDeployApplicationFile
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+             type: object
+             properties:
+               uploadYamlYmlFile:
+                 type: string
+                 format: binary
+      responses:
+        "200":
+          description: Successful
+    delete:
+      tags:
+        - ApplicationsAPI
+      summary: Handle DELETE request for Application File Deploy
+      description: Delete a deployed application file with the request
+      operationId: idDeleteApplicationFile
+      requestBody:
+         content:
+           multipart/form-data:
+             schema:
+              type: object
+              properties:
+                uploadYamlYmlFile:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Successful
+
+  /api/application/{sourcetype}:
+    get:
+      tags:
+        - ApplicationsAPI
+      summary: Handle GET request for Application File with source type
+      description: Returns the application with the given source type
+      operationId: idGetApplicationFileSourceType
+      parameters:
+        - name: sourcetype
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryApplicationPage"
+        "500":
+          description: Internal Server Error
+
+  /api/application/download/{id}/{sourcetype}:
+    get:
+      tags:
+        - ApplicationsAPI
+      summary: Handle GET request for Meshery Application with of source content
+      description: Get the application source-content
+      operationId: typeGetApplication
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sourcetype
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "500":
+          description: Internal Server Error
+
+  /api/application/types:
+    get:
+      tags:
+        - ApplicationsAPI
+      summary: Handle GET request for Meshery Application types
+      description: Get application file types
+      operationId: typeGetMesheryApplication
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                     type: 
+                       type: string
+                     supported_extensions:
+                       type: array
+                       items:
+                         type: string
+        "500":
+          description: Internal Server Error
+
+components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number
+      required: false
+      schema:
+        type: integer
+        default: 0
+    pagesize:
+      name: pagesize
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        default: 10
+    search:
+      name: search
+      in: query
+      description: Search term
+      required: false
+      schema:
+        type: string
+    order:
+      name: order
+      in: query
+      description: Sort order
+      required: false
+      schema:
+        type: string
+
+  schemas:
+    MesheryApplication:
+      $ref: "./application.yaml"
+      x-go-type: MesheryApplication
+
+    MesheryApplicationPage:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        applications:
+          type: array
+          items:
+            $ref: "#/components/schemas/MesheryApplication"
+        total_count:
+          type: integer
+
+    MesheryApplicationRequestBody:
+      type: object
+      properties:
+        application_data:
+          $ref: "#/components/schemas/MesheryApplication"
+        save:
+          type: boolean
+        url:
+           type: string
+        name:
+           type: string

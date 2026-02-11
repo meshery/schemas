@@ -112,7 +112,6 @@ paths:
           description: Server error
 
     put:
-      x-internal: ["cloud"]
       tags:
         - Connections
       operationId: UpdateConnection

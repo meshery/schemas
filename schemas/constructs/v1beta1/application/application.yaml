@@ -1,0 +1,53 @@
+$schema: http://json-schema.org/draft-07/schema#
+title: Application Schema
+description: Applications are your primary tool for managing and deploying your infrastructure.
+type: object
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    x-order: 1
+  name:
+    type: string
+    description: Name of the application.
+    x-order: 2
+  schemaVersion:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    description: Specifies the version of the schema to which the application conforms.
+    x-order: 3
+  version:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
+    default: v0.0.1
+    x-order: 4
+  metadata:
+    type: object
+    x-order: 5
+    additionalProperties: true
+  application_file:
+    type: string
+    description: The content of the application file.
+    x-order: 6
+  source_content:
+    type: array
+    items:
+      type: integer
+      format: uint8
+    description: The source content of the application.
+    x-order: 7
+  type:
+     $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
+     x-order: 8
+  user_id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+    x-order: 9
+  created_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-order: 10
+  updated_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-order: 11
+  location:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/MapObject
+    x-order: 12
+required:
+  - id
+  - name
