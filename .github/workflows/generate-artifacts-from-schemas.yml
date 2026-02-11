@@ -14,22 +14,24 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4 
         with:
           ref: 'master'
+          token: ${{ secrets.GH_ACCESS_TOKEN }}
+
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.25.5'   # match your local version
+          go-version: '1.25.5'
 
       - name: Install Redocly
         uses: actions/setup-node@v6
+        
       - run: |
           npm i
           npm i -g @redocly/cli@latest
           go version 
           go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
-          echo "$HOME/go/bin" >> $GITHUB_PATH  # ✅ Add oapi-codegen to PATH
-
+          echo "$HOME/go/bin" >> $GITHUB_PATH
 
       - name: Run Make build
         shell: bash
@@ -47,4 +49,3 @@ jobs:
           commit_user_name: meshery
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          token: ${{ secrets.GH_ACCESS_TOKEN }}
