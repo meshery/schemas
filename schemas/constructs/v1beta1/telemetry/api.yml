@@ -1,0 +1,224 @@
+openapi: 3.0.0
+info:
+  title: telemetry
+  version: 1.0.0
+paths:
+  /api/telemetry/metrics/config:
+    get:
+      summary: Get Prometheus configuration
+      description: Fetches Prometheus configuration
+      operationId: idGetPrometheusConfig
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+    post:
+      summary: Update Prometheus configuration
+      description: Persists Prometheus configuration
+      operationId: idPostPrometheusConfig
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+    delete:
+      summary: Delete Prometheus configuration
+      description: Deletes Prometheus configuration
+      operationId: idDeletePrometheusConfig
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/ping/{connectionID}:
+    get:
+      summary: Ping Prometheus
+      description: Pings Prometheus service
+      operationId: idGetPrometheusPing
+      tags:
+        - telemetry
+      parameters:
+        - name: connectionID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+    
+  /api/telemetry/metrics/board_import:
+    post:
+      summary: Import Grafana Board for Prometheus
+      description: Imports Grafana board for Prometheus
+      operationId: idPostPrometheusBoardImport
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/query/{connectionID}:
+    get:
+      summary: Prometheus Query
+      description: Executes Prometheus query
+      operationId: idGetPrometheusQuery
+      tags:
+        - telemetry
+      parameters:
+        - name: connectionID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/static-board:
+    get:
+      summary: Get Prometheus Static Board
+      description: Fetches static board (Note code expects connectionID but path does not have it in swagger comment)
+      operationId: idGetPrometheusStaticBoard
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/boards/{connectionID}:
+    post:
+      summary: Persist Prometheus Board
+      description: Persists selected board and panels
+      operationId: idPostPrometheusBoard
+      tags:
+        - telemetry
+      parameters:
+        - name: connectionID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/grafana/scan:
+    get:
+      summary: Scan Grafana
+      description: Fetches and returns Grafana
+      operationId: idGetGrafana
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/grafana/config:
+    get:
+      summary: Get Grafana configuration
+      description: Fetches Grafana configuration
+      operationId: idGetGrafanaConfig
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+    post:
+      summary: Update Grafana configuration
+      description: Persists Grafana configuration
+      operationId: idPostGrafanaConfig
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+    delete:
+      summary: Delete Grafana configuration
+      description: Deletes Grafana configuration
+      operationId: idDeleteGrafanaConfig
+      tags:
+        - telemetry
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/grafana/ping/{connectionID}:
+    get:
+      summary: Ping Grafana
+      description: Pings Grafana service
+      operationId: idGetGrafanaPing
+      tags:
+        - telemetry
+      parameters:
+        - name: connectionID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/grafana/boards/{connectionID}:
+    get:
+      summary: Get Grafana Boards
+      description: Fetches Grafana boards and panels
+      operationId: idGetGrafanaBoards
+      tags:
+        - telemetry
+      parameters:
+        - name: connectionID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+    post:
+      summary: Save Grafana Boards
+      description: Persists board and panel selection
+      operationId: idPostGrafanaBoards
+      tags:
+        - telemetry
+      parameters:
+        - name: connectionID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+
+  /api/telemetry/metrics/grafana/query/{connectionID}:
+    get:
+      summary: Grafana Query
+      description: Executes Grafana query
+      operationId: idGetGrafanaQuery
+      tags:
+        - telemetry
+      parameters:
+        - name: connectionID
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+
+components:
+  schemas:
+    Telemetry:
+      $ref: "./telemetry.yaml"

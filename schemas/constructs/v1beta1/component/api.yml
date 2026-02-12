@@ -312,8 +312,8 @@ paths:
 
   /api/meshmodel/components/register:
     post:
-      summary: Register a new component
-      description: Registers a new meshmodel component
+      summary: Handle POST request for registering meshmodel components
+      description: Register meshmodel components
       operationId: idPostMeshModelComponentsRegister
       tags:
         - component

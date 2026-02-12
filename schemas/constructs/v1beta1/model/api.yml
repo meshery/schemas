@@ -6,7 +6,7 @@ paths:
   /api/meshmodels/register:
     post:
       summary: Register mesh models
-      operationId: RegisterMeshmodels
+      operationId: idRegisterMeshmodels
       requestBody:
         required: true
         content:

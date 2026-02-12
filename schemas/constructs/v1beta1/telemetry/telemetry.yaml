@@ -1,0 +1,11 @@
+title: Telemetry
+type: object
+properties:
+  type:
+    type: string
+    description: Type of telemetry (e.g. prometheus, grafana)
+  spec:
+    type: object
+    description: Telemetry specification
+required:
+  - type
