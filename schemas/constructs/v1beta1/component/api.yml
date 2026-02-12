@@ -2,8 +2,393 @@ openapi: 3.0.0
 info:
   title: component
   version: 1.0.0
-paths: {}
+paths:
+  /api/meshmodels/components:
+    get:
+      summary: Get all meshmodel components
+      description: Returns a list of all meshmodel components
+      operationId: idGetAllMeshmodelComponents
+      tags:
+        - component
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/model"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/components/{name}:
+    get:
+      summary: Get meshmodel component by name
+      description: Returns a meshmodel component by name
+      operationId: idGetAllMeshmodelComponentsByName
+      tags:
+        - component
+      parameters:
+        - name: name
+          in: path
+          description: Component Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/model"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories/{category}/components:
+    get:
+      summary: Get meshmodel components by category
+      description: Returns meshmodel components for a specific category
+      operationId: idGetMeshmodelComponentByCategory
+      tags:
+        - component
+      parameters:
+        - name: category
+          in: path
+          description: Category Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/model"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories/{category}/components/{name}:
+    get:
+      summary: Get meshmodel component by name and category
+      description: Returns a meshmodel component by name within a category
+      operationId: idGetMeshmodelComponentsByNameByCategory
+      tags:
+        - component
+      parameters:
+        - name: category
+          in: path
+          description: Category Name
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          description: Component Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/model"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models/{model}/components:
+    get:
+      summary: Get meshmodel components by model
+      description: Returns meshmodel components for a specific model
+      operationId: idGetMeshmodelComponentByModel
+      tags:
+        - component
+      parameters:
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/trim"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/annotations"
+        - name: id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models/{model}/components/{name}:
+    get:
+      summary: Get meshmodel component by name and model
+      description: Returns a meshmodel component by name within a model
+      operationId: idGetMeshmodelComponentsByNameByModel
+      tags:
+        - component
+      parameters:
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          description: Component Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories/{category}/models/{model}/components:
+    get:
+      summary: Get meshmodel components by category and model
+      description: Returns meshmodel components for a specific category and model
+      operationId: idGetMeshmodelComponentByModelByCategory
+      tags:
+        - component
+      parameters:
+        - name: category
+          in: path
+          description: Category Name
+          required: true
+          schema:
+            type: string
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories/{category}/models/{model}/components/{name}:
+    get:
+      summary: Get meshmodel component by name, category, and model
+      description: Returns a meshmodel component by name within a category and model
+      operationId: idGetMeshmodelComponentsByNameByModelByCategory
+      tags:
+        - component
+      parameters:
+        - name: category
+          in: path
+          description: Category Name
+          required: true
+          schema:
+            type: string
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          description: Component Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/apiVersion"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ComponentDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodel/components/register:
+    post:
+      summary: Register a new component
+      description: Registers a new meshmodel component
+      operationId: idPostMeshModelComponentsRegister
+      tags:
+        - component
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+    pagesize:
+      name: pagesize
+      in: query
+      description: Page size
+      schema:
+        type: string # Handler often treats as string due to "all" support
+    search:
+      name: search
+      in: query
+      description: Search term
+      schema:
+        type: string
+    order:
+      name: order
+      in: query
+      description: Order field
+      schema:
+        type: string
+    sort:
+      name: sort
+      in: query
+      description: Sort direction (asc/desc)
+      schema:
+        type: string
+    trim:
+      name: trim
+      in: query
+      description: Trim output
+      schema:
+        type: boolean
+    version:
+      name: version
+      in: query
+      description: Version filter
+      schema:
+        type: string
+    apiVersion:
+      name: apiVersion
+      in: query
+      description: API Version filter
+      schema:
+        type: string
+    model:
+      name: model
+      in: query
+      description: Model name filter
+      schema:
+        type: string
+    annotations:
+      name: annotations
+      in: query
+      description: Filter by annotations (true/false)
+      schema:
+        type: string
+  responses:
+    "500":
+      description: Internal Server Error
+
   schemas:
     ComponentDefinition:
       $ref: "./component.yaml"
