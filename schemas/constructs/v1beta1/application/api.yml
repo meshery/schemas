@@ -7,29 +7,19 @@ paths:
     get:
       tags:
         - ApplicationsAPI
-      summary: Handle GET request for Application File
-      description: Returns the list of all the applications with the filter content
-      operationId: idGetApplicationFile
+      summary: Handle GET request for Application Files
+      description: Fetches the list of all applications saved by the current user
+      operationId: idGetMesheryApplications
       parameters:
-        - name: id
+        - name: updated_after
           in: query
-          description: id for a specific application
+          description: timestamp should be of the format "YYYY-MM-DD HH:MM:SS"
           schema:
             type: string
-        - name: type
-          in: query
-          description: file type
-          schema:
-            type: string
-        - name: name
-          in: query
-          description: name
-          schema:
-            type: string
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
       responses:
         "200":
           description: Successful
@@ -37,27 +27,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MesheryApplicationPage"
-        "500":
-          description: Internal Server Error
-
-    post:
-      tags:
-        - ApplicationsAPI
-      summary: Handle POST request for Application File
-      description: Save application file
-      operationId: idPostApplicationFile
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MesheryApplicationRequestBody"
-      responses:
-        "200":
-          description: Successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MesheryApplication"
         "500":
           description: Internal Server Error
 

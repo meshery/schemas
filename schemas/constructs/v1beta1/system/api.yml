@@ -341,6 +341,7 @@ paths:
                schema:
                  type: object # Placeholder for v1ServicesMapResponseWrapper
 
+  
   /api/system/meshsync/resources:
     get:
       summary: Handle GET request for meshsync discovered resources

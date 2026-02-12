@@ -60,6 +60,20 @@ paths:
              type: array
              items:
                type: string
+        - name: updated_after
+          in: query
+          schema:
+            type: string
+        - name: metrics
+          in: query
+          schema:
+            type: boolean
+        - name: populate
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: Successful
@@ -90,23 +104,6 @@ paths:
                  $ref: "#/components/schemas/MesheryPattern"
         "500":
            description: Internal Server Error
-
-    delete:
-      summary: Handle DELETE request for patterns
-      description: Delete a list of patterns
-      operationId: idDeletePatterns
-      tags:
-        - PatternsAPI
-      requestBody:
-        content:
-          application/json:
-             schema:
-               $ref: "#/components/schemas/MesheryPatternDeleteRequestBody"
-      responses:
-        "200":
-          description: Successful
-        "500":
-          description: Internal Server Error
 
   /api/pattern/{id}:
     get:
