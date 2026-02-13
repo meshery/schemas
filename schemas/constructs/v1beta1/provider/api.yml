@@ -1,0 +1,57 @@
+openapi: 3.0.0
+info:
+  title: provider
+  version: 1.0.0
+paths:
+  /api/provider:
+    get:
+      summary: Handle GET request for the choice of provider
+      description: Update the choice of provider in system
+      operationId: idChoiceProvider
+      tags:
+        - ProvidersAPI
+      parameters:
+        - name: provider
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+
+  /api/providers:
+    get:
+      summary: Handle GET request for list of providers
+      description: Returns the list of available providers
+      operationId: idGetProvidersList
+      tags:
+        - ProvidersAPI
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for Providers model
+
+  /api/provider/capabilities:
+    get:
+      summary: Handle GET requests for Provider
+      description: Returns the capabilities.json for the provider
+      operationId: idGetProviderCapabilities
+      tags:
+        - ProvidersAPI
+      responses:
+        "200":
+          description: ""
+
+  /api/provider/extension:
+    get:
+      summary: Handle GET request for React Components
+      description: handles the requests to serve react components from the provider package
+      operationId: idReactComponents
+      tags:
+        - ProvidersAPI
+      responses:
+        "200":
+          description: ""

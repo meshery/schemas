@@ -234,8 +234,7 @@ components:
   schemas:
     MesheryApplication:
       $ref: "./application.yaml"
-      x-go-type: MesheryApplication
-
+      
     MesheryApplicationPage:
       type: object
       properties:

@@ -61,6 +61,12 @@ const (
 	Vee                  ModelDefinitionMetadataShape = "vee"
 )
 
+// CategoryDefinition defines model for CategoryDefinition.
+type CategoryDefinition struct {
+	// Name Name of the category
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
 // ImportBody defines model for ImportBody.
 type ImportBody struct {
 	union json.RawMessage
@@ -163,7 +169,7 @@ type ModelDefinition struct {
 	// SchemaVersion Specifies the version of the schema used for the definition.
 	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
 
-	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+	// Version Version of the model definition.
 	Version string `json:"version" yaml:"version"`
 
 	// Name The unique name for the model within the scope of a registrant.
@@ -261,7 +267,7 @@ type ModelDefinition_Metadata struct {
 
 // ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 type ModelReference struct {
-	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
+	// Version Version of the model definition.
 	Version string `json:"version" yaml:"version"`
 
 	// Name The unique name for the model within the scope of a registrant.
@@ -285,6 +291,27 @@ type ModelReference struct {
 type RegistrantReference struct {
 	Kind string `json:"kind" yaml:"kind"`
 }
+
+// Annotations defines model for annotations.
+type Annotations = string
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = int
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
+
+// Sort defines model for sort.
+type Sort = string
+
+// Version defines model for version.
+type Version = string
 
 // Getter for additional properties for ModelDefinition_Metadata. Returns the specified
 // element and whether it was found

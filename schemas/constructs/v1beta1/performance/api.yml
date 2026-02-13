@@ -1,0 +1,166 @@
+openapi: 3.0.0
+info:
+  title: performance
+  version: 1.0.0
+paths:
+  /api/perf/profile:
+    get:
+      summary: Handle GET request to run a test
+      description: Runs the load test with the given parameters
+      operationId: idRunPerfTest
+      tags:
+        - PerfAPI
+      parameters:
+        - name: c
+          in: query
+          description: concurrent request in number
+          schema:
+            type: integer
+            format: int64
+        - name: dur
+          in: query
+          description: duration e.g. s for second
+          schema:
+            type: string
+        - name: loadGenerator
+          in: query
+          description: load generator for performance test
+          schema:
+            type: string
+        - name: mesh
+          in: query
+          description: infrastructure for performance test
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: name of performance test
+          schema:
+            type: string
+        - name: qps
+          in: query
+          description: qps in number
+          schema:
+            type: integer
+            format: int64
+        - name: t
+          in: query
+          description: time in integer e.g. 30
+          schema:
+            type: integer
+            format: int64
+        - name: url
+          in: query
+          description: url for test
+          schema:
+            type: string
+        - name: uuid
+          in: query
+          description: test-id of pre-existing test
+          schema:
+            type: string
+            format: uuid
+        - name: Body
+          in: body
+          schema:
+            $ref: '#/components/schemas/PerformanceTestConfig'
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceSpec"
+
+  /api/perf/profile/result:
+    get:
+      summary: Handles GET requests for perf results
+      description: |-
+        # Results can be further filtered through query parameter
+
+        ```?order={field}``` orders on the passed field
+
+        ```?page={page-number}``` Default page number is 0
+
+        ```?pagesize={pagesize}``` Default pagesize is 10
+
+        ```?search={}``` If search is non empty then a greedy search is performed
+
+        ```?from={date}``` Date must be in yyyy-mm-dd format
+
+        ```?to={date}``` Date must be in yyyy-mm-dd format
+      operationId: idGetAllPerfResults
+      tags:
+        - PerfAPI
+      parameters:
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: pagesize
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          description: Date must be in yyyy-mm-dd format
+          schema:
+            type: string
+        - name: to
+          in: query
+          description: Date must be in yyyy-mm-dd format
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceResults"
+
+  /api/perf/profile/result/{id}:
+    get:
+      summary: Handles GET requests for perf result
+      description: Returns an individual result from provider
+      operationId: idGetSinglePerfResult
+      tags:
+        - PerfAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerformanceResult"
+
+components:
+  schemas:
+    PerformanceSpec:
+      type: object
+      # Placeholder for PerformanceSpec schema
+    PerformanceResults:
+      type: object
+      # Placeholder for PerformanceResults schema
+    PerformanceResult:
+      type: object
+      # Placeholder for PerformanceResult schema
+    PerformanceTestConfig:
+      type: object
+      # Placeholder for PerformanceTestConfig schema

@@ -1,0 +1,57 @@
+openapi: 3.0.3
+info:
+  title: Meshery Content API
+  description: Content API endpoints for sharing designs and filters
+  version: v1beta1
+tags:
+  - name: ShareContent
+    description: Operations related to sharing content
+paths:
+  /api/content/design/share:
+    post:
+      tags:
+        - ShareContent
+      summary: Handle POST request for Sharing content
+      description: Used to share designs with others
+      operationId: idPostShareDesign
+      requestBody:
+        description: Design share request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogRequest"
+      responses:
+        "200":
+          description: Design shared
+        "403":
+          description: Operation not available
+        "500":
+          description: Internal Server Error
+
+  /api/content/filter/share:
+    post:
+      tags:
+        - ShareContent
+      summary: Handle POST request for Sharing content
+      description: Used to share filters with others
+      operationId: idPostShareFilter
+      requestBody:
+        description: Filter share request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogRequest"
+      responses:
+        "200":
+          description: Filter shared
+        "403":
+          description: Operation not available
+        "500":
+          description: Internal Server Error
+
+components:
+  schemas:
+    CatalogRequest:
+      $ref: "./content.yaml"

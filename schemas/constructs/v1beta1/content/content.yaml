@@ -1,0 +1,37 @@
+type: object
+title: CatalogRequest
+description: CatalogRequest represents a request to share content (design or filter)
+properties:
+  id:
+    $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+  content_id:
+    $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+  content_name:
+    type: string
+    description: Name of the content
+  content_type:
+    type: string
+    description: Type of the content
+    enum:
+      - pattern
+      - filter
+  first_name:
+    type: string
+    description: First name of the requester
+  last_name:
+    type: string
+    description: Last name of the requester
+  email:
+    type: string
+    description: Email of the requester
+  status:
+    type: string
+    description: Status of the request
+    enum:
+      - pending
+      - approved
+      - denied
+  created_at:
+    $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+  updated_at:
+    $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"

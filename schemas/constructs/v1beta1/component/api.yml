@@ -5,8 +5,27 @@ info:
 paths:
   /api/meshmodels/components:
     get:
-      summary: Get all meshmodel components
-      description: Returns a list of all meshmodel components
+      summary: Handle GET request for getting meshmodel components across all models and categories
+      description: |-
+        # Components can be further filtered through query parameter
+
+        ```?version={version}```
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all models are returned
+
+        ```?order={field}``` orders on the passed field
+
+        ```?search={componentname}``` If search is non empty then a greedy search is performed
+
+        ```?trim={[true]}``` When trim is set to true, the underlying schemas are not returned for entities
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned.
       operationId: idGetAllMeshmodelComponents
       tags:
         - component
@@ -35,8 +54,30 @@ paths:
 
   /api/meshmodels/components/{name}:
     get:
-      summary: Get meshmodel component by name
-      description: Returns a meshmodel component by name
+      summary: Handle GET request for getting meshmodel components of a specific type by name across all models and categories
+      description: |-
+        Example: ```/api/meshmodels/components/Namespace```
+        Components can be further filtered through query parameter
+
+        ```?model={model}``` If model is unspecified then all models are returned
+
+        ```?version={version}``` If version is unspecified then all model versions are returned
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all components are returned
+
+        ```?order={field}``` orders on the passed field
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?trim={[true]}``` When trim is set to true, the underlying schemas are not returned for entities
+
+        ```?search={[true/false]}``` If search is true then a greedy search is performed
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned.
       operationId: idGetAllMeshmodelComponentsByName
       tags:
         - component
@@ -71,8 +112,27 @@ paths:
 
   /api/meshmodels/categories/{category}/components:
     get:
-      summary: Get meshmodel components by category
-      description: Returns meshmodel components for a specific category
+      summary: Handle GET request for getting meshmodel components of a specific model and category.
+      description: |-
+        # Components can be further filtered through query parameter
+
+        ```?version={version}```
+
+        ```?trim={[true]}``` When trim is set to true, the underlying schemas are not returned for entities
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all models are returned
+
+        ```?order={field}``` orders on the passed field
+
+        ```?search={componentname}``` If search is non empty then a greedy search is performed
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned.
       operationId: idGetMeshmodelComponentByCategory
       tags:
         - component
@@ -106,8 +166,28 @@ paths:
 
   /api/meshmodels/categories/{category}/components/{name}:
     get:
-      summary: Get meshmodel component by name and category
-      description: Returns a meshmodel component by name within a category
+      summary: Handle GET request for getting meshmodel components of a specific type category.
+      description: |-
+        Example: ```/api/meshmodels/categories/Orchestration``` and Management/components/Namespace
+        Components can be further filtered through query parameter
+
+        ```?model={model}``` If model is unspecified then all models are returned
+
+        ```?version={version}``` If version is unspecified then all model versions are returned
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all components are returned
+
+        ```?order={field}``` orders on the passed field
+
+        ```?search={[true/false]}``` If search is true then a greedy search is performed
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned.
       operationId: idGetMeshmodelComponentsByNameByCategory
       tags:
         - component
@@ -147,8 +227,28 @@ paths:
 
   /api/meshmodels/models/{model}/components:
     get:
-      summary: Get meshmodel components by model
-      description: Returns meshmodel components for a specific model
+      summary: Handle GET request for getting meshmodel components of a specific model. The component type/model name should be lowercase like "kubernetes", "istio"
+      description: |-
+        Example: ```/api/meshmodels/models/kubernetes/components```
+        Components can be further filtered through query parameter
+
+        ```?version={version}```
+
+        ```?trim={[true]}``` When trim is set to true, the underlying schemas are not returned for entities
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all models are returned
+
+        ```?search={componentname}``` If search is non empty then a greedy search is performed
+
+        ```?order={field}``` orders on the passed field
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned.
       operationId: idGetMeshmodelComponentByModel
       tags:
         - component
@@ -186,8 +286,26 @@ paths:
 
   /api/meshmodels/models/{model}/components/{name}:
     get:
-      summary: Get meshmodel component by name and model
-      description: Returns a meshmodel component by name within a model
+      summary: Handle GET request for getting meshmodel components of a specific  model.
+      description: |-
+        Example: ```/api/meshmodels/models/kubernetes/components/Namespace```
+        Components can be further filtered through query parameter
+
+        ```?version={version}``` If version is unspecified then all model versions are returned
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all components are returned
+
+        ```?order={field}``` orders on the passed field
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?search={[true/false]}``` If search is true then a greedy search is performed
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned. returned.
       operationId: idGetMeshmodelComponentsByNameByModel
       tags:
         - component
@@ -226,8 +344,28 @@ paths:
 
   /api/meshmodels/categories/{category}/models/{model}/components:
     get:
-      summary: Get meshmodel components by category and model
-      description: Returns meshmodel components for a specific category and model
+      summary: Handle GET request for getting meshmodel components of a specific model and category. The component type/model name should be lowercase like "kubernetes", "istio"
+      description: |-
+        Example: ```/api/meshmodels/categories/Orchestration``` and Management/models/kubernetes/components
+        Components can be further filtered through query parameter
+
+        ```?version={version}```
+
+        ```?trim={[true]}``` When trim is set to true, the underlying schemas are not returned for entities
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all models are returned
+
+        ```?order={field}``` orders on the passed field
+
+        ```?search={componentname}``` If search is non empty then a greedy search is performed
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned.
       operationId: idGetMeshmodelComponentByModelByCategory
       tags:
         - component
@@ -266,8 +404,26 @@ paths:
 
   /api/meshmodels/categories/{category}/models/{model}/components/{name}:
     get:
-      summary: Get meshmodel component by name, category, and model
-      description: Returns a meshmodel component by name within a category and model
+      summary: Handle GET request for getting meshmodel components of a specific type by model and category.
+      description: |-
+        Example: ```/api/meshmodels/categories/Orchestration``` and Management/models/kubernetes/components/Namespace
+        Components can be further filtered through query parameter
+
+        ```?version={version}``` If version is unspecified then all model versions are returned
+
+        ```?apiVersion={apiVersion}``` If apiVersion is unspecified then all components are returned
+
+        ```?order={field}``` orders on the passed field
+
+        ```?search={[true/false]}``` If search is true then a greedy search is performed
+
+        ```?sort={[asc/desc]}``` Default behavior is asc
+
+        ```?page={page-number}``` Default page number is 1
+
+        ```?pagesize={pagesize}``` Default pagesize is 25. To return all results: ```pagesize=all```
+
+        ```?annotations={["true"/"false"/]}``` If "true" components having "isAnnotation" property as true are "only" returned, If false all components except "annotations" are returned. Any other value of the query parameter results in both annoations as well as non-annotation components being returned.
       operationId: idGetMeshmodelComponentsByNameByModelByCategory
       tags:
         - component
