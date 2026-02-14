@@ -1,0 +1,47 @@
+openapi: 3.0.3
+info:
+  title: Meshery Schema API
+  description: REST API for Meshery Schema operations
+  version: v1beta1
+tags:
+  - name: Schema
+    description: Operations related to Meshery Schemas
+paths:
+  /api/schema/resource/{resourceName}:
+    get:
+      summary: Get Resource Schema
+      description: Retrieves and merges the RJSF schema and UI schema for a given resource.
+      operationId: HandleResourceSchemas
+      tags:
+        - Schema
+      parameters:
+        - in: path
+          name: resourceName
+          schema:
+            type: string
+          required: true
+          description: The name of the resource to retrieve the schema for.
+      responses:
+        '200':
+          description: Resource Schema
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResourceSchema'
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    ResourceSchema:
+      type: object
+      properties:
+        rjsfSchema:
+          type: object
+          description: The JSON Schema for the resource (RJSF format).
+          additionalProperties: true
+        uiSchema:
+          type: object
+          description: The UI Schema for the resource.
+          additionalProperties: true
+      x-go-package: github.com/meshery/meshery/server/models
