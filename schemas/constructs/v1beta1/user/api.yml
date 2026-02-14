@@ -23,6 +23,52 @@ paths:
       summary: Handlers GET request for User logout
       tags:
         - UserAPI
+
+  /api/identity/users:
+    get:
+      summary: Handles GET for all Users
+      description: |-
+        # Users can be further filtered through query parameters
+
+        ```?order={field}``` orders on the passed field
+        ```?page={page-number}``` Default page number is 0
+        ```?pagesize={pagesize}``` Default pagesize is 20
+        ```?search={username|email|first_name|last_name}``` If search is non empty then a greedy search is performed
+        ```?filter={condition}```
+      operationId: idGetAllUsersHandler
+      tags:
+        - UserAPI
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: filter
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPage' # Placeholder, will verify if this schema exists or needs creation.
+
   /api/user/performance/profiles:
     get:
       description: |
@@ -364,6 +410,26 @@ paths:
         - UserAPI
 components:
   schemas:
+    UserPage:
+      type: object
+      properties:
+        page:
+          type: integer
+          format: uint64
+          x-go-name: Page
+        page_size:
+          type: integer
+          format: uint64
+          x-go-name: PageSize
+        total_count:
+          type: integer
+          format: uint64
+          x-go-name: TotalCount
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          x-go-name: Users
     Adapter:
       description: Adapter represents an adapter in Meshery
       properties:

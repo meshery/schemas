@@ -7,7 +7,6 @@ info:
 paths:
   /api/integrations/connections:
     get:
-      x-internal: ["cloud"]
       tags:
         - Connections
       operationId: GetConnections
@@ -65,7 +64,6 @@ paths:
           description: Server error
 
     post:
-      x-internal: ["cloud"]
       tags:
         - Connections
       operationId: RegisterConnection
@@ -90,29 +88,7 @@ paths:
           description: Server error
 
   /api/integrations/connections/{connectionId}:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - Connections
-      operationId: GetConnectionById
-      summary: Get connection by ID
-      description: Returns a specific connection by its ID
-      parameters:
-        - $ref: "#/components/parameters/connectionId"
-      responses:
-        "200":
-          description: Connection details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Connection"
-        "404":
-          description: Connection not found
-        "500":
-          description: Server error
-
     put:
-      x-internal: ["cloud"]
       tags:
         - Connections
       operationId: UpdateConnection
@@ -139,7 +115,6 @@ paths:
           description: Server error
 
     delete:
-      x-internal: ["cloud"]
       tags:
         - Connections
       operationId: DeleteConnection
@@ -176,6 +151,64 @@ paths:
           description: Meshery connection deleted successfully
         "404":
           description: Connection not found
+        "500":
+          description: Server error
+
+  /api/integrations/connections/status:
+    get:
+      tags:
+        - Connections
+      operationId: GetConnectionStatus
+      summary: Get connection status
+      description: Get the status of connections
+      responses:
+        "200":
+          description: Connection status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionsStatusPage"
+        "500":
+          description: Server error
+
+  /api/integrations/connections/{connectionKind}:
+    get:
+      tags:
+        - Connections
+      operationId: GetConnectionsByKind
+      summary: Get connections by kind
+      description: Get connections filtered by kind
+      parameters:
+        - $ref: "#/components/parameters/connectionKind"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: filter
+          in: query
+          description: Filter connections
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paginated list of connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "500":
+          description: Server error
+
+    put:
+      tags:
+        - Connections
+      operationId: idPutConnection
+      summary: Update a connection
+      description: Updates existing connection
+      responses:
+        "200":
+          description: Connection updated successfully
         "500":
           description: Server error
 

@@ -1288,3 +1288,22 @@ type UserKeys struct {
 	Subcategory *string `json:"subcategory,omitempty" yaml:"subcategory,omitempty"`
 	UpdatedAt   *string `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
+
+// UserPage defines model for UserPage.
+type UserPage struct {
+	Page       *uint64 `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *uint64 `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *uint64 `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Users      *[]struct {
+		AvatarURL *string   `json:"avatar_url,omitempty" yaml:"avatar_url,omitempty"`
+		Bio       *string   `json:"bio,omitempty" yaml:"bio,omitempty"`
+		Email     *string   `json:"email,omitempty" yaml:"email,omitempty"`
+		FirstName *string   `json:"first_name,omitempty" yaml:"first_name,omitempty"`
+		ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
+		LastName  *string   `json:"last_name,omitempty" yaml:"last_name,omitempty"`
+		Provider  *string   `json:"provider,omitempty" yaml:"provider,omitempty"`
+		RoleNames *[]string `json:"role_names,omitempty" yaml:"role_names,omitempty"`
+		Status    *string   `json:"status,omitempty" yaml:"status,omitempty"`
+		UserID    *string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	} `json:"users,omitempty" yaml:"users,omitempty"`
+}
