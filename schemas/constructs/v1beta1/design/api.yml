@@ -7,6 +7,8 @@ paths:
     post:
       summary: Import Design
       operationId: ImportDesign
+      tags:
+        - PatternsAPI
       requestBody:
         required: true
         content:
@@ -27,6 +29,309 @@ paths:
           description: Invalid request format
         "500":
           description: Internal server error
+
+  /api/pattern:
+    get:
+      summary: Handle GET request for patterns
+      description: Returns a list of patterns
+      operationId: idGetPatterns
+      tags:
+        - PatternsAPI
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: visibility
+          in: query
+          schema:
+             type: array
+             items:
+               type: string
+        - name: updated_after
+          in: query
+          schema:
+            type: string
+        - name: metrics
+          in: query
+          schema:
+            type: boolean
+        - name: populate
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryPatternPage"
+        "500":
+          description: Internal Server Error
+
+    post:
+      summary: Handle POST request for patterns
+      description: Create a new pattern
+      operationId: idPostPattern
+      tags:
+        - PatternsAPI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryPatternRequestBody"
+      responses:
+        "200":
+          description: Successful
+          content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/MesheryPattern"
+        "500":
+           description: Internal Server Error
+
+  /api/pattern/{id}:
+    get:
+      summary: Handle GET request for pattern with ID
+      description: Returns the pattern with the given ID
+      operationId: idGetPatternByID
+      tags:
+        - PatternsAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+           description: Successful
+           content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/MesheryPattern"
+        "404":
+           description: Pattern not found
+        "500":
+           description: Internal Server Error
+
+    delete:
+      summary: Handle DELETE request for pattern with ID
+      description: Delete the pattern with the given ID
+      operationId: idDeletePatternByID
+      tags:
+        - PatternsAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+        "404":
+          description: Pattern not found
+        "500":
+          description: Internal Server Error
+
+  /api/pattern/deploy:
+    post:
+      summary: Handle POST request for Pattern Deploy
+      description: Deploy an attached pattern file
+      operationId: idPostDeployPattern
+      tags:
+        - PatternsAPI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MesheryPattern"
+      responses:
+        "200":
+          description: Successful
+    delete:
+      summary: Handle DELETE request for Pattern Deploy
+      description: Delete a deployed pattern file
+      operationId: idDeleteDeployPattern
+      tags:
+        - PatternsAPI
+      requestBody:
+        content:
+           application/json:
+             schema:
+               $ref: "#/components/schemas/MesheryPattern"
+      responses:
+        "200":
+          description: Successful
+
+  /api/pattern/clone/{id}:
+    post:
+      summary: Handle POST request for Pattern Clone
+      description: Clone a pattern
+      operationId: idPostPatternClone
+      tags:
+        - PatternsAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+
+  /api/pattern/catalog:
+    get:
+      summary: Handle GET request for catalog patterns
+      description: Returns a list of catalog patterns
+      operationId: idGetCatalogPatterns
+      tags:
+        - PatternsAPI
+      responses:
+        "200":
+          description: Successful
+
+  /api/pattern/catalog/publish:
+    post:
+      summary: Handle POST request for catalog publish
+      description: Publish a pattern to the catalog
+      operationId: idPostCatalogPublish
+      tags:
+        - PatternsAPI
+      requestBody:
+         content:
+           application/json:
+             schema:
+               type: object
+      responses:
+        "200":
+          description: Successful
+
+  /api/pattern/catalog/unpublish:
+    delete:
+      summary: Handle DELETE request for catalog unpublish
+      description: Unpublish a pattern from the catalog
+      operationId: idDeleteCatalogUnpublish
+      tags:
+        - PatternsAPI
+      requestBody:
+         content:
+           application/json:
+             schema:
+               type: object
+      responses:
+        "200":
+          description: Successful
+
+  /api/pattern/download/{id}:
+    get:
+      summary: Handle GET request for pattern download
+      description: Download a pattern
+      operationId: idGetPatternDownload
+      tags:
+        - PatternsAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+          content:
+             application/octet-stream:
+               schema:
+                 type: string
+                 format: binary
+
+  /api/pattern/download/{id}/{sourcetype}:
+    get:
+      summary: Handle GET request for pattern download with source type
+      description: Download a pattern with source type
+      operationId: idGetPatternDownloadSourceType
+      tags:
+        - PatternsAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: sourcetype
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+           description: Successful
+
+  /api/pattern/types:
+    get:
+       summary: Handle GET request for pattern types
+       description: Returns pattern types
+       operationId: idGetPatternTypes
+       tags:
+         - PatternsAPI
+       responses:
+         "200":
+           description: Successful
+
+  /api/patterns:
+    get:
+      summary: Handle GET request for multiple patterns
+      description: Returns a list of patterns (alias for /api/pattern)
+      operationId: idGetPatternsAlias
+      tags:
+        - PatternsAPI
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/MesheryPatternPage"
+
 components:
   schemas:
     DeletePatternModel:

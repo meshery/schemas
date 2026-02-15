@@ -1,0 +1,201 @@
+openapi: 3.0.0
+info:
+  title: Meshery Provider API
+  description: REST API for Meshery Provider operations
+  version: v1beta1
+tags:
+  - name: ProvidersAPI
+    description: Operations related to Meshery Providers
+paths:
+  /provider:
+    get:
+      summary: Handle GET request to provider UI
+      description: Servers providers UI
+      operationId: idProvider
+      tags:
+        - ProvidersAPI
+      responses:
+        "200":
+          description: ""
+
+  /api/provider:
+    get:
+      summary: Handle GET request for the choice of provider
+      description: Update the choice of provider in system
+      operationId: idChoiceProvider
+      tags:
+        - ProvidersAPI
+      parameters:
+        - name: provider
+          in: query
+          schema:
+            type: string
+          description: Name of the provider
+      responses:
+        "200":
+          description: ""
+
+  /api/providers:
+    get:
+      summary: Handle GET request for list of providers
+      description: Returns the available list of providers
+      operationId: idGetProvidersList
+      tags:
+        - ProvidersAPI
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderPropertiesMap'
+
+  /api/provider/capabilities:
+    get:
+      summary: Handle GET requests for Provider
+      description: Returns the capabilities.json for the provider
+      operationId: idGetProviderCapabilities
+      tags:
+        - ProvidersAPI
+      responses:
+        "200":
+          description: ""
+
+  /api/provider/extension:
+    get:
+      summary: Handle GET request for React Components
+      description: handles the requests to serve react components from the provider package
+      operationId: idReactComponents
+      tags:
+        - ProvidersAPI
+      responses:
+        "200":
+          description: ""
+
+components:
+  schemas:
+    ProviderPropertiesMap:
+      type: object
+      description: Returns a list of available providers
+      additionalProperties:
+        $ref: '#/components/schemas/ProviderProperties'
+        
+    ProviderProperties:
+      description: ProviderProperties represents the structure of properties that a provider has
+      type: object
+      properties:
+        capabilities:
+          items:
+            $ref: '#/components/schemas/Capabilities'
+          type: array
+        extensions:
+          $ref: '#/components/schemas/Extensions'
+        package_url:
+          type: string
+          x-go-name: PackageURL
+        package_version:
+          type: string
+          x-go-name: PackageVersion
+        provider_description:
+          type: array
+          items:
+            type: string
+          x-go-name: ProviderDescription
+        provider_name:
+          type: string
+          x-go-name: ProviderName
+        provider_type:
+          $ref: '#/components/schemas/ProviderType'
+      x-go-package: github.com/meshery/meshery/server/models
+
+    Capabilities:
+      description: Capabilities represents the features of the provider
+      properties:
+        feature:
+          type: string
+          x-go-name: Feature
+        endpoint:
+          type: string
+          x-go-name: Endpoint
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+
+    Extensions:
+      description: Extensions represents the extensions of the provider
+      properties:
+        navigator:
+          items:
+            $ref: '#/components/schemas/NavigatorExtension'
+          type: array
+          x-go-name: Navigator
+        account:
+          items:
+            $ref: '#/components/schemas/AccountExtension'
+          type: array
+          x-go-name: Account
+        graphql:
+          items:
+            $ref: '#/components/schemas/GraphQLExtension'
+          type: array
+          x-go-name: GraphQL
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+      
+    NavigatorExtension:
+      properties:
+        title:
+          type: string
+          x-go-name: Title
+        href:
+          type: object
+          x-go-name: Href
+        component:
+          type: string
+          x-go-name: Component
+        icon:
+          type: string
+          x-go-name: Icon
+        show:
+          type: boolean
+          x-go-name: Show
+        children:
+          items:
+            type: object
+            x-go-type: NavigatorExtension
+          type: array
+          x-go-name: Children
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+
+    AccountExtension:
+      properties:
+        title:
+          type: string
+          x-go-name: Title
+        href:
+          type: object
+          x-go-name: Href
+        component:
+          type: string
+          x-go-name: Component
+        on_click:
+          type: string
+          x-go-name: OnClick
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+      
+    GraphQLExtension:
+      properties:
+        component:
+          type: string
+          x-go-name: Component
+        path:
+          type: string
+          x-go-name: Path
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+      
+    ProviderType:
+      description: ProviderType - for representing the type of provider
+      type: string
+      x-go-package: github.com/meshery/meshery/server/models

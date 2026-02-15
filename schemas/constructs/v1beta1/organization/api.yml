@@ -4,6 +4,51 @@ info:
   version: 1.0.0
 
 paths:
+  /api/identity/orgs:
+    get:
+      summary: Handles GET for all Organizations
+      description: |
+        ```?order={field}``` orders on the passed field
+        ```?page={page-number}``` Default page number is 0
+        ```?pagesize={pagesize}``` Default pagesize is 20
+        ```?search={environments_name}``` If search is non empty then a greedy search is performed
+        ```?filter={condition}```
+      operationId: idGetOrganizations
+      tags:
+        - OrganizationsAPI
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: pagesize
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: filter
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamsOrganizationsMappingPage" # NOTE: Using existing page schema as placeholder, verifying return type next.
+        "500":
+          description: Internal server error
+
   /api/identity/orgs/by-domain:
     get:
       summary: Get organization by domain

@@ -1,0 +1,169 @@
+openapi: 3.0.3
+info:
+  title: Meshery SMI API
+  description: REST API for Meshery SMI operations
+  version: v1beta1
+tags:
+  - name: Smi
+    description: Operations related to Service Mesh Interface (SMI)
+paths:
+  /api/smi/results:
+    get:
+      description: |-
+        # Results can be further filtered through query parameter
+
+        ```?order={field}``` orders on the passed field
+
+        ```?page={page-number}``` Default page number is 0
+
+        ```?pagesize={pagesize}``` Default pagesize is 10
+
+        ```?search={status|mesh_version|mesh_name|date|id}``` If search is non empty then a greedy search is performed
+      parameters:
+        - description: Order field
+          in: query
+          name: order
+          schema:
+            type: string
+        - description: Page number
+          in: query
+          name: page
+          schema:
+            type: integer
+        - description: Page size
+          in: query
+          name: pagesize
+          schema:
+            type: integer
+        - description: Search query
+          in: query
+          name: search
+          schema:
+            type: string
+      summary: Handle GET request for the results of all the smi conformance tests
+      tags:
+        - Smi
+      operationId: idFetchSmiResults
+      responses:
+        "200":
+          description: Returns SMI results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmiResultPage"
+
+components:
+  schemas:
+    SmiResultPage:
+      description: SmiResultPage - represents a page of meshery results
+      properties:
+        page:
+          format: uint64
+          type: integer
+          x-go-name: Page
+        page_size:
+          format: uint64
+          type: integer
+          x-go-name: PageSize
+        results:
+          items:
+            $ref: '#/components/schemas/SmiResultWithID'
+          type: array
+          x-go-name: Results
+        total_count:
+          format: int64
+          type: integer
+          x-go-name: TotalCount
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    
+    SmiResultWithID:
+      properties:
+
+        cases_passed:
+          type: string
+          x-go-name: CasesPassed
+        date:
+          type: string
+          x-go-name: Date
+        id:
+          format: uuid
+          type: string
+          x-go-name: ID
+        mesh_name:
+          type: string
+          x-go-name: MeshName
+        mesh_version:
+          type: string
+          x-go-name: MeshVersion
+        more_details:
+          items:
+            $ref: '#/components/schemas/SmiResult'
+          type: array
+          x-go-name: MoreDetails
+        status:
+          type: string
+          x-go-name: Status
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+
+    SmiResult:
+      properties:
+        cases_passed:
+          type: string
+          x-go-name: CasesPassed
+        date:
+          type: string
+          x-go-name: Date
+        id:
+          format: uuid
+          type: string
+          x-go-name: ID
+        mesh_name:
+          type: string
+          x-go-name: MeshName
+        mesh_version:
+          type: string
+          x-go-name: MeshVersion
+        more_details:
+          items:
+            $ref: '#/components/schemas/Detail'
+          type: array
+          x-go-name: MoreDetails
+        passing_percentage:
+          type: string
+          x-go-name: PassingPercentage
+        status:
+          type: string
+          x-go-name: Status
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+
+    Detail:
+      properties:
+        assertions:
+          type: string
+          x-go-name: Assertions
+        capability:
+          type: string
+          x-go-name: Capability
+        reason:
+          type: string
+          x-go-name: Reason
+        result:
+          type: string
+          x-go-name: Result
+        smi_specification:
+          type: string
+          x-go-name: SmiSpecification
+        smi_version:
+          type: string
+          x-go-name: SmiVersion
+        status:
+          type: string
+          x-go-name: Status
+        time:
+          type: string
+          x-go-name: Time
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models

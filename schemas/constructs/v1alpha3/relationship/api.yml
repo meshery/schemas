@@ -2,8 +2,245 @@ openapi: 3.0.0
 info:
   title: relationship
   version: 1.0.0
-paths: {}
+paths:
+  /api/meshmodels/relationships:
+    get:
+      summary: Get all meshmodel relationships
+      description: Returns a list of all meshmodel relationships
+      operationId: idGetAllMeshmodelRelationships
+      tags:
+        - relationship
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/kind"
+        - $ref: "#/components/parameters/type"
+        - $ref: "#/components/parameters/subType"
+        - name: id
+          in: query
+          schema:
+            type: string
+        - name: model
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RelationshipDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models/{model}/relationships:
+    get:
+      summary: Get meshmodel relationships by model
+      description: Returns a list of meshmodel relationships for a specific model
+      operationId: idGetAllMeshmodelRelationshipsByModel
+      tags:
+        - relationship
+      parameters:
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/kind"
+        - $ref: "#/components/parameters/type"
+        - $ref: "#/components/parameters/subType"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RelationshipDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models/{model}/relationships/{name}:
+    get:
+      summary: Get meshmodel relationship by name and model
+      description: Returns a meshmodel relationship by name within a model
+      operationId: idGetMeshmodelRelationshipByName
+      tags:
+        - relationship
+      parameters:
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          description: Relationship Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RelationshipDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/relationships/evaluate:
+    post:
+      summary: Evaluate relationship policy
+      description: Evaluates logic based on relationships
+      operationId: relationshipPolicyEvalPayloadWrapper
+      tags:
+        - relationship
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models/{model}/policies:
+    get:
+      summary: Get meshmodel policies by model
+      description: Returns a list of meshmodel policies for a specific model
+      operationId: idGetMeshmodelPolicies
+      tags:
+        - relationship
+      parameters:
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models/{model}/policies/{name}:
+    get:
+      summary: Get meshmodel policy by name and model
+      description: Returns a meshmodel policy by name https://docs.meshery.io/concepts/policies
+      operationId: idGetMeshmodelPoliciesByName
+      tags:
+        - relationship
+      parameters:
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          description: Policy Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+    pagesize:
+      name: pagesize
+      in: query
+      description: Page size
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Search term
+      schema:
+        type: string
+    order:
+      name: order
+      in: query
+      description: Order field
+      schema:
+        type: string
+    sort:
+      name: sort
+      in: query
+      description: Sort direction (asc/desc)
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version filter
+      schema:
+        type: string
+    kind:
+      name: kind
+      in: query
+      description: Kind filter
+      schema:
+        type: string
+    type:
+      name: type
+      in: query
+      description: Type filter
+      schema:
+        type: string
+    subType:
+      name: subType
+      in: query
+      description: SubType filter
+      schema:
+        type: string
+  responses:
+    "500":
+      description: Internal Server Error
+
   schemas:
     RelationshipDefinition:
       $ref: "./relationship.yaml"

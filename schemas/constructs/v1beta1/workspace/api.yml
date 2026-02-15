@@ -93,6 +93,208 @@ paths:
       responses:
         "200":
           description: Workspace deleted successfully
+  /api/workspaces/{id}/environments:
+    get:
+      tags:
+        - workspaces
+      operationId: GetEnvironmentsOfWorkspace
+      summary: Get all environments assigned to a workspace (by default returns assigned)
+      description: Gets an environments of a given workspace by its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+        - name: filter
+          in: query
+          description: Filter environments
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Environment
+          content:
+            application/json:
+              schema:
+                $ref: "../environment/api.yml#/components/schemas/environmentPage"
+        "400":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+        "404":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+        "500":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+  /api/workspaces/{id}/environments/{environmentID}:
+    delete:
+      tags:
+        - workspaces
+      operationId: UnassignEnvironmentFromWorkspace
+      summary: Unassign a environment from a workspace
+      description: Unassigns a environment from a workspace
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: environmentID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspaces environments mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspacesEnvironmentsMapping"
+        "400":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+        "404":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+        "500":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+    post:
+      tags:
+        - workspaces
+      operationId: AssignEnvironmentToWorkspace
+      summary: Assign a environment to a workspace
+      description: Assigns a environment to a workspace
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: environmentID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspaces environments mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspacesEnvironmentsMapping"
+        "400":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+        "500":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+  /api/workspaces/{id}/designs/{designID}:
+    delete:
+      tags:
+        - workspaces
+      operationId: UnassignDesignFromWorkspace
+      summary: Unassign a design from a workspace
+      description: Unassign a design from a workspace
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: designID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspaces designs mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspacesDesignsMapping"
+        "400":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+        "404":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+        "500":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+    post:
+      tags:
+        - workspaces
+      operationId: AssignDesignToWorkspace
+      summary: Assign a design to a workspace
+      description: Assigns a design to a workspace
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: designID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Workspaces designs mappings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspacesDesignsMapping"
+        "400":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+        "500":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+  /api/workspaces/{id}/designs:
+    get:
+      tags:
+        - workspaces
+      operationId: GetDesignsOfWorkspace
+      summary: Get all designs assigned to a workspace (by default returns assigned)
+      description: Gets an designs of a given workspace by its ID
+      parameters:
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/search"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/order"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/page"
+        - $ref: "../../v1alpha1/core/api.yml#/components/parameters/pagesize"
+        - name: filter
+          in: query
+          description: Filter designs
+          required: false
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Design
+          content:
+            application/json:
+              schema:
+                $ref: "../design/api.yml#/components/schemas/MesheryPatternPage"
+        "400":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+        "401":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+        "404":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+        "500":
+          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
 components:
   securitySchemes:
     jwt:
@@ -425,158 +627,7 @@ components:
 #         $ref: '#/components/responses/401'
 #       '500':
 #         $ref: '#/components/responses/500'
-# /api/workspaces/{workspaceId}/environments:
-#   get:
-#     tags:
-#       - workspaces
-#     operationId: GetEnvironmentsOfWorkspace
-#     summary: Get all environments assigned to a workspace (by default returns assigned)
-#     description: Gets an environments of a given workspace by its ID
-#     parameters:
-#       - $ref: '#/components/parameters/workspaceId'
-#       - $ref: '#/components/parameters/search'
-#       - $ref: '#/components/parameters/order'
-#       - $ref: '#/components/parameters/page'
-#       - $ref: '#/components/parameters/pagesize'
-#       - $ref: '#/components/parameters/workspaceFilter'
-#     responses:
-#       '200':
-#         description: Environment
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/environmentPage'
-#       '400':
-#         $ref: '#/components/responses/400'
-#       '401':
-#         $ref: '#/components/responses/401'
-#       '404':
-#         $ref: '#/components/responses/404'
-#       '500':
-#         $ref: '#/components/responses/500'
-# /api/workspaces/{workspaceId}/environments/{environmentId}:
-#   delete:
-#     tags:
-#       - workspaces
-#     operationId: UnassignEnvironmentFromWorkspace
-#     summary: Unassign a environment from a workspace
-#     description: Unassigns a environment from a workspace
-#     parameters:
-#       - $ref: '#/components/parameters/workspaceId'
-#       - $ref: '#/components/parameters/environmentId'
-#     responses:
-#       '200':
-#         description: Workspaces environments mappings
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/workspacesEnvironmentsMapping'
-#       '400':
-#         $ref: '#/components/responses/400'
-#       '401':
-#         $ref: '#/components/responses/401'
-#       '404':
-#         $ref: '#/components/responses/404'
-#       '500':
-#         $ref: '#/components/responses/500'
-#   post:
-#     tags:
-#       - workspaces
-#     operationId: AssignEnvironmentToWorkspace
-#     summary: Assign a environment to a workspace
-#     description: Assigns a environment to a workspace
-#     parameters:
-#       - $ref: '#/components/parameters/workspaceId'
-#       - $ref: '#/components/parameters/environmentId'
-#     responses:
-#       '200':
-#         description: Workspaces environments mappings
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/workspacesEnvironmentsMapping'
-#       '400':
-#         $ref: '#/components/responses/400'
-#       '401':
-#         $ref: '#/components/responses/401'
-#       '500':
-#         $ref: '#/components/responses/500'
-# /api/workspaces/{workspaceId}/designs/{designId}:
-#   delete:
-#     tags:
-#       - workspaces
-#     operationId: UnassignDesignFromWorkspace
-#     summary: Unassign a design from a workspace
-#     description: Unassign a design from a workspace
-#     parameters:
-#       - $ref: '#/components/parameters/workspaceId'
-#       - $ref: '#/components/parameters/designId'
-#     responses:
-#       '200':
-#         description: Workspaces designs mappings
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/workspacesDesignsMapping'
-#       '400':
-#         $ref: '#/components/responses/400'
-#       '401':
-#         $ref: '#/components/responses/401'
-#       '404':
-#         $ref: '#/components/responses/404'
-#       '500':
-#         $ref: '#/components/responses/500'
-#   post:
-#     tags:
-#       - workspaces
-#     operationId: AssignDesignToWorkspace
-#     summary: Assign a design to a workspace
-#     description: Assigns a design to a workspace
-#     parameters:
-#       - $ref: '#/components/parameters/workspaceId'
-#       - $ref: '#/components/parameters/designId'
-#     responses:
-#       '200':
-#         description: Workspaces designs mappings
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/workspacesDesignsMapping'
-#       '400':
-#         $ref: '#/components/responses/400'
-#       '401':
-#         $ref: '#/components/responses/401'
-#       '500':
-#         $ref: '#/components/responses/500'
-# /api/workspaces/{workspaceId}/designs:
-#   get:
-#     tags:
-#       - workspaces
-#     operationId: GetDesignsOfWorkspace
-#     summary: Get all designs assigned to a workspace (by default returns assigned)
-#     description: Gets an designs of a given workspace by its ID
-#     parameters:
-#       - $ref: '#/components/parameters/search'
-#       - $ref: '#/components/parameters/order'
-#       - $ref: '#/components/parameters/page'
-#       - $ref: '#/components/parameters/pagesize'
-#       - $ref: '#/components/parameters/workspaceFilter'
-#       - $ref: '#/components/parameters/workspaceId'
-#     responses:
-#       '200':
-#         description: Design
-#         content:
-#           application/json:
-#             schema:
-#               $ref: '#/components/schemas/mesheryDesignPage'
-#       '400':
-#         $ref: '#/components/responses/400'
-#       '401':
-#         $ref: '#/components/responses/401'
-#       '404':
-#         $ref: '#/components/responses/404'
-#       '500':
-#         $ref: '#/components/responses/500'
+
 # /api/workspaces/{workspaceId}/views/{viewId}:
 #   delete:
 #     tags:

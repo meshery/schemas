@@ -6,256 +6,1304 @@ package user
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
-	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// Defines values for GetUserResponseRoleNames.
-const (
-	GetUserResponseRoleNamesAdmin             GetUserResponseRoleNames = "admin"
-	GetUserResponseRoleNamesCurator           GetUserResponseRoleNames = "curator"
-	GetUserResponseRoleNamesMeshmap           GetUserResponseRoleNames = "meshmap"
-	GetUserResponseRoleNamesOrganizationAdmin GetUserResponseRoleNames = "organization admin"
-	GetUserResponseRoleNamesTeamAdmin         GetUserResponseRoleNames = "team admin"
-	GetUserResponseRoleNamesUser              GetUserResponseRoleNames = "user"
-	GetUserResponseRoleNamesWorkspaceAdmin    GetUserResponseRoleNames = "workspace admin"
-	GetUserResponseRoleNamesWorkspaceManager  GetUserResponseRoleNames = "workspace manager"
-)
-
-// Defines values for GetUserResponseStatus.
-const (
-	GetUserResponseStatusActive    GetUserResponseStatus = "active"
-	GetUserResponseStatusAnonymous GetUserResponseStatus = "anonymous"
-	GetUserResponseStatusInactive  GetUserResponseStatus = "inactive"
-	GetUserResponseStatusPending   GetUserResponseStatus = "pending"
-)
-
-// Defines values for UserStatus.
-const (
-	UserStatusActive    UserStatus = "active"
-	UserStatusAnonymous UserStatus = "anonymous"
-	UserStatusInactive  UserStatus = "inactive"
-	UserStatusPending   UserStatus = "pending"
-)
-
-// Adapter Placeholder for Adapter struct definition.
-type Adapter = map[string]interface{}
-
-// GetUserResponse defines model for GetUserResponse.
-type GetUserResponse struct {
-	// AcceptedTermsAt Timestamp when user accepted terms and conditions
-	AcceptedTermsAt time.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at"`
-
-	// AvatarUrl URL to user's avatar image
-	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
-
-	// Bio User's biography or description
-	Bio *string `db:"bio" json:"bio" yaml:"bio"`
-
-	// Country User's country information stored as JSONB
-	Country *core.Map `db:"country" json:"country" yaml:"country"`
-
-	// CreatedAt Timestamp when the user record was created
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
-
-	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
-	DeletedAt *core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
-
-	// Email User's email address
-	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
-
-	// FirstLoginTime Timestamp of user's first login
-	FirstLoginTime time.Time `db:"first_login_time" json:"first_login_time" yaml:"first_login_time"`
-
-	// FirstName User's first name
-	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
-
-	// ID Unique identifier for the user
-	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
-
-	// LastLoginTime Timestamp of user's most recent login
-	LastLoginTime time.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
-
-	// LastName User's last name
-	LastName string `db:"last_name" json:"last_name" yaml:"last_name"`
-
-	// Organizations Organizations the user belongs to with role information
-	Organizations *struct {
-		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizations_with_roles" yaml:"organizations_with_roles"`
-		TotalCount             *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
-	} `db:"organizations" json:"organizations" yaml:"organizations"`
-
-	// Preferences User preferences stored as JSONB
-	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
-
-	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-	Provider string `db:"provider" json:"provider" yaml:"provider"`
-
-	// Region User's region information stored as JSONB
-	Region *core.Map `db:"region" json:"region" yaml:"region"`
-
-	// RoleNames List of global roles assigned to the user
-	RoleNames *[]GetUserResponseRoleNames `db:"role_names" json:"role_names" yaml:"role_names"`
-
-	// Socials Various online profiles associated with the user account
-	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
-
-	// Status User account status
-	Status GetUserResponseStatus `db:"status" json:"status" yaml:"status"`
-
-	// Teams Teams the user belongs to with role information
-	Teams *struct {
-		TeamsWithRoles *[]map[string]interface{} `db:"teams_with_roles" json:"teams_with_roles" yaml:"teams_with_roles"`
-		TotalCount     *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
-	} `db:"teams" json:"teams" yaml:"teams"`
-
-	// UpdatedAt Timestamp when the user record was last updated
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
-
-	// UserId User identifier (username or external ID)
-	UserId string `db:"user_id" json:"user_id" yaml:"user_id"`
+// Adapter Adapter represents an adapter in Meshery
+type Adapter struct {
+	Location     *string `json:"adapter_location,omitempty" yaml:"adapter_location,omitempty"`
+	GitCommitSHA *string `json:"git_commit_sha,omitempty" yaml:"git_commit_sha,omitempty"`
+	Name         *string `json:"name,omitempty" yaml:"name,omitempty"`
+	Ops          *[]struct {
+		Category *int32  `json:"category,omitempty" yaml:"category,omitempty"`
+		Key      *string `json:"key,omitempty" yaml:"key,omitempty"`
+		Value    *string `json:"value,omitempty" yaml:"value,omitempty"`
+	} `json:"ops,omitempty" yaml:"ops,omitempty"`
+	Version *string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
-// GetUserResponseRoleNames defines model for GetUserResponse.RoleNames.
-type GetUserResponseRoleNames string
+// Alert defines model for Alert.
+type Alert struct {
+	AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+	Conditions    *[]struct {
+		Evaluator *struct {
+			Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+			Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+		} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+		Operator *struct {
+			Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+		} `json:"operator,omitempty" yaml:"operator,omitempty"`
+		Query *struct {
+			Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+		} `json:"query,omitempty" yaml:"query,omitempty"`
+		Reducer *struct {
+			Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+			Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+		} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+		Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+	} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+	ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+	For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+	Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+	Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+	Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+	Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+	NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+	Notifications       *[]struct {
+		DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+		Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+		ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+		IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+		Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+		SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+		Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+		Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+		UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+	} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+}
 
-// GetUserResponseStatus User account status
-type GetUserResponseStatus string
+// AlertCondition defines model for AlertCondition.
+type AlertCondition struct {
+	Evaluator *struct {
+		Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+		Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+	} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+	Operator *struct {
+		Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+	} `json:"operator,omitempty" yaml:"operator,omitempty"`
+	Query *struct {
+		Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+	} `json:"query,omitempty" yaml:"query,omitempty"`
+	Reducer *struct {
+		Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+		Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+	} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+	Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+}
 
-// Grafana defines model for Grafana.
+// AlertEvaluator defines model for AlertEvaluator.
+type AlertEvaluator struct {
+	Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+	Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// AlertNotification AlertNotification as described in the doc
+// https://grafana.com/docs/grafana/latest/http_api/alerting_notification_channels/
+type AlertNotification struct {
+	DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+	Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+	ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+	IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+	Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+	SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+	Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+	Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+	UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+}
+
+// AlertOperator defines model for AlertOperator.
+type AlertOperator struct {
+	Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// AlertQuery defines model for AlertQuery.
+type AlertQuery struct {
+	Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+}
+
+// AlertReducer defines model for AlertReducer.
+type AlertReducer struct {
+	Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+	Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// Grafana Grafana represents the Grafana session config
 type Grafana struct {
-	GrafanaAPIKey         *string `json:"grafanaAPIKey,omitempty" yaml:"grafanaAPIKey,omitempty"`
-	GrafanaURL            *string `json:"grafanaURL,omitempty" yaml:"grafanaURL,omitempty"`
-	SelectedBoardsConfigs *[]struct {
-		// Board Placeholder for GrafanaBoard definition (define fields as needed)
-		Board        *map[string]interface{}   `json:"board,omitempty" yaml:"board,omitempty"`
-		Panels       *[]map[string]interface{} `json:"panels,omitempty" yaml:"panels,omitempty"`
-		TemplateVars *[]string                 `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
+	GrafanaAPIKey *string `json:"grafanaAPIKey,omitempty" yaml:"grafanaAPIKey,omitempty"`
+	GrafanaURL    *string `json:"grafanaURL,omitempty" yaml:"grafanaURL,omitempty"`
+
+	// GrafanaBoards GrafanaBoardSearch string          `json:"grafanaBoardSearch,omitempty" yaml:"grafanaBoardSearch,omitempty"`
+	GrafanaBoards *[]struct {
+		// Board GrafanaBoard represents a Grafana board
+		Board *struct {
+			OrgID  *uint64 `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+			Panels *[]struct {
+				Alert *struct {
+					AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+					Conditions    *[]struct {
+						Evaluator *struct {
+							Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+						Operator *struct {
+							Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"operator,omitempty" yaml:"operator,omitempty"`
+						Query *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+						} `json:"query,omitempty" yaml:"query,omitempty"`
+						Reducer *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+						Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+					ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+					For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+					Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+					Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+					Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+					Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+					NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+					Notifications       *[]struct {
+						DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+						Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+						ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+						IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+						Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+						SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+						Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+						Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+						UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+					} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+				} `json:"alert,omitempty" yaml:"alert,omitempty"`
+				AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+				Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+				Cards       *struct {
+					CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+					CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+				} `json:"cards,omitempty" yaml:"cards,omitempty"`
+				Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+				Color     *struct {
+					CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+					ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+					ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+					Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+					Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+					Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+					Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+				} `json:"color,omitempty" yaml:"color,omitempty"`
+			} `json:"panels,omitempty" yaml:"panels,omitempty"`
+			Slug         *string `json:"slug,omitempty" yaml:"slug,omitempty"`
+			TemplateVars *[]struct {
+				// Datasource GrafanaDataSource represents a Grafana datasource like Prometheus
+				Datasource *struct {
+					ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+					Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+				} `json:"datasource,omitempty" yaml:"datasource,omitempty"`
+				Hide  *uint8                  `json:"hide,omitempty" yaml:"hide,omitempty"`
+				Name  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+				Query *string                 `json:"query,omitempty" yaml:"query,omitempty"`
+				Value *map[string]interface{} `json:"value,omitempty" yaml:"value,omitempty"`
+			} `json:"template_vars,omitempty" yaml:"template_vars,omitempty"`
+			Timezone *string `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+			Title    *string `json:"title,omitempty" yaml:"title,omitempty"`
+			UID      *string `json:"uid,omitempty" yaml:"uid,omitempty"`
+			URI      *string `json:"uri,omitempty" yaml:"uri,omitempty"`
+		} `json:"board,omitempty" yaml:"board,omitempty"`
+		GrafanaPanels *[]struct {
+			Alert *struct {
+				AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+				Conditions    *[]struct {
+					Evaluator *struct {
+						Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+						Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+					Operator *struct {
+						Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"operator,omitempty" yaml:"operator,omitempty"`
+					Query *struct {
+						Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+					} `json:"query,omitempty" yaml:"query,omitempty"`
+					Reducer *struct {
+						Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+						Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+					Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+				ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+				For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+				Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+				Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+				Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+				Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+				NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+				Notifications       *[]struct {
+					DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+					Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+					ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+					IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+					Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+					SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+					Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+					Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+					UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+				} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+			} `json:"alert,omitempty" yaml:"alert,omitempty"`
+			AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+			Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+			Cards       *struct {
+				CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+				CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+			} `json:"cards,omitempty" yaml:"cards,omitempty"`
+			Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+			Color     *struct {
+				CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+				ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+				ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+				Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+				Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+				Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+				Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+			} `json:"color,omitempty" yaml:"color,omitempty"`
+		} `json:"panels,omitempty" yaml:"panels,omitempty"`
+		SelectedTemplateVars *[]string `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
 	} `json:"selectedBoardsConfigs,omitempty" yaml:"selectedBoardsConfigs,omitempty"`
 }
 
-// GrafanaBoard Placeholder for GrafanaBoard definition (define fields as needed)
-type GrafanaBoard = map[string]interface{}
+// GrafanaBoard GrafanaBoard represents a Grafana board
+type GrafanaBoard struct {
+	OrgID  *uint64 `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+	Panels *[]struct {
+		Alert *struct {
+			AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+			Conditions    *[]struct {
+				Evaluator *struct {
+					Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+					Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+				Operator *struct {
+					Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"operator,omitempty" yaml:"operator,omitempty"`
+				Query *struct {
+					Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+				} `json:"query,omitempty" yaml:"query,omitempty"`
+				Reducer *struct {
+					Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+					Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+				Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+			} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+			ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+			For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+			Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+			Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+			Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+			Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+			NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+			Notifications       *[]struct {
+				DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+				Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+				ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+				IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+				Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+				SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+				Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+				Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+				UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+			} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+		} `json:"alert,omitempty" yaml:"alert,omitempty"`
+		AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+		Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+		Cards       *struct {
+			CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+			CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+		} `json:"cards,omitempty" yaml:"cards,omitempty"`
+		Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+		Color     *struct {
+			CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+			ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+			ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+			Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+			Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+			Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+			Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+		} `json:"color,omitempty" yaml:"color,omitempty"`
+	} `json:"panels,omitempty" yaml:"panels,omitempty"`
+	Slug         *string `json:"slug,omitempty" yaml:"slug,omitempty"`
+	TemplateVars *[]struct {
+		// Datasource GrafanaDataSource represents a Grafana datasource like Prometheus
+		Datasource *struct {
+			ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+			Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+		} `json:"datasource,omitempty" yaml:"datasource,omitempty"`
+		Hide  *uint8                  `json:"hide,omitempty" yaml:"hide,omitempty"`
+		Name  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+		Query *string                 `json:"query,omitempty" yaml:"query,omitempty"`
+		Value *map[string]interface{} `json:"value,omitempty" yaml:"value,omitempty"`
+	} `json:"template_vars,omitempty" yaml:"template_vars,omitempty"`
+	Timezone *string `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+	Title    *string `json:"title,omitempty" yaml:"title,omitempty"`
+	UID      *string `json:"uid,omitempty" yaml:"uid,omitempty"`
+	URI      *string `json:"uri,omitempty" yaml:"uri,omitempty"`
+}
 
-// LoadTestPreferences defines model for LoadTestPreferences.
+// GrafanaDataSource GrafanaDataSource represents a Grafana datasource like Prometheus
+type GrafanaDataSource struct {
+	ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// GrafanaTemplateVars GrafanaTemplateVars represents template variables in a bboard
+type GrafanaTemplateVars struct {
+	// Datasource GrafanaDataSource represents a Grafana datasource like Prometheus
+	Datasource *struct {
+		ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+		Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+	} `json:"datasource,omitempty" yaml:"datasource,omitempty"`
+	Hide  *uint8                  `json:"hide,omitempty" yaml:"hide,omitempty"`
+	Name  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+	Query *string                 `json:"query,omitempty" yaml:"query,omitempty"`
+	Value *map[string]interface{} `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// LoadTestPreferences LoadTestPreferences represents the load test preferences
 type LoadTestPreferences struct {
-	// C Concurrent requests
-	C *int `json:"c,omitempty" yaml:"c,omitempty"`
-
-	// Gen Load generator
-	Gen *string `json:"gen,omitempty" yaml:"gen,omitempty"`
-
-	// Qps Queries per second
-	Qps *int `json:"qps,omitempty" yaml:"qps,omitempty"`
-
-	// T Duration
-	T *string `json:"t,omitempty" yaml:"t,omitempty"`
+	ConcurrentRequests *int64  `json:"c,omitempty" yaml:"c,omitempty"`
+	LoadGenerator      *string `json:"gen,omitempty" yaml:"gen,omitempty"`
+	QueriesPerSecond   *int64  `json:"qps,omitempty" yaml:"qps,omitempty"`
+	Duration           *string `json:"t,omitempty" yaml:"t,omitempty"`
 }
 
-// Panel Grafana panel structure imported from github.com/grafana-tools/sdk
-type Panel = map[string]interface{}
+// Map It implements native SQL driver interfaces and hence can
+// be used for SQL json or jsonb types as a drop in replacement
+// of golang native maps
+type Map map[string]interface{}
 
-// Preference defines model for Preference.
+// Panel defines model for Panel.
+type Panel struct {
+	Alert *struct {
+		AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+		Conditions    *[]struct {
+			Evaluator *struct {
+				Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+				Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+			} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+			Operator *struct {
+				Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+			} `json:"operator,omitempty" yaml:"operator,omitempty"`
+			Query *struct {
+				Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+			} `json:"query,omitempty" yaml:"query,omitempty"`
+			Reducer *struct {
+				Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+				Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+			} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+			Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+		} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+		ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+		For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+		Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+		Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+		Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+		Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+		NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+		Notifications       *[]struct {
+			DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+			Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+			ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+			IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+			Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+			SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+			Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+			Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+			UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+		} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+	} `json:"alert,omitempty" yaml:"alert,omitempty"`
+	AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+	Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+	Cards       *struct {
+		CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+		CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+	} `json:"cards,omitempty" yaml:"cards,omitempty"`
+	Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+	Color     *struct {
+		CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+		ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+		ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+		Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+		Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+		Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+		Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+	} `json:"color,omitempty" yaml:"color,omitempty"`
+}
+
+// PerformanceProfile PerformanceProfile represents the performance profile that needs
+// to be saved
+type PerformanceProfile struct {
+	ConcurrentRequest *int64              `json:"concurrent_request,omitempty" yaml:"concurrent_request,omitempty"`
+	ContentType       *string             `json:"content_type,omitempty" yaml:"content_type,omitempty"`
+	CreatedAt         *string             `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Duration          *string             `json:"duration,omitempty" yaml:"duration,omitempty"`
+	Endpoints         *[]string           `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
+	ID                *openapi_types.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+	LastRun           *string             `json:"last_run,omitempty" yaml:"last_run,omitempty"`
+	LoadGenerators    *[]string           `json:"load_generators,omitempty" yaml:"load_generators,omitempty"`
+
+	// Metadata It implements native SQL driver interfaces and hence can
+	// be used for SQL json or jsonb types as a drop in replacement
+	// of golang native maps
+	Metadata       *map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name           *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+	QPS            *int64                  `json:"qps,omitempty" yaml:"qps,omitempty"`
+	RequestBody    *string                 `json:"request_body,omitempty" yaml:"request_body,omitempty"`
+	RequestCookies *string                 `json:"request_cookies,omitempty" yaml:"request_cookies,omitempty"`
+	RequestHeaders *string                 `json:"request_headers,omitempty" yaml:"request_headers,omitempty"`
+	Schedule       *openapi_types.UUID     `json:"schedule,omitempty" yaml:"schedule,omitempty"`
+	ServiceMesh    *string                 `json:"service_mesh,omitempty" yaml:"service_mesh,omitempty"`
+	TotalResults   *int64                  `json:"total_results,omitempty" yaml:"total_results,omitempty"`
+	UpdatedAt      *string                 `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+}
+
+// PerformanceProfileParameters PerformanceProfileParameters structs contains parameters to save a performance profile
+type PerformanceProfileParameters struct {
+	// ConcurrentRequest number of concurrent requests
+	ConcurrentRequest *int64 `json:"concurrent_request,omitempty" yaml:"concurrent_request,omitempty"`
+
+	// Duration duration of tests e.g. 30s
+	Duration       *string   `json:"duration,omitempty" yaml:"duration,omitempty"`
+	Endpoints      *[]string `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
+	LoadGenerators *[]string `json:"load_generators,omitempty" yaml:"load_generators,omitempty"`
+
+	// Name name of the profile
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// QPS qps
+	QPS *int64 `json:"qps,omitempty" yaml:"qps,omitempty"`
+
+	// ServiceMesh service mesh
+	ServiceMesh *string `json:"service_mesh,omitempty" yaml:"service_mesh,omitempty"`
+}
+
+// PerformanceProfilesAPIResponse API response model for PerformanceProfilesAPI
+type PerformanceProfilesAPIResponse struct {
+	Page     *uint64 `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize *uint64 `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Profiles *[]struct {
+		ConcurrentRequest *int64              `json:"concurrent_request,omitempty" yaml:"concurrent_request,omitempty"`
+		ContentType       *string             `json:"content_type,omitempty" yaml:"content_type,omitempty"`
+		CreatedAt         *string             `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+		Duration          *string             `json:"duration,omitempty" yaml:"duration,omitempty"`
+		Endpoints         *[]string           `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
+		ID                *openapi_types.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+		LastRun           *string             `json:"last_run,omitempty" yaml:"last_run,omitempty"`
+		LoadGenerators    *[]string           `json:"load_generators,omitempty" yaml:"load_generators,omitempty"`
+
+		// Metadata It implements native SQL driver interfaces and hence can
+		// be used for SQL json or jsonb types as a drop in replacement
+		// of golang native maps
+		Metadata       *map[string]interface{} `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+		Name           *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+		QPS            *int64                  `json:"qps,omitempty" yaml:"qps,omitempty"`
+		RequestBody    *string                 `json:"request_body,omitempty" yaml:"request_body,omitempty"`
+		RequestCookies *string                 `json:"request_cookies,omitempty" yaml:"request_cookies,omitempty"`
+		RequestHeaders *string                 `json:"request_headers,omitempty" yaml:"request_headers,omitempty"`
+		Schedule       *openapi_types.UUID     `json:"schedule,omitempty" yaml:"schedule,omitempty"`
+		ServiceMesh    *string                 `json:"service_mesh,omitempty" yaml:"service_mesh,omitempty"`
+		TotalResults   *int64                  `json:"total_results,omitempty" yaml:"total_results,omitempty"`
+		UpdatedAt      *string                 `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	} `json:"profiles,omitempty" yaml:"profiles,omitempty"`
+	TotalCount *uint64 `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// PerformanceResult PerformanceResult represents the result of a performance test
+type PerformanceResult struct {
+	Mesh               *string             `json:"mesh,omitempty" yaml:"mesh,omitempty"`
+	MesheryID          *openapi_types.UUID `json:"meshery_id,omitempty" yaml:"meshery_id,omitempty"`
+	Name               *string             `json:"name,omitempty" yaml:"name,omitempty"`
+	PerformanceProfile *openapi_types.UUID `json:"performance_profile,omitempty" yaml:"performance_profile,omitempty"`
+	RunnerResults      *struct {
+		ActualDuration    *uint64  `json:"ActualDuration,omitempty" yaml:"ActualDuration,omitempty"`
+		QPS               *float64 `json:"ActualQPS,omitempty" yaml:"ActualQPS,omitempty"`
+		DurationHistogram *struct {
+			Average     *float64 `json:"Avg,omitempty" yaml:"Avg,omitempty"`
+			Max         *float64 `json:"Max,omitempty" yaml:"Max,omitempty"`
+			Min         *float64 `json:"Min,omitempty" yaml:"Min,omitempty"`
+			Percentiles *[]struct {
+				Percentile *float64 `json:"Percentile,omitempty" yaml:"Percentile,omitempty"`
+				Value      *float64 `json:"Value,omitempty" yaml:"Value,omitempty"`
+			} `json:"Percentiles,omitempty" yaml:"Percentiles,omitempty"`
+		} `json:"DurationHistogram,omitempty" yaml:"DurationHistogram,omitempty"`
+		RequestedDuration *string    `json:"RequestedDuration,omitempty" yaml:"RequestedDuration,omitempty"`
+		StartTime         *time.Time `json:"StartTime,omitempty" yaml:"StartTime,omitempty"`
+		URL               *string    `json:"URL,omitempty" yaml:"URL,omitempty"`
+		LoadGenerator     *string    `json:"load-generator,omitempty" yaml:"load-generator,omitempty"`
+	} `json:"runner_results,omitempty" yaml:"runner_results,omitempty"`
+	ServerBoardConfig *string                 `json:"server_board_config,omitempty" yaml:"server_board_config,omitempty"`
+	ServerMetrics     *map[string]interface{} `json:"server_metrics,omitempty" yaml:"server_metrics,omitempty"`
+	TestStartTime     *time.Time              `json:"test_start_time,omitempty" yaml:"test_start_time,omitempty"`
+	UserID            *openapi_types.UUID     `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+}
+
+// PerformanceResultsAPIResponse PerformanceResultsAPIResponse response retruned by performance endpoint on meshery server
+type PerformanceResultsAPIResponse struct {
+	Page     *uint64 `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize *uint64 `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Results  *[]struct {
+		Mesh               *string             `json:"mesh,omitempty" yaml:"mesh,omitempty"`
+		MesheryID          *openapi_types.UUID `json:"meshery_id,omitempty" yaml:"meshery_id,omitempty"`
+		Name               *string             `json:"name,omitempty" yaml:"name,omitempty"`
+		PerformanceProfile *openapi_types.UUID `json:"performance_profile,omitempty" yaml:"performance_profile,omitempty"`
+		RunnerResults      *struct {
+			ActualDuration    *uint64  `json:"ActualDuration,omitempty" yaml:"ActualDuration,omitempty"`
+			QPS               *float64 `json:"ActualQPS,omitempty" yaml:"ActualQPS,omitempty"`
+			DurationHistogram *struct {
+				Average     *float64 `json:"Avg,omitempty" yaml:"Avg,omitempty"`
+				Max         *float64 `json:"Max,omitempty" yaml:"Max,omitempty"`
+				Min         *float64 `json:"Min,omitempty" yaml:"Min,omitempty"`
+				Percentiles *[]struct {
+					Percentile *float64 `json:"Percentile,omitempty" yaml:"Percentile,omitempty"`
+					Value      *float64 `json:"Value,omitempty" yaml:"Value,omitempty"`
+				} `json:"Percentiles,omitempty" yaml:"Percentiles,omitempty"`
+			} `json:"DurationHistogram,omitempty" yaml:"DurationHistogram,omitempty"`
+			RequestedDuration *string    `json:"RequestedDuration,omitempty" yaml:"RequestedDuration,omitempty"`
+			StartTime         *time.Time `json:"StartTime,omitempty" yaml:"StartTime,omitempty"`
+			URL               *string    `json:"URL,omitempty" yaml:"URL,omitempty"`
+			LoadGenerator     *string    `json:"load-generator,omitempty" yaml:"load-generator,omitempty"`
+		} `json:"runner_results,omitempty" yaml:"runner_results,omitempty"`
+		ServerBoardConfig *string                 `json:"server_board_config,omitempty" yaml:"server_board_config,omitempty"`
+		ServerMetrics     *map[string]interface{} `json:"server_metrics,omitempty" yaml:"server_metrics,omitempty"`
+		TestStartTime     *time.Time              `json:"test_start_time,omitempty" yaml:"test_start_time,omitempty"`
+		UserID            *openapi_types.UUID     `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	} `json:"results,omitempty" yaml:"results,omitempty"`
+	TotalCount *uint64 `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// PerformanceTestConfig defines model for PerformanceTestConfig.
+type PerformanceTestConfig struct {
+	// Clients Single or distributed load generators
+	Clients *[]struct {
+		AdditionalOptions *string            `json:"additional_options,omitempty" yaml:"additional_options,omitempty"`
+		Body              *string            `json:"body,omitempty" yaml:"body,omitempty"`
+		Connections       *int32             `json:"connections,omitempty" yaml:"connections,omitempty"`
+		ContentType       *string            `json:"content_type,omitempty" yaml:"content_type,omitempty"`
+		Cookies           *map[string]string `json:"cookies,omitempty" yaml:"cookies,omitempty"`
+		EndpointUrls      *[]string          `json:"endpoint_urls,omitempty" yaml:"endpoint_urls,omitempty"`
+		Headers           *map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
+		Internal          *bool              `json:"internal,omitempty" yaml:"internal,omitempty"`
+		LoadGenerator     *string            `json:"load_generator,omitempty" yaml:"load_generator,omitempty"`
+		Protocol          *int32             `json:"protocol,omitempty" yaml:"protocol,omitempty"`
+		Rps               *int64             `json:"rps,omitempty" yaml:"rps,omitempty"`
+		SslCertificate    *string            `json:"ssl_certificate,omitempty" yaml:"ssl_certificate,omitempty"`
+	} `json:"clients,omitempty" yaml:"clients,omitempty"`
+
+	// Duration Length of time the endpoint will be under load
+	Duration *string            `json:"duration,omitempty" yaml:"duration,omitempty"`
+	Id       *string            `json:"id,omitempty" yaml:"id,omitempty"`
+	Labels   *map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Name     *string            `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// SmpVersion Spec version
+	SmpVersion *string `json:"smp_version,omitempty" yaml:"smp_version,omitempty"`
+}
+
+// PerformanceTestConfigClient defines model for PerformanceTestConfig_Client.
+type PerformanceTestConfigClient struct {
+	AdditionalOptions *string            `json:"additional_options,omitempty" yaml:"additional_options,omitempty"`
+	Body              *string            `json:"body,omitempty" yaml:"body,omitempty"`
+	Connections       *int32             `json:"connections,omitempty" yaml:"connections,omitempty"`
+	ContentType       *string            `json:"content_type,omitempty" yaml:"content_type,omitempty"`
+	Cookies           *map[string]string `json:"cookies,omitempty" yaml:"cookies,omitempty"`
+	EndpointUrls      *[]string          `json:"endpoint_urls,omitempty" yaml:"endpoint_urls,omitempty"`
+	Headers           *map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
+	Internal          *bool              `json:"internal,omitempty" yaml:"internal,omitempty"`
+	LoadGenerator     *string            `json:"load_generator,omitempty" yaml:"load_generator,omitempty"`
+	Protocol          *int32             `json:"protocol,omitempty" yaml:"protocol,omitempty"`
+	Rps               *int64             `json:"rps,omitempty" yaml:"rps,omitempty"`
+	SslCertificate    *string            `json:"ssl_certificate,omitempty" yaml:"ssl_certificate,omitempty"`
+}
+
+// PerformanceTestConfigClientProtocol defines model for PerformanceTestConfig_Client_Protocol.
+type PerformanceTestConfigClientProtocol = int32
+
+// Preference Preference represents the data stored in session / local DB
 type Preference struct {
-	AnonymousPerfResults              bool                    `json:"anonymousPerfResults" yaml:"anonymousPerfResults"`
-	AnonymousUsageStats               bool                    `json:"anonymousUsageStats" yaml:"anonymousUsageStats"`
-	DashboardPreferences              map[string]interface{}  `json:"dashboardPreferences" yaml:"dashboardPreferences"`
-	Grafana                           *Grafana                `json:"grafana,omitempty" yaml:"grafana,omitempty"`
-	LoadTestPrefs                     *LoadTestPreferences    `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
-	MeshAdapters                      *[]Adapter              `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
-	Prometheus                        *Prometheus             `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
-	RemoteProviderPreferences         *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
-	SelectedOrganizationID            string                  `json:"selectedOrganizationID" yaml:"selectedOrganizationID"`
-	SelectedWorkspaceForOrganizations map[string]string       `json:"selectedWorkspaceForOrganizations" yaml:"selectedWorkspaceForOrganizations"`
-	UpdatedAt                         *time.Time              `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	UsersExtensionPreferences         map[string]interface{}  `json:"usersExtensionPreferences" yaml:"usersExtensionPreferences"`
+	AnonymousPerfResults *bool `json:"anonymousPerfResults,omitempty" yaml:"anonymousPerfResults,omitempty"`
+	AnonymousUsageStats  *bool `json:"anonymousUsageStats,omitempty" yaml:"anonymousUsageStats,omitempty"`
+
+	// Grafana Grafana represents the Grafana session config
+	Grafana *struct {
+		GrafanaAPIKey *string `json:"grafanaAPIKey,omitempty" yaml:"grafanaAPIKey,omitempty"`
+		GrafanaURL    *string `json:"grafanaURL,omitempty" yaml:"grafanaURL,omitempty"`
+
+		// GrafanaBoards GrafanaBoardSearch string          `json:"grafanaBoardSearch,omitempty" yaml:"grafanaBoardSearch,omitempty"`
+		GrafanaBoards *[]struct {
+			// Board GrafanaBoard represents a Grafana board
+			Board *struct {
+				OrgID  *uint64 `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+				Panels *[]struct {
+					Alert *struct {
+						AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+						Conditions    *[]struct {
+							Evaluator *struct {
+								Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+								Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+							} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+							Operator *struct {
+								Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+							} `json:"operator,omitempty" yaml:"operator,omitempty"`
+							Query *struct {
+								Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+							} `json:"query,omitempty" yaml:"query,omitempty"`
+							Reducer *struct {
+								Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+								Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+							} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+							Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+						ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+						For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+						Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+						Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+						Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+						Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+						NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+						Notifications       *[]struct {
+							DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+							Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+							ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+							IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+							Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+							SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+							Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+							Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+							UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+						} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+					} `json:"alert,omitempty" yaml:"alert,omitempty"`
+					AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+					Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+					Cards       *struct {
+						CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+						CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+					} `json:"cards,omitempty" yaml:"cards,omitempty"`
+					Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+					Color     *struct {
+						CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+						ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+						ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+						Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+						Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+						Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+						Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+					} `json:"color,omitempty" yaml:"color,omitempty"`
+				} `json:"panels,omitempty" yaml:"panels,omitempty"`
+				Slug         *string `json:"slug,omitempty" yaml:"slug,omitempty"`
+				TemplateVars *[]struct {
+					// Datasource GrafanaDataSource represents a Grafana datasource like Prometheus
+					Datasource *struct {
+						ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+						Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+					} `json:"datasource,omitempty" yaml:"datasource,omitempty"`
+					Hide  *uint8                  `json:"hide,omitempty" yaml:"hide,omitempty"`
+					Name  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+					Query *string                 `json:"query,omitempty" yaml:"query,omitempty"`
+					Value *map[string]interface{} `json:"value,omitempty" yaml:"value,omitempty"`
+				} `json:"template_vars,omitempty" yaml:"template_vars,omitempty"`
+				Timezone *string `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+				Title    *string `json:"title,omitempty" yaml:"title,omitempty"`
+				UID      *string `json:"uid,omitempty" yaml:"uid,omitempty"`
+				URI      *string `json:"uri,omitempty" yaml:"uri,omitempty"`
+			} `json:"board,omitempty" yaml:"board,omitempty"`
+			GrafanaPanels *[]struct {
+				Alert *struct {
+					AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+					Conditions    *[]struct {
+						Evaluator *struct {
+							Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+						Operator *struct {
+							Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"operator,omitempty" yaml:"operator,omitempty"`
+						Query *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+						} `json:"query,omitempty" yaml:"query,omitempty"`
+						Reducer *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+						Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+					ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+					For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+					Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+					Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+					Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+					Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+					NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+					Notifications       *[]struct {
+						DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+						Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+						ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+						IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+						Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+						SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+						Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+						Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+						UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+					} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+				} `json:"alert,omitempty" yaml:"alert,omitempty"`
+				AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+				Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+				Cards       *struct {
+					CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+					CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+				} `json:"cards,omitempty" yaml:"cards,omitempty"`
+				Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+				Color     *struct {
+					CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+					ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+					ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+					Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+					Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+					Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+					Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+				} `json:"color,omitempty" yaml:"color,omitempty"`
+			} `json:"panels,omitempty" yaml:"panels,omitempty"`
+			SelectedTemplateVars *[]string `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
+		} `json:"selectedBoardsConfigs,omitempty" yaml:"selectedBoardsConfigs,omitempty"`
+	} `json:"grafana,omitempty" yaml:"grafana,omitempty"`
+
+	// LoadTestPrefs LoadTestPreferences represents the load test preferences
+	LoadTestPrefs *struct {
+		ConcurrentRequests *int64  `json:"c,omitempty" yaml:"c,omitempty"`
+		LoadGenerator      *string `json:"gen,omitempty" yaml:"gen,omitempty"`
+		QueriesPerSecond   *int64  `json:"qps,omitempty" yaml:"qps,omitempty"`
+		Duration           *string `json:"t,omitempty" yaml:"t,omitempty"`
+	} `json:"loadTestPrefs,omitempty" yaml:"loadTestPrefs,omitempty"`
+	MeshAdapters *[]struct {
+		Location     *string `json:"adapter_location,omitempty" yaml:"adapter_location,omitempty"`
+		GitCommitSHA *string `json:"git_commit_sha,omitempty" yaml:"git_commit_sha,omitempty"`
+		Name         *string `json:"name,omitempty" yaml:"name,omitempty"`
+		Ops          *[]struct {
+			Category *int32  `json:"category,omitempty" yaml:"category,omitempty"`
+			Key      *string `json:"key,omitempty" yaml:"key,omitempty"`
+			Value    *string `json:"value,omitempty" yaml:"value,omitempty"`
+		} `json:"ops,omitempty" yaml:"ops,omitempty"`
+		Version *string `json:"version,omitempty" yaml:"version,omitempty"`
+	} `json:"meshAdapters,omitempty" yaml:"meshAdapters,omitempty"`
+
+	// Prometheus Prometheus represents the prometheus session config
+	Prometheus *struct {
+		PrometheusURL                   *string `json:"prometheusURL,omitempty" yaml:"prometheusURL,omitempty"`
+		SelectedPrometheusBoardsConfigs *[]struct {
+			// Board GrafanaBoard represents a Grafana board
+			Board *struct {
+				OrgID  *uint64 `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+				Panels *[]struct {
+					Alert *struct {
+						AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+						Conditions    *[]struct {
+							Evaluator *struct {
+								Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+								Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+							} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+							Operator *struct {
+								Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+							} `json:"operator,omitempty" yaml:"operator,omitempty"`
+							Query *struct {
+								Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+							} `json:"query,omitempty" yaml:"query,omitempty"`
+							Reducer *struct {
+								Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+								Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+							} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+							Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+						ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+						For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+						Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+						Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+						Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+						Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+						NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+						Notifications       *[]struct {
+							DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+							Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+							ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+							IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+							Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+							SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+							Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+							Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+							UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+						} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+					} `json:"alert,omitempty" yaml:"alert,omitempty"`
+					AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+					Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+					Cards       *struct {
+						CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+						CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+					} `json:"cards,omitempty" yaml:"cards,omitempty"`
+					Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+					Color     *struct {
+						CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+						ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+						ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+						Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+						Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+						Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+						Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+					} `json:"color,omitempty" yaml:"color,omitempty"`
+				} `json:"panels,omitempty" yaml:"panels,omitempty"`
+				Slug         *string `json:"slug,omitempty" yaml:"slug,omitempty"`
+				TemplateVars *[]struct {
+					// Datasource GrafanaDataSource represents a Grafana datasource like Prometheus
+					Datasource *struct {
+						ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+						Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+					} `json:"datasource,omitempty" yaml:"datasource,omitempty"`
+					Hide  *uint8                  `json:"hide,omitempty" yaml:"hide,omitempty"`
+					Name  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+					Query *string                 `json:"query,omitempty" yaml:"query,omitempty"`
+					Value *map[string]interface{} `json:"value,omitempty" yaml:"value,omitempty"`
+				} `json:"template_vars,omitempty" yaml:"template_vars,omitempty"`
+				Timezone *string `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+				Title    *string `json:"title,omitempty" yaml:"title,omitempty"`
+				UID      *string `json:"uid,omitempty" yaml:"uid,omitempty"`
+				URI      *string `json:"uri,omitempty" yaml:"uri,omitempty"`
+			} `json:"board,omitempty" yaml:"board,omitempty"`
+			GrafanaPanels *[]struct {
+				Alert *struct {
+					AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+					Conditions    *[]struct {
+						Evaluator *struct {
+							Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+						Operator *struct {
+							Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"operator,omitempty" yaml:"operator,omitempty"`
+						Query *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+						} `json:"query,omitempty" yaml:"query,omitempty"`
+						Reducer *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+						Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+					ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+					For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+					Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+					Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+					Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+					Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+					NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+					Notifications       *[]struct {
+						DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+						Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+						ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+						IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+						Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+						SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+						Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+						Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+						UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+					} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+				} `json:"alert,omitempty" yaml:"alert,omitempty"`
+				AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+				Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+				Cards       *struct {
+					CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+					CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+				} `json:"cards,omitempty" yaml:"cards,omitempty"`
+				Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+				Color     *struct {
+					CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+					ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+					ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+					Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+					Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+					Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+					Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+				} `json:"color,omitempty" yaml:"color,omitempty"`
+			} `json:"panels,omitempty" yaml:"panels,omitempty"`
+			SelectedTemplateVars *[]string `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
+		} `json:"selectedPrometheusBoardsConfigs,omitempty" yaml:"selectedPrometheusBoardsConfigs,omitempty"`
+	} `json:"prometheus,omitempty" yaml:"prometheus,omitempty"`
+	RemoteProviderPreferences *map[string]interface{} `json:"remoteProviderPreferences,omitempty" yaml:"remoteProviderPreferences,omitempty"`
+	UpdatedAt                 *time.Time              `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UsersExtensionPreferences *map[string]interface{} `json:"usersExtensionPreferences,omitempty" yaml:"usersExtensionPreferences,omitempty"`
 }
 
-// Prometheus defines model for Prometheus.
+// Prometheus Prometheus represents the prometheus session config
 type Prometheus struct {
 	PrometheusURL                   *string `json:"prometheusURL,omitempty" yaml:"prometheusURL,omitempty"`
 	SelectedPrometheusBoardsConfigs *[]struct {
-		// Board Placeholder for GrafanaBoard definition (define fields as needed)
-		Board        *map[string]interface{}   `json:"board,omitempty" yaml:"board,omitempty"`
-		Panels       *[]map[string]interface{} `json:"panels,omitempty" yaml:"panels,omitempty"`
-		TemplateVars *[]string                 `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
+		// Board GrafanaBoard represents a Grafana board
+		Board *struct {
+			OrgID  *uint64 `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+			Panels *[]struct {
+				Alert *struct {
+					AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+					Conditions    *[]struct {
+						Evaluator *struct {
+							Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+						Operator *struct {
+							Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"operator,omitempty" yaml:"operator,omitempty"`
+						Query *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+						} `json:"query,omitempty" yaml:"query,omitempty"`
+						Reducer *struct {
+							Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+							Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+						} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+						Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+					ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+					For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+					Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+					Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+					Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+					Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+					NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+					Notifications       *[]struct {
+						DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+						Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+						ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+						IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+						Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+						SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+						Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+						Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+						UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+					} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+				} `json:"alert,omitempty" yaml:"alert,omitempty"`
+				AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+				Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+				Cards       *struct {
+					CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+					CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+				} `json:"cards,omitempty" yaml:"cards,omitempty"`
+				Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+				Color     *struct {
+					CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+					ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+					ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+					Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+					Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+					Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+					Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+				} `json:"color,omitempty" yaml:"color,omitempty"`
+			} `json:"panels,omitempty" yaml:"panels,omitempty"`
+			Slug         *string `json:"slug,omitempty" yaml:"slug,omitempty"`
+			TemplateVars *[]struct {
+				// Datasource GrafanaDataSource represents a Grafana datasource like Prometheus
+				Datasource *struct {
+					ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+					Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+				} `json:"datasource,omitempty" yaml:"datasource,omitempty"`
+				Hide  *uint8                  `json:"hide,omitempty" yaml:"hide,omitempty"`
+				Name  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+				Query *string                 `json:"query,omitempty" yaml:"query,omitempty"`
+				Value *map[string]interface{} `json:"value,omitempty" yaml:"value,omitempty"`
+			} `json:"template_vars,omitempty" yaml:"template_vars,omitempty"`
+			Timezone *string `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+			Title    *string `json:"title,omitempty" yaml:"title,omitempty"`
+			UID      *string `json:"uid,omitempty" yaml:"uid,omitempty"`
+			URI      *string `json:"uri,omitempty" yaml:"uri,omitempty"`
+		} `json:"board,omitempty" yaml:"board,omitempty"`
+		GrafanaPanels *[]struct {
+			Alert *struct {
+				AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+				Conditions    *[]struct {
+					Evaluator *struct {
+						Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+						Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+					Operator *struct {
+						Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"operator,omitempty" yaml:"operator,omitempty"`
+					Query *struct {
+						Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+					} `json:"query,omitempty" yaml:"query,omitempty"`
+					Reducer *struct {
+						Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+						Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+					Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+				ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+				For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+				Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+				Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+				Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+				Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+				NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+				Notifications       *[]struct {
+					DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+					Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+					ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+					IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+					Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+					SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+					Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+					Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+					UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+				} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+			} `json:"alert,omitempty" yaml:"alert,omitempty"`
+			AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+			Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+			Cards       *struct {
+				CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+				CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+			} `json:"cards,omitempty" yaml:"cards,omitempty"`
+			Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+			Color     *struct {
+				CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+				ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+				ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+				Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+				Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+				Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+				Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+			} `json:"color,omitempty" yaml:"color,omitempty"`
+		} `json:"panels,omitempty" yaml:"panels,omitempty"`
+		SelectedTemplateVars *[]string `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
 	} `json:"selectedPrometheusBoardsConfigs,omitempty" yaml:"selectedPrometheusBoardsConfigs,omitempty"`
 }
 
-// SelectedGrafanaConfig defines model for SelectedGrafanaConfig.
+// RunnerResults defines model for RunnerResults.
+type RunnerResults struct {
+	ActualDuration    *uint64  `json:"ActualDuration,omitempty" yaml:"ActualDuration,omitempty"`
+	QPS               *float64 `json:"ActualQPS,omitempty" yaml:"ActualQPS,omitempty"`
+	DurationHistogram *struct {
+		Average     *float64 `json:"Avg,omitempty" yaml:"Avg,omitempty"`
+		Max         *float64 `json:"Max,omitempty" yaml:"Max,omitempty"`
+		Min         *float64 `json:"Min,omitempty" yaml:"Min,omitempty"`
+		Percentiles *[]struct {
+			Percentile *float64 `json:"Percentile,omitempty" yaml:"Percentile,omitempty"`
+			Value      *float64 `json:"Value,omitempty" yaml:"Value,omitempty"`
+		} `json:"Percentiles,omitempty" yaml:"Percentiles,omitempty"`
+	} `json:"DurationHistogram,omitempty" yaml:"DurationHistogram,omitempty"`
+	RequestedDuration *string    `json:"RequestedDuration,omitempty" yaml:"RequestedDuration,omitempty"`
+	StartTime         *time.Time `json:"StartTime,omitempty" yaml:"StartTime,omitempty"`
+	URL               *string    `json:"URL,omitempty" yaml:"URL,omitempty"`
+	LoadGenerator     *string    `json:"load-generator,omitempty" yaml:"load-generator,omitempty"`
+}
+
+// Schedule Schedule is the struct for representing schedules
+type Schedule struct {
+	// CronExpression CronExpression is the UNIX cron expression (quartz expression)
+	CronExpression *string             `json:"cron_expression,omitempty" yaml:"cron_expression,omitempty"`
+	ID             *openapi_types.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// SchedulesAPIResponse API response model for SchedulesAPI
+type SchedulesAPIResponse struct {
+	Page      *uint64 `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize  *uint64 `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Schedules *[]struct {
+		// CronExpression CronExpression is the UNIX cron expression (quartz expression)
+		CronExpression *string             `json:"cron_expression,omitempty" yaml:"cron_expression,omitempty"`
+		ID             *openapi_types.UUID `json:"id,omitempty" yaml:"id,omitempty"`
+	} `json:"schedules,omitempty" yaml:"schedules,omitempty"`
+	TotalCount *uint64 `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// SelectedGrafanaConfig SelectedGrafanaConfig represents the selected boards, panels, and template variables
 type SelectedGrafanaConfig struct {
-	// Board Placeholder for GrafanaBoard definition (define fields as needed)
-	Board        *map[string]interface{}   `json:"board,omitempty" yaml:"board,omitempty"`
-	Panels       *[]map[string]interface{} `json:"panels,omitempty" yaml:"panels,omitempty"`
-	TemplateVars *[]string                 `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
+	// Board GrafanaBoard represents a Grafana board
+	Board *struct {
+		OrgID  *uint64 `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+		Panels *[]struct {
+			Alert *struct {
+				AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+				Conditions    *[]struct {
+					Evaluator *struct {
+						Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+						Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+					Operator *struct {
+						Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"operator,omitempty" yaml:"operator,omitempty"`
+					Query *struct {
+						Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+					} `json:"query,omitempty" yaml:"query,omitempty"`
+					Reducer *struct {
+						Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+						Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+					} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+					Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+				ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+				For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+				Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+				Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+				Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+				Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+				NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+				Notifications       *[]struct {
+					DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+					Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+					ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+					IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+					Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+					SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+					Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+					Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+					UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+				} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+			} `json:"alert,omitempty" yaml:"alert,omitempty"`
+			AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+			Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+			Cards       *struct {
+				CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+				CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+			} `json:"cards,omitempty" yaml:"cards,omitempty"`
+			Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+			Color     *struct {
+				CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+				ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+				ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+				Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+				Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+				Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+				Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+			} `json:"color,omitempty" yaml:"color,omitempty"`
+		} `json:"panels,omitempty" yaml:"panels,omitempty"`
+		Slug         *string `json:"slug,omitempty" yaml:"slug,omitempty"`
+		TemplateVars *[]struct {
+			// Datasource GrafanaDataSource represents a Grafana datasource like Prometheus
+			Datasource *struct {
+				ID   *uint64 `json:"id,omitempty" yaml:"id,omitempty"`
+				Name *string `json:"name,omitempty" yaml:"name,omitempty"`
+			} `json:"datasource,omitempty" yaml:"datasource,omitempty"`
+			Hide  *uint8                  `json:"hide,omitempty" yaml:"hide,omitempty"`
+			Name  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+			Query *string                 `json:"query,omitempty" yaml:"query,omitempty"`
+			Value *map[string]interface{} `json:"value,omitempty" yaml:"value,omitempty"`
+		} `json:"template_vars,omitempty" yaml:"template_vars,omitempty"`
+		Timezone *string `json:"timezone,omitempty" yaml:"timezone,omitempty"`
+		Title    *string `json:"title,omitempty" yaml:"title,omitempty"`
+		UID      *string `json:"uid,omitempty" yaml:"uid,omitempty"`
+		URI      *string `json:"uri,omitempty" yaml:"uri,omitempty"`
+	} `json:"board,omitempty" yaml:"board,omitempty"`
+	GrafanaPanels *[]struct {
+		Alert *struct {
+			AlertRuleTags *map[string]string `json:"alertRuleTags,omitempty" yaml:"alertRuleTags,omitempty"`
+			Conditions    *[]struct {
+				Evaluator *struct {
+					Params *[]float64 `json:"params,omitempty" yaml:"params,omitempty"`
+					Type   *string    `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"evaluator,omitempty" yaml:"evaluator,omitempty"`
+				Operator *struct {
+					Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"operator,omitempty" yaml:"operator,omitempty"`
+				Query *struct {
+					Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+				} `json:"query,omitempty" yaml:"query,omitempty"`
+				Reducer *struct {
+					Params *[]string `json:"params,omitempty" yaml:"params,omitempty"`
+					Type   *string   `json:"type,omitempty" yaml:"type,omitempty"`
+				} `json:"reducer,omitempty" yaml:"reducer,omitempty"`
+				Type *string `json:"type,omitempty" yaml:"type,omitempty"`
+			} `json:"conditions,omitempty" yaml:"conditions,omitempty"`
+			ExecutionErrorState *string `json:"executionErrorState,omitempty" yaml:"executionErrorState,omitempty"`
+			For                 *string `json:"for,omitempty" yaml:"for,omitempty"`
+			Frequency           *string `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+			Handler             *int64  `json:"handler,omitempty" yaml:"handler,omitempty"`
+			Message             *string `json:"message,omitempty" yaml:"message,omitempty"`
+			Name                *string `json:"name,omitempty" yaml:"name,omitempty"`
+			NoDataState         *string `json:"noDataState,omitempty" yaml:"noDataState,omitempty"`
+			Notifications       *[]struct {
+				DisableResolveMessage *bool                   `json:"disableResolveMessage,omitempty" yaml:"disableResolveMessage,omitempty"`
+				Frequency             *string                 `json:"frequency,omitempty" yaml:"frequency,omitempty"`
+				ID                    *int64                  `json:"id,omitempty" yaml:"id,omitempty"`
+				IsDefault             *bool                   `json:"isDefault,omitempty" yaml:"isDefault,omitempty"`
+				Name                  *string                 `json:"name,omitempty" yaml:"name,omitempty"`
+				SendReminder          *bool                   `json:"sendReminder,omitempty" yaml:"sendReminder,omitempty"`
+				Settings              *map[string]interface{} `json:"settings,omitempty" yaml:"settings,omitempty"`
+				Type                  *string                 `json:"type,omitempty" yaml:"type,omitempty"`
+				UID                   *string                 `json:"uid,omitempty" yaml:"uid,omitempty"`
+			} `json:"notifications,omitempty" yaml:"notifications,omitempty"`
+		} `json:"alert,omitempty" yaml:"alert,omitempty"`
+		AliasColors *map[string]string `json:"aliasColors,omitempty" yaml:"aliasColors,omitempty"`
+		Bars        *bool              `json:"bars,omitempty" yaml:"bars,omitempty"`
+		Cards       *struct {
+			CardPadding *float64 `json:"cardPadding,omitempty" yaml:"cardPadding,omitempty"`
+			CardRound   *float64 `json:"cardRound,omitempty" yaml:"cardRound,omitempty"`
+		} `json:"cards,omitempty" yaml:"cards,omitempty"`
+		Collapsed *bool `json:"collapsed,omitempty" yaml:"collapsed,omitempty"`
+		Color     *struct {
+			CardColor   *string  `json:"cardColor,omitempty" yaml:"cardColor,omitempty"`
+			ColorScale  *string  `json:"colorScale,omitempty" yaml:"colorScale,omitempty"`
+			ColorScheme *string  `json:"colorScheme,omitempty" yaml:"colorScheme,omitempty"`
+			Exponent    *float64 `json:"exponent,omitempty" yaml:"exponent,omitempty"`
+			Max         *float64 `json:"max,omitempty" yaml:"max,omitempty"`
+			Min         *float64 `json:"min,omitempty" yaml:"min,omitempty"`
+			Mode        *string  `json:"mode,omitempty" yaml:"mode,omitempty"`
+		} `json:"color,omitempty" yaml:"color,omitempty"`
+	} `json:"panels,omitempty" yaml:"panels,omitempty"`
+	SelectedTemplateVars *[]string `json:"templateVars,omitempty" yaml:"templateVars,omitempty"`
 }
 
-// Social Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on.
+// Social defines model for Social.
 type Social struct {
-	Link string `json:"link" yaml:"link"`
-	Site string `json:"site" yaml:"site"`
+	Link *string `json:"link,omitempty" yaml:"link,omitempty"`
+	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// User Represents a user in Layer5 Cloud (Meshery)
+// StringArray defines model for StringArray.
+type StringArray = []string
+
+// SupportedOperation SupportedOperation represents a supported operation by a mesh
+type SupportedOperation struct {
+	Category *int32  `json:"category,omitempty" yaml:"category,omitempty"`
+	Key      *string `json:"key,omitempty" yaml:"key,omitempty"`
+	Value    *string `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// Token defines model for Token.
+type Token struct {
+	Token *string `json:"token,omitempty" yaml:"token,omitempty"`
+}
+
+// User User - represents a user in Meshery
 type User struct {
-	// AcceptedTermsAt Timestamp when user accepted terms and conditions
-	AcceptedTermsAt time.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at"`
-
-	// AvatarUrl URL to user's avatar image
-	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
-
-	// Bio User's biography or description
-	Bio *string `db:"bio" json:"bio" yaml:"bio"`
-
-	// Country User's country information stored as JSONB
-	Country *core.Map `db:"country" json:"country" yaml:"country"`
-
-	// CreatedAt Timestamp when the user record was created
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
-
-	// DeletedAt Timestamp when the user record was soft-deleted (null if not deleted)
-	DeletedAt *core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
-
-	// Email User's email address
-	Email openapi_types.Email `db:"email" json:"email" yaml:"email"`
-
-	// FirstLoginTime Timestamp of user's first login
-	FirstLoginTime time.Time `db:"first_login_time" json:"first_login_time" yaml:"first_login_time"`
-
-	// FirstName User's first name
-	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
-
-	// ID Unique identifier for the user
-	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
-
-	// LastLoginTime Timestamp of user's most recent login
-	LastLoginTime time.Time `db:"last_login_time" json:"last_login_time" yaml:"last_login_time"`
-
-	// LastName User's last name
-	LastName string `db:"last_name" json:"last_name" yaml:"last_name"`
-
-	// Preferences User preferences stored as JSONB
-	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
-
-	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
-	Provider string `db:"provider" json:"provider" yaml:"provider"`
-
-	// Region User's region information stored as JSONB
-	Region *core.Map `db:"region" json:"region" yaml:"region"`
-
-	// Socials Various online profiles associated with the user account
-	Socials *UserSocials `db:"socials" json:"socials" yaml:"socials"`
-
-	// Status User account status
-	Status UserStatus `db:"status" json:"status" yaml:"status"`
-
-	// UpdatedAt Timestamp when the user record was last updated
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
-
-	// UserId User identifier (username or external ID)
-	UserId string `db:"user_id" json:"user_id" yaml:"user_id"`
+	AvatarURL *string   `json:"avatar_url,omitempty" yaml:"avatar_url,omitempty"`
+	Bio       *string   `json:"bio,omitempty" yaml:"bio,omitempty"`
+	Email     *string   `json:"email,omitempty" yaml:"email,omitempty"`
+	FirstName *string   `json:"first_name,omitempty" yaml:"first_name,omitempty"`
+	ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
+	LastName  *string   `json:"last_name,omitempty" yaml:"last_name,omitempty"`
+	Provider  *string   `json:"provider,omitempty" yaml:"provider,omitempty"`
+	RoleNames *[]string `json:"role_names,omitempty" yaml:"role_names,omitempty"`
+	Status    *string   `json:"status,omitempty" yaml:"status,omitempty"`
+	UserID    *string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 }
 
-// UserStatus User account status
-type UserStatus string
+// UserKeys defines model for UserKeys.
+type UserKeys struct {
+	Category    *string `json:"category,omitempty" yaml:"category,omitempty"`
+	CreatedAt   *string `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt   *string `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description *string `json:"description,omitempty" yaml:"description,omitempty"`
+	Function    *string `json:"function,omitempty" yaml:"function,omitempty"`
+	ID          *string `json:"id,omitempty" yaml:"id,omitempty"`
+	Owner       *string `json:"owner,omitempty" yaml:"owner,omitempty"`
+	Subcategory *string `json:"subcategory,omitempty" yaml:"subcategory,omitempty"`
+	UpdatedAt   *string `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+}
+
+// UserPage defines model for UserPage.
+type UserPage struct {
+	Page       *uint64 `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *uint64 `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *uint64 `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Users      *[]struct {
+		AvatarURL *string   `json:"avatar_url,omitempty" yaml:"avatar_url,omitempty"`
+		Bio       *string   `json:"bio,omitempty" yaml:"bio,omitempty"`
+		Email     *string   `json:"email,omitempty" yaml:"email,omitempty"`
+		FirstName *string   `json:"first_name,omitempty" yaml:"first_name,omitempty"`
+		ID        *string   `json:"id,omitempty" yaml:"id,omitempty"`
+		LastName  *string   `json:"last_name,omitempty" yaml:"last_name,omitempty"`
+		Provider  *string   `json:"provider,omitempty" yaml:"provider,omitempty"`
+		RoleNames *[]string `json:"role_names,omitempty" yaml:"role_names,omitempty"`
+		Status    *string   `json:"status,omitempty" yaml:"status,omitempty"`
+		UserID    *string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	} `json:"users,omitempty" yaml:"users,omitempty"`
+}

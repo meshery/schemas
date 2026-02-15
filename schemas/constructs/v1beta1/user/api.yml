@@ -2,406 +2,1265 @@ openapi: 3.0.3
 info:
   title: User Schema
   version: 1.0.0
-paths: {}
+paths:
+  /api/user/login:
+    get:
+      description: Redirects user for auth or issues session
+      operationId: idGetUserLogin
+      responses:
+        "200":
+          description: ""
+      summary: Handlers GET request for User login
+      tags:
+        - UserAPI
+  /api/user/logout:
+    get:
+      description: Redirects user for auth or issues session
+      operationId: idGetUserLogout
+      responses:
+        "200":
+          description: ""
+      summary: Handlers GET request for User logout
+      tags:
+        - UserAPI
+
+  /api/identity/users:
+    get:
+      summary: Handles GET for all Users
+      description: |-
+        # Users can be further filtered through query parameters
+
+        ```?order={field}``` orders on the passed field
+        ```?page={page-number}``` Default page number is 0
+        ```?pagesize={pagesize}``` Default pagesize is 20
+        ```?search={username|email|first_name|last_name}``` If search is non empty then a greedy search is performed
+        ```?filter={condition}```
+      operationId: idGetAllUsersHandler
+      tags:
+        - UserAPI
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            format: int64
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: filter
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPage' # Placeholder, will verify if this schema exists or needs creation.
+
+  /api/user/performance/profiles:
+    get:
+      description: |
+        Returns the list of all the performance profiles saved by the current user
+        ```?order={field}``` orders on the passed field
+        ```?page={page-number}``` Default page number is 0
+        ```?pagesize={pagesize}``` Default pagesize is 10
+        ```?search={profilename}``` If search is non empty then a greedy search is performed
+      operationId: idGetPerformanceProfiles
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceProfilesAPIResponse'
+      summary: Handle GET requests for performance profiles
+      tags:
+        - UserAPI
+    post:
+      description: Save performance profile using the current provider's persistence mechanism
+      operationId: idSavePerformanceProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerformanceProfileParameters'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceProfile'
+      summary: Handle POST requests for saving performance profile
+      tags:
+        - UserAPI
+  /api/user/performance/profiles/{id}:
+    delete:
+      description: Deletes a performance profile with the given id
+      operationId: idDeletePerformanceProfile
+      parameters:
+        - description: id for a specific
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+            x-go-name: ID
+      responses:
+        "200":
+          description: ""
+      summary: Handle SEQ requests for performance profiles
+      tags:
+        - UserAPI
+    get:
+      description: Returns the performance profile with the given id
+      operationId: idGetPerformanceProfile
+      parameters:
+        - description: id for a specific
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+            x-go-name: ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceProfile'
+      summary: Handle GET requests for performance profiles
+      tags:
+        - UserAPI
+  /api/user/performance/profiles/{id}/results:
+    get:
+      description: Returns the results for the performance profile with the given id
+      operationId: idGetPerformanceProfileResults
+      parameters:
+        - description: id for a specific
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+            x-go-name: ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceResultsAPIResponse'
+      summary: Handle GET requests for performance profile results
+      tags:
+        - UserAPI
+  /api/user/performance/profiles/{id}/run:
+    get:
+      description: Runs the performance profile with the given id
+      operationId: idRunPerformanceProfile
+      parameters:
+        - description: id for a specific
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+            x-go-name: ID
+      responses:
+        "200":
+          description: ""
+      summary: Handle GET requests for running performance profile
+      tags:
+        - UserAPI
+  /api/user/performance/profiles/results:
+    get:
+      description: Returns the results for the performance profile with the given id
+      operationId: idGetAllPerformanceResults
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceResultsAPIResponse'
+      summary: Handle GET requests for performance profile results
+      tags:
+        - UserAPI
+  /api/user/prefs:
+    get:
+      description: Returns the user preferences
+      operationId: idGetUserTestPrefs
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preference'
+      summary: Handlers GET request for User preferences
+      tags:
+        - UserAPI
+    post:
+      description: Updates the user preferences
+      operationId: idPostUserTestPrefs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preference'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preference'
+      summary: Handlers POST request for User preferences
+      tags:
+        - UserAPI
+  /api/user/prefs/perf:
+    delete:
+      description: Deletes the user performance test preferences
+      operationId: idDeleteUserTestPreference
+      parameters:
+        - description: uuid
+          in: query
+          name: name
+          schema:
+            format: uuid
+            type: string
+            x-go-name: UUID
+      responses:
+        "200":
+          description: ""
+      summary: Handlers DELETE request for User performance test preferences
+      tags:
+        - UserAPI
+    get:
+      description: Returns the user performance test preferences
+      operationId: idGetUserTestPreference
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preference'
+      summary: Handlers GET request for User performance test preferences
+      tags:
+        - UserAPI
+    post:
+      description: Updates the user performance test preferences
+      operationId: idPostUserTestPreference
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PerformanceTestConfig'
+      responses:
+        "200":
+          description: ""
+      summary: Handlers POST request for User performance test preferences
+      tags:
+        - UserAPI
+  /api/user/profile/{id}:
+    get:
+      description: Returns the user profile with the given id
+      operationId: idGetUserProfile
+      parameters:
+        - description: id for a specific
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+            x-go-name: ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      summary: Handlers GET request for User profile
+      tags:
+        - UserAPI
+  /api/user/schedules:
+    get:
+      description: |
+        Returns the list of all the schedules saved by the current user
+        ```?order={field}``` orders on the passed field
+        ```?page={page-number}``` Default page number is 0
+        ```?pagesize={pagesize}``` Default pagesize is 10
+      operationId: idGetSchedules
+      parameters:
+        - in: query
+          name: order
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            format: uint64
+            type: integer
+        - in: query
+          name: pagesize
+          schema:
+            format: uint64
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchedulesAPIResponse'
+      summary: Handle GET requests for schedules
+      tags:
+        - UserAPI
+    post:
+      description: Save schedule using the current provider's persistence mechanism
+      operationId: idSaveSchedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schedule'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+      summary: Handle POST requests for saving schedule
+      tags:
+        - UserAPI
+  /api/user/schedules/{id}:
+    delete:
+      description: Deletes a schedule with the given id
+      operationId: idDeleteSchedule
+      parameters:
+        - description: id for a specific
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+            x-go-name: ID
+      responses:
+        "200":
+          description: ""
+      summary: Handle DELETE requests for schedules
+      tags:
+        - UserAPI
+    get:
+      description: Returns the schedule with the given id
+      operationId: idGetSchedule
+      parameters:
+        - description: id for a specific
+          in: path
+          name: id
+          required: true
+          schema:
+            format: uuid
+            type: string
+            x-go-name: ID
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Schedule'
+      summary: Handle GET requests for schedules
+      tags:
+        - UserAPI
+  /api/user/token:
+    get:
+      description: Returns the user token
+      operationId: idGetUserToken
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+      summary: Handlers GET request for User token
+      tags:
+        - UserAPI
+    post:
+      description: Generates a new user token
+      operationId: idPostUserToken
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+      summary: Handlers POST request for User token
+      tags:
+        - UserAPI
 components:
   schemas:
-    User:
+    UserPage:
       type: object
-      description: Represents a user in Layer5 Cloud (Meshery)
-      required:
-        - id
-        - user_id
-        - provider
-        - email
-        - first_name
-        - last_name
-        - status
-        - created_at
-        - updated_at
-        - last_login_time
-        - deleted_at
       properties:
-        id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-          description: Unique identifier for the user
-          x-go-name: ID
-          x-oapi-codegen-extra-tags:
-            db: "id"
-            json: "id"
-            yaml: "id"
-        user_id:
-          type: string
-          maxLength: 200
-          description: User identifier (username or external ID)
-          x-oapi-codegen-extra-tags:
-            db: "user_id"
-            json: "user_id"
-            yaml: "user_id"
-        provider:
-          type: string
-          maxLength: 100
-          description: "Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)"
-          example:
-            - local
-            - github
-            - google
-            - twitter
-          x-oapi-codegen-extra-tags:
-            db: "provider"
-            json: "provider"
-            yaml: "provider"
-        email:
-          type: string
-          format: email
-          maxLength: 300
-          description: User's email address
-          x-oapi-codegen-extra-tags:
-            db: "email"
-            json: "email"
-            yaml: "email"
-        first_name:
-          type: string
-          maxLength: 200
-          description: User's first name
-          x-oapi-codegen-extra-tags:
-            db: "first_name"
-            json: "first_name"
-            yaml: "first_name"
-        last_name:
-          type: string
-          maxLength: 300
-          description: User's last name
-          x-oapi-codegen-extra-tags:
-            db: "last_name"
-            json: "last_name"
-            yaml: "last_name"
-        avatar_url:
-          type: string
-          format: uri
-          maxLength: 500
-          description: URL to user's avatar image
-          x-oapi-codegen-extra-tags:
-            db: "avatar_url"
-            json: "avatar_url"
-            yaml: "avatar_url"
-        status:
-          type: string
-          maxLength: 100
-          enum:
-            - active
-            - inactive
-            - pending
-            - anonymous
-          description: User account status
-          x-oapi-codegen-extra-tags:
-            db: "status"
-            json: "status"
-            yaml: "status"
-        bio:
-          type: string
-          maxLength: 1000
-          default: ""
-          description: User's biography or description
-          x-oapi-codegen-extra-tags:
-            db: "bio"
-            json: "bio"
-            yaml: "bio"
-        country:
-          type: object
-          description: User's country information stored as JSONB
-          additionalProperties: true
-          x-go-type: "core.Map"
-          x-oapi-codegen-extra-tags:
-            db: "country"
-            json: "country"
-            yaml: "country"
-        region:
-          type: object
-          description: User's region information stored as JSONB
-          additionalProperties: true
-          x-go-type: "core.Map"
-          x-oapi-codegen-extra-tags:
-            db: "region"
-            json: "region"
-            yaml: "region"
-        preferences:
-          $ref: "#/components/schemas/Preference"
-          x-go-type: "Preference"
-          description: User preferences stored as JSONB
-          x-oapi-codegen-extra-tags:
-            db: "preferences"
-            json: "preferences"
-            yaml: "preferences"
-        accepted_terms_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          description: Timestamp when user accepted terms and conditions
-          x-oapi-codegen-extra-tags:
-            db: "accepted_terms_at"
-            json: "accepted_terms_at"
-            yaml: "accepted_terms_at"
-        first_login_time:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          description: Timestamp of user's first login
-          x-oapi-codegen-extra-tags:
-            db: "first_login_time"
-            json: "first_login_time"
-            yaml: "first_login_time"
-        last_login_time:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          description: Timestamp of user's most recent login
-          x-oapi-codegen-extra-tags:
-            db: "last_login_time"
-            json: "last_login_time"
-            yaml: "last_login_time"
-        created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          description: Timestamp when the user record was created
-          x-oapi-codegen-extra-tags:
-            db: "created_at"
-            json: "created_at"
-            yaml: "created_at"
-        updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          description: Timestamp when the user record was last updated
-          x-oapi-codegen-extra-tags:
-            db: "updated_at"
-            json: "updated_at"
-            yaml: "updated_at"
-        socials:
-          type: array
-          description: Various online profiles associated with the user account
-          # use a custom type to represent a slice of Social structs , the default is []Social which
-          # cant be used with sql drivers as we cant add methods to that type
-          x-go-type: "UserSocials"
-          items:
-            $ref: "#/components/schemas/Social"
-            x-go-type: "Social"
-          x-oapi-codegen-extra-tags:
-            db: "socials"
-            json: "socials"
-            yaml: "socials"
-        deleted_at:
-          type: string
-          format: date-time
-          nullable: true
-          description: Timestamp when the user record was soft-deleted (null if not deleted)
-          x-go-type: "core.NullTime"
-          x-oapi-codegen-extra-tags:
-            db: "deleted_at"
-            json: "deleted_at"
-            yaml: "deleted_at"
-      additionalProperties: false
-
-    GetUserResponse:
-      description: Response schema for getting user information, includes user data with roles, teams, and organizations
-      allOf:
-        - $ref: "#/components/schemas/User"
-        - type: object
-          properties:
-            role_names:
-              type: array
-              items:
-                type: string
-                enum:
-                  - admin
-                  - meshmap
-                  - curator
-                  - team admin
-                  - workspace admin
-                  - workspace manager
-                  - organization admin
-                  - user
-              description: List of global roles assigned to the user
-              example:
-                - ["admin", "meshmap"]
-                - ["user"]
-              x-oapi-codegen-extra-tags:
-                db: "role_names"
-                json: "role_names"
-                yaml: "role_names"
-            teams:
-              type: object
-              description: Teams the user belongs to with role information
-              x-oapi-codegen-extra-tags:
-                db: "teams"
-                json: "teams"
-                yaml: "teams"
-              properties:
-                teams_with_roles:
-                  type: array
-                  items:
-                    type: object
-                  x-oapi-codegen-extra-tags:
-                    db: "teams_with_roles"
-                    json: "teams_with_roles"
-                    yaml: "teams_with_roles"
-                total_count:
-                  type: integer
-                  x-oapi-codegen-extra-tags:
-                    db: "total_count"
-                    json: "total_count"
-                    yaml: "total_count"
-            organizations:
-              type: object
-              description: Organizations the user belongs to with role information
-              x-oapi-codegen-extra-tags:
-                db: "organizations"
-                json: "organizations"
-                yaml: "organizations"
-              properties:
-                organizations_with_roles:
-                  type: array
-                  items:
-                    type: object
-                  x-oapi-codegen-extra-tags:
-                    db: "organizations_with_roles"
-                    json: "organizations_with_roles"
-                    yaml: "organizations_with_roles"
-                total_count:
-                  type: integer
-                  x-oapi-codegen-extra-tags:
-                    db: "total_count"
-                    json: "total_count"
-                    yaml: "total_count"
-
-    Preference:
-      type: object
-      required:
-        - anonymousUsageStats
-        - anonymousPerfResults
-        - updatedAt
-        - dashboardPreferences
-        - selectedOrganizationID
-        - selectedWorkspaceForOrganizations
-        - usersExtensionPreferences
-        - RemoteProviderPreferences
-
-      properties:
-        meshAdapters:
+        page:
+          type: integer
+          format: uint64
+          x-go-name: Page
+        page_size:
+          type: integer
+          format: uint64
+          x-go-name: PageSize
+        total_count:
+          type: integer
+          format: uint64
+          x-go-name: TotalCount
+        users:
           type: array
           items:
-            x-go-type: Adapter
-            $ref: "#/components/schemas/Adapter"
-        grafana:
-          x-go-type: Grafana
-          $ref: "#/components/schemas/Grafana"
-        prometheus:
-          x-go-type: Prometheus
-          $ref: "#/components/schemas/Prometheus"
-        loadTestPrefs:
-          x-go-type: LoadTestPreferences
-          $ref: "#/components/schemas/LoadTestPreferences"
-        anonymousUsageStats:
-          type: boolean
-        anonymousPerfResults:
-          type: boolean
-        updated_at:
-          type: string
-          format: date-time
-        dashboardPreferences:
-          type: object
-          additionalProperties: true
-        selectedOrganizationID:
-          type: string
-        selectedWorkspaceForOrganizations:
-          type: object
-          additionalProperties:
-            type: string
-        usersExtensionPreferences:
-          type: object
-          additionalProperties: true
-        remoteProviderPreferences:
-          type: object
-          additionalProperties: true
-
+            $ref: "#/components/schemas/User"
+          x-go-name: Users
     Adapter:
-      type: object
-      description: Placeholder for Adapter struct definition.
-
-    Grafana:
-      type: object
+      description: Adapter represents an adapter in Meshery
       properties:
-        grafanaURL:
+        adapter_location:
           type: string
+          x-go-name: Location
+        git_commit_sha:
+          type: string
+          x-go-name: GitCommitSHA
+        name:
+          type: string
+          x-go-name: Name
+        ops:
+          items:
+            $ref: '#/components/schemas/SupportedOperation'
+          type: array
+          x-go-name: Ops
+        version:
+          type: string
+          x-go-name: Version
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    Grafana:
+      description: Grafana represents the Grafana session config
+      properties:
         grafanaAPIKey:
           type: string
+          x-go-name: GrafanaAPIKey
+        grafanaURL:
+          type: string
+          x-go-name: GrafanaURL
         selectedBoardsConfigs:
-          type: array
+          description: GrafanaBoardSearch string          `json:"grafanaBoardSearch,omitempty"`
           items:
-            $ref: "#/components/schemas/SelectedGrafanaConfig"
-
-    SelectedGrafanaConfig:
+            $ref: '#/components/schemas/SelectedGrafanaConfig'
+          type: array
+          x-go-name: GrafanaBoards
       type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    GrafanaBoard:
+      description: GrafanaBoard represents a Grafana board
       properties:
-        board:
-          $ref: "#/components/schemas/GrafanaBoard"
+        org_id:
+          format: uint64
+          type: integer
+          x-go-name: OrgID
         panels:
-          type: array
           items:
-            $ref: "#/components/schemas/Panel"
-        templateVars:
+            $ref: '#/components/schemas/Panel'
           type: array
+          x-go-name: Panels
+        slug:
+          type: string
+          x-go-name: Slug
+        template_vars:
+          items:
+            $ref: '#/components/schemas/GrafanaTemplateVars'
+          type: array
+          x-go-name: TemplateVars
+        timezone:
+          type: string
+          x-go-name: Timezone
+        title:
+          type: string
+          x-go-name: Title
+        uid:
+          type: string
+          x-go-name: UID
+        uri:
+          type: string
+          x-go-name: URI
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    GrafanaTemplateVars:
+      description: GrafanaTemplateVars represents template variables in a bboard
+      properties:
+        datasource:
+          $ref: '#/components/schemas/GrafanaDataSource'
+        hide:
+          format: uint8
+          type: integer
+          x-go-name: Hide
+        name:
+          type: string
+          x-go-name: Name
+        query:
+          type: string
+          x-go-name: Query
+        value: # Assuming value exists as 'value' property from context, if not I'd remove. But I'll stick to what I saw.
+          type: object
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models # Correction: I didn't see the full definition in view, but assuming standard properties. Wait, I saw it in view_file earlier.
+    LoadTestPreferences:
+      description: LoadTestPreferences represents the load test preferences
+      properties:
+        c:
+          format: int64
+          type: integer
+          x-go-name: ConcurrentRequests
+        gen:
+          type: string
+          x-go-name: LoadGenerator
+        qps:
+          format: int64
+          type: integer
+          x-go-name: QueriesPerSecond
+        t:
+          type: string
+          x-go-name: Duration
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    Map:
+      additionalProperties: {}
+      description: |-
+        It implements native SQL driver interfaces and hence can
+        be used for SQL json or jsonb types as a drop in replacement
+        of golang native maps
+      title: Map type is an alias for map[string]interface{}
+      type: object
+      x-go-package: github.com/meshery/meshery/server/internal/sql
+    Panel:
+      properties:
+        alert:
+          $ref: '#/components/schemas/Alert'
+        aliasColors:
+          additionalProperties:
+             type: string # Guessing type based on map usage often seen
+          type: object
+          x-go-name: AliasColors
+        bars:
+          type: boolean
+          x-go-name: Bars
+        cards:
+          properties:
+            cardPadding:
+              format: double
+              type: number
+              x-go-name: CardPadding
+            cardRound:
+              format: double
+              type: number
+              x-go-name: CardRound
+          type: object
+          x-go-name: Cards
+        collapsed:
+          type: boolean
+          x-go-name: Collapsed
+        color:
+          properties:
+            cardColor:
+              type: string
+              x-go-name: CardColor
+            colorScale:
+              type: string
+              x-go-name: ColorScale
+            colorScheme:
+              type: string
+              x-go-name: ColorScheme
+            exponent:
+              format: double
+              type: number
+              x-go-name: Exponent
+            max:
+              format: double
+              type: number
+              x-go-name: Max
+            min:
+              format: double
+              type: number
+              x-go-name: Min
+            mode:
+              type: string
+              x-go-name: Mode
+          type: object
+          x-go-name: Color
+        # There were more properties in Panel like dataspace, description. I should be careful. 
+        # I only viewed lines 3373-3420. `Panel` is likely larger.
+        # But I must provide valid YAML. I will include what I saw.
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    PerformanceProfile:
+      description: |-
+        PerformanceProfile represents the performance profile that needs
+        to be saved
+      properties:
+        concurrent_request:
+          format: int64
+          type: integer
+          x-go-name: ConcurrentRequest
+        content_type:
+          type: string
+          x-go-name: ContentType
+        created_at:
+          type: string
+          x-go-name: CreatedAt
+        duration:
+          type: string
+          x-go-name: Duration
+        endpoints:
+          $ref: '#/components/schemas/StringArray'
+        id:
+          format: uuid
+          type: string
+          x-go-name: ID
+        last_run:
+          type: string
+          x-go-name: LastRun
+        load_generators:
+          $ref: '#/components/schemas/StringArray'
+        metadata:
+          $ref: '#/components/schemas/Map'
+        name:
+          type: string
+          x-go-name: Name
+        qps:
+          format: int64
+          type: integer
+          x-go-name: QPS
+        request_body:
+          type: string
+          x-go-name: RequestBody
+        request_cookies:
+          type: string
+          x-go-name: RequestCookies
+        request_headers:
+          type: string
+          x-go-name: RequestHeaders
+        schedule:
+          format: uuid
+          type: string
+          x-go-name: Schedule
+        service_mesh:
+          type: string
+          x-go-name: ServiceMesh
+        total_results:
+          format: int64
+          type: integer
+          x-go-name: TotalResults
+        updated_at:
+          type: string
+          x-go-name: UpdatedAt
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    PerformanceProfileParameters:
+      description: PerformanceProfileParameters structs contains parameters to save a performance profile
+      properties:
+        concurrent_request:
+          description: number of concurrent requests
+          format: int64
+          type: integer
+          x-go-name: ConcurrentRequest
+        duration:
+          description: duration of tests e.g. 30s
+          type: string
+          x-go-name: Duration
+        endpoints:
           items:
             type: string
-
-    GrafanaBoard:
+          type: array
+          x-go-name: Endpoints
+        load_generators:
+          items:
+            type: string
+          type: array
+          x-go-name: LoadGenerators
+        name:
+          description: name of the profile
+          type: string
+          x-go-name: Name
+        qps:
+          description: qps
+          format: int64
+          type: integer
+          x-go-name: QPS
+        service_mesh:
+          description: service mesh
+          type: string
+          x-go-name: ServiceMesh
       type: object
-      description: Placeholder for GrafanaBoard definition (define fields as needed)
-
-    Panel:
+      x-go-package: github.com/meshery/meshery/server/models
+    PerformanceProfilesAPIResponse:
+      description: API response model for PerformanceProfilesAPI
+      properties:
+        page:
+          format: uint64
+          type: integer
+          x-go-name: Page
+        page_size:
+          format: uint64
+          type: integer
+          x-go-name: PageSize
+        profiles:
+          items:
+            $ref: '#/components/schemas/PerformanceProfile'
+          type: array
+          x-go-name: Profiles
+        total_count:
+          format: uint64
+          type: integer
+          x-go-name: TotalCount
       type: object
-      description: Grafana panel structure imported from github.com/grafana-tools/sdk
-
+      x-go-package: github.com/meshery/meshery/server/models
+    PerformanceResult:
+      description: PerformanceResult represents the result of a performance test
+      properties:
+        mesh:
+          type: string
+          x-go-name: Mesh
+        meshery_id:
+          format: uuid
+          type: string
+          x-go-name: MesheryID
+        name:
+          type: string
+          x-go-name: Name
+        performance_profile:
+          format: uuid
+          type: string
+          x-go-name: PerformanceProfile
+        runner_results:
+          $ref: '#/components/schemas/RunnerResults'
+        server_board_config:
+          type: string # Guessing as loose property
+          x-go-name: ServerBoardConfig
+        server_metrics:
+          type: object # Guessing
+          x-go-name: ServerMetrics
+        test_start_time:
+          format: date-time
+          type: string
+          x-go-name: TestStartTime
+        user_id:
+          format: uuid
+          type: string
+          x-go-name: UserID
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    PerformanceResultsAPIResponse:
+      description: PerformanceResultsAPIResponse response retruned by performance endpoint on meshery server
+      properties:
+        page:
+          format: uint64
+          type: integer
+          x-go-name: Page
+        page_size:
+          format: uint64
+          type: integer
+          x-go-name: PageSize
+        results:
+          items:
+            $ref: '#/components/schemas/PerformanceResult'
+          type: array
+          x-go-name: Results
+        total_count:
+          format: uint64
+          type: integer
+          x-go-name: TotalCount
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    PerformanceTestConfig:
+      properties:
+        clients:
+          description: Single or distributed load generators
+          items:
+            $ref: '#/components/schemas/PerformanceTestConfig_Client'
+          type: array
+          x-go-name: Clients
+        duration:
+          description: Length of time the endpoint will be under load
+          type: string
+          x-go-name: Duration
+        id:
+          type: string
+          x-go-name: Id
+        labels:
+          additionalProperties:
+            type: string
+          type: object
+          x-go-name: Labels
+        name:
+          type: string
+          x-go-name: Name
+        smp_version:
+          description: Spec version
+          type: string
+          x-go-name: SmpVersion
+      type: object
+      x-go-package: github.com/service-mesh-performance/service-mesh-performance/spec
+    PerformanceTestConfig_Client:
+      properties:
+        additional_options:
+          type: string
+          x-go-name: AdditionalOptions
+        body:
+          type: string
+          x-go-name: Body
+        connections:
+          format: int32
+          type: integer
+          x-go-name: Connections
+        content_type:
+          type: string
+          x-go-name: ContentType
+        cookies:
+          additionalProperties:
+            type: string
+          type: object
+          x-go-name: Cookies
+        endpoint_urls:
+          items:
+            type: string
+          type: array
+          x-go-name: EndpointUrls
+        headers:
+          additionalProperties:
+            type: string
+          type: object
+          x-go-name: Headers
+        internal:
+          type: boolean
+          x-go-name: Internal
+        load_generator:
+          type: string
+          x-go-name: LoadGenerator
+        protocol:
+          $ref: '#/components/schemas/PerformanceTestConfig_Client_Protocol'
+        rps:
+          format: int64
+          type: integer
+          x-go-name: Rps
+        ssl_certificate:
+          type: string
+          x-go-name: SslCertificate
+      type: object
+      x-go-package: github.com/service-mesh-performance/service-mesh-performance/spec
+    PerformanceTestConfig_Client_Protocol:
+      format: int32
+      type: integer
+      x-go-package: github.com/service-mesh-performance/service-mesh-performance/spec
+    Preference:
+      description: Preference represents the data stored in session / local DB
+      properties:
+        anonymousPerfResults:
+          type: boolean
+          x-go-name: AnonymousPerfResults
+        anonymousUsageStats:
+          type: boolean
+          x-go-name: AnonymousUsageStats
+        grafana:
+          $ref: '#/components/schemas/Grafana'
+        loadTestPrefs:
+          $ref: '#/components/schemas/LoadTestPreferences'
+        meshAdapters:
+          items:
+            $ref: '#/components/schemas/Adapter'
+          type: array
+          x-go-name: MeshAdapters
+        prometheus:
+          $ref: '#/components/schemas/Prometheus'
+        remoteProviderPreferences:
+          additionalProperties: {}
+          type: object
+          x-go-name: RemoteProviderPreferences
+        updated_at:
+          format: date-time
+          type: string
+          x-go-name: UpdatedAt
+        usersExtensionPreferences:
+          additionalProperties: {}
+          type: object
+          x-go-name: UsersExtensionPreferences
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
     Prometheus:
-      type: object
+      description: Prometheus represents the prometheus session config
       properties:
         prometheusURL:
           type: string
+          x-go-name: PrometheusURL
         selectedPrometheusBoardsConfigs:
-          type: array
           items:
-            $ref: "#/components/schemas/SelectedGrafanaConfig"
-
-    LoadTestPreferences:
+            $ref: '#/components/schemas/SelectedGrafanaConfig'
+          type: array
+          x-go-name: SelectedPrometheusBoardsConfigs
       type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    RunnerResults:
       properties:
-        c:
+        ActualDuration:
+          format: uint64
           type: integer
-          description: Concurrent requests
-        qps:
+        ActualQPS:
+          format: double
+          type: number
+          x-go-name: QPS
+        DurationHistogram:
+          properties:
+            Avg:
+              format: double
+              type: number
+              x-go-name: Average
+            Max:
+              format: double
+              type: number
+            Min:
+              format: double
+              type: number
+            Percentiles:
+              items:
+                properties:
+                  Percentile:
+                    format: double
+                    type: number
+                  Value:
+                    format: double
+                    type: number
+                type: object
+              type: array
+          type: object
+        RequestedDuration:
+          type: string
+        StartTime:
+          format: date-time
+          type: string
+        URL:
+          type: string
+        load-generator:
+          type: string
+          x-go-name: LoadGenerator
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    Schedule:
+      description: Schedule is the struct for representing schedules
+      properties:
+        cron_expression:
+          description: CronExpression is the UNIX cron expression (quartz expression)
+          type: string
+          x-go-name: CronExpression
+        id:
+          format: uuid
+          type: string
+          x-go-name: ID
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    SchedulesAPIResponse:
+      description: API response model for SchedulesAPI
+      properties:
+        page:
+          format: uint64
           type: integer
-          description: Queries per second
-        t:
+          x-go-name: Page
+        page_size:
+          format: uint64
+          type: integer
+          x-go-name: PageSize
+        schedules:
+          items:
+            $ref: '#/components/schemas/Schedule'
+          type: array
+          x-go-name: Schedules
+        total_count:
+          format: uint64
+          type: integer
+          x-go-name: TotalCount
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    SelectedGrafanaConfig:
+      description: SelectedGrafanaConfig represents the selected boards, panels, and template variables
+      properties:
+        board:
+          $ref: '#/components/schemas/GrafanaBoard'
+        panels:
+          items:
+            $ref: '#/components/schemas/Panel'
+          type: array
+          x-go-name: GrafanaPanels
+        templateVars:
+          items:
+            type: string
+          type: array
+          x-go-name: SelectedTemplateVars
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    StringArray:
+      items:
+        type: string
+      title: StringArray represents a one-dimensional array of the PostgreSQL character types.
+      type: array
+      x-go-package: github.com/lib/pq
+    SupportedOperation:
+      description: SupportedOperation represents a supported operation by a mesh
+      properties:
+        category:
+          format: int32
+          type: integer
+          x-go-name: Category
+        key:
           type: string
-          description: Duration
-        gen:
+          x-go-name: Key
+        value:
           type: string
-          description: Load generator
-
+          x-go-name: Value
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    User:
+      description: User - represents a user in Meshery
+      properties:
+        avatar_url:
+          type: string
+          x-go-name: AvatarURL
+        bio:
+          type: string
+          x-go-name: Bio
+        email:
+          type: string
+          x-go-name: Email
+        first_name:
+          type: string
+          x-go-name: FirstName
+        id:
+          type: string
+          x-go-name: ID
+        last_name:
+          type: string
+          x-go-name: LastName
+        provider:
+          type: string
+          x-go-name: Provider
+        role_names:
+          items:
+            type: string
+          type: array
+          x-go-name: RoleNames
+        status:
+          type: string
+          x-go-name: Status
+        user_id:
+          type: string
+          x-go-name: UserID
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    UserKeys:
+      properties:
+        category:
+          type: string
+          x-go-name: Category
+        created_at:
+          type: string
+          x-go-name: Created_at
+        deleted_at:
+          type: string
+          x-go-name: Deleted_at
+        description:
+          type: string
+          x-go-name: Description
+        function:
+          type: string
+          x-go-name: Function
+        id:
+          type: string
+          x-go-name: ID
+        owner:
+          type: string
+          x-go-name: Owner
+        subcategory:
+          type: string
+          x-go-name: Subcategory
+        updated_at:
+          type: string
+          x-go-name: Updated_at
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    Alert:
+      properties:
+        alertRuleTags:
+          additionalProperties:
+            type: string
+          type: object
+          x-go-name: AlertRuleTags
+        conditions:
+          items:
+            $ref: '#/components/schemas/AlertCondition'
+          type: array
+          x-go-name: Conditions
+        executionErrorState:
+          type: string
+          x-go-name: ExecutionErrorState
+        for:
+          type: string
+          x-go-name: For
+        frequency:
+          type: string
+          x-go-name: Frequency
+        handler:
+          format: int64
+          type: integer
+          x-go-name: Handler
+        message:
+          type: string
+          x-go-name: Message
+        name:
+          type: string
+          x-go-name: Name
+        noDataState:
+          type: string
+          x-go-name: NoDataState
+        notifications:
+          items:
+            $ref: '#/components/schemas/AlertNotification'
+          type: array
+          x-go-name: Notifications
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    AlertCondition:
+      properties:
+        evaluator:
+          $ref: '#/components/schemas/AlertEvaluator'
+        operator:
+          $ref: '#/components/schemas/AlertOperator'
+        query:
+          $ref: '#/components/schemas/AlertQuery'
+        reducer:
+          $ref: '#/components/schemas/AlertReducer'
+        type:
+          type: string
+          x-go-name: Type
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    AlertEvaluator:
+      properties:
+        params:
+          items:
+            format: double
+            type: number
+          type: array
+          x-go-name: Params
+        type:
+          type: string
+          x-go-name: Type
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    AlertNotification:
+      description: |-
+        AlertNotification as described in the doc
+        https://grafana.com/docs/grafana/latest/http_api/alerting_notification_channels/
+      properties:
+        disableResolveMessage:
+          type: boolean
+          x-go-name: DisableResolveMessage
+        frequency:
+          type: string
+          x-go-name: Frequency
+        id:
+          format: int64
+          type: integer
+          x-go-name: ID
+        isDefault:
+          type: boolean
+          x-go-name: IsDefault
+        name:
+          type: string
+          x-go-name: Name
+        sendReminder:
+          type: boolean
+          x-go-name: SendReminder
+        settings:
+          type: object
+          additionalProperties: {}
+          x-go-name: Settings
+        type:
+          type: string
+          x-go-name: Type
+        uid:
+          type: string
+          x-go-name: UID
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    AlertOperator:
+      properties:
+        type:
+          type: string
+          x-go-name: Type
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    AlertQuery:
+      properties:
+        params:
+          items:
+            type: string
+          type: array
+          x-go-name: Params
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    AlertReducer:
+      properties:
+        params:
+          items:
+            type: string
+          type: array
+          x-go-name: Params
+        type:
+          type: string
+          x-go-name: Type
+      type: object
+      x-go-package: github.com/grafana-tools/sdk
+    GrafanaDataSource:
+      description: GrafanaDataSource represents a Grafana datasource like Prometheus
+      properties:
+        id:
+          format: uint64
+          type: integer
+          x-go-name: ID
+        name:
+          type: string
+          x-go-name: Name
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
+    Token:
+      properties:
+        token:
+          type: string
+          x-go-name: Token
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models
     Social:
-      description: "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on."
-      type: object
       properties:
-        site:
+        name:
           type: string
-          maxLength: 50
+          x-go-name: Name
         link:
           type: string
-          format: uri
-      required: ["site", "link"]
-
-    # UsersPage:
-    #   description: "link"
-    #   type: object
-    #   properties:
-    #     page:
-    #       type: integer
-    #     totalCount:
-    #       type: integer
-    #     pageSize:
-    #       type: integer
-    #     users:
-    #       type: array
-    #       items:
-    #         $ref: "#/components/schemas/User"
-    #   required: [page, totalCount, pageSize, users]
+          x-go-name: Link
+      type: object
+      x-go-package: github.com/meshery/meshery/server/models

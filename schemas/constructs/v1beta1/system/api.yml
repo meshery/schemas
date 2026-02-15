@@ -1,0 +1,503 @@
+openapi: 3.0.0
+info:
+  title: system
+  version: 1.0.0
+paths:
+  /api/system/adapter/manage:
+    delete:
+      summary: Handle DELETE requests to delete adapter config
+      description: Used to delete adapter configuration
+      operationId: idDeleteAdapterConfig
+      tags:
+        - SystemAPI
+      parameters:
+        - name: adapter
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+
+    post:
+      summary: Handle POST requests to persist adapter config
+      description: Used to persist adapter config
+      operationId: idPostAdapterConfig
+      tags:
+        - SystemAPI
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                meshLocationURL:
+                  type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Adapter"
+
+  /api/system/adapter/operation:
+    post:
+      summary: Handle POST requests for Adapter Operations
+      description: Used to send operations to the adapters
+      operationId: idPostAdapterOperation
+      tags:
+        - SystemAPI
+      parameters:
+        - name: adapter
+          in: query
+          schema:
+            type: string
+        - name: query
+          in: query
+          schema:
+            type: string
+        - name: customBody
+          in: query
+          schema:
+            type: string
+        - name: namespace
+          in: query
+          schema:
+            type: string
+        - name: deleteOp
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+
+  /api/system/adapters:
+    get:
+      summary: Handle GET request for adapters
+      description: Fetches and returns all the adapters and ping adapters
+      operationId: idGetSystemAdapters
+      tags:
+        - SystemAPI
+      parameters:
+        - name: adapter
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Adapter"
+
+  /api/system/adapters/available:
+    get:
+      summary: Handle GET request for available adapters
+      description: Fetches and returns all the adapters available for deployment
+      operationId: idGetAvailableAdapters
+      tags:
+        - SystemAPI
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Adapter"
+
+  /api/system/database:
+    get:
+      summary: Handle GET request for getting summary about the system database.
+      description: Retreives summary about the system database
+      operationId: idGetSystemDatabase
+      tags:
+        - GetSystemDatabase
+      parameters:
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+             type: string
+        - name: page
+          in: query
+          schema:
+             type: integer
+        - name: pagesize
+          in: query
+          schema:
+             type: string
+        - name: search
+          in: query
+          schema:
+             type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for systemDatabaseResponseWrapper
+
+  /api/system/database/reset:
+    delete:
+      summary: Reset the system database to its initial state.
+      description: Resets the system database to its initial state
+      operationId: ResetSystemDatabase
+      tags:
+        - SystemAPI
+      responses:
+        "200":
+          description: Successful
+        "500":
+          description: Internal Server Error
+
+  /api/system/downloadFile:
+    get:
+      summary: Handles GET request to download a file.
+      description: Retrieves and initiates a download for the specified file.
+      operationId: idDownloadFile
+      tags:
+        - system
+        - downloadFile
+      responses:
+        "200":
+          description: Successful
+        "500":
+          description: Internal Server Error
+
+  /api/system/events:
+    get:
+      summary: Get current logging configuration for the server events
+      description: Retrieves the current server log level and lists all available log levels.
+      operationId: getLogLevel
+      tags:
+        - system
+      responses:
+        "200":
+          description: Successfully retrieved log level
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for LogLevelResponse
+
+    post:
+      summary: Set server event logging level
+      description: Updates the server's logging level.
+      operationId: setLogLevel
+      tags:
+        - system
+      responses:
+        "200":
+          description: Successfully updated log level
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for LogLevelResponse
+        "400":
+          description: Invalid log level provided
+
+  /api/system/kubernetes:
+    delete:
+      summary: Handle DELETE request for Kubernetes Config
+      description: Used to delete kubernetes config to System
+      operationId: idDeleteK8SConfig
+      tags:
+        - SystemAPI
+      responses:
+        "200":
+          description: Successful
+
+    post:
+      summary: Handle POST request for Kubernetes Config
+      description: Used to add kubernetes config to System
+      operationId: idPostK8SConfig
+      tags:
+        - SystemAPI
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for k8sConfigRespWrapper
+
+  /api/system/kubernetes/contexts:
+    get:
+      summary: Handle GET request for all kubernetes contexts.
+      description: Returns all kubernetes contexts
+      operationId: idGetAllContexts
+      tags:
+        - GetAllContexts
+      parameters:
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for systemK8sContextsResponseWrapper
+
+    post:
+      summary: Handle POST requests for Kubernetes Context list
+      description: Returns the context list for a given k8s config
+      operationId: idPostK8SContexts
+      tags:
+        - SystemAPI
+      responses:
+        "200":
+          description: Successful
+          content:
+             application/json:
+               schema:
+                 type: object # Placeholder for k8sContextsRespWrapper
+
+  /api/system/kubernetes/ping:
+    get:
+      summary: Handle GET request for Kubernetes ping
+      description: Fetches server version to simulate ping
+      operationId: idGetKubernetesPing
+      tags:
+        - SystemAPI
+      parameters:
+        - name: connection_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+
+  /api/system/kubernetes/register:
+    post:
+      summary: Handle registration request for Kubernetes components
+      description: Used to register Kubernetes components to Meshery from a kubeconfig file
+      operationId: idPostK8SRegistration
+      tags:
+        - SystemAPI
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+
+  /api/system/meshsync/grafana:
+    get:
+      summary: Handle GET request for mesh-sync grafana
+      description: Fetches Prometheus and Grafana
+      operationId: idMeshSyncGrafana
+      tags:
+        - SystemAPI
+      responses:
+        "200":
+           description: Successful
+           content:
+             application/json:
+               schema:
+                 type: object # Placeholder for v1ServicesMapResponseWrapper
+
+  /api/system/meshsync/prometheus:
+    get:
+      summary: Handle GET request for fetching prometheus
+      description: Fetches Prometheus
+      operationId: idMeshSyncPrometheus
+      tags:
+        - SystemAPI
+      responses:
+        "200":
+          description: Successful
+          content:
+             application/json:
+               schema:
+                 type: object # Placeholder for v1ServicesMapResponseWrapper
+
+  
+  /api/system/meshsync/resources:
+    get:
+      summary: Handle GET request for meshsync discovered resources
+      description: Returns meshsync discovered resources
+      operationId: idGetMeshSyncResources
+      tags:
+        - GetMeshSyncResources
+      parameters:
+        - name: apiVersion
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          schema:
+            type: string
+        - name: annotation
+          in: query
+          schema:
+             type: boolean
+        - name: labels
+          in: query
+          schema:
+             type: boolean
+        - name: spec
+          in: query
+          schema:
+             type: boolean
+        - name: status
+          in: query
+          schema:
+             type: boolean
+        - name: clusterId
+          in: query
+          schema:
+             type: array
+             items:
+               type: string
+        - name: asDesign
+          in: query
+          schema:
+             type: boolean
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for meshsyncResourcesResponseWrapper
+
+  /api/system/meshsync/resources/summary:
+    get:
+      summary: Handle GET request for meshsync discovered resources
+      description: Returns summary of meshsync resources
+      operationId: idGetMeshSyncResourcesSummary
+      tags:
+        - GetMeshSyncResourcesSummary
+      parameters:
+        - name: clusterId
+          in: query
+          schema:
+            type: array
+            items:
+               type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+               schema:
+                 type: object # Placeholder
+
+  /api/system/sync:
+    get:
+       summary: Handle GET request for config sync
+       description: Used to send session data to the UI for initial sync
+       operationId: idSystemSync
+       tags:
+         - SystemAPI
+       responses:
+         "200":
+           description: Successful
+           content:
+             application/json:
+               schema:
+                 type: object # Placeholder for userLoadTestPrefsRespWrapper
+
+  /api/system/version:
+    get:
+      summary: Handle GET request for system/server version
+      description: Returns the running Meshery version
+      operationId: idGetSystemVersion
+      tags:
+         - SystemAPI
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+               schema:
+                 type: object # Placeholder for mesheryVersionRespWrapper
+
+  /api/system/viewFile:
+    get:
+      summary: Handles GET request to view a file.
+      description: Retrieves and displays the content of the specified file as plain text.
+      operationId: idFileViewer
+      tags:
+         - system
+         - viewFile
+      responses:
+        "200":
+           description: Successful
+        "500":
+           description: Internal Server Error
+
+components:
+  schemas:
+    Adapter:
+      type: object
+      properties:
+        adapter_location:
+          type: string
+        git_commit_sha:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        ops:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdapterOperation"
+            
+    AdapterOperation:
+      type: object
+      properties:
+        type:
+           type: integer
+        key:
+           type: string
+        value: 
+           type: string

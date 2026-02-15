@@ -178,3 +178,152 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
+
+  /api/environments/{id}:
+    get:
+      summary: Get environment by ID
+      description: Gets an environment by ID
+      operationId: idGetEnvironmentByIDHandler
+      tags:
+        - environment
+      parameters:
+        - name: id
+          in: path
+          description: Environment ID
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/orgIDQuery"
+      responses:
+        "200":
+          description: Environment
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for environmentResponseWrapper
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      summary: Update environment
+      description: Updates an environment
+      operationId: idUpdateEnvironmentHandler
+      tags:
+        - environment
+      parameters:
+        - name: id
+          in: path
+          description: Environment ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/environmentPayload"
+      responses:
+        "200":
+          description: Updated environment
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for environmentResponseWrapper
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      summary: Delete environment
+      description: Deletes an environment
+      operationId: idDeleteEnvironmentHandler
+      tags:
+        - environment
+      parameters:
+        - name: id
+          in: path
+          description: Environment ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Environment deleted
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentID}/connections:
+    get:
+      summary: Get connections of environment
+      description: Gets all connections of an environment
+      operationId: idGetConnectionsOfEnvironmentHandler
+      tags:
+        - environment
+      parameters:
+        - name: environmentID
+          in: path
+          description: Environment ID
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Environment connections
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for mesheryConnectionsResponseWrapper
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentID}/connections/{connectionID}:
+    post:
+      summary: Add connection to environment
+      description: Adds a connection to an environment
+      operationId: idAddConnectionToEnvironmentHandler
+      tags:
+        - environment
+      parameters:
+        - name: environmentID
+          in: path
+          description: Environment ID
+          required: true
+          schema:
+            type: string
+        - name: connectionID
+          in: path
+          description: Connection ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Connection added to environment
+          content:
+            application/json:
+              schema:
+                type: object # Placeholder for environmentResponseWrapper
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      summary: Remove connection from environment
+      description: Removes a connection from an environment
+      operationId: idRemoveConnectionFromEnvironmentHandler
+      tags:
+        - environment
+      parameters:
+        - name: environmentID
+          in: path
+          description: Environment ID
+          required: true
+          schema:
+            type: string
+        - name: connectionID
+          in: path
+          description: Connection ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Connection removed from environment
+        "500":
+          $ref: "#/components/responses/500"

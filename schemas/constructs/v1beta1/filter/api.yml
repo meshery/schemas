@@ -1,0 +1,297 @@
+openapi: 3.0.0
+info:
+  title: filter
+  version: 1.0.0
+paths:
+  /api/filter:
+    get:
+      summary: Handle GET request for filters
+      description: Returns the list of all the filters saved by the current user
+      operationId: idGetFilterFiles
+      tags:
+        - FiltersAPI
+      parameters:
+        - name: order
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          schema:
+            type: integer
+        - name: visibility
+          in: query
+          schema:
+            type: array
+            items:
+               type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/FiltersAPIResponse"
+
+    post:
+      summary: Handle POST requests for Meshery Filters
+      description: Used to save/update a Meshery Filter
+      operationId: idPostFilterFile
+      tags:
+        - FiltersAPI
+      requestBody:
+        content:
+          application/json:
+             schema:
+               $ref: "#/components/schemas/MesheryFilterRequestBody"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+
+  /api/filter/{id}:
+    delete:
+      summary: Handle Delete for a Meshery Filter
+      description: Deletes a meshery filter with ID
+      operationId: idDeleteMesheryFilter
+      tags:
+        - FiltersAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+
+    get:
+      summary: Handle GET request for a Meshery Filter
+      description: Fetches the Meshery Filter with the given id
+      operationId: idGetMesheryFilter
+      tags:
+        - FiltersAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MesheryFilter"
+
+  /api/filter/catalog:
+    get:
+      summary: Handle GET request for catalog filters
+      description: Returns a list of catalog filters
+      operationId: idGetCatalogMesheryFiltersHandler
+      tags:
+        - FiltersAPI
+      parameters:
+        - name: order
+          in: query
+          schema:
+             type: string
+        - name: page
+          in: query
+          schema:
+             type: integer
+        - name: pagesize
+          in: query
+          schema:
+             type: integer
+        - name: search
+          in: query
+          schema:
+             type: string
+      responses:
+        "200":
+           description: Successful
+           content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/FiltersAPIResponse"
+
+  /api/filter/catalog/publish:
+    post:
+      summary: Handle Publish for a Meshery Filter
+      description: Publishes filter to Meshery Catalog
+      operationId: idPublishCatalogFilterHandler
+      tags:
+        - FiltersAPI
+      requestBody:
+        content:
+           application/json:
+             schema:
+               type: object
+      responses:
+        "202":
+          description: Accepted
+
+  /api/filter/catalog/unpublish:
+    delete:
+      summary: Handle UnPublish for a Meshery Filter
+      description: Unpublishes filter from Meshery Catalog
+      operationId: idUnPublishCatalogFilterHandler
+      tags:
+        - FiltersAPI
+      requestBody:
+         content:
+           application/json:
+             schema:
+               type: object
+      responses:
+        "200":
+          description: Successful
+
+  /api/filter/clone/{id}:
+    post:
+      summary: Handle Clone for a Meshery Filter
+      description: Creates a local copy of a published filter
+      operationId: idCloneMesheryFilter
+      tags:
+        - FiltersAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+             type: string
+             format: uuid
+      responses:
+        "200":
+          description: Successful
+
+  /api/filter/deploy:
+    delete:
+      summary: Handle DELETE request for Filter File Deploy
+      description: Delete a deployed filter file with the request
+      operationId: idDeleteFilterFile
+      tags:
+        - FilterAPI
+      requestBody:
+        content:
+           multipart/form-data:
+             schema:
+               type: object
+               properties:
+                 uploadYamlYmlFile:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: Successful
+
+    post:
+      summary: Handle POST request for Filter File Deploy
+      description: Deploy an attached filter file with the request
+      operationId: idPostDeployFilterFile
+      tags:
+        - FilterAPI
+      requestBody:
+        content:
+           multipart/form-data:
+             schema:
+               type: object
+               properties:
+                 uploadYamlYmlFile:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                   $ref: "#/components/schemas/MesheryFilter"
+
+  /api/filter/file/{id}:
+    get:
+      summary: Handle GET request for filter file with given id
+      description: Returns the Meshery Filter file saved by the current user with the given id
+      operationId: idGetFilterFile
+      tags:
+        - FiltersAPI
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+         "200":
+           description: Successful
+           content:
+             application/json:
+               schema:
+                 $ref: "#/components/schemas/MesheryFilter"
+
+components:
+  schemas:
+    FiltersAPIResponse:
+      type: object
+      properties:
+        page:
+          type: integer
+        page_size:
+          type: integer
+        total_count:
+          type: integer
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/MesheryFilter"
+
+    MesheryFilter:
+      type: object
+      properties:
+        id:
+           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+        name:
+           type: string
+        filter_file:
+           type: string
+        user_id:
+           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Id"
+        created_at:
+           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+        updated_at:
+           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+        visibility:
+           type: string
+        catalog_data:
+           $ref: "../../v1alpha2/catalog/api.yml#/components/schemas/CatalogData"
+
+    MesheryFilterRequestBody:
+       type: object
+       properties:
+         filter_data:
+            $ref: "#/components/schemas/MesheryFilter"
+         save:
+            type: boolean
+         url:
+            type: string
+         path: 
+            type: string

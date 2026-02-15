@@ -862,6 +862,33 @@ type RelationshipDefinition_Selectors_Deny_To_Patch struct {
 // RelationshipDefinitionStatus Status of the relationship.
 type RelationshipDefinitionStatus string
 
+// Kind defines model for kind.
+type Kind = string
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = int
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
+
+// Sort defines model for sort.
+type Sort = string
+
+// SubType defines model for subType.
+type SubType = string
+
+// Type defines model for type.
+type Type = string
+
+// Version defines model for version.
+type Version = string
+
 // Getter for additional properties for RelationshipDefinition_Metadata. Returns the specified
 // element and whether it was found
 func (a RelationshipDefinition_Metadata) Get(fieldName string) (value interface{}, found bool) {

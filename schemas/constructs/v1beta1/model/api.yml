@@ -6,7 +6,7 @@ paths:
   /api/meshmodels/register:
     post:
       summary: Register mesh models
-      operationId: RegisterMeshmodels
+      operationId: idRegisterMeshmodels
       requestBody:
         required: true
         content:
@@ -27,8 +27,334 @@ paths:
           description: Invalid request format
         "500":
           description: Internal server error
+
+  /api/meshmodels/registrants:
+    get:
+      summary: Get meshmodel registrants
+      description: Returns a list of all meshmodel registrants
+      operationId: GetMeshmodelRegistrants
+      tags:
+        - model
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegistrantReference"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models:
+    get:
+      summary: Get meshmodel models
+      description: Returns a list of all meshmodel models
+      operationId: idGetMeshmodelModels
+      tags:
+        - model
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+        - name: id
+          in: query
+          schema:
+            type: string
+        - name: registrant
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModelDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/models/{model}:
+    get:
+      summary: Get meshmodel models by name
+      description: Returns a list of meshmodel models by name
+      operationId: idGetMeshmodelModelsByName
+      tags:
+        - model
+      parameters:
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModelDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories:
+    get:
+      summary: Get meshmodel categories
+      description: Returns a list of all meshmodel categories
+      operationId: idGetMeshmodelCategories
+      tags:
+        - model
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryDefinition" # Assuming this schema exists or I should define it
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories/{category}:
+    get:
+      summary: Get meshmodel categories by name
+      description: Returns a list of meshmodel categories by name
+      operationId: idGetMeshmodelCategoriesByName
+      tags:
+        - model
+      parameters:
+        - name: category
+          in: path
+          description: Category Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategoryDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories/{category}/models:
+    get:
+      summary: Get meshmodel models by category
+      description: Returns a list of meshmodel models for a specific category
+      operationId: idGetMeshmodelModelsByCategories
+      tags:
+        - model
+      parameters:
+        - name: category
+          in: path
+          description: Category Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModelDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/categories/{category}/models/{model}:
+    get:
+      summary: Get meshmodel models by category and name
+      description: Returns a list of meshmodel models for a specific category and name
+      operationId: idGetMeshmodelModelsByCategoriesByModel
+      tags:
+        - model
+      parameters:
+        - name: category
+          in: path
+          description: Category Name
+          required: true
+          schema:
+            type: string
+        - name: model
+          in: path
+          description: Model Name
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/version"
+        - $ref: "#/components/parameters/annotations"
+      responses:
+        "200":
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModelDefinition"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodel/generate:
+    post:
+      summary: Generate meshmodel component
+      description: Generates a meshmodel component
+      operationId: idPostMeshModelComponentGenerate
+      tags:
+        - model
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodel/update/status:
+    post:
+      summary: Update meshmodel status
+      description: Updates the status of a meshmodel entity
+      operationId: idPostMeshModelUpdateEntityStatus
+      tags:
+        - model
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodel/validate:
+    post:
+      summary: Validate meshmodel
+      description: Validates a meshmodel
+      operationId: idPostMeshModelValidate
+      tags:
+        - model
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/meshmodels/export:
+    get:
+      summary: Export meshmodel
+      description: Exports a meshmodel
+      operationId: idExportModel
+      tags:
+        - model
+      responses:
+        "200":
+          description: Successful
+        "500":
+          $ref: "#/components/responses/500"
 components:
+  parameters:
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+    pagesize:
+      name: pagesize
+      in: query
+      description: Page size
+      schema:
+        type: string
+    search:
+      name: search
+      in: query
+      description: Search term
+      schema:
+        type: string
+    order:
+      name: order
+      in: query
+      description: Order field
+      schema:
+        type: string
+    sort:
+      name: sort
+      in: query
+      description: Sort direction (asc/desc)
+      schema:
+        type: string
+    version:
+      name: version
+      in: query
+      description: Version filter
+      schema:
+        type: string
+    annotations:
+      name: annotations
+      in: query
+      description: Filter by annotations (true/false)
+      schema:
+        type: string
+  responses:
+    "500":
+      description: Internal Server Error
+
   schemas:
+    CategoryDefinition:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the category
     Model:
       type: object
       description: "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31)."

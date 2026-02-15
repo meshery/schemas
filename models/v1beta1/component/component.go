@@ -411,6 +411,36 @@ type ComponentDefinition_Metadata struct {
 	AdditionalProperties  map[string]interface{} `json:"-" yaml:"-"`
 }
 
+// Annotations defines model for annotations.
+type Annotations = string
+
+// ApiVersion defines model for apiVersion.
+type ApiVersion = string
+
+// Model defines model for model.
+type Model = string
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = int
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
+
+// Sort defines model for sort.
+type Sort = string
+
+// Trim defines model for trim.
+type Trim = bool
+
+// Version defines model for version.
+type Version = string
+
 // Getter for additional properties for ComponentDefinition_Styles. Returns the specified
 // element and whether it was found
 func (a ComponentDefinition_Styles) Get(fieldName string) (value interface{}, found bool) {
