@@ -171,47 +171,6 @@ paths:
         "500":
           description: Server error
 
-  /api/integrations/connections/{connectionKind}:
-    get:
-      tags:
-        - Connections
-      operationId: GetConnectionsByKind
-      summary: Get connections by kind
-      description: Get connections filtered by kind
-      parameters:
-        - $ref: "#/components/parameters/connectionKind"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-        - name: filter
-          in: query
-          description: Filter connections
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Paginated list of connections
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ConnectionPage"
-        "500":
-          description: Server error
-
-    put:
-      tags:
-        - Connections
-      operationId: idPutConnection
-      summary: Update a connection
-      description: Updates existing connection
-      responses:
-        "200":
-          description: Connection updated successfully
-        "500":
-          description: Server error
-
   /api/integrations/connections/kubernetes/{connectionId}/context:
     get:
       x-internal: ["cloud"]
