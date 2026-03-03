@@ -28,3 +28,67 @@ components:
         - version
         - kind
         - schema
+
+    ComponentSummaryFilter:
+      type: object
+      properties:
+        modelName:
+          type: string
+        categoryName:
+          type: string
+        version:
+          type: string
+        status:
+          type: string
+          default: enabled
+        annotations:
+          type: string
+          enum:
+            - "true"
+            - "false"
+        registrant:
+          type: string
+        include:
+          type: array
+          items:
+            type: string
+            enum:
+              - by_model
+              - by_category
+              - by_registrant
+      additionalProperties: false
+
+    ComponentGroupEntry:
+      type: object
+      properties:
+        key:
+          type: string
+        count:
+          type: integer
+          format: int32
+      required:
+        - key
+        - count
+      additionalProperties: false
+
+    ComponentSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        byModel:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComponentGroupEntry"
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComponentGroupEntry"
+        byRegistrant:
+          type: array
+          items:
+            $ref: "#/components/schemas/ComponentGroupEntry"
+      required:
+        - total
+      additionalProperties: false

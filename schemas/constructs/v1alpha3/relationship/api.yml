@@ -7,35 +7,89 @@ components:
   schemas:
     RelationshipDefinition:
       $ref: "./relationship.yaml#/components/schemas/RelationshipDefinition"
-
-    # Sub-schemas from relationship.yaml that are referenced via x-go-type
-    # and need to be top-level schemas so oapi-codegen generates named Go types.
-
     MatchSelectorItem:
       $ref: "./relationship.yaml#/components/schemas/MatchSelectorItem"
-
     MatchSelector:
       $ref: "./relationship.yaml#/components/schemas/MatchSelector"
-
     RelationshipDefinition_Selectors_Patch:
       $ref: "./relationship.yaml#/components/schemas/RelationshipDefinition_Selectors_Patch"
       x-go-name: RelationshipDefinition_Selectors_Patch
-
     SelectorItem:
       $ref: "./relationship.yaml#/components/schemas/SelectorItem"
-
     Selector:
       $ref: "./relationship.yaml#/components/schemas/Selector"
-
     SelectorSetItem:
       $ref: "./relationship.yaml#/components/schemas/SelectorSetItem"
-
     SelectorSet:
       $ref: "./relationship.yaml#/components/schemas/SelectorSet"
-
     Relationship_Metadata:
       $ref: "./relationship.yaml#/components/schemas/Relationship_Metadata"
       x-go-name: "Relationship_Metadata"
-
     RelationshipDefinitionMetadataStyles:
       $ref: "./relationship.yaml#/components/schemas/RelationshipDefinitionMetadataStyles"
+    RelationshipSummaryFilter:
+      type: object
+      properties:
+        kind:
+          type: string
+        greedy:
+          type: boolean
+          default: false
+        subType:
+          type: string
+        relationshipType:
+          type: string
+        version:
+          type: string
+        modelName:
+          type: string
+        status:
+          type: string
+          default: enabled
+        include:
+          type: array
+          items:
+            type: string
+            enum:
+              - by_model
+              - by_kind
+              - by_type
+              - by_subtype
+      additionalProperties: false
+    RelationshipGroupEntry:
+      type: object
+      properties:
+        key:
+          type: string
+        count:
+          type: integer
+          format: int32
+      required:
+        - key
+        - count
+      additionalProperties: false
+    RelationshipSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        byModel:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+        byKind:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+        byType:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+        bySubType:
+          type: array
+          items:
+            $ref: "#/components/schemas/RelationshipGroupEntry"
+      required:
+        - total
+      additionalProperties: false
