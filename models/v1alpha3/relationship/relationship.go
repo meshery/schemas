@@ -149,7 +149,7 @@ type RelationshipDefinition struct {
 	// Metadata Metadata contains additional information associated with the Relationship.
 	Metadata *Relationship_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
-	// Model // Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+	// Model Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 	Model model.ModelReference `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
 
 	// ModelId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
