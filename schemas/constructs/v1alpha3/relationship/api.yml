@@ -6,4 +6,36 @@ paths: {}
 components:
   schemas:
     RelationshipDefinition:
-      $ref: "./relationship.yaml"
+      $ref: "./relationship.yaml#/components/schemas/RelationshipDefinition"
+
+    # Sub-schemas from relationship.yaml that are referenced via x-go-type
+    # and need to be top-level schemas so oapi-codegen generates named Go types.
+
+    MatchSelectorItem:
+      $ref: "./relationship.yaml#/components/schemas/MatchSelectorItem"
+
+    MatchSelector:
+      $ref: "./relationship.yaml#/components/schemas/MatchSelector"
+
+    RelationshipDefinition_Selectors_Patch:
+      $ref: "./relationship.yaml#/components/schemas/RelationshipDefinition_Selectors_Patch"
+      x-go-name: RelationshipDefinition_Selectors_Patch
+
+    SelectorItem:
+      $ref: "./relationship.yaml#/components/schemas/SelectorItem"
+
+    Selector:
+      $ref: "./relationship.yaml#/components/schemas/Selector"
+
+    SelectorSetItem:
+      $ref: "./relationship.yaml#/components/schemas/SelectorSetItem"
+
+    SelectorSet:
+      $ref: "./relationship.yaml#/components/schemas/SelectorSet"
+
+    Relationship_Metadata:
+      $ref: "./relationship.yaml#/components/schemas/Relationship_Metadata"
+      x-go-name: "Relationship_Metadata"
+
+    RelationshipDefinitionMetadataStyles:
+      $ref: "./relationship.yaml#/components/schemas/RelationshipDefinitionMetadataStyles"

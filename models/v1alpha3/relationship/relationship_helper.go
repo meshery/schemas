@@ -25,10 +25,7 @@ func (r *RelationshipDefinition) GenerateID() (uuid.UUID, error) {
 }
 
 func (r RelationshipDefinition) GetID() uuid.UUID {
-	if r.Id == nil {
-		return uuid.Nil
-	}
-	return *r.Id
+	return r.Id
 }
 
 func (r *RelationshipDefinition) GetEntityDetail() string {
@@ -40,7 +37,7 @@ func (r *RelationshipDefinition) Create(db *database.Handler, hostID uuid.UUID) 
 	if err != nil {
 		return uuid.UUID{}, err
 	}
-	r.Id = &id
+	r.Id = id
 
 	err = db.Omit(clause.Associations).Create(&r).Error
 	if err != nil {
