@@ -10,12 +10,14 @@ export interface components {
     /** @description A string starting with an alphanumeric character. Spaces and hyphens allowed. */
     inputString: string;
     /**
-     * @description API version of the object
+     * @description API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
      * @example [
      *   "v1",
      *   "v1alpha1",
      *   "v2beta3",
-     *   "v1.custom-suffix"
+     *   "v1.custom-suffix",
+     *   "models.meshery.io/v1beta1",
+     *   "capability.meshery.io/v1alpha1"
      * ]
      */
     versionString: string;

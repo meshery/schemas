@@ -200,6 +200,8 @@ export type ImportDesignApiArg = {
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
   id: string;
+  /** Specifies the version of the schema used for the definition. */
+  schemaVersion?: string;
   /** Environment name */
   name: string;
   /** Environment description */
@@ -231,6 +233,8 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
   environments?: {
     /** ID */
     id: string;
+    /** Specifies the version of the schema used for the definition. */
+    schemaVersion?: string;
     /** Environment name */
     name: string;
     /** Environment description */
@@ -358,6 +362,8 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           environments?: {
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             id: string;
+            /** Specifies the version of the schema used for the definition. */
+            schemaVersion?: string;
             /** Environment name */
             name: string;
             /** Environment description */
@@ -1325,6 +1331,8 @@ export type PostEvaluateApiArg = {
             environments?: {
               /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
               id: string;
+              /** Specifies the version of the schema used for the definition. */
+              schemaVersion?: string;
               /** Environment name */
               name: string;
               /** Environment description */

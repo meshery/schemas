@@ -1027,7 +1027,7 @@ type Username = string
 // Uuid A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Uuid = uuid.UUID
 
-// VersionString API version of the object
+// VersionString API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
 type VersionString = string
 
 // ViewId defines model for view_id.

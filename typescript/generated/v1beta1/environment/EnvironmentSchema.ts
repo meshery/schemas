@@ -175,6 +175,27 @@ const EnvironmentSchema = {
               "path": "github.com/gofrs/uuid"
             }
           },
+          "schemaVersion": {
+            "description": "Specifies the version of the schema used for the definition.",
+            "x-order": 2,
+            "x-oapi-codegen-extra-tags": {
+              "db": "schema_version",
+              "yaml": "schemaVersion"
+            },
+            "default": "environments.meshery.io/v1beta1",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+            "example": [
+              "v1",
+              "v1alpha1",
+              "v2beta3",
+              "v1.custom-suffix",
+              "models.meshery.io/v1beta1",
+              "capability.meshery.io/v1alpha1"
+            ]
+          },
           "name": {
             "x-oapi-codegen-extra-tags": {
               "db": "name",
@@ -399,6 +420,27 @@ const EnvironmentSchema = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
+                "schemaVersion": {
+                  "description": "Specifies the version of the schema used for the definition.",
+                  "x-order": 2,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "schema_version",
+                    "yaml": "schemaVersion"
+                  },
+                  "default": "environments.meshery.io/v1beta1",
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100,
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                  "example": [
+                    "v1",
+                    "v1alpha1",
+                    "v2beta3",
+                    "v1.custom-suffix",
+                    "models.meshery.io/v1beta1",
+                    "capability.meshery.io/v1alpha1"
+                  ]
+                },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "name",
@@ -608,6 +650,27 @@ const EnvironmentSchema = {
                       "x-go-type-import": {
                         "path": "github.com/gofrs/uuid"
                       }
+                    },
+                    "schemaVersion": {
+                      "description": "Specifies the version of the schema used for the definition.",
+                      "x-order": 2,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "schema_version",
+                        "yaml": "schemaVersion"
+                      },
+                      "default": "environments.meshery.io/v1beta1",
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 100,
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "example": [
+                        "v1",
+                        "v1alpha1",
+                        "v2beta3",
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
+                      ]
                     },
                     "name": {
                       "x-oapi-codegen-extra-tags": {
@@ -825,6 +888,27 @@ const EnvironmentSchema = {
                             "x-go-type-import": {
                               "path": "github.com/gofrs/uuid"
                             }
+                          },
+                          "schemaVersion": {
+                            "description": "Specifies the version of the schema used for the definition.",
+                            "x-order": 2,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "schema_version",
+                              "yaml": "schemaVersion"
+                            },
+                            "default": "environments.meshery.io/v1beta1",
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "example": [
+                              "v1",
+                              "v1alpha1",
+                              "v2beta3",
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
+                            ]
                           },
                           "name": {
                             "x-oapi-codegen-extra-tags": {

@@ -20,7 +20,9 @@ export interface components {
        *   "v1",
        *   "v1alpha1",
        *   "v2beta3",
-       *   "v1.custom-suffix"
+       *   "v1.custom-suffix",
+       *   "models.meshery.io/v1beta1",
+       *   "capability.meshery.io/v1alpha1"
        * ]
        */
       schemaVersion: string;
@@ -48,7 +50,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;

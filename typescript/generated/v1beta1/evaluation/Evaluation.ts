@@ -32,7 +32,9 @@ export interface paths {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -85,7 +87,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -115,7 +119,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -199,6 +205,19 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
+                        /**
+                         * @description Specifies the version of the schema used for the definition.
+                         * @default environments.meshery.io/v1beta1
+                         * @example [
+                         *   "v1",
+                         *   "v1alpha1",
+                         *   "v2beta3",
+                         *   "v1.custom-suffix",
+                         *   "models.meshery.io/v1beta1",
+                         *   "capability.meshery.io/v1alpha1"
+                         * ]
+                         */
+                        schemaVersion?: string;
                         /** @description Environment name */
                         name: string;
                         /** @description Environment description */
@@ -228,7 +247,9 @@ export interface paths {
                        *   "v1",
                        *   "v1alpha1",
                        *   "v2beta3",
-                       *   "v1.custom-suffix"
+                       *   "v1.custom-suffix",
+                       *   "models.meshery.io/v1beta1",
+                       *   "capability.meshery.io/v1alpha1"
                        * ]
                        */
                       schemaVersion: string;
@@ -336,7 +357,9 @@ export interface paths {
                          *   "v1",
                          *   "v1alpha1",
                          *   "v2beta3",
-                         *   "v1.custom-suffix"
+                         *   "v1.custom-suffix",
+                         *   "models.meshery.io/v1beta1",
+                         *   "capability.meshery.io/v1alpha1"
                          * ]
                          */
                         schemaVersion: string;
@@ -803,7 +826,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -905,7 +930,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -938,7 +965,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -1561,7 +1590,9 @@ export interface paths {
                *   "v1",
                *   "v1alpha1",
                *   "v2beta3",
-               *   "v1.custom-suffix"
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
                * ]
                */
               schemaVersion: string;
@@ -1614,7 +1645,9 @@ export interface paths {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -1644,7 +1677,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -1728,6 +1763,19 @@ export interface paths {
                        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                        */
                       id: string;
+                      /**
+                       * @description Specifies the version of the schema used for the definition.
+                       * @default environments.meshery.io/v1beta1
+                       * @example [
+                       *   "v1",
+                       *   "v1alpha1",
+                       *   "v2beta3",
+                       *   "v1.custom-suffix",
+                       *   "models.meshery.io/v1beta1",
+                       *   "capability.meshery.io/v1alpha1"
+                       * ]
+                       */
+                      schemaVersion?: string;
                       /** @description Environment name */
                       name: string;
                       /** @description Environment description */
@@ -1757,7 +1805,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -1865,7 +1915,9 @@ export interface paths {
                        *   "v1",
                        *   "v1alpha1",
                        *   "v2beta3",
-                       *   "v1.custom-suffix"
+                       *   "v1.custom-suffix",
+                       *   "models.meshery.io/v1beta1",
+                       *   "capability.meshery.io/v1alpha1"
                        * ]
                        */
                       schemaVersion: string;
@@ -2332,7 +2384,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -2434,7 +2488,9 @@ export interface paths {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -2467,7 +2523,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -3084,7 +3142,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;
@@ -3137,7 +3197,9 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
@@ -3167,7 +3229,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -3251,6 +3315,19 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
+                /**
+                 * @description Specifies the version of the schema used for the definition.
+                 * @default environments.meshery.io/v1beta1
+                 * @example [
+                 *   "v1",
+                 *   "v1alpha1",
+                 *   "v2beta3",
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
+                 * ]
+                 */
+                schemaVersion?: string;
                 /** @description Environment name */
                 name: string;
                 /** @description Environment description */
@@ -3280,7 +3357,9 @@ export interface components {
                *   "v1",
                *   "v1alpha1",
                *   "v2beta3",
-               *   "v1.custom-suffix"
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
                * ]
                */
               schemaVersion: string;
@@ -3388,7 +3467,9 @@ export interface components {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -3855,7 +3936,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -3952,7 +4035,9 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
@@ -3980,7 +4065,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -4592,7 +4679,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;
@@ -4645,7 +4734,9 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
@@ -4675,7 +4766,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -4759,6 +4852,19 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
+                /**
+                 * @description Specifies the version of the schema used for the definition.
+                 * @default environments.meshery.io/v1beta1
+                 * @example [
+                 *   "v1",
+                 *   "v1alpha1",
+                 *   "v2beta3",
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
+                 * ]
+                 */
+                schemaVersion?: string;
                 /** @description Environment name */
                 name: string;
                 /** @description Environment description */
@@ -4788,7 +4894,9 @@ export interface components {
                *   "v1",
                *   "v1alpha1",
                *   "v2beta3",
-               *   "v1.custom-suffix"
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
                * ]
                */
               schemaVersion: string;
@@ -4896,7 +5004,9 @@ export interface components {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -5363,7 +5473,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -5460,7 +5572,9 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
@@ -5488,7 +5602,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
