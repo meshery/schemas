@@ -16,9 +16,9 @@ components:
             type: string
             minLength: 2
             maxLength: 100
-            description: API version of the object
-            pattern: "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$"
-            example: ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix"]
+            description: API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
+            pattern: "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$"
+            example: ["v1", "v1alpha1", "v2beta3", "v1.custom-suffix", "models.meshery.io/v1beta1", "capability.meshery.io/v1alpha1"]
 
         semverString:
             type: string
