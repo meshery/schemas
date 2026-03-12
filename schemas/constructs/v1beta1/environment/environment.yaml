@@ -5,6 +5,7 @@ additionalProperties: false
 type: object
 required:
   - id
+  - schemaVersion
   - name
   - description
   - organization_id
