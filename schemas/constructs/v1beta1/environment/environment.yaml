@@ -20,7 +20,7 @@ properties:
       yaml: id
   schemaVersion:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
-    description: Specifies the version of the schema to which the design conforms.
+    description: Specifies the version of the schema to which the environment conforms.
     x-order: 2
   name:
     x-oapi-codegen-extra-tags:
