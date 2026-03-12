@@ -17,6 +17,14 @@ properties:
     x-oapi-codegen-extra-tags:
       db: id
       yaml: id
+  schemaVersion:
+    description: Specifies the version of the schema used for the definition.
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    x-order: 2
+    x-oapi-codegen-extra-tags:
+      db: schema_version
+      yaml: schemaVersion
+    default: environments.meshery.io/v1beta1
   name:
     x-oapi-codegen-extra-tags:
       db: name
