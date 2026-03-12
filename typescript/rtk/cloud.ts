@@ -2008,8 +2008,8 @@ export type GetConnectionsApiResponse = /** status 200 Paginated list of connect
     environments?: {
       /** ID */
       id: string;
-      /** Specifies the version of the schema used for the definition. */
-      schemaVersion?: string;
+      /** Specifies the version of the schema to which the environment conforms. */
+      schemaVersion: string;
       /** Environment name */
       name: string;
       /** Environment description */
@@ -2100,8 +2100,8 @@ export type RegisterConnectionApiResponse = /** status 201 Connection registered
   environments?: {
     /** ID */
     id: string;
-    /** Specifies the version of the schema used for the definition. */
-    schemaVersion?: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
     /** Environment name */
     name: string;
     /** Environment description */
@@ -2174,8 +2174,8 @@ export type GetConnectionByIdApiResponse = /** status 200 Connection details */ 
   environments?: {
     /** ID */
     id: string;
-    /** Specifies the version of the schema used for the definition. */
-    schemaVersion?: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
     /** Environment name */
     name: string;
     /** Environment description */
@@ -2230,8 +2230,8 @@ export type UpdateConnectionApiResponse = /** status 200 Connection updated succ
   environments?: {
     /** ID */
     id: string;
-    /** Specifies the version of the schema used for the definition. */
-    schemaVersion?: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
     /** Environment name */
     name: string;
     /** Environment description */
@@ -2319,8 +2319,8 @@ export type ImportDesignApiArg = {
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
   id: string;
-  /** Specifies the version of the schema used for the definition. */
-  schemaVersion?: string;
+  /** Specifies the version of the schema to which the environment conforms. */
+  schemaVersion: string;
   /** Environment name */
   name: string;
   /** Environment description */
@@ -2352,8 +2352,8 @@ export type GetEnvironmentsApiResponse = /** status 200 Environments */ {
   environments?: {
     /** ID */
     id: string;
-    /** Specifies the version of the schema used for the definition. */
-    schemaVersion?: string;
+    /** Specifies the version of the schema to which the environment conforms. */
+    schemaVersion: string;
     /** Environment name */
     name: string;
     /** Environment description */

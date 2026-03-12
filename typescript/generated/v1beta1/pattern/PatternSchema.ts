@@ -640,6 +640,7 @@ const PatternSchema = {
                             "type": "object",
                             "required": [
                               "id",
+                              "schemaVersion",
                               "name",
                               "description",
                               "organization_id"
@@ -661,11 +662,12 @@ const PatternSchema = {
                                 }
                               },
                               "schemaVersion": {
-                                "description": "Specifies the version of the schema used for the definition.",
+                                "description": "Specifies the version of the schema to which the environment conforms.",
                                 "x-order": 2,
                                 "x-oapi-codegen-extra-tags": {
-                                  "db": "schema_version",
-                                  "yaml": "schemaVersion"
+                                  "yaml": "schemaVersion",
+                                  "db": "-",
+                                  "gorm": "-"
                                 },
                                 "default": "environments.meshery.io/v1beta1",
                                 "type": "string",
@@ -686,7 +688,7 @@ const PatternSchema = {
                                   "db": "name",
                                   "yaml": "name"
                                 },
-                                "x-order": 2,
+                                "x-order": 3,
                                 "type": "string",
                                 "description": "Environment name"
                               },
@@ -695,7 +697,7 @@ const PatternSchema = {
                                   "db": "description",
                                   "yaml": "description"
                                 },
-                                "x-order": 3,
+                                "x-order": 4,
                                 "type": "string",
                                 "description": "Environment description"
                               },
@@ -712,7 +714,7 @@ const PatternSchema = {
                                   "db": "organization_id",
                                   "yaml": "organization_id"
                                 },
-                                "x-order": 4
+                                "x-order": 5
                               },
                               "owner": {
                                 "type": "string",
@@ -726,14 +728,14 @@ const PatternSchema = {
                                   "db": "owner",
                                   "yaml": "owner"
                                 },
-                                "x-order": 5
+                                "x-order": 6
                               },
                               "created_at": {
                                 "x-oapi-codegen-extra-tags": {
                                   "db": "created_at",
                                   "yaml": "created_at"
                                 },
-                                "x-order": 6,
+                                "x-order": 7,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -743,7 +745,7 @@ const PatternSchema = {
                                   "db": "metadata",
                                   "yaml": "metadata"
                                 },
-                                "x-order": 7,
+                                "x-order": 8,
                                 "x-go-type": "core.Map",
                                 "x-go-type-skip-optional-pointer": true,
                                 "type": "object"
@@ -753,7 +755,7 @@ const PatternSchema = {
                                   "db": "updated_at",
                                   "yaml": "updated_at"
                                 },
-                                "x-order": 8,
+                                "x-order": 9,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -765,7 +767,7 @@ const PatternSchema = {
                                 },
                                 "x-go-type": "core.NullTime",
                                 "x-go-import": "database/sql",
-                                "x-order": 9,
+                                "x-order": 10,
                                 "type": "string",
                                 "format": "date-time",
                                 "x-go-type-skip-optional-pointer": true
@@ -5482,6 +5484,7 @@ const PatternSchema = {
                                 "type": "object",
                                 "required": [
                                   "id",
+                                  "schemaVersion",
                                   "name",
                                   "description",
                                   "organization_id"
@@ -5503,11 +5506,12 @@ const PatternSchema = {
                                     }
                                   },
                                   "schemaVersion": {
-                                    "description": "Specifies the version of the schema used for the definition.",
+                                    "description": "Specifies the version of the schema to which the environment conforms.",
                                     "x-order": 2,
                                     "x-oapi-codegen-extra-tags": {
-                                      "db": "schema_version",
-                                      "yaml": "schemaVersion"
+                                      "yaml": "schemaVersion",
+                                      "db": "-",
+                                      "gorm": "-"
                                     },
                                     "default": "environments.meshery.io/v1beta1",
                                     "type": "string",
@@ -5528,7 +5532,7 @@ const PatternSchema = {
                                       "db": "name",
                                       "yaml": "name"
                                     },
-                                    "x-order": 2,
+                                    "x-order": 3,
                                     "type": "string",
                                     "description": "Environment name"
                                   },
@@ -5537,7 +5541,7 @@ const PatternSchema = {
                                       "db": "description",
                                       "yaml": "description"
                                     },
-                                    "x-order": 3,
+                                    "x-order": 4,
                                     "type": "string",
                                     "description": "Environment description"
                                   },
@@ -5554,7 +5558,7 @@ const PatternSchema = {
                                       "db": "organization_id",
                                       "yaml": "organization_id"
                                     },
-                                    "x-order": 4
+                                    "x-order": 5
                                   },
                                   "owner": {
                                     "type": "string",
@@ -5568,14 +5572,14 @@ const PatternSchema = {
                                       "db": "owner",
                                       "yaml": "owner"
                                     },
-                                    "x-order": 5
+                                    "x-order": 6
                                   },
                                   "created_at": {
                                     "x-oapi-codegen-extra-tags": {
                                       "db": "created_at",
                                       "yaml": "created_at"
                                     },
-                                    "x-order": 6,
+                                    "x-order": 7,
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-type-skip-optional-pointer": true
@@ -5585,7 +5589,7 @@ const PatternSchema = {
                                       "db": "metadata",
                                       "yaml": "metadata"
                                     },
-                                    "x-order": 7,
+                                    "x-order": 8,
                                     "x-go-type": "core.Map",
                                     "x-go-type-skip-optional-pointer": true,
                                     "type": "object"
@@ -5595,7 +5599,7 @@ const PatternSchema = {
                                       "db": "updated_at",
                                       "yaml": "updated_at"
                                     },
-                                    "x-order": 8,
+                                    "x-order": 9,
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-type-skip-optional-pointer": true
@@ -5607,7 +5611,7 @@ const PatternSchema = {
                                     },
                                     "x-go-type": "core.NullTime",
                                     "x-go-import": "database/sql",
-                                    "x-order": 9,
+                                    "x-order": 10,
                                     "type": "string",
                                     "format": "date-time",
                                     "x-go-type-skip-optional-pointer": true
@@ -10356,6 +10360,7 @@ const PatternSchema = {
                                       "type": "object",
                                       "required": [
                                         "id",
+                                        "schemaVersion",
                                         "name",
                                         "description",
                                         "organization_id"
@@ -10377,11 +10382,12 @@ const PatternSchema = {
                                           }
                                         },
                                         "schemaVersion": {
-                                          "description": "Specifies the version of the schema used for the definition.",
+                                          "description": "Specifies the version of the schema to which the environment conforms.",
                                           "x-order": 2,
                                           "x-oapi-codegen-extra-tags": {
-                                            "db": "schema_version",
-                                            "yaml": "schemaVersion"
+                                            "yaml": "schemaVersion",
+                                            "db": "-",
+                                            "gorm": "-"
                                           },
                                           "default": "environments.meshery.io/v1beta1",
                                           "type": "string",
@@ -10402,7 +10408,7 @@ const PatternSchema = {
                                             "db": "name",
                                             "yaml": "name"
                                           },
-                                          "x-order": 2,
+                                          "x-order": 3,
                                           "type": "string",
                                           "description": "Environment name"
                                         },
@@ -10411,7 +10417,7 @@ const PatternSchema = {
                                             "db": "description",
                                             "yaml": "description"
                                           },
-                                          "x-order": 3,
+                                          "x-order": 4,
                                           "type": "string",
                                           "description": "Environment description"
                                         },
@@ -10428,7 +10434,7 @@ const PatternSchema = {
                                             "db": "organization_id",
                                             "yaml": "organization_id"
                                           },
-                                          "x-order": 4
+                                          "x-order": 5
                                         },
                                         "owner": {
                                           "type": "string",
@@ -10442,14 +10448,14 @@ const PatternSchema = {
                                             "db": "owner",
                                             "yaml": "owner"
                                           },
-                                          "x-order": 5
+                                          "x-order": 6
                                         },
                                         "created_at": {
                                           "x-oapi-codegen-extra-tags": {
                                             "db": "created_at",
                                             "yaml": "created_at"
                                           },
-                                          "x-order": 6,
+                                          "x-order": 7,
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-type-skip-optional-pointer": true
@@ -10459,7 +10465,7 @@ const PatternSchema = {
                                             "db": "metadata",
                                             "yaml": "metadata"
                                           },
-                                          "x-order": 7,
+                                          "x-order": 8,
                                           "x-go-type": "core.Map",
                                           "x-go-type-skip-optional-pointer": true,
                                           "type": "object"
@@ -10469,7 +10475,7 @@ const PatternSchema = {
                                             "db": "updated_at",
                                             "yaml": "updated_at"
                                           },
-                                          "x-order": 8,
+                                          "x-order": 9,
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-type-skip-optional-pointer": true
@@ -10481,7 +10487,7 @@ const PatternSchema = {
                                           },
                                           "x-go-type": "core.NullTime",
                                           "x-go-import": "database/sql",
-                                          "x-order": 9,
+                                          "x-order": 10,
                                           "type": "string",
                                           "format": "date-time",
                                           "x-go-type-skip-optional-pointer": true
@@ -15262,6 +15268,7 @@ const PatternSchema = {
                                     "type": "object",
                                     "required": [
                                       "id",
+                                      "schemaVersion",
                                       "name",
                                       "description",
                                       "organization_id"
@@ -15283,11 +15290,12 @@ const PatternSchema = {
                                         }
                                       },
                                       "schemaVersion": {
-                                        "description": "Specifies the version of the schema used for the definition.",
+                                        "description": "Specifies the version of the schema to which the environment conforms.",
                                         "x-order": 2,
                                         "x-oapi-codegen-extra-tags": {
-                                          "db": "schema_version",
-                                          "yaml": "schemaVersion"
+                                          "yaml": "schemaVersion",
+                                          "db": "-",
+                                          "gorm": "-"
                                         },
                                         "default": "environments.meshery.io/v1beta1",
                                         "type": "string",
@@ -15308,7 +15316,7 @@ const PatternSchema = {
                                           "db": "name",
                                           "yaml": "name"
                                         },
-                                        "x-order": 2,
+                                        "x-order": 3,
                                         "type": "string",
                                         "description": "Environment name"
                                       },
@@ -15317,7 +15325,7 @@ const PatternSchema = {
                                           "db": "description",
                                           "yaml": "description"
                                         },
-                                        "x-order": 3,
+                                        "x-order": 4,
                                         "type": "string",
                                         "description": "Environment description"
                                       },
@@ -15334,7 +15342,7 @@ const PatternSchema = {
                                           "db": "organization_id",
                                           "yaml": "organization_id"
                                         },
-                                        "x-order": 4
+                                        "x-order": 5
                                       },
                                       "owner": {
                                         "type": "string",
@@ -15348,14 +15356,14 @@ const PatternSchema = {
                                           "db": "owner",
                                           "yaml": "owner"
                                         },
-                                        "x-order": 5
+                                        "x-order": 6
                                       },
                                       "created_at": {
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "created_at",
                                           "yaml": "created_at"
                                         },
-                                        "x-order": 6,
+                                        "x-order": 7,
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
@@ -15365,7 +15373,7 @@ const PatternSchema = {
                                           "db": "metadata",
                                           "yaml": "metadata"
                                         },
-                                        "x-order": 7,
+                                        "x-order": 8,
                                         "x-go-type": "core.Map",
                                         "x-go-type-skip-optional-pointer": true,
                                         "type": "object"
@@ -15375,7 +15383,7 @@ const PatternSchema = {
                                           "db": "updated_at",
                                           "yaml": "updated_at"
                                         },
-                                        "x-order": 8,
+                                        "x-order": 9,
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true
@@ -15387,7 +15395,7 @@ const PatternSchema = {
                                         },
                                         "x-go-type": "core.NullTime",
                                         "x-go-import": "database/sql",
-                                        "x-order": 9,
+                                        "x-order": 10,
                                         "type": "string",
                                         "format": "date-time",
                                         "x-go-type-skip-optional-pointer": true

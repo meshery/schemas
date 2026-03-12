@@ -90,7 +90,7 @@ export interface components {
          */
         id: string;
         /**
-         * @description Specifies the version of the schema used for the definition.
+         * @description Specifies the version of the schema to which the environment conforms.
          * @default environments.meshery.io/v1beta1
          * @example [
          *   "v1",
@@ -101,7 +101,7 @@ export interface components {
          *   "capability.meshery.io/v1alpha1"
          * ]
          */
-        schemaVersion?: string;
+        schemaVersion: string;
         /** @description Environment name */
         name: string;
         /** @description Environment description */
@@ -194,7 +194,7 @@ export interface components {
            */
           id: string;
           /**
-           * @description Specifies the version of the schema used for the definition.
+           * @description Specifies the version of the schema to which the environment conforms.
            * @default environments.meshery.io/v1beta1
            * @example [
            *   "v1",
@@ -205,7 +205,7 @@ export interface components {
            *   "capability.meshery.io/v1alpha1"
            * ]
            */
-          schemaVersion?: string;
+          schemaVersion: string;
           /** @description Environment name */
           name: string;
           /** @description Environment description */
@@ -484,7 +484,7 @@ export interface operations {
                  */
                 id: string;
                 /**
-                 * @description Specifies the version of the schema used for the definition.
+                 * @description Specifies the version of the schema to which the environment conforms.
                  * @default environments.meshery.io/v1beta1
                  * @example [
                  *   "v1",
@@ -495,7 +495,7 @@ export interface operations {
                  *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
-                schemaVersion?: string;
+                schemaVersion: string;
                 /** @description Environment name */
                 name: string;
                 /** @description Environment description */
@@ -606,7 +606,7 @@ export interface operations {
                */
               id: string;
               /**
-               * @description Specifies the version of the schema used for the definition.
+               * @description Specifies the version of the schema to which the environment conforms.
                * @default environments.meshery.io/v1beta1
                * @example [
                *   "v1",
@@ -617,7 +617,7 @@ export interface operations {
                *   "capability.meshery.io/v1alpha1"
                * ]
                */
-              schemaVersion?: string;
+              schemaVersion: string;
               /** @description Environment name */
               name: string;
               /** @description Environment description */
@@ -757,7 +757,7 @@ export interface operations {
                */
               id: string;
               /**
-               * @description Specifies the version of the schema used for the definition.
+               * @description Specifies the version of the schema to which the environment conforms.
                * @default environments.meshery.io/v1beta1
                * @example [
                *   "v1",
@@ -768,7 +768,7 @@ export interface operations {
                *   "capability.meshery.io/v1alpha1"
                * ]
                */
-              schemaVersion?: string;
+              schemaVersion: string;
               /** @description Environment name */
               name: string;
               /** @description Environment description */
@@ -878,7 +878,7 @@ export interface operations {
                */
               id: string;
               /**
-               * @description Specifies the version of the schema used for the definition.
+               * @description Specifies the version of the schema to which the environment conforms.
                * @default environments.meshery.io/v1beta1
                * @example [
                *   "v1",
@@ -889,7 +889,7 @@ export interface operations {
                *   "capability.meshery.io/v1alpha1"
                * ]
                */
-              schemaVersion?: string;
+              schemaVersion: string;
               /** @description Environment name */
               name: string;
               /** @description Environment description */

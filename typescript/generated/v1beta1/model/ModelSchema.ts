@@ -509,6 +509,7 @@ const ModelSchema = {
                   "type": "object",
                   "required": [
                     "id",
+                    "schemaVersion",
                     "name",
                     "description",
                     "organization_id"
@@ -530,11 +531,12 @@ const ModelSchema = {
                       }
                     },
                     "schemaVersion": {
-                      "description": "Specifies the version of the schema used for the definition.",
+                      "description": "Specifies the version of the schema to which the environment conforms.",
                       "x-order": 2,
                       "x-oapi-codegen-extra-tags": {
-                        "db": "schema_version",
-                        "yaml": "schemaVersion"
+                        "yaml": "schemaVersion",
+                        "db": "-",
+                        "gorm": "-"
                       },
                       "default": "environments.meshery.io/v1beta1",
                       "type": "string",
@@ -555,7 +557,7 @@ const ModelSchema = {
                         "db": "name",
                         "yaml": "name"
                       },
-                      "x-order": 2,
+                      "x-order": 3,
                       "type": "string",
                       "description": "Environment name"
                     },
@@ -564,7 +566,7 @@ const ModelSchema = {
                         "db": "description",
                         "yaml": "description"
                       },
-                      "x-order": 3,
+                      "x-order": 4,
                       "type": "string",
                       "description": "Environment description"
                     },
@@ -574,7 +576,7 @@ const ModelSchema = {
                         "db": "organization_id",
                         "yaml": "organization_id"
                       },
-                      "x-order": 4,
+                      "x-order": 5,
                       "description": "Environment organization ID",
                       "type": "string",
                       "format": "uuid",
@@ -588,7 +590,7 @@ const ModelSchema = {
                         "db": "owner",
                         "yaml": "owner"
                       },
-                      "x-order": 5,
+                      "x-order": 6,
                       "description": "Environment owner",
                       "type": "string",
                       "format": "uuid",
@@ -602,7 +604,7 @@ const ModelSchema = {
                         "db": "created_at",
                         "yaml": "created_at"
                       },
-                      "x-order": 6,
+                      "x-order": 7,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -612,7 +614,7 @@ const ModelSchema = {
                         "db": "metadata",
                         "yaml": "metadata"
                       },
-                      "x-order": 7,
+                      "x-order": 8,
                       "x-go-type": "core.Map",
                       "x-go-type-skip-optional-pointer": true,
                       "type": "object"
@@ -622,7 +624,7 @@ const ModelSchema = {
                         "db": "updated_at",
                         "yaml": "updated_at"
                       },
-                      "x-order": 8,
+                      "x-order": 9,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -634,7 +636,7 @@ const ModelSchema = {
                       },
                       "x-go-type": "core.NullTime",
                       "x-go-import": "database/sql",
-                      "x-order": 9,
+                      "x-order": 10,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true

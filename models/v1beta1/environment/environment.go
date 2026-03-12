@@ -16,11 +16,11 @@ type Environment struct {
 	// ID ID
 	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
 
+	// SchemaVersion Specifies the version of the schema to which the environment conforms.
+	SchemaVersion string `db:"-" gorm:"-" json:"schemaVersion" yaml:"schemaVersion"`
+
 	// Name Environment name
 	Name string `db:"name" json:"name" yaml:"name"`
-
-	// SchemaVersion Specifies the version of the schema used for the definition.
-	SchemaVersion *string `db:"schema_version" json:"schemaVersion,omitempty" yaml:"schemaVersion,omitempty"`
 
 	// Description Environment description
 	Description string `db:"description" json:"description" yaml:"description"`
