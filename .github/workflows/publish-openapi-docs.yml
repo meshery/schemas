@@ -5,7 +5,7 @@
 #
 # What it does:
 # - Builds the OpenAPI specifications from schemas
-# - Copies the merged_openapi.yml to meshery/meshery repo at docs/data/openapi.yml
+# - Copies the merged_openapi.yml to meshery/meshery repo at docs/_data/openapi.yml
 # - Commits and pushes the changes directly to the master branch
 #
 # This ensures that the Meshery REST API documentation stays in sync with the schemas repository.
@@ -63,9 +63,9 @@ jobs:
 
       - name: Copy OpenAPI specification to meshery repo
         run: |
-          mkdir -p meshery/docs/data
-          cp _openapi_build/merged_openapi.yml meshery/docs/data/openapi.yml
-          echo "Copied merged_openapi.yml to meshery/docs/data/openapi.yml"
+          mkdir -p meshery/docs/_data
+          cp _openapi_build/merged_openapi.yml meshery/docs/_data/openapi.yml
+          echo "Copied merged_openapi.yml to meshery/docs/_data/openapi.yml"
 
       - name: Pull changes from remote
         working-directory: meshery
@@ -80,5 +80,5 @@ jobs:
           commit_user_name: meshery
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          file_pattern: docs/data/openapi.yml
+          file_pattern: docs/_data/openapi.yml
           branch: master
