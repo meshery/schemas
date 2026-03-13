@@ -1,6 +1,7 @@
 title: Design Schema
 description: Schema for design  in v1Beta1
 type: object
+additionalProperties: false
 properties:
   name:
     type: string

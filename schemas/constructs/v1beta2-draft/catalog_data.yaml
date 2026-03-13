@@ -1,5 +1,6 @@
 $schema: http://json-schema.org/draft-07/schema#
 type: object
+additionalProperties: false
 $comment: "Any given catalog content will expose a version. It is the version # of the content at time of publshing."
 properties:
   publishedVersion:
