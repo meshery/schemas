@@ -105,3 +105,51 @@ func TestConstructTopLevelPropertiesAreDocumented(t *testing.T) {
 		t.Fatalf("walk construct schemas: %v", err)
 	}
 }
+
+func TestCatalogConstructsReuseSharedFieldSchemas(t *testing.T) {
+	expected := map[string]map[string]string{
+		filepath.Join("schemas", "constructs", "v1alpha1", "catalog_data.yaml"): {
+			"class":         "core/api.yml#/components/schemas/CatalogClass",
+			"compatibility": "core/api.yml#/components/schemas/CatalogCompatibility",
+			"type":          "core/api.yml#/components/schemas/CatalogType",
+			"snapshotURL":   "core/api.yml#/components/schemas/CatalogSnapshotUrls",
+		},
+		filepath.Join("schemas", "constructs", "v1alpha2", "catalog", "catalog.yaml"): {
+			"class":         "../../v1alpha1/core/api.yml#/components/schemas/CatalogClass",
+			"compatibility": "../../v1alpha1/core/api.yml#/components/schemas/CatalogCompatibility",
+			"type":          "../../v1alpha1/core/api.yml#/components/schemas/CatalogType",
+			"snapshotURL":   "../../v1alpha1/core/api.yml#/components/schemas/CatalogSnapshotUrls",
+		},
+		filepath.Join("schemas", "constructs", "v1beta2-draft", "catalog_data.yaml"): {
+			"type":        "../v1alpha1/core/api.yml#/components/schemas/CatalogType",
+			"snapshotURL": "../v1alpha1/core/api.yml#/components/schemas/CatalogSnapshotUrls",
+		},
+	}
+
+	for path, properties := range expected {
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatalf("read %s: %v", path, err)
+		}
+
+		var doc map[string]any
+		if err := yaml.Unmarshal(raw, &doc); err != nil {
+			t.Fatalf("unmarshal %s: %v", path, err)
+		}
+
+		allProps, ok := doc["properties"].(map[string]any)
+		if !ok {
+			t.Fatalf("%s missing properties", path)
+		}
+
+		for name, wantRef := range properties {
+			prop, ok := allProps[name].(map[string]any)
+			if !ok {
+				t.Fatalf("%s property %q missing", path, name)
+			}
+			if gotRef, _ := prop["$ref"].(string); gotRef != wantRef {
+				t.Errorf("%s property %q = %q, want %q", path, name, gotRef, wantRef)
+			}
+		}
+	}
+}

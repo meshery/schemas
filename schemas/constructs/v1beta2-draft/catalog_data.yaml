@@ -33,26 +33,9 @@ properties:
     title: Description
     description: Purpose of the design along with its intended and unintended uses.
   type:
-    type: string
-    title: Type
-    enum:
-      - Deployment
-      - Observability
-      - Resiliency
-      - Scaling
-      - Security
-      - Traffic-management
-      - Troubleshooting
-      - Workloads
-    default: Deployment
-    description: Categorization of the type of design or operational flow depicted in this design.
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/CatalogType
   snapshotURL:
-    type: array
-    items:
-      type: string
-      format: uri
-      pattern: ^(https?|http?|oci)://
-    description: Contains reference to the dark and light mode snapshots of the design.
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/CatalogSnapshotUrls
   tags:
     type: string
     description: Custom tags to categorise catalog items

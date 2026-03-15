@@ -175,6 +175,51 @@ components:
                     x-go-type-skip-optional-pointer: true
             x-go-type-skip-optional-pointer: true
 
+        CatalogClass:
+            description: Published content is classified by its support level. Content classes help you understand the origin and expected support level for each piece of content.
+            type: string
+            oneOf:
+                - const: official
+                  description: Content produced and fully supported by Meshery maintainers. This represents the highest level of support and is considered the most reliable.
+                - const: verified
+                  description: Content produced by partners and verified by Meshery maintainers. While not directly maintained by Meshery, it has undergone a verification process to ensure quality and compatibility.
+                - const: reference architecture
+                  description: Content produced and shared by Meshery users. This includes a wide range of content, such as performance profiles, test results, filters, patterns, and applications. Reference architecture content may have varying levels of support and reliability.
+
+        CatalogCompatibility:
+            type: array
+            title: Model
+            items:
+                enum:
+                    - kubernetes
+                type: string
+            uniqueItems: true
+            minItems: 1
+            description: One or more compatibility targets associated with this catalog item.
+
+        CatalogType:
+            type: string
+            title: Type
+            enum:
+                - Deployment
+                - Observability
+                - Resiliency
+                - Scaling
+                - Security
+                - Traffic-management
+                - Troubleshooting
+                - Workloads
+            default: Deployment
+            description: Categorization of the type of design or operational flow depicted in this design.
+
+        CatalogSnapshotUrls:
+            type: array
+            items:
+                type: string
+                format: uri
+                pattern: ^(https?|http?|oci)://
+            description: Contains references to the dark and light mode snapshots of the design.
+
         empty:
             description: Body for empty request
             type: object
