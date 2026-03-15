@@ -2,6 +2,7 @@ $schema: http://json-schema.org/draft-07/schema#
 title: Design Schema
 description: Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type: object
+additionalProperties: false
 properties:
   id:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
@@ -22,6 +23,7 @@ properties:
     minLength: 1
     maxLength: 50
   metadata:
+    description: Additional metadata associated with the design.
     type: object
     x-order: 5
     additionalProperties: true

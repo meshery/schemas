@@ -1,4 +1,5 @@
 type: object
+additionalProperties: false
 description: Represents an authorization key used for access control.
 required:
   - id

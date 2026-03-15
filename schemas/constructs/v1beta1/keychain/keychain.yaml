@@ -1,4 +1,5 @@
 type: object
+additionalProperties: false
 description: Represents a collection of keys.
 required:
   - id

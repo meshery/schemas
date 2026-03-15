@@ -1,11 +1,13 @@
 $schema: http://json-schema.org/draft-07/schema#
 type: object
-$comment: "Any given catalog content will expose a version. It is the version # of the content at time of publshing."
+additionalProperties: false
+$comment: "Any given catalog content will expose a version. It is the version # of the content at time of publishing."
 properties:
   publishedVersion:
     description: Tracks the specific content version that has been made available in the Catalog.
     $ref: ../v1alpha1/core/api.yml#/components/schemas/versionString
   contentType:
+    description: Schema-specific content details for the catalog item.
     $comment: Based on the entity appropriate schema is selected and used by the system. Examples of different catalog item are Designs, Models, relationships. For designs compatibility only requires model, for Model compatability requires Registrant, version and name
     oneOf:
       - $comment: Catalog cotent schema for Design
@@ -31,32 +33,17 @@ properties:
     title: Description
     description: Purpose of the design along with its intended and unintended uses.
   type:
-    type: string
-    title: Type
-    enum:
-      - Deployment
-      - Observability
-      - Resiliency
-      - Scaling
-      - Security
-      - Traffic-management
-      - Troubleshooting
-      - Workloads
-    default: Deployment
-    description: Categorization of the type of design or operational flow depicted in this design.
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/CatalogType
   snapshotURL:
-    type: array
-    items:
-      type: string
-      format: uri
-      pattern: ^(https?|http?|oci)://
-    description: Contains reference to the dark and light mode snapshots of the design.
+    $ref: ../v1alpha1/core/api.yml#/components/schemas/CatalogSnapshotUrls
   tags:
     type: string
     description: Custom tags to categorise catalog items
   category:
+    description: Category assigned to the catalog item.
     type: string
   subCategory:
+    description: Subcategory assigned to the catalog item.
     type: string
 required:
   - compatibility
