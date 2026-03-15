@@ -207,6 +207,7 @@ properties:
       gorm: type:bytes;serializer:json
     x-order: 12
   relationships:
+    description: Relationships associated with the model.
     type: array
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:
@@ -214,6 +215,7 @@ properties:
       json: relationships
       yaml: relationships
   components:
+    description: Components associated with the model.
     type: array
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:

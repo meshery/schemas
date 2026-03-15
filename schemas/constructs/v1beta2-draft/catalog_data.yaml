@@ -7,6 +7,7 @@ properties:
     description: Tracks the specific content version that has been made available in the Catalog.
     $ref: ../v1alpha1/core/api.yml#/components/schemas/versionString
   contentType:
+    description: Schema-specific content details for the catalog item.
     $comment: Based on the entity appropriate schema is selected and used by the system. Examples of different catalog item are Designs, Models, relationships. For designs compatibility only requires model, for Model compatability requires Registrant, version and name
     oneOf:
       - $comment: Catalog cotent schema for Design
@@ -56,8 +57,10 @@ properties:
     type: string
     description: Custom tags to categorise catalog items
   category:
+    description: Category assigned to the catalog item.
     type: string
   subCategory:
+    description: Subcategory assigned to the catalog item.
     type: string
 required:
   - compatibility

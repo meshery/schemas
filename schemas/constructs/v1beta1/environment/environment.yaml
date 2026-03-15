@@ -63,6 +63,7 @@ properties:
       yaml: created_at
     x-order: 7
   metadata:
+    description: Additional metadata associated with the environment.
     x-oapi-codegen-extra-tags:
       db: metadata
       yaml: metadata

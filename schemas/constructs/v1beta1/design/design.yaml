@@ -23,6 +23,7 @@ properties:
     minLength: 1
     maxLength: 50
   metadata:
+    description: Additional metadata associated with the design.
     type: object
     x-order: 5
     additionalProperties: true
