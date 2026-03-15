@@ -109,7 +109,14 @@ components:
         description:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
         organization_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/organization_id"
+          x-go-name: OrganizationID
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: organization_id
+            yaml: organization_id
+            json: organization_id
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Workspace organization ID
         owner:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
         created_at:
@@ -183,7 +190,7 @@ components:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
           description: Environment description
         organization_id:
-          type: string
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
           description: Organization ID
           x-go-type-skip-optional-pointer: true
           x-go-name: OrganizationID
@@ -200,7 +207,7 @@ components:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/Text"
           description: Workspaces serve as a virtual space for your team-based work, allows you to control access and more, Provide a detailed description to clarify the purpose of this workspace. Remember you can changes description of workspace after it's creations too. Learn more about workspaces [here](https://docs.meshery.io/concepts/logical/workspaces)
         organization_id:
-          type: string
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
           description: Select an organization in which you want to create this new workspace. Keep in mind that the organization cannot be changed after creation.
           x-go-type-skip-optional-pointer: true
           x-go-name: OrganizationID
