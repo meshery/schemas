@@ -1,5 +1,5 @@
 title: Design Schema
-description: Schema for design  in v1Beta1
+description: Schema for design in v1alpha2
 type: object
 additionalProperties: false
 properties:
@@ -8,7 +8,7 @@ properties:
     description: Name of the design
   schemaVersion:
     type: string
-    description: Specifies the version of the schema to which the design  conforms.
+    description: Specifies the version of the schema to which the design conforms.
     x-oapi-codegen-extra-tags:
       yaml: schemaVersion
   version:
