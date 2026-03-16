@@ -151,6 +151,7 @@ properties:
         description: Primary color associated with the model.
         minLength: 1
         maxLength: 50
+        pattern: ^#(?:[0-9a-fA-F]{3}){1,2}$
         default: "#00b39f"
         x-oapi-codegen-extra-tags:
           yaml: primaryColor
@@ -161,6 +162,7 @@ properties:
         description: Secondary color associated with the model.
         minLength: 1
         maxLength: 50
+        pattern: ^#(?:[0-9a-fA-F]{3}){1,2}$
         default: "#00D3A9"
         x-oapi-codegen-extra-tags:
           yaml: secondaryColor
@@ -209,6 +211,7 @@ properties:
   relationships:
     description: Relationships associated with the model.
     type: array
+    default: []
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:
       gorm: "-"
@@ -217,6 +220,7 @@ properties:
   components:
     description: Components associated with the model.
     type: array
+    default: []
     x-go-type: interface{}
     x-oapi-codegen-extra-tags:
       gorm: "-"
