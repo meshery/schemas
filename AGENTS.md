@@ -2,6 +2,8 @@
 
 This document provides guidance for AI agents working on the meshery/schemas repository to avoid common mistakes and follow established patterns.
 
+> **Meshery follows schema-driven development.** Schemas in this repository are the source of truth from which Go structs, TypeScript types, and API clients are generated. See [Contributing to Schemas](https://docs.meshery.io/project/contributing/contributing-schemas) for details.
+
 ## Schema Modification Guidelines
 
 ### 1. DO NOT Commit Generated Code

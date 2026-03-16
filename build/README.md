@@ -4,6 +4,8 @@ This directory contains build scripts and configuration files for generating cod
 
 All build scripts are written in JavaScript (Node.js) for consistency, cross-platform compatibility, and easier code sharing.
 
+> **Meshery follows schema-driven development.** This build system generates Go structs, TypeScript types, and API clients from schemas defined in `schemas/constructs/`. See [Contributing to Schemas](https://docs.meshery.io/project/contributing/contributing-schemas) for details.
+
 ## Quick Start
 
 ```bash
