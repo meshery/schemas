@@ -1,0 +1,94 @@
+$id: https://schemas.meshery.io/notification.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: Meshery Notifications represent alerts and messages for users about system events, actions, and status changes.
+additionalProperties: false
+type: object
+required:
+  - id
+  - schemaVersion
+  - title
+  - message
+  - severity
+  - isRead
+  - userId
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Unique identifier for the notification
+    x-order: 1
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      yaml: id
+  schemaVersion:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    description: Specifies the version of the schema to which the notification conforms.
+    x-order: 2
+    x-oapi-codegen-extra-tags:
+      yaml: schemaVersion
+      db: "-"
+      gorm: "-"
+    default: notifications.meshery.io/v1beta1
+  title:
+    type: string
+    description: Short title summarizing the notification
+    x-order: 3
+    x-oapi-codegen-extra-tags:
+      db: title
+      yaml: title
+  message:
+    type: string
+    description: Detailed notification message body
+    x-order: 4
+    x-oapi-codegen-extra-tags:
+      db: message
+      yaml: message
+  severity:
+    type: string
+    description: Severity level of the notification
+    enum:
+      - info
+      - warning
+      - error
+      - critical
+    x-order: 5
+    x-oapi-codegen-extra-tags:
+      db: severity
+      yaml: severity
+  isRead:
+    type: boolean
+    description: Whether the notification has been read by the user
+    default: false
+    x-order: 6
+    x-go-name: IsRead
+    x-oapi-codegen-extra-tags:
+      db: is_read
+      yaml: isRead
+  userId:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: ID of the user this notification belongs to
+    x-order: 7
+    x-go-name: UserID
+    x-oapi-codegen-extra-tags:
+      db: user_id
+      yaml: userId
+  created_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: created_at
+      yaml: created_at
+    x-order: 8
+  updated_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+      yaml: updated_at
+    x-order: 9
+  deleted_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+      yaml: deleted_at
+    x-go-type: core.NullTime
+    x-go-import: database/sql
+    x-order: 10

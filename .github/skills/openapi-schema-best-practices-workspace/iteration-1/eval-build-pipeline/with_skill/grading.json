@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "build-pipeline-cross-ref",
+  "configuration": "with_skill",
+  "expectations": [
+    {"text": "Explains Go generator resolution mechanism", "passed": true, "evidence": "Describes two-layer mechanism: static import mappings in openapi.config.yml and per-field x-go-type annotations"},
+    {"text": "Mentions x-go-type annotation", "passed": true, "evidence": "x-go-type explained with package.Type format (e.g., plan.Plan)"},
+    {"text": "Mentions x-go-type-import", "passed": true, "evidence": "x-go-type-import with path field explained and demonstrated"},
+    {"text": "Provides concrete example with meshery import path", "passed": true, "evidence": "Example shows github.com/meshery/schemas/models/v1beta1/plan"},
+    {"text": "Shows $ref and x-go-type used together", "passed": true, "evidence": "Example combines $ref: ../plan/api.yml#/... with x-go-type: plan.Plan"},
+    {"text": "Does not suggest editing generated Go files", "passed": true, "evidence": "No mention of editing generated files; focuses entirely on schema annotations"}
+  ]
+}

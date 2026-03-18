@@ -1,0 +1,87 @@
+{
+  "eval_id": 1,
+  "eval_name": "audit-best-practices",
+  "prompt": "Audit the schemas in schemas/constructs/v1beta1/ against OpenAPI best practices. Check naming conventions, $ref usage, description coverage, response schema consistency, proper use of HTTP status codes, pagination patterns, error response schemas, required field declarations, enum consistency, proper use of format specifiers (uuid, date-time, email, uri), x-oapi-codegen-extra-tags correctness, template file completeness, and whether schemas would produce clean generated code. Give me a full report.",
+  "assertions": [
+    {
+      "name": "min_5_constructs_audited",
+      "description": "At least 5 different v1beta1 constructs were examined",
+      "check": "manual"
+    },
+    {
+      "name": "naming_convention_checks",
+      "description": "Report checks camelCase properties, PascalCase schemas, kebab-case paths",
+      "check": "content_contains",
+      "target": "audit_report.md",
+      "pattern": "camelCase"
+    },
+    {
+      "name": "ref_usage_checks",
+      "description": "Report evaluates $ref usage and checks for deprecated core.json references",
+      "check": "content_contains_any",
+      "target": "audit_report.md",
+      "patterns": ["$ref", "core.json", "core/api.yml"]
+    },
+    {
+      "name": "description_coverage",
+      "description": "Report assesses description/documentation coverage on fields",
+      "check": "content_contains",
+      "target": "audit_report.md",
+      "pattern": "description"
+    },
+    {
+      "name": "http_status_codes",
+      "description": "Report checks proper use of HTTP status codes in responses",
+      "check": "content_contains_any",
+      "target": "audit_report.md",
+      "patterns": ["status code", "200", "201", "400", "404"]
+    },
+    {
+      "name": "pagination_check",
+      "description": "Report evaluates pagination patterns across constructs",
+      "check": "content_contains",
+      "target": "audit_report.md",
+      "pattern": "pagination"
+    },
+    {
+      "name": "error_response_check",
+      "description": "Report checks for error response schemas",
+      "check": "content_contains_any",
+      "target": "audit_report.md",
+      "patterns": ["error response", "error schema", "4xx", "5xx"]
+    },
+    {
+      "name": "required_fields_check",
+      "description": "Report evaluates required field declarations",
+      "check": "content_contains",
+      "target": "audit_report.md",
+      "pattern": "required"
+    },
+    {
+      "name": "format_specifier_check",
+      "description": "Report checks proper use of format specifiers (uuid, date-time, etc.)",
+      "check": "content_contains",
+      "target": "audit_report.md",
+      "pattern": "format"
+    },
+    {
+      "name": "codegen_readiness_check",
+      "description": "Report assesses whether schemas produce clean generated code",
+      "check": "content_contains_any",
+      "target": "audit_report.md",
+      "patterns": ["generated code", "code generation", "codegen", "oapi-codegen", "x-oapi-codegen"]
+    },
+    {
+      "name": "specific_file_references",
+      "description": "Report references specific files and line locations, not just general observations",
+      "check": "content_contains",
+      "target": "audit_report.md",
+      "pattern": "api.yml"
+    },
+    {
+      "name": "actionable_findings",
+      "description": "Report includes actionable recommendations, not just observations",
+      "check": "manual"
+    }
+  ]
+}

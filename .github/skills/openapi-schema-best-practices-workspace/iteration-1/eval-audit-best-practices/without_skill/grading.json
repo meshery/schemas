@@ -1,0 +1,19 @@
+{
+  "eval_id": 1,
+  "eval_name": "audit-best-practices",
+  "configuration": "without_skill",
+  "expectations": [
+    {"text": "At least 5 constructs audited", "passed": true, "evidence": "7 constructs: connection, environment, workspace, model, component, design, category"},
+    {"text": "Checks camelCase/PascalCase/kebab-case naming", "passed": true, "evidence": "Sections 1.1-1.4 cover schema names, property names, endpoint paths, operationId"},
+    {"text": "Evaluates $ref usage and deprecated core.json", "passed": true, "evidence": "Section 2 covers $ref usage patterns and correct core references"},
+    {"text": "Assesses description/documentation coverage", "passed": true, "evidence": "Report covers description presence in schema properties"},
+    {"text": "Checks HTTP status codes", "passed": true, "evidence": "Report checks response status codes across constructs"},
+    {"text": "Evaluates pagination patterns", "passed": true, "evidence": "Report evaluates pagination consistency across constructs"},
+    {"text": "Checks error response schemas", "passed": true, "evidence": "Notes no structured error response schema anywhere (critical finding)"},
+    {"text": "Evaluates required field declarations", "passed": true, "evidence": "Notes missing required on page schemas and environment required field mismatch"},
+    {"text": "Checks format specifiers", "passed": true, "evidence": "Notes invalid format: file specifier (critical finding)"},
+    {"text": "Assesses codegen readiness", "passed": true, "evidence": "Notes 'not found' enum with space, $ref with sibling properties violating OAS 3.0, duplicate x-order"},
+    {"text": "References specific files", "passed": true, "evidence": "All findings reference specific files: connection.yaml, model.yaml, workspace/api.yml"},
+    {"text": "Includes actionable recommendations", "passed": true, "evidence": "34 findings with severity ratings and specific remediation guidance"}
+  ]
+}

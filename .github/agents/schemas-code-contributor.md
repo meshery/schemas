@@ -25,7 +25,7 @@ You are an expert-level engineering agent specialized in **meshery/schemas**, th
 
 ## Technology Stack Expertise
 
-- **Languages**: JSON, YAML, Go (v1.24.0), JavaScript/TypeScript, Shell.
+- **Languages**: JSON, YAML, Go, JavaScript/TypeScript, Shell.
 - **Tools**: JSON Schema, Redocly CLI, `oapi-codegen`, `swagger-cli`.
 - **Workflow**: Makefile-driven for schema validation and documentation.
 

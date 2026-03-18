@@ -1,0 +1,49 @@
+{
+  "eval_id": 2,
+  "eval_name": "build-pipeline-cross-ref",
+  "prompt": "I changed a schema and ran make build but I'm getting errors in the Go generation step. The error mentions a missing import for a $ref to another construct. How does the Go generator resolve cross-package references, and what do I need to add to my schema?",
+  "assertions": [
+    {
+      "name": "explains_go_generator_mechanism",
+      "description": "Explains how generate-golang.js discovers and resolves external $ref targets",
+      "check": "content_contains_any",
+      "target": "response.md",
+      "patterns": ["generate-golang", "import mapping", "import map"]
+    },
+    {
+      "name": "mentions_x_go_type",
+      "description": "Tells user to add x-go-type annotation",
+      "check": "content_contains",
+      "target": "response.md",
+      "pattern": "x-go-type"
+    },
+    {
+      "name": "mentions_x_go_type_import",
+      "description": "Tells user to add x-go-type-import with the Go import path",
+      "check": "content_contains",
+      "target": "response.md",
+      "pattern": "x-go-type-import"
+    },
+    {
+      "name": "provides_concrete_example",
+      "description": "Includes a concrete YAML example showing the annotations",
+      "check": "content_contains",
+      "target": "response.md",
+      "pattern": "github.com/meshery/schemas/models"
+    },
+    {
+      "name": "mentions_ref_alongside_go_type",
+      "description": "Shows that $ref and x-go-type are used together on the same field",
+      "check": "content_contains",
+      "target": "response.md",
+      "pattern": "$ref"
+    },
+    {
+      "name": "does_not_suggest_manual_go_edit",
+      "description": "Does NOT suggest editing generated Go files directly",
+      "check": "content_not_contains",
+      "target": "response.md",
+      "pattern": "edit the generated"
+    }
+  ]
+}

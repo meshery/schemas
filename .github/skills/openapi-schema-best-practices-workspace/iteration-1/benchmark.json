@@ -1,0 +1,85 @@
+{
+  "skill_name": "openapi-schema-best-practices",
+  "iteration": 1,
+  "configurations": [
+    {
+      "name": "with_skill",
+      "evals": [
+        {
+          "eval_name": "create-notification-construct",
+          "pass_rate": 1.0,
+          "passed": 12,
+          "total": 12,
+          "tokens": 76199,
+          "duration_seconds": 106.4
+        },
+        {
+          "eval_name": "audit-best-practices",
+          "pass_rate": 1.0,
+          "passed": 12,
+          "total": 12,
+          "tokens": 110591,
+          "duration_seconds": 197.3
+        },
+        {
+          "eval_name": "build-pipeline-cross-ref",
+          "pass_rate": 1.0,
+          "passed": 6,
+          "total": 6,
+          "tokens": 79952,
+          "duration_seconds": 99.6
+        }
+      ],
+      "aggregate": {
+        "pass_rate": {"mean": 1.0, "stddev": 0.0},
+        "tokens": {"mean": 88914, "stddev": 16278},
+        "duration_seconds": {"mean": 134.4, "stddev": 44.8}
+      }
+    },
+    {
+      "name": "without_skill",
+      "evals": [
+        {
+          "eval_name": "create-notification-construct",
+          "pass_rate": 0.917,
+          "passed": 11,
+          "total": 12,
+          "tokens": 92061,
+          "duration_seconds": 116.7
+        },
+        {
+          "eval_name": "audit-best-practices",
+          "pass_rate": 1.0,
+          "passed": 12,
+          "total": 12,
+          "tokens": 130536,
+          "duration_seconds": 294.1
+        },
+        {
+          "eval_name": "build-pipeline-cross-ref",
+          "pass_rate": 1.0,
+          "passed": 6,
+          "total": 6,
+          "tokens": 93518,
+          "duration_seconds": 118.8
+        }
+      ],
+      "aggregate": {
+        "pass_rate": {"mean": 0.972, "stddev": 0.039},
+        "tokens": {"mean": 105372, "stddev": 17937},
+        "duration_seconds": {"mean": 176.5, "stddev": 82.1}
+      }
+    }
+  ],
+  "delta": {
+    "pass_rate": "+2.8%",
+    "tokens": "-15.6% (16k fewer tokens on average)",
+    "duration": "-23.8% (42s faster on average)"
+  },
+  "analyst_observations": [
+    "The with_skill version achieved 100% pass rate vs 97.2% without. The failure was on PascalCase schema naming — the without_skill baseline used lowercase schema names (notification, notificationPage) instead of PascalCase (Notification, NotificationPage). The skill's explicit naming convention table prevented this.",
+    "The with_skill audit was faster (197s vs 294s) and used fewer tokens (111k vs 131k) while producing a comparable number of findings (67 vs 34). The skill provided a structured checklist that allowed the agent to audit more systematically without spending time discovering what to check.",
+    "The build pipeline explanation was a near-draw — both versions correctly explained x-go-type and x-go-type-import. The with_skill version additionally explained the static import mapping layer in openapi.config.yml, providing a more complete picture. The without_skill version compensated by reading the actual build scripts to discover the mechanism independently.",
+    "The biggest efficiency gain is in the audit task, where the skill cut token usage by 15% and time by 33%. This makes sense — the audit checklist in the skill removes the need to discover audit criteria from first principles."
+  ]
+}

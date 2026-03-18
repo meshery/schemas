@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: notification
+  description: Documentation for meshery Cloud REST APIs
+  contact:
+    email: maintainers@meshery.io
+  version: v0.6.394
+servers:
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+
+security:
+  - jwt: []
+
+tags:
+  - name: notifications
+    description: APIs for notifications
+
+components:
+  responses:
+    200:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
+    400:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+    401:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  parameters:
+    notificationId:
+      name: notificationId
+      in: path
+      description: Notification ID
+      schema:
+        $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+      required: true
+    search:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+    order:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+    page:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
+
+  schemas:
+    notification:
+      $ref: "./notification.yaml"
+    notificationPayload:
+      properties:
+        title:
+          type: string
+          description: Short title summarizing the notification
+        message:
+          type: string
+          description: Detailed notification message body
+        severity:
+          type: string
+          description: Severity level of the notification
+          enum:
+            - info
+            - warning
+            - error
+            - critical
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user this notification belongs to
+          x-go-name: UserID
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: userId
+      required:
+        - title
+        - message
+        - severity
+        - userId
+    notificationPage:
+      properties:
+        page:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+        page_size:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+        total_count:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+        notifications:
+          type: array
+          x-go-type-skip-optional-pointer: true
+          items:
+            x-go-type: Notification
+            $ref: "#/components/schemas/notification"
+
+  requestBodies:
+    notificationPayload:
+      description: Body for creating notification
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/notificationPayload"
+
+paths:
+  /api/notifications:
+    get:
+      tags:
+        - notifications
+      operationId: GetNotifications
+      summary: Get all notifications
+      description: Gets all notifications with pagination support
+      parameters:
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notificationPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      tags:
+        - notifications
+      operationId: CreateNotification
+      summary: Create a notification
+      description: Creates a new notification
+      requestBody:
+        $ref: "#/components/requestBodies/notificationPayload"
+      responses:
+        "201":
+          description: Created notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notification"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"

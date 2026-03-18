@@ -1,0 +1,19 @@
+{
+  "eval_id": 1,
+  "eval_name": "audit-best-practices",
+  "configuration": "with_skill",
+  "expectations": [
+    {"text": "At least 5 constructs audited", "passed": true, "evidence": "6 constructs: connection, environment, workspace, model, organization, invitation"},
+    {"text": "Checks camelCase/PascalCase/kebab-case naming", "passed": true, "evidence": "Section 1 covers property names (camelCase), schema names (PascalCase), paths, and operationId"},
+    {"text": "Evaluates $ref usage and deprecated core.json", "passed": true, "evidence": "Report checks core.yml references throughout; no mention of core.json violations found"},
+    {"text": "Assesses description/documentation coverage", "passed": true, "evidence": "Report covers description presence across all audited constructs"},
+    {"text": "Checks HTTP status codes", "passed": true, "evidence": "Findings note DELETE returning 200 instead of 204, and missing error responses"},
+    {"text": "Evaluates pagination patterns", "passed": true, "evidence": "Report identifies inconsistent pagination field naming across all constructs"},
+    {"text": "Checks error response schemas", "passed": true, "evidence": "Report notes constructs missing error response schemas"},
+    {"text": "Evaluates required field declarations", "passed": true, "evidence": "Findings include missing required fields on workspace and pagination schemas"},
+    {"text": "Checks format specifiers", "passed": true, "evidence": "Report covers format usage including uuid format"},
+    {"text": "Assesses codegen readiness", "passed": true, "evidence": "Report identifies connection status enum with space ('not found'), x-order collisions, JSON tag mismatches"},
+    {"text": "References specific files", "passed": true, "evidence": "All findings reference specific files: connection.yaml, environment.yaml, api.yml with line details"},
+    {"text": "Includes actionable recommendations", "passed": true, "evidence": "67 findings categorized by severity with specific fix actions described"}
+  ]
+}

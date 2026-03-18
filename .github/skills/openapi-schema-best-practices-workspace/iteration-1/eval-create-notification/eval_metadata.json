@@ -1,0 +1,88 @@
+{
+  "eval_id": 0,
+  "eval_name": "create-notification-construct",
+  "prompt": "I need to add a new 'notification' construct to v1beta1. It should have fields for id (uuid), title (string), message (string), severity (enum: info, warning, error, critical), isRead (boolean), userId (uuid), and timestamps. It needs a list endpoint with pagination and a create endpoint.",
+  "assertions": [
+    {
+      "name": "api_yml_exists",
+      "description": "An api.yml file was created",
+      "check": "file_exists",
+      "target": "api.yml"
+    },
+    {
+      "name": "subschema_exists",
+      "description": "A notification.yaml subschema was created",
+      "check": "file_exists",
+      "target": "notification.yaml"
+    },
+    {
+      "name": "template_exists",
+      "description": "A notification_template.json template was created",
+      "check": "file_exists",
+      "target": "notification_template.json"
+    },
+    {
+      "name": "openapi_version_300",
+      "description": "api.yml uses openapi 3.0.0 (not 3.1.0, which oapi-codegen doesn't support)",
+      "check": "content_contains",
+      "target": "api.yml",
+      "pattern": "openapi: 3.0"
+    },
+    {
+      "name": "camelcase_properties",
+      "description": "Property names use camelCase (isRead, userId, not is_read, user_id)",
+      "check": "content_contains",
+      "target": "notification.yaml",
+      "pattern": "isRead"
+    },
+    {
+      "name": "pascalcase_schema_names",
+      "description": "Schema component names use PascalCase (Notification, NotificationPage)",
+      "check": "content_contains",
+      "target": "api.yml",
+      "pattern": "Notification:"
+    },
+    {
+      "name": "core_ref_timestamps",
+      "description": "Timestamps reference v1alpha1/core/api.yml instead of inline definitions",
+      "check": "content_contains",
+      "target": "notification.yaml",
+      "pattern": "v1alpha1/core/api.yml"
+    },
+    {
+      "name": "uuid_format",
+      "description": "UUID fields use format: uuid or $ref to core uuid schema",
+      "check": "content_contains_any",
+      "target": "notification.yaml",
+      "patterns": ["format: uuid", "schemas/uuid"]
+    },
+    {
+      "name": "pagination_pattern",
+      "description": "List endpoint uses a pagination wrapper (NotificationPage or similar)",
+      "check": "content_contains",
+      "target": "api.yml",
+      "pattern": "Page"
+    },
+    {
+      "name": "kebab_case_paths",
+      "description": "API paths use kebab-case under /api",
+      "check": "content_contains",
+      "target": "api.yml",
+      "pattern": "/api/"
+    },
+    {
+      "name": "severity_enum_lowercase",
+      "description": "Severity enum values are lowercase (info, warning, error, critical)",
+      "check": "content_contains",
+      "target": "notification.yaml",
+      "pattern": "- info"
+    },
+    {
+      "name": "operationid_present",
+      "description": "Endpoints have operationId defined",
+      "check": "content_contains",
+      "target": "api.yml",
+      "pattern": "operationId"
+    }
+  ]
+}

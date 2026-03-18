@@ -1,0 +1,19 @@
+{
+  "eval_id": 0,
+  "eval_name": "create-notification-construct",
+  "configuration": "with_skill",
+  "expectations": [
+    {"text": "api.yml file exists", "passed": true, "evidence": "api.yml created in outputs/"},
+    {"text": "notification.yaml subschema exists", "passed": true, "evidence": "notification.yaml created in outputs/"},
+    {"text": "notification_template.json exists", "passed": true, "evidence": "templates/notification_template.json created in outputs/"},
+    {"text": "OpenAPI version is 3.0.x", "passed": true, "evidence": "Line 1: openapi: 3.0.0"},
+    {"text": "Property names use camelCase", "passed": true, "evidence": "isRead (line 61), userId (line 72), schemaVersion (line 23) all camelCase"},
+    {"text": "Schema component names use PascalCase", "passed": true, "evidence": "Notification: (line 47), NotificationPage: (line 49) in api.yml"},
+    {"text": "Timestamps reference core schemas", "passed": true, "evidence": "created_at uses $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time (line 81)"},
+    {"text": "UUID fields use core ref or format: uuid", "passed": true, "evidence": "id and userId both use $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid"},
+    {"text": "Pagination wrapper present", "passed": true, "evidence": "NotificationPage defined in api.yml line 49 with page, page_size, total_count, notifications array"},
+    {"text": "API paths use kebab-case under /api", "passed": true, "evidence": "/api/notifications (line 74)"},
+    {"text": "Severity enum values are lowercase", "passed": true, "evidence": "enum: info, warning, error, critical (lines 51-55)"},
+    {"text": "operationId present on endpoints", "passed": true, "evidence": "GetNotifications (line 79), CreateNotification (line 101)"}
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill_name": "openapi-schema-best-practices",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I need to add a new 'notification' construct to v1beta1. It should have fields for id (uuid), title (string), message (string), severity (enum: info, warning, error, critical), isRead (boolean), userId (uuid), and timestamps. It needs a list endpoint with pagination and a create endpoint.",
+      "expected_output": "A complete set of schema files (api.yml, notification.yaml, template) following all naming conventions and patterns from the repository",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Audit the schemas in schemas/constructs/v1beta1/ against OpenAPI best practices. Check naming conventions, $ref usage, description coverage, response schema consistency, proper use of HTTP status codes, pagination patterns, error response schemas, required field declarations, enum consistency, proper use of format specifiers (uuid, date-time, email, uri), x-oapi-codegen-extra-tags correctness, template file completeness, and whether schemas would produce clean generated code. Give me a full report.",
+      "expected_output": "A thorough audit report covering all the requested dimensions with specific file locations and actionable findings",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I changed a schema and ran make build but I'm getting errors in the Go generation step. The error mentions a missing import for a $ref to another construct. How does the Go generator resolve cross-package references, and what do I need to add to my schema?",
+      "expected_output": "Clear explanation of the Go generator's import resolution mechanism, with specific schema annotations (x-go-type, x-go-type-import) needed to fix cross-package references",
+      "files": []
+    }
+  ]
+}
