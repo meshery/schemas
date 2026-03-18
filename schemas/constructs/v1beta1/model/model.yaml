@@ -113,7 +113,7 @@ properties:
     x-oapi-codegen-extra-tags:
       yaml: category
       json: category
-      gorm: foreignKey:CategoryId;references:Id
+      gorm: foreignKey:CategoryId;references:ID
     x-go-type: categoryv1beta1.CategoryDefinition
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/category

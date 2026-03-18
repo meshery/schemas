@@ -9,8 +9,8 @@ import (
 
 	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
 	catalogv1alpha2 "github.com/meshery/schemas/models/v1alpha2/catalog"
-	relationshipv1alpha3 "github.com/meshery/schemas/models/v1alpha3/relationship"
-	componentv1beta1 "github.com/meshery/schemas/models/v1beta1/component"
+	relationship "github.com/meshery/schemas/models/v1alpha3/relationship"
+	component "github.com/meshery/schemas/models/v1beta1/component"
 )
 
 // DesignPreferences Design-level preferences
@@ -21,7 +21,7 @@ type DesignPreferences struct {
 
 // DeletePatternModel defines model for DeletePatternModel.
 type DeletePatternModel struct {
-	Id   corev1alpha1.Id   `json:"id,omitempty" yaml:"id,omitempty"`
+	ID   corev1alpha1.Id   `json:"id,omitempty" yaml:"id,omitempty"`
 	Name corev1alpha1.Text `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -29,7 +29,7 @@ type DeletePatternModel struct {
 type MesheryPattern struct {
 	CatalogData *catalogv1alpha2.CatalogData `json:"catalog_data,omitempty" yaml:"catalog_data,omitempty"`
 	CreatedAt   corev1alpha1.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Id          corev1alpha1.Id           `json:"id,omitempty" yaml:"id,omitempty"`
+	ID          corev1alpha1.Id           `json:"id,omitempty" yaml:"id,omitempty"`
 	Location    corev1alpha1.MapObject    `json:"location,omitempty" yaml:"location,omitempty"`
 	Name        corev1alpha1.Text         `json:"name,omitempty" yaml:"name,omitempty"`
 
@@ -81,7 +81,7 @@ type MesheryPatternRequestBody struct {
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type PatternFile struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
 
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
@@ -94,13 +94,13 @@ type PatternFile struct {
 	Metadata *PatternFile_Metadata     `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// Components A list of one or more component declarations.
-	Components []componentv1beta1.ComponentDefinition `json:"components" yaml:"components"`
+	Components []*component.ComponentDefinition `json:"components" yaml:"components"`
 
 	// Preferences Design-level preferences
 	Preferences *DesignPreferences `json:"preferences,omitempty" yaml:"preferences,omitempty"`
 
 	// Relationships List of relationships between components
-	Relationships []relationshipv1alpha3.RelationshipDefinition `json:"relationships" yaml:"relationships"`
+	Relationships []*relationship.RelationshipDefinition `json:"relationships" yaml:"relationships"`
 }
 
 // PatternFile_Metadata defines model for PatternFile.Metadata.
@@ -113,17 +113,17 @@ type PatternFile_Metadata struct {
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Id = corev1alpha1.Uuid
 
-// Corev1alpha1Order defines model for order.
-type Corev1alpha1Order = string
+// Order defines model for order.
+type Order = string
 
-// Corev1alpha1Page defines model for page.
-type Corev1alpha1Page = string
+// Page defines model for page.
+type Page = string
 
-// Corev1alpha1Pagesize defines model for pagesize.
-type Corev1alpha1Pagesize = string
+// Pagesize defines model for pagesize.
+type Pagesize = string
 
-// Corev1alpha1Search defines model for search.
-type Corev1alpha1Search = string
+// Search defines model for search.
+type Search = string
 
 // Getter for additional properties for PatternFile_Metadata. Returns the specified
 // element and whether it was found

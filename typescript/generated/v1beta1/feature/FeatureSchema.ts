@@ -78,9 +78,10 @@ const FeatureSchema = {
                         }
                       },
                       "plan": {
-                        "x-go-type": "plan.Plan",
+                        "x-go-type": "planv1beta1.Plan",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                          "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                          "name": "planv1beta1"
                         },
                         "x-oapi-codegen-extra-tags": {
                           "belongs_to": "plans",
@@ -335,9 +336,10 @@ const FeatureSchema = {
                         }
                       },
                       "plan": {
-                        "x-go-type": "plan.Plan",
+                        "x-go-type": "planv1beta1.Plan",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                          "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                          "name": "planv1beta1"
                         },
                         "x-oapi-codegen-extra-tags": {
                           "belongs_to": "plans",
@@ -580,9 +582,10 @@ const FeatureSchema = {
               }
             },
             "plan": {
-              "x-go-type": "plan.Plan",
+              "x-go-type": "planv1beta1.Plan",
               "x-go-type-import": {
-                "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                "name": "planv1beta1"
               },
               "x-oapi-codegen-extra-tags": {
                 "belongs_to": "plans",
@@ -779,9 +782,10 @@ const FeatureSchema = {
             }
           },
           "plan": {
-            "x-go-type": "plan.Plan",
+            "x-go-type": "planv1beta1.Plan",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/plan"
+              "path": "github.com/meshery/schemas/models/v1beta1/plan",
+              "name": "planv1beta1"
             },
             "x-oapi-codegen-extra-tags": {
               "belongs_to": "plans",
@@ -933,6 +937,6 @@ const FeatureSchema = {
       }
     }
   }
-} satisfies Record<string, unknown>;
+} as const satisfies Record<string, unknown>;
 
 export default FeatureSchema;

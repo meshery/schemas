@@ -10,7 +10,7 @@ import (
 // Schedule A schedule defines a recurring cron-based trigger for performance tests or other automated tasks.
 type Schedule struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Human-readable name for the schedule.
 	Name string `db:"name" json:"name" yaml:"name"`
@@ -44,14 +44,14 @@ type SchedulePage struct {
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Id = corev1alpha1.Uuid
 
-// Corev1alpha1Order defines model for order.
-type Corev1alpha1Order = string
+// Order defines model for order.
+type Order = string
 
-// Corev1alpha1Page defines model for page.
-type Corev1alpha1Page = string
+// Page defines model for page.
+type Page = string
 
-// Corev1alpha1Pagesize defines model for pagesize.
-type Corev1alpha1Pagesize = string
+// Pagesize defines model for pagesize.
+type Pagesize = string
 
-// Corev1alpha1Search defines model for search.
-type Corev1alpha1Search = string
+// Search defines model for search.
+type Search = string

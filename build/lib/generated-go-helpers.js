@@ -199,6 +199,9 @@ function writeGeneratedHelperFile(pkg, outputDir) {
 
   const spec = inferHelperSpec(pkg, outputPath, outputDir);
   const content = renderGeneratedHelperFile(pkg, spec);
+  if (!content) {
+    return null;
+  }
 
   if (!content) {
     if (fs.existsSync(filePath)) {

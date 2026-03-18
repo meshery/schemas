@@ -654,9 +654,10 @@ const AcademySchema = {
                   "access_status": {
                     "description": "Current access status of the curricula",
                     "x-go-name": "AccessStatus",
-                    "x-go-type": "invitation.InvitationStatus",
+                    "x-go-type": "invitationv1beta1.InvitationStatus",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1beta1/invitation"
+                      "path": "github.com/meshery/schemas/models/v1beta1/invitation",
+                      "name": "invitationv1beta1"
                     },
                     "x-oapi-codegen-extra-tags": {
                       "json": "access_status",
@@ -3146,9 +3147,10 @@ const AcademySchema = {
                   "access_status": {
                     "description": "Current access status of the curricula",
                     "x-go-name": "AccessStatus",
-                    "x-go-type": "invitation.InvitationStatus",
+                    "x-go-type": "invitationv1beta1.InvitationStatus",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1beta1/invitation"
+                      "path": "github.com/meshery/schemas/models/v1beta1/invitation",
+                      "name": "invitationv1beta1"
                     },
                     "x-oapi-codegen-extra-tags": {
                       "json": "access_status",
@@ -3857,9 +3859,10 @@ const AcademySchema = {
                           }
                         },
                         "Invitation": {
-                          "x-go-type": "invitation.Invitation",
+                          "x-go-type": "invitationv1beta1.Invitation",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/invitation"
+                            "path": "github.com/meshery/schemas/models/v1beta1/invitation",
+                            "name": "invitationv1beta1"
                           },
                           "type": "object",
                           "required": [
@@ -4560,9 +4563,10 @@ const AcademySchema = {
                           }
                         },
                         "Invitation": {
-                          "x-go-type": "invitation.Invitation",
+                          "x-go-type": "invitationv1beta1.Invitation",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/invitation"
+                            "path": "github.com/meshery/schemas/models/v1beta1/invitation",
+                            "name": "invitationv1beta1"
                           },
                           "type": "object",
                           "required": [
@@ -8711,9 +8715,10 @@ const AcademySchema = {
                 }
               },
               "Invitation": {
-                "x-go-type": "invitation.Invitation",
+                "x-go-type": "invitationv1beta1.Invitation",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1beta1/invitation"
+                  "path": "github.com/meshery/schemas/models/v1beta1/invitation",
+                  "name": "invitationv1beta1"
                 },
                 "type": "object",
                 "required": [
@@ -8993,9 +8998,10 @@ const AcademySchema = {
           "access_status": {
             "description": "Current access status of the curricula",
             "x-go-name": "AccessStatus",
-            "x-go-type": "invitation.InvitationStatus",
+            "x-go-type": "invitationv1beta1.InvitationStatus",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/invitation"
+              "path": "github.com/meshery/schemas/models/v1beta1/invitation",
+              "name": "invitationv1beta1"
             },
             "x-oapi-codegen-extra-tags": {
               "json": "access_status",
@@ -14924,6 +14930,6 @@ const AcademySchema = {
       }
     }
   }
-} satisfies Record<string, unknown>;
+} as const satisfies Record<string, unknown>;
 
 export default AcademySchema;

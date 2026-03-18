@@ -140,7 +140,7 @@ type MatchSelector struct {
 // MatchSelectorItem Match selector item for binding between nodes
 type MatchSelectorItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id         *corev1alpha1.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	ID         *corev1alpha1.Uuid `json:"id" yaml:"id"`
 	Kind       string             `json:"kind" yaml:"kind"`
 	MutatedRef *MutatedRef        `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
 
@@ -157,10 +157,10 @@ type MutatorRef = [][]string
 // RelationshipDefinition Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
 type RelationshipDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
 
 	// Capabilities Capabilities associated with the relationship.
-	Capabilities *[]capabilityv1alpha1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
+	Capabilities *[]capabilityv1alpha1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities"`
 
 	// EvaluationQuery Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
 	EvaluationQuery *string `json:"evaluationQuery" yaml:"evaluationQuery"`
@@ -169,13 +169,13 @@ type RelationshipDefinition struct {
 	Kind RelationshipDefinitionKind `json:"kind" yaml:"kind"`
 
 	// Metadata Metadata contains additional information associated with the Relationship.
-	Metadata *RelationshipMetadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Metadata *Relationship_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 	Model modelv1beta1.ModelReference `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
 
 	// ModelId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ModelId *corev1alpha1.Uuid `gorm:"index:idx_relationship_definition_dbs_model_id,column:model_id" json:"modelId,omitempty" yaml:"modelId,omitempty"`
+	ModelId *corev1alpha1.Uuid `gorm:"index:idx_relationship_definition_dbs_model_id,column:model_id" json:"-" yaml:"modelId,omitempty"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
 	SchemaVersion corev1alpha1.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
@@ -379,7 +379,7 @@ type Selector struct {
 // SelectorItem Optional fields that are a part of the selector. Absence of a field has an implied * meaning.
 type SelectorItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id   *corev1alpha1.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	ID   *corev1alpha1.Uuid `json:"id" yaml:"id"`
 	Kind *string            `json:"kind" yaml:"kind"`
 
 	// Match Match configuration for selector
@@ -389,10 +389,10 @@ type SelectorItem struct {
 	MatchStrategyMatrix *[][]string `json:"match_strategy_matrix" yaml:"match_strategy_matrix"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	Model *modelv1beta1.ModelReference `json:"model,omitempty" yaml:"model,omitempty"`
+	Model *modelv1beta1.ModelReference `json:"model,omitempty" yaml:"model"`
 
 	// Patch Patch configuration for the selector
-	Patch *RelationshipDefinitionSelectorsPatch `json:"patch,omitempty" yaml:"patch,omitempty"`
+	Patch *RelationshipDefinition_Selectors_Patch `json:"patch" yaml:"patch"`
 }
 
 // SelectorSet Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.

@@ -70,7 +70,7 @@ type Organization struct {
 	Domain      *string      `db:"domain" json:"domain" yaml:"domain"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id       UUID        `db:"id" json:"id" yaml:"id"`
+	ID       UUID        `db:"id" json:"id" yaml:"id"`
 	Metadata OrgMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 	Name     string      `db:"name" json:"name" yaml:"name"`
 
@@ -118,7 +118,7 @@ type Text = corev1alpha1.Text
 
 // Theme defines model for Theme.
 type Theme struct {
-	Id   string                  `json:"id" yaml:"id"`
+	ID   string                  `json:"id" yaml:"id"`
 	Logo Logo                    `json:"logo" yaml:"logo"`
 	Vars *map[string]interface{} `json:"vars,omitempty" yaml:"vars,omitempty"`
 }

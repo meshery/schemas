@@ -36,7 +36,7 @@ export interface components {
        * ]
        */
       schemaVersion: string;
-      /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+      /** @description Version of the model definition. */
       version: string;
       /**
        * @description The unique name for the model within the scope of a registrant.
@@ -274,7 +274,7 @@ export interface components {
            * ]
            */
           schemaVersion: string;
-          /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+          /** @description Version of the capability definition. */
           version: string;
           /** @description Name of the capability in human-readible format. */
           displayName: string;
@@ -397,7 +397,7 @@ export interface components {
       id: string;
       /** @description The unique name for the model within the scope of a registrant. */
       name: string;
-      /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+      /** @description Version of the model definition. */
       version: string;
       /** @description Human-readable name for the model. */
       displayName: string;

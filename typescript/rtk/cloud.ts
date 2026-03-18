@@ -2704,7 +2704,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
         /** Format specifies the format used in the `component.schema` field. JSON is the default. */
         format: "JSON" | "CUE";
         /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-        model?: {
+        model: {
           /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
           id: string;
           /** Specifies the version of the schema used for the definition. */
@@ -2945,7 +2945,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
           id: string;
           /** The unique name for the model within the scope of a registrant. */
           name: string;
-          /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+          /** Version of the model definition. */
           version: string;
           /** Human-readable name for the model. */
           displayName: string;
@@ -3197,7 +3197,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
         id: string;
         /** Specifies the version of the schema used for the relationship definition. */
         schemaVersion: string;
-        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** Specifies the version of the relationship definition. */
         version: string;
         /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
         kind: "hierarchical" | "edge" | "sibling";
@@ -3335,7 +3335,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
           id: string;
           /** The unique name for the model within the scope of a registrant. */
           name: string;
-          /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+          /** Version of the model definition. */
           version: string;
           /** Human-readable name for the model. */
           displayName: string;
@@ -3389,7 +3389,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                /** Version of the model definition. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3454,7 +3454,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                /** Version of the model definition. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3522,7 +3522,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                /** Version of the model definition. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3587,7 +3587,7 @@ export type GetPatternsApiResponse = /** status 200 Designs fetched successfully
                 id: string;
                 /** The unique name for the model within the scope of a registrant. */
                 name: string;
-                /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                /** Version of the model definition. */
                 version: string;
                 /** Human-readable name for the model. */
                 displayName: string;
@@ -3717,7 +3717,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
       /** Format specifies the format used in the `component.schema` field. JSON is the default. */
       format: "JSON" | "CUE";
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-      model?: {
+      model: {
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
         /** Specifies the version of the schema used for the definition. */
@@ -3958,7 +3958,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** Version of the model definition. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -4210,7 +4210,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
       id: string;
       /** Specifies the version of the schema used for the relationship definition. */
       schemaVersion: string;
-      /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+      /** Specifies the version of the relationship definition. */
       version: string;
       /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
       kind: "hierarchical" | "edge" | "sibling";
@@ -4348,7 +4348,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** Version of the model definition. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -4402,7 +4402,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4467,7 +4467,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4535,7 +4535,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4600,7 +4600,7 @@ export type UpsertPatternApiResponse = /** status 200 Design saved successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -4718,7 +4718,7 @@ export type UpsertPatternApiArg = {
           /** Format specifies the format used in the `component.schema` field. JSON is the default. */
           format: "JSON" | "CUE";
           /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-          model?: {
+          model: {
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
             id: string;
             /** Specifies the version of the schema used for the definition. */
@@ -4959,7 +4959,7 @@ export type UpsertPatternApiArg = {
             id: string;
             /** The unique name for the model within the scope of a registrant. */
             name: string;
-            /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+            /** Version of the model definition. */
             version: string;
             /** Human-readable name for the model. */
             displayName: string;
@@ -5211,7 +5211,7 @@ export type UpsertPatternApiArg = {
           id: string;
           /** Specifies the version of the schema used for the relationship definition. */
           schemaVersion: string;
-          /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+          /** Specifies the version of the relationship definition. */
           version: string;
           /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
           kind: "hierarchical" | "edge" | "sibling";
@@ -5349,7 +5349,7 @@ export type UpsertPatternApiArg = {
             id: string;
             /** The unique name for the model within the scope of a registrant. */
             name: string;
-            /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+            /** Version of the model definition. */
             version: string;
             /** Human-readable name for the model. */
             displayName: string;
@@ -5403,7 +5403,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** Version of the model definition. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5468,7 +5468,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** Version of the model definition. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5536,7 +5536,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** Version of the model definition. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5601,7 +5601,7 @@ export type UpsertPatternApiArg = {
                   id: string;
                   /** The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** Version of the model definition. */
                   version: string;
                   /** Human-readable name for the model. */
                   displayName: string;
@@ -5754,7 +5754,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
       /** Format specifies the format used in the `component.schema` field. JSON is the default. */
       format: "JSON" | "CUE";
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-      model?: {
+      model: {
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
         /** Specifies the version of the schema used for the definition. */
@@ -5995,7 +5995,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** Version of the model definition. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -6247,7 +6247,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
       id: string;
       /** Specifies the version of the schema used for the relationship definition. */
       schemaVersion: string;
-      /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+      /** Specifies the version of the relationship definition. */
       version: string;
       /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
       kind: "hierarchical" | "edge" | "sibling";
@@ -6385,7 +6385,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** Version of the model definition. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -6439,7 +6439,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -6504,7 +6504,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -6572,7 +6572,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -6637,7 +6637,7 @@ export type GetPatternApiResponse = /** status 200 Design fetched successfully *
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -6761,7 +6761,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
       /** Format specifies the format used in the `component.schema` field. JSON is the default. */
       format: "JSON" | "CUE";
       /** Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-      model?: {
+      model: {
         /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
         id: string;
         /** Specifies the version of the schema used for the definition. */
@@ -7002,7 +7002,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** Version of the model definition. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -7254,7 +7254,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
       id: string;
       /** Specifies the version of the schema used for the relationship definition. */
       schemaVersion: string;
-      /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+      /** Specifies the version of the relationship definition. */
       version: string;
       /** Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships. */
       kind: "hierarchical" | "edge" | "sibling";
@@ -7392,7 +7392,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
         id: string;
         /** The unique name for the model within the scope of a registrant. */
         name: string;
-        /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** Version of the model definition. */
         version: string;
         /** Human-readable name for the model. */
         displayName: string;
@@ -7446,7 +7446,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7511,7 +7511,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7579,7 +7579,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;
@@ -7644,7 +7644,7 @@ export type ClonePatternApiResponse = /** status 200 Design cloned successfully 
               id: string;
               /** The unique name for the model within the scope of a registrant. */
               name: string;
-              /** A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+              /** Version of the model definition. */
               version: string;
               /** Human-readable name for the model. */
               displayName: string;

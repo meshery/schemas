@@ -44,7 +44,7 @@ type Adapter = map[string]interface{}
 
 // GetUserResponse defines model for GetUserResponse.
 type GetUserResponse struct {
-	AcceptedTermsAt corev1alpha1.Time `db:"accepted_terms_at" json:"accepted_terms_at,omitempty" yaml:"accepted_terms_at,omitempty"`
+	AcceptedTermsAt corev1alpha1.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at"`
 
 	// AvatarUrl URL to user's avatar image
 	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
@@ -61,7 +61,7 @@ type GetUserResponse struct {
 
 	// Email User's email address
 	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime corev1alpha1.Time   `db:"first_login_time" json:"first_login_time,omitempty" yaml:"first_login_time,omitempty"`
+	FirstLoginTime corev1alpha1.Time   `db:"first_login_time" json:"first_login_time" yaml:"first_login_time"`
 
 	// FirstName User's first name
 	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
@@ -78,7 +78,7 @@ type GetUserResponse struct {
 		OrganizationsWithRoles *[]map[string]interface{} `db:"organizations_with_roles" json:"organizations_with_roles" yaml:"organizations_with_roles"`
 		TotalCount             *int                      `db:"total_count" json:"total_count" yaml:"total_count"`
 	} `db:"organizations" json:"organizations" yaml:"organizations"`
-	Preferences *Preference `db:"preferences" json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
 
 	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
 	Provider string `db:"provider" json:"provider" yaml:"provider"`
@@ -178,7 +178,7 @@ type Social struct {
 
 // User Represents a user in Layer5 Cloud (Meshery)
 type User struct {
-	AcceptedTermsAt corev1alpha1.Time `db:"accepted_terms_at" json:"accepted_terms_at,omitempty" yaml:"accepted_terms_at,omitempty"`
+	AcceptedTermsAt corev1alpha1.Time `db:"accepted_terms_at" json:"accepted_terms_at" yaml:"accepted_terms_at"`
 
 	// AvatarUrl URL to user's avatar image
 	AvatarUrl *string `db:"avatar_url" json:"avatar_url" yaml:"avatar_url"`
@@ -195,7 +195,7 @@ type User struct {
 
 	// Email User's email address
 	Email          openapi_types.Email `db:"email" json:"email" yaml:"email"`
-	FirstLoginTime corev1alpha1.Time   `db:"first_login_time" json:"first_login_time,omitempty" yaml:"first_login_time,omitempty"`
+	FirstLoginTime corev1alpha1.Time   `db:"first_login_time" json:"first_login_time" yaml:"first_login_time"`
 
 	// FirstName User's first name
 	FirstName string `db:"first_name" json:"first_name" yaml:"first_name"`
@@ -206,7 +206,7 @@ type User struct {
 
 	// LastName User's last name
 	LastName    string      `db:"last_name" json:"last_name" yaml:"last_name"`
-	Preferences *Preference `db:"preferences" json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	Preferences *Preference `db:"preferences" json:"preferences" yaml:"preferences"`
 
 	// Provider Authentication provider (e.g., Layer5 Cloud, Twitter, Facebook, Github)
 	Provider string `db:"provider" json:"provider" yaml:"provider"`

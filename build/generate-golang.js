@@ -110,20 +110,156 @@ function rewriteGoTypeAlias(goType, importInfo) {
   );
 }
 
-function rewriteExternalRefAliases(filePath) {
+function parseOptionalPointerOverride(value) {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (value === "true") {
+    return true;
+  }
+
+  if (value === "false") {
+    return false;
+  }
+
+  return null;
+}
+
+function applyGoTypeOverride(currentFieldType, desiredGoType, optionalPointerOverride) {
+  if (typeof desiredGoType !== "string" || desiredGoType.length === 0) {
+    return currentFieldType;
+  }
+
+  if (desiredGoType.startsWith("*")) {
+    return desiredGoType;
+  }
+
+  if (optionalPointerOverride === true) {
+    return desiredGoType;
+  }
+
+  if (optionalPointerOverride === false || currentFieldType.startsWith("*")) {
+    return `*${desiredGoType}`;
+  }
+
+  return desiredGoType;
+}
+
+function chooseImportAlias(importPath, preferredAliases, usedAliases) {
+  const preferredAlias = preferredAliases.get(importPath);
+  if (preferredAlias && !usedAliases.has(preferredAlias)) {
+    usedAliases.add(preferredAlias);
+    return preferredAlias;
+  }
+
+  return buildReadableImportAlias(importPath, usedAliases);
+}
+
+function schemaNodeToGoType(schemaNode) {
+  if (!schemaNode || typeof schemaNode !== "object") {
+    return null;
+  }
+
+  if (typeof schemaNode["x-go-type"] === "string" && schemaNode["x-go-type"].length > 0) {
+    return rewriteGoTypeAlias(schemaNode["x-go-type"], schemaNode["x-go-type-import"]);
+  }
+
+  if (typeof schemaNode.type === "string") {
+    switch (schemaNode.type) {
+      case "boolean":
+        return "bool";
+      case "integer":
+        return "int";
+      case "number":
+        return "float64";
+      case "string":
+        return "string";
+      default:
+        return null;
+    }
+  }
+
+  return null;
+}
+
+function resolveParameterAliasType(parameterDefinition, options) {
+  if (!parameterDefinition || typeof parameterDefinition !== "object") {
+    return null;
+  }
+
+  if (typeof parameterDefinition.$ref === "string") {
+    const resolvedParameter = resolveSchemaRef(parameterDefinition.$ref, options);
+    return resolveParameterAliasType(resolvedParameter, {
+      ...options,
+      seenRefs: new Set([...(options.seenRefs || []), parameterDefinition.$ref]),
+    });
+  }
+
+  if (parameterDefinition.schema && typeof parameterDefinition.schema === "object") {
+    if (typeof parameterDefinition.schema.$ref === "string") {
+      const resolvedSchema = resolveSchemaRef(parameterDefinition.schema.$ref, options);
+      return schemaNodeToGoType(resolvedSchema);
+    }
+
+    return schemaNodeToGoType(parameterDefinition.schema);
+  }
+
+  return null;
+}
+
+function rewriteExternalRefAliases(filePath, inputPath) {
   let content = fs.readFileSync(filePath, "utf-8");
   const importBlockMatch = content.match(/import \(([^]*?)\n\)/m);
   if (!importBlockMatch) {
     return;
   }
 
+  function parseImportEntries(block) {
+    return block
+      .split("\n")
+      .map((line) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) {
+          return null;
+        }
+
+        const importMatch = trimmedLine.match(/^(?:(\w+)\s+)?"([^"]+)"$/);
+        if (!importMatch) {
+          return null;
+        }
+
+        const [, explicitAlias, importPath] = importMatch;
+        return {
+          explicitAlias,
+          importPath,
+          resolvedAlias: explicitAlias || sanitizeGoIdentifier(path.basename(importPath)),
+        };
+      })
+      .filter(Boolean);
+  }
+
   const usedAliases = new Set();
   const aliasMappings = [];
   const aliasByImportPath = new Map();
+  const preferredAliases = collectPreferredImportAliases(inputPath);
+  const originalImportBlock = importBlockMatch[1];
+  const originalImportEntries = parseImportEntries(originalImportBlock);
+
+  for (const { explicitAlias, importPath } of originalImportEntries) {
+    const reservedAlias = explicitAlias || sanitizeGoIdentifier(path.basename(importPath));
+    if (reservedAlias && !/^externalRef\d+$/.test(reservedAlias)) {
+      usedAliases.add(reservedAlias);
+      aliasByImportPath.set(importPath, reservedAlias);
+    }
+  }
+
   const importBlock = importBlockMatch[1].replace(
     /^(\s*)(externalRef\d+)\s+"([^"]+)"$/gm,
     (_, indent, alias, importPath) => {
-      const readableAlias = aliasByImportPath.get(importPath) || buildReadableImportAlias(importPath, usedAliases);
+      const readableAlias =
+        aliasByImportPath.get(importPath) ||
+        chooseImportAlias(importPath, preferredAliases, usedAliases);
       aliasByImportPath.set(importPath, readableAlias);
       aliasMappings.push({ alias, readableAlias });
       return `${indent}${readableAlias} "${importPath}"`;
@@ -156,9 +292,22 @@ function rewriteExternalRefAliases(filePath) {
     .replace(/^\n+/, "\n")
     .replace(/\n+$/, "");
 
+  const canonicalAliasByImportPath = new Map(
+    parseImportEntries(normalizedImportBlock).map((entry) => [entry.importPath, entry.resolvedAlias]),
+  );
+
+  for (const { importPath, resolvedAlias } of originalImportEntries) {
+    const canonicalAlias = canonicalAliasByImportPath.get(importPath);
+    if (canonicalAlias && resolvedAlias !== canonicalAlias) {
+      aliasMappings.push({ alias: resolvedAlias, readableAlias: canonicalAlias });
+    }
+  }
+
   content = content.replace(importBlockMatch[0], `import (${normalizedImportBlock}\n)`);
 
-  for (const { alias, readableAlias } of aliasMappings) {
+  const uniqueAliasMappings = [...new Map(aliasMappings.map((entry) => [entry.alias, entry])).values()];
+
+  for (const { alias, readableAlias } of uniqueAliasMappings) {
     content = content.replace(new RegExp(`\\b${alias}\\b`, "g"), readableAlias);
     content = content.replace(
       new RegExp(`\\b${exportGoIdentifier(alias)}(?=[A-Z])`, "g"),
@@ -169,69 +318,74 @@ function rewriteExternalRefAliases(filePath) {
   fs.writeFileSync(filePath, content, "utf-8");
 }
 
+function setOrReplaceStructTag(rawTags, tagName, tagValue) {
+  const sanitizedValue = String(tagValue).replace(/"/g, '\\"');
+  const nextTag = `${tagName}:"${sanitizedValue}"`;
+  const tagPattern = new RegExp(`(^|\\s)${tagName}:"(?:\\\\.|[^"])*"`);
+
+  if (tagPattern.test(rawTags)) {
+    return rawTags.replace(tagPattern, (match, leadingWhitespace) => `${leadingWhitespace}${nextTag}`);
+  }
+
+  return `${nextTag} ${rawTags}`;
+}
+
+function resolveSchemaRef(ref, options) {
+  const {
+    document,
+    inputDir,
+    inputPath,
+    resolvedSchemaCache,
+    seenRefs = new Set(),
+    missingFile = "null",
+  } = options;
+
+  if (seenRefs.has(ref)) {
+    return null;
+  }
+
+  if (resolvedSchemaCache.has(ref)) {
+    return resolvedSchemaCache.get(ref);
+  }
+
+  const { refPath, fragment } = splitRef(ref);
+  let targetDocument = document;
+
+  if (refPath) {
+    if (/^https?:\/\//.test(refPath)) {
+      return null;
+    }
+
+    const resolvedRefPath = path.resolve(inputDir, refPath);
+    if (!fs.existsSync(resolvedRefPath)) {
+      if (missingFile === "throw") {
+        throw new Error(`Unable to resolve referenced schema file '${refPath}' from ${inputPath}`);
+      }
+      return null;
+    }
+
+    targetDocument = loadYamlFile(resolvedRefPath);
+  }
+
+  let resolvedNode;
+  try {
+    resolvedNode = getNodeByFragment(targetDocument, fragment, ref);
+  } catch (err) {
+    if (missingFile === "throw") {
+      throw err;
+    }
+    return null;
+  }
+
+  resolvedSchemaCache.set(ref, resolvedNode);
+  return resolvedNode;
+}
+
 function collectSchemaExtraTags(inputPath) {
   const extraTagsByStruct = new Map();
   const document = loadYamlFile(inputPath) || {};
   const inputDir = path.dirname(inputPath);
   const resolvedSchemaCache = new Map();
-
-  function decodeJsonPointerSegment(segment) {
-    return segment.replace(/~1/g, "/").replace(/~0/g, "~");
-  }
-
-  function getNodeByFragment(targetDocument, fragment, ref) {
-    if (!fragment) {
-      return targetDocument;
-    }
-
-    if (!fragment.startsWith("/")) {
-      throw new Error(`Unsupported JSON pointer fragment '${fragment}' in ref '${ref}'`);
-    }
-
-    let currentNode = targetDocument;
-    for (const segment of fragment.slice(1).split("/").map(decodeJsonPointerSegment)) {
-      if (!currentNode || typeof currentNode !== "object" || !(segment in currentNode)) {
-        throw new Error(`Unable to resolve fragment '#${fragment}' from ref '${ref}'`);
-      }
-
-      currentNode = currentNode[segment];
-    }
-
-    return currentNode;
-  }
-
-  function resolveSchemaRef(ref, seenRefs = new Set()) {
-    if (seenRefs.has(ref)) {
-      return null;
-    }
-
-    if (resolvedSchemaCache.has(ref)) {
-      return resolvedSchemaCache.get(ref);
-    }
-
-    const nextSeenRefs = new Set(seenRefs);
-    nextSeenRefs.add(ref);
-
-    const { refPath, fragment } = splitRef(ref);
-    let targetDocument = document;
-
-    if (refPath) {
-      if (/^https?:\/\//.test(refPath)) {
-        return null;
-      }
-
-      const resolvedRefPath = path.resolve(inputDir, refPath);
-      if (!fs.existsSync(resolvedRefPath)) {
-        throw new Error(`Unable to resolve referenced schema file '${refPath}' from ${inputPath}`);
-      }
-
-      targetDocument = loadYamlFile(resolvedRefPath);
-    }
-
-    const resolvedNode = getNodeByFragment(targetDocument, fragment, ref);
-    resolvedSchemaCache.set(ref, resolvedNode);
-    return resolvedNode;
-  }
 
   function createPropertyTagEntry(propertyName, propertyDefinition) {
     if (!propertyDefinition || typeof propertyDefinition !== "object") {
@@ -263,9 +417,19 @@ function collectSchemaExtraTags(inputPath) {
       typeof propertyDefinition["x-go-name"] === "string" &&
       propertyDefinition["x-go-name"].length > 0
         ? propertyDefinition["x-go-name"]
-        : null;
+        : propertyName === "id"
+          ? "ID"
+          : null;
+    const optionalPointerOverride = parseOptionalPointerOverride(
+      propertyDefinition["x-go-type-skip-optional-pointer"],
+    );
 
-    if (Object.keys(normalizedExtraTags).length === 0 && !goName && !goType) {
+    if (
+      Object.keys(normalizedExtraTags).length === 0 &&
+      !goName &&
+      !goType &&
+      optionalPointerOverride === null
+    ) {
       return null;
     }
 
@@ -281,6 +445,7 @@ function collectSchemaExtraTags(inputPath) {
       extraTags: normalizedExtraTags,
       goName,
       goType,
+      optionalPointerOverride,
     };
   }
 
@@ -292,7 +457,14 @@ function collectSchemaExtraTags(inputPath) {
     const propertyTags = new Map();
 
     if (typeof schemaDefinition.$ref === "string") {
-      const resolvedSchema = resolveSchemaRef(schemaDefinition.$ref, seenRefs);
+      const resolvedSchema = resolveSchemaRef(schemaDefinition.$ref, {
+        document,
+        inputDir,
+        inputPath,
+        resolvedSchemaCache,
+        seenRefs,
+        missingFile: "throw",
+      });
       for (const entry of collectPropertyTags(resolvedSchema, new Set([...seenRefs, schemaDefinition.$ref]))) {
         propertyTags.set(entry.propertyName, entry);
       }
@@ -428,6 +600,17 @@ function addSchemaExtraTags(filePath, inputPath) {
     return;
   }
 
+  function mergeTag(rawTags, tagName, tagValue) {
+    const sanitizedValue = String(tagValue).replace(/"/g, '\\"');
+    const tagPattern = new RegExp(`${tagName}:"[^"]*"`);
+
+    if (tagPattern.test(rawTags)) {
+      return rawTags.replace(tagPattern, `${tagName}:"${sanitizedValue}"`);
+    }
+
+    return `${tagName}:"${sanitizedValue}" ${rawTags}`;
+  }
+
   const lines = fs.readFileSync(filePath, "utf-8").split("\n");
   let currentStructName = null;
   let structDepth = 0;
@@ -460,12 +643,7 @@ function addSchemaExtraTags(filePath, inputPath) {
         let updatedTags = rawTags;
 
         for (const [tagName, tagValue] of Object.entries(propertyTags.extraTags)) {
-          if (updatedTags.includes(`${tagName}:"`)) {
-            continue;
-          }
-
-          const sanitizedValue = String(tagValue).replace(/"/g, '\\"');
-          updatedTags = `${tagName}:"${sanitizedValue}" ${updatedTags}`;
+          updatedTags = setOrReplaceStructTag(updatedTags, tagName, tagValue);
         }
 
         if (updatedTags !== rawTags) {
@@ -504,18 +682,21 @@ function addSchemaExtraTags(filePath, inputPath) {
 
             if (propertyTags.goType) {
               const fieldTypeMatch = updatedLine.match(/^(\s*\w+\s+)(\S+)(\s+`[^`]*`.*)$/);
-              if (fieldTypeMatch && fieldTypeMatch[2] !== propertyTags.goType) {
-                updatedLine = `${fieldTypeMatch[1]}${propertyTags.goType}${fieldTypeMatch[3]}`;
+              if (fieldTypeMatch) {
+                const nextFieldType = applyGoTypeOverride(
+                  fieldTypeMatch[2],
+                  propertyTags.goType,
+                  propertyTags.optionalPointerOverride,
+                );
+
+                if (fieldTypeMatch[2] !== nextFieldType) {
+                  updatedLine = `${fieldTypeMatch[1]}${nextFieldType}${fieldTypeMatch[3]}`;
+                }
               }
             }
 
             for (const [tagName, tagValue] of Object.entries(propertyTags.extraTags)) {
-              if (updatedTags.includes(`${tagName}:"`)) {
-                continue;
-              }
-
-              const sanitizedValue = String(tagValue).replace(/"/g, '\\"');
-              updatedTags = `${tagName}:"${sanitizedValue}" ${updatedTags}`;
+              updatedTags = setOrReplaceStructTag(updatedTags, tagName, tagValue);
             }
 
             if (updatedTags !== rawTags) {
@@ -541,6 +722,62 @@ function addSchemaExtraTags(filePath, inputPath) {
   fs.writeFileSync(filePath, lines.join("\n"), "utf-8");
 }
 
+function addCompatibilityParameterAliases(filePath, inputPath) {
+  const document = loadYamlFile(inputPath) || {};
+  const inputDir = path.dirname(inputPath);
+  const resolvedSchemaCache = new Map();
+  const parameterNames = Object.keys(document.components?.parameters || {});
+  if (parameterNames.length === 0) {
+    return;
+  }
+
+  let content = fs.readFileSync(filePath, "utf-8");
+
+  for (const parameterName of parameterNames) {
+    const exportedName = exportGoIdentifier(parameterName);
+    const aliasPattern = new RegExp(`(^// .*\\n)?^type (\\w+${exportedName}) = (.+)$`, "m");
+    const aliasMatch = content.match(aliasPattern);
+    if (!aliasMatch || aliasMatch[2] === exportedName) {
+      continue;
+    }
+
+    const schemaTypeExpression = resolveParameterAliasType(document.components.parameters[parameterName], {
+      document,
+      inputDir,
+      inputPath,
+      resolvedSchemaCache,
+      seenRefs: new Set(),
+      missingFile: "throw",
+    });
+    const typeExpression = schemaTypeExpression || aliasMatch[3];
+    const directAliasPattern = new RegExp(
+      `(^// ${exportedName} defines model for ${parameterName}\\.\\n)?^type ${exportedName} = .+$`,
+      "m",
+    );
+    const directAlias = `// ${exportedName} defines model for ${parameterName}.\ntype ${exportedName} = ${typeExpression}`;
+
+    if (directAliasPattern.test(content)) {
+      content = content.replace(directAliasPattern, directAlias);
+      content = content.replace(new RegExp(`${aliasMatch[0]}\\n+`, "m"), "");
+      continue;
+    }
+
+    content = content.replace(aliasPattern, directAlias);
+  }
+
+  fs.writeFileSync(filePath, content, "utf-8");
+}
+
+function validateReadableImportAliases(filePath) {
+  const content = fs.readFileSync(filePath, "utf-8");
+  const opaqueAliases = [...content.matchAll(/\bexternalRef\d+\b/g)].map((match) => match[0]);
+
+  if (opaqueAliases.length > 0) {
+    throw new Error(
+      `Generated Go file still contains opaque import aliases: ${[...new Set(opaqueAliases)].join(", ")}`,
+    );
+  }
+}
 function validateGeneratedDbTags(filePath, inputPath) {
   const extraTagsByStruct = collectSchemaExtraTags(inputPath);
   const generatedTagsByStruct = collectGeneratedStructTags(filePath);
@@ -554,24 +791,26 @@ function validateGeneratedDbTags(filePath, inputPath) {
 
     for (const entry of propertyTags) {
       const { propertyName, candidateJsonNames, extraTags } = entry;
-      if (!Object.prototype.hasOwnProperty.call(extraTags, "db")) {
-        continue;
-      }
-
-      const expectedDbTag = `db:"${String(extraTags.db).replace(/"/g, '\\"')}"`;
       const generatedField = candidateJsonNames
         .map((candidateName) => generatedPropertyTags.get(candidateName))
         .find(Boolean);
 
-      if (!generatedField || !generatedField.rawTags.includes(expectedDbTag)) {
-        failures.push(
-          `${structName}.${propertyName} expected ${expectedDbTag} in generated tags`,
-        );
+      if (Object.prototype.hasOwnProperty.call(extraTags, "db")) {
+        const expectedDbTag = `db:"${String(extraTags.db).replace(/"/g, '\\"')}"`;
+        if (!generatedField || !generatedField.rawTags.includes(expectedDbTag)) {
+          failures.push(
+            `${structName}.${propertyName} expected ${expectedDbTag} in generated tags`,
+          );
+        }
       }
 
       if (entry.goName && generatedField && generatedField.fieldName !== entry.goName) {
         failures.push(
           `${structName}.${propertyName} expected field name ${entry.goName} but generated ${generatedField.fieldName}`,
+        );
+      } else if (entry.goName && !generatedField) {
+        failures.push(
+          `${structName}.${propertyName} expected field name ${entry.goName} but no generated field was found`,
         );
       }
     }
@@ -579,7 +818,7 @@ function validateGeneratedDbTags(filePath, inputPath) {
 
   if (failures.length > 0) {
     throw new Error(
-      "Generated Go structs are missing schema-declared db tags:\n" +
+      "Generated Go structs do not match schema-declared tags or field names:\n" +
         failures.map((failure) => `  - ${failure}`).join("\n"),
     );
   }
@@ -601,12 +840,87 @@ function splitRef(ref) {
   };
 }
 
+function decodeJsonPointerSegment(segment) {
+  return segment.replace(/~1/g, "/").replace(/~0/g, "~");
+}
+
+function getNodeByFragment(targetDocument, fragment, ref) {
+  if (!fragment) {
+    return targetDocument;
+  }
+
+  if (!fragment.startsWith("/")) {
+    throw new Error(`Unsupported JSON pointer fragment '${fragment}' in ref '${ref}'`);
+  }
+
+  let currentNode = targetDocument;
+  for (const segment of fragment.slice(1).split("/").map(decodeJsonPointerSegment)) {
+    if (!currentNode || typeof currentNode !== "object" || !(segment in currentNode)) {
+      throw new Error(`Unable to resolve ref '${ref}' while generating Go models`);
+    }
+    currentNode = currentNode[segment];
+  }
+
+  return currentNode;
+}
+
 function loadYamlFile(filePath) {
   try {
     return yaml.load(fs.readFileSync(filePath, "utf-8"));
   } catch (err) {
     throw new Error(`Failed to parse schema file ${filePath}: ${err.message}`);
   }
+}
+
+function collectPreferredImportAliases(inputPath) {
+  const preferredAliases = new Map();
+  const document = loadYamlFile(inputPath) || {};
+  const inputDir = path.dirname(inputPath);
+  const resolvedSchemaCache = new Map();
+
+  function visitNode(node, seenRefs = new Set()) {
+    if (Array.isArray(node)) {
+      for (const item of node) {
+        visitNode(item, seenRefs);
+      }
+      return;
+    }
+
+    if (!node || typeof node !== "object") {
+      return;
+    }
+
+    if (
+      node["x-go-type-import"] &&
+      typeof node["x-go-type-import"] === "object" &&
+      typeof node["x-go-type-import"].path === "string" &&
+      typeof node["x-go-type-import"].name === "string" &&
+      node["x-go-type-import"].name.length > 0
+    ) {
+      preferredAliases.set(node["x-go-type-import"].path, node["x-go-type-import"].name);
+    }
+
+    if (typeof node.$ref === "string") {
+      const resolved = resolveSchemaRef(node.$ref, {
+        document,
+        inputDir,
+        inputPath,
+        resolvedSchemaCache,
+        seenRefs,
+        missingFile: "null",
+      });
+      if (resolved) {
+        visitNode(resolved, new Set([...seenRefs, node.$ref]));
+      }
+    }
+
+    for (const value of Object.values(node)) {
+      visitNode(value, seenRefs);
+    }
+  }
+
+  visitNode(document);
+  return preferredAliases;
 }
 
 function collectRefs(node, refs = new Set()) {
@@ -983,7 +1297,9 @@ async function generateGoModels(pkg) {
     // oapi-codegen omits for referenced object fields.
     addYamlTags(outputPath);
     addSchemaExtraTags(outputPath, inputPath);
-    rewriteExternalRefAliases(outputPath);
+    rewriteExternalRefAliases(outputPath, inputPath);
+    validateReadableImportAliases(outputPath);
+    addCompatibilityParameterAliases(outputPath, inputPath);
     validateGeneratedDbTags(outputPath, inputPath);
     writeGeneratedHelperFile(pkg, outputDir);
 

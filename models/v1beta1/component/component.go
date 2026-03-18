@@ -42,7 +42,7 @@ type Component struct {
 // ComponentDefinition Components are reusable building blocks for depicting capabilities defined within models. Learn more at https://docs.meshery.io/concepts/components
 type ComponentDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
 	SchemaVersion corev1alpha1.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
@@ -60,16 +60,16 @@ type ComponentDefinition struct {
 	Format ComponentDefinitionFormat `json:"format" yaml:"format"`
 
 	// Model Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
-	Model *modelv1beta1.ModelDefinition `gorm:"foreignKey:ModelId;references:Id" json:"model,omitempty" yaml:"model,omitempty"`
+	Model *modelv1beta1.ModelDefinition `gorm:"foreignKey:ModelId;references:ID" json:"model" yaml:"model"`
 
 	// ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 	ModelReference modelv1beta1.ModelReference `gorm:"-" json:"modelReference" yaml:"modelReference"`
 
 	// Styles Visualization styles for a component
-	Styles *corev1alpha1.ComponentStyles `gorm:"type:bytes;serializer:json" json:"styles,omitempty" yaml:"styles,omitempty"`
+	Styles corev1alpha1.ComponentStyles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
 
 	// Capabilities Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
-	Capabilities *[]capabilityv1alpha1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities" yaml:"capabilities"`
+	Capabilities []capabilityv1alpha1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities" yaml:"capabilities"`
 
 	// Status Status of component, including:
 	// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.
@@ -94,7 +94,7 @@ type ComponentDefinition struct {
 	UpdatedAt corev1alpha1.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// ModelId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ModelId corev1alpha1.Uuid `gorm:"index:idx_component_definition_dbs_model_id,column:model_id" json:"modelId" yaml:"modelId"`
+	ModelId corev1alpha1.Uuid `gorm:"index:idx_component_definition_dbs_model_id,column:model_id" json:"-" yaml:"-"`
 }
 
 // ComponentDefinitionFormat Format specifies the format used in the `component.schema` field. JSON is the default.

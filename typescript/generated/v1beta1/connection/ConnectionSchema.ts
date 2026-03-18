@@ -321,9 +321,10 @@ const ConnectionSchema = {
                             "type": "array",
                             "description": "Associated environments for this connection",
                             "items": {
-                              "x-go-type": "*environment.Environment",
+                              "x-go-type": "*environmentv1beta1.Environment",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                "name": "environmentv1beta1"
                               },
                               "$id": "https://schemas.meshery.io/environment.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -823,9 +824,10 @@ const ConnectionSchema = {
                       "type": "array",
                       "description": "Associated environments for this connection",
                       "items": {
-                        "x-go-type": "*environment.Environment",
+                        "x-go-type": "*environmentv1beta1.Environment",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                          "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                          "name": "environmentv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/environment.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1201,9 +1203,10 @@ const ConnectionSchema = {
                       "type": "array",
                       "description": "Associated environments for this connection",
                       "items": {
-                        "x-go-type": "*environment.Environment",
+                        "x-go-type": "*environmentv1beta1.Environment",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                          "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                          "name": "environmentv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/environment.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1674,9 +1677,10 @@ const ConnectionSchema = {
                       "type": "array",
                       "description": "Associated environments for this connection",
                       "items": {
-                        "x-go-type": "*environment.Environment",
+                        "x-go-type": "*environmentv1beta1.Environment",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                          "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                          "name": "environmentv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/environment.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2287,9 +2291,10 @@ const ConnectionSchema = {
             "type": "array",
             "description": "Associated environments for this connection",
             "items": {
-              "x-go-type": "*environment.Environment",
+              "x-go-type": "*environmentv1beta1.Environment",
               "x-go-type-import": {
-                "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                "name": "environmentv1beta1"
               },
               "$id": "https://schemas.meshery.io/environment.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2645,9 +2650,10 @@ const ConnectionSchema = {
                   "type": "array",
                   "description": "Associated environments for this connection",
                   "items": {
-                    "x-go-type": "*environment.Environment",
+                    "x-go-type": "*environmentv1beta1.Environment",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                      "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                      "name": "environmentv1beta1"
                     },
                     "$id": "https://schemas.meshery.io/environment.yaml",
                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -3284,6 +3290,6 @@ const ConnectionSchema = {
       }
     }
   }
-} satisfies Record<string, unknown>;
+} as const satisfies Record<string, unknown>;
 
 export default ConnectionSchema;

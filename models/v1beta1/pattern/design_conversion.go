@@ -31,7 +31,7 @@ func (p *PatternFile) ConvertTo(pattern conversion.Hub) error {
 	}
 
 	patternFile.Name = p.Name
-	patternFile.PatternID = p.Id.String()
+	patternFile.PatternID = p.ID.String()
 	patternFile.Version = p.Version
 
 	for _, component := range p.Components {
@@ -43,10 +43,12 @@ func (p *PatternFile) ConvertTo(pattern conversion.Hub) error {
 
 		service.ApiVersion = component.Component.Version
 		service.Type = component.Component.Kind
-		componentId := component.Id
+		componentId := component.ID
 		service.Id = &componentId
 		service.IsAnnotation = component.Metadata.IsAnnotation
-		service.Model = component.Model.Name
+		if component.Model != nil {
+			service.Model = component.Model.Name
+		}
 		service.Version = component.Version
 		service.Name = component.DisplayName
 
@@ -74,7 +76,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 		return err
 	}
 
-	p.Id = uuid.FromStringOrNil(patternFile.PatternID)
+	p.ID = uuid.FromStringOrNil(patternFile.PatternID)
 	p.Name = patternFile.Name
 	p.SchemaVersion = v1beta1.DesignSchemaVersion
 	p.Version = patternFile.Version
@@ -95,7 +97,7 @@ func (p *PatternFile) ConvertFrom(pattern conversion.Hub) error {
 				Kind:    service.Type,
 				Version: service.ApiVersion,
 			},
-			Model: model.ModelDefinition{
+			Model: &model.ModelDefinition{
 				SchemaVersion: v1beta1.ModelSchemaVersion,
 				Name:          service.Model,
 			},
@@ -135,7 +137,7 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 	}
 
 	isNamespaced := false
-	cmp.Id = compNodeUUID
+	cmp.ID = compNodeUUID
 	_metadata := extensionsMetadata["meshmodel-metadata"]
 	metadata := map[string]interface{}{}
 	if _metadata != nil {
@@ -190,7 +192,7 @@ func (p *PatternFile) convertFromTraits(cmp *component.ComponentDefinition, serv
 func (p *PatternFile) convertToTraits(service *v1alpha2.Service, component *component.ComponentDefinition) error {
 	extensionsMetadata := make(map[string]interface{}, 0)
 	extensionsMetadata["meshmap"] = map[string]interface{}{
-		"id":                 component.Id,
+		"id":                 component.ID,
 		"meshmodel-data":     component.Model,
 		"meshmodel-metadata": component.Metadata,
 		"position":           component.Metadata.AdditionalProperties["position"],

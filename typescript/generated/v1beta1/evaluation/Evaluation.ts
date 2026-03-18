@@ -106,7 +106,7 @@ export interface paths {
                    */
                   format: "JSON" | "CUE";
                   /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-                  model?: {
+                  model: {
                     /**
                      * Format: uuid
                      * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -483,7 +483,7 @@ export interface paths {
                     id: string;
                     /** @description The unique name for the model within the scope of a registrant. */
                     name: string;
-                    /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                    /** @description Version of the model definition. */
                     version: string;
                     /** @description Human-readable name for the model. */
                     displayName: string;
@@ -930,7 +930,7 @@ export interface paths {
                    * ]
                    */
                   schemaVersion: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Specifies the version of the relationship definition. */
                   version: string;
                   /**
                    * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -1135,7 +1135,7 @@ export interface paths {
                     id: string;
                     /** @description The unique name for the model within the scope of a registrant. */
                     name: string;
-                    /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                    /** @description Version of the model definition. */
                     version: string;
                     /** @description Human-readable name for the model. */
                     displayName: string;
@@ -1204,7 +1204,7 @@ export interface paths {
                           id: string;
                           /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
-                          /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                          /** @description Version of the model definition. */
                           version: string;
                           /** @description Human-readable name for the model. */
                           displayName: string;
@@ -1291,7 +1291,7 @@ export interface paths {
                           id: string;
                           /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
-                          /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                          /** @description Version of the model definition. */
                           version: string;
                           /** @description Human-readable name for the model. */
                           displayName: string;
@@ -1381,7 +1381,7 @@ export interface paths {
                           id: string;
                           /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
-                          /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                          /** @description Version of the model definition. */
                           version: string;
                           /** @description Human-readable name for the model. */
                           displayName: string;
@@ -1468,7 +1468,7 @@ export interface paths {
                           id: string;
                           /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
-                          /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                          /** @description Version of the model definition. */
                           version: string;
                           /** @description Human-readable name for the model. */
                           displayName: string;
@@ -1628,7 +1628,7 @@ export interface paths {
                  */
                 format: "JSON" | "CUE";
                 /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-                model?: {
+                model: {
                   /**
                    * Format: uuid
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -2005,7 +2005,7 @@ export interface paths {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -2452,7 +2452,7 @@ export interface paths {
                  * ]
                  */
                 schemaVersion: string;
-                /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                /** @description Specifies the version of the relationship definition. */
                 version: string;
                 /**
                  * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -2657,7 +2657,7 @@ export interface paths {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -2726,7 +2726,7 @@ export interface paths {
                         id: string;
                         /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
-                        /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                        /** @description Version of the model definition. */
                         version: string;
                         /** @description Human-readable name for the model. */
                         displayName: string;
@@ -2813,7 +2813,7 @@ export interface paths {
                         id: string;
                         /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
-                        /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                        /** @description Version of the model definition. */
                         version: string;
                         /** @description Human-readable name for the model. */
                         displayName: string;
@@ -2903,7 +2903,7 @@ export interface paths {
                         id: string;
                         /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
-                        /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                        /** @description Version of the model definition. */
                         version: string;
                         /** @description Human-readable name for the model. */
                         displayName: string;
@@ -2990,7 +2990,7 @@ export interface paths {
                         id: string;
                         /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
-                        /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                        /** @description Version of the model definition. */
                         version: string;
                         /** @description Human-readable name for the model. */
                         displayName: string;
@@ -3144,7 +3144,7 @@ export interface components {
            */
           format: "JSON" | "CUE";
           /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-          model?: {
+          model: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -3521,7 +3521,7 @@ export interface components {
             id: string;
             /** @description The unique name for the model within the scope of a registrant. */
             name: string;
-            /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+            /** @description Version of the model definition. */
             version: string;
             /** @description Human-readable name for the model. */
             displayName: string;
@@ -3963,7 +3963,7 @@ export interface components {
            * ]
            */
           schemaVersion: string;
-          /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+          /** @description Specifies the version of the relationship definition. */
           version: string;
           /**
            * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -4163,7 +4163,7 @@ export interface components {
             id: string;
             /** @description The unique name for the model within the scope of a registrant. */
             name: string;
-            /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+            /** @description Version of the model definition. */
             version: string;
             /** @description Human-readable name for the model. */
             displayName: string;
@@ -4232,7 +4232,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -4319,7 +4319,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -4409,7 +4409,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -4496,7 +4496,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -4645,7 +4645,7 @@ export interface components {
            */
           format: "JSON" | "CUE";
           /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-          model?: {
+          model: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -5022,7 +5022,7 @@ export interface components {
             id: string;
             /** @description The unique name for the model within the scope of a registrant. */
             name: string;
-            /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+            /** @description Version of the model definition. */
             version: string;
             /** @description Human-readable name for the model. */
             displayName: string;
@@ -5464,7 +5464,7 @@ export interface components {
            * ]
            */
           schemaVersion: string;
-          /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+          /** @description Specifies the version of the relationship definition. */
           version: string;
           /**
            * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -5664,7 +5664,7 @@ export interface components {
             id: string;
             /** @description The unique name for the model within the scope of a registrant. */
             name: string;
-            /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+            /** @description Version of the model definition. */
             version: string;
             /** @description Human-readable name for the model. */
             displayName: string;
@@ -5733,7 +5733,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -5820,7 +5820,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -5910,7 +5910,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;
@@ -5997,7 +5997,7 @@ export interface components {
                   id: string;
                   /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
-                  /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+                  /** @description Version of the model definition. */
                   version: string;
                   /** @description Human-readable name for the model. */
                   displayName: string;

@@ -97,9 +97,6 @@ type AcademyCirricula struct {
 	WorkspaceId *AcademyCirriculaWorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
-// AcademyCirriculaBadgeId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type AcademyCirriculaBadgeId = corev1alpha1.Uuid
-
 // AcademyCirriculaCreatedAt defines model for AcademyCirriculaCreatedAt.
 type AcademyCirriculaCreatedAt = corev1alpha1.Time
 
@@ -179,14 +176,14 @@ type AcademyCurriculaWithMetricsListResponse struct {
 
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
-	Certificate Certificate `db:"certificate" json:"certificate" yaml:"certificate"`
+	Certificate core.Map `db:"certificate" json:"certificate" yaml:"certificate"`
 
 	// ContentId ID of the course content
 	ContentId string            `db:"content_id" json:"content_id" yaml:"content_id"`
 	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt corev1alpha1.DeletedAt `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
@@ -273,7 +270,7 @@ type ChildNode struct {
 	Banner *string `json:"banner" yaml:"banner"`
 
 	// Children List of child nodes (sub-courses or modules)
-	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
+	Children []ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
 
 	// Description Course description
 	Description string `json:"description" yaml:"description"`
@@ -286,7 +283,7 @@ type ChildNode struct {
 
 	// Title Title of the course
 	Title string       `json:"title" yaml:"title"`
-	Type  *ContentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type  ContentType `json:"type,omitempty" yaml:"type,omitempty"`
 
 	// Weight A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
 	Weight *float32 `json:"weight,omitempty" yaml:"weight,omitempty"`
@@ -295,7 +292,7 @@ type ChildNode struct {
 // CirriculaCurrentItemData defines model for CirriculaCurrentItemData.
 type CirriculaCurrentItemData struct {
 	ContentType ContentType `json:"content_type" yaml:"content_type"`
-	Id          string      `json:"id" yaml:"id"`
+	ID          string      `json:"id" yaml:"id"`
 	LastOpened  time.Time   `json:"last_opened" yaml:"last_opened"`
 }
 
@@ -347,10 +344,10 @@ type CreateAcademyCurriculaRequest struct {
 type CurriculaMetadata struct {
 	// Banner Filename of the banner image, which should be placed in the same directory as the _index.md file
 	Banner      *string      `json:"banner" yaml:"banner"`
-	Certificate *Certificate `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+	Certificate Certificate `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 
 	// Children List of children items in the top-level curricula
-	Children *[]ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
+	Children []ChildNode `json:"children,omitempty" yaml:"children,omitempty"`
 
 	// Description Short description of the curricula
 	Description string `json:"description" yaml:"description"`
@@ -395,7 +392,7 @@ type Level string
 
 // Parent defines model for Parent.
 type Parent struct {
-	Id           string `json:"id" yaml:"id"`
+	ID           string `json:"id" yaml:"id"`
 	RelPermalink string `json:"relPermalink" yaml:"relPermalink"`
 	Title        string `json:"title" yaml:"title"`
 	Type         string `json:"type" yaml:"type"`
@@ -411,7 +408,7 @@ type ProgressItemCompleted struct {
 // Question defines model for Question.
 type Question struct {
 	CorrectAnswer   string           `json:"correct_answer" yaml:"correct_answer"`
-	Id              string           `json:"id" yaml:"id"`
+	ID              string           `json:"id" yaml:"id"`
 	Marks           int              `json:"marks" yaml:"marks"`
 	MultipleAnswers *bool            `json:"multiple_answers,omitempty" yaml:"multiple_answers,omitempty"`
 	Options         []QuestionOption `json:"options" yaml:"options"`
@@ -421,7 +418,7 @@ type Question struct {
 
 // QuestionOption defines model for QuestionOption.
 type QuestionOption struct {
-	Id        string `json:"id" yaml:"id"`
+	ID        string `json:"id" yaml:"id"`
 	IsCorrect bool   `json:"is_correct" yaml:"is_correct"`
 	Text      string `json:"text" yaml:"text"`
 }
@@ -448,7 +445,7 @@ type Quiz struct {
 
 	// OrgId Organization ID that owns this quiz
 	OrgId          string     `db:"org_id" json:"org_id" yaml:"org_id"`
-	Parent         *Parent    `json:"parent,omitempty" yaml:"parent,omitempty"`
+	Parent         Parent    `json:"parent,omitempty" yaml:"parent,omitempty"`
 	PassPercentage float32    `json:"pass_percentage" yaml:"pass_percentage"`
 	Permalink      string     `json:"permalink" yaml:"permalink"`
 	Prerequisites  []Parent   `json:"prerequisites" yaml:"prerequisites"`
@@ -500,7 +497,7 @@ type RegisterToAcademyContentRequest struct {
 
 // SingleAcademyCurriculaResponse defines model for SingleAcademyCurriculaResponse.
 type SingleAcademyCurriculaResponse struct {
-	Invitation        *invitationv1beta1.Invitation `json:"Invitation,omitempty" yaml:"Invitation,omitempty"`
+	Invitation        invitationv1beta1.Invitation `json:"Invitation,omitempty" yaml:"Invitation,omitempty"`
 	RegistrationCount float32                  `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
 
 	// BadgeId ID of the badge to be awarded on completion of this curricula
@@ -558,7 +555,7 @@ type TestSubmission struct {
 	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt corev1alpha1.DeletedAt `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
 	// ExpiresAt Expiry time for the test submission ( based on the time limit of the test )
 	ExpiresAt *time.Time `db:"expires_at" json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
@@ -568,9 +565,9 @@ type TestSubmission struct {
 
 	// RegistrationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	RegistrationId corev1alpha1.Uuid     `db:"registration_id" json:"registration_id" yaml:"registration_id"`
-	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
+	Result         QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
 	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
-	SubmissionData *QuizSubmission       `db:"submission_data" json:"submission_data,omitempty" yaml:"submission_data,omitempty"`
+	SubmissionData QuizSubmission       `db:"submission_data" json:"submission_data,omitempty" yaml:"submission_data,omitempty"`
 	SubmittedAt    *time.Time            `db:"submitted_at" json:"submitted_at,omitempty" yaml:"submitted_at,omitempty"`
 	Test           Quiz                  `json:"test" yaml:"test"`
 	TestAbsPath    string                `db:"test_abs_path" json:"test_abs_path" yaml:"test_abs_path"`
@@ -635,4 +632,4 @@ type UserRegistration struct {
 type Visibility string
 
 // Id defines model for id.
-type Id = string
+type Id = corev1alpha1.Uuid

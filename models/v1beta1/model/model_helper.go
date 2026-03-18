@@ -62,7 +62,7 @@ func (m *ModelDefinition) GenerateID() (uuid.UUID, error) {
 }
 
 func (m ModelDefinition) GetID() uuid.UUID {
-	return m.Id
+	return m.ID
 }
 
 func (m *ModelDefinition) GetEntityDetail() string {
@@ -90,7 +90,7 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		if err != nil {
 			return uuid.UUID{}, err
 		}
-		m.Id = modelID
+		m.ID = modelID
 		m.CategoryId = id
 		m.RegistrantId = hostID
 		err = db.Omit(clause.Associations).Create(&m).Error
@@ -102,13 +102,13 @@ func (m *ModelDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.U
 		if err != nil {
 			return uuid.UUID{}, err
 		}
-		return m.Id, nil
+		return m.ID, nil
 	}
-	return model.Id, nil
+	return model.ID, nil
 }
 
 func (m *ModelDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
-	err := db.Model(&ModelDefinition{}).Where("id = ?", m.Id).Update("status", status).Error
+	err := db.Model(&ModelDefinition{}).Where("id = ?", m.ID).Update("status", status).Error
 	if err != nil {
 		return entity.ErrUpdateEntityStatus(err, string(m.Type()), status)
 	}

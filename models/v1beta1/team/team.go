@@ -17,18 +17,18 @@ type Team struct {
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// Description Team description
-	Description *string `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+	Description *string `db:"description" json:"description,omitempty" yaml:"description"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+	Owner *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
 
 	// Metadata Additional metadata for the team
-	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Metadata  core.Map          `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
+	CreatedAt corev1alpha1.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
+	UpdatedAt corev1alpha1.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
 }
 
 // TeamPage Paginated list of teams
@@ -58,7 +58,7 @@ type TeamsUsersMapping struct {
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt corev1alpha1.NullTime  `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Id        corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
+	ID        corev1alpha1.GeneralId `db:"id" json:"id" yaml:"id"`
 	TeamId    corev1alpha1.TeamId    `db:"team_id" json:"team_id" yaml:"team_id"`
 
 	// UpdatedAt Timestamp when the resource was updated.
@@ -76,20 +76,20 @@ type TeamsUsersMappingPage struct {
 	TotalCount        corev1alpha1.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
-// Corev1alpha1Order defines model for order.
-type Corev1alpha1Order = string
+// Order defines model for order.
+type Order = string
 
 // OrgId defines model for orgId.
 type OrgId = corev1alpha1.OrganizationId
 
-// Corev1alpha1Page defines model for page.
-type Corev1alpha1Page = string
+// Page defines model for page.
+type Page = string
 
-// Corev1alpha1Pagesize defines model for pagesize.
-type Corev1alpha1Pagesize = string
+// Pagesize defines model for pagesize.
+type Pagesize = string
 
-// Corev1alpha1Search defines model for search.
-type Corev1alpha1Search = string
+// Search defines model for search.
+type Search = string
 
 // TeamId defines model for teamId.
 type TeamId = corev1alpha1.TeamId

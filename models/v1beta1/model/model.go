@@ -83,14 +83,14 @@ type ImportRequestUploadType string
 
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {
-	// Version Version of the model as defined by the registrant.
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
 	Version corev1alpha1.SemverString `json:"version" yaml:"version"`
 }
 
 // ModelDefinition Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
 type ModelDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
 	SchemaVersion corev1alpha1.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
@@ -115,16 +115,16 @@ type ModelDefinition struct {
 	Status ModelDefinitionStatus `json:"status" yaml:"status"`
 
 	// CategoryId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	CategoryId corev1alpha1.Uuid `gorm:"categoryID" json:"categoryId" yaml:"categoryId"`
+	CategoryId corev1alpha1.Uuid `gorm:"categoryID" json:"-" yaml:"-"`
 
 	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
 	Registrant connectionv1beta1.Connection `gorm:"foreignKey:RegistrantId;references:ID" json:"registrant" yaml:"registrant"`
 
 	// RegistrantId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RegistrantId corev1alpha1.Uuid `gorm:"column:connection_id" json:"registrantId" yaml:"registrantId"`
+	RegistrantId corev1alpha1.Uuid `gorm:"column:connection_id" json:"connection_id" yaml:"connection_id"`
 
 	// Category Category of the model.
-	Category categoryv1beta1.CategoryDefinition `gorm:"foreignKey:CategoryId;references:Id" json:"category" yaml:"category"`
+	Category categoryv1beta1.CategoryDefinition `gorm:"foreignKey:CategoryId;references:ID" json:"category" yaml:"category"`
 
 	// SubCategory Sub category of the model determines the secondary grouping.
 	SubCategory subcategoryv1beta1.SubCategoryDefinition `json:"subCategory" yaml:"subCategory"`
@@ -191,7 +191,7 @@ type ModelReference struct {
 	DisplayName string `json:"displayName" yaml:"displayName"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 	Model Model `json:"model" yaml:"model"`

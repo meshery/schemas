@@ -55,7 +55,7 @@ type Connection struct {
 	Name string `db:"name" json:"name" yaml:"name"`
 
 	// CredentialId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	CredentialID *corev1alpha1.Uuid `db:"credential_id" json:"credential_id,omitempty" yaml:"credential_id,omitempty"`
+	CredentialID *corev1alpha1.Uuid `db:"credential_id" json:"credential_id,omitempty" yaml:"credential_id"`
 
 	// Type Connection Type (platform, telemetry, collaboration)
 	Type string `db:"type" json:"type" yaml:"type"`
@@ -67,21 +67,21 @@ type Connection struct {
 	Kind string `db:"kind" json:"kind" yaml:"kind"`
 
 	// Metadata Additional connection metadata
-	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
 
 	// Status Connection Status
 	Status ConnectionStatus `db:"status" json:"status" yaml:"status"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserID    *corev1alpha1.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UserID    *corev1alpha1.Uuid `db:"user_id" json:"user_id,omitempty" yaml:"user_id"`
+	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
+	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
 
 	// Environments Associated environments for this connection
-	Environments []environmentv1beta1.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments,omitempty"`
+	Environments []*environmentv1beta1.Environment `db:"-" gorm:"-" json:"environments,omitempty" yaml:"environments"`
 
 	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
 	SchemaVersion corev1alpha1.VersionString `gorm:"-" db:"-" json:"schemaVersion" yaml:"schemaVersion"`
@@ -224,7 +224,7 @@ type MesheryInstance struct {
 	DeletedAt *string `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
 	// Id Instance ID
-	Id *string `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *string `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Instance name
 	Name *string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`

@@ -12,12 +12,12 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 paths:
-  /api/academy/cirricula/registered:
+  /api/academy/Curricula/registered:
     get:
       x-internal: ["cloud"]
       tags:
         - Academy
-      operationId: getMyAcademyCirricula
+      operationId: getMyAcademyCurricula
       summary: Get academy content
       description: Returns a list of academy content registered by the user with optional filtering.
       parameters:
@@ -48,7 +48,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AcademyCirriculaListResponse"
+              $ref: "#/components/schemas/AcademyCurriculaListResponse"
       "400":
         description: Invalid request parameters
       "500":
@@ -74,18 +74,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcademyCirricula"
+                $ref: "#/components/schemas/AcademyCurricula"
         "400":
           description: Invalid request parameters
         "500":
           description: Server error
 
-  /api/academy/cirricula:
+  /api/academy/Curricula:
     get:
       x-internal: ["cloud"]
       tags:
         - Academy
-      operationId: getAcademyCirricula
+      operationId: getAcademyCurricula
       summary: Get academy content
       description: Returns a list of academy content with optional filtering.
       parameters:
@@ -226,7 +226,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcademyCirricula"
+                $ref: "#/components/schemas/AcademyCurricula"
         "400":
           description: Invalid request parameters
         "500":
@@ -420,13 +420,13 @@ paths:
                   message:
                     type: string
                   progress_tracker:
-                    $ref: "#/components/schemas/CirriculaProgressTracker"
+                    $ref: "#/components/schemas/CurriculaProgressTracker"
                   registration_id:
                     type: string
                   content_type:
                     $ref: "#/components/schemas/ContentType"
                   item_data:
-                    $ref: "#/components/schemas/CirriculaCurrentItemData"
+                    $ref: "#/components/schemas/CurriculaCurrentItemData"
         "400":
           description: Bad request
           content:
@@ -685,7 +685,7 @@ components:
         type: string
 
   schemas:
-    AcademyCirriculaOrgId:
+    AcademyCurriculaOrgId:
       type: string
       description: Organization ID that owns this learning path
       example: layer5
@@ -694,7 +694,7 @@ components:
         json: "org_id"
         yaml: "org_id"
 
-    AcademyCirriculaBadgeId:
+    AcademyCurriculaBadgeId:
       allOf:
         - $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
       description: ID of the badge to be awarded on completion of this curricula
@@ -703,44 +703,44 @@ components:
         json: "badge_id"
         yaml: "badge_id"
 
-    AcademyCirriculaInviteId:
+    AcademyCurriculaInviteId:
       allOf:
         - $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-      description: ID of the invite associated with this cirricula
+      description: ID of the invite associated with this Curricula
       x-oapi-codegen-extra-tags:
         db: "invite_id"
         json: "invite_id"
         yaml: "invite_id"
 
-    AcademyCirriculaWorkspaceId:
+    AcademyCurriculaWorkspaceId:
       allOf:
         - $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-      description: ID of the workspace to which this cirricula belongs
+      description: ID of the workspace to which this Curricula belongs
       x-oapi-codegen-extra-tags:
         db: "workspace_id"
         json: "workspace_id"
         yaml: "workspace_id"
 
-    AcademyCirriculaCreatedAt:
+    AcademyCurriculaCreatedAt:
       allOf:
         - $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-      description: When the cirricula item was created
+      description: When the Curricula item was created
       x-oapi-codegen-extra-tags:
         db: "created_at"
         json: "created_at"
         yaml: "created_at"
 
-    AcademyCirriculaUpdatedAt:
+    AcademyCurriculaUpdatedAt:
       allOf:
         - $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-      description: When the cirricula was last updated
+      description: When the Curricula was last updated
       x-go-type: "core.Time"
       x-oapi-codegen-extra-tags:
         db: "updated_at"
         json: "updated_at"
         yaml: "updated_at"
 
-    AcademyCirriculaDeletedAt:
+    AcademyCurriculaDeletedAt:
       allOf:
         - $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
       x-go-type: "core.NullTime"
@@ -749,9 +749,9 @@ components:
         json: "deleted_at"
         yaml: "deleted_at"
 
-    AcademyCirriculaMetadata:
+    AcademyCurriculaMetadata:
       type: object
-      description: Additional metadata about the cirricula
+      description: Additional metadata about the Curricula
       additionalProperties: true
       x-go-type: "core.Map"
       x-go-type-skip-optional-pointer: true
@@ -811,12 +811,12 @@ components:
         - archived
         - not_ready
 
-    AcademyCirricula:
+    AcademyCurricula:
       type: object
       properties:
         id:
           type: string
-          description: Id of the cirricula
+          description: Id of the Curricula
           example: 923458-3490394-934893
           x-go-name: ID
           x-oapi-codegen-extra-tags:
@@ -830,10 +830,10 @@ components:
           x-oapi-codegen-extra-tags:
             db: "type"
         orgId:
-          $ref: "#/components/schemas/AcademyCirriculaOrgId"
+          $ref: "#/components/schemas/AcademyCurriculaOrgId"
         visibility:
           $ref: "#/components/schemas/Visibility"
-          description: Visibility of the cirricula
+          description: Visibility of the Curricula
           x-go-type: "Visibility"
           x-oapi-codegen-extra-tags:
             db: "visibility"
@@ -842,7 +842,7 @@ components:
         status:
           $ref: "#/components/schemas/Status"
           example: ready
-          description: Status of the cirricula
+          description: Status of the Curricula
           x-go-type: "Status"
           x-oapi-codegen-extra-tags:
             db: "status"
@@ -851,12 +851,12 @@ components:
 
         slug:
           type: string
-          description: slug of the cirricula
+          description: slug of the Curricula
           example: intro-kubernetes-course
 
         level:
           $ref: "#/components/schemas/Level"
-          description: Level of the cirricula
+          description: Level of the Curricula
           x-go-type: "Level"
           x-oapi-codegen-extra-tags:
             db: "level"
@@ -864,23 +864,23 @@ components:
             yaml: "level"
 
         badge_id:
-          $ref: "#/components/schemas/AcademyCirriculaBadgeId"
+          $ref: "#/components/schemas/AcademyCurriculaBadgeId"
 
         invite_id:
-          $ref: "#/components/schemas/AcademyCirriculaInviteId"
+          $ref: "#/components/schemas/AcademyCurriculaInviteId"
 
         workspace_id:
-          $ref: "#/components/schemas/AcademyCirriculaWorkspaceId"
+          $ref: "#/components/schemas/AcademyCurriculaWorkspaceId"
 
         createdAt:
-          $ref: "#/components/schemas/AcademyCirriculaCreatedAt"
+          $ref: "#/components/schemas/AcademyCurriculaCreatedAt"
 
         updatedAt:
-          $ref: "#/components/schemas/AcademyCirriculaUpdatedAt"
+          $ref: "#/components/schemas/AcademyCurriculaUpdatedAt"
         deletedAt:
-          $ref: "#/components/schemas/AcademyCirriculaDeletedAt"
+          $ref: "#/components/schemas/AcademyCurriculaDeletedAt"
         metadata:
-          $ref: "#/components/schemas/AcademyCirriculaMetadata"
+          $ref: "#/components/schemas/AcademyCurriculaMetadata"
 
       required:
         - id
@@ -898,7 +898,7 @@ components:
     SingleAcademyCurriculaResponse:
       type: object
       allOf:
-        - $ref: "#/components/schemas/AcademyCirricula"
+        - $ref: "#/components/schemas/AcademyCurricula"
         - type: object
           required:
             - RegistrationCount
@@ -936,13 +936,13 @@ components:
             json: "title"
 
         orgId:
-          $ref: "#/components/schemas/AcademyCirriculaOrgId"
+          $ref: "#/components/schemas/AcademyCurriculaOrgId"
 
         workspace_id:
-          $ref: "#/components/schemas/AcademyCirriculaWorkspaceId"
+          $ref: "#/components/schemas/AcademyCurriculaWorkspaceId"
 
         badge_id:
-          $ref: "#/components/schemas/AcademyCirriculaBadgeId"
+          $ref: "#/components/schemas/AcademyCurriculaBadgeId"
 
         team_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
@@ -970,7 +970,7 @@ components:
             yaml: "access_status"
 
         metadata:
-          $ref: "#/components/schemas/AcademyCirriculaMetadata"
+          $ref: "#/components/schemas/AcademyCurriculaMetadata"
 
       required:
         - type
@@ -983,7 +983,7 @@ components:
 
     AcademyCurriculaWithMetrics:
       allOf:
-        - $ref: "#/components/schemas/AcademyCirricula"
+        - $ref: "#/components/schemas/AcademyCurricula"
         - type: object
           required:
             - RegistrationCount
@@ -995,18 +995,18 @@ components:
                 json: "registration_count,omitempty"
                 yaml: "registration_count,omitempty"
 
-    AcademyCirriculaListResponse:
+    AcademyCurriculaListResponse:
       type: object
       properties:
         total:
           type: integer
-          description: Total number of cirricula
+          description: Total number of Curricula
           example: 7
         data:
           type: array
           items:
-            x-go-type: "AcademyCirricula"
-            $ref: "#/components/schemas/AcademyCirricula"
+            x-go-type: "AcademyCurricula"
+            $ref: "#/components/schemas/AcademyCurricula"
       required:
         - total
         - data
@@ -1016,7 +1016,7 @@ components:
       properties:
         total:
           type: integer
-          description: Total number of cirricula
+          description: Total number of Curricula
           example: 7
         data:
           type: array
@@ -1345,7 +1345,7 @@ components:
         - total
         - data
 
-    CirriculaCurrentItemData:
+    CurriculaCurrentItemData:
       type: object
       required:
         - id
@@ -1361,7 +1361,7 @@ components:
           $ref: "#/components/schemas/ContentType"
           x-go-type: "ContentType"
 
-    CirriculaProgressTracker:
+    CurriculaProgressTracker:
       type: object
       required:
         - current_item
@@ -1373,8 +1373,8 @@ components:
         current_item:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/CirriculaCurrentItemData"
-            x-go-type: "CirriculaCurrentItemData"
+            $ref: "#/components/schemas/CurriculaCurrentItemData"
+            x-go-type: "CurriculaCurrentItemData"
         grades:
           type: object
           additionalProperties:
@@ -1417,8 +1417,8 @@ components:
           $ref: "#/components/schemas/ContentType"
           x-go-type: "ContentType"
         item_data:
-          $ref: "#/components/schemas/CirriculaCurrentItemData"
-          x-go-type: "CirriculaCurrentItemData"
+          $ref: "#/components/schemas/CurriculaCurrentItemData"
+          x-go-type: "CurriculaCurrentItemData"
       required:
         - content_type
         - item_data

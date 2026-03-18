@@ -184,6 +184,7 @@ type Endpoint = Text
 type IaCFileTypes string
 
 // Id defines model for Id.
+// Id defines model for id.
 type Id = uuid.UUID
 
 // MapObject defines model for MapObject.
@@ -459,9 +460,6 @@ type CredentialID = uuid.UUID
 
 // DeletedAt Timestamp when the resource was deleted.
 type DeletedAt = time.Time
-
-// DesignId defines model for design_id.
-type DesignId = uuid.UUID
 
 // EdgeStyles defines model for edgeStyles.
 type EdgeStyles struct {
@@ -808,9 +806,6 @@ type ViewId = uuid.UUID
 // WorkspaceId defines model for workspace_id.
 type WorkspaceId = uuid.UUID
 
-// ActorType defines model for actorType.
-type ActorType = string
-
 // All defines model for all.
 type All = bool
 
@@ -855,9 +850,6 @@ type Page = string
 
 // Pagesize defines model for pagesize.
 type Pagesize = string
-
-// PagesizeWithAll defines model for pagesizeWithAll.
-type PagesizeWithAll = string
 
 // Playground defines model for playground.
 type Playground = string

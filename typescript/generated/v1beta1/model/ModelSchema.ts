@@ -200,20 +200,15 @@ const ModelSchema = {
         "properties": {
           "version": {
             "description": "Version of the model as defined by the registrant.",
-            "allOf": [
-              {
-                "type": "string",
-                "minLength": 5,
-                "maxLength": 100,
-                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-              }
-            ],
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",
               "json": "version"
             },
-            "x-order": 1
+            "x-order": 1,
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           }
         }
       },
@@ -260,16 +255,16 @@ const ModelSchema = {
             ]
           },
           "version": {
+            "description": "Version of the model definition.",
             "type": "string",
-            "minLength": 5,
-            "maxLength": 100,
-            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
             "x-order": 3,
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",
               "json": "version"
-            }
+            },
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
           "name": {
             "type": "string",
@@ -337,9 +332,10 @@ const ModelSchema = {
               "gorm": "foreignKey:RegistrantId;references:ID"
             },
             "x-order": 8,
-            "x-go-type": "connection.Connection",
+            "x-go-type": "connectionv1beta1.Connection",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/connection"
+              "path": "github.com/meshery/schemas/models/v1beta1/connection",
+              "name": "connectionv1beta1"
             },
             "$id": "https://schemas.meshery.io/connection.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -505,9 +501,10 @@ const ModelSchema = {
                 "type": "array",
                 "description": "Associated environments for this connection",
                 "items": {
-                  "x-go-type": "*environment.Environment",
+                  "x-go-type": "*environmentv1beta1.Environment",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                    "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                    "name": "environmentv1beta1"
                   },
                   "$id": "https://schemas.meshery.io/environment.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -716,11 +713,12 @@ const ModelSchema = {
             "x-oapi-codegen-extra-tags": {
               "yaml": "category",
               "json": "category",
-              "gorm": "foreignKey:CategoryId;references:Id"
+              "gorm": "foreignKey:CategoryId;references:ID"
             },
-            "x-go-type": "category.CategoryDefinition",
+            "x-go-type": "categoryv1beta1.CategoryDefinition",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/category"
+              "path": "github.com/meshery/schemas/models/v1beta1/category",
+              "name": "categoryv1beta1"
             },
             "$id": "https://schemas.meshery.io/category.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -785,9 +783,10 @@ const ModelSchema = {
           },
           "subCategory": {
             "x-order": 10,
-            "x-go-type": "subcategory.SubCategoryDefinition",
+            "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+              "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+              "name": "subcategoryv1beta1"
             },
             "$id": "https://schemas.meshery.io/category.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -862,9 +861,10 @@ const ModelSchema = {
                 "type": "array",
                 "description": "Capabilities associated with the model",
                 "items": {
-                  "x-go-type": "capability.Capability",
+                  "x-go-type": "capabilityv1alpha1.Capability",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                    "name": "capabilityv1alpha1"
                   },
                   "$id": "https://schemas.meshery.io/capability.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -903,11 +903,11 @@ const ModelSchema = {
                       ]
                     },
                     "version": {
+                      "description": "Version of the capability definition.",
                       "type": "string",
                       "minLength": 5,
                       "maxLength": 100,
-                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                     },
                     "displayName": {
                       "description": "Name of the capability in human-readible format.",
@@ -1166,20 +1166,15 @@ const ModelSchema = {
             "properties": {
               "version": {
                 "description": "Version of the model as defined by the registrant.",
-                "allOf": [
-                  {
-                    "type": "string",
-                    "minLength": 5,
-                    "maxLength": 100,
-                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                  }
-                ],
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "version",
                   "json": "version"
                 },
-                "x-order": 1
+                "x-order": 1,
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 100,
+                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
               }
             }
           },
@@ -1310,11 +1305,11 @@ const ModelSchema = {
             ]
           },
           "version": {
+            "description": "Version of the model definition.",
             "type": "string",
             "minLength": 5,
             "maxLength": 100,
-            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
           "displayName": {
             "type": "string",
@@ -1335,20 +1330,15 @@ const ModelSchema = {
             "properties": {
               "version": {
                 "description": "Version of the model as defined by the registrant.",
-                "allOf": [
-                  {
-                    "type": "string",
-                    "minLength": 5,
-                    "maxLength": 100,
-                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                  }
-                ],
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "version",
                   "json": "version"
                 },
-                "x-order": 1
+                "x-order": 1,
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 100,
+                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
               }
             }
           },
@@ -1607,6 +1597,6 @@ const ModelSchema = {
       }
     }
   }
-} satisfies Record<string, unknown>;
+} as const satisfies Record<string, unknown>;
 
 export default ModelSchema;

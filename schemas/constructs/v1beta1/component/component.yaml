@@ -55,16 +55,16 @@ properties:
       json: format
   model:
     $ref: ../model/api.yml#/components/schemas/ModelDefinition
-    x-go-type: modelv1beta1.ModelDefinition
+    x-go-type: '*modelv1beta1.ModelDefinition'
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/model
       name: modelv1beta1
     x-order: 7
     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
     x-oapi-codegen-extra-tags:
-      gorm: foreignKey:ModelId;references:Id
-      json: model,omitempty
-      yaml: model,omitempty
+      gorm: foreignKey:ModelId;references:ID
+      json: model
+      yaml: model
   modelReference:
     $ref: ../model/api.yml#/components/schemas/ModelReference
     x-go-type: modelv1beta1.ModelReference
@@ -293,6 +293,6 @@ required:
   - version
   - configuration
   - metadata
-  - modelId
+  - model
   - modelReference
   - component

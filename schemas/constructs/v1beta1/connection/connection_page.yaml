@@ -12,9 +12,9 @@ properties:
   connections:
     type: array
     description: List of connections on this page
+    x-go-type: "[]*Connection"
     items:
       $ref: ./connection.yaml
-      x-go-type: '*Connection'
     x-order: 1
   total_count:
     type: integer

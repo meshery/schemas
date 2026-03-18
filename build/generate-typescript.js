@@ -116,7 +116,7 @@ async function generateTypescriptTypes(pkg) {
       ` */\n\n` +
       `const ${pascalName}Schema = ` +
       jsonContent +
-      ` satisfies Record<string, unknown>;\n\nexport default ${pascalName}Schema;\n`;
+      ` as const satisfies Record<string, unknown>;\n\nexport default ${pascalName}Schema;\n`;
     fs.writeFileSync(jsonOutputPath, tsContent, "utf-8");
     logger.success(`Generated: ${jsonOutputPath}`);
   } catch (err) {

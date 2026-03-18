@@ -94,9 +94,10 @@ const PatternSchema = {
                         "type": "object",
                         "properties": {
                           "catalog_data": {
-                            "x-go-type": "catalog.CatalogData",
+                            "x-go-type": "catalogv1alpha2.CatalogData",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+                              "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                              "name": "catalogv1alpha2"
                             },
                             "type": "object",
                             "properties": {
@@ -346,6 +347,11 @@ const PatternSchema = {
                                 "minItems": 0,
                                 "x-order": 6,
                                 "type": "array",
+                                "x-go-type": "[]*component.ComponentDefinition",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1beta1/component",
+                                  "name": "component"
+                                },
                                 "items": {
                                   "allOf": [
                                     {
@@ -436,16 +442,17 @@ const PatternSchema = {
                                           }
                                         },
                                         "model": {
-                                          "x-go-type": "model.ModelDefinition",
+                                          "x-go-type": "*modelv1beta1.ModelDefinition",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                            "name": "modelv1beta1"
                                           },
                                           "x-order": 7,
                                           "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                                           "x-oapi-codegen-extra-tags": {
-                                            "gorm": "foreignKey:ModelId;references:Id",
-                                            "json": "model,omitempty",
-                                            "yaml": "model,omitempty"
+                                            "gorm": "foreignKey:ModelId;references:ID",
+                                            "json": "model",
+                                            "yaml": "model"
                                           },
                                           "$id": "https://schemas.meshery.io/model.yaml",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -565,9 +572,10 @@ const PatternSchema = {
                                                 "gorm": "foreignKey:RegistrantId;references:ID"
                                               },
                                               "x-order": 8,
-                                              "x-go-type": "connection.Connection",
+                                              "x-go-type": "connectionv1beta1.Connection",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                                "name": "connectionv1beta1"
                                               },
                                               "$id": "https://schemas.meshery.io/connection.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -733,9 +741,10 @@ const PatternSchema = {
                                                   "type": "array",
                                                   "description": "Associated environments for this connection",
                                                   "items": {
-                                                    "x-go-type": "*environment.Environment",
+                                                    "x-go-type": "*environmentv1beta1.Environment",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                                      "name": "environmentv1beta1"
                                                     },
                                                     "$id": "https://schemas.meshery.io/environment.yaml",
                                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -944,11 +953,12 @@ const PatternSchema = {
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "category",
                                                 "json": "category",
-                                                "gorm": "foreignKey:CategoryId;references:Id"
+                                                "gorm": "foreignKey:CategoryId;references:ID"
                                               },
-                                              "x-go-type": "category.CategoryDefinition",
+                                              "x-go-type": "categoryv1beta1.CategoryDefinition",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                                "name": "categoryv1beta1"
                                               },
                                               "$id": "https://schemas.meshery.io/category.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1013,9 +1023,10 @@ const PatternSchema = {
                                             },
                                             "subCategory": {
                                               "x-order": 10,
-                                              "x-go-type": "subcategory.SubCategoryDefinition",
+                                              "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                                "name": "subcategoryv1beta1"
                                               },
                                               "$id": "https://schemas.meshery.io/category.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1090,9 +1101,10 @@ const PatternSchema = {
                                                   "type": "array",
                                                   "description": "Capabilities associated with the model",
                                                   "items": {
-                                                    "x-go-type": "capability.Capability",
+                                                    "x-go-type": "capabilityv1alpha1.Capability",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                                      "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                                      "name": "capabilityv1alpha1"
                                                     },
                                                     "$id": "https://schemas.meshery.io/capability.yaml",
                                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1394,20 +1406,15 @@ const PatternSchema = {
                                               "properties": {
                                                 "version": {
                                                   "description": "Version of the model as defined by the registrant.",
-                                                  "allOf": [
-                                                    {
-                                                      "type": "string",
-                                                      "minLength": 5,
-                                                      "maxLength": 100,
-                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                    }
-                                                  ],
                                                   "x-oapi-codegen-extra-tags": {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "x-order": 1
+                                                  "x-order": 1,
+                                                  "type": "string",
+                                                  "minLength": 5,
+                                                  "maxLength": 100,
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 }
                                               }
                                             },
@@ -1499,9 +1506,10 @@ const PatternSchema = {
                                           ]
                                         },
                                         "modelReference": {
-                                          "x-go-type": "model.ModelReference",
+                                          "x-go-type": "modelv1beta1.ModelReference",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                            "name": "modelv1beta1"
                                           },
                                           "x-order": 8,
                                           "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -1536,11 +1544,11 @@ const PatternSchema = {
                                               ]
                                             },
                                             "version": {
+                                              "description": "Version of the model definition.",
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             },
                                             "displayName": {
                                               "type": "string",
@@ -1561,20 +1569,15 @@ const PatternSchema = {
                                               "properties": {
                                                 "version": {
                                                   "description": "Version of the model as defined by the registrant.",
-                                                  "allOf": [
-                                                    {
-                                                      "type": "string",
-                                                      "minLength": 5,
-                                                      "maxLength": 100,
-                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                    }
-                                                  ],
                                                   "x-oapi-codegen-extra-tags": {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "x-order": 1
+                                                  "x-order": 1,
+                                                  "type": "string",
+                                                  "minLength": 5,
+                                                  "maxLength": 100,
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 }
                                               }
                                             },
@@ -1616,9 +1619,10 @@ const PatternSchema = {
                                             "yaml": "styles",
                                             "json": "styles"
                                           },
-                                          "x-go-type": "core.ComponentStyles",
+                                          "x-go-type": "corev1alpha1.ComponentStyles",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                                            "name": "corev1alpha1"
                                           },
                                           "x-order": 8,
                                           "type": "object",
@@ -1998,9 +2002,10 @@ const PatternSchema = {
                                           "type": "array",
                                           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                           "items": {
-                                            "x-go-type": "capability.Capability",
+                                            "x-go-type": "capabilityv1alpha1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                              "name": "capabilityv1alpha1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2453,16 +2458,13 @@ const PatternSchema = {
                                         "version",
                                         "configuration",
                                         "metadata",
+                                        "model",
                                         "modelId",
                                         "modelReference",
                                         "component"
                                       ]
                                     }
-                                  ],
-                                  "x-go-type": "*component.ComponentDefinition",
-                                  "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1beta1/component"
-                                  }
+                                  ]
                                 }
                               },
                               "preferences": {
@@ -2484,6 +2486,11 @@ const PatternSchema = {
                                 "description": "List of relationships between components",
                                 "type": "array",
                                 "x-order": 8,
+                                "x-go-type": "[]*relationship.RelationshipDefinition",
+                                "x-go-type-import": {
+                                  "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                                  "name": "relationship"
+                                },
                                 "items": {
                                   "allOf": [
                                     {
@@ -2535,16 +2542,16 @@ const PatternSchema = {
                                           ]
                                         },
                                         "version": {
-                                          "type": "string",
-                                          "minLength": 5,
-                                          "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                                          "description": "Specifies the version of the relationship definition.",
                                           "x-order": 13,
                                           "x-oapi-codegen-extra-tags": {
                                             "yaml": "version",
                                             "json": "version"
-                                          }
+                                          },
+                                          "type": "string",
+                                          "minLength": 5,
+                                          "maxLength": 100,
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "kind": {
                                           "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -2603,9 +2610,10 @@ const PatternSchema = {
                                           "description": "Capabilities associated with the relationship.",
                                           "x-order": 2,
                                           "items": {
-                                            "x-go-type": "capability.Capability",
+                                            "x-go-type": "capabilityv1alpha1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                              "name": "capabilityv1alpha1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -3165,9 +3173,10 @@ const PatternSchema = {
                                           }
                                         },
                                         "model": {
-                                          "x-go-type": "model.ModelReference",
+                                          "x-go-type": "modelv1beta1.ModelReference",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                            "name": "modelv1beta1"
                                           },
                                           "x-go-type-skip-optional-pointer": true,
                                           "x-order": 6,
@@ -3205,11 +3214,11 @@ const PatternSchema = {
                                               ]
                                             },
                                             "version": {
+                                              "description": "Version of the model definition.",
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             },
                                             "displayName": {
                                               "type": "string",
@@ -3230,20 +3239,15 @@ const PatternSchema = {
                                               "properties": {
                                                 "version": {
                                                   "description": "Version of the model as defined by the registrant.",
-                                                  "allOf": [
-                                                    {
-                                                      "type": "string",
-                                                      "minLength": 5,
-                                                      "maxLength": 100,
-                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                    }
-                                                  ],
                                                   "x-oapi-codegen-extra-tags": {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "x-order": 1
+                                                  "x-order": 1,
+                                                  "type": "string",
+                                                  "minLength": 5,
+                                                  "maxLength": 100,
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 }
                                               }
                                             },
@@ -3520,9 +3524,10 @@ const PatternSchema = {
                                                           }
                                                         },
                                                         "model": {
-                                                          "x-go-type": "model.ModelReference",
+                                                          "x-go-type": "modelv1beta1.ModelReference",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                            "name": "modelv1beta1"
                                                           },
                                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                           "x-oapi-codegen-extra-tags": {
@@ -3557,11 +3562,11 @@ const PatternSchema = {
                                                               ]
                                                             },
                                                             "version": {
+                                                              "description": "Version of the model definition.",
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             },
                                                             "displayName": {
                                                               "type": "string",
@@ -3582,20 +3587,15 @@ const PatternSchema = {
                                                               "properties": {
                                                                 "version": {
                                                                   "description": "Version of the model as defined by the registrant.",
-                                                                  "allOf": [
-                                                                    {
-                                                                      "type": "string",
-                                                                      "minLength": 5,
-                                                                      "maxLength": 100,
-                                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                    }
-                                                                  ],
                                                                   "x-oapi-codegen-extra-tags": {
                                                                     "yaml": "version",
                                                                     "json": "version"
                                                                   },
-                                                                  "x-order": 1
+                                                                  "x-order": 1,
+                                                                  "type": "string",
+                                                                  "minLength": 5,
+                                                                  "maxLength": 100,
+                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                                 }
                                                               }
                                                             },
@@ -3880,9 +3880,10 @@ const PatternSchema = {
                                                           }
                                                         },
                                                         "model": {
-                                                          "x-go-type": "model.ModelReference",
+                                                          "x-go-type": "modelv1beta1.ModelReference",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                            "name": "modelv1beta1"
                                                           },
                                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                           "x-oapi-codegen-extra-tags": {
@@ -3917,11 +3918,11 @@ const PatternSchema = {
                                                               ]
                                                             },
                                                             "version": {
+                                                              "description": "Version of the model definition.",
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             },
                                                             "displayName": {
                                                               "type": "string",
@@ -3942,20 +3943,15 @@ const PatternSchema = {
                                                               "properties": {
                                                                 "version": {
                                                                   "description": "Version of the model as defined by the registrant.",
-                                                                  "allOf": [
-                                                                    {
-                                                                      "type": "string",
-                                                                      "minLength": 5,
-                                                                      "maxLength": 100,
-                                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                    }
-                                                                  ],
                                                                   "x-oapi-codegen-extra-tags": {
                                                                     "yaml": "version",
                                                                     "json": "version"
                                                                   },
-                                                                  "x-order": 1
+                                                                  "x-order": 1,
+                                                                  "type": "string",
+                                                                  "minLength": 5,
+                                                                  "maxLength": 100,
+                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                                 }
                                                               }
                                                             },
@@ -4255,9 +4251,10 @@ const PatternSchema = {
                                                           }
                                                         },
                                                         "model": {
-                                                          "x-go-type": "model.ModelReference",
+                                                          "x-go-type": "modelv1beta1.ModelReference",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                            "name": "modelv1beta1"
                                                           },
                                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                           "x-oapi-codegen-extra-tags": {
@@ -4292,11 +4289,11 @@ const PatternSchema = {
                                                               ]
                                                             },
                                                             "version": {
+                                                              "description": "Version of the model definition.",
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             },
                                                             "displayName": {
                                                               "type": "string",
@@ -4317,20 +4314,15 @@ const PatternSchema = {
                                                               "properties": {
                                                                 "version": {
                                                                   "description": "Version of the model as defined by the registrant.",
-                                                                  "allOf": [
-                                                                    {
-                                                                      "type": "string",
-                                                                      "minLength": 5,
-                                                                      "maxLength": 100,
-                                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                    }
-                                                                  ],
                                                                   "x-oapi-codegen-extra-tags": {
                                                                     "yaml": "version",
                                                                     "json": "version"
                                                                   },
-                                                                  "x-order": 1
+                                                                  "x-order": 1,
+                                                                  "type": "string",
+                                                                  "minLength": 5,
+                                                                  "maxLength": 100,
+                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                                 }
                                                               }
                                                             },
@@ -4615,9 +4607,10 @@ const PatternSchema = {
                                                           }
                                                         },
                                                         "model": {
-                                                          "x-go-type": "model.ModelReference",
+                                                          "x-go-type": "modelv1beta1.ModelReference",
                                                           "x-go-type-import": {
-                                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                            "name": "modelv1beta1"
                                                           },
                                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                           "x-oapi-codegen-extra-tags": {
@@ -4652,11 +4645,11 @@ const PatternSchema = {
                                                               ]
                                                             },
                                                             "version": {
+                                                              "description": "Version of the model definition.",
                                                               "type": "string",
                                                               "minLength": 5,
                                                               "maxLength": 100,
-                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             },
                                                             "displayName": {
                                                               "type": "string",
@@ -4677,20 +4670,15 @@ const PatternSchema = {
                                                               "properties": {
                                                                 "version": {
                                                                   "description": "Version of the model as defined by the registrant.",
-                                                                  "allOf": [
-                                                                    {
-                                                                      "type": "string",
-                                                                      "minLength": 5,
-                                                                      "maxLength": 100,
-                                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                    }
-                                                                  ],
                                                                   "x-oapi-codegen-extra-tags": {
                                                                     "yaml": "version",
                                                                     "json": "version"
                                                                   },
-                                                                  "x-order": 1
+                                                                  "x-order": 1,
+                                                                  "type": "string",
+                                                                  "minLength": 5,
+                                                                  "maxLength": 100,
+                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                                 }
                                                               }
                                                             },
@@ -4783,11 +4771,7 @@ const PatternSchema = {
                                         }
                                       }
                                     }
-                                  ],
-                                  "x-go-type": "*relationship.RelationshipDefinition",
-                                  "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                                  }
+                                  ]
                                 }
                               }
                             },
@@ -4880,9 +4864,10 @@ const PatternSchema = {
                     "type": "object",
                     "properties": {
                       "catalog_data": {
-                        "x-go-type": "catalog.CatalogData",
+                        "x-go-type": "catalogv1alpha2.CatalogData",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+                          "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                          "name": "catalogv1alpha2"
                         },
                         "type": "object",
                         "properties": {
@@ -5132,6 +5117,11 @@ const PatternSchema = {
                             "minItems": 0,
                             "x-order": 6,
                             "type": "array",
+                            "x-go-type": "[]*component.ComponentDefinition",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1beta1/component",
+                              "name": "component"
+                            },
                             "items": {
                               "allOf": [
                                 {
@@ -5222,16 +5212,17 @@ const PatternSchema = {
                                       }
                                     },
                                     "model": {
-                                      "x-go-type": "model.ModelDefinition",
+                                      "x-go-type": "*modelv1beta1.ModelDefinition",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                        "name": "modelv1beta1"
                                       },
                                       "x-order": 7,
                                       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                                       "x-oapi-codegen-extra-tags": {
-                                        "gorm": "foreignKey:ModelId;references:Id",
-                                        "json": "model,omitempty",
-                                        "yaml": "model,omitempty"
+                                        "gorm": "foreignKey:ModelId;references:ID",
+                                        "json": "model",
+                                        "yaml": "model"
                                       },
                                       "$id": "https://schemas.meshery.io/model.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5351,9 +5342,10 @@ const PatternSchema = {
                                             "gorm": "foreignKey:RegistrantId;references:ID"
                                           },
                                           "x-order": 8,
-                                          "x-go-type": "connection.Connection",
+                                          "x-go-type": "connectionv1beta1.Connection",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                            "name": "connectionv1beta1"
                                           },
                                           "$id": "https://schemas.meshery.io/connection.yaml",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5519,9 +5511,10 @@ const PatternSchema = {
                                               "type": "array",
                                               "description": "Associated environments for this connection",
                                               "items": {
-                                                "x-go-type": "*environment.Environment",
+                                                "x-go-type": "*environmentv1beta1.Environment",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                                  "name": "environmentv1beta1"
                                                 },
                                                 "$id": "https://schemas.meshery.io/environment.yaml",
                                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5730,11 +5723,12 @@ const PatternSchema = {
                                           "x-oapi-codegen-extra-tags": {
                                             "yaml": "category",
                                             "json": "category",
-                                            "gorm": "foreignKey:CategoryId;references:Id"
+                                            "gorm": "foreignKey:CategoryId;references:ID"
                                           },
-                                          "x-go-type": "category.CategoryDefinition",
+                                          "x-go-type": "categoryv1beta1.CategoryDefinition",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                            "name": "categoryv1beta1"
                                           },
                                           "$id": "https://schemas.meshery.io/category.yaml",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5799,9 +5793,10 @@ const PatternSchema = {
                                         },
                                         "subCategory": {
                                           "x-order": 10,
-                                          "x-go-type": "subcategory.SubCategoryDefinition",
+                                          "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                            "name": "subcategoryv1beta1"
                                           },
                                           "$id": "https://schemas.meshery.io/category.yaml",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -5876,9 +5871,10 @@ const PatternSchema = {
                                               "type": "array",
                                               "description": "Capabilities associated with the model",
                                               "items": {
-                                                "x-go-type": "capability.Capability",
+                                                "x-go-type": "capabilityv1alpha1.Capability",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                                  "name": "capabilityv1alpha1"
                                                 },
                                                 "$id": "https://schemas.meshery.io/capability.yaml",
                                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -6180,20 +6176,15 @@ const PatternSchema = {
                                           "properties": {
                                             "version": {
                                               "description": "Version of the model as defined by the registrant.",
-                                              "allOf": [
-                                                {
-                                                  "type": "string",
-                                                  "minLength": 5,
-                                                  "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                }
-                                              ],
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "version",
                                                 "json": "version"
                                               },
-                                              "x-order": 1
+                                              "x-order": 1,
+                                              "type": "string",
+                                              "minLength": 5,
+                                              "maxLength": 100,
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             }
                                           }
                                         },
@@ -6285,9 +6276,10 @@ const PatternSchema = {
                                       ]
                                     },
                                     "modelReference": {
-                                      "x-go-type": "model.ModelReference",
+                                      "x-go-type": "modelv1beta1.ModelReference",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                        "name": "modelv1beta1"
                                       },
                                       "x-order": 8,
                                       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -6322,11 +6314,11 @@ const PatternSchema = {
                                           ]
                                         },
                                         "version": {
+                                          "description": "Version of the model definition.",
                                           "type": "string",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "type": "string",
@@ -6347,20 +6339,15 @@ const PatternSchema = {
                                           "properties": {
                                             "version": {
                                               "description": "Version of the model as defined by the registrant.",
-                                              "allOf": [
-                                                {
-                                                  "type": "string",
-                                                  "minLength": 5,
-                                                  "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                }
-                                              ],
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "version",
                                                 "json": "version"
                                               },
-                                              "x-order": 1
+                                              "x-order": 1,
+                                              "type": "string",
+                                              "minLength": 5,
+                                              "maxLength": 100,
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             }
                                           }
                                         },
@@ -6402,9 +6389,10 @@ const PatternSchema = {
                                         "yaml": "styles",
                                         "json": "styles"
                                       },
-                                      "x-go-type": "core.ComponentStyles",
+                                      "x-go-type": "corev1alpha1.ComponentStyles",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                                        "name": "corev1alpha1"
                                       },
                                       "x-order": 8,
                                       "type": "object",
@@ -6784,9 +6772,10 @@ const PatternSchema = {
                                       "type": "array",
                                       "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                       "items": {
-                                        "x-go-type": "capability.Capability",
+                                        "x-go-type": "capabilityv1alpha1.Capability",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                          "name": "capabilityv1alpha1"
                                         },
                                         "$id": "https://schemas.meshery.io/capability.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -7239,16 +7228,13 @@ const PatternSchema = {
                                     "version",
                                     "configuration",
                                     "metadata",
+                                    "model",
                                     "modelId",
                                     "modelReference",
                                     "component"
                                   ]
                                 }
-                              ],
-                              "x-go-type": "*component.ComponentDefinition",
-                              "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/component"
-                              }
+                              ]
                             }
                           },
                           "preferences": {
@@ -7270,6 +7256,11 @@ const PatternSchema = {
                             "description": "List of relationships between components",
                             "type": "array",
                             "x-order": 8,
+                            "x-go-type": "[]*relationship.RelationshipDefinition",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                              "name": "relationship"
+                            },
                             "items": {
                               "allOf": [
                                 {
@@ -7321,16 +7312,16 @@ const PatternSchema = {
                                       ]
                                     },
                                     "version": {
-                                      "type": "string",
-                                      "minLength": 5,
-                                      "maxLength": 100,
-                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                                      "description": "Specifies the version of the relationship definition.",
                                       "x-order": 13,
                                       "x-oapi-codegen-extra-tags": {
                                         "yaml": "version",
                                         "json": "version"
-                                      }
+                                      },
+                                      "type": "string",
+                                      "minLength": 5,
+                                      "maxLength": 100,
+                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                     },
                                     "kind": {
                                       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -7389,9 +7380,10 @@ const PatternSchema = {
                                       "description": "Capabilities associated with the relationship.",
                                       "x-order": 2,
                                       "items": {
-                                        "x-go-type": "capability.Capability",
+                                        "x-go-type": "capabilityv1alpha1.Capability",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                          "name": "capabilityv1alpha1"
                                         },
                                         "$id": "https://schemas.meshery.io/capability.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -7951,9 +7943,10 @@ const PatternSchema = {
                                       }
                                     },
                                     "model": {
-                                      "x-go-type": "model.ModelReference",
+                                      "x-go-type": "modelv1beta1.ModelReference",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                        "name": "modelv1beta1"
                                       },
                                       "x-go-type-skip-optional-pointer": true,
                                       "x-order": 6,
@@ -7991,11 +7984,11 @@ const PatternSchema = {
                                           ]
                                         },
                                         "version": {
+                                          "description": "Version of the model definition.",
                                           "type": "string",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "type": "string",
@@ -8016,20 +8009,15 @@ const PatternSchema = {
                                           "properties": {
                                             "version": {
                                               "description": "Version of the model as defined by the registrant.",
-                                              "allOf": [
-                                                {
-                                                  "type": "string",
-                                                  "minLength": 5,
-                                                  "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                }
-                                              ],
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "version",
                                                 "json": "version"
                                               },
-                                              "x-order": 1
+                                              "x-order": 1,
+                                              "type": "string",
+                                              "minLength": 5,
+                                              "maxLength": 100,
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             }
                                           }
                                         },
@@ -8306,9 +8294,10 @@ const PatternSchema = {
                                                       }
                                                     },
                                                     "model": {
-                                                      "x-go-type": "model.ModelReference",
+                                                      "x-go-type": "modelv1beta1.ModelReference",
                                                       "x-go-type-import": {
-                                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                        "name": "modelv1beta1"
                                                       },
                                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                       "x-oapi-codegen-extra-tags": {
@@ -8343,11 +8332,11 @@ const PatternSchema = {
                                                           ]
                                                         },
                                                         "version": {
+                                                          "description": "Version of the model definition.",
                                                           "type": "string",
                                                           "minLength": 5,
                                                           "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                         },
                                                         "displayName": {
                                                           "type": "string",
@@ -8368,20 +8357,15 @@ const PatternSchema = {
                                                           "properties": {
                                                             "version": {
                                                               "description": "Version of the model as defined by the registrant.",
-                                                              "allOf": [
-                                                                {
-                                                                  "type": "string",
-                                                                  "minLength": 5,
-                                                                  "maxLength": 100,
-                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                }
-                                                              ],
                                                               "x-oapi-codegen-extra-tags": {
                                                                 "yaml": "version",
                                                                 "json": "version"
                                                               },
-                                                              "x-order": 1
+                                                              "x-order": 1,
+                                                              "type": "string",
+                                                              "minLength": 5,
+                                                              "maxLength": 100,
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             }
                                                           }
                                                         },
@@ -8666,9 +8650,10 @@ const PatternSchema = {
                                                       }
                                                     },
                                                     "model": {
-                                                      "x-go-type": "model.ModelReference",
+                                                      "x-go-type": "modelv1beta1.ModelReference",
                                                       "x-go-type-import": {
-                                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                        "name": "modelv1beta1"
                                                       },
                                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                       "x-oapi-codegen-extra-tags": {
@@ -8703,11 +8688,11 @@ const PatternSchema = {
                                                           ]
                                                         },
                                                         "version": {
+                                                          "description": "Version of the model definition.",
                                                           "type": "string",
                                                           "minLength": 5,
                                                           "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                         },
                                                         "displayName": {
                                                           "type": "string",
@@ -8728,20 +8713,15 @@ const PatternSchema = {
                                                           "properties": {
                                                             "version": {
                                                               "description": "Version of the model as defined by the registrant.",
-                                                              "allOf": [
-                                                                {
-                                                                  "type": "string",
-                                                                  "minLength": 5,
-                                                                  "maxLength": 100,
-                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                }
-                                                              ],
                                                               "x-oapi-codegen-extra-tags": {
                                                                 "yaml": "version",
                                                                 "json": "version"
                                                               },
-                                                              "x-order": 1
+                                                              "x-order": 1,
+                                                              "type": "string",
+                                                              "minLength": 5,
+                                                              "maxLength": 100,
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             }
                                                           }
                                                         },
@@ -9041,9 +9021,10 @@ const PatternSchema = {
                                                       }
                                                     },
                                                     "model": {
-                                                      "x-go-type": "model.ModelReference",
+                                                      "x-go-type": "modelv1beta1.ModelReference",
                                                       "x-go-type-import": {
-                                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                        "name": "modelv1beta1"
                                                       },
                                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                       "x-oapi-codegen-extra-tags": {
@@ -9078,11 +9059,11 @@ const PatternSchema = {
                                                           ]
                                                         },
                                                         "version": {
+                                                          "description": "Version of the model definition.",
                                                           "type": "string",
                                                           "minLength": 5,
                                                           "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                         },
                                                         "displayName": {
                                                           "type": "string",
@@ -9103,20 +9084,15 @@ const PatternSchema = {
                                                           "properties": {
                                                             "version": {
                                                               "description": "Version of the model as defined by the registrant.",
-                                                              "allOf": [
-                                                                {
-                                                                  "type": "string",
-                                                                  "minLength": 5,
-                                                                  "maxLength": 100,
-                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                }
-                                                              ],
                                                               "x-oapi-codegen-extra-tags": {
                                                                 "yaml": "version",
                                                                 "json": "version"
                                                               },
-                                                              "x-order": 1
+                                                              "x-order": 1,
+                                                              "type": "string",
+                                                              "minLength": 5,
+                                                              "maxLength": 100,
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             }
                                                           }
                                                         },
@@ -9401,9 +9377,10 @@ const PatternSchema = {
                                                       }
                                                     },
                                                     "model": {
-                                                      "x-go-type": "model.ModelReference",
+                                                      "x-go-type": "modelv1beta1.ModelReference",
                                                       "x-go-type-import": {
-                                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                        "name": "modelv1beta1"
                                                       },
                                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                       "x-oapi-codegen-extra-tags": {
@@ -9438,11 +9415,11 @@ const PatternSchema = {
                                                           ]
                                                         },
                                                         "version": {
+                                                          "description": "Version of the model definition.",
                                                           "type": "string",
                                                           "minLength": 5,
                                                           "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                         },
                                                         "displayName": {
                                                           "type": "string",
@@ -9463,20 +9440,15 @@ const PatternSchema = {
                                                           "properties": {
                                                             "version": {
                                                               "description": "Version of the model as defined by the registrant.",
-                                                              "allOf": [
-                                                                {
-                                                                  "type": "string",
-                                                                  "minLength": 5,
-                                                                  "maxLength": 100,
-                                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                                }
-                                                              ],
                                                               "x-oapi-codegen-extra-tags": {
                                                                 "yaml": "version",
                                                                 "json": "version"
                                                               },
-                                                              "x-order": 1
+                                                              "x-order": 1,
+                                                              "type": "string",
+                                                              "minLength": 5,
+                                                              "maxLength": 100,
+                                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                             }
                                                           }
                                                         },
@@ -9569,11 +9541,7 @@ const PatternSchema = {
                                     }
                                   }
                                 }
-                              ],
-                              "x-go-type": "*relationship.RelationshipDefinition",
-                              "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                              }
+                              ]
                             }
                           }
                         },
@@ -9633,9 +9601,10 @@ const PatternSchema = {
                   "type": "object",
                   "properties": {
                     "catalog_data": {
-                      "x-go-type": "catalog.CatalogData",
+                      "x-go-type": "catalogv1alpha2.CatalogData",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                        "name": "catalogv1alpha2"
                       },
                       "type": "object",
                       "properties": {
@@ -9885,6 +9854,11 @@ const PatternSchema = {
                           "minItems": 0,
                           "x-order": 6,
                           "type": "array",
+                          "x-go-type": "[]*component.ComponentDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/component",
+                            "name": "component"
+                          },
                           "items": {
                             "allOf": [
                               {
@@ -9975,16 +9949,17 @@ const PatternSchema = {
                                     }
                                   },
                                   "model": {
-                                    "x-go-type": "model.ModelDefinition",
+                                    "x-go-type": "*modelv1beta1.ModelDefinition",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-order": 7,
                                     "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                                     "x-oapi-codegen-extra-tags": {
-                                      "gorm": "foreignKey:ModelId;references:Id",
-                                      "json": "model,omitempty",
-                                      "yaml": "model,omitempty"
+                                      "gorm": "foreignKey:ModelId;references:ID",
+                                      "json": "model",
+                                      "yaml": "model"
                                     },
                                     "$id": "https://schemas.meshery.io/model.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10104,9 +10079,10 @@ const PatternSchema = {
                                           "gorm": "foreignKey:RegistrantId;references:ID"
                                         },
                                         "x-order": 8,
-                                        "x-go-type": "connection.Connection",
+                                        "x-go-type": "connectionv1beta1.Connection",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                          "name": "connectionv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/connection.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10272,9 +10248,10 @@ const PatternSchema = {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
                                             "items": {
-                                              "x-go-type": "*environment.Environment",
+                                              "x-go-type": "*environmentv1beta1.Environment",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                                "name": "environmentv1beta1"
                                               },
                                               "$id": "https://schemas.meshery.io/environment.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10483,11 +10460,12 @@ const PatternSchema = {
                                         "x-oapi-codegen-extra-tags": {
                                           "yaml": "category",
                                           "json": "category",
-                                          "gorm": "foreignKey:CategoryId;references:Id"
+                                          "gorm": "foreignKey:CategoryId;references:ID"
                                         },
-                                        "x-go-type": "category.CategoryDefinition",
+                                        "x-go-type": "categoryv1beta1.CategoryDefinition",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                          "name": "categoryv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/category.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10552,9 +10530,10 @@ const PatternSchema = {
                                       },
                                       "subCategory": {
                                         "x-order": 10,
-                                        "x-go-type": "subcategory.SubCategoryDefinition",
+                                        "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                          "name": "subcategoryv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/category.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10629,9 +10608,10 @@ const PatternSchema = {
                                             "type": "array",
                                             "description": "Capabilities associated with the model",
                                             "items": {
-                                              "x-go-type": "capability.Capability",
+                                              "x-go-type": "capabilityv1alpha1.Capability",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                                "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                                "name": "capabilityv1alpha1"
                                               },
                                               "$id": "https://schemas.meshery.io/capability.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10933,20 +10913,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -11038,9 +11013,10 @@ const PatternSchema = {
                                     ]
                                   },
                                   "modelReference": {
-                                    "x-go-type": "model.ModelReference",
+                                    "x-go-type": "modelv1beta1.ModelReference",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-order": 8,
                                     "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -11075,11 +11051,11 @@ const PatternSchema = {
                                         ]
                                       },
                                       "version": {
+                                        "description": "Version of the model definition.",
                                         "type": "string",
                                         "minLength": 5,
                                         "maxLength": 100,
-                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       },
                                       "displayName": {
                                         "type": "string",
@@ -11100,20 +11076,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -11155,9 +11126,10 @@ const PatternSchema = {
                                       "yaml": "styles",
                                       "json": "styles"
                                     },
-                                    "x-go-type": "core.ComponentStyles",
+                                    "x-go-type": "corev1alpha1.ComponentStyles",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                                      "name": "corev1alpha1"
                                     },
                                     "x-order": 8,
                                     "type": "object",
@@ -11537,9 +11509,10 @@ const PatternSchema = {
                                     "type": "array",
                                     "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                     "items": {
-                                      "x-go-type": "capability.Capability",
+                                      "x-go-type": "capabilityv1alpha1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -11992,16 +11965,13 @@ const PatternSchema = {
                                   "version",
                                   "configuration",
                                   "metadata",
+                                  "model",
                                   "modelId",
                                   "modelReference",
                                   "component"
                                 ]
                               }
-                            ],
-                            "x-go-type": "*component.ComponentDefinition",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/component"
-                            }
+                            ]
                           }
                         },
                         "preferences": {
@@ -12023,6 +11993,11 @@ const PatternSchema = {
                           "description": "List of relationships between components",
                           "type": "array",
                           "x-order": 8,
+                          "x-go-type": "[]*relationship.RelationshipDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                            "name": "relationship"
+                          },
                           "items": {
                             "allOf": [
                               {
@@ -12074,16 +12049,16 @@ const PatternSchema = {
                                     ]
                                   },
                                   "version": {
-                                    "type": "string",
-                                    "minLength": 5,
-                                    "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                                    "description": "Specifies the version of the relationship definition.",
                                     "x-order": 13,
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
                                       "json": "version"
-                                    }
+                                    },
+                                    "type": "string",
+                                    "minLength": 5,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "kind": {
                                     "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -12142,9 +12117,10 @@ const PatternSchema = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capability.Capability",
+                                      "x-go-type": "capabilityv1alpha1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -12704,9 +12680,10 @@ const PatternSchema = {
                                     }
                                   },
                                   "model": {
-                                    "x-go-type": "model.ModelReference",
+                                    "x-go-type": "modelv1beta1.ModelReference",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-go-type-skip-optional-pointer": true,
                                     "x-order": 6,
@@ -12744,11 +12721,11 @@ const PatternSchema = {
                                         ]
                                       },
                                       "version": {
+                                        "description": "Version of the model definition.",
                                         "type": "string",
                                         "minLength": 5,
                                         "maxLength": 100,
-                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       },
                                       "displayName": {
                                         "type": "string",
@@ -12769,20 +12746,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -13059,9 +13031,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -13096,11 +13069,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -13121,20 +13094,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -13419,9 +13387,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -13456,11 +13425,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -13481,20 +13450,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -13794,9 +13758,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -13831,11 +13796,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -13856,20 +13821,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -14154,9 +14114,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -14191,11 +14152,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -14216,20 +14177,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -14322,11 +14278,7 @@ const PatternSchema = {
                                   }
                                 }
                               }
-                            ],
-                            "x-go-type": "*relationship.RelationshipDefinition",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                            }
+                            ]
                           }
                         }
                       },
@@ -14755,9 +14707,10 @@ const PatternSchema = {
                   "type": "object",
                   "properties": {
                     "catalog_data": {
-                      "x-go-type": "catalog.CatalogData",
+                      "x-go-type": "catalogv1alpha2.CatalogData",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                        "name": "catalogv1alpha2"
                       },
                       "type": "object",
                       "properties": {
@@ -15007,6 +14960,11 @@ const PatternSchema = {
                           "minItems": 0,
                           "x-order": 6,
                           "type": "array",
+                          "x-go-type": "[]*component.ComponentDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/component",
+                            "name": "component"
+                          },
                           "items": {
                             "allOf": [
                               {
@@ -15097,16 +15055,17 @@ const PatternSchema = {
                                     }
                                   },
                                   "model": {
-                                    "x-go-type": "model.ModelDefinition",
+                                    "x-go-type": "*modelv1beta1.ModelDefinition",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-order": 7,
                                     "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                                     "x-oapi-codegen-extra-tags": {
-                                      "gorm": "foreignKey:ModelId;references:Id",
-                                      "json": "model,omitempty",
-                                      "yaml": "model,omitempty"
+                                      "gorm": "foreignKey:ModelId;references:ID",
+                                      "json": "model",
+                                      "yaml": "model"
                                     },
                                     "$id": "https://schemas.meshery.io/model.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -15226,9 +15185,10 @@ const PatternSchema = {
                                           "gorm": "foreignKey:RegistrantId;references:ID"
                                         },
                                         "x-order": 8,
-                                        "x-go-type": "connection.Connection",
+                                        "x-go-type": "connectionv1beta1.Connection",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                          "name": "connectionv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/connection.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -15394,9 +15354,10 @@ const PatternSchema = {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
                                             "items": {
-                                              "x-go-type": "*environment.Environment",
+                                              "x-go-type": "*environmentv1beta1.Environment",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                                "name": "environmentv1beta1"
                                               },
                                               "$id": "https://schemas.meshery.io/environment.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -15605,11 +15566,12 @@ const PatternSchema = {
                                         "x-oapi-codegen-extra-tags": {
                                           "yaml": "category",
                                           "json": "category",
-                                          "gorm": "foreignKey:CategoryId;references:Id"
+                                          "gorm": "foreignKey:CategoryId;references:ID"
                                         },
-                                        "x-go-type": "category.CategoryDefinition",
+                                        "x-go-type": "categoryv1beta1.CategoryDefinition",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                          "name": "categoryv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/category.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -15674,9 +15636,10 @@ const PatternSchema = {
                                       },
                                       "subCategory": {
                                         "x-order": 10,
-                                        "x-go-type": "subcategory.SubCategoryDefinition",
+                                        "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                          "name": "subcategoryv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/category.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -15751,9 +15714,10 @@ const PatternSchema = {
                                             "type": "array",
                                             "description": "Capabilities associated with the model",
                                             "items": {
-                                              "x-go-type": "capability.Capability",
+                                              "x-go-type": "capabilityv1alpha1.Capability",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                                "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                                "name": "capabilityv1alpha1"
                                               },
                                               "$id": "https://schemas.meshery.io/capability.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -16055,20 +16019,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -16160,9 +16119,10 @@ const PatternSchema = {
                                     ]
                                   },
                                   "modelReference": {
-                                    "x-go-type": "model.ModelReference",
+                                    "x-go-type": "modelv1beta1.ModelReference",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-order": 8,
                                     "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -16197,11 +16157,11 @@ const PatternSchema = {
                                         ]
                                       },
                                       "version": {
+                                        "description": "Version of the model definition.",
                                         "type": "string",
                                         "minLength": 5,
                                         "maxLength": 100,
-                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       },
                                       "displayName": {
                                         "type": "string",
@@ -16222,20 +16182,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -16277,9 +16232,10 @@ const PatternSchema = {
                                       "yaml": "styles",
                                       "json": "styles"
                                     },
-                                    "x-go-type": "core.ComponentStyles",
+                                    "x-go-type": "corev1alpha1.ComponentStyles",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                                      "name": "corev1alpha1"
                                     },
                                     "x-order": 8,
                                     "type": "object",
@@ -16659,9 +16615,10 @@ const PatternSchema = {
                                     "type": "array",
                                     "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                     "items": {
-                                      "x-go-type": "capability.Capability",
+                                      "x-go-type": "capabilityv1alpha1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -17114,16 +17071,13 @@ const PatternSchema = {
                                   "version",
                                   "configuration",
                                   "metadata",
+                                  "model",
                                   "modelId",
                                   "modelReference",
                                   "component"
                                 ]
                               }
-                            ],
-                            "x-go-type": "*component.ComponentDefinition",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/component"
-                            }
+                            ]
                           }
                         },
                         "preferences": {
@@ -17145,6 +17099,11 @@ const PatternSchema = {
                           "description": "List of relationships between components",
                           "type": "array",
                           "x-order": 8,
+                          "x-go-type": "[]*relationship.RelationshipDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                            "name": "relationship"
+                          },
                           "items": {
                             "allOf": [
                               {
@@ -17196,16 +17155,16 @@ const PatternSchema = {
                                     ]
                                   },
                                   "version": {
-                                    "type": "string",
-                                    "minLength": 5,
-                                    "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                                    "description": "Specifies the version of the relationship definition.",
                                     "x-order": 13,
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
                                       "json": "version"
-                                    }
+                                    },
+                                    "type": "string",
+                                    "minLength": 5,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "kind": {
                                     "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -17264,9 +17223,10 @@ const PatternSchema = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capability.Capability",
+                                      "x-go-type": "capabilityv1alpha1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -17826,9 +17786,10 @@ const PatternSchema = {
                                     }
                                   },
                                   "model": {
-                                    "x-go-type": "model.ModelReference",
+                                    "x-go-type": "modelv1beta1.ModelReference",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-go-type-skip-optional-pointer": true,
                                     "x-order": 6,
@@ -17866,11 +17827,11 @@ const PatternSchema = {
                                         ]
                                       },
                                       "version": {
+                                        "description": "Version of the model definition.",
                                         "type": "string",
                                         "minLength": 5,
                                         "maxLength": 100,
-                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       },
                                       "displayName": {
                                         "type": "string",
@@ -17891,20 +17852,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -18181,9 +18137,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -18218,11 +18175,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -18243,20 +18200,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -18541,9 +18493,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -18578,11 +18531,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -18603,20 +18556,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -18916,9 +18864,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -18953,11 +18902,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -18978,20 +18927,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -19276,9 +19220,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -19313,11 +19258,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -19338,20 +19283,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -19444,11 +19384,7 @@ const PatternSchema = {
                                   }
                                 }
                               }
-                            ],
-                            "x-go-type": "*relationship.RelationshipDefinition",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                            }
+                            ]
                           }
                         }
                       },
@@ -19616,9 +19552,10 @@ const PatternSchema = {
                   "type": "object",
                   "properties": {
                     "catalog_data": {
-                      "x-go-type": "catalog.CatalogData",
+                      "x-go-type": "catalogv1alpha2.CatalogData",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+                        "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                        "name": "catalogv1alpha2"
                       },
                       "type": "object",
                       "properties": {
@@ -19868,6 +19805,11 @@ const PatternSchema = {
                           "minItems": 0,
                           "x-order": 6,
                           "type": "array",
+                          "x-go-type": "[]*component.ComponentDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1beta1/component",
+                            "name": "component"
+                          },
                           "items": {
                             "allOf": [
                               {
@@ -19958,16 +19900,17 @@ const PatternSchema = {
                                     }
                                   },
                                   "model": {
-                                    "x-go-type": "model.ModelDefinition",
+                                    "x-go-type": "*modelv1beta1.ModelDefinition",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-order": 7,
                                     "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                                     "x-oapi-codegen-extra-tags": {
-                                      "gorm": "foreignKey:ModelId;references:Id",
-                                      "json": "model,omitempty",
-                                      "yaml": "model,omitempty"
+                                      "gorm": "foreignKey:ModelId;references:ID",
+                                      "json": "model",
+                                      "yaml": "model"
                                     },
                                     "$id": "https://schemas.meshery.io/model.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20087,9 +20030,10 @@ const PatternSchema = {
                                           "gorm": "foreignKey:RegistrantId;references:ID"
                                         },
                                         "x-order": 8,
-                                        "x-go-type": "connection.Connection",
+                                        "x-go-type": "connectionv1beta1.Connection",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                          "name": "connectionv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/connection.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20255,9 +20199,10 @@ const PatternSchema = {
                                             "type": "array",
                                             "description": "Associated environments for this connection",
                                             "items": {
-                                              "x-go-type": "*environment.Environment",
+                                              "x-go-type": "*environmentv1beta1.Environment",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                                "name": "environmentv1beta1"
                                               },
                                               "$id": "https://schemas.meshery.io/environment.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20466,11 +20411,12 @@ const PatternSchema = {
                                         "x-oapi-codegen-extra-tags": {
                                           "yaml": "category",
                                           "json": "category",
-                                          "gorm": "foreignKey:CategoryId;references:Id"
+                                          "gorm": "foreignKey:CategoryId;references:ID"
                                         },
-                                        "x-go-type": "category.CategoryDefinition",
+                                        "x-go-type": "categoryv1beta1.CategoryDefinition",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                          "name": "categoryv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/category.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20535,9 +20481,10 @@ const PatternSchema = {
                                       },
                                       "subCategory": {
                                         "x-order": 10,
-                                        "x-go-type": "subcategory.SubCategoryDefinition",
+                                        "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                          "name": "subcategoryv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/category.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20612,9 +20559,10 @@ const PatternSchema = {
                                             "type": "array",
                                             "description": "Capabilities associated with the model",
                                             "items": {
-                                              "x-go-type": "capability.Capability",
+                                              "x-go-type": "capabilityv1alpha1.Capability",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                                "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                                "name": "capabilityv1alpha1"
                                               },
                                               "$id": "https://schemas.meshery.io/capability.yaml",
                                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -20916,20 +20864,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -21021,9 +20964,10 @@ const PatternSchema = {
                                     ]
                                   },
                                   "modelReference": {
-                                    "x-go-type": "model.ModelReference",
+                                    "x-go-type": "modelv1beta1.ModelReference",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-order": 8,
                                     "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -21058,11 +21002,11 @@ const PatternSchema = {
                                         ]
                                       },
                                       "version": {
+                                        "description": "Version of the model definition.",
                                         "type": "string",
                                         "minLength": 5,
                                         "maxLength": 100,
-                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       },
                                       "displayName": {
                                         "type": "string",
@@ -21083,20 +21027,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -21138,9 +21077,10 @@ const PatternSchema = {
                                       "yaml": "styles",
                                       "json": "styles"
                                     },
-                                    "x-go-type": "core.ComponentStyles",
+                                    "x-go-type": "corev1alpha1.ComponentStyles",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                      "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                                      "name": "corev1alpha1"
                                     },
                                     "x-order": 8,
                                     "type": "object",
@@ -21520,9 +21460,10 @@ const PatternSchema = {
                                     "type": "array",
                                     "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                     "items": {
-                                      "x-go-type": "capability.Capability",
+                                      "x-go-type": "capabilityv1alpha1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -21975,16 +21916,13 @@ const PatternSchema = {
                                   "version",
                                   "configuration",
                                   "metadata",
+                                  "model",
                                   "modelId",
                                   "modelReference",
                                   "component"
                                 ]
                               }
-                            ],
-                            "x-go-type": "*component.ComponentDefinition",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/component"
-                            }
+                            ]
                           }
                         },
                         "preferences": {
@@ -22006,6 +21944,11 @@ const PatternSchema = {
                           "description": "List of relationships between components",
                           "type": "array",
                           "x-order": 8,
+                          "x-go-type": "[]*relationship.RelationshipDefinition",
+                          "x-go-type-import": {
+                            "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                            "name": "relationship"
+                          },
                           "items": {
                             "allOf": [
                               {
@@ -22057,16 +22000,16 @@ const PatternSchema = {
                                     ]
                                   },
                                   "version": {
-                                    "type": "string",
-                                    "minLength": 5,
-                                    "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                                    "description": "Specifies the version of the relationship definition.",
                                     "x-order": 13,
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "version",
                                       "json": "version"
-                                    }
+                                    },
+                                    "type": "string",
+                                    "minLength": 5,
+                                    "maxLength": 100,
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "kind": {
                                     "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -22125,9 +22068,10 @@ const PatternSchema = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capability.Capability",
+                                      "x-go-type": "capabilityv1alpha1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                        "name": "capabilityv1alpha1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -22687,9 +22631,10 @@ const PatternSchema = {
                                     }
                                   },
                                   "model": {
-                                    "x-go-type": "model.ModelReference",
+                                    "x-go-type": "modelv1beta1.ModelReference",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                      "name": "modelv1beta1"
                                     },
                                     "x-go-type-skip-optional-pointer": true,
                                     "x-order": 6,
@@ -22727,11 +22672,11 @@ const PatternSchema = {
                                         ]
                                       },
                                       "version": {
+                                        "description": "Version of the model definition.",
                                         "type": "string",
                                         "minLength": 5,
                                         "maxLength": 100,
-                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       },
                                       "displayName": {
                                         "type": "string",
@@ -22752,20 +22697,15 @@ const PatternSchema = {
                                         "properties": {
                                           "version": {
                                             "description": "Version of the model as defined by the registrant.",
-                                            "allOf": [
-                                              {
-                                                "type": "string",
-                                                "minLength": 5,
-                                                "maxLength": 100,
-                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                              }
-                                            ],
                                             "x-oapi-codegen-extra-tags": {
                                               "yaml": "version",
                                               "json": "version"
                                             },
-                                            "x-order": 1
+                                            "x-order": 1,
+                                            "type": "string",
+                                            "minLength": 5,
+                                            "maxLength": 100,
+                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                           }
                                         }
                                       },
@@ -23042,9 +22982,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -23079,11 +23020,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -23104,20 +23045,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -23402,9 +23338,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -23439,11 +23376,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -23464,20 +23401,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -23777,9 +23709,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -23814,11 +23747,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -23839,20 +23772,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -24137,9 +24065,10 @@ const PatternSchema = {
                                                     }
                                                   },
                                                   "model": {
-                                                    "x-go-type": "model.ModelReference",
+                                                    "x-go-type": "modelv1beta1.ModelReference",
                                                     "x-go-type-import": {
-                                                      "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                      "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                      "name": "modelv1beta1"
                                                     },
                                                     "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                     "x-oapi-codegen-extra-tags": {
@@ -24174,11 +24103,11 @@ const PatternSchema = {
                                                         ]
                                                       },
                                                       "version": {
+                                                        "description": "Version of the model definition.",
                                                         "type": "string",
                                                         "minLength": 5,
                                                         "maxLength": 100,
-                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       },
                                                       "displayName": {
                                                         "type": "string",
@@ -24199,20 +24128,15 @@ const PatternSchema = {
                                                         "properties": {
                                                           "version": {
                                                             "description": "Version of the model as defined by the registrant.",
-                                                            "allOf": [
-                                                              {
-                                                                "type": "string",
-                                                                "minLength": 5,
-                                                                "maxLength": 100,
-                                                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                              }
-                                                            ],
                                                             "x-oapi-codegen-extra-tags": {
                                                               "yaml": "version",
                                                               "json": "version"
                                                             },
-                                                            "x-order": 1
+                                                            "x-order": 1,
+                                                            "type": "string",
+                                                            "minLength": 5,
+                                                            "maxLength": 100,
+                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                           }
                                                         }
                                                       },
@@ -24305,11 +24229,7 @@ const PatternSchema = {
                                   }
                                 }
                               }
-                            ],
-                            "x-go-type": "*relationship.RelationshipDefinition",
-                            "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                            }
+                            ]
                           }
                         }
                       },
@@ -24876,6 +24796,11 @@ const PatternSchema = {
             "minItems": 0,
             "x-order": 6,
             "type": "array",
+            "x-go-type": "[]*component.ComponentDefinition",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1beta1/component",
+              "name": "component"
+            },
             "items": {
               "allOf": [
                 {
@@ -24966,16 +24891,17 @@ const PatternSchema = {
                       }
                     },
                     "model": {
-                      "x-go-type": "model.ModelDefinition",
+                      "x-go-type": "*modelv1beta1.ModelDefinition",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                        "name": "modelv1beta1"
                       },
                       "x-order": 7,
                       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                       "x-oapi-codegen-extra-tags": {
-                        "gorm": "foreignKey:ModelId;references:Id",
-                        "json": "model,omitempty",
-                        "yaml": "model,omitempty"
+                        "gorm": "foreignKey:ModelId;references:ID",
+                        "json": "model",
+                        "yaml": "model"
                       },
                       "$id": "https://schemas.meshery.io/model.yaml",
                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -25095,9 +25021,10 @@ const PatternSchema = {
                             "gorm": "foreignKey:RegistrantId;references:ID"
                           },
                           "x-order": 8,
-                          "x-go-type": "connection.Connection",
+                          "x-go-type": "connectionv1beta1.Connection",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                            "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                            "name": "connectionv1beta1"
                           },
                           "$id": "https://schemas.meshery.io/connection.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -25263,9 +25190,10 @@ const PatternSchema = {
                               "type": "array",
                               "description": "Associated environments for this connection",
                               "items": {
-                                "x-go-type": "*environment.Environment",
+                                "x-go-type": "*environmentv1beta1.Environment",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                  "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                  "name": "environmentv1beta1"
                                 },
                                 "$id": "https://schemas.meshery.io/environment.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -25474,11 +25402,12 @@ const PatternSchema = {
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "category",
                             "json": "category",
-                            "gorm": "foreignKey:CategoryId;references:Id"
+                            "gorm": "foreignKey:CategoryId;references:ID"
                           },
-                          "x-go-type": "category.CategoryDefinition",
+                          "x-go-type": "categoryv1beta1.CategoryDefinition",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/category"
+                            "path": "github.com/meshery/schemas/models/v1beta1/category",
+                            "name": "categoryv1beta1"
                           },
                           "$id": "https://schemas.meshery.io/category.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -25543,9 +25472,10 @@ const PatternSchema = {
                         },
                         "subCategory": {
                           "x-order": 10,
-                          "x-go-type": "subcategory.SubCategoryDefinition",
+                          "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                            "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                            "name": "subcategoryv1beta1"
                           },
                           "$id": "https://schemas.meshery.io/category.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -25620,9 +25550,10 @@ const PatternSchema = {
                               "type": "array",
                               "description": "Capabilities associated with the model",
                               "items": {
-                                "x-go-type": "capability.Capability",
+                                "x-go-type": "capabilityv1alpha1.Capability",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                  "name": "capabilityv1alpha1"
                                 },
                                 "$id": "https://schemas.meshery.io/capability.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -25924,20 +25855,15 @@ const PatternSchema = {
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
-                              "allOf": [
-                                {
-                                  "type": "string",
-                                  "minLength": 5,
-                                  "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                }
-                              ],
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
                               },
-                              "x-order": 1
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                             }
                           }
                         },
@@ -26029,9 +25955,10 @@ const PatternSchema = {
                       ]
                     },
                     "modelReference": {
-                      "x-go-type": "model.ModelReference",
+                      "x-go-type": "modelv1beta1.ModelReference",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                        "name": "modelv1beta1"
                       },
                       "x-order": 8,
                       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -26066,11 +25993,11 @@ const PatternSchema = {
                           ]
                         },
                         "version": {
+                          "description": "Version of the model definition.",
                           "type": "string",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "displayName": {
                           "type": "string",
@@ -26091,20 +26018,15 @@ const PatternSchema = {
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
-                              "allOf": [
-                                {
-                                  "type": "string",
-                                  "minLength": 5,
-                                  "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                }
-                              ],
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
                               },
-                              "x-order": 1
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                             }
                           }
                         },
@@ -26146,9 +26068,10 @@ const PatternSchema = {
                         "yaml": "styles",
                         "json": "styles"
                       },
-                      "x-go-type": "core.ComponentStyles",
+                      "x-go-type": "corev1alpha1.ComponentStyles",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                        "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                        "name": "corev1alpha1"
                       },
                       "x-order": 8,
                       "type": "object",
@@ -26528,9 +26451,10 @@ const PatternSchema = {
                       "type": "array",
                       "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                       "items": {
-                        "x-go-type": "capability.Capability",
+                        "x-go-type": "capabilityv1alpha1.Capability",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                          "name": "capabilityv1alpha1"
                         },
                         "$id": "https://schemas.meshery.io/capability.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -26983,16 +26907,13 @@ const PatternSchema = {
                     "version",
                     "configuration",
                     "metadata",
+                    "model",
                     "modelId",
                     "modelReference",
                     "component"
                   ]
                 }
-              ],
-              "x-go-type": "*component.ComponentDefinition",
-              "x-go-type-import": {
-                "path": "github.com/meshery/schemas/models/v1beta1/component"
-              }
+              ]
             }
           },
           "preferences": {
@@ -27014,6 +26935,11 @@ const PatternSchema = {
             "description": "List of relationships between components",
             "type": "array",
             "x-order": 8,
+            "x-go-type": "[]*relationship.RelationshipDefinition",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+              "name": "relationship"
+            },
             "items": {
               "allOf": [
                 {
@@ -27065,16 +26991,16 @@ const PatternSchema = {
                       ]
                     },
                     "version": {
-                      "type": "string",
-                      "minLength": 5,
-                      "maxLength": 100,
-                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                      "description": "Specifies the version of the relationship definition.",
                       "x-order": 13,
                       "x-oapi-codegen-extra-tags": {
                         "yaml": "version",
                         "json": "version"
-                      }
+                      },
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 100,
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                     },
                     "kind": {
                       "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -27133,9 +27059,10 @@ const PatternSchema = {
                       "description": "Capabilities associated with the relationship.",
                       "x-order": 2,
                       "items": {
-                        "x-go-type": "capability.Capability",
+                        "x-go-type": "capabilityv1alpha1.Capability",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                          "name": "capabilityv1alpha1"
                         },
                         "$id": "https://schemas.meshery.io/capability.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -27695,9 +27622,10 @@ const PatternSchema = {
                       }
                     },
                     "model": {
-                      "x-go-type": "model.ModelReference",
+                      "x-go-type": "modelv1beta1.ModelReference",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                        "name": "modelv1beta1"
                       },
                       "x-go-type-skip-optional-pointer": true,
                       "x-order": 6,
@@ -27735,11 +27663,11 @@ const PatternSchema = {
                           ]
                         },
                         "version": {
+                          "description": "Version of the model definition.",
                           "type": "string",
                           "minLength": 5,
                           "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "displayName": {
                           "type": "string",
@@ -27760,20 +27688,15 @@ const PatternSchema = {
                           "properties": {
                             "version": {
                               "description": "Version of the model as defined by the registrant.",
-                              "allOf": [
-                                {
-                                  "type": "string",
-                                  "minLength": 5,
-                                  "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                }
-                              ],
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
                               },
-                              "x-order": 1
+                              "x-order": 1,
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                             }
                           }
                         },
@@ -28050,9 +27973,10 @@ const PatternSchema = {
                                       }
                                     },
                                     "model": {
-                                      "x-go-type": "model.ModelReference",
+                                      "x-go-type": "modelv1beta1.ModelReference",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                        "name": "modelv1beta1"
                                       },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "x-oapi-codegen-extra-tags": {
@@ -28087,11 +28011,11 @@ const PatternSchema = {
                                           ]
                                         },
                                         "version": {
+                                          "description": "Version of the model definition.",
                                           "type": "string",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "type": "string",
@@ -28112,20 +28036,15 @@ const PatternSchema = {
                                           "properties": {
                                             "version": {
                                               "description": "Version of the model as defined by the registrant.",
-                                              "allOf": [
-                                                {
-                                                  "type": "string",
-                                                  "minLength": 5,
-                                                  "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                }
-                                              ],
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "version",
                                                 "json": "version"
                                               },
-                                              "x-order": 1
+                                              "x-order": 1,
+                                              "type": "string",
+                                              "minLength": 5,
+                                              "maxLength": 100,
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             }
                                           }
                                         },
@@ -28410,9 +28329,10 @@ const PatternSchema = {
                                       }
                                     },
                                     "model": {
-                                      "x-go-type": "model.ModelReference",
+                                      "x-go-type": "modelv1beta1.ModelReference",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                        "name": "modelv1beta1"
                                       },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "x-oapi-codegen-extra-tags": {
@@ -28447,11 +28367,11 @@ const PatternSchema = {
                                           ]
                                         },
                                         "version": {
+                                          "description": "Version of the model definition.",
                                           "type": "string",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "type": "string",
@@ -28472,20 +28392,15 @@ const PatternSchema = {
                                           "properties": {
                                             "version": {
                                               "description": "Version of the model as defined by the registrant.",
-                                              "allOf": [
-                                                {
-                                                  "type": "string",
-                                                  "minLength": 5,
-                                                  "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                }
-                                              ],
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "version",
                                                 "json": "version"
                                               },
-                                              "x-order": 1
+                                              "x-order": 1,
+                                              "type": "string",
+                                              "minLength": 5,
+                                              "maxLength": 100,
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             }
                                           }
                                         },
@@ -28785,9 +28700,10 @@ const PatternSchema = {
                                       }
                                     },
                                     "model": {
-                                      "x-go-type": "model.ModelReference",
+                                      "x-go-type": "modelv1beta1.ModelReference",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                        "name": "modelv1beta1"
                                       },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "x-oapi-codegen-extra-tags": {
@@ -28822,11 +28738,11 @@ const PatternSchema = {
                                           ]
                                         },
                                         "version": {
+                                          "description": "Version of the model definition.",
                                           "type": "string",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "type": "string",
@@ -28847,20 +28763,15 @@ const PatternSchema = {
                                           "properties": {
                                             "version": {
                                               "description": "Version of the model as defined by the registrant.",
-                                              "allOf": [
-                                                {
-                                                  "type": "string",
-                                                  "minLength": 5,
-                                                  "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                }
-                                              ],
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "version",
                                                 "json": "version"
                                               },
-                                              "x-order": 1
+                                              "x-order": 1,
+                                              "type": "string",
+                                              "minLength": 5,
+                                              "maxLength": 100,
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             }
                                           }
                                         },
@@ -29145,9 +29056,10 @@ const PatternSchema = {
                                       }
                                     },
                                     "model": {
-                                      "x-go-type": "model.ModelReference",
+                                      "x-go-type": "modelv1beta1.ModelReference",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                        "name": "modelv1beta1"
                                       },
                                       "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                       "x-oapi-codegen-extra-tags": {
@@ -29182,11 +29094,11 @@ const PatternSchema = {
                                           ]
                                         },
                                         "version": {
+                                          "description": "Version of the model definition.",
                                           "type": "string",
                                           "minLength": 5,
                                           "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                         },
                                         "displayName": {
                                           "type": "string",
@@ -29207,20 +29119,15 @@ const PatternSchema = {
                                           "properties": {
                                             "version": {
                                               "description": "Version of the model as defined by the registrant.",
-                                              "allOf": [
-                                                {
-                                                  "type": "string",
-                                                  "minLength": 5,
-                                                  "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                }
-                                              ],
                                               "x-oapi-codegen-extra-tags": {
                                                 "yaml": "version",
                                                 "json": "version"
                                               },
-                                              "x-order": 1
+                                              "x-order": 1,
+                                              "type": "string",
+                                              "minLength": 5,
+                                              "maxLength": 100,
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             }
                                           }
                                         },
@@ -29313,11 +29220,7 @@ const PatternSchema = {
                     }
                   }
                 }
-              ],
-              "x-go-type": "*relationship.RelationshipDefinition",
-              "x-go-type-import": {
-                "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-              }
+              ]
             }
           }
         },
@@ -29334,9 +29237,10 @@ const PatternSchema = {
         "type": "object",
         "properties": {
           "catalog_data": {
-            "x-go-type": "catalog.CatalogData",
+            "x-go-type": "catalogv1alpha2.CatalogData",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+              "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+              "name": "catalogv1alpha2"
             },
             "type": "object",
             "properties": {
@@ -29586,6 +29490,11 @@ const PatternSchema = {
                 "minItems": 0,
                 "x-order": 6,
                 "type": "array",
+                "x-go-type": "[]*component.ComponentDefinition",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/v1beta1/component",
+                  "name": "component"
+                },
                 "items": {
                   "allOf": [
                     {
@@ -29676,16 +29585,17 @@ const PatternSchema = {
                           }
                         },
                         "model": {
-                          "x-go-type": "model.ModelDefinition",
+                          "x-go-type": "*modelv1beta1.ModelDefinition",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                            "name": "modelv1beta1"
                           },
                           "x-order": 7,
                           "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                           "x-oapi-codegen-extra-tags": {
-                            "gorm": "foreignKey:ModelId;references:Id",
-                            "json": "model,omitempty",
-                            "yaml": "model,omitempty"
+                            "gorm": "foreignKey:ModelId;references:ID",
+                            "json": "model",
+                            "yaml": "model"
                           },
                           "$id": "https://schemas.meshery.io/model.yaml",
                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -29805,9 +29715,10 @@ const PatternSchema = {
                                 "gorm": "foreignKey:RegistrantId;references:ID"
                               },
                               "x-order": 8,
-                              "x-go-type": "connection.Connection",
+                              "x-go-type": "connectionv1beta1.Connection",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                "name": "connectionv1beta1"
                               },
                               "$id": "https://schemas.meshery.io/connection.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -29973,9 +29884,10 @@ const PatternSchema = {
                                   "type": "array",
                                   "description": "Associated environments for this connection",
                                   "items": {
-                                    "x-go-type": "*environment.Environment",
+                                    "x-go-type": "*environmentv1beta1.Environment",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                      "name": "environmentv1beta1"
                                     },
                                     "$id": "https://schemas.meshery.io/environment.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -30184,11 +30096,12 @@ const PatternSchema = {
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "category",
                                 "json": "category",
-                                "gorm": "foreignKey:CategoryId;references:Id"
+                                "gorm": "foreignKey:CategoryId;references:ID"
                               },
-                              "x-go-type": "category.CategoryDefinition",
+                              "x-go-type": "categoryv1beta1.CategoryDefinition",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                "name": "categoryv1beta1"
                               },
                               "$id": "https://schemas.meshery.io/category.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -30253,9 +30166,10 @@ const PatternSchema = {
                             },
                             "subCategory": {
                               "x-order": 10,
-                              "x-go-type": "subcategory.SubCategoryDefinition",
+                              "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                "name": "subcategoryv1beta1"
                               },
                               "$id": "https://schemas.meshery.io/category.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -30330,9 +30244,10 @@ const PatternSchema = {
                                   "type": "array",
                                   "description": "Capabilities associated with the model",
                                   "items": {
-                                    "x-go-type": "capability.Capability",
+                                    "x-go-type": "capabilityv1alpha1.Capability",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                      "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                      "name": "capabilityv1alpha1"
                                     },
                                     "$id": "https://schemas.meshery.io/capability.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -30634,20 +30549,15 @@ const PatternSchema = {
                               "properties": {
                                 "version": {
                                   "description": "Version of the model as defined by the registrant.",
-                                  "allOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 5,
-                                      "maxLength": 100,
-                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                    }
-                                  ],
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "version",
                                     "json": "version"
                                   },
-                                  "x-order": 1
+                                  "x-order": 1,
+                                  "type": "string",
+                                  "minLength": 5,
+                                  "maxLength": 100,
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 }
                               }
                             },
@@ -30739,9 +30649,10 @@ const PatternSchema = {
                           ]
                         },
                         "modelReference": {
-                          "x-go-type": "model.ModelReference",
+                          "x-go-type": "modelv1beta1.ModelReference",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                            "name": "modelv1beta1"
                           },
                           "x-order": 8,
                           "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -30776,11 +30687,11 @@ const PatternSchema = {
                               ]
                             },
                             "version": {
+                              "description": "Version of the model definition.",
                               "type": "string",
                               "minLength": 5,
                               "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                             },
                             "displayName": {
                               "type": "string",
@@ -30801,20 +30712,15 @@ const PatternSchema = {
                               "properties": {
                                 "version": {
                                   "description": "Version of the model as defined by the registrant.",
-                                  "allOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 5,
-                                      "maxLength": 100,
-                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                    }
-                                  ],
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "version",
                                     "json": "version"
                                   },
-                                  "x-order": 1
+                                  "x-order": 1,
+                                  "type": "string",
+                                  "minLength": 5,
+                                  "maxLength": 100,
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 }
                               }
                             },
@@ -30856,9 +30762,10 @@ const PatternSchema = {
                             "yaml": "styles",
                             "json": "styles"
                           },
-                          "x-go-type": "core.ComponentStyles",
+                          "x-go-type": "corev1alpha1.ComponentStyles",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                            "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                            "name": "corev1alpha1"
                           },
                           "x-order": 8,
                           "type": "object",
@@ -31238,9 +31145,10 @@ const PatternSchema = {
                           "type": "array",
                           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                           "items": {
-                            "x-go-type": "capability.Capability",
+                            "x-go-type": "capabilityv1alpha1.Capability",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                              "name": "capabilityv1alpha1"
                             },
                             "$id": "https://schemas.meshery.io/capability.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -31693,16 +31601,13 @@ const PatternSchema = {
                         "version",
                         "configuration",
                         "metadata",
+                        "model",
                         "modelId",
                         "modelReference",
                         "component"
                       ]
                     }
-                  ],
-                  "x-go-type": "*component.ComponentDefinition",
-                  "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1beta1/component"
-                  }
+                  ]
                 }
               },
               "preferences": {
@@ -31724,6 +31629,11 @@ const PatternSchema = {
                 "description": "List of relationships between components",
                 "type": "array",
                 "x-order": 8,
+                "x-go-type": "[]*relationship.RelationshipDefinition",
+                "x-go-type-import": {
+                  "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                  "name": "relationship"
+                },
                 "items": {
                   "allOf": [
                     {
@@ -31775,16 +31685,16 @@ const PatternSchema = {
                           ]
                         },
                         "version": {
-                          "type": "string",
-                          "minLength": 5,
-                          "maxLength": 100,
-                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                          "description": "Specifies the version of the relationship definition.",
                           "x-order": 13,
                           "x-oapi-codegen-extra-tags": {
                             "yaml": "version",
                             "json": "version"
-                          }
+                          },
+                          "type": "string",
+                          "minLength": 5,
+                          "maxLength": 100,
+                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                         },
                         "kind": {
                           "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -31843,9 +31753,10 @@ const PatternSchema = {
                           "description": "Capabilities associated with the relationship.",
                           "x-order": 2,
                           "items": {
-                            "x-go-type": "capability.Capability",
+                            "x-go-type": "capabilityv1alpha1.Capability",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                              "name": "capabilityv1alpha1"
                             },
                             "$id": "https://schemas.meshery.io/capability.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -32405,9 +32316,10 @@ const PatternSchema = {
                           }
                         },
                         "model": {
-                          "x-go-type": "model.ModelReference",
+                          "x-go-type": "modelv1beta1.ModelReference",
                           "x-go-type-import": {
-                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                            "name": "modelv1beta1"
                           },
                           "x-go-type-skip-optional-pointer": true,
                           "x-order": 6,
@@ -32445,11 +32357,11 @@ const PatternSchema = {
                               ]
                             },
                             "version": {
+                              "description": "Version of the model definition.",
                               "type": "string",
                               "minLength": 5,
                               "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                             },
                             "displayName": {
                               "type": "string",
@@ -32470,20 +32382,15 @@ const PatternSchema = {
                               "properties": {
                                 "version": {
                                   "description": "Version of the model as defined by the registrant.",
-                                  "allOf": [
-                                    {
-                                      "type": "string",
-                                      "minLength": 5,
-                                      "maxLength": 100,
-                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                    }
-                                  ],
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "version",
                                     "json": "version"
                                   },
-                                  "x-order": 1
+                                  "x-order": 1,
+                                  "type": "string",
+                                  "minLength": 5,
+                                  "maxLength": 100,
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 }
                               }
                             },
@@ -32760,9 +32667,10 @@ const PatternSchema = {
                                           }
                                         },
                                         "model": {
-                                          "x-go-type": "model.ModelReference",
+                                          "x-go-type": "modelv1beta1.ModelReference",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                            "name": "modelv1beta1"
                                           },
                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "x-oapi-codegen-extra-tags": {
@@ -32797,11 +32705,11 @@ const PatternSchema = {
                                               ]
                                             },
                                             "version": {
+                                              "description": "Version of the model definition.",
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             },
                                             "displayName": {
                                               "type": "string",
@@ -32822,20 +32730,15 @@ const PatternSchema = {
                                               "properties": {
                                                 "version": {
                                                   "description": "Version of the model as defined by the registrant.",
-                                                  "allOf": [
-                                                    {
-                                                      "type": "string",
-                                                      "minLength": 5,
-                                                      "maxLength": 100,
-                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                    }
-                                                  ],
                                                   "x-oapi-codegen-extra-tags": {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "x-order": 1
+                                                  "x-order": 1,
+                                                  "type": "string",
+                                                  "minLength": 5,
+                                                  "maxLength": 100,
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 }
                                               }
                                             },
@@ -33120,9 +33023,10 @@ const PatternSchema = {
                                           }
                                         },
                                         "model": {
-                                          "x-go-type": "model.ModelReference",
+                                          "x-go-type": "modelv1beta1.ModelReference",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                            "name": "modelv1beta1"
                                           },
                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "x-oapi-codegen-extra-tags": {
@@ -33157,11 +33061,11 @@ const PatternSchema = {
                                               ]
                                             },
                                             "version": {
+                                              "description": "Version of the model definition.",
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             },
                                             "displayName": {
                                               "type": "string",
@@ -33182,20 +33086,15 @@ const PatternSchema = {
                                               "properties": {
                                                 "version": {
                                                   "description": "Version of the model as defined by the registrant.",
-                                                  "allOf": [
-                                                    {
-                                                      "type": "string",
-                                                      "minLength": 5,
-                                                      "maxLength": 100,
-                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                    }
-                                                  ],
                                                   "x-oapi-codegen-extra-tags": {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "x-order": 1
+                                                  "x-order": 1,
+                                                  "type": "string",
+                                                  "minLength": 5,
+                                                  "maxLength": 100,
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 }
                                               }
                                             },
@@ -33495,9 +33394,10 @@ const PatternSchema = {
                                           }
                                         },
                                         "model": {
-                                          "x-go-type": "model.ModelReference",
+                                          "x-go-type": "modelv1beta1.ModelReference",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                            "name": "modelv1beta1"
                                           },
                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "x-oapi-codegen-extra-tags": {
@@ -33532,11 +33432,11 @@ const PatternSchema = {
                                               ]
                                             },
                                             "version": {
+                                              "description": "Version of the model definition.",
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             },
                                             "displayName": {
                                               "type": "string",
@@ -33557,20 +33457,15 @@ const PatternSchema = {
                                               "properties": {
                                                 "version": {
                                                   "description": "Version of the model as defined by the registrant.",
-                                                  "allOf": [
-                                                    {
-                                                      "type": "string",
-                                                      "minLength": 5,
-                                                      "maxLength": 100,
-                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                    }
-                                                  ],
                                                   "x-oapi-codegen-extra-tags": {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "x-order": 1
+                                                  "x-order": 1,
+                                                  "type": "string",
+                                                  "minLength": 5,
+                                                  "maxLength": 100,
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 }
                                               }
                                             },
@@ -33855,9 +33750,10 @@ const PatternSchema = {
                                           }
                                         },
                                         "model": {
-                                          "x-go-type": "model.ModelReference",
+                                          "x-go-type": "modelv1beta1.ModelReference",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                            "name": "modelv1beta1"
                                           },
                                           "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                           "x-oapi-codegen-extra-tags": {
@@ -33892,11 +33788,11 @@ const PatternSchema = {
                                               ]
                                             },
                                             "version": {
+                                              "description": "Version of the model definition.",
                                               "type": "string",
                                               "minLength": 5,
                                               "maxLength": 100,
-                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                             },
                                             "displayName": {
                                               "type": "string",
@@ -33917,20 +33813,15 @@ const PatternSchema = {
                                               "properties": {
                                                 "version": {
                                                   "description": "Version of the model as defined by the registrant.",
-                                                  "allOf": [
-                                                    {
-                                                      "type": "string",
-                                                      "minLength": 5,
-                                                      "maxLength": 100,
-                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                      "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                    }
-                                                  ],
                                                   "x-oapi-codegen-extra-tags": {
                                                     "yaml": "version",
                                                     "json": "version"
                                                   },
-                                                  "x-order": 1
+                                                  "x-order": 1,
+                                                  "type": "string",
+                                                  "minLength": 5,
+                                                  "maxLength": 100,
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 }
                                               }
                                             },
@@ -34023,11 +33914,7 @@ const PatternSchema = {
                         }
                       }
                     }
-                  ],
-                  "x-go-type": "*relationship.RelationshipDefinition",
-                  "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                  }
+                  ]
                 }
               }
             },
@@ -34076,9 +33963,10 @@ const PatternSchema = {
               "type": "object",
               "properties": {
                 "catalog_data": {
-                  "x-go-type": "catalog.CatalogData",
+                  "x-go-type": "catalogv1alpha2.CatalogData",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+                    "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                    "name": "catalogv1alpha2"
                   },
                   "type": "object",
                   "properties": {
@@ -34328,6 +34216,11 @@ const PatternSchema = {
                       "minItems": 0,
                       "x-order": 6,
                       "type": "array",
+                      "x-go-type": "[]*component.ComponentDefinition",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1beta1/component",
+                        "name": "component"
+                      },
                       "items": {
                         "allOf": [
                           {
@@ -34418,16 +34311,17 @@ const PatternSchema = {
                                 }
                               },
                               "model": {
-                                "x-go-type": "model.ModelDefinition",
+                                "x-go-type": "*modelv1beta1.ModelDefinition",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                  "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                  "name": "modelv1beta1"
                                 },
                                 "x-order": 7,
                                 "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                                 "x-oapi-codegen-extra-tags": {
-                                  "gorm": "foreignKey:ModelId;references:Id",
-                                  "json": "model,omitempty",
-                                  "yaml": "model,omitempty"
+                                  "gorm": "foreignKey:ModelId;references:ID",
+                                  "json": "model",
+                                  "yaml": "model"
                                 },
                                 "$id": "https://schemas.meshery.io/model.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -34547,9 +34441,10 @@ const PatternSchema = {
                                       "gorm": "foreignKey:RegistrantId;references:ID"
                                     },
                                     "x-order": 8,
-                                    "x-go-type": "connection.Connection",
+                                    "x-go-type": "connectionv1beta1.Connection",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                      "name": "connectionv1beta1"
                                     },
                                     "$id": "https://schemas.meshery.io/connection.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -34715,9 +34610,10 @@ const PatternSchema = {
                                         "type": "array",
                                         "description": "Associated environments for this connection",
                                         "items": {
-                                          "x-go-type": "*environment.Environment",
+                                          "x-go-type": "*environmentv1beta1.Environment",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                            "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                            "name": "environmentv1beta1"
                                           },
                                           "$id": "https://schemas.meshery.io/environment.yaml",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -34926,11 +34822,12 @@ const PatternSchema = {
                                     "x-oapi-codegen-extra-tags": {
                                       "yaml": "category",
                                       "json": "category",
-                                      "gorm": "foreignKey:CategoryId;references:Id"
+                                      "gorm": "foreignKey:CategoryId;references:ID"
                                     },
-                                    "x-go-type": "category.CategoryDefinition",
+                                    "x-go-type": "categoryv1beta1.CategoryDefinition",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                      "name": "categoryv1beta1"
                                     },
                                     "$id": "https://schemas.meshery.io/category.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -34995,9 +34892,10 @@ const PatternSchema = {
                                   },
                                   "subCategory": {
                                     "x-order": 10,
-                                    "x-go-type": "subcategory.SubCategoryDefinition",
+                                    "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                                     "x-go-type-import": {
-                                      "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                      "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                      "name": "subcategoryv1beta1"
                                     },
                                     "$id": "https://schemas.meshery.io/category.yaml",
                                     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -35072,9 +34970,10 @@ const PatternSchema = {
                                         "type": "array",
                                         "description": "Capabilities associated with the model",
                                         "items": {
-                                          "x-go-type": "capability.Capability",
+                                          "x-go-type": "capabilityv1alpha1.Capability",
                                           "x-go-type-import": {
-                                            "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                            "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                            "name": "capabilityv1alpha1"
                                           },
                                           "$id": "https://schemas.meshery.io/capability.yaml",
                                           "$schema": "http://json-schema.org/draft-07/schema#",
@@ -35376,20 +35275,15 @@ const PatternSchema = {
                                     "properties": {
                                       "version": {
                                         "description": "Version of the model as defined by the registrant.",
-                                        "allOf": [
-                                          {
-                                            "type": "string",
-                                            "minLength": 5,
-                                            "maxLength": 100,
-                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                          }
-                                        ],
                                         "x-oapi-codegen-extra-tags": {
                                           "yaml": "version",
                                           "json": "version"
                                         },
-                                        "x-order": 1
+                                        "x-order": 1,
+                                        "type": "string",
+                                        "minLength": 5,
+                                        "maxLength": 100,
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       }
                                     }
                                   },
@@ -35481,9 +35375,10 @@ const PatternSchema = {
                                 ]
                               },
                               "modelReference": {
-                                "x-go-type": "model.ModelReference",
+                                "x-go-type": "modelv1beta1.ModelReference",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                  "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                  "name": "modelv1beta1"
                                 },
                                 "x-order": 8,
                                 "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -35518,11 +35413,11 @@ const PatternSchema = {
                                     ]
                                   },
                                   "version": {
+                                    "description": "Version of the model definition.",
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "displayName": {
                                     "type": "string",
@@ -35543,20 +35438,15 @@ const PatternSchema = {
                                     "properties": {
                                       "version": {
                                         "description": "Version of the model as defined by the registrant.",
-                                        "allOf": [
-                                          {
-                                            "type": "string",
-                                            "minLength": 5,
-                                            "maxLength": 100,
-                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                          }
-                                        ],
                                         "x-oapi-codegen-extra-tags": {
                                           "yaml": "version",
                                           "json": "version"
                                         },
-                                        "x-order": 1
+                                        "x-order": 1,
+                                        "type": "string",
+                                        "minLength": 5,
+                                        "maxLength": 100,
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       }
                                     }
                                   },
@@ -35598,9 +35488,10 @@ const PatternSchema = {
                                   "yaml": "styles",
                                   "json": "styles"
                                 },
-                                "x-go-type": "core.ComponentStyles",
+                                "x-go-type": "corev1alpha1.ComponentStyles",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                                  "name": "corev1alpha1"
                                 },
                                 "x-order": 8,
                                 "type": "object",
@@ -35980,9 +35871,10 @@ const PatternSchema = {
                                 "type": "array",
                                 "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "items": {
-                                  "x-go-type": "capability.Capability",
+                                  "x-go-type": "capabilityv1alpha1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                    "name": "capabilityv1alpha1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -36435,16 +36327,13 @@ const PatternSchema = {
                               "version",
                               "configuration",
                               "metadata",
+                              "model",
                               "modelId",
                               "modelReference",
                               "component"
                             ]
                           }
-                        ],
-                        "x-go-type": "*component.ComponentDefinition",
-                        "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/component"
-                        }
+                        ]
                       }
                     },
                     "preferences": {
@@ -36466,6 +36355,11 @@ const PatternSchema = {
                       "description": "List of relationships between components",
                       "type": "array",
                       "x-order": 8,
+                      "x-go-type": "[]*relationship.RelationshipDefinition",
+                      "x-go-type-import": {
+                        "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                        "name": "relationship"
+                      },
                       "items": {
                         "allOf": [
                           {
@@ -36517,16 +36411,16 @@ const PatternSchema = {
                                 ]
                               },
                               "version": {
-                                "type": "string",
-                                "minLength": 5,
-                                "maxLength": 100,
-                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                                "description": "Specifies the version of the relationship definition.",
                                 "x-order": 13,
                                 "x-oapi-codegen-extra-tags": {
                                   "yaml": "version",
                                   "json": "version"
-                                }
+                                },
+                                "type": "string",
+                                "minLength": 5,
+                                "maxLength": 100,
+                                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                               },
                               "kind": {
                                 "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -36585,9 +36479,10 @@ const PatternSchema = {
                                 "description": "Capabilities associated with the relationship.",
                                 "x-order": 2,
                                 "items": {
-                                  "x-go-type": "capability.Capability",
+                                  "x-go-type": "capabilityv1alpha1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                    "name": "capabilityv1alpha1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -37147,9 +37042,10 @@ const PatternSchema = {
                                 }
                               },
                               "model": {
-                                "x-go-type": "model.ModelReference",
+                                "x-go-type": "modelv1beta1.ModelReference",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                  "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                  "name": "modelv1beta1"
                                 },
                                 "x-go-type-skip-optional-pointer": true,
                                 "x-order": 6,
@@ -37187,11 +37083,11 @@ const PatternSchema = {
                                     ]
                                   },
                                   "version": {
+                                    "description": "Version of the model definition.",
                                     "type": "string",
                                     "minLength": 5,
                                     "maxLength": 100,
-                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                   },
                                   "displayName": {
                                     "type": "string",
@@ -37212,20 +37108,15 @@ const PatternSchema = {
                                     "properties": {
                                       "version": {
                                         "description": "Version of the model as defined by the registrant.",
-                                        "allOf": [
-                                          {
-                                            "type": "string",
-                                            "minLength": 5,
-                                            "maxLength": 100,
-                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                          }
-                                        ],
                                         "x-oapi-codegen-extra-tags": {
                                           "yaml": "version",
                                           "json": "version"
                                         },
-                                        "x-order": 1
+                                        "x-order": 1,
+                                        "type": "string",
+                                        "minLength": 5,
+                                        "maxLength": 100,
+                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                       }
                                     }
                                   },
@@ -37502,9 +37393,10 @@ const PatternSchema = {
                                                 }
                                               },
                                               "model": {
-                                                "x-go-type": "model.ModelReference",
+                                                "x-go-type": "modelv1beta1.ModelReference",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                  "name": "modelv1beta1"
                                                 },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "x-oapi-codegen-extra-tags": {
@@ -37539,11 +37431,11 @@ const PatternSchema = {
                                                     ]
                                                   },
                                                   "version": {
+                                                    "description": "Version of the model definition.",
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "type": "string",
@@ -37564,20 +37456,15 @@ const PatternSchema = {
                                                     "properties": {
                                                       "version": {
                                                         "description": "Version of the model as defined by the registrant.",
-                                                        "allOf": [
-                                                          {
-                                                            "type": "string",
-                                                            "minLength": 5,
-                                                            "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                          }
-                                                        ],
                                                         "x-oapi-codegen-extra-tags": {
                                                           "yaml": "version",
                                                           "json": "version"
                                                         },
-                                                        "x-order": 1
+                                                        "x-order": 1,
+                                                        "type": "string",
+                                                        "minLength": 5,
+                                                        "maxLength": 100,
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       }
                                                     }
                                                   },
@@ -37862,9 +37749,10 @@ const PatternSchema = {
                                                 }
                                               },
                                               "model": {
-                                                "x-go-type": "model.ModelReference",
+                                                "x-go-type": "modelv1beta1.ModelReference",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                  "name": "modelv1beta1"
                                                 },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "x-oapi-codegen-extra-tags": {
@@ -37899,11 +37787,11 @@ const PatternSchema = {
                                                     ]
                                                   },
                                                   "version": {
+                                                    "description": "Version of the model definition.",
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "type": "string",
@@ -37924,20 +37812,15 @@ const PatternSchema = {
                                                     "properties": {
                                                       "version": {
                                                         "description": "Version of the model as defined by the registrant.",
-                                                        "allOf": [
-                                                          {
-                                                            "type": "string",
-                                                            "minLength": 5,
-                                                            "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                          }
-                                                        ],
                                                         "x-oapi-codegen-extra-tags": {
                                                           "yaml": "version",
                                                           "json": "version"
                                                         },
-                                                        "x-order": 1
+                                                        "x-order": 1,
+                                                        "type": "string",
+                                                        "minLength": 5,
+                                                        "maxLength": 100,
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       }
                                                     }
                                                   },
@@ -38237,9 +38120,10 @@ const PatternSchema = {
                                                 }
                                               },
                                               "model": {
-                                                "x-go-type": "model.ModelReference",
+                                                "x-go-type": "modelv1beta1.ModelReference",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                  "name": "modelv1beta1"
                                                 },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "x-oapi-codegen-extra-tags": {
@@ -38274,11 +38158,11 @@ const PatternSchema = {
                                                     ]
                                                   },
                                                   "version": {
+                                                    "description": "Version of the model definition.",
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "type": "string",
@@ -38299,20 +38183,15 @@ const PatternSchema = {
                                                     "properties": {
                                                       "version": {
                                                         "description": "Version of the model as defined by the registrant.",
-                                                        "allOf": [
-                                                          {
-                                                            "type": "string",
-                                                            "minLength": 5,
-                                                            "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                          }
-                                                        ],
                                                         "x-oapi-codegen-extra-tags": {
                                                           "yaml": "version",
                                                           "json": "version"
                                                         },
-                                                        "x-order": 1
+                                                        "x-order": 1,
+                                                        "type": "string",
+                                                        "minLength": 5,
+                                                        "maxLength": 100,
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       }
                                                     }
                                                   },
@@ -38597,9 +38476,10 @@ const PatternSchema = {
                                                 }
                                               },
                                               "model": {
-                                                "x-go-type": "model.ModelReference",
+                                                "x-go-type": "modelv1beta1.ModelReference",
                                                 "x-go-type-import": {
-                                                  "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                  "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                  "name": "modelv1beta1"
                                                 },
                                                 "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                                 "x-oapi-codegen-extra-tags": {
@@ -38634,11 +38514,11 @@ const PatternSchema = {
                                                     ]
                                                   },
                                                   "version": {
+                                                    "description": "Version of the model definition.",
                                                     "type": "string",
                                                     "minLength": 5,
                                                     "maxLength": 100,
-                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                    "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                   },
                                                   "displayName": {
                                                     "type": "string",
@@ -38659,20 +38539,15 @@ const PatternSchema = {
                                                     "properties": {
                                                       "version": {
                                                         "description": "Version of the model as defined by the registrant.",
-                                                        "allOf": [
-                                                          {
-                                                            "type": "string",
-                                                            "minLength": 5,
-                                                            "maxLength": 100,
-                                                            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                            "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                          }
-                                                        ],
                                                         "x-oapi-codegen-extra-tags": {
                                                           "yaml": "version",
                                                           "json": "version"
                                                         },
-                                                        "x-order": 1
+                                                        "x-order": 1,
+                                                        "type": "string",
+                                                        "minLength": 5,
+                                                        "maxLength": 100,
+                                                        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                       }
                                                     }
                                                   },
@@ -38765,11 +38640,7 @@ const PatternSchema = {
                               }
                             }
                           }
-                        ],
-                        "x-go-type": "*relationship.RelationshipDefinition",
-                        "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                        }
+                        ]
                       }
                     }
                   },
@@ -38850,9 +38721,10 @@ const PatternSchema = {
             "type": "object",
             "properties": {
               "catalog_data": {
-                "x-go-type": "catalog.CatalogData",
+                "x-go-type": "catalogv1alpha2.CatalogData",
                 "x-go-type-import": {
-                  "path": "github.com/meshery/schemas/models/v1alpha2/catalog"
+                  "path": "github.com/meshery/schemas/models/v1alpha2/catalog",
+                  "name": "catalogv1alpha2"
                 },
                 "type": "object",
                 "properties": {
@@ -39102,6 +38974,11 @@ const PatternSchema = {
                     "minItems": 0,
                     "x-order": 6,
                     "type": "array",
+                    "x-go-type": "[]*component.ComponentDefinition",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/v1beta1/component",
+                      "name": "component"
+                    },
                     "items": {
                       "allOf": [
                         {
@@ -39192,16 +39069,17 @@ const PatternSchema = {
                               }
                             },
                             "model": {
-                              "x-go-type": "model.ModelDefinition",
+                              "x-go-type": "*modelv1beta1.ModelDefinition",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                "name": "modelv1beta1"
                               },
                               "x-order": 7,
                               "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
                               "x-oapi-codegen-extra-tags": {
-                                "gorm": "foreignKey:ModelId;references:Id",
-                                "json": "model,omitempty",
-                                "yaml": "model,omitempty"
+                                "gorm": "foreignKey:ModelId;references:ID",
+                                "json": "model",
+                                "yaml": "model"
                               },
                               "$id": "https://schemas.meshery.io/model.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -39321,9 +39199,10 @@ const PatternSchema = {
                                     "gorm": "foreignKey:RegistrantId;references:ID"
                                   },
                                   "x-order": 8,
-                                  "x-go-type": "connection.Connection",
+                                  "x-go-type": "connectionv1beta1.Connection",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1beta1/connection"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/connection",
+                                    "name": "connectionv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/connection.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -39489,9 +39368,10 @@ const PatternSchema = {
                                       "type": "array",
                                       "description": "Associated environments for this connection",
                                       "items": {
-                                        "x-go-type": "*environment.Environment",
+                                        "x-go-type": "*environmentv1beta1.Environment",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                          "name": "environmentv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/environment.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -39700,11 +39580,12 @@ const PatternSchema = {
                                   "x-oapi-codegen-extra-tags": {
                                     "yaml": "category",
                                     "json": "category",
-                                    "gorm": "foreignKey:CategoryId;references:Id"
+                                    "gorm": "foreignKey:CategoryId;references:ID"
                                   },
-                                  "x-go-type": "category.CategoryDefinition",
+                                  "x-go-type": "categoryv1beta1.CategoryDefinition",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1beta1/category"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/category",
+                                    "name": "categoryv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/category.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -39769,9 +39650,10 @@ const PatternSchema = {
                                 },
                                 "subCategory": {
                                   "x-order": 10,
-                                  "x-go-type": "subcategory.SubCategoryDefinition",
+                                  "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+                                    "name": "subcategoryv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/category.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -39846,9 +39728,10 @@ const PatternSchema = {
                                       "type": "array",
                                       "description": "Capabilities associated with the model",
                                       "items": {
-                                        "x-go-type": "capability.Capability",
+                                        "x-go-type": "capabilityv1alpha1.Capability",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                          "name": "capabilityv1alpha1"
                                         },
                                         "$id": "https://schemas.meshery.io/capability.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -40150,20 +40033,15 @@ const PatternSchema = {
                                   "properties": {
                                     "version": {
                                       "description": "Version of the model as defined by the registrant.",
-                                      "allOf": [
-                                        {
-                                          "type": "string",
-                                          "minLength": 5,
-                                          "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                        }
-                                      ],
                                       "x-oapi-codegen-extra-tags": {
                                         "yaml": "version",
                                         "json": "version"
                                       },
-                                      "x-order": 1
+                                      "x-order": 1,
+                                      "type": "string",
+                                      "minLength": 5,
+                                      "maxLength": 100,
+                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                     }
                                   }
                                 },
@@ -40255,9 +40133,10 @@ const PatternSchema = {
                               ]
                             },
                             "modelReference": {
-                              "x-go-type": "model.ModelReference",
+                              "x-go-type": "modelv1beta1.ModelReference",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                "name": "modelv1beta1"
                               },
                               "x-order": 8,
                               "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models",
@@ -40292,11 +40171,11 @@ const PatternSchema = {
                                   ]
                                 },
                                 "version": {
+                                  "description": "Version of the model definition.",
                                   "type": "string",
                                   "minLength": 5,
                                   "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 },
                                 "displayName": {
                                   "type": "string",
@@ -40317,20 +40196,15 @@ const PatternSchema = {
                                   "properties": {
                                     "version": {
                                       "description": "Version of the model as defined by the registrant.",
-                                      "allOf": [
-                                        {
-                                          "type": "string",
-                                          "minLength": 5,
-                                          "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                        }
-                                      ],
                                       "x-oapi-codegen-extra-tags": {
                                         "yaml": "version",
                                         "json": "version"
                                       },
-                                      "x-order": 1
+                                      "x-order": 1,
+                                      "type": "string",
+                                      "minLength": 5,
+                                      "maxLength": 100,
+                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                     }
                                   }
                                 },
@@ -40372,9 +40246,10 @@ const PatternSchema = {
                                 "yaml": "styles",
                                 "json": "styles"
                               },
-                              "x-go-type": "core.ComponentStyles",
+                              "x-go-type": "corev1alpha1.ComponentStyles",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1alpha1/core"
+                                "path": "github.com/meshery/schemas/models/v1alpha1/core",
+                                "name": "corev1alpha1"
                               },
                               "x-order": 8,
                               "type": "object",
@@ -40754,9 +40629,10 @@ const PatternSchema = {
                               "type": "array",
                               "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                               "items": {
-                                "x-go-type": "capability.Capability",
+                                "x-go-type": "capabilityv1alpha1.Capability",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                  "name": "capabilityv1alpha1"
                                 },
                                 "$id": "https://schemas.meshery.io/capability.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -41209,16 +41085,13 @@ const PatternSchema = {
                             "version",
                             "configuration",
                             "metadata",
+                            "model",
                             "modelId",
                             "modelReference",
                             "component"
                           ]
                         }
-                      ],
-                      "x-go-type": "*component.ComponentDefinition",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta1/component"
-                      }
+                      ]
                     }
                   },
                   "preferences": {
@@ -41240,6 +41113,11 @@ const PatternSchema = {
                     "description": "List of relationships between components",
                     "type": "array",
                     "x-order": 8,
+                    "x-go-type": "[]*relationship.RelationshipDefinition",
+                    "x-go-type-import": {
+                      "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                      "name": "relationship"
+                    },
                     "items": {
                       "allOf": [
                         {
@@ -41291,16 +41169,16 @@ const PatternSchema = {
                               ]
                             },
                             "version": {
-                              "type": "string",
-                              "minLength": 5,
-                              "maxLength": 100,
-                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                              "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.",
+                              "description": "Specifies the version of the relationship definition.",
                               "x-order": 13,
                               "x-oapi-codegen-extra-tags": {
                                 "yaml": "version",
                                 "json": "version"
-                              }
+                              },
+                              "type": "string",
+                              "minLength": 5,
+                              "maxLength": 100,
+                              "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                             },
                             "kind": {
                               "description": "Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.",
@@ -41359,9 +41237,10 @@ const PatternSchema = {
                               "description": "Capabilities associated with the relationship.",
                               "x-order": 2,
                               "items": {
-                                "x-go-type": "capability.Capability",
+                                "x-go-type": "capabilityv1alpha1.Capability",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                                  "name": "capabilityv1alpha1"
                                 },
                                 "$id": "https://schemas.meshery.io/capability.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -41921,9 +41800,10 @@ const PatternSchema = {
                               }
                             },
                             "model": {
-                              "x-go-type": "model.ModelReference",
+                              "x-go-type": "modelv1beta1.ModelReference",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                "name": "modelv1beta1"
                               },
                               "x-go-type-skip-optional-pointer": true,
                               "x-order": 6,
@@ -41961,11 +41841,11 @@ const PatternSchema = {
                                   ]
                                 },
                                 "version": {
+                                  "description": "Version of the model definition.",
                                   "type": "string",
                                   "minLength": 5,
                                   "maxLength": 100,
-                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                 },
                                 "displayName": {
                                   "type": "string",
@@ -41986,20 +41866,15 @@ const PatternSchema = {
                                   "properties": {
                                     "version": {
                                       "description": "Version of the model as defined by the registrant.",
-                                      "allOf": [
-                                        {
-                                          "type": "string",
-                                          "minLength": 5,
-                                          "maxLength": 100,
-                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                        }
-                                      ],
                                       "x-oapi-codegen-extra-tags": {
                                         "yaml": "version",
                                         "json": "version"
                                       },
-                                      "x-order": 1
+                                      "x-order": 1,
+                                      "type": "string",
+                                      "minLength": 5,
+                                      "maxLength": 100,
+                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                     }
                                   }
                                 },
@@ -42276,9 +42151,10 @@ const PatternSchema = {
                                               }
                                             },
                                             "model": {
-                                              "x-go-type": "model.ModelReference",
+                                              "x-go-type": "modelv1beta1.ModelReference",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                "name": "modelv1beta1"
                                               },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "x-oapi-codegen-extra-tags": {
@@ -42313,11 +42189,11 @@ const PatternSchema = {
                                                   ]
                                                 },
                                                 "version": {
+                                                  "description": "Version of the model definition.",
                                                   "type": "string",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "type": "string",
@@ -42338,20 +42214,15 @@ const PatternSchema = {
                                                   "properties": {
                                                     "version": {
                                                       "description": "Version of the model as defined by the registrant.",
-                                                      "allOf": [
-                                                        {
-                                                          "type": "string",
-                                                          "minLength": 5,
-                                                          "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                        }
-                                                      ],
                                                       "x-oapi-codegen-extra-tags": {
                                                         "yaml": "version",
                                                         "json": "version"
                                                       },
-                                                      "x-order": 1
+                                                      "x-order": 1,
+                                                      "type": "string",
+                                                      "minLength": 5,
+                                                      "maxLength": 100,
+                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                     }
                                                   }
                                                 },
@@ -42636,9 +42507,10 @@ const PatternSchema = {
                                               }
                                             },
                                             "model": {
-                                              "x-go-type": "model.ModelReference",
+                                              "x-go-type": "modelv1beta1.ModelReference",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                "name": "modelv1beta1"
                                               },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "x-oapi-codegen-extra-tags": {
@@ -42673,11 +42545,11 @@ const PatternSchema = {
                                                   ]
                                                 },
                                                 "version": {
+                                                  "description": "Version of the model definition.",
                                                   "type": "string",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "type": "string",
@@ -42698,20 +42570,15 @@ const PatternSchema = {
                                                   "properties": {
                                                     "version": {
                                                       "description": "Version of the model as defined by the registrant.",
-                                                      "allOf": [
-                                                        {
-                                                          "type": "string",
-                                                          "minLength": 5,
-                                                          "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                        }
-                                                      ],
                                                       "x-oapi-codegen-extra-tags": {
                                                         "yaml": "version",
                                                         "json": "version"
                                                       },
-                                                      "x-order": 1
+                                                      "x-order": 1,
+                                                      "type": "string",
+                                                      "minLength": 5,
+                                                      "maxLength": 100,
+                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                     }
                                                   }
                                                 },
@@ -43011,9 +42878,10 @@ const PatternSchema = {
                                               }
                                             },
                                             "model": {
-                                              "x-go-type": "model.ModelReference",
+                                              "x-go-type": "modelv1beta1.ModelReference",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                "name": "modelv1beta1"
                                               },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "x-oapi-codegen-extra-tags": {
@@ -43048,11 +42916,11 @@ const PatternSchema = {
                                                   ]
                                                 },
                                                 "version": {
+                                                  "description": "Version of the model definition.",
                                                   "type": "string",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "type": "string",
@@ -43073,20 +42941,15 @@ const PatternSchema = {
                                                   "properties": {
                                                     "version": {
                                                       "description": "Version of the model as defined by the registrant.",
-                                                      "allOf": [
-                                                        {
-                                                          "type": "string",
-                                                          "minLength": 5,
-                                                          "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                        }
-                                                      ],
                                                       "x-oapi-codegen-extra-tags": {
                                                         "yaml": "version",
                                                         "json": "version"
                                                       },
-                                                      "x-order": 1
+                                                      "x-order": 1,
+                                                      "type": "string",
+                                                      "minLength": 5,
+                                                      "maxLength": 100,
+                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                     }
                                                   }
                                                 },
@@ -43371,9 +43234,10 @@ const PatternSchema = {
                                               }
                                             },
                                             "model": {
-                                              "x-go-type": "model.ModelReference",
+                                              "x-go-type": "modelv1beta1.ModelReference",
                                               "x-go-type-import": {
-                                                "path": "github.com/meshery/schemas/models/v1beta1/model"
+                                                "path": "github.com/meshery/schemas/models/v1beta1/model",
+                                                "name": "modelv1beta1"
                                               },
                                               "description": "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models",
                                               "x-oapi-codegen-extra-tags": {
@@ -43408,11 +43272,11 @@ const PatternSchema = {
                                                   ]
                                                 },
                                                 "version": {
+                                                  "description": "Version of the model definition.",
                                                   "type": "string",
                                                   "minLength": 5,
                                                   "maxLength": 100,
-                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                  "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+                                                  "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                 },
                                                 "displayName": {
                                                   "type": "string",
@@ -43433,20 +43297,15 @@ const PatternSchema = {
                                                   "properties": {
                                                     "version": {
                                                       "description": "Version of the model as defined by the registrant.",
-                                                      "allOf": [
-                                                        {
-                                                          "type": "string",
-                                                          "minLength": 5,
-                                                          "maxLength": 100,
-                                                          "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                                                          "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
-                                                        }
-                                                      ],
                                                       "x-oapi-codegen-extra-tags": {
                                                         "yaml": "version",
                                                         "json": "version"
                                                       },
-                                                      "x-order": 1
+                                                      "x-order": 1,
+                                                      "type": "string",
+                                                      "minLength": 5,
+                                                      "maxLength": 100,
+                                                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                                                     }
                                                   }
                                                 },
@@ -43539,11 +43398,7 @@ const PatternSchema = {
                             }
                           }
                         }
-                      ],
-                      "x-go-type": "*relationship.RelationshipDefinition",
-                      "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha3/relationship"
-                      }
+                      ]
                     }
                   }
                 },
@@ -43636,6 +43491,6 @@ const PatternSchema = {
       }
     }
   }
-} satisfies Record<string, unknown>;
+} as const satisfies Record<string, unknown>;
 
 export default PatternSchema;

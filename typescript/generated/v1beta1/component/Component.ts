@@ -40,7 +40,7 @@ export interface components {
        */
       format: "JSON" | "CUE";
       /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-      model?: {
+      model: {
         /**
          * Format: uuid
          * @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
@@ -417,7 +417,7 @@ export interface components {
         id: string;
         /** @description The unique name for the model within the scope of a registrant. */
         name: string;
-        /** @description A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'. */
+        /** @description Version of the model definition. */
         version: string;
         /** @description Human-readable name for the model. */
         displayName: string;

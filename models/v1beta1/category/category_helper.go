@@ -41,7 +41,7 @@ func (cat *CategoryDefinition) GenerateID() (uuid.UUID, error) {
 }
 
 func (cat CategoryDefinition) GetID() uuid.UUID {
-	return cat.Id
+	return cat.ID
 }
 
 func (cat *CategoryDefinition) GetEntityDetail() string {
@@ -65,14 +65,14 @@ func (cat *CategoryDefinition) Create(db *database.Handler, _ uuid.UUID) (uuid.U
 		return uuid.UUID{}, err
 	}
 	if err == gorm.ErrRecordNotFound { //The category is already not present and needs to be inserted
-		cat.Id = catID
+		cat.ID = catID
 		err = db.Create(&cat).Error
 		if err != nil {
 			return uuid.UUID{}, err
 		}
-		return cat.Id, nil
+		return cat.ID, nil
 	}
-	return category.Id, nil
+	return category.ID, nil
 }
 
 func (m *CategoryDefinition) UpdateStatus(db database.Handler, status entity.EntityStatus) error {

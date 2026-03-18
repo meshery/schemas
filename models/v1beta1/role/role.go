@@ -20,7 +20,7 @@ type Preference struct {
 // Role Role definition for Layer5 Cloud (Meshery).
 type Role struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// RoleName Unique name of the role.
 	RoleName string `db:"role_name" json:"role_name" yaml:"role_name"`
@@ -50,7 +50,7 @@ type RoleHolderRequest struct {
 // RolesKeychainsMapping Mapping between a role and a keychain.
 type RolesKeychainsMapping struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
+	ID corev1alpha1.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// KeychainId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	KeychainId corev1alpha1.Uuid `db:"keychain_id" json:"keychain_id" yaml:"keychain_id"`
@@ -84,7 +84,7 @@ type RolesPage struct {
 // UserRoleUpdateRequest Request to update role assignments for a user.
 type UserRoleUpdateRequest struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id *corev1alpha1.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+	ID *corev1alpha1.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 	UserId    *corev1alpha1.Uuid   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
@@ -107,20 +107,20 @@ type Id = corev1alpha1.Uuid
 // KeychainID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type KeychainID = corev1alpha1.Uuid
 
-// Corev1alpha1Order defines model for order.
-type Corev1alpha1Order = string
+// Order defines model for order.
+type Order = string
 
 // OrgID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type OrgID = corev1alpha1.Uuid
 
-// Corev1alpha1Page defines model for page.
-type Corev1alpha1Page = string
+// Page defines model for page.
+type Page = string
 
-// Corev1alpha1Pagesize defines model for pagesize.
-type Corev1alpha1Pagesize = string
+// Pagesize defines model for pagesize.
+type Pagesize = string
 
 // RoleID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type RoleID = corev1alpha1.Uuid
 
-// Corev1alpha1Search defines model for search.
-type Corev1alpha1Search = string
+// Search defines model for search.
+type Search = string

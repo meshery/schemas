@@ -11,7 +11,7 @@ import (
 // Credential Meshery Credentials store sensitive information such as API keys, tokens, and passwords used by connections to external systems.
 type Credential struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
+	ID *corev1alpha1.Uuid `db:"id" json:"id,omitempty" yaml:"id,omitempty"`
 
 	// Name Human-readable name for the credential.
 	Name string `db:"name" json:"name" yaml:"name"`
@@ -23,7 +23,7 @@ type Credential struct {
 	Type string `db:"type" json:"type" yaml:"type"`
 
 	// Secret Key-value pairs containing the sensitive credential data.
-	Secret *core.Map `db:"secret" json:"secret,omitempty" yaml:"secret,omitempty"`
+	Secret core.Map `db:"secret" json:"secret,omitempty" yaml:"secret,omitempty"`
 
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt corev1alpha1.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
@@ -52,14 +52,14 @@ type CredentialPage struct {
 // Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
 type Id = corev1alpha1.Uuid
 
-// Corev1alpha1Order defines model for order.
-type Corev1alpha1Order = string
+// Order defines model for order.
+type Order = string
 
-// Corev1alpha1Page defines model for page.
-type Corev1alpha1Page = string
+// Page defines model for page.
+type Page = string
 
-// Corev1alpha1Pagesize defines model for pagesize.
-type Corev1alpha1Pagesize = string
+// Pagesize defines model for pagesize.
+type Pagesize = string
 
-// Corev1alpha1Search defines model for search.
-type Corev1alpha1Search = string
+// Search defines model for search.
+type Search = string

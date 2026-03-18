@@ -36,7 +36,7 @@ type Invitation struct {
 	ExpiresAt *time.Time `db:"expires_at" json:"expires_at" yaml:"expires_at"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id corev1alpha1.Uuid `json:"id" yaml:"id"`
+	ID corev1alpha1.Uuid `json:"id" yaml:"id"`
 
 	// IsDefault Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation
 	IsDefault *bool `db:"is_default" json:"is_default" yaml:"is_default"`

@@ -25,10 +25,12 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 
 ### Outputs
 
-- `_openapi_build/constructs/<version>/<package>/merged-openapi.json`: Per-package bundled JSON
-- `_openapi_build/merged_openapi.yml`: Complete merged spec
-- `_openapi_build/cloud_openapi.yml`: Endpoints tagged `x-internal: cloud`
-- `_openapi_build/meshery_openapi.yml`: Endpoints tagged `x-internal: meshery`
+| File | Contents |
+|------|----------|
+| `_openapi_build/constructs/<version>/<package>/merged-openapi.json` | Per-package bundled JSON |
+| `_openapi_build/merged_openapi.yml` | Complete merged spec |
+| `_openapi_build/cloud_openapi.yml` | Endpoints tagged `x-internal: cloud` |
+| `_openapi_build/meshery_openapi.yml` | Endpoints tagged `x-internal: meshery` |
 
 ### Excluded from merge
 
@@ -70,15 +72,17 @@ Detailed reference for how the build scripts consume OpenAPI schemas and produce
 
 ### Schema features that affect Go output
 
-- `type: string, format: uuid`: `openapi_types.UUID`
-- `x-go-type: "core.Map"`: Uses the specified Go type directly
-- `x-go-type-import`: Adds the specified import
-- `x-go-type-skip-optional-pointer`: Skips `*` prefix on optional fields
-- `x-oapi-codegen-extra-tags`: Adds custom struct tags
-- `allOf`: Inherits property tags and overrides from composed subschemas during post-processing
-- `oneOf` / `anyOf`: Union type with `RawMessage`
-- `$ref` to external schema: Import from the referenced package
-- `nullable: true`: Pointer type
+| Schema feature | Go result |
+|---------------|-----------|
+| `type: string, format: uuid` | `openapi_types.UUID` |
+| `x-go-type: "core.Map"` | Uses the specified Go type directly |
+| `x-go-type-import` | Adds the specified import |
+| `x-go-type-skip-optional-pointer` | Skips `*` prefix on optional fields |
+| `x-oapi-codegen-extra-tags` | Adds custom struct tags |
+| `allOf` | Inherits property tags and overrides from composed subschemas during post-processing |
+| `oneOf` / `anyOf` | Union type with `RawMessage` |
+| `$ref` to external schema | Import from the referenced package |
+| `nullable: true` | Pointer type |
 
 ### Helper generation guidance
 
@@ -104,8 +108,10 @@ Avoid central manifests that enumerate packages or types just to tell the genera
 
 ### Output files
 
-- `typescript/generated/<version>/<package>/<Package>.ts`: Type definitions
-- `typescript/generated/<version>/<package>/<Package>Schema.ts`: JSON schema as const
+| File | Contents |
+|------|----------|
+| `typescript/generated/<version>/<package>/<Package>.ts` | Type definitions |
+| `typescript/generated/<version>/<package>/<Package>Schema.ts` | JSON schema as const |
 
 ### Important: typescript/index.ts
 
@@ -131,8 +137,10 @@ Note: The property name in `["schemas"]["..."]` matches the schema component nam
 
 ### Config files
 
-- `typescript/rtk/cloud-rtk-config.ts`: reads `cloud_openapi.yml`, writes `typescript/rtk/cloud.ts`
-- `typescript/rtk/meshery-rtk-config.ts`: reads `meshery_openapi.yml`, writes `typescript/rtk/meshery.ts`
+| Config | Input spec | Output |
+|--------|-----------|--------|
+| `typescript/rtk/cloud-rtk-config.ts` | `cloud_openapi.yml` | `typescript/rtk/cloud.ts` |
+| `typescript/rtk/meshery-rtk-config.ts` | `meshery_openapi.yml` | `typescript/rtk/meshery.ts` |
 
 ### How x-internal affects RTK
 

@@ -27,13 +27,13 @@ type Environment struct {
 	OrganizationID corev1alpha1.Uuid `db:"organization_id" json:"organization_id" yaml:"organization_id"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner     *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
-	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Metadata  core.Map           `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	Owner     *corev1alpha1.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner"`
+	CreatedAt corev1alpha1.Time  `db:"created_at" json:"created_at,omitempty" yaml:"created_at"`
+	Metadata  core.Map           `db:"metadata" json:"metadata,omitempty" yaml:"metadata"`
+	UpdatedAt corev1alpha1.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt corev1alpha1.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at"`
 }
 
 // EnvironmentConnectionMapping defines model for environmentConnectionMapping.
@@ -67,17 +67,17 @@ type EnvironmentPayload struct {
 // EnvironmentId defines model for environmentId.
 type EnvironmentId = corev1alpha1.Id
 
-// Corev1alpha1Order defines model for order.
-type Corev1alpha1Order = string
+// Order defines model for order.
+type Order = string
 
 // OrgIDQuery defines model for orgIDQuery.
 type OrgIDQuery = string
 
-// Corev1alpha1Page defines model for page.
-type Corev1alpha1Page = string
+// Page defines model for page.
+type Page = string
 
-// Corev1alpha1Pagesize defines model for pagesize.
-type Corev1alpha1Pagesize = string
+// Pagesize defines model for pagesize.
+type Pagesize = string
 
-// Corev1alpha1Search defines model for search.
-type Corev1alpha1Search = string
+// Search defines model for search.
+type Search = string

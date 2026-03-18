@@ -120,17 +120,17 @@ type UpgradeSubscriptionRequest struct {
 // WebhookEvent Payload for webhook events from payment processors
 type WebhookEvent = map[string]interface{}
 
-// Corev1alpha1Order defines model for order.
-type Corev1alpha1Order = string
+// Order defines model for order.
+type Order = string
 
-// Corev1alpha1Page defines model for page.
-type Corev1alpha1Page = string
+// Page defines model for page.
+type Page = string
 
-// Corev1alpha1Pagesize defines model for pagesize.
-type Corev1alpha1Pagesize = string
+// Pagesize defines model for pagesize.
+type Pagesize = string
 
-// Corev1alpha1PagesizeWithAll defines model for pagesizeWithAll.
-type Corev1alpha1PagesizeWithAll = string
+// PagesizeWithAll defines model for pagesizeWithAll.
+type PagesizeWithAll = string
 
 // SubscriptionId defines model for subscriptionId.
 type SubscriptionId = string
