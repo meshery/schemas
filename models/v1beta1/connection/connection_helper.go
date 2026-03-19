@@ -54,25 +54,25 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 	return connection.ID, nil
 }
 
-// Deprecated aliases for ConnectionStatusValue constants.
-// These preserve the older exported names for downstream callers.
+// Deprecated aliases for legacy ConnectionStatus constants.
+// These preserve the older short exported names for downstream callers.
 const (
-	// Deprecated: Use Connected instead.
-	ConnectionStatusValueConnected = Connected
-	// Deprecated: Use Deleted instead.
-	ConnectionStatusValueDeleted = Deleted
-	// Deprecated: Use Disconnected instead.
-	ConnectionStatusValueDisconnected = Disconnected
-	// Deprecated: Use Discovered instead.
-	ConnectionStatusValueDiscovered = Discovered
-	// Deprecated: Use Ignored instead.
-	ConnectionStatusValueIgnored = Ignored
-	// Deprecated: Use Maintenance instead.
-	ConnectionStatusValueMaintenance = Maintenance
-	// Deprecated: Use NotFound instead.
-	ConnectionStatusValueNotFound = NotFound
-	// Deprecated: Use Registered instead.
-	ConnectionStatusValueRegistered = Registered
+	// Deprecated: Use ConnectionStatusConnected instead.
+	Connected = ConnectionStatusConnected
+	// Deprecated: Use ConnectionStatusDeleted instead.
+	Deleted = ConnectionStatusDeleted
+	// Deprecated: Use ConnectionStatusDisconnected instead.
+	Disconnected = ConnectionStatusDisconnected
+	// Deprecated: Use ConnectionStatusDiscovered instead.
+	Discovered = ConnectionStatusDiscovered
+	// Deprecated: Use ConnectionStatusIgnored instead.
+	Ignored = ConnectionStatusIgnored
+	// Deprecated: Use ConnectionStatusMaintenance instead.
+	Maintenance = ConnectionStatusMaintenance
+	// Deprecated: Use ConnectionStatusNotFound instead.
+	NotFound = ConnectionStatusNotFound
+	// Deprecated: Use ConnectionStatusRegistered instead.
+	Registered = ConnectionStatusRegistered
 )
 
 type MeshsyncDeploymentMode string

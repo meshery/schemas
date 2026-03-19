@@ -171,6 +171,10 @@ components:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/general_id"
         design_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/design_id"
+          x-go-type: "corev1alpha1.Uuid"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/v1alpha1/core"
+            name: corev1alpha1
         workspace_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/workspace_id"
         created_at:

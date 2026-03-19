@@ -1323,7 +1323,7 @@ function checkPrerequisites() {
   if (!commandExists("oapi-codegen")) {
     logger.error("oapi-codegen not found.");
     logger.info(
-      "Install it with: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest",
+      "Install it with: go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1",
     );
     process.exit(1);
   }

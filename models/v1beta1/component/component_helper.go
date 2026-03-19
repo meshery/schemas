@@ -71,7 +71,8 @@ func (c *ComponentDefinition) Create(db *database.Handler, hostID uuid.UUID) (uu
 		c.Metadata.AdditionalProperties["hasInvalidSchema"] = true
 	}
 
-	c.ModelId = mid
+	modelID := core.Uuid(mid)
+	c.ModelId = &modelID
 	err = db.Omit(clause.Associations).Create(&c).Error
 	return c.ID, err
 }

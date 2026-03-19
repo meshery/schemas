@@ -865,6 +865,10 @@ components:
 
         badge_id:
           $ref: "#/components/schemas/AcademyCurriculaBadgeId"
+          x-go-type: "corev1alpha1.Uuid"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/v1alpha1/core"
+            name: corev1alpha1
 
         invite_id:
           $ref: "#/components/schemas/AcademyCurriculaInviteId"
@@ -943,6 +947,10 @@ components:
 
         badge_id:
           $ref: "#/components/schemas/AcademyCurriculaBadgeId"
+          x-go-type: "corev1alpha1.Uuid"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/v1alpha1/core"
+            name: corev1alpha1
 
         team_id:
           $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"

@@ -120,6 +120,12 @@ ifeq (,$(findstring $(GOVERSION), $(INSTALLED_GO_VERSION)))
 #	 Ensure go '$(GOVERSION).x' is installed and available in your 'PATH'.)
 endif
 
+# local Node dependencies
+	@if [ ! -d node_modules ] || ! node -e "require.resolve(\"js-yaml\")" >/dev/null 2>&1; then \
+		echo "Dependency missing: local Node modules. Installing project dependencies"; \
+		npm install --legacy-peer-deps; \
+	fi
+
 # redocly cli
 ifeq (,$(shell command -v redocly))
 	@echo "Dependency missing: redocly. Install redocly cli from https://redoc.ly/docs/cli/installation/"
@@ -128,9 +134,8 @@ ifeq (,$(shell command -v redocly))
 endif
 
 # oapi-codegen
-ifeq (,$(shell command -v oapi-codegen))
-	@echo "Dependency missing: oapi-codegen. Install oapi-codegen"
-	@echo "installing oapi-codegen"
-	# for the binary install
-	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
-endif
+	@if ! command -v oapi-codegen >/dev/null 2>&1 && [ ! -x "$(shell go env GOPATH)/bin/oapi-codegen" ]; then \
+		echo "Dependency missing: oapi-codegen. Install oapi-codegen"; \
+		echo "installing oapi-codegen"; \
+		go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1; \
+	fi
