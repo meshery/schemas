@@ -1,18 +1,17 @@
 openapi: 3.0.0
 info:
-  title: Environment
-  description: OpenAPI schema for environment management in Meshery Cloud.
-  version: v1beta1
+  title: environment
+  description: Documentation for meshery Cloud REST APIs
   contact:
-    name: Meshery Maintainers
     email: maintainers@meshery.io
-    url: https://meshery.io
-  license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v0.6.394
 servers:
-  - url: http://localhost:9081
-    description: Meshery Server development server URL (controlled via PORT environment variable)
+  - url: https://cloud.meshery.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.meshery.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL (controlled via PORT environment variable)
 
 security:
   - jwt: []
@@ -64,12 +63,27 @@ components:
     environment:
       $ref: "./environment.yaml"
     environmentConnectionMapping:
+      type: object
+      title: Environment Connection Mapping
+      additionalProperties: false
+      description: Mapping between an environment and one of its associated connections.
+      required:
+        - ID
+        - environment_id
+        - connection_id
+        - created_at
+        - updated_at
       properties:
         ID:
+          title: Mapping ID
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
+          description: Unique identifier for the environment-to-connection mapping.
+          readOnly: true
         environment_id:
+          title: Environment ID
           type: string
           format: uuid
+          description: Identifier of the environment participating in the mapping.
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
@@ -78,8 +92,10 @@ components:
             json: environment_id
           x-go-type-skip-optional-pointer: true
         connection_id:
+          title: Connection ID
           type: string
           format: uuid
+          description: Identifier of the connection participating in the mapping.
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
@@ -88,43 +104,91 @@ components:
             json: connection_id
           x-go-type-skip-optional-pointer: true
         created_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          title: Created At
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+          readOnly: true
         updated_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          title: Updated At
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+          readOnly: true
         deleted_at:
+          title: Deleted At
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+          description: Timestamp when the mapping was soft deleted. Null while active.
+          nullable: true
+          readOnly: true
+      example:
+        ID: 00000000-0000-0000-0000-000000000000
+        environment_id: 00000000-0000-0000-0000-000000000000
+        connection_id: 00000000-0000-0000-0000-000000000000
+        created_at: "0001-01-01T00:00:00Z"
+        updated_at: "0001-01-01T00:00:00Z"
+        deleted_at: null
     environmentPayload:
-      properties:
-        name:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
-          description: An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.
-        description:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
-          description: "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
-        OrganizationID:
-          type: string
-          description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
-          x-go-type-skip-optional-pointer: true
-          x-go-name: OrgId
-          x-oapi-codegen-extra-tags:
-            json: organization_id
+      type: object
+      title: Environment Payload
+      additionalProperties: false
+      description: Body for creating an environment.
       required:
         - name
-        - organizationID
+        - organization_id
+      properties:
+        name:
+          $ref: "./environment.yaml#/properties/name"
+        description:
+          $ref: "./environment.yaml#/properties/description"
+        organization_id:
+          $ref: "./environment.yaml#/properties/organization_id"
+      example:
+        name: Production Environment
+        description: Connections and credentials for the production cluster.
+        organization_id: 00000000-0000-0000-0000-000000000000
     environmentPage:
+      type: object
+      title: Environment Page
+      additionalProperties: false
+      description: Paginated collection of environments.
+      required:
+        - page
+        - page_size
+        - total_count
+        - environments
       properties:
         page:
+          title: Page Number
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          description: Current page number in the paginated result set.
         page_size:
+          title: Page Size
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          description: Maximum number of environments returned for the current page.
         total_count:
+          title: Total Count
           $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          description: Total number of environments available across all pages.
         environments:
+          title: Environments
           type: array
+          description: Environments included in the current page.
           x-go-type-skip-optional-pointer: true
           items:
             x-go-type: Environment
             $ref: "#/components/schemas/environment"
+      example:
+        page: 1
+        page_size: 10
+        total_count: 1
+        environments:
+          - id: 00000000-0000-0000-0000-000000000000
+            schemaVersion: environments.meshery.io/v1beta1
+            name: Production Environment
+            description: Connections and credentials for the production cluster.
+            organization_id: 00000000-0000-0000-0000-000000000000
+            owner: 00000000-0000-0000-0000-000000000000
+            created_at: "0001-01-01T00:00:00Z"
+            metadata: {}
+            updated_at: "0001-01-01T00:00:00Z"
+            deleted_at: null
 
   requestBodies:
     environmentPayload:
