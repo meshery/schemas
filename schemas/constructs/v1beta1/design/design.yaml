@@ -2,6 +2,7 @@ $schema: http://json-schema.org/draft-07/schema#
 title: Design Schema
 description: Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type: object
+additionalProperties: false
 properties:
   id:
     $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
@@ -22,6 +23,7 @@ properties:
     minLength: 1
     maxLength: 50
   metadata:
+    description: Additional metadata associated with the design.
     type: object
     x-order: 5
     additionalProperties: true
@@ -40,13 +42,11 @@ properties:
     minItems: 0
     x-order: 6
     type: array
-    x-go-type: "[]*component.ComponentDefinition"
-    x-go-type-import:
-      path: github.com/meshery/schemas/models/v1beta1/component
-      name: component
     items:
-      allOf:
-        - $ref: ../component/api.yml#/components/schemas/ComponentDefinition
+      $ref: ../component/component.yaml
+      x-go-type: "*component.ComponentDefinition"
+      x-go-type-import:
+        path: github.com/meshery/schemas/models/v1beta1/component
   preferences:
     $ref: ./api.yml#/components/schemas/DesignPreferences
     x-go-type: DesignPreferences
@@ -54,13 +54,11 @@ properties:
     description: List of relationships between components
     type: array
     x-order: 8
-    x-go-type: "[]*relationship.RelationshipDefinition"
-    x-go-type-import:
-      path: github.com/meshery/schemas/models/v1alpha3/relationship
-      name: relationship
     items:
-      allOf:
-        - $ref: ../../v1alpha3/relationship/api.yml#/components/schemas/RelationshipDefinition
+      $ref: ../../v1alpha3/relationship/api.yml#/components/schemas/RelationshipDefinition
+      x-go-type: "*relationship.RelationshipDefinition"
+      x-go-type-import:
+        path: github.com/meshery/schemas/models/v1alpha3/relationship
 required:
   - id
   - name
