@@ -4,8 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-
-	core "github.com/meshery/schemas/models/core"
 )
 
 // UserSocials User social profiles
@@ -33,29 +31,4 @@ func (us *UserSocials) Scan(value interface{}) error {
 	}
 
 	return json.Unmarshal(bytes, us)
-}
-
-// Value implements driver.Valuer for JSONB storage.
-func (p Preference) Value() (driver.Value, error) {
-	mapVal, err := core.StructToMap(p)
-	if err != nil {
-		return nil, err
-	}
-
-	return core.Map(mapVal).Value()
-}
-
-// Scan implements sql.Scanner for JSONB retrieval.
-func (p *Preference) Scan(src interface{}) error {
-	if src == nil {
-		*p = Preference{}
-		return nil
-	}
-
-	mapVal := core.Map{}
-	if err := mapVal.Scan(src); err != nil {
-		return err
-	}
-
-	return core.MapToStruct(mapVal, p)
 }

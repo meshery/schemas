@@ -436,6 +436,7 @@ components:
             $ref: "#/components/schemas/User"
 
     Preference:
+      x-generate-db-helpers: true
       type: object
       required:
         - anonymousUsageStats
