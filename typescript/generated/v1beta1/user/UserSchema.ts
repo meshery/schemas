@@ -287,6 +287,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "preferences",
                               "yaml": "preferences"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "anonymousUsageStats",
@@ -426,6 +427,13 @@ const UserSchema: Record<string, unknown> = {
                               "usersExtensionPreferences": {
                                 "type": "object",
                                 "additionalProperties": true
+                              },
+                              "selectedK8sContexts": {
+                                "type": "array",
+                                "description": "Persisted selection of active Kubernetes context IDs",
+                                "items": {
+                                  "type": "string"
+                                }
                               },
                               "remoteProviderPreferences": {
                                 "type": "object",
@@ -884,6 +892,7 @@ const UserSchema: Record<string, unknown> = {
                               "json": "preferences",
                               "yaml": "preferences"
                             },
+                            "x-generate-db-helpers": true,
                             "type": "object",
                             "required": [
                               "anonymousUsageStats",
@@ -1023,6 +1032,13 @@ const UserSchema: Record<string, unknown> = {
                               "usersExtensionPreferences": {
                                 "type": "object",
                                 "additionalProperties": true
+                              },
+                              "selectedK8sContexts": {
+                                "type": "array",
+                                "description": "Persisted selection of active Kubernetes context IDs",
+                                "items": {
+                                  "type": "string"
+                                }
                               },
                               "remoteProviderPreferences": {
                                 "type": "object",
@@ -1440,6 +1456,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "preferences",
                         "yaml": "preferences"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "anonymousUsageStats",
@@ -1579,6 +1596,13 @@ const UserSchema: Record<string, unknown> = {
                         "usersExtensionPreferences": {
                           "type": "object",
                           "additionalProperties": true
+                        },
+                        "selectedK8sContexts": {
+                          "type": "array",
+                          "description": "Persisted selection of active Kubernetes context IDs",
+                          "items": {
+                            "type": "string"
+                          }
                         },
                         "remoteProviderPreferences": {
                           "type": "object",
@@ -1966,6 +1990,7 @@ const UserSchema: Record<string, unknown> = {
                         "json": "preferences",
                         "yaml": "preferences"
                       },
+                      "x-generate-db-helpers": true,
                       "type": "object",
                       "required": [
                         "anonymousUsageStats",
@@ -2105,6 +2130,13 @@ const UserSchema: Record<string, unknown> = {
                         "usersExtensionPreferences": {
                           "type": "object",
                           "additionalProperties": true
+                        },
+                        "selectedK8sContexts": {
+                          "type": "array",
+                          "description": "Persisted selection of active Kubernetes context IDs",
+                          "items": {
+                            "type": "string"
+                          }
                         },
                         "remoteProviderPreferences": {
                           "type": "object",
@@ -2323,489 +2355,182 @@ const UserSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/identity/users/preferences": {
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "updateUserPreference",
-        "summary": "Update user preferences",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Preferences updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/users/self": {
-      "delete": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "deleteOwnAccount",
-        "summary": "Delete current user account",
-        "responses": {
-          "201": {
-            "description": "Account deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/orgs/{orgId}/users/bulk": {
-      "post": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "bulkDeleteUsers",
-        "summary": "Bulk delete organization users",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "required": true,
-            "description": "Organization ID",
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "org_id",
-                "json": "org_id"
-              },
-              "x-go-type-name": "OrganizationId",
-              "x-go-type-skip-optional-pointer": true
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Users deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/users/profile/details": {
+    "/api/user/prefs": {
       "get": {
         "tags": [
           "users"
         ],
-        "operationId": "getProfileOverview",
-        "summary": "Get current user profile overview",
-        "responses": {
-          "200": {
-            "description": "User account overview",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/users/{userId}/profile/activity": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "getUserActivity",
-        "summary": "Get user activity",
-        "security": [],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "description": "User ID",
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              }
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Get responses by page",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "pagesize",
-            "in": "query",
-            "description": "Get responses by pagesize",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "Get ordered responses",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "filter",
-            "in": "query",
-            "description": "Get filtered reponses",
-            "schema": {
-              "type": "string"
-            }
-          }
+        "operationId": "getUserPrefs",
+        "summary": "Get user preferences",
+        "description": "Returns the current user's preferences including selected K8s contexts, load test settings, and other UI preferences.",
+        "x-internal": [
+          "meshery"
         ],
         "responses": {
           "200": {
-            "description": "User recent activity",
+            "description": "User preferences",
             "content": {
               "application/json": {
                 "schema": {
+                  "x-generate-db-helpers": true,
                   "type": "object",
+                  "required": [
+                    "anonymousUsageStats",
+                    "anonymousPerfResults",
+                    "updated_at",
+                    "dashboardPreferences",
+                    "selectedOrganizationID",
+                    "selectedWorkspaceForOrganizations",
+                    "usersExtensionPreferences",
+                    "remoteProviderPreferences"
+                  ],
                   "properties": {
-                    "page": {
-                      "type": "integer"
-                    },
-                    "page_size": {
-                      "type": "integer"
-                    },
-                    "total_count": {
-                      "type": "integer"
-                    },
-                    "data": {
+                    "meshAdapters": {
                       "type": "array",
                       "items": {
+                        "x-go-type": "Adapter",
                         "type": "object",
-                        "additionalProperties": true
+                        "description": "Placeholder for Adapter struct definition."
                       }
+                    },
+                    "grafana": {
+                      "x-go-type": "Grafana",
+                      "type": "object",
+                      "properties": {
+                        "grafanaURL": {
+                          "type": "string"
+                        },
+                        "grafanaAPIKey": {
+                          "type": "string"
+                        },
+                        "selectedBoardsConfigs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "board": {
+                                "type": "object",
+                                "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                              },
+                              "panels": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                }
+                              },
+                              "templateVars": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "prometheus": {
+                      "x-go-type": "Prometheus",
+                      "type": "object",
+                      "properties": {
+                        "prometheusURL": {
+                          "type": "string"
+                        },
+                        "selectedPrometheusBoardsConfigs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "board": {
+                                "type": "object",
+                                "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                              },
+                              "panels": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                }
+                              },
+                              "templateVars": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "loadTestPrefs": {
+                      "x-go-type": "LoadTestPreferences",
+                      "type": "object",
+                      "properties": {
+                        "c": {
+                          "type": "integer",
+                          "description": "Concurrent requests"
+                        },
+                        "qps": {
+                          "type": "integer",
+                          "description": "Queries per second"
+                        },
+                        "t": {
+                          "type": "string",
+                          "description": "Duration"
+                        },
+                        "gen": {
+                          "type": "string",
+                          "description": "Load generator"
+                        }
+                      }
+                    },
+                    "anonymousUsageStats": {
+                      "type": "boolean"
+                    },
+                    "anonymousPerfResults": {
+                      "type": "boolean"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "dashboardPreferences": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "selectedOrganizationID": {
+                      "type": "string"
+                    },
+                    "selectedWorkspaceForOrganizations": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "usersExtensionPreferences": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "selectedK8sContexts": {
+                      "type": "array",
+                      "description": "Persisted selection of active Kubernetes context IDs",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "remoteProviderPreferences": {
+                      "type": "object",
+                      "additionalProperties": true
                     }
                   }
                 }
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/users/notify/feedback": {
-      "post": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "handleFeedbackFormSubmission",
-        "summary": "Submit feedback notification",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Feedback submitted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/users/password": {
-      "post": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "updateUsersPassword",
-        "summary": "Update current user password",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "password": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Password updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/users/notifications/preferences": {
-      "put": {
-        "tags": [
-          "users"
-        ],
-        "operationId": "updateNotificationPreferences",
-        "summary": "Update notification preferences",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Notification preferences updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2826,40 +2551,335 @@ const UserSchema: Record<string, unknown> = {
           }
         }
       },
-      "get": {
+      "post": {
         "tags": [
           "users"
         ],
-        "operationId": "getAvailableNotificationPreferences",
-        "summary": "Get available notification preferences",
+        "operationId": "updateUserPrefs",
+        "summary": "Update user preferences",
+        "description": "Merges the provided fields into the current user's preferences. Only the fields present in the request body are updated.",
+        "x-internal": [
+          "meshery"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "x-generate-db-helpers": true,
+                "type": "object",
+                "required": [
+                  "anonymousUsageStats",
+                  "anonymousPerfResults",
+                  "updated_at",
+                  "dashboardPreferences",
+                  "selectedOrganizationID",
+                  "selectedWorkspaceForOrganizations",
+                  "usersExtensionPreferences",
+                  "remoteProviderPreferences"
+                ],
+                "properties": {
+                  "meshAdapters": {
+                    "type": "array",
+                    "items": {
+                      "x-go-type": "Adapter",
+                      "type": "object",
+                      "description": "Placeholder for Adapter struct definition."
+                    }
+                  },
+                  "grafana": {
+                    "x-go-type": "Grafana",
+                    "type": "object",
+                    "properties": {
+                      "grafanaURL": {
+                        "type": "string"
+                      },
+                      "grafanaAPIKey": {
+                        "type": "string"
+                      },
+                      "selectedBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              }
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "prometheus": {
+                    "x-go-type": "Prometheus",
+                    "type": "object",
+                    "properties": {
+                      "prometheusURL": {
+                        "type": "string"
+                      },
+                      "selectedPrometheusBoardsConfigs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "board": {
+                              "type": "object",
+                              "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                            },
+                            "panels": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                              }
+                            },
+                            "templateVars": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "loadTestPrefs": {
+                    "x-go-type": "LoadTestPreferences",
+                    "type": "object",
+                    "properties": {
+                      "c": {
+                        "type": "integer",
+                        "description": "Concurrent requests"
+                      },
+                      "qps": {
+                        "type": "integer",
+                        "description": "Queries per second"
+                      },
+                      "t": {
+                        "type": "string",
+                        "description": "Duration"
+                      },
+                      "gen": {
+                        "type": "string",
+                        "description": "Load generator"
+                      }
+                    }
+                  },
+                  "anonymousUsageStats": {
+                    "type": "boolean"
+                  },
+                  "anonymousPerfResults": {
+                    "type": "boolean"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "dashboardPreferences": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "selectedOrganizationID": {
+                    "type": "string"
+                  },
+                  "selectedWorkspaceForOrganizations": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "usersExtensionPreferences": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "selectedK8sContexts": {
+                    "type": "array",
+                    "description": "Persisted selection of active Kubernetes context IDs",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "remoteProviderPreferences": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Available notification preferences",
+            "description": "Updated user preferences",
             "content": {
               "application/json": {
                 "schema": {
+                  "x-generate-db-helpers": true,
                   "type": "object",
+                  "required": [
+                    "anonymousUsageStats",
+                    "anonymousPerfResults",
+                    "updated_at",
+                    "dashboardPreferences",
+                    "selectedOrganizationID",
+                    "selectedWorkspaceForOrganizations",
+                    "usersExtensionPreferences",
+                    "remoteProviderPreferences"
+                  ],
                   "properties": {
-                    "notification_preferences": {
+                    "meshAdapters": {
+                      "type": "array",
+                      "items": {
+                        "x-go-type": "Adapter",
+                        "type": "object",
+                        "description": "Placeholder for Adapter struct definition."
+                      }
+                    },
+                    "grafana": {
+                      "x-go-type": "Grafana",
+                      "type": "object",
+                      "properties": {
+                        "grafanaURL": {
+                          "type": "string"
+                        },
+                        "grafanaAPIKey": {
+                          "type": "string"
+                        },
+                        "selectedBoardsConfigs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "board": {
+                                "type": "object",
+                                "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                              },
+                              "panels": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                }
+                              },
+                              "templateVars": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "prometheus": {
+                      "x-go-type": "Prometheus",
+                      "type": "object",
+                      "properties": {
+                        "prometheusURL": {
+                          "type": "string"
+                        },
+                        "selectedPrometheusBoardsConfigs": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "board": {
+                                "type": "object",
+                                "description": "Placeholder for GrafanaBoard definition (define fields as needed)"
+                              },
+                              "panels": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "description": "Grafana panel structure imported from github.com/grafana-tools/sdk"
+                                }
+                              },
+                              "templateVars": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "loadTestPrefs": {
+                      "x-go-type": "LoadTestPreferences",
+                      "type": "object",
+                      "properties": {
+                        "c": {
+                          "type": "integer",
+                          "description": "Concurrent requests"
+                        },
+                        "qps": {
+                          "type": "integer",
+                          "description": "Queries per second"
+                        },
+                        "t": {
+                          "type": "string",
+                          "description": "Duration"
+                        },
+                        "gen": {
+                          "type": "string",
+                          "description": "Load generator"
+                        }
+                      }
+                    },
+                    "anonymousUsageStats": {
+                      "type": "boolean"
+                    },
+                    "anonymousPerfResults": {
+                      "type": "boolean"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "dashboardPreferences": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "selectedOrganizationID": {
+                      "type": "string"
+                    },
+                    "selectedWorkspaceForOrganizations": {
                       "type": "object",
                       "additionalProperties": {
-                        "type": "object",
-                        "properties": {
-                          "category": {
-                            "type": "string"
-                          },
-                          "subcategory": {
-                            "type": "string"
-                          },
-                          "label": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          }
-                        },
-                        "additionalProperties": true
+                        "type": "string"
                       }
+                    },
+                    "usersExtensionPreferences": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "selectedK8sContexts": {
+                      "type": "array",
+                      "description": "Persisted selection of active Kubernetes context IDs",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "remoteProviderPreferences": {
+                      "type": "object",
+                      "additionalProperties": true
                     }
                   }
                 }
@@ -3037,67 +3057,6 @@ const UserSchema: Record<string, unknown> = {
         "bearerFormat": "JWT"
       }
     },
-    "requestBodies": {
-      "userPreferencePayload": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        }
-      },
-      "bulkDeleteUsersPayload": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        }
-      },
-      "userFeedbackPayload": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        }
-      },
-      "updatePasswordPayload": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "notificationPreferencePayload": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        }
-      }
-    },
     "schemas": {
       "User": {
         "type": "object",
@@ -3256,6 +3215,7 @@ const UserSchema: Record<string, unknown> = {
               "json": "preferences",
               "yaml": "preferences"
             },
+            "x-generate-db-helpers": true,
             "type": "object",
             "required": [
               "anonymousUsageStats",
@@ -3395,6 +3355,13 @@ const UserSchema: Record<string, unknown> = {
               "usersExtensionPreferences": {
                 "type": "object",
                 "additionalProperties": true
+              },
+              "selectedK8sContexts": {
+                "type": "array",
+                "description": "Persisted selection of active Kubernetes context IDs",
+                "items": {
+                  "type": "string"
+                }
               },
               "remoteProviderPreferences": {
                 "type": "object",
@@ -3759,6 +3726,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "preferences",
                     "yaml": "preferences"
                   },
+                  "x-generate-db-helpers": true,
                   "type": "object",
                   "required": [
                     "anonymousUsageStats",
@@ -3898,6 +3866,13 @@ const UserSchema: Record<string, unknown> = {
                     "usersExtensionPreferences": {
                       "type": "object",
                       "additionalProperties": true
+                    },
+                    "selectedK8sContexts": {
+                      "type": "array",
+                      "description": "Persisted selection of active Kubernetes context IDs",
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "remoteProviderPreferences": {
                       "type": "object",
@@ -4265,6 +4240,7 @@ const UserSchema: Record<string, unknown> = {
                     "json": "preferences",
                     "yaml": "preferences"
                   },
+                  "x-generate-db-helpers": true,
                   "type": "object",
                   "required": [
                     "anonymousUsageStats",
@@ -4404,6 +4380,13 @@ const UserSchema: Record<string, unknown> = {
                     "usersExtensionPreferences": {
                       "type": "object",
                       "additionalProperties": true
+                    },
+                    "selectedK8sContexts": {
+                      "type": "array",
+                      "description": "Persisted selection of active Kubernetes context IDs",
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "remoteProviderPreferences": {
                       "type": "object",
@@ -4600,6 +4583,7 @@ const UserSchema: Record<string, unknown> = {
         }
       },
       "Preference": {
+        "x-generate-db-helpers": true,
         "type": "object",
         "required": [
           "anonymousUsageStats",
@@ -4739,6 +4723,13 @@ const UserSchema: Record<string, unknown> = {
           "usersExtensionPreferences": {
             "type": "object",
             "additionalProperties": true
+          },
+          "selectedK8sContexts": {
+            "type": "array",
+            "description": "Persisted selection of active Kubernetes context IDs",
+            "items": {
+              "type": "string"
+            }
           },
           "remoteProviderPreferences": {
             "type": "object",
@@ -4887,79 +4878,6 @@ const UserSchema: Record<string, unknown> = {
           "site",
           "link"
         ]
-      },
-      "AccountOverview": {
-        "type": "object",
-        "additionalProperties": true
-      },
-      "RecentActivity": {
-        "type": "object",
-        "additionalProperties": true
-      },
-      "RecentActivityPage": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer"
-          },
-          "page_size": {
-            "type": "integer"
-          },
-          "total_count": {
-            "type": "integer"
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        }
-      },
-      "AvailableNotificationPreference": {
-        "type": "object",
-        "properties": {
-          "category": {
-            "type": "string"
-          },
-          "subcategory": {
-            "type": "string"
-          },
-          "label": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "additionalProperties": true
-      },
-      "AvailableNotificationPreferences": {
-        "type": "object",
-        "properties": {
-          "notification_preferences": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object",
-              "properties": {
-                "category": {
-                  "type": "string"
-                },
-                "subcategory": {
-                  "type": "string"
-                },
-                "label": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": true
-            }
-          }
-        }
       }
     }
   }

@@ -104,6 +104,53 @@ paths:
           $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
+
+  /api/user/prefs:
+    get:
+      tags:
+        - users
+      operationId: getUserPrefs
+      summary: Get user preferences
+      description: Returns the current user's preferences including selected K8s contexts, load test settings, and other UI preferences.
+      x-internal:
+        - meshery
+      responses:
+        "200":
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Preference"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      tags:
+        - users
+      operationId: updateUserPrefs
+      summary: Update user preferences
+      description: Merges the provided fields into the current user's preferences. Only the fields present in the request body are updated.
+      x-internal:
+        - meshery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Preference"
+      responses:
+        "200":
+          description: Updated user preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Preference"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
 components:
   responses:
     400:
@@ -482,6 +529,11 @@ components:
         usersExtensionPreferences:
           type: object
           additionalProperties: true
+        selectedK8sContexts:
+          type: array
+          description: Persisted selection of active Kubernetes context IDs
+          items:
+            type: string
         remoteProviderPreferences:
           type: object
           additionalProperties: true

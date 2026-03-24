@@ -352,66 +352,13 @@ const injectedRtkApi = api
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
       }),
-      updateUserPreference: build.mutation<UpdateUserPreferenceApiResponse, UpdateUserPreferenceApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/users/preferences`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["User_users"],
-      }),
-      deleteOwnAccount: build.mutation<DeleteOwnAccountApiResponse, DeleteOwnAccountApiArg>({
-        query: () => ({ url: `/api/identity/users/self`, method: "DELETE" }),
-        invalidatesTags: ["User_users"],
-      }),
-      bulkDeleteUsers: build.mutation<BulkDeleteUsersApiResponse, BulkDeleteUsersApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/orgs/${queryArg.orgId}/users/bulk`,
-          method: "POST",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["User_users"],
-      }),
-      getProfileOverview: build.query<GetProfileOverviewApiResponse, GetProfileOverviewApiArg>({
-        query: () => ({ url: `/api/identity/users/profile/details` }),
+      getUserPrefs: build.query<GetUserPrefsApiResponse, GetUserPrefsApiArg>({
+        query: () => ({ url: `/api/user/prefs` }),
         providesTags: ["User_users"],
       }),
-      getUserActivity: build.query<GetUserActivityApiResponse, GetUserActivityApiArg>({
-        query: (queryArg) => ({
-          url: `/api/identity/users/${queryArg.userId}/profile/activity`,
-          params: {
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            order: queryArg.order,
-            filter: queryArg.filter,
-          },
-        }),
-        providesTags: ["User_users"],
-      }),
-      handleFeedbackFormSubmission: build.mutation<
-        HandleFeedbackFormSubmissionApiResponse,
-        HandleFeedbackFormSubmissionApiArg
-      >({
-        query: (queryArg) => ({ url: `/api/identity/users/notify/feedback`, method: "POST", body: queryArg.body }),
+      updateUserPrefs: build.mutation<UpdateUserPrefsApiResponse, UpdateUserPrefsApiArg>({
+        query: (queryArg) => ({ url: `/api/user/prefs`, method: "POST", body: queryArg.body }),
         invalidatesTags: ["User_users"],
-      }),
-      updateUsersPassword: build.mutation<UpdateUsersPasswordApiResponse, UpdateUsersPasswordApiArg>({
-        query: (queryArg) => ({ url: `/api/identity/users/password`, method: "POST", body: queryArg.body }),
-        invalidatesTags: ["User_users"],
-      }),
-      updateNotificationPreferences: build.mutation<
-        UpdateNotificationPreferencesApiResponse,
-        UpdateNotificationPreferencesApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/api/identity/users/notifications/preferences`,
-          method: "PUT",
-          body: queryArg.body,
-        }),
-        invalidatesTags: ["User_users"],
-      }),
-      getAvailableNotificationPreferences: build.query<
-        GetAvailableNotificationPreferencesApiResponse,
-        GetAvailableNotificationPreferencesApiArg
-      >({
-        query: () => ({ url: `/api/identity/users/notifications/preferences` }),
-        providesTags: ["User_users"],
       }),
     }),
     overrideExisting: false,
@@ -3818,6 +3765,8 @@ export type GetUsersForOrgApiResponse = /** status 200 Paginated list of organiz
       usersExtensionPreferences: {
         [key: string]: any;
       };
+      /** Persisted selection of active Kubernetes context IDs */
+      selectedK8sContexts?: string[];
       remoteProviderPreferences: {
         [key: string]: any;
       };
@@ -3954,6 +3903,8 @@ export type GetUsersApiResponse = /** status 200 Paginated list of public users 
       usersExtensionPreferences: {
         [key: string]: any;
       };
+      /** Persisted selection of active Kubernetes context IDs */
+      selectedK8sContexts?: string[];
       remoteProviderPreferences: {
         [key: string]: any;
       };
@@ -4082,6 +4033,8 @@ export type GetUserProfileByIdApiResponse = /** status 200 User profile for the 
     usersExtensionPreferences: {
       [key: string]: any;
     };
+    /** Persisted selection of active Kubernetes context IDs */
+    selectedK8sContexts?: string[];
     remoteProviderPreferences: {
       [key: string]: any;
     };
@@ -4201,6 +4154,8 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
     usersExtensionPreferences: {
       [key: string]: any;
     };
+    /** Persisted selection of active Kubernetes context IDs */
+    selectedK8sContexts?: string[];
     remoteProviderPreferences: {
       [key: string]: any;
     };
@@ -4245,88 +4200,159 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
-export type UpdateUserPreferenceApiResponse = /** status 201 Preferences updated */ {
-  [key: string]: any;
-};
-export type UpdateUserPreferenceApiArg = {
-  body: {
+export type GetUserPrefsApiResponse = /** status 200 User preferences */ {
+  meshAdapters?: object[];
+  grafana?: {
+    grafanaURL?: string;
+    grafanaAPIKey?: string;
+    selectedBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      panels?: object[];
+      templateVars?: string[];
+    }[];
+  };
+  prometheus?: {
+    prometheusURL?: string;
+    selectedPrometheusBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      panels?: object[];
+      templateVars?: string[];
+    }[];
+  };
+  loadTestPrefs?: {
+    /** Concurrent requests */
+    c?: number;
+    /** Queries per second */
+    qps?: number;
+    /** Duration */
+    t?: string;
+    /** Load generator */
+    gen?: string;
+  };
+  anonymousUsageStats: boolean;
+  anonymousPerfResults: boolean;
+  updated_at: string;
+  dashboardPreferences: {
+    [key: string]: any;
+  };
+  selectedOrganizationID: string;
+  selectedWorkspaceForOrganizations: {
+    [key: string]: string;
+  };
+  usersExtensionPreferences: {
+    [key: string]: any;
+  };
+  /** Persisted selection of active Kubernetes context IDs */
+  selectedK8sContexts?: string[];
+  remoteProviderPreferences: {
     [key: string]: any;
   };
 };
-export type DeleteOwnAccountApiResponse = /** status 201 Account deleted */ {
-  [key: string]: any;
-};
-export type DeleteOwnAccountApiArg = void;
-export type BulkDeleteUsersApiResponse = /** status 201 Users deleted */ {
-  [key: string]: any;
-};
-export type BulkDeleteUsersApiArg = {
-  /** Organization ID */
-  orgId: string;
-  body: {
+export type GetUserPrefsApiArg = void;
+export type UpdateUserPrefsApiResponse = /** status 200 Updated user preferences */ {
+  meshAdapters?: object[];
+  grafana?: {
+    grafanaURL?: string;
+    grafanaAPIKey?: string;
+    selectedBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      panels?: object[];
+      templateVars?: string[];
+    }[];
+  };
+  prometheus?: {
+    prometheusURL?: string;
+    selectedPrometheusBoardsConfigs?: {
+      /** Placeholder for GrafanaBoard definition (define fields as needed) */
+      board?: object;
+      panels?: object[];
+      templateVars?: string[];
+    }[];
+  };
+  loadTestPrefs?: {
+    /** Concurrent requests */
+    c?: number;
+    /** Queries per second */
+    qps?: number;
+    /** Duration */
+    t?: string;
+    /** Load generator */
+    gen?: string;
+  };
+  anonymousUsageStats: boolean;
+  anonymousPerfResults: boolean;
+  updated_at: string;
+  dashboardPreferences: {
+    [key: string]: any;
+  };
+  selectedOrganizationID: string;
+  selectedWorkspaceForOrganizations: {
+    [key: string]: string;
+  };
+  usersExtensionPreferences: {
+    [key: string]: any;
+  };
+  /** Persisted selection of active Kubernetes context IDs */
+  selectedK8sContexts?: string[];
+  remoteProviderPreferences: {
     [key: string]: any;
   };
 };
-export type GetProfileOverviewApiResponse = /** status 200 User account overview */ {
-  [key: string]: any;
-};
-export type GetProfileOverviewApiArg = void;
-export type GetUserActivityApiResponse = /** status 200 User recent activity */ {
-  page?: number;
-  page_size?: number;
-  total_count?: number;
-  data?: {
-    [key: string]: any;
-  }[];
-};
-export type GetUserActivityApiArg = {
-  /** User ID */
-  userId: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get filtered reponses */
-  filter?: string;
-};
-export type HandleFeedbackFormSubmissionApiResponse = /** status 201 Feedback submitted */ {
-  [key: string]: any;
-};
-export type HandleFeedbackFormSubmissionApiArg = {
+export type UpdateUserPrefsApiArg = {
   body: {
-    [key: string]: any;
-  };
-};
-export type UpdateUsersPasswordApiResponse = /** status 200 Password updated */ {
-  [key: string]: any;
-};
-export type UpdateUsersPasswordApiArg = {
-  body: {
-    password?: string;
-  };
-};
-export type UpdateNotificationPreferencesApiResponse = /** status 200 Notification preferences updated */ {
-  [key: string]: any;
-};
-export type UpdateNotificationPreferencesApiArg = {
-  body: {
-    [key: string]: any;
-  };
-};
-export type GetAvailableNotificationPreferencesApiResponse = /** status 200 Available notification preferences */ {
-  notification_preferences?: {
-    [key: string]: {
-      category?: string;
-      subcategory?: string;
-      label?: string;
-      name?: string;
+    meshAdapters?: object[];
+    grafana?: {
+      grafanaURL?: string;
+      grafanaAPIKey?: string;
+      selectedBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        panels?: object[];
+        templateVars?: string[];
+      }[];
+    };
+    prometheus?: {
+      prometheusURL?: string;
+      selectedPrometheusBoardsConfigs?: {
+        /** Placeholder for GrafanaBoard definition (define fields as needed) */
+        board?: object;
+        panels?: object[];
+        templateVars?: string[];
+      }[];
+    };
+    loadTestPrefs?: {
+      /** Concurrent requests */
+      c?: number;
+      /** Queries per second */
+      qps?: number;
+      /** Duration */
+      t?: string;
+      /** Load generator */
+      gen?: string;
+    };
+    anonymousUsageStats: boolean;
+    anonymousPerfResults: boolean;
+    updated_at: string;
+    dashboardPreferences: {
+      [key: string]: any;
+    };
+    selectedOrganizationID: string;
+    selectedWorkspaceForOrganizations: {
+      [key: string]: string;
+    };
+    usersExtensionPreferences: {
+      [key: string]: any;
+    };
+    /** Persisted selection of active Kubernetes context IDs */
+    selectedK8sContexts?: string[];
+    remoteProviderPreferences: {
       [key: string]: any;
     };
   };
 };
-export type GetAvailableNotificationPreferencesApiArg = void;
 export const {
   useGetConnectionsQuery,
   useRegisterConnectionMutation,
@@ -4376,13 +4402,6 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
-  useUpdateUserPreferenceMutation,
-  useDeleteOwnAccountMutation,
-  useBulkDeleteUsersMutation,
-  useGetProfileOverviewQuery,
-  useGetUserActivityQuery,
-  useHandleFeedbackFormSubmissionMutation,
-  useUpdateUsersPasswordMutation,
-  useUpdateNotificationPreferencesMutation,
-  useGetAvailableNotificationPreferencesQuery,
+  useGetUserPrefsQuery,
+  useUpdateUserPrefsMutation,
 } = injectedRtkApi;
