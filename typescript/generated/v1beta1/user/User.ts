@@ -18,30 +18,11 @@ export interface paths {
   "/api/identity/users/profile": {
     get: operations["getUser"];
   };
-  "/api/identity/users/preferences": {
-    put: operations["updateUserPreference"];
-  };
-  "/api/identity/users/self": {
-    delete: operations["deleteOwnAccount"];
-  };
-  "/api/identity/orgs/{orgId}/users/bulk": {
-    post: operations["bulkDeleteUsers"];
-  };
-  "/api/identity/users/profile/details": {
-    get: operations["getProfileOverview"];
-  };
-  "/api/identity/users/{userId}/profile/activity": {
-    get: operations["getUserActivity"];
-  };
-  "/api/identity/users/notify/feedback": {
-    post: operations["handleFeedbackFormSubmission"];
-  };
-  "/api/identity/users/password": {
-    post: operations["updateUsersPassword"];
-  };
-  "/api/identity/users/notifications/preferences": {
-    get: operations["getAvailableNotificationPreferences"];
-    put: operations["updateNotificationPreferences"];
+  "/api/user/prefs": {
+    /** Returns the current user's preferences including selected K8s contexts, load test settings, and other UI preferences. */
+    get: operations["getUserPrefs"];
+    /** Merges the provided fields into the current user's preferences. Only the fields present in the request body are updated. */
+    post: operations["updateUserPrefs"];
   };
 }
 
@@ -134,6 +115,8 @@ export interface components {
         selectedOrganizationID: string;
         selectedWorkspaceForOrganizations: { [key: string]: string };
         usersExtensionPreferences: { [key: string]: unknown };
+        /** @description Persisted selection of active Kubernetes context IDs */
+        selectedK8sContexts?: string[];
         remoteProviderPreferences: { [key: string]: unknown };
       };
       /**
@@ -291,6 +274,8 @@ export interface components {
           selectedOrganizationID: string;
           selectedWorkspaceForOrganizations: { [key: string]: string };
           usersExtensionPreferences: { [key: string]: unknown };
+          /** @description Persisted selection of active Kubernetes context IDs */
+          selectedK8sContexts?: string[];
           remoteProviderPreferences: { [key: string]: unknown };
         };
         /**
@@ -449,6 +434,8 @@ export interface components {
           selectedOrganizationID: string;
           selectedWorkspaceForOrganizations: { [key: string]: string };
           usersExtensionPreferences: { [key: string]: unknown };
+          /** @description Persisted selection of active Kubernetes context IDs */
+          selectedK8sContexts?: string[];
           remoteProviderPreferences: { [key: string]: unknown };
         };
         /**
@@ -555,6 +542,8 @@ export interface components {
       selectedOrganizationID: string;
       selectedWorkspaceForOrganizations: { [key: string]: string };
       usersExtensionPreferences: { [key: string]: unknown };
+      /** @description Persisted selection of active Kubernetes context IDs */
+      selectedK8sContexts?: string[];
       remoteProviderPreferences: { [key: string]: unknown };
     };
     /** @description Placeholder for Adapter struct definition. */
@@ -604,30 +593,6 @@ export interface components {
       /** Format: uri */
       link: string;
     };
-    AccountOverview: { [key: string]: unknown };
-    RecentActivity: { [key: string]: unknown };
-    RecentActivityPage: {
-      page?: number;
-      page_size?: number;
-      total_count?: number;
-      data?: { [key: string]: unknown }[];
-    };
-    AvailableNotificationPreference: {
-      category?: string;
-      subcategory?: string;
-      label?: string;
-      name?: string;
-    } & { [key: string]: unknown };
-    AvailableNotificationPreferences: {
-      notification_preferences?: {
-        [key: string]: {
-          category?: string;
-          subcategory?: string;
-          label?: string;
-          name?: string;
-        } & { [key: string]: unknown };
-      };
-    };
   };
   responses: {
     /** Invalid request body or request param */
@@ -672,35 +637,6 @@ export interface components {
     filter: string;
     /** @description Optional team filter when listing organization users */
     teamID: string;
-  };
-  requestBodies: {
-    userPreferencePayload: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-    bulkDeleteUsersPayload: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-    userFeedbackPayload: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-    updatePasswordPayload: {
-      content: {
-        "application/json": {
-          password?: string;
-        };
-      };
-    };
-    notificationPreferencePayload: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
   };
 }
 
@@ -821,6 +757,8 @@ export interface operations {
                 selectedOrganizationID: string;
                 selectedWorkspaceForOrganizations: { [key: string]: string };
                 usersExtensionPreferences: { [key: string]: unknown };
+                /** @description Persisted selection of active Kubernetes context IDs */
+                selectedK8sContexts?: string[];
                 remoteProviderPreferences: { [key: string]: unknown };
               };
               /**
@@ -1020,6 +958,8 @@ export interface operations {
                 selectedOrganizationID: string;
                 selectedWorkspaceForOrganizations: { [key: string]: string };
                 usersExtensionPreferences: { [key: string]: unknown };
+                /** @description Persisted selection of active Kubernetes context IDs */
+                selectedK8sContexts?: string[];
                 remoteProviderPreferences: { [key: string]: unknown };
               };
               /**
@@ -1206,6 +1146,8 @@ export interface operations {
               selectedOrganizationID: string;
               selectedWorkspaceForOrganizations: { [key: string]: string };
               usersExtensionPreferences: { [key: string]: unknown };
+              /** @description Persisted selection of active Kubernetes context IDs */
+              selectedK8sContexts?: string[];
               remoteProviderPreferences: { [key: string]: unknown };
             };
             /**
@@ -1379,6 +1321,8 @@ export interface operations {
               selectedOrganizationID: string;
               selectedWorkspaceForOrganizations: { [key: string]: string };
               usersExtensionPreferences: { [key: string]: unknown };
+              /** @description Persisted selection of active Kubernetes context IDs */
+              selectedK8sContexts?: string[];
               remoteProviderPreferences: { [key: string]: unknown };
             };
             /**
@@ -1461,171 +1405,55 @@ export interface operations {
       };
     };
   };
-  updateUserPreference: {
+  /** Returns the current user's preferences including selected K8s contexts, load test settings, and other UI preferences. */
+  getUserPrefs: {
     responses: {
-      /** Preferences updated */
-      201: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  deleteOwnAccount: {
-    responses: {
-      /** Account deleted */
-      201: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  bulkDeleteUsers: {
-    parameters: {
-      path: {
-        /** Organization ID */
-        orgId: string;
-      };
-    };
-    responses: {
-      /** Users deleted */
-      201: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
-  };
-  getProfileOverview: {
-    responses: {
-      /** User account overview */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  getUserActivity: {
-    parameters: {
-      path: {
-        /** User ID */
-        userId: string;
-      };
-      query: {
-        /** Get responses by page */
-        page?: string;
-        /** Get responses by pagesize */
-        pagesize?: string;
-        /** Get ordered responses */
-        order?: string;
-        /** Get filtered reponses */
-        filter?: string;
-      };
-    };
-    responses: {
-      /** User recent activity */
+      /** User preferences */
       200: {
         content: {
           "application/json": {
-            page?: number;
-            page_size?: number;
-            total_count?: number;
-            data?: { [key: string]: unknown }[];
+            meshAdapters?: { [key: string]: unknown }[];
+            grafana?: {
+              grafanaURL?: string;
+              grafanaAPIKey?: string;
+              selectedBoardsConfigs?: {
+                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                board?: { [key: string]: unknown };
+                panels?: { [key: string]: unknown }[];
+                templateVars?: string[];
+              }[];
+            };
+            prometheus?: {
+              prometheusURL?: string;
+              selectedPrometheusBoardsConfigs?: {
+                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                board?: { [key: string]: unknown };
+                panels?: { [key: string]: unknown }[];
+                templateVars?: string[];
+              }[];
+            };
+            loadTestPrefs?: {
+              /** @description Concurrent requests */
+              c?: number;
+              /** @description Queries per second */
+              qps?: number;
+              /** @description Duration */
+              t?: string;
+              /** @description Load generator */
+              gen?: string;
+            };
+            anonymousUsageStats: boolean;
+            anonymousPerfResults: boolean;
+            /** Format: date-time */
+            updated_at: string;
+            dashboardPreferences: { [key: string]: unknown };
+            selectedOrganizationID: string;
+            selectedWorkspaceForOrganizations: { [key: string]: string };
+            usersExtensionPreferences: { [key: string]: unknown };
+            /** @description Persisted selection of active Kubernetes context IDs */
+            selectedK8sContexts?: string[];
+            remoteProviderPreferences: { [key: string]: unknown };
           };
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  handleFeedbackFormSubmission: {
-    responses: {
-      /** Feedback submitted */
-      201: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
         };
       };
       /** Expired JWT token used or insufficient privilege */
@@ -1641,18 +1469,56 @@ export interface operations {
         };
       };
     };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
-      };
-    };
   };
-  updateUsersPassword: {
+  /** Merges the provided fields into the current user's preferences. Only the fields present in the request body are updated. */
+  updateUserPrefs: {
     responses: {
-      /** Password updated */
+      /** Updated user preferences */
       200: {
         content: {
-          "application/json": { [key: string]: unknown };
+          "application/json": {
+            meshAdapters?: { [key: string]: unknown }[];
+            grafana?: {
+              grafanaURL?: string;
+              grafanaAPIKey?: string;
+              selectedBoardsConfigs?: {
+                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                board?: { [key: string]: unknown };
+                panels?: { [key: string]: unknown }[];
+                templateVars?: string[];
+              }[];
+            };
+            prometheus?: {
+              prometheusURL?: string;
+              selectedPrometheusBoardsConfigs?: {
+                /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+                board?: { [key: string]: unknown };
+                panels?: { [key: string]: unknown }[];
+                templateVars?: string[];
+              }[];
+            };
+            loadTestPrefs?: {
+              /** @description Concurrent requests */
+              c?: number;
+              /** @description Queries per second */
+              qps?: number;
+              /** @description Duration */
+              t?: string;
+              /** @description Load generator */
+              gen?: string;
+            };
+            anonymousUsageStats: boolean;
+            anonymousPerfResults: boolean;
+            /** Format: date-time */
+            updated_at: string;
+            dashboardPreferences: { [key: string]: unknown };
+            selectedOrganizationID: string;
+            selectedWorkspaceForOrganizations: { [key: string]: string };
+            usersExtensionPreferences: { [key: string]: unknown };
+            /** @description Persisted selection of active Kubernetes context IDs */
+            selectedK8sContexts?: string[];
+            remoteProviderPreferences: { [key: string]: unknown };
+          };
         };
       };
       /** Expired JWT token used or insufficient privilege */
@@ -1671,66 +1537,48 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          password?: string;
-        };
-      };
-    };
-  };
-  getAvailableNotificationPreferences: {
-    responses: {
-      /** Available notification preferences */
-      200: {
-        content: {
-          "application/json": {
-            notification_preferences?: {
-              [key: string]: {
-                category?: string;
-                subcategory?: string;
-                label?: string;
-                name?: string;
-              } & { [key: string]: unknown };
-            };
+          meshAdapters?: { [key: string]: unknown }[];
+          grafana?: {
+            grafanaURL?: string;
+            grafanaAPIKey?: string;
+            selectedBoardsConfigs?: {
+              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+              board?: { [key: string]: unknown };
+              panels?: { [key: string]: unknown }[];
+              templateVars?: string[];
+            }[];
           };
+          prometheus?: {
+            prometheusURL?: string;
+            selectedPrometheusBoardsConfigs?: {
+              /** @description Placeholder for GrafanaBoard definition (define fields as needed) */
+              board?: { [key: string]: unknown };
+              panels?: { [key: string]: unknown }[];
+              templateVars?: string[];
+            }[];
+          };
+          loadTestPrefs?: {
+            /** @description Concurrent requests */
+            c?: number;
+            /** @description Queries per second */
+            qps?: number;
+            /** @description Duration */
+            t?: string;
+            /** @description Load generator */
+            gen?: string;
+          };
+          anonymousUsageStats: boolean;
+          anonymousPerfResults: boolean;
+          /** Format: date-time */
+          updated_at: string;
+          dashboardPreferences: { [key: string]: unknown };
+          selectedOrganizationID: string;
+          selectedWorkspaceForOrganizations: { [key: string]: string };
+          usersExtensionPreferences: { [key: string]: unknown };
+          /** @description Persisted selection of active Kubernetes context IDs */
+          selectedK8sContexts?: string[];
+          remoteProviderPreferences: { [key: string]: unknown };
         };
-      };
-      /** Expired JWT token used or insufficient privilege */
-      401: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-  };
-  updateNotificationPreferences: {
-    responses: {
-      /** Notification preferences updated */
-      200: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-      /** Invalid request body or request param */
-      400: {
-        content: {
-          "text/plain": string;
-        };
-      };
-      /** Internal server error */
-      500: {
-        content: {
-          "text/plain": string;
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": { [key: string]: unknown };
       };
     };
   };
