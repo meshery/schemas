@@ -1,0 +1,365 @@
+openapi: 3.0.0
+info:
+  title: capability
+  description: Documentation for Meshery Cloud REST APIs for Provider Capabilities
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1beta1
+servers:
+  - url: https://cloud.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL
+
+tags:
+  - name: capabilities
+    description: Operations related to remote provider capabilities
+
+paths:
+  /capabilities:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - capabilities
+      summary: Get capabilities (deprecated)
+      operationId: getCapabilitiesDeprecated
+      deprecated: true
+      description: >
+        Returns the capability set of this remote provider.
+        Deprecated: use /{mesheryVersion}/capabilities instead.
+      responses:
+        "200":
+          description: Capabilities fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capability"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /{mesheryVersion}/capabilities:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - capabilities
+      summary: Get capabilities
+      operationId: getCapabilities
+      description: Returns the full capability set of this remote provider for the given Meshery version.
+      parameters:
+        - name: mesheryVersion
+          in: path
+          description: Meshery server version string (e.g. v0.8.0)
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Capabilities fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Capability"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    500:
+      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+
+  schemas:
+    Capability:
+      type: object
+      description: Provider capability configuration returned to Meshery on handshake.
+      properties:
+        providerType:
+          type: string
+          description: Type of the provider (e.g. "remote").
+          x-order: 1
+        packageVersion:
+          type: string
+          description: Version of the provider package.
+          x-order: 2
+        packageUrl:
+          type: string
+          description: URL from which the provider package can be downloaded.
+          x-order: 3
+        providerName:
+          type: string
+          description: Display name of the provider.
+          x-order: 4
+        providerDescription:
+          type: array
+          items:
+            type: string
+          description: List of human-readable description lines for the provider.
+          x-order: 5
+        extensions:
+          $ref: "#/components/schemas/CapabilityExtension"
+          x-order: 6
+        capabilities:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityGeneralCapability"
+          description: List of general feature capabilities.
+          x-order: 7
+        restrictedAccess:
+          $ref: "#/components/schemas/RestrictedAccess"
+          x-order: 8
+
+    CapabilityExtension:
+      type: object
+      description: Extension points for the Meshery UI and backend.
+      properties:
+        navigator:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityNavigatorExtension"
+          x-order: 1
+        userPrefs:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityUserPrefExtension"
+          x-order: 2
+        graphql:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityGraphQLExtension"
+          x-order: 3
+        account:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityAccountExtension"
+          x-order: 4
+        collaborator:
+          type: array
+          items:
+            $ref: "#/components/schemas/CapabilityCollaboratorsExtension"
+          x-order: 5
+
+    CapabilityNavigatorExtension:
+      type: object
+      description: Navigator extension for the Meshery UI sidebar.
+      properties:
+        title:
+          type: string
+        onClickCallback:
+          type: integer
+        href:
+          $ref: "#/components/schemas/CapabilityNavigatorExtensionHref"
+        component:
+          type: string
+        icon:
+          type: string
+        link:
+          type: boolean
+        show:
+          type: boolean
+        type:
+          type: string
+        allowedTo:
+          type: object
+        isBeta:
+          type: boolean
+
+    CapabilityNavigatorExtensionHref:
+      type: object
+      description: Href configuration for navigator extensions.
+      properties:
+        uri:
+          type: string
+        external:
+          type: boolean
+
+    CapabilityUserPrefExtension:
+      type: object
+      description: User preferences extension.
+      properties:
+        component:
+          type: string
+        type:
+          type: string
+
+    CapabilityGraphQLExtension:
+      type: object
+      description: GraphQL backend extension.
+      properties:
+        component:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+
+    CapabilityAccountExtension:
+      type: object
+      description: Account extension for the user profile area.
+      properties:
+        title:
+          type: string
+        onClickCallback:
+          type: integer
+        href:
+          $ref: "#/components/schemas/CapabilityAccountExtensionHref"
+        component:
+          type: string
+        link:
+          type: boolean
+        show:
+          type: boolean
+        type:
+          type: string
+
+    CapabilityAccountExtensionHref:
+      type: object
+      description: Href configuration for account extensions.
+      properties:
+        uri:
+          type: string
+        external:
+          type: boolean
+
+    CapabilityCollaboratorsExtension:
+      type: object
+      description: Collaborators extension.
+      properties:
+        component:
+          type: string
+        type:
+          type: string
+
+    CapabilityGeneralCapability:
+      type: object
+      description: General capability defining a feature and its endpoint.
+      properties:
+        feature:
+          type: string
+          description: Feature identifier.
+        endpoint:
+          type: string
+          description: API endpoint for the feature.
+
+    RestrictedAccess:
+      type: object
+      description: Restricted access configuration for the Meshery UI.
+      properties:
+        isMesheryUIRestricted:
+          type: boolean
+        allowedComponents:
+          $ref: "#/components/schemas/MesheryUICapability"
+
+    MesheryUICapability:
+      type: object
+      description: Meshery UI component capability.
+      properties:
+        navigator:
+          $ref: "#/components/schemas/NavigatorComponents"
+        header:
+          $ref: "#/components/schemas/HeaderComponents"
+
+    NavigatorComponents:
+      type: object
+      description: Navigator component visibility settings.
+      properties:
+        dashboard:
+          type: boolean
+        performance:
+          type: boolean
+        conformance:
+          type: boolean
+        extensions:
+          type: boolean
+        toggler:
+          type: boolean
+        help:
+          type: boolean
+        lifecycle:
+          type: object
+        configuration:
+          $ref: "#/components/schemas/Configuration"
+
+    HeaderComponents:
+      type: object
+      description: Header component visibility settings.
+      properties:
+        contextSwitcher:
+          type: boolean
+        settings:
+          type: boolean
+        notifications:
+          type: boolean
+        profile:
+          type: boolean
+
+    MeshMapComponentSet:
+      type: object
+      description: Component set for MeshMap (Kanvas) permissions.
+      properties:
+        designer:
+          $ref: "#/components/schemas/DesignerComponents"
+        visualizer:
+          type: boolean
+
+    DesignerComponents:
+      type: object
+      description: Designer component permission flags.
+      properties:
+        design:
+          type: boolean
+        application:
+          type: boolean
+        filter:
+          type: boolean
+        save:
+          type: boolean
+        new:
+          type: boolean
+        saveAs:
+          type: boolean
+        validate:
+          type: boolean
+        deploy:
+          type: boolean
+        undeploy:
+          type: boolean
+
+    Configuration:
+      type: object
+      description: Configuration component visibility settings.
+      properties:
+        designs:
+          type: boolean
+        applications:
+          type: boolean
+        filters:
+          type: boolean
+
+    Adapters:
+      type: object
+      description: Service mesh adapter visibility settings.
+      properties:
+        istio:
+          type: boolean
+        citrix:
+          type: boolean
+        consul:
+          type: boolean
+        cilium:
+          type: boolean
+        appMesh:
+          type: boolean
+        kuma:
+          type: boolean
+        linkerd:
+          type: boolean
+        nginx:
+          type: boolean
+        nsm:
+          type: boolean
