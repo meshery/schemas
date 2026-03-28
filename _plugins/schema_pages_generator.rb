@@ -79,7 +79,8 @@ module Jekyll
           "language" => ext == ".json" ? "json" : "yaml",
           "content" => trimmed
         }
-      rescue StandardError
+      rescue StandardError => e
+        Jekyll.logger.warn("SchemaPagesGenerator:", "Could not process #{abs_file}: #{e.message}")
         next
       end
 
