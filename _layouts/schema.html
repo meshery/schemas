@@ -1,0 +1,65 @@
+---
+layout: default
+---
+<main class="main-content schema-page">
+  <section class="schema-detail-header">
+    <a class="back-link" href="/">← Back to schemas explorer</a>
+    <h1>{{ page.schema.name }}</h1>
+    <p>{{ page.schema.description }}</p>
+    <div class="schema-detail-tags">
+      <span class="badge">{{ page.schema.version }}</span>
+      <span class="badge">{{ page.schema.kind }}</span>
+      <span class="badge">{{ page.schema.format }}</span>
+    </div>
+  </section>
+
+  <section class="schema-detail-grid">
+    <article class="schema-card">
+      <h2>Files</h2>
+      {% if page.schema_files and page.schema_files.size > 0 %}
+      <ul class="schema-file-list">
+        {% for file in page.schema_files %}
+        <li><code>{{ file }}</code></li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted-text">No files found for this schema path.</p>
+      {% endif %}
+    </article>
+
+    <article class="schema-card">
+      <h2>Details</h2>
+      <dl class="schema-meta">
+        <div>
+          <dt>Name</dt>
+          <dd>{{ page.schema.name }}</dd>
+        </div>
+        <div>
+          <dt>Version</dt>
+          <dd>{{ page.schema.version }}</dd>
+        </div>
+        <div>
+          <dt>Path</dt>
+          <dd><code>{{ page.schema.path }}</code></dd>
+        </div>
+      </dl>
+      <div class="schema-actions">
+        {% if page.schema.raw_url %}<a href="{{ page.schema.raw_url }}">Source</a>{% endif %}
+      </div>
+    </article>
+  </section>
+
+  <section class="schema-previews">
+    <h2>YAML / JSON Preview</h2>
+    {% if page.schema_previews and page.schema_previews.size > 0 %}
+    {% for preview in page.schema_previews %}
+    <article class="preview-block">
+      <h3><code>{{ preview.path }}</code></h3>
+      <pre><code class="language-{{ preview.language }}">{{ preview.content | escape }}</code></pre>
+    </article>
+    {% endfor %}
+    {% else %}
+    <p class="muted-text">No YAML/JSON files available for preview.</p>
+    {% endif %}
+  </section>
+</main>

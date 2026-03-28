@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="site-logo">
+        <img id="meshery-logo"
+          src="https://raw.githubusercontent.com/meshery/meshery/master/.github/assets/images/readme/meshery-logo-light-text-side.svg"
+          data-dark="https://raw.githubusercontent.com/meshery/meshery/master/.github/assets/images/readme/meshery-logo-light-text-side.svg"
+          data-light="https://raw.githubusercontent.com/meshery/meshery/master/.github/assets/images/readme/meshery-logo-dark-text-side.svg"
+          alt="Meshery Logo" />
+        <span class="site-logo-text">| <span>Schemas</span></span>
+      </a>
+
+      <button id="mobile-menu-toggle" class="mobile-menu-toggle" type="button" aria-label="Toggle navigation"></button>
+
+      <nav id="header-links" class="header-links">
+        <div class="desktop-nav">
+          <a href="https://docs.meshery.io/project/contributing/contributing-schemas">Docs</a>
+          <a href="https://meshery.io/catalog">Catalog</a>
+          <a href="https://playground.meshery.io">Playground</a>
+
+          <div class="dropdown" data-dropdown>
+            <button class="dropdown-toggle" type="button" aria-expanded="false">Community <span>▾</span></button>
+            <ul class="dropdown-menu">
+              <li>
+                <div class="sub-nav-li sub-nav-li--active">
+                  <img class="nav-img" src="/assets/images/nav-icons/community.svg" alt="">
+                  <a href="https://meshery.io/community" class="subnav-item">Participate</a>
+                </div>
+              </li>
+              <li>
+                <div class="sub-nav-li">
+                  <img class="nav-img" src="/assets/images/nav-icons/Calendar.svg" alt="">
+                  <a href="https://meshery.io/calendar" class="subnav-item">Calendar</a>
+                </div>
+              </li>
+              <li>
+                <div class="sub-nav-li">
+                  <img class="nav-img" src="/assets/images/nav-icons/Discuss.svg" alt="">
+                  <a href="https://meshery.io/community#discussion-forums" class="subnav-item">Discussion Forums</a>
+                </div>
+              </li>
+              <li>
+                <div class="sub-nav-li">
+                  <img class="nav-img" src="/assets/images/nav-icons/Github.svg" alt="">
+                  <a href="https://github.com/meshery" target="_blank" rel="noopener noreferrer" class="subnav-item">
+                    GitHub
+                    <img src="/assets/images/buttons/external-link_gray.svg" class="nav-sublink-logo" alt="">
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="dropdown" data-dropdown>
+            <button class="dropdown-toggle" type="button" aria-expanded="false">Resources <span>▾</span></button>
+            <ul class="dropdown-menu">
+              <li>
+                <div class="sub-nav-li sub-nav-li--active">
+                  <img class="nav-img" src="/assets/images/nav-icons/meshery.svg" alt="">
+                  <a href="https://docs.meshery.io" class="subnav-item">Documentation</a>
+                </div>
+              </li>
+              <li>
+                <div class="sub-nav-li">
+                  <img class="nav-img" src="/assets/images/nav-icons/Blog.svg" alt="">
+                  <a href="https://meshery.io/blog" class="subnav-item">Blog</a>
+                </div>
+              </li>
+              <li>
+                <div class="sub-nav-li">
+                  <img class="nav-img" src="/assets/images/nav-icons/Github.svg" alt="">
+                  <a href="https://github.com/meshery/schemas" target="_blank" rel="noopener noreferrer"
+                    class="subnav-item">
+                    GitHub
+                    <img src="/assets/images/buttons/external-link_gray.svg" class="nav-sublink-logo" alt="">
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a class="getting-started-btn" href="https://docs.meshery.io/installation">Getting Started</a>
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">
+            <img id="theme-icon" src="https://docs.meshery.io/images/nav-icons/mode-toggle-icon-moon.png"
+              data-dark="https://docs.meshery.io/images/nav-icons/mode-toggle-icon-moon.png"
+              data-light="https://docs.meshery.io/images/nav-icons/mode-toggle-icon-sun.png" alt="Toggle theme"
+              width="18" height="18" />
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  {{ content }}
+
+  <footer class="site-footer">
+
+    <div class="footer-grid">
+      <div class="footer-column">
+        <h4>Community</h4>
+        <a href="https://meshery.io/blog">Blog</a>
+        <a href="https://meshery.io/community#mailing-lists">Mailing Lists</a>
+        <a href="https://meshery.io/calendar">Calendar</a>
+        <a href="https://meshery.io/community#internships">Internships</a>
+        <a href="https://discuss.meshery.io">Forums</a>
+      </div>
+      <div class="footer-column">
+        <h4>Getting Started</h4>
+        <a href="https://meshery.io/features">Features</a>
+        <a href="https://docs.meshery.io/installation">Run Meshery</a>
+        <a href="https://docs.meshery.io/integrations">Integrations</a>
+        <a href="https://playground.meshery.io">Cloud Native Playground</a>
+      </div>
+      <div class="footer-column">
+        <h4>Resources</h4>
+        <a href="https://docs.meshery.io">Docs</a>
+        <a href="https://meshery.io/catalog">Meshery Catalog</a>
+        <a href="https://docs.meshery.io/tutorials">User Tutorials</a>
+        <a href="https://docs.meshery.io/contributing/contributor-trainings">Contributor Trainings</a>
+        <a href="https://layer5.io/performance">Cloud Native Performance</a>
+      </div>
+      <div class="footer-column">
+        <h4>Socials</h4>
+        <a href="https://x.com/mesheryio">Twitter</a>
+        <a href="https://www.youtube.com/@meshery">YouTube</a>
+        <a href="https://hub.docker.com/r/layer5/meshery">Docker Hub</a>
+        <a href="https://slack.meshery.io">Slack</a>
+        <a href="https://github.com/meshery">GitHub</a>
+        <a href="https://www.linkedin.com/company/meshery">LinkedIn</a>
+        <a href="https://bsky.app/profile/meshery.io">Bluesky</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-bottom-info">
+        <span>&copy; 2026 The Meshery Authors</span>
+        <span>Confidently wrangling cloud native infrastructure</span>
+      </div>
+      <div class="footer-bottom-info">
+        <a href="https://github.com/meshery/schemas/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a>
+        <span>Linux Foundation trademark text</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,332 @@
+- name: Academy
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Schema for academy entities used in Meshery cloud workflows.
+  path: schemas/constructs/v1beta1/academy/
+  view_url: /schemas/constructs/v1beta1/academy/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/academy
+
+- name: Badge
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Defines badge metadata and assignment structure.
+  path: schemas/constructs/v1beta1/badge/
+  view_url: /schemas/constructs/v1beta1/badge/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/badge
+
+- name: Category
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Category definitions for grouping related constructs.
+  path: schemas/constructs/v1beta1/category/
+  view_url: /schemas/constructs/v1beta1/category/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/category
+
+- name: Component
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Meshery component schema for model-driven resource definitions.
+  path: schemas/constructs/v1beta1/component/
+  view_url: /schemas/constructs/v1beta1/component/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/component
+
+- name: Connection
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Connection schema for provider and integration configurations.
+  path: schemas/constructs/v1beta1/connection/
+  view_url: /schemas/constructs/v1beta1/connection/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/connection
+
+- name: Credential
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Credential schema for secure identity and secret references.
+  path: schemas/constructs/v1beta1/credential/
+  view_url: /schemas/constructs/v1beta1/credential/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/credential
+
+- name: Design
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Schema for design definitions and topology snapshots.
+  path: schemas/constructs/v1beta1/design/
+  view_url: /schemas/constructs/v1beta1/design/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/design
+
+- name: Environment
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Environment schema for runtime contexts and deployment settings.
+  path: schemas/constructs/v1beta1/environment/
+  view_url: /schemas/constructs/v1beta1/environment/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/environment
+
+- name: Evaluation
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Evaluation definitions for policy, checks, and scoring.
+  path: schemas/constructs/v1beta1/evaluation/
+  view_url: /schemas/constructs/v1beta1/evaluation/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/evaluation
+
+- name: Event
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Event schema for system activity and audit messaging.
+  path: schemas/constructs/v1beta1/event/
+  view_url: /schemas/constructs/v1beta1/event/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/event
+
+- name: Feature
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Feature schema representing capability flags and availability.
+  path: schemas/constructs/v1beta1/feature/
+  view_url: /schemas/constructs/v1beta1/feature/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/feature
+
+- name: Invitation
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Invitation schema for onboarding users into organizations and teams.
+  path: schemas/constructs/v1beta1/invitation/
+  view_url: /schemas/constructs/v1beta1/invitation/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/invitation
+
+- name: Key
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Key schema for encrypted key material references.
+  path: schemas/constructs/v1beta1/key/
+  view_url: /schemas/constructs/v1beta1/key/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/key
+
+- name: Keychain
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Keychain schema grouping and managing related keys.
+  path: schemas/constructs/v1beta1/keychain/
+  view_url: /schemas/constructs/v1beta1/keychain/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/keychain
+
+- name: Model
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Model schema describing package metadata and component collections.
+  path: schemas/constructs/v1beta1/model/
+  view_url: /schemas/constructs/v1beta1/model/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/model
+
+- name: Organization
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Organization schema for workspace and account boundaries.
+  path: schemas/constructs/v1beta1/organization/
+  view_url: /schemas/constructs/v1beta1/organization/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/organization
+
+- name: Plan
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Subscription plan schema including limits and tier metadata.
+  path: schemas/constructs/v1beta1/plan/
+  view_url: /schemas/constructs/v1beta1/plan/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/plan
+
+- name: Role
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Role schema that maps permissions to actor identities.
+  path: schemas/constructs/v1beta1/role/
+  view_url: /schemas/constructs/v1beta1/role/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/role
+
+- name: Schedule
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Schedule schema for timed operations and recurring tasks.
+  path: schemas/constructs/v1beta1/schedule/
+  view_url: /schemas/constructs/v1beta1/schedule/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/schedule
+
+- name: Subcategory
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Subcategory schema for nested construct classification.
+  path: schemas/constructs/v1beta1/subcategory/
+  view_url: /schemas/constructs/v1beta1/subcategory/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/subcategory
+
+- name: Subscription
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Subscription schema for billing lifecycle and account linkage.
+  path: schemas/constructs/v1beta1/subscription/
+  view_url: /schemas/constructs/v1beta1/subscription/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/subscription
+
+- name: Team
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Team schema for member groups and ownership boundaries.
+  path: schemas/constructs/v1beta1/team/
+  view_url: /schemas/constructs/v1beta1/team/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/team
+
+- name: Token
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Token schema for API authentication and revocation control.
+  path: schemas/constructs/v1beta1/token/
+  view_url: /schemas/constructs/v1beta1/token/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/token
+
+- name: User
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: User schema for identity profile and account metadata.
+  path: schemas/constructs/v1beta1/user/
+  view_url: /schemas/constructs/v1beta1/user/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/user
+
+- name: Workspace
+  version: v1beta1
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Workspace schema for project-level tenancy and resource grouping.
+  path: schemas/constructs/v1beta1/workspace/
+  view_url: /schemas/constructs/v1beta1/workspace/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1beta1/workspace
+
+- name: Relationship
+  version: v1alpha3
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Relationship schema for linking components and models.
+  path: schemas/constructs/v1alpha3/relationship/
+  view_url: /schemas/constructs/v1alpha3/relationship/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1alpha3/relationship
+
+- name: Selector
+  version: v1alpha3
+  kind: Construct
+  format: OpenAPI / YAML
+  description: Selector schema for matching target resources by criteria.
+  path: schemas/constructs/v1alpha3/selector/
+  view_url: /schemas/constructs/v1alpha3/selector/
+  raw_url: https://github.com/meshery/schemas/tree/master/schemas/constructs/v1alpha3/selector
+
+- name: Design
+  version: v1alpha2
+  kind: Schema
+  format: YAML
+  description: Legacy design schema in v1alpha2 format.
+  path: schemas/constructs/v1alpha2/design.yaml
+  view_url: /schemas/constructs/v1alpha2/design.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/design.yaml
+
+- name: Relationship
+  version: v1alpha2
+  kind: Schema
+  format: YAML
+  description: Legacy relationship schema in v1alpha2 format.
+  path: schemas/constructs/v1alpha2/relationship.yaml
+  view_url: /schemas/constructs/v1alpha2/relationship.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/relationship.yaml
+
+- name: Selector
+  version: v1alpha2
+  kind: Schema
+  format: YAML
+  description: Legacy selector schema in v1alpha2 format.
+  path: schemas/constructs/v1alpha2/selector.yaml
+  view_url: /schemas/constructs/v1alpha2/selector.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha2/selector.yaml
+
+- name: Catalog Data
+  version: v1alpha1
+  kind: Schema
+  format: YAML
+  description: Catalog data schema for early model catalog formats.
+  path: schemas/constructs/v1alpha1/catalog_data.yaml
+  view_url: /schemas/constructs/v1alpha1/catalog_data.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/catalog_data.yaml
+
+- name: Component
+  version: v1alpha1
+  kind: Schema
+  format: YAML
+  description: Legacy component schema in v1alpha1 format.
+  path: schemas/constructs/v1alpha1/component.yaml
+  view_url: /schemas/constructs/v1alpha1/component.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/component.yaml
+
+- name: Model
+  version: v1alpha1
+  kind: Schema
+  format: YAML
+  description: Legacy model schema in v1alpha1 format.
+  path: schemas/constructs/v1alpha1/model.yaml
+  view_url: /schemas/constructs/v1alpha1/model.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/model.yaml
+
+- name: Relationship
+  version: v1alpha1
+  kind: Schema
+  format: YAML
+  description: Legacy relationship schema in v1alpha1 format.
+  path: schemas/constructs/v1alpha1/relationship.yaml
+  view_url: /schemas/constructs/v1alpha1/relationship.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/relationship.yaml
+
+- name: Selector
+  version: v1alpha1
+  kind: Schema
+  format: YAML
+  description: Legacy selector schema in v1alpha1 format.
+  path: schemas/constructs/v1alpha1/selector.yaml
+  view_url: /schemas/constructs/v1alpha1/selector.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1alpha1/selector.yaml
+
+- name: Catalog Data
+  version: v1beta2-draft
+  kind: Draft
+  format: YAML
+  description: Draft catalog schema for upcoming v1beta2 work.
+  path: schemas/constructs/v1beta2-draft/catalog_data.yaml
+  view_url: /schemas/constructs/v1beta2-draft/catalog_data.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2-draft/catalog_data.yaml
+
+- name: Draft v1beta2
+  version: v1beta2-draft
+  kind: Draft
+  format: YAML
+  description: Consolidated draft schema for v1beta2 design discussions.
+  path: schemas/constructs/v1beta2-draft/draft-v1beta2.yaml
+  view_url: /schemas/constructs/v1beta2-draft/draft-v1beta2.yaml
+  raw_url: https://github.com/meshery/schemas/blob/master/schemas/constructs/v1beta2-draft/draft-v1beta2.yaml

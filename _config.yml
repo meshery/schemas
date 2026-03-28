@@ -1,5 +1,26 @@
+title: Meshery Schemas
+description: Logical object models for Meshery
+url: https://schemas.meshery.io
+
 plugins:
   - jekyll-redirect-from
 
 include:
   - schemas/constructs
+
+exclude:
+  - node_modules
+  - package.json
+  - package-lock.json
+  - go.mod
+  - go.sum
+  - Makefile
+  - tsconfig.json
+  - tsup.config.ts
+  - build
+  - models
+  - typescript
+  - test.json
+  - specs
+  - artifacthub
+  - permissions_history
