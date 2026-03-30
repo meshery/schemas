@@ -1835,7 +1835,8 @@ function collectSchemaFingerprints(filePath, doc) {
  * e.g. "schemas/constructs/v1beta1/academy/api.yml" → "academy"
  */
 function extractConstructName(filePath) {
-  const match = filePath.match(/schemas\/constructs\/[^/]+\/([^/]+)\//);
+  const normalized = filePath.split(path.sep).join("/");
+  const match = normalized.match(/schemas\/constructs\/[^/]+\/([^/]+)\//);
   return match ? match[1] : filePath;
 }
 
@@ -1978,16 +1979,9 @@ function walk(dir) {
       // Skip deprecated constructs in strict mode. They are superseded
       // by a newer API version and kept only for backward compatibility.
       if (strictConsistency) {
-        const apiCheck = path.join(constructDir, "api.yml");
-        if (fs.existsSync(apiCheck)) {
-          try {
-            const checkDoc = yaml.load(fs.readFileSync(apiCheck, "utf-8"));
-            if (checkDoc?.info?.["x-deprecated"] === true) {
-              continue;
-            }
-          } catch (e) {
-            // parse error — proceed with validation to surface it
-          }
+        const checkDoc = loadYamlDoc(path.join(constructDir, "api.yml"));
+        if (checkDoc?.info?.["x-deprecated"] === true) {
+          continue;
         }
       }
 
