@@ -161,6 +161,7 @@ components:
         uploadType:
           type: string
           title: "Upload method"
+          x-enum-casing-exempt: true
           enum: ["file", "urlImport", "csv", "url"]
           enumDescriptions:
             [

@@ -149,6 +149,7 @@ components:
     PlanName:
       type: string
       description: "Name of the plan"
+      x-enum-casing-exempt: true
       enum:
         - "Free"
         - "Team Designer"

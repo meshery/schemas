@@ -97,6 +97,7 @@ components:
     FeatureName:
       type: string
 
+      x-enum-casing-exempt: true
       enum:
         - ComponentsInDesign
         - RelationshipsInDesign

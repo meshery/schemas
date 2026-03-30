@@ -53,3 +53,48 @@ test("does not flag lowercase enum additions", () => {
 
   assert.deepEqual(findings, []);
 });
+
+test("x-enum-casing-exempt skips all values regardless of baseline", () => {
+  const doc = {
+    components: {
+      schemas: {
+        PlanName: {
+          type: "string",
+          "x-enum-casing-exempt": true,
+          enum: ["Free", "Team Designer", "Enterprise"],
+        },
+      },
+    },
+  };
+
+  // null baseline — no master copy exists (new file)
+  const findings = findNewNonLowercaseEnumValues(doc, null);
+  assert.deepEqual(findings, []);
+});
+
+test("x-enum-casing-exempt only affects the annotated schema", () => {
+  const doc = {
+    components: {
+      schemas: {
+        Exempt: {
+          type: "string",
+          "x-enum-casing-exempt": true,
+          enum: ["MixedCase"],
+        },
+        NotExempt: {
+          type: "object",
+          properties: {
+            status: {
+              type: "string",
+              enum: ["AlsoMixed"],
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const findings = findNewNonLowercaseEnumValues(doc, null);
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].value, "AlsoMixed");
+});
