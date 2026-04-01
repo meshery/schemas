@@ -1,0 +1,510 @@
+openapi: 3.0.0
+info:
+  title: role
+  description: Documentation for Meshery Cloud REST APIs for Roles
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1beta1
+servers:
+  - url: https://cloud.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL
+
+security:
+  - jwt: []
+
+tags:
+  - name: roles
+    description: Operations related to roles and role assignments
+
+paths:
+  /api/identity/roles:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Add role holder
+      operationId: addRoleHolder
+      description: Assigns a role to a user identified by email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleHolderRequest"
+      responses:
+        "201":
+          description: Role holder added
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/roles/{id}:
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Delete role
+      operationId: deleteRole
+      description: Removes a role assignment by ID.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "204":
+          description: Role deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/roles:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Get organization roles
+      operationId: getAllRoles
+      description: Returns all roles defined for the specified organization.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/all"
+        - $ref: "#/components/parameters/selector"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Roles response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolesPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Upsert organization role
+      operationId: upsertRole
+      description: Creates or updates a role for the specified organization.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: Role upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Role"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Bulk edit role holders
+      operationId: bulkEditRoleHolder
+      description: Updates role assignments for multiple users in the organization.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/UserRoleUpdateRequest"
+      responses:
+        "200":
+          description: Role holders updated
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/roles/{roleId}/keychains:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Get keychains for role
+      operationId: getRoleKeychains
+      description: Returns all keychains assigned to the specified role.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/roleId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Keychains response
+          content:
+            application/json:
+              schema:
+                x-go-type: "keychainv1beta1.KeychainPage"
+                x-go-type-import:
+                  path: "github.com/meshery/schemas/models/v1beta1/keychain"
+                  name: keychainv1beta1
+                $ref: "../keychain/api.yml#/components/schemas/KeychainPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/roles/{roleId}/keychains/{keychainId}:
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Assign keychain to role
+      operationId: assignKeychainToRole
+      description: Associates a keychain with the specified role.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/roleId"
+        - $ref: "#/components/parameters/keychainId"
+      responses:
+        "200":
+          description: Keychain assigned to role
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - roles
+      summary: Unassign keychain from role
+      operationId: unassignKeychainFromRole
+      description: Removes the association between a keychain and a role.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/roleId"
+        - $ref: "#/components/parameters/keychainId"
+      responses:
+        "204":
+          description: Keychain unassigned from role
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  parameters:
+    id:
+      name: id
+      in: path
+      description: Role ID
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    orgId:
+      name: orgId
+      in: path
+      description: Organization ID
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    roleId:
+      name: roleId
+      in: path
+      description: Role ID
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    keychainId:
+      name: keychainId
+      in: path
+      description: Keychain ID
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    page:
+      $ref: "../core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../core/api.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../core/api.yml#/components/parameters/order"
+    all:
+      $ref: "../core/api.yml#/components/parameters/all"
+    selector:
+      name: selector
+      in: query
+      description: Role grouping selector such as provider, organization, or team.
+      schema:
+        type: string
+    teamId:
+      name: teamId
+      in: query
+      description: Team ID used when selector is team.
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+
+  schemas:
+    Role:
+      type: object
+      description: Role definition for Layer5 Cloud (Meshery).
+      required:
+        - role_name
+        - description
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Unique identifier for the role.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        role_name:
+          type: string
+          description: Unique name of the role.
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            db: "role_name"
+          maxLength: 500
+        description:
+          type: string
+          description: Human-readable description of the role.
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            db: "description"
+          maxLength: 5000
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+          x-order: 4
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+          x-order: 5
+        deleted_at:
+          $ref: "../core/api.yml#/components/schemas/nullTime"
+          description: Timestamp when the role was soft-deleted.
+          x-order: 6
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+
+    RolesPage:
+      type: object
+      description: A paginated list of roles.
+      required:
+        - page
+        - page_size
+        - total_count
+        - roles
+      properties:
+        page:
+          type: integer
+          description: Current page number (zero-based).
+          x-order: 1
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of roles per page.
+          x-order: 2
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of roles across all pages.
+          x-order: 3
+          minimum: 0
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/Role"
+            x-go-type: Role
+          x-order: 4
+          description: The roles of the rolespage.
+
+    RolesKeychainsMapping:
+      type: object
+      description: Mapping between a role and a keychain.
+      required:
+        - id
+        - keychain_id
+        - role_id
+        - created_at
+        - updated_at
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        keychain_id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: UUID of the associated keychain.
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            db: "keychain_id"
+        role_id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: UUID of the associated role.
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            db: "role_id"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+          x-order: 4
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+          x-order: 5
+        deleted_at:
+          $ref: "../core/api.yml#/components/schemas/nullTime"
+          x-order: 6
+          x-oapi-codegen-extra-tags:
+            db: "deleted_at"
+
+    RoleHolderRequest:
+      type: object
+      description: Request body for assigning a role to a user.
+      required:
+        - email
+        - roleNames
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email of the user to assign roles to.
+          x-order: 1
+        roleNames:
+          type: array
+          items:
+            type: string
+          description: List of role names to assign.
+          x-order: 2
+
+    UserRoleUpdateRequest:
+      type: object
+      description: Request to update role assignments for a user.
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          x-order: 1
+        user_id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          x-order: 2
+        username:
+          type: string
+          x-order: 3
+          description: The username of the userroleupdaterequest.
+          maxLength: 500
+        email:
+          type: string
+          format: email
+          x-order: 4
+          description: Email address.
+        firstName:
+          type: string
+          x-order: 5
+          description: The first name of the userroleupdaterequest.
+          maxLength: 500
+        lastName:
+          type: string
+          x-order: 6
+          description: The last name of the userroleupdaterequest.
+          maxLength: 500
+        status:
+          type: string
+          x-order: 7
+          description: Current status of the resource.
+          maxLength: 255
+        roleNames:
+          type: array
+          items:
+            type: string
+          x-order: 8
+          description: The role names of the userroleupdaterequest.
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          x-order: 9
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/Time"
+          x-order: 10
+        deleted_at:
+          $ref: "../core/api.yml#/components/schemas/nullTime"
+          x-order: 11
+
+    Preference:
+      type: object
+      description: User notification preferences.
+      required:
+        - welcomeEmail
+        - notifyRoleChange
+      properties:
+        welcomeEmail:
+          type: boolean
+          description: Whether to send a welcome email to new users.
+          x-order: 1
+        notifyRoleChange:
+          type: boolean
+          description: Whether to notify the user of role changes.
+          x-order: 2

@@ -1,12 +1,22 @@
-name: "Pull Request Labeler"
+name: Pull Request Labeler
+
 on:
-- pull_request_target
+  pull_request_target:
+    types: [opened, synchronize, reopened]   # optional but recommended
+
+permissions:
+  contents: read          # needed to read changed files
+  pull-requests: write    # needed to add/remove labels
 
 jobs:
   triage:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest   # ubuntu-24.04 is fine too, but latest is usually better
+
     steps:
-    - uses: actions/labeler@v4
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        
+      - name: Label PR based on changed paths
+        uses: actions/labeler@v6
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: if you put config somewhere else
+          # configuration-path: .github/my-labels.yml
+          # sync-labels: true     # remove labels that no longer match (careful!)

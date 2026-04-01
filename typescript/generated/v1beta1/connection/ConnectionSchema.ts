@@ -3,23 +3,36 @@
  * Do not manually modify this file.
  */
 
-const ConnectionSchema = {
+const ConnectionSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Connection API",
+    "description": "API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
     "version": "v1beta1",
-    "description": "API for managing Meshery connections - managed and unmanaged resources tracked by Meshery"
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
+  "security": [
+    {
+      "jwt": []
+    }
+  ],
   "paths": {
     "/api/integrations/connections": {
       "get": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "GetConnections",
+        "operationId": "getConnections",
         "summary": "Get all connections",
         "description": "Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support",
         "parameters": [
@@ -149,8 +162,8 @@ const ConnectionSchema = {
                     "connections": {
                       "type": "array",
                       "description": "List of connections on this page",
+                      "x-go-type": "[]*Connection",
                       "items": {
-                        "x-go-type": "*Connection",
                         "$id": "https://schemas.meshery.io/connection.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
                         "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -305,11 +318,13 @@ const ConnectionSchema = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
+                            "x-order": 12,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "meshcore.NullTime",
                             "x-go-type-import": {
+                              "name": "meshcore",
                               "path": "github.com/meshery/schemas/models/core"
                             },
-                            "x-order": 12,
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -318,17 +333,32 @@ const ConnectionSchema = {
                             "type": "array",
                             "description": "Associated environments for this connection",
                             "items": {
-                              "x-go-type": "*environment.Environment",
+                              "x-go-type": "*environmentv1beta1.Environment",
                               "x-go-type-import": {
-                                "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                                "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                                "name": "environmentv1beta1"
                               },
                               "$id": "https://schemas.meshery.io/environment.yaml",
                               "$schema": "http://json-schema.org/draft-07/schema#",
-                              "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                              "title": "Environment",
+                              "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
                               "additionalProperties": false,
                               "type": "object",
+                              "example": {
+                                "id": "00000000-0000-0000-0000-000000000000",
+                                "schemaVersion": "environments.meshery.io/v1beta1",
+                                "name": "Production Environment",
+                                "description": "Connections and credentials for the production cluster.",
+                                "organization_id": "00000000-0000-0000-0000-000000000000",
+                                "owner": "00000000-0000-0000-0000-000000000000",
+                                "created_at": "0001-01-01T00:00:00Z",
+                                "metadata": {},
+                                "updated_at": "0001-01-01T00:00:00Z",
+                                "deleted_at": null
+                              },
                               "required": [
                                 "id",
+                                "schemaVersion",
                                 "name",
                                 "description",
                                 "organization_id"
@@ -349,13 +379,36 @@ const ConnectionSchema = {
                                     "path": "github.com/gofrs/uuid"
                                   }
                                 },
+                                "schemaVersion": {
+                                  "description": "Specifies the version of the schema to which the environment conforms.",
+                                  "x-order": 2,
+                                  "x-oapi-codegen-extra-tags": {
+                                    "yaml": "schemaVersion",
+                                    "db": "-",
+                                    "gorm": "-"
+                                  },
+                                  "default": "environments.meshery.io/v1beta1",
+                                  "type": "string",
+                                  "minLength": 2,
+                                  "maxLength": 100,
+                                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                                  "example": [
+                                    "v1",
+                                    "v1alpha1",
+                                    "v2beta3",
+                                    "v1.custom-suffix",
+                                    "models.meshery.io/v1beta1",
+                                    "capability.meshery.io/v1alpha1"
+                                  ]
+                                },
                                 "name": {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "name",
                                     "yaml": "name"
                                   },
-                                  "x-order": 2,
+                                  "x-order": 3,
                                   "type": "string",
+                                  "maxLength": 100,
                                   "description": "Environment name"
                                 },
                                 "description": {
@@ -363,8 +416,9 @@ const ConnectionSchema = {
                                     "db": "description",
                                     "yaml": "description"
                                   },
-                                  "x-order": 3,
+                                  "x-order": 4,
                                   "type": "string",
+                                  "maxLength": 1000,
                                   "description": "Environment description"
                                 },
                                 "organization_id": {
@@ -373,7 +427,7 @@ const ConnectionSchema = {
                                     "db": "organization_id",
                                     "yaml": "organization_id"
                                   },
-                                  "x-order": 4,
+                                  "x-order": 5,
                                   "description": "Environment organization ID",
                                   "type": "string",
                                   "format": "uuid",
@@ -387,7 +441,7 @@ const ConnectionSchema = {
                                     "db": "owner",
                                     "yaml": "owner"
                                   },
-                                  "x-order": 5,
+                                  "x-order": 6,
                                   "description": "Environment owner",
                                   "type": "string",
                                   "format": "uuid",
@@ -397,43 +451,56 @@ const ConnectionSchema = {
                                   }
                                 },
                                 "created_at": {
+                                  "x-order": 7,
+                                  "description": "Timestamp when the resource was created.",
+                                  "x-go-type": "time.Time",
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "x-go-name": "CreatedAt",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "created_at",
                                     "yaml": "created_at"
                                   },
-                                  "x-order": 6,
-                                  "type": "string",
-                                  "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "metadata": {
+                                  "description": "Additional metadata associated with the environment.",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "metadata",
                                     "yaml": "metadata"
                                   },
-                                  "x-order": 7,
+                                  "x-order": 8,
                                   "x-go-type": "core.Map",
                                   "x-go-type-skip-optional-pointer": true,
                                   "type": "object"
                                 },
                                 "updated_at": {
+                                  "x-order": 9,
+                                  "description": "Timestamp when the resource was updated.",
+                                  "x-go-type": "time.Time",
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "x-go-name": "UpdatedAt",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "updated_at",
                                     "yaml": "updated_at"
                                   },
-                                  "x-order": 8,
-                                  "type": "string",
-                                  "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
                                 },
                                 "deleted_at": {
+                                  "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                                  "nullable": true,
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "deleted_at",
                                     "yaml": "deleted_at"
                                   },
                                   "x-go-type": "core.NullTime",
                                   "x-go-import": "database/sql",
-                                  "x-order": 9,
+                                  "x-order": 10,
+                                  "x-go-type-import": {
+                                    "name": "meshcore",
+                                    "path": "github.com/meshery/schemas/models/core"
+                                  },
                                   "type": "string",
                                   "format": "date-time",
                                   "x-go-type-skip-optional-pointer": true
@@ -460,12 +527,14 @@ const ConnectionSchema = {
                             "type": "string",
                             "minLength": 2,
                             "maxLength": 100,
-                            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
                             "example": [
                               "v1",
                               "v1alpha1",
                               "v2beta3",
-                              "v1.custom-suffix"
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
                             ]
                           }
                         }
@@ -517,19 +586,33 @@ const ConnectionSchema = {
               }
             }
           },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
       "post": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "RegisterConnection",
+        "operationId": "registerConnection",
         "summary": "Register a new connection",
         "description": "Register a new connection with credentials",
         "requestBody": {
@@ -572,12 +655,9 @@ const ConnectionSchema = {
                   },
                   "sub_type": {
                     "type": "string",
-                    "description": "Connection sub-type",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "sub_type"
-                    }
+                    "description": "Connection sub-type"
                   },
-                  "credential_secret": {
+                  "credentialSecret": {
                     "type": "object",
                     "description": "Credential secret data",
                     "x-go-type": "core.Map",
@@ -586,7 +666,7 @@ const ConnectionSchema = {
                     },
                     "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
-                      "json": "credential_secret"
+                      "json": "credentialSecret"
                     }
                   },
                   "metadata": {
@@ -631,7 +711,7 @@ const ConnectionSchema = {
         },
         "responses": {
           "201": {
-            "description": "Connection registered successfully",
+            "description": "Connection registered",
             "content": {
               "application/json": {
                 "schema": {
@@ -789,11 +869,13 @@ const ConnectionSchema = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
+                      "x-order": 12,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
+                        "name": "meshcore",
                         "path": "github.com/meshery/schemas/models/core"
                       },
-                      "x-order": 12,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -802,17 +884,32 @@ const ConnectionSchema = {
                       "type": "array",
                       "description": "Associated environments for this connection",
                       "items": {
-                        "x-go-type": "*environment.Environment",
+                        "x-go-type": "*environmentv1beta1.Environment",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                          "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                          "name": "environmentv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/environment.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
-                        "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                        "title": "Environment",
+                        "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
                         "additionalProperties": false,
                         "type": "object",
+                        "example": {
+                          "id": "00000000-0000-0000-0000-000000000000",
+                          "schemaVersion": "environments.meshery.io/v1beta1",
+                          "name": "Production Environment",
+                          "description": "Connections and credentials for the production cluster.",
+                          "organization_id": "00000000-0000-0000-0000-000000000000",
+                          "owner": "00000000-0000-0000-0000-000000000000",
+                          "created_at": "0001-01-01T00:00:00Z",
+                          "metadata": {},
+                          "updated_at": "0001-01-01T00:00:00Z",
+                          "deleted_at": null
+                        },
                         "required": [
                           "id",
+                          "schemaVersion",
                           "name",
                           "description",
                           "organization_id"
@@ -833,13 +930,36 @@ const ConnectionSchema = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
+                          "schemaVersion": {
+                            "description": "Specifies the version of the schema to which the environment conforms.",
+                            "x-order": 2,
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "schemaVersion",
+                              "db": "-",
+                              "gorm": "-"
+                            },
+                            "default": "environments.meshery.io/v1beta1",
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "example": [
+                              "v1",
+                              "v1alpha1",
+                              "v2beta3",
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
+                            ]
+                          },
                           "name": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "name",
                               "yaml": "name"
                             },
-                            "x-order": 2,
+                            "x-order": 3,
                             "type": "string",
+                            "maxLength": 100,
                             "description": "Environment name"
                           },
                           "description": {
@@ -847,8 +967,9 @@ const ConnectionSchema = {
                               "db": "description",
                               "yaml": "description"
                             },
-                            "x-order": 3,
+                            "x-order": 4,
                             "type": "string",
+                            "maxLength": 1000,
                             "description": "Environment description"
                           },
                           "organization_id": {
@@ -857,7 +978,7 @@ const ConnectionSchema = {
                               "db": "organization_id",
                               "yaml": "organization_id"
                             },
-                            "x-order": 4,
+                            "x-order": 5,
                             "description": "Environment organization ID",
                             "type": "string",
                             "format": "uuid",
@@ -871,7 +992,7 @@ const ConnectionSchema = {
                               "db": "owner",
                               "yaml": "owner"
                             },
-                            "x-order": 5,
+                            "x-order": 6,
                             "description": "Environment owner",
                             "type": "string",
                             "format": "uuid",
@@ -881,43 +1002,56 @@ const ConnectionSchema = {
                             }
                           },
                           "created_at": {
+                            "x-order": 7,
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
                               "yaml": "created_at"
                             },
-                            "x-order": 6,
-                            "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "metadata": {
+                            "description": "Additional metadata associated with the environment.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "metadata",
                               "yaml": "metadata"
                             },
-                            "x-order": 7,
+                            "x-order": 8,
                             "x-go-type": "core.Map",
                             "x-go-type-skip-optional-pointer": true,
                             "type": "object"
                           },
                           "updated_at": {
+                            "x-order": 9,
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
                               "yaml": "updated_at"
                             },
-                            "x-order": 8,
-                            "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
+                            "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                            "nullable": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
                             "x-go-type": "core.NullTime",
                             "x-go-import": "database/sql",
-                            "x-order": 9,
+                            "x-order": 10,
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -944,12 +1078,14 @@ const ConnectionSchema = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
                         "v2beta3",
-                        "v1.custom-suffix"
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
                       ]
                     }
                   }
@@ -958,23 +1094,44 @@ const ConnectionSchema = {
             }
           },
           "400": {
-            "description": "Invalid request parameters"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/integrations/connections/{connectionId}": {
       "get": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "GetConnectionById",
+        "operationId": "getConnectionById",
         "summary": "Get connection by ID",
         "description": "Returns a specific connection by its ID",
         "parameters": [
@@ -1149,11 +1306,13 @@ const ConnectionSchema = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
+                      "x-order": 12,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
+                        "name": "meshcore",
                         "path": "github.com/meshery/schemas/models/core"
                       },
-                      "x-order": 12,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1162,17 +1321,32 @@ const ConnectionSchema = {
                       "type": "array",
                       "description": "Associated environments for this connection",
                       "items": {
-                        "x-go-type": "*environment.Environment",
+                        "x-go-type": "*environmentv1beta1.Environment",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                          "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                          "name": "environmentv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/environment.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
-                        "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                        "title": "Environment",
+                        "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
                         "additionalProperties": false,
                         "type": "object",
+                        "example": {
+                          "id": "00000000-0000-0000-0000-000000000000",
+                          "schemaVersion": "environments.meshery.io/v1beta1",
+                          "name": "Production Environment",
+                          "description": "Connections and credentials for the production cluster.",
+                          "organization_id": "00000000-0000-0000-0000-000000000000",
+                          "owner": "00000000-0000-0000-0000-000000000000",
+                          "created_at": "0001-01-01T00:00:00Z",
+                          "metadata": {},
+                          "updated_at": "0001-01-01T00:00:00Z",
+                          "deleted_at": null
+                        },
                         "required": [
                           "id",
+                          "schemaVersion",
                           "name",
                           "description",
                           "organization_id"
@@ -1193,13 +1367,36 @@ const ConnectionSchema = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
+                          "schemaVersion": {
+                            "description": "Specifies the version of the schema to which the environment conforms.",
+                            "x-order": 2,
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "schemaVersion",
+                              "db": "-",
+                              "gorm": "-"
+                            },
+                            "default": "environments.meshery.io/v1beta1",
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "example": [
+                              "v1",
+                              "v1alpha1",
+                              "v2beta3",
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
+                            ]
+                          },
                           "name": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "name",
                               "yaml": "name"
                             },
-                            "x-order": 2,
+                            "x-order": 3,
                             "type": "string",
+                            "maxLength": 100,
                             "description": "Environment name"
                           },
                           "description": {
@@ -1207,8 +1404,9 @@ const ConnectionSchema = {
                               "db": "description",
                               "yaml": "description"
                             },
-                            "x-order": 3,
+                            "x-order": 4,
                             "type": "string",
+                            "maxLength": 1000,
                             "description": "Environment description"
                           },
                           "organization_id": {
@@ -1217,7 +1415,7 @@ const ConnectionSchema = {
                               "db": "organization_id",
                               "yaml": "organization_id"
                             },
-                            "x-order": 4,
+                            "x-order": 5,
                             "description": "Environment organization ID",
                             "type": "string",
                             "format": "uuid",
@@ -1231,7 +1429,7 @@ const ConnectionSchema = {
                               "db": "owner",
                               "yaml": "owner"
                             },
-                            "x-order": 5,
+                            "x-order": 6,
                             "description": "Environment owner",
                             "type": "string",
                             "format": "uuid",
@@ -1241,43 +1439,56 @@ const ConnectionSchema = {
                             }
                           },
                           "created_at": {
+                            "x-order": 7,
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
                               "yaml": "created_at"
                             },
-                            "x-order": 6,
-                            "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "metadata": {
+                            "description": "Additional metadata associated with the environment.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "metadata",
                               "yaml": "metadata"
                             },
-                            "x-order": 7,
+                            "x-order": 8,
                             "x-go-type": "core.Map",
                             "x-go-type-skip-optional-pointer": true,
                             "type": "object"
                           },
                           "updated_at": {
+                            "x-order": 9,
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
                               "yaml": "updated_at"
                             },
-                            "x-order": 8,
-                            "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
+                            "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                            "nullable": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
                             "x-go-type": "core.NullTime",
                             "x-go-import": "database/sql",
-                            "x-order": 9,
+                            "x-order": 10,
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -1304,12 +1515,14 @@ const ConnectionSchema = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
                         "v2beta3",
-                        "v1.custom-suffix"
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
                       ]
                     }
                   }
@@ -1317,22 +1530,43 @@ const ConnectionSchema = {
               }
             }
           },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Connection not found"
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
       "put": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "UpdateConnection",
+        "operationId": "updateConnection",
         "summary": "Update a connection",
         "description": "Update an existing connection",
         "parameters": [
@@ -1387,12 +1621,9 @@ const ConnectionSchema = {
                   },
                   "sub_type": {
                     "type": "string",
-                    "description": "Connection sub-type",
-                    "x-oapi-codegen-extra-tags": {
-                      "json": "sub_type"
-                    }
+                    "description": "Connection sub-type"
                   },
-                  "credential_secret": {
+                  "credentialSecret": {
                     "type": "object",
                     "description": "Credential secret data",
                     "x-go-type": "core.Map",
@@ -1401,7 +1632,7 @@ const ConnectionSchema = {
                     },
                     "x-go-type-skip-optional-pointer": true,
                     "x-oapi-codegen-extra-tags": {
-                      "json": "credential_secret"
+                      "json": "credentialSecret"
                     }
                   },
                   "metadata": {
@@ -1446,7 +1677,7 @@ const ConnectionSchema = {
         },
         "responses": {
           "200": {
-            "description": "Connection updated successfully",
+            "description": "Connection updated",
             "content": {
               "application/json": {
                 "schema": {
@@ -1604,11 +1835,13 @@ const ConnectionSchema = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
+                      "x-order": 12,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "meshcore.NullTime",
                       "x-go-type-import": {
+                        "name": "meshcore",
                         "path": "github.com/meshery/schemas/models/core"
                       },
-                      "x-order": 12,
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1617,17 +1850,32 @@ const ConnectionSchema = {
                       "type": "array",
                       "description": "Associated environments for this connection",
                       "items": {
-                        "x-go-type": "*environment.Environment",
+                        "x-go-type": "*environmentv1beta1.Environment",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                          "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                          "name": "environmentv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/environment.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
-                        "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                        "title": "Environment",
+                        "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
                         "additionalProperties": false,
                         "type": "object",
+                        "example": {
+                          "id": "00000000-0000-0000-0000-000000000000",
+                          "schemaVersion": "environments.meshery.io/v1beta1",
+                          "name": "Production Environment",
+                          "description": "Connections and credentials for the production cluster.",
+                          "organization_id": "00000000-0000-0000-0000-000000000000",
+                          "owner": "00000000-0000-0000-0000-000000000000",
+                          "created_at": "0001-01-01T00:00:00Z",
+                          "metadata": {},
+                          "updated_at": "0001-01-01T00:00:00Z",
+                          "deleted_at": null
+                        },
                         "required": [
                           "id",
+                          "schemaVersion",
                           "name",
                           "description",
                           "organization_id"
@@ -1648,13 +1896,36 @@ const ConnectionSchema = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
+                          "schemaVersion": {
+                            "description": "Specifies the version of the schema to which the environment conforms.",
+                            "x-order": 2,
+                            "x-oapi-codegen-extra-tags": {
+                              "yaml": "schemaVersion",
+                              "db": "-",
+                              "gorm": "-"
+                            },
+                            "default": "environments.meshery.io/v1beta1",
+                            "type": "string",
+                            "minLength": 2,
+                            "maxLength": 100,
+                            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                            "example": [
+                              "v1",
+                              "v1alpha1",
+                              "v2beta3",
+                              "v1.custom-suffix",
+                              "models.meshery.io/v1beta1",
+                              "capability.meshery.io/v1alpha1"
+                            ]
+                          },
                           "name": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "name",
                               "yaml": "name"
                             },
-                            "x-order": 2,
+                            "x-order": 3,
                             "type": "string",
+                            "maxLength": 100,
                             "description": "Environment name"
                           },
                           "description": {
@@ -1662,8 +1933,9 @@ const ConnectionSchema = {
                               "db": "description",
                               "yaml": "description"
                             },
-                            "x-order": 3,
+                            "x-order": 4,
                             "type": "string",
+                            "maxLength": 1000,
                             "description": "Environment description"
                           },
                           "organization_id": {
@@ -1672,7 +1944,7 @@ const ConnectionSchema = {
                               "db": "organization_id",
                               "yaml": "organization_id"
                             },
-                            "x-order": 4,
+                            "x-order": 5,
                             "description": "Environment organization ID",
                             "type": "string",
                             "format": "uuid",
@@ -1686,7 +1958,7 @@ const ConnectionSchema = {
                               "db": "owner",
                               "yaml": "owner"
                             },
-                            "x-order": 5,
+                            "x-order": 6,
                             "description": "Environment owner",
                             "type": "string",
                             "format": "uuid",
@@ -1696,43 +1968,56 @@ const ConnectionSchema = {
                             }
                           },
                           "created_at": {
+                            "x-order": 7,
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
                             "x-oapi-codegen-extra-tags": {
                               "db": "created_at",
                               "yaml": "created_at"
                             },
-                            "x-order": 6,
-                            "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "metadata": {
+                            "description": "Additional metadata associated with the environment.",
                             "x-oapi-codegen-extra-tags": {
                               "db": "metadata",
                               "yaml": "metadata"
                             },
-                            "x-order": 7,
+                            "x-order": 8,
                             "x-go-type": "core.Map",
                             "x-go-type-skip-optional-pointer": true,
                             "type": "object"
                           },
                           "updated_at": {
+                            "x-order": 9,
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
                             "x-oapi-codegen-extra-tags": {
                               "db": "updated_at",
                               "yaml": "updated_at"
                             },
-                            "x-order": 8,
-                            "type": "string",
-                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
+                            "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                            "nullable": true,
                             "x-oapi-codegen-extra-tags": {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
                             "x-go-type": "core.NullTime",
                             "x-go-import": "database/sql",
-                            "x-order": 9,
+                            "x-order": 10,
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
@@ -1759,12 +2044,14 @@ const ConnectionSchema = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
                         "v2beta3",
-                        "v1.custom-suffix"
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
                       ]
                     }
                   }
@@ -1772,22 +2059,53 @@ const ConnectionSchema = {
               }
             }
           },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Connection not found"
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "DeleteConnection",
+        "operationId": "deleteConnection",
         "summary": "Delete a connection",
         "description": "Delete a specific connection",
         "parameters": [
@@ -1804,26 +2122,47 @@ const ConnectionSchema = {
         ],
         "responses": {
           "204": {
-            "description": "Connection deleted successfully"
+            "description": "Connection deleted"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Connection not found"
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/integrations/connections/meshery/{mesheryServerId}": {
       "delete": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "DeleteMesheryConnection",
+        "operationId": "deleteMesheryConnection",
         "summary": "Delete Meshery instance connection",
         "description": "Delete a Meshery server connection by server ID",
         "parameters": [
@@ -1840,26 +2179,47 @@ const ConnectionSchema = {
         ],
         "responses": {
           "204": {
-            "description": "Meshery connection deleted successfully"
+            "description": "Meshery connection deleted"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Connection not found"
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/integrations/connections/kubernetes/{connectionId}/context": {
       "get": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "GetKubernetesContext",
+        "operationId": "getKubernetesContext",
         "summary": "Get Kubernetes context",
         "description": "Get Kubernetes context for a specific connection",
         "parameters": [
@@ -1885,24 +2245,45 @@ const ConnectionSchema = {
               }
             }
           },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Connection not found"
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/environments/{environmentId}/connections/{connectionId}": {
       "post": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "AddConnectionToEnvironment",
+        "operationId": "addConnectionToEnvironment",
         "summary": "Add connection to environment",
         "description": "Associate a connection with an environment",
         "parameters": [
@@ -1928,25 +2309,56 @@ const ConnectionSchema = {
           }
         ],
         "responses": {
-          "200": {
-            "description": "Connection added to environment successfully"
+          "201": {
+            "description": "Connection added to environment"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Connection or environment not found"
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
-        "x-internal": [
-          "cloud"
-        ],
         "tags": [
           "Connections"
         ],
-        "operationId": "RemoveConnectionFromEnvironment",
+        "operationId": "removeConnectionFromEnvironment",
         "summary": "Remove connection from environment",
         "description": "Disassociate a connection from an environment",
         "parameters": [
@@ -1973,19 +2385,92 @@ const ConnectionSchema = {
         ],
         "responses": {
           "204": {
-            "description": "Connection removed from environment successfully"
+            "description": "Connection removed from environment"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Connection or environment not found"
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     }
   },
   "components": {
+    "responses": {
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "parameters": {
       "connectionId": {
         "name": "connectionId",
@@ -2211,11 +2696,13 @@ const ConnectionSchema = {
               "db": "deleted_at",
               "yaml": "deleted_at"
             },
-            "x-go-type": "core.NullTime",
+            "x-order": 12,
+            "description": "SQL null Timestamp to handle null values of time.",
+            "x-go-type": "meshcore.NullTime",
             "x-go-type-import": {
+              "name": "meshcore",
               "path": "github.com/meshery/schemas/models/core"
             },
-            "x-order": 12,
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
@@ -2224,17 +2711,32 @@ const ConnectionSchema = {
             "type": "array",
             "description": "Associated environments for this connection",
             "items": {
-              "x-go-type": "*environment.Environment",
+              "x-go-type": "*environmentv1beta1.Environment",
               "x-go-type-import": {
-                "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                "name": "environmentv1beta1"
               },
               "$id": "https://schemas.meshery.io/environment.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
-              "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+              "title": "Environment",
+              "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
               "additionalProperties": false,
               "type": "object",
+              "example": {
+                "id": "00000000-0000-0000-0000-000000000000",
+                "schemaVersion": "environments.meshery.io/v1beta1",
+                "name": "Production Environment",
+                "description": "Connections and credentials for the production cluster.",
+                "organization_id": "00000000-0000-0000-0000-000000000000",
+                "owner": "00000000-0000-0000-0000-000000000000",
+                "created_at": "0001-01-01T00:00:00Z",
+                "metadata": {},
+                "updated_at": "0001-01-01T00:00:00Z",
+                "deleted_at": null
+              },
               "required": [
                 "id",
+                "schemaVersion",
                 "name",
                 "description",
                 "organization_id"
@@ -2255,13 +2757,36 @@ const ConnectionSchema = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
+                "schemaVersion": {
+                  "description": "Specifies the version of the schema to which the environment conforms.",
+                  "x-order": 2,
+                  "x-oapi-codegen-extra-tags": {
+                    "yaml": "schemaVersion",
+                    "db": "-",
+                    "gorm": "-"
+                  },
+                  "default": "environments.meshery.io/v1beta1",
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100,
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                  "example": [
+                    "v1",
+                    "v1alpha1",
+                    "v2beta3",
+                    "v1.custom-suffix",
+                    "models.meshery.io/v1beta1",
+                    "capability.meshery.io/v1alpha1"
+                  ]
+                },
                 "name": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "name",
                     "yaml": "name"
                   },
-                  "x-order": 2,
+                  "x-order": 3,
                   "type": "string",
+                  "maxLength": 100,
                   "description": "Environment name"
                 },
                 "description": {
@@ -2269,8 +2794,9 @@ const ConnectionSchema = {
                     "db": "description",
                     "yaml": "description"
                   },
-                  "x-order": 3,
+                  "x-order": 4,
                   "type": "string",
+                  "maxLength": 1000,
                   "description": "Environment description"
                 },
                 "organization_id": {
@@ -2279,7 +2805,7 @@ const ConnectionSchema = {
                     "db": "organization_id",
                     "yaml": "organization_id"
                   },
-                  "x-order": 4,
+                  "x-order": 5,
                   "description": "Environment organization ID",
                   "type": "string",
                   "format": "uuid",
@@ -2293,7 +2819,7 @@ const ConnectionSchema = {
                     "db": "owner",
                     "yaml": "owner"
                   },
-                  "x-order": 5,
+                  "x-order": 6,
                   "description": "Environment owner",
                   "type": "string",
                   "format": "uuid",
@@ -2303,43 +2829,56 @@ const ConnectionSchema = {
                   }
                 },
                 "created_at": {
+                  "x-order": 7,
+                  "description": "Timestamp when the resource was created.",
+                  "x-go-type": "time.Time",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-name": "CreatedAt",
                   "x-oapi-codegen-extra-tags": {
                     "db": "created_at",
                     "yaml": "created_at"
                   },
-                  "x-order": 6,
-                  "type": "string",
-                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "metadata": {
+                  "description": "Additional metadata associated with the environment.",
                   "x-oapi-codegen-extra-tags": {
                     "db": "metadata",
                     "yaml": "metadata"
                   },
-                  "x-order": 7,
+                  "x-order": 8,
                   "x-go-type": "core.Map",
                   "x-go-type-skip-optional-pointer": true,
                   "type": "object"
                 },
                 "updated_at": {
+                  "x-order": 9,
+                  "description": "Timestamp when the resource was updated.",
+                  "x-go-type": "time.Time",
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-name": "UpdatedAt",
                   "x-oapi-codegen-extra-tags": {
                     "db": "updated_at",
                     "yaml": "updated_at"
                   },
-                  "x-order": 8,
-                  "type": "string",
-                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
+                  "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                  "nullable": true,
                   "x-oapi-codegen-extra-tags": {
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
                   "x-go-type": "core.NullTime",
                   "x-go-import": "database/sql",
-                  "x-order": 9,
+                  "x-order": 10,
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -2366,12 +2905,14 @@ const ConnectionSchema = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
               "v2beta3",
-              "v1.custom-suffix"
+              "v1.custom-suffix",
+              "models.meshery.io/v1beta1",
+              "capability.meshery.io/v1alpha1"
             ]
           }
         }
@@ -2392,8 +2933,8 @@ const ConnectionSchema = {
           "connections": {
             "type": "array",
             "description": "List of connections on this page",
+            "x-go-type": "[]*Connection",
             "items": {
-              "x-go-type": "*Connection",
               "$id": "https://schemas.meshery.io/connection.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
               "description": "Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections",
@@ -2548,11 +3089,13 @@ const ConnectionSchema = {
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
-                  "x-go-type": "core.NullTime",
+                  "x-order": 12,
+                  "description": "SQL null Timestamp to handle null values of time.",
+                  "x-go-type": "meshcore.NullTime",
                   "x-go-type-import": {
+                    "name": "meshcore",
                     "path": "github.com/meshery/schemas/models/core"
                   },
-                  "x-order": 12,
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
@@ -2561,17 +3104,32 @@ const ConnectionSchema = {
                   "type": "array",
                   "description": "Associated environments for this connection",
                   "items": {
-                    "x-go-type": "*environment.Environment",
+                    "x-go-type": "*environmentv1beta1.Environment",
                     "x-go-type-import": {
-                      "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                      "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                      "name": "environmentv1beta1"
                     },
                     "$id": "https://schemas.meshery.io/environment.yaml",
                     "$schema": "http://json-schema.org/draft-07/schema#",
-                    "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                    "title": "Environment",
+                    "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
                     "additionalProperties": false,
                     "type": "object",
+                    "example": {
+                      "id": "00000000-0000-0000-0000-000000000000",
+                      "schemaVersion": "environments.meshery.io/v1beta1",
+                      "name": "Production Environment",
+                      "description": "Connections and credentials for the production cluster.",
+                      "organization_id": "00000000-0000-0000-0000-000000000000",
+                      "owner": "00000000-0000-0000-0000-000000000000",
+                      "created_at": "0001-01-01T00:00:00Z",
+                      "metadata": {},
+                      "updated_at": "0001-01-01T00:00:00Z",
+                      "deleted_at": null
+                    },
                     "required": [
                       "id",
+                      "schemaVersion",
                       "name",
                       "description",
                       "organization_id"
@@ -2592,13 +3150,36 @@ const ConnectionSchema = {
                           "path": "github.com/gofrs/uuid"
                         }
                       },
+                      "schemaVersion": {
+                        "description": "Specifies the version of the schema to which the environment conforms.",
+                        "x-order": 2,
+                        "x-oapi-codegen-extra-tags": {
+                          "yaml": "schemaVersion",
+                          "db": "-",
+                          "gorm": "-"
+                        },
+                        "default": "environments.meshery.io/v1beta1",
+                        "type": "string",
+                        "minLength": 2,
+                        "maxLength": 100,
+                        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                        "example": [
+                          "v1",
+                          "v1alpha1",
+                          "v2beta3",
+                          "v1.custom-suffix",
+                          "models.meshery.io/v1beta1",
+                          "capability.meshery.io/v1alpha1"
+                        ]
+                      },
                       "name": {
                         "x-oapi-codegen-extra-tags": {
                           "db": "name",
                           "yaml": "name"
                         },
-                        "x-order": 2,
+                        "x-order": 3,
                         "type": "string",
+                        "maxLength": 100,
                         "description": "Environment name"
                       },
                       "description": {
@@ -2606,8 +3187,9 @@ const ConnectionSchema = {
                           "db": "description",
                           "yaml": "description"
                         },
-                        "x-order": 3,
+                        "x-order": 4,
                         "type": "string",
+                        "maxLength": 1000,
                         "description": "Environment description"
                       },
                       "organization_id": {
@@ -2616,7 +3198,7 @@ const ConnectionSchema = {
                           "db": "organization_id",
                           "yaml": "organization_id"
                         },
-                        "x-order": 4,
+                        "x-order": 5,
                         "description": "Environment organization ID",
                         "type": "string",
                         "format": "uuid",
@@ -2630,7 +3212,7 @@ const ConnectionSchema = {
                           "db": "owner",
                           "yaml": "owner"
                         },
-                        "x-order": 5,
+                        "x-order": 6,
                         "description": "Environment owner",
                         "type": "string",
                         "format": "uuid",
@@ -2640,43 +3222,56 @@ const ConnectionSchema = {
                         }
                       },
                       "created_at": {
+                        "x-order": 7,
+                        "description": "Timestamp when the resource was created.",
+                        "x-go-type": "time.Time",
+                        "type": "string",
+                        "format": "date-time",
+                        "x-go-name": "CreatedAt",
                         "x-oapi-codegen-extra-tags": {
                           "db": "created_at",
                           "yaml": "created_at"
                         },
-                        "x-order": 6,
-                        "type": "string",
-                        "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
                       },
                       "metadata": {
+                        "description": "Additional metadata associated with the environment.",
                         "x-oapi-codegen-extra-tags": {
                           "db": "metadata",
                           "yaml": "metadata"
                         },
-                        "x-order": 7,
+                        "x-order": 8,
                         "x-go-type": "core.Map",
                         "x-go-type-skip-optional-pointer": true,
                         "type": "object"
                       },
                       "updated_at": {
+                        "x-order": 9,
+                        "description": "Timestamp when the resource was updated.",
+                        "x-go-type": "time.Time",
+                        "type": "string",
+                        "format": "date-time",
+                        "x-go-name": "UpdatedAt",
                         "x-oapi-codegen-extra-tags": {
                           "db": "updated_at",
                           "yaml": "updated_at"
                         },
-                        "x-order": 8,
-                        "type": "string",
-                        "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
                       },
                       "deleted_at": {
+                        "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                        "nullable": true,
                         "x-oapi-codegen-extra-tags": {
                           "db": "deleted_at",
                           "yaml": "deleted_at"
                         },
                         "x-go-type": "core.NullTime",
                         "x-go-import": "database/sql",
-                        "x-order": 9,
+                        "x-order": 10,
+                        "x-go-type-import": {
+                          "name": "meshcore",
+                          "path": "github.com/meshery/schemas/models/core"
+                        },
                         "type": "string",
                         "format": "date-time",
                         "x-go-type-skip-optional-pointer": true
@@ -2703,12 +3298,14 @@ const ConnectionSchema = {
                   "type": "string",
                   "minLength": 2,
                   "maxLength": 100,
-                  "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                  "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
                   "example": [
                     "v1",
                     "v1alpha1",
                     "v2beta3",
-                    "v1.custom-suffix"
+                    "v1.custom-suffix",
+                    "models.meshery.io/v1beta1",
+                    "capability.meshery.io/v1alpha1"
                   ]
                 }
               }
@@ -2808,12 +3405,9 @@ const ConnectionSchema = {
           },
           "sub_type": {
             "type": "string",
-            "description": "Connection sub-type",
-            "x-oapi-codegen-extra-tags": {
-              "json": "sub_type"
-            }
+            "description": "Connection sub-type"
           },
-          "credential_secret": {
+          "credentialSecret": {
             "type": "object",
             "description": "Credential secret data",
             "x-go-type": "core.Map",
@@ -2822,7 +3416,7 @@ const ConnectionSchema = {
             },
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
-              "json": "credential_secret"
+              "json": "credentialSecret"
             }
           },
           "metadata": {
@@ -2913,7 +3507,7 @@ const ConnectionSchema = {
               "json": "page_size"
             }
           },
-          "connections_status": {
+          "connectionsStatus": {
             "type": "array",
             "description": "List of status counts",
             "items": {
@@ -2943,7 +3537,7 @@ const ConnectionSchema = {
               ]
             },
             "x-oapi-codegen-extra-tags": {
-              "json": "connections_status"
+              "json": "connectionsStatus"
             }
           }
         },
@@ -2951,7 +3545,7 @@ const ConnectionSchema = {
           "total_count",
           "page",
           "page_size",
-          "connections_status"
+          "connectionsStatus"
         ]
       },
       "MesheryInstance": {
@@ -3038,7 +3632,7 @@ const ConnectionSchema = {
         "type": "object",
         "description": "Paginated list of Meshery instances",
         "properties": {
-          "meshery_instances": {
+          "mesheryInstances": {
             "type": "array",
             "description": "List of Meshery instances",
             "items": {
@@ -3122,7 +3716,7 @@ const ConnectionSchema = {
               }
             },
             "x-oapi-codegen-extra-tags": {
-              "json": "meshery_instances"
+              "json": "mesheryInstances"
             }
           },
           "page": {
@@ -3148,7 +3742,7 @@ const ConnectionSchema = {
           }
         },
         "required": [
-          "meshery_instances",
+          "mesheryInstances",
           "page",
           "page_size",
           "total_count"
@@ -3158,24 +3752,24 @@ const ConnectionSchema = {
         "type": "object",
         "description": "Meshery version compatibility check",
         "properties": {
-          "meshery_version": {
+          "mesheryVersion": {
             "type": "string",
             "description": "Meshery version string",
             "x-oapi-codegen-extra-tags": {
-              "json": "meshery_version,omitempty"
+              "json": "mesheryVersion,omitempty"
             }
           },
-          "check_compatibility": {
+          "checkCompatibility": {
             "type": "boolean",
             "description": "Whether to check compatibility",
             "x-oapi-codegen-extra-tags": {
-              "json": "check_compatibility,omitempty"
+              "json": "checkCompatibility,omitempty"
             }
           }
         }
       }
     }
   }
-} as const;
+};
 
 export default ConnectionSchema;

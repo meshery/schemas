@@ -6,9 +6,8 @@ package academy
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
-	"github.com/meshery/schemas/models/core"
-	"github.com/meshery/schemas/models/v1beta1/invitation"
+	core "github.com/meshery/schemas/models/core"
+	invitationv1beta1 "github.com/meshery/schemas/models/v1beta1/invitation"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -22,9 +21,9 @@ const (
 
 // Defines values for ContentType.
 const (
-	ContentTypeCertification ContentType = "certification"
-	ContentTypeChallenge     ContentType = "challenge"
-	ContentTypeLearningPath  ContentType = "learning-path"
+	Certification ContentType = "certification"
+	Challenge     ContentType = "challenge"
+	LearningPath  ContentType = "learning-path"
 )
 
 // Defines values for Level.
@@ -40,13 +39,6 @@ const (
 	QuestionTypeMultipleAnswers QuestionType = "multiple-answers"
 	QuestionTypeShortAnswer     QuestionType = "short-answer"
 	QuestionTypeSingleAnswer    QuestionType = "single-answer"
-)
-
-// Defines values for RegisterToAcademyContentRequestContentType.
-const (
-	RegisterToAcademyContentRequestContentTypeCertification RegisterToAcademyContentRequestContentType = "certification"
-	RegisterToAcademyContentRequestContentTypeChallenge     RegisterToAcademyContentRequestContentType = "challenge"
-	RegisterToAcademyContentRequestContentTypeLearningPath  RegisterToAcademyContentRequestContentType = "learning-path"
 )
 
 // Defines values for Status.
@@ -69,183 +61,143 @@ const (
 	Public  Visibility = "public"
 )
 
-// AcademyCirricula defines model for AcademyCirricula.
-type AcademyCirricula struct {
+// AcademyCurricula defines model for AcademyCurricula.
+type AcademyCurricula struct {
 	// BadgeId ID of the badge to be awarded on completion of this curricula
-	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+	BadgeId *core.Uuid `db:"badge_id" json:"badge_id" yaml:"badge_id"`
 
-	// CreatedAt When the cirricula item was created
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+	// CreatedAt When the Curricula item was created
+	CreatedAt AcademyCurriculaCreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
+	DeletedAt AcademyCurriculaDeletedAt `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
-	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
-
-	// ID Id of the cirricula
+	// ID Id of the Curricula
 	ID string `db:"id" json:"id" yaml:"id"`
 
-	// InviteId ID of the invite associated with this cirricula
-	InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
+	// InviteId ID of the invite associated with this Curricula
+	InviteId *AcademyCurriculaInviteId `db:"invite_id" json:"invite_id" yaml:"invite_id"`
+	Level    Level                     `db:"level" json:"level" yaml:"level"`
 
-	// Level Level of the cirricula
-	Level Level `db:"level" json:"level" yaml:"level"`
-
-	// Metadata Additional metadata about the cirricula
-	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	// Metadata Additional metadata about the Curricula
+	Metadata AcademyCurriculaMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// OrgId Organization ID that owns this learning path
-	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
 
-	// Slug slug of the cirricula
-	Slug string `json:"slug" yaml:"slug"`
-
-	// Status Status of the cirricula
+	// Slug slug of the Curricula
+	Slug   string      `json:"slug" yaml:"slug"`
 	Status Status      `db:"status" json:"status" yaml:"status"`
 	Type   ContentType `db:"type" json:"type" yaml:"type"`
 
-	// UpdatedAt When the cirricula was last updated
-	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	// UpdatedAt When the Curricula was last updated
+	UpdatedAt  AcademyCurriculaUpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	Visibility Visibility                `db:"visibility" json:"visibility" yaml:"visibility"`
 
-	// Visibility Visibility of the cirricula
-	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
-
-	// WorkspaceId ID of the workspace to which this cirricula belongs
-	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+	// WorkspaceId ID of the workspace to which this Curricula belongs
+	WorkspaceId *AcademyCurriculaWorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
-// AcademyCirriculaListResponse defines model for AcademyCirriculaListResponse.
-type AcademyCirriculaListResponse struct {
-	Data []AcademyCirricula `json:"data" yaml:"data"`
+// AcademyCurriculaAccessExpiresAt defines model for AcademyCurriculaAccessExpiresAt.
+type AcademyCurriculaAccessExpiresAt = core.Time
 
-	// Total Total number of cirricula
+// AcademyCurriculaCreatedAt defines model for AcademyCurriculaCreatedAt.
+type AcademyCurriculaCreatedAt = core.Time
+
+// AcademyCurriculaDeletedAt Timestamp when the resource was deleted.
+type AcademyCurriculaDeletedAt = core.DeletedAt
+
+// AcademyCurriculaInviteId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type AcademyCurriculaInviteId = core.Uuid
+
+// AcademyCurriculaListResponse defines model for AcademyCurriculaListResponse.
+type AcademyCurriculaListResponse struct {
+	Data []AcademyCurricula `json:"data" yaml:"data"`
+
+	// Total Total number of Curricula
 	Total int `json:"total" yaml:"total"`
 }
 
+// AcademyCurriculaMetadata Additional metadata about the Curricula
+type AcademyCurriculaMetadata = core.Map
+
+// AcademyCurriculaOrgId Organization ID that owns this learning path
+type AcademyCurriculaOrgId = string
+
+// AcademyCurriculaUpdatedAt defines model for AcademyCurriculaUpdatedAt.
+type AcademyCurriculaUpdatedAt = core.Time
+
 // AcademyCurriculaWithMetrics defines model for AcademyCurriculaWithMetrics.
 type AcademyCurriculaWithMetrics struct {
-	RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
-
 	// BadgeId ID of the badge to be awarded on completion of this curricula
-	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+	BadgeId *core.Uuid `db:"badge_id" json:"badge_id" yaml:"badge_id"`
 
-	// CreatedAt When the cirricula item was created
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+	// CreatedAt When the Curricula item was created
+	CreatedAt AcademyCurriculaCreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
+	DeletedAt AcademyCurriculaDeletedAt `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
-	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
-
-	// ID Id of the cirricula
+	// ID Id of the Curricula
 	ID string `db:"id" json:"id" yaml:"id"`
 
-	// InviteId ID of the invite associated with this cirricula
-	InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
+	// InviteId ID of the invite associated with this Curricula
+	InviteId *AcademyCurriculaInviteId `db:"invite_id" json:"invite_id" yaml:"invite_id"`
+	Level    Level                     `db:"level" json:"level" yaml:"level"`
 
-	// Level Level of the cirricula
-	Level Level `db:"level" json:"level" yaml:"level"`
-
-	// Metadata Additional metadata about the cirricula
-	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	// Metadata Additional metadata about the Curricula
+	Metadata AcademyCurriculaMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// OrgId Organization ID that owns this learning path
-	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId             AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
+	RegistrationCount float32               `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
 
-	// Slug slug of the cirricula
-	Slug string `json:"slug" yaml:"slug"`
-
-	// Status Status of the cirricula
+	// Slug slug of the Curricula
+	Slug   string      `json:"slug" yaml:"slug"`
 	Status Status      `db:"status" json:"status" yaml:"status"`
 	Type   ContentType `db:"type" json:"type" yaml:"type"`
 
-	// UpdatedAt When the cirricula was last updated
-	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	// UpdatedAt When the Curricula was last updated
+	UpdatedAt  AcademyCurriculaUpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	Visibility Visibility                `db:"visibility" json:"visibility" yaml:"visibility"`
 
-	// Visibility Visibility of the cirricula
-	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
-
-	// WorkspaceId ID of the workspace to which this cirricula belongs
-	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+	// WorkspaceId ID of the workspace to which this Curricula belongs
+	WorkspaceId *AcademyCurriculaWorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
 // AcademyCurriculaWithMetricsListResponse defines model for AcademyCurriculaWithMetricsListResponse.
 type AcademyCurriculaWithMetricsListResponse struct {
-	Data []struct {
-		RegistrationCount float32 `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
+	Data []AcademyCurriculaWithMetrics `json:"data" yaml:"data"`
 
-		// BadgeId ID of the badge to be awarded on completion of this curricula
-		BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
-
-		// CreatedAt When the cirricula item was created
-		CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
-
-		// DeletedAt Timestamp when the resource was deleted.
-		DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
-
-		// ID Id of the cirricula
-		ID string `db:"id" json:"id" yaml:"id"`
-
-		// InviteId ID of the invite associated with this cirricula
-		InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
-
-		// Level Level of the cirricula
-		Level Level `db:"level" json:"level" yaml:"level"`
-
-		// Metadata Additional metadata about the cirricula
-		Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
-
-		// OrgId Organization ID that owns this learning path
-		OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
-
-		// Slug slug of the cirricula
-		Slug string `json:"slug" yaml:"slug"`
-
-		// Status Status of the cirricula
-		Status Status      `db:"status" json:"status" yaml:"status"`
-		Type   ContentType `db:"type" json:"type" yaml:"type"`
-
-		// UpdatedAt When the cirricula was last updated
-		UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
-
-		// Visibility Visibility of the cirricula
-		Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
-
-		// WorkspaceId ID of the workspace to which this cirricula belongs
-		WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
-	} `json:"data" yaml:"data"`
-
-	// Total Total number of cirricula
+	// Total Total number of Curricula
 	Total int `json:"total" yaml:"total"`
 }
 
+// AcademyCurriculaWorkspaceId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type AcademyCurriculaWorkspaceId = core.Uuid
+
 // AcademyRegistration defines model for AcademyRegistration.
 type AcademyRegistration struct {
-	// Certificate Issued certificate for completing the curricula under registration
 	Certificate core.Map `db:"certificate" json:"certificate" yaml:"certificate"`
 
 	// ContentId ID of the course content
-	ContentId string `db:"content_id" json:"content_id" yaml:"content_id"`
-
-	// CreatedAt When the registration was created
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+	ContentId string            `db:"content_id" json:"content_id" yaml:"content_id"`
+	CreatedAt core.Time `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
 	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
-	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// Metadata Additional metadata about the registration
 	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
 
-	// OrgId ID of the organization
-	OrgId uuid.UUID `db:"org_id" json:"org_id" yaml:"org_id"`
+	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrgId core.Uuid `db:"org_id" json:"org_id" yaml:"org_id"`
 
 	// Status Status of the user's course registration
-	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
+	Status    AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
+	UpdatedAt core.Time         `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
-	// UpdatedAt When the registration was updated
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
-
-	// UserId ID of the user (foreign key to User)
-	UserId uuid.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
+	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	UserId core.Uuid `db:"user_id" json:"user_id" yaml:"user_id"`
 }
 
 // AcademyRegistrationStatus Status of the user's course registration
@@ -268,28 +220,28 @@ type Certificate struct {
 	Description string `json:"description" yaml:"description"`
 
 	// ExpirationDate Date when the certificate expires (optional)
-	ExpirationDate *time.Time `json:"expiration_date,omitempty" yaml:"expiration_date,omitempty"`
+	ExpirationDate *time.Time `json:"expirationDate,omitempty" yaml:"expirationDate,omitempty"`
 
 	// ExpiresIn Number of months after which the certificate expires
-	ExpiresIn *int `json:"expires_in,omitempty" yaml:"expires_in,omitempty"`
+	ExpiresIn *int `json:"expiresIn,omitempty" yaml:"expiresIn,omitempty"`
 
 	// ID Unique identifier for the certificate
 	ID string `json:"id" yaml:"id"`
 
 	// IssuedDate Date when the certificate was issued
-	IssuedDate time.Time `json:"issued_date" yaml:"issued_date"`
+	IssuedDate time.Time `json:"issuedDate" yaml:"issuedDate"`
 
 	// IssuingAuthorities List of issuing authorities for the certificate
-	IssuingAuthorities []CertificateIssuingAuthority `json:"issuing_authorities" yaml:"issuing_authorities"`
+	IssuingAuthorities []CertificateIssuingAuthority `json:"issuingAuthorities" yaml:"issuingAuthorities"`
 
-	// OrgId UUID of the organization that issued the certificate
-	OrgId uuid.UUID `json:"org_id" yaml:"org_id"`
+	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrgId core.Uuid `json:"orgId" yaml:"orgId"`
 
 	// RecipientId ID of the recipient (user) who received the certificate
-	RecipientId string `json:"recipient_id" yaml:"recipient_id"`
+	RecipientId string `json:"recipientId" yaml:"recipientId"`
 
 	// RecipientName Name of the recipient (user) who received the certificate
-	RecipientName string `json:"recipient_name" yaml:"recipient_name"`
+	RecipientName string `json:"recipientName" yaml:"recipientName"`
 
 	// Title Title of the certificate
 	Title string `json:"title" yaml:"title"`
@@ -304,7 +256,7 @@ type CertificateIssuingAuthority struct {
 	Role *string `json:"role,omitempty" yaml:"role,omitempty"`
 
 	// SignatureUrl URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
-	SignatureUrl *string `json:"signature_url,omitempty" yaml:"signature_url,omitempty"`
+	SignatureUrl *string `json:"signatureUrl,omitempty" yaml:"signatureUrl,omitempty"`
 }
 
 // ChallengeMetadata defines model for ChallengeMetadata.
@@ -328,33 +280,11 @@ type ChildNode struct {
 	Permalink string `json:"permalink" yaml:"permalink"`
 
 	// Title Title of the course
-	Title string `json:"title" yaml:"title"`
-
-	// Type Type of the content (e.g., learning-path, challenge, certification)
-	Type *ContentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Title string       `json:"title" yaml:"title"`
+	Type  *ContentType `json:"type,omitempty" yaml:"type,omitempty"`
 
 	// Weight A numeric value to determine the display order. A smaller number appears first. If not specified, items will be sorted alphabetically by title.
 	Weight *float32 `json:"weight,omitempty" yaml:"weight,omitempty"`
-}
-
-// CirriculaCurrentItemData defines model for CirriculaCurrentItemData.
-type CirriculaCurrentItemData struct {
-	ContentType ContentType `json:"content_type" yaml:"content_type"`
-	Id          string      `json:"id" yaml:"id"`
-	LastOpened  time.Time   `json:"last_opened" yaml:"last_opened"`
-}
-
-// CirriculaProgressTracker defines model for CirriculaProgressTracker.
-type CirriculaProgressTracker struct {
-	Completed core.NullTime `json:"completed" yaml:"completed"`
-
-	// CompletedItems Items that have been completed (map of item IDs to item data)
-	CompletedItems map[string]ProgressItemCompleted    `json:"completed_items" yaml:"completed_items"`
-	CurrentItem    map[string]CirriculaCurrentItemData `json:"current_item" yaml:"current_item"`
-	Grades         map[string]QuizEvaluationResult     `json:"grades" yaml:"grades"`
-
-	// TimeSpent Total time spent in seconds
-	TimeSpent int `json:"time_spent" yaml:"time_spent"`
 }
 
 // ContentType defines model for ContentType.
@@ -363,31 +293,36 @@ type ContentType string
 // CreateAcademyCurriculaRequest defines model for CreateAcademyCurriculaRequest.
 type CreateAcademyCurriculaRequest struct {
 	// AccessExpiresAt Expiry time for curricula access
-	AccessExpiresAt *time.Time `db:"access_expires_at" json:"access_expires_at" yaml:"access_expires_at"`
+	AccessExpiresAt *AcademyCurriculaAccessExpiresAt `db:"access_expires_at" json:"access_expires_at" yaml:"access_expires_at"`
 
-	// AccessStatus Current access status of the curricula
-	AccessStatus invitation.InvitationStatus `db:"access_status" json:"access_status" yaml:"access_status"`
+	// AccessStatus Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+	AccessStatus invitationv1beta1.InvitationStatus `db:"access_status" json:"access_status" yaml:"access_status"`
 
 	// BadgeId ID of the badge to be awarded on completion of this curricula
-	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+	BadgeId *core.Uuid `db:"badge_id" json:"badge_id" yaml:"badge_id"`
 
-	// Metadata Additional metadata about the cirricula
-	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	// Metadata Additional metadata about the Curricula
+	Metadata AcademyCurriculaMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 
-	// OrgId Organization ID that owns this curricula
-	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+	// OrgId Organization ID that owns this learning path
+	OrgId AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
 
-	// TeamId ID of the team associated with this curricula
-	TeamId uuid.UUID `db:"team_id" json:"team_id" yaml:"team_id"`
+	// TeamId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	TeamId core.Uuid `db:"team_id" json:"team_id" yaml:"team_id"`
 
 	// Title Title of the curricula
-	Title string `json:"title" yaml:"title"`
+	Title string      `json:"title" yaml:"title"`
+	Type  ContentType `json:"type" yaml:"type"`
 
-	// Type Type of the curricula
-	Type ContentType `json:"type" yaml:"type"`
+	// WorkspaceId ID of the workspace to which this Curricula belongs
+	WorkspaceId AcademyCurriculaWorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+}
 
-	// WorkspaceId ID of the workspace to which this cirricula belongs
-	WorkspaceId uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+// CurriculaCurrentItemData defines model for CurriculaCurrentItemData.
+type CurriculaCurrentItemData struct {
+	ContentType ContentType `json:"contentType" yaml:"contentType"`
+	ID          string      `json:"id" yaml:"id"`
+	LastOpened  time.Time   `json:"lastOpened" yaml:"lastOpened"`
 }
 
 // CurriculaMetadata defines model for CurriculaMetadata.
@@ -403,13 +338,26 @@ type CurriculaMetadata struct {
 	Description string `json:"description" yaml:"description"`
 
 	// DetailedDescription Detailed description of the curricula
-	DetailedDescription *string `json:"detailed_description,omitempty" yaml:"detailed_description,omitempty"`
+	DetailedDescription *string `json:"detailedDescription,omitempty" yaml:"detailedDescription,omitempty"`
 
 	// Permalink Canonical URL for the learning path
 	Permalink string `json:"permalink" yaml:"permalink"`
 
 	// Title Title of the learning path
 	Title string `json:"title" yaml:"title"`
+}
+
+// CurriculaProgressTracker defines model for CurriculaProgressTracker.
+type CurriculaProgressTracker struct {
+	Completed core.NullTime `json:"completed" yaml:"completed"`
+
+	// CompletedItems Items that have been completed (map of item IDs to item data)
+	CompletedItems map[string]ProgressItemCompleted    `json:"completedItems" yaml:"completedItems"`
+	CurrentItem    map[string]CurriculaCurrentItemData `json:"currentItem" yaml:"currentItem"`
+	Grades         map[string]QuizEvaluationResult     `json:"grades" yaml:"grades"`
+
+	// TimeSpent Total time spent in seconds
+	TimeSpent int `json:"timeSpent" yaml:"timeSpent"`
 }
 
 // CurriculaRegistrationsFilter defines model for CurriculaRegistrationsFilter.
@@ -442,7 +390,7 @@ type Level string
 
 // Parent defines model for Parent.
 type Parent struct {
-	Id           string `json:"id" yaml:"id"`
+	ID           string `json:"id" yaml:"id"`
 	RelPermalink string `json:"relPermalink" yaml:"relPermalink"`
 	Title        string `json:"title" yaml:"title"`
 	Type         string `json:"type" yaml:"type"`
@@ -451,16 +399,16 @@ type Parent struct {
 // ProgressItemCompleted defines model for ProgressItemCompleted.
 type ProgressItemCompleted struct {
 	// CompletedAt Timestamp when the item was completed
-	CompletedAt time.Time `json:"completed_at" yaml:"completed_at"`
-	ItemData    Parent    `json:"item_data" yaml:"item_data"`
+	CompletedAt time.Time `json:"completedAt" yaml:"completedAt"`
+	ItemData    Parent    `json:"itemData" yaml:"itemData"`
 }
 
 // Question defines model for Question.
 type Question struct {
-	CorrectAnswer   string           `json:"correct_answer" yaml:"correct_answer"`
-	Id              string           `json:"id" yaml:"id"`
+	CorrectAnswer   string           `json:"correctAnswer" yaml:"correctAnswer"`
+	ID              string           `json:"id" yaml:"id"`
 	Marks           int              `json:"marks" yaml:"marks"`
-	MultipleAnswers *bool            `json:"multiple_answers,omitempty" yaml:"multiple_answers,omitempty"`
+	MultipleAnswers *bool            `json:"multipleAnswers,omitempty" yaml:"multipleAnswers,omitempty"`
 	Options         []QuestionOption `json:"options" yaml:"options"`
 	Text            string           `json:"text" yaml:"text"`
 	Type            QuestionType     `json:"type" yaml:"type"`
@@ -468,8 +416,8 @@ type Question struct {
 
 // QuestionOption defines model for QuestionOption.
 type QuestionOption struct {
-	Id        string `json:"id" yaml:"id"`
-	IsCorrect bool   `json:"is_correct" yaml:"is_correct"`
+	ID        string `json:"id" yaml:"id"`
+	IsCorrect bool   `json:"isCorrect" yaml:"isCorrect"`
 	Text      string `json:"text" yaml:"text"`
 }
 
@@ -530,74 +478,62 @@ type QuizEvaluationResult struct {
 // QuizSubmission defines model for QuizSubmission.
 type QuizSubmission struct {
 	Answers        []SubmittedAnswer `json:"answers" yaml:"answers"`
-	QuizAbsPath    string            `json:"quiz_abs_path" yaml:"quiz_abs_path"`
-	RegistrationId string            `json:"registration_id" yaml:"registration_id"`
+	QuizAbsPath    string            `json:"quizAbsPath" yaml:"quizAbsPath"`
+	RegistrationId string            `json:"registrationId" yaml:"registrationId"`
 
 	// TestSessionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	TestSessionId uuid.UUID `json:"test_session_id" yaml:"test_session_id"`
-	UserId        string    `json:"user_id" yaml:"user_id"`
+	TestSessionId core.Uuid `json:"testSessionId" yaml:"testSessionId"`
+	UserId        string            `json:"user_id" yaml:"user_id"`
 }
 
 // RegisterToAcademyContentRequest defines model for RegisterToAcademyContentRequest.
 type RegisterToAcademyContentRequest struct {
 	// ContentId ID of the academy content to register for
-	ContentId   string                                      `json:"content_id" yaml:"content_id"`
-	ContentType *RegisterToAcademyContentRequestContentType `json:"content_type,omitempty" yaml:"content_type,omitempty"`
+	ContentId   string       `json:"contentId" yaml:"contentId"`
+	ContentType *ContentType `json:"contentType,omitempty" yaml:"contentType,omitempty"`
 }
-
-// RegisterToAcademyContentRequestContentType defines model for RegisterToAcademyContentRequest.ContentType.
-type RegisterToAcademyContentRequestContentType string
 
 // SingleAcademyCurriculaResponse defines model for SingleAcademyCurriculaResponse.
 type SingleAcademyCurriculaResponse struct {
-	Invitation        *invitation.Invitation `json:"Invitation,omitempty" yaml:"Invitation,omitempty"`
-	RegistrationCount float32                `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
-
 	// BadgeId ID of the badge to be awarded on completion of this curricula
-	BadgeId *uuid.UUID `db:"badge_id" json:"badge_id" yaml:"badge_id"`
+	BadgeId *core.Uuid `db:"badge_id" json:"badge_id" yaml:"badge_id"`
 
-	// CreatedAt When the cirricula item was created
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+	// CreatedAt When the Curricula item was created
+	CreatedAt AcademyCurriculaCreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
+	DeletedAt AcademyCurriculaDeletedAt `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
 
-	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt core.NullTime `db:"deleted_at" json:"deleted_at" yaml:"deleted_at"`
+	// ID Id of the Curricula
+	ID         string                   `db:"id" json:"id" yaml:"id"`
+	Invitation *invitationv1beta1.Invitation `json:"invitation,omitempty" yaml:"invitation,omitempty"`
 
-	// ID Id of the cirricula
-	ID string `db:"id" json:"id" yaml:"id"`
+	// InviteId ID of the invite associated with this Curricula
+	InviteId *AcademyCurriculaInviteId `db:"invite_id" json:"invite_id" yaml:"invite_id"`
+	Level    Level                     `db:"level" json:"level" yaml:"level"`
 
-	// InviteId ID of the invite associated with this cirricula
-	InviteId *uuid.UUID `db:"invite_id" json:"invite_id" yaml:"invite_id"`
-
-	// Level Level of the cirricula
-	Level Level `db:"level" json:"level" yaml:"level"`
-
-	// Metadata Additional metadata about the cirricula
-	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+	// Metadata Additional metadata about the Curricula
+	Metadata AcademyCurriculaMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
 
 	// OrgId Organization ID that owns this learning path
-	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+	OrgId             AcademyCurriculaOrgId `db:"org_id" json:"org_id" yaml:"org_id"`
+	RegistrationCount float32               `db:"registration_count,omitempty" json:"registration_count,omitempty" yaml:"registration_count,omitempty"`
 
-	// Slug slug of the cirricula
-	Slug string `json:"slug" yaml:"slug"`
-
-	// Status Status of the cirricula
+	// Slug slug of the Curricula
+	Slug   string      `json:"slug" yaml:"slug"`
 	Status Status      `db:"status" json:"status" yaml:"status"`
 	Type   ContentType `db:"type" json:"type" yaml:"type"`
 
-	// UpdatedAt When the cirricula was last updated
-	UpdatedAt core.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	// UpdatedAt When the Curricula was last updated
+	UpdatedAt  AcademyCurriculaUpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	Visibility Visibility                `db:"visibility" json:"visibility" yaml:"visibility"`
 
-	// Visibility Visibility of the cirricula
-	Visibility Visibility `db:"visibility" json:"visibility" yaml:"visibility"`
-
-	// WorkspaceId ID of the workspace to which this cirricula belongs
-	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
+	// WorkspaceId ID of the workspace to which this Curricula belongs
+	WorkspaceId *AcademyCurriculaWorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
 // StartTestRequest defines model for StartTestRequest.
 type StartTestRequest struct {
-	RegistrationId string `json:"registration_id" yaml:"registration_id"`
-	TestAbsPath    string `json:"test_abs_path" yaml:"test_abs_path"`
+	RegistrationId string `json:"registrationId" yaml:"registrationId"`
+	TestAbsPath    string `json:"testAbsPath" yaml:"testAbsPath"`
 }
 
 // Status defines model for Status.
@@ -605,9 +541,9 @@ type Status string
 
 // SubmittedAnswer defines model for SubmittedAnswer.
 type SubmittedAnswer struct {
-	AnswerText       string          `json:"answer_text" yaml:"answer_text"`
-	QuestionId       string          `json:"question_id" yaml:"question_id"`
-	SelectedOptionId map[string]bool `json:"selected_option_id" yaml:"selected_option_id"`
+	AnswerText       string          `json:"answerText" yaml:"answerText"`
+	QuestionId       string          `json:"questionId" yaml:"questionId"`
+	SelectedOptionId map[string]bool `json:"selectedOptionId" yaml:"selectedOptionId"`
 }
 
 // TestSubmission defines model for TestSubmission.
@@ -621,11 +557,11 @@ type TestSubmission struct {
 	// ExpiresAt Expiry time for the test submission ( based on the time limit of the test )
 	ExpiresAt *time.Time `db:"expires_at" json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
 
-	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// RegistrationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	RegistrationId uuid.UUID             `db:"registration_id" json:"registration_id" yaml:"registration_id"`
+	RegistrationId core.Uuid     `db:"registration_id" json:"registration_id" yaml:"registration_id"`
 	Result         *QuizEvaluationResult `db:"result" json:"result,omitempty" yaml:"result,omitempty"`
 	Status         TestSubmissionStatus  `json:"status" yaml:"status"`
 	SubmissionData *QuizSubmission       `db:"submission_data" json:"submission_data,omitempty" yaml:"submission_data,omitempty"`
@@ -637,29 +573,28 @@ type TestSubmission struct {
 	UpdatedAt *time.Time `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 
 	// UserId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	UserId uuid.UUID `db:"user_id" json:"user_id" yaml:"user_id"`
+	UserId core.Uuid `db:"user_id" json:"user_id" yaml:"user_id"`
 }
 
 // TestSubmissionStatus defines model for TestSubmissionStatus.
 type TestSubmissionStatus string
 
 // TestSubmissions Test submissions made by the user (array of QuizEvaluationResult)
-type TestSubmissions = []struct {
-	AttemptedAt        time.Time       `json:"attempted_at" yaml:"attempted_at"`
-	Attempts           int             `json:"attempts" yaml:"attempts"`
-	CorrectSubmissions map[string]bool `json:"correct_submissions" yaml:"correct_submissions"`
-	PassPercentage     float32         `json:"pass_percentage" yaml:"pass_percentage"`
-	Passed             bool            `json:"passed" yaml:"passed"`
-	PercentageScored   float32         `json:"percentage_scored" yaml:"percentage_scored"`
-	Quiz               Quiz            `json:"quiz" yaml:"quiz"`
-	Score              int             `json:"score" yaml:"score"`
-	TotalMarks         int             `json:"total_marks" yaml:"total_marks"`
+type TestSubmissions = []QuizEvaluationResult
+
+// UpdateCurrentItemProgressResponse defines model for UpdateCurrentItemProgressResponse.
+type UpdateCurrentItemProgressResponse struct {
+	ContentType     *ContentType              `json:"contentType,omitempty" yaml:"contentType,omitempty"`
+	ItemData        *CurriculaCurrentItemData `json:"itemData,omitempty" yaml:"itemData,omitempty"`
+	Message         *string                   `json:"message,omitempty" yaml:"message,omitempty"`
+	ProgressTracker *CurriculaProgressTracker `json:"progressTracker,omitempty" yaml:"progressTracker,omitempty"`
+	RegistrationId  *string                   `json:"registrationId,omitempty" yaml:"registrationId,omitempty"`
 }
 
 // UpdateCurrentItemRequest defines model for UpdateCurrentItemRequest.
 type UpdateCurrentItemRequest struct {
-	ContentType ContentType              `json:"content_type" yaml:"content_type"`
-	ItemData    CirriculaCurrentItemData `json:"item_data" yaml:"item_data"`
+	ContentType ContentType              `json:"contentType" yaml:"contentType"`
+	ItemData    CurriculaCurrentItemData `json:"itemData" yaml:"itemData"`
 }
 
 // UserRegistration defines model for UserRegistration.
@@ -671,15 +606,13 @@ type UserRegistration struct {
 	CurriculaPermalink string `db:"curricula_permalink" json:"curricula_permalink" yaml:"curricula_permalink"`
 
 	// CurriculaTitle Title of the curricula
-	CurriculaTitle string `db:"curricula_title" json:"curricula_title" yaml:"curricula_title"`
-
-	// CurriculaType Type of the curricula
-	CurriculaType ContentType `db:"curricula_type" json:"curricula_type" yaml:"curricula_type"`
+	CurriculaTitle string      `db:"curricula_title" json:"curricula_title" yaml:"curricula_title"`
+	CurriculaType  ContentType `db:"curricula_type" json:"curricula_type" yaml:"curricula_type"`
 
 	// RegistrationId Unique ID of the registration
 	RegistrationId openapi_types.UUID `db:"registration_id" json:"registration_id" yaml:"registration_id"`
 
-	// Status Registration status
+	// Status Status of the user's course registration
 	Status AcademyRegistrationStatus `db:"status" json:"status" yaml:"status"`
 
 	// TotalCount Total count for pagination

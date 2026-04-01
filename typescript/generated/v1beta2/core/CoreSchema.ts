@@ -1,0 +1,2075 @@
+/**
+ * This file was automatically generated from OpenAPI schema.
+ * Do not manually modify this file.
+ */
+
+const CoreSchema: Record<string, unknown> = {
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Core Schema Elements",
+    "description": "Reusable core schema elements for Meshery OpenAPI specifications.",
+    "version": "v1beta2",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "paths": {},
+  "components": {
+    "schemas": {
+      "InputString": {
+        "type": "string",
+        "pattern": "^[a-zA-Z_][a-zA-Z0-9_-]*[a-zA-Z0-9_]$",
+        "description": "A string starting with an alphanumeric character. Spaces and hyphens allowed."
+      },
+      "VersionString": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 100,
+        "description": "API version of the object, optionally prefixed with an API group (e.g. \"group.example.io/v1beta1\" or bare \"v1beta1\").",
+        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+        "example": [
+          "v1",
+          "v1alpha1",
+          "v2beta3",
+          "v1.custom-suffix",
+          "models.meshery.io/v1beta1",
+          "capability.meshery.io/v1alpha1"
+        ]
+      },
+      "SemverString": {
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 100,
+        "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
+      },
+      "Uuid": {
+        "type": "string",
+        "format": "uuid",
+        "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        }
+      },
+      "Id": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Username": {
+        "type": "string",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Provider": {
+        "type": "string",
+        "description": "One of (x-oapi-codegen-extra-tags-cloud, github, google)",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Time": {
+        "type": "string",
+        "format": "date-time",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "SqlNullTime": {
+        "type": "string",
+        "format": "date-time",
+        "x-go-type": "sql.NullTime",
+        "x-go-type-import": {
+          "path": "database/sql"
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Email": {
+        "type": "string",
+        "format": "email",
+        "description": "email",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Text": {
+        "type": "string",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Number": {
+        "type": "integer",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "AvatarUrl": {
+        "type": "string",
+        "description": "Link for profile picture",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "MapObject": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Status": {
+        "type": "string",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Bio": {
+        "type": "string",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "AcceptedTermsAt": {
+        "type": "string",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Emails": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "email",
+          "description": "email",
+          "x-go-type-skip-optional-pointer": true
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "UserIds": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          },
+          "x-go-type-skip-optional-pointer": true
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Price": {
+        "type": "integer",
+        "format": "int32",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Endpoint": {
+        "description": "endpoint",
+        "format": "uri",
+        "pattern": "^https?://",
+        "x-go-type-skip-optional-pointer": true,
+        "type": "string"
+      },
+      "RoleNames": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "x-go-type-skip-optional-pointer": true
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "RecordsPage": {
+        "discriminator": {
+          "propertyName": "recordType"
+        },
+        "properties": {
+          "page": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "page_size": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "recordsTotal": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "The records total of the recordspage.",
+            "minimum": 0
+          },
+          "recordType": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "The record type of the recordspage.",
+            "maxLength": 500
+          }
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "ResultsPage": {
+        "discriminator": {
+          "propertyName": "resultType"
+        },
+        "properties": {
+          "page": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "page_size": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "total_count": {
+            "type": "integer",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "resultType": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "The result type of the resultspage.",
+            "maxLength": 500
+          }
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Empty": {
+        "description": "Body for empty request",
+        "type": "object",
+        "properties": {},
+        "x-go-type-skip-optional-pointer": true
+      },
+      "EmailPreference": {
+        "type": "object",
+        "properties": {
+          "welcomeEmail": {
+            "type": "boolean",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "The welcome email of the emailpreference."
+          },
+          "notifyRoleChange": {
+            "type": "boolean",
+            "x-go-type-skip-optional-pointer": true,
+            "description": "The notify role change of the emailpreference."
+          }
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "UserUuid": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "user_id",
+          "json": "user_id"
+        },
+        "x-go-name": "UserID",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "OrganizationId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "org_id",
+          "json": "org_id"
+        },
+        "x-go-type-name": "OrganizationId",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "GeneralId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "id",
+          "json": "id"
+        },
+        "x-go-type-name": "GeneralId",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "EnvironmentId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "environment_id",
+          "json": "environment_id"
+        },
+        "x-go-type-name": "EnvironmentId",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "WorkspaceId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "workspace_id",
+          "json": "workspace_id"
+        },
+        "x-go-type-name": "WorkspaceId",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "ViewId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "view_id",
+          "json": "view_id"
+        },
+        "x-go-type-name": "ViewId",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "TeamId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "team_id",
+          "json": "team_id"
+        },
+        "x-go-type-name": "TeamId",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "DesignId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "design_id",
+          "json": "design_id"
+        },
+        "x-go-type-name": "DesignId",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "CredentialUuid": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "credential_id",
+          "json": "credential_id"
+        },
+        "x-go-name": "CredentialID",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "MesheryInstanceUuid": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "meshery_instance_id",
+          "json": "meshery_instance_id"
+        },
+        "x-go-name": "MesheryInstanceID",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "KubernetesServerUuid": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "kubernetes_server_id",
+          "json": "kubernetes_server_id"
+        },
+        "x-go-name": "KubernetesServerID",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "SystemId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "system_id"
+        },
+        "x-go-name": "SystemID",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "OperationId": {
+        "type": "string",
+        "format": "uuid",
+        "x-go-type": "uuid.UUID",
+        "x-go-type-import": {
+          "path": "github.com/gofrs/uuid"
+        },
+        "x-oapi-codegen-extra-tags": {
+          "db": "operation_id"
+        },
+        "x-go-name": "OperationID",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "UserId": {
+        "type": "string",
+        "x-go-name": "UserIdOrEmail",
+        "description": "user's email or username",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "CreatedAt": {
+        "description": "Timestamp when the resource was created.",
+        "x-go-type": "time.Time",
+        "type": "string",
+        "format": "date-time",
+        "x-go-name": "CreatedAt",
+        "x-oapi-codegen-extra-tags": {
+          "db": "created_at",
+          "yaml": "created_at"
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "UpdatedAt": {
+        "description": "Timestamp when the resource was updated.",
+        "x-go-type": "time.Time",
+        "type": "string",
+        "format": "date-time",
+        "x-go-name": "UpdatedAt",
+        "x-oapi-codegen-extra-tags": {
+          "db": "updated_at",
+          "yaml": "updated_at"
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "DeletedAt": {
+        "description": "Timestamp when the resource was deleted.",
+        "x-go-type": "NullTime",
+        "type": "string",
+        "format": "date-time",
+        "x-go-name": "DeletedAt",
+        "x-oapi-codegen-extra-tags": {
+          "db": "deleted_at",
+          "yaml": "deleted_at"
+        },
+        "x-go-type-skip-optional-pointer": true
+      },
+      "NullTime": {
+        "description": "SQL null Timestamp to handle null values of time.",
+        "x-go-type": "meshcore.NullTime",
+        "x-go-type-import": {
+          "name": "meshcore",
+          "path": "github.com/meshery/schemas/models/core"
+        },
+        "type": "string",
+        "format": "date-time",
+        "x-go-type-skip-optional-pointer": true
+      },
+      "Styles": {
+        "type": "object",
+        "description": "Common styles for all entities",
+        "additionalProperties": true,
+        "required": [
+          "primaryColor",
+          "svgColor",
+          "svgWhite",
+          "svgComplete"
+        ],
+        "properties": {
+          "primaryColor": {
+            "type": "string",
+            "description": "Primary color of the component used for UI representation.",
+            "maxLength": 500
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "Secondary color of the entity used for UI representation.",
+            "maxLength": 500
+          },
+          "svgWhite": {
+            "type": "string",
+            "description": "White SVG of the entity used for UI representation on dark background.",
+            "maxLength": 500
+          },
+          "svgColor": {
+            "type": "string",
+            "description": "Colored SVG of the entity used for UI representation on light background.",
+            "maxLength": 500
+          },
+          "svgComplete": {
+            "type": "string",
+            "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+            "maxLength": 500
+          },
+          "color": {
+            "type": "string",
+            "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+            "maxLength": 500
+          },
+          "textOpacity": {
+            "type": "number",
+            "description": "The opacity of the label text, including its outline.",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "fontFamily": {
+            "type": "string",
+            "description": "A comma-separated list of font names to use on the label text.",
+            "maxLength": 500
+          },
+          "fontSize": {
+            "type": "string",
+            "description": "The size of the label text.",
+            "maxLength": 500
+          },
+          "fontStyle": {
+            "type": "string",
+            "description": "A CSS font style to be applied to the label text.",
+            "maxLength": 500
+          },
+          "fontWeight": {
+            "type": "string",
+            "description": "A CSS font weight to be applied to the label text.",
+            "maxLength": 500
+          },
+          "textTransform": {
+            "type": "string",
+            "description": "A transformation to apply to the label text",
+            "enum": [
+              "none",
+              "uppercase",
+              "lowercase"
+            ]
+          },
+          "opacity": {
+            "type": "number",
+            "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "zIndex": {
+            "type": "integer",
+            "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+            "minimum": 0
+          },
+          "label": {
+            "type": "string",
+            "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+            "maxLength": 500
+          },
+          "animation": {
+            "type": "object",
+            "description": "The animation to apply to the element. example ripple,bounce,etc"
+          }
+        }
+      },
+      "Shape": {
+        "type": "string",
+        "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+        "enum": [
+          "ellipse",
+          "triangle",
+          "round-triangle",
+          "rectangle",
+          "round-rectangle",
+          "bottom-round-rectangle",
+          "cut-rectangle",
+          "barrel",
+          "rhomboid",
+          "diamond",
+          "round-diamond",
+          "pentagon",
+          "round-pentagon",
+          "hexagon",
+          "round-hexagon",
+          "concave-hexagon",
+          "heptagon",
+          "round-heptagon",
+          "octagon",
+          "round-octagon",
+          "star",
+          "tag",
+          "round-tag",
+          "vee",
+          "polygon"
+        ]
+      },
+      "EdgeStyles": {
+        "type": "object",
+        "description": "Visualization styles for a relationship",
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Common styles for all entities",
+            "additionalProperties": true,
+            "required": [
+              "primaryColor",
+              "svgColor",
+              "svgWhite",
+              "svgComplete"
+            ],
+            "properties": {
+              "primaryColor": {
+                "type": "string",
+                "description": "Primary color of the component used for UI representation.",
+                "maxLength": 500
+              },
+              "secondaryColor": {
+                "type": "string",
+                "description": "Secondary color of the entity used for UI representation.",
+                "maxLength": 500
+              },
+              "svgWhite": {
+                "type": "string",
+                "description": "White SVG of the entity used for UI representation on dark background.",
+                "maxLength": 500
+              },
+              "svgColor": {
+                "type": "string",
+                "description": "Colored SVG of the entity used for UI representation on light background.",
+                "maxLength": 500
+              },
+              "svgComplete": {
+                "type": "string",
+                "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+                "maxLength": 500
+              },
+              "color": {
+                "type": "string",
+                "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 500
+              },
+              "textOpacity": {
+                "type": "number",
+                "description": "The opacity of the label text, including its outline.",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "fontFamily": {
+                "type": "string",
+                "description": "A comma-separated list of font names to use on the label text.",
+                "maxLength": 500
+              },
+              "fontSize": {
+                "type": "string",
+                "description": "The size of the label text.",
+                "maxLength": 500
+              },
+              "fontStyle": {
+                "type": "string",
+                "description": "A CSS font style to be applied to the label text.",
+                "maxLength": 500
+              },
+              "fontWeight": {
+                "type": "string",
+                "description": "A CSS font weight to be applied to the label text.",
+                "maxLength": 500
+              },
+              "textTransform": {
+                "type": "string",
+                "description": "A transformation to apply to the label text",
+                "enum": [
+                  "none",
+                  "uppercase",
+                  "lowercase"
+                ]
+              },
+              "opacity": {
+                "type": "number",
+                "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "zIndex": {
+                "type": "integer",
+                "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+                "minimum": 0
+              },
+              "label": {
+                "type": "string",
+                "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+                "maxLength": 500
+              },
+              "animation": {
+                "type": "object",
+                "description": "The animation to apply to the element. example ripple,bounce,etc"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "edgeAnimation": {
+                "type": "string",
+                "description": "The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .",
+                "maxLength": 100
+              },
+              "curveStyle": {
+                "type": "string",
+                "description": "The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.",
+                "default": "straight",
+                "enum": [
+                  "straight",
+                  "haystack",
+                  "bezier",
+                  "unbundled-bezier",
+                  "segments",
+                  "taxi"
+                ]
+              },
+              "lineColor": {
+                "type": "string",
+                "description": "The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "lineStyle": {
+                "type": "string",
+                "description": "The style of the edge's line.",
+                "enum": [
+                  "solid",
+                  "dotted",
+                  "dashed"
+                ]
+              },
+              "lineCap": {
+                "type": "string",
+                "description": "The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
+                "enum": [
+                  "butt",
+                  "round",
+                  "square"
+                ],
+                "default": "butt"
+              },
+              "lineOpacity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 1,
+                "description": "The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
+              },
+              "targetArrowColor": {
+                "type": "string",
+                "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "targetArrowShape": {
+                "type": "string",
+                "description": "The shape of the edge's source arrow",
+                "enum": [
+                  "triangle",
+                  "triangle-tee",
+                  "circle-triangle",
+                  "triangle-cross",
+                  "triangle-backcurve",
+                  "vee",
+                  "tee",
+                  "square",
+                  "circle",
+                  "diamond",
+                  "chevron",
+                  "none"
+                ]
+              },
+              "targetArrowFill": {
+                "type": "string",
+                "description": "The fill state of the edge's source arrow",
+                "enum": [
+                  "filled",
+                  "hollow"
+                ]
+              },
+              "midTargetArrowColor": {
+                "type": "string",
+                "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "midTargetArrowShape": {
+                "type": "string",
+                "description": "The shape of the edge's source arrow",
+                "enum": [
+                  "triangle",
+                  "triangle-tee",
+                  "circle-triangle",
+                  "triangle-cross",
+                  "triangle-backcurve",
+                  "vee",
+                  "tee",
+                  "square",
+                  "circle",
+                  "diamond",
+                  "chevron",
+                  "none"
+                ]
+              },
+              "midTargetArrowFill": {
+                "type": "string",
+                "description": "The fill state of the edge's source arrow",
+                "enum": [
+                  "filled",
+                  "hollow"
+                ]
+              },
+              "arrowScale": {
+                "type": "number",
+                "description": "Scaling for the arrow size.",
+                "minimum": 0
+              },
+              "sourceLabel": {
+                "type": "string",
+                "description": "The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id",
+                "maxLength": 500
+              },
+              "targetLabel": {
+                "type": "string",
+                "description": "The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id",
+                "maxLength": 500
+              }
+            }
+          }
+        ]
+      },
+      "ComponentStyles": {
+        "type": "object",
+        "description": "Visualization styles for a component",
+        "required": [
+          "shape",
+          "primaryColor",
+          "svgColor",
+          "svgWhite",
+          "svgComplete"
+        ],
+        "allOf": [
+          {
+            "type": "object",
+            "description": "Common styles for all entities",
+            "additionalProperties": true,
+            "required": [
+              "primaryColor",
+              "svgColor",
+              "svgWhite",
+              "svgComplete"
+            ],
+            "properties": {
+              "primaryColor": {
+                "type": "string",
+                "description": "Primary color of the component used for UI representation.",
+                "maxLength": 500
+              },
+              "secondaryColor": {
+                "type": "string",
+                "description": "Secondary color of the entity used for UI representation.",
+                "maxLength": 500
+              },
+              "svgWhite": {
+                "type": "string",
+                "description": "White SVG of the entity used for UI representation on dark background.",
+                "maxLength": 500
+              },
+              "svgColor": {
+                "type": "string",
+                "description": "Colored SVG of the entity used for UI representation on light background.",
+                "maxLength": 500
+              },
+              "svgComplete": {
+                "type": "string",
+                "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+                "maxLength": 500
+              },
+              "color": {
+                "type": "string",
+                "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 500
+              },
+              "textOpacity": {
+                "type": "number",
+                "description": "The opacity of the label text, including its outline.",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "fontFamily": {
+                "type": "string",
+                "description": "A comma-separated list of font names to use on the label text.",
+                "maxLength": 500
+              },
+              "fontSize": {
+                "type": "string",
+                "description": "The size of the label text.",
+                "maxLength": 500
+              },
+              "fontStyle": {
+                "type": "string",
+                "description": "A CSS font style to be applied to the label text.",
+                "maxLength": 500
+              },
+              "fontWeight": {
+                "type": "string",
+                "description": "A CSS font weight to be applied to the label text.",
+                "maxLength": 500
+              },
+              "textTransform": {
+                "type": "string",
+                "description": "A transformation to apply to the label text",
+                "enum": [
+                  "none",
+                  "uppercase",
+                  "lowercase"
+                ]
+              },
+              "opacity": {
+                "type": "number",
+                "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "zIndex": {
+                "type": "integer",
+                "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+                "minimum": 0
+              },
+              "label": {
+                "type": "string",
+                "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+                "maxLength": 500
+              },
+              "animation": {
+                "type": "object",
+                "description": "The animation to apply to the element. example ripple,bounce,etc"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "shape": {
+                "type": "string",
+                "description": "The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)",
+                "enum": [
+                  "ellipse",
+                  "triangle",
+                  "round-triangle",
+                  "rectangle",
+                  "round-rectangle",
+                  "bottom-round-rectangle",
+                  "cut-rectangle",
+                  "barrel",
+                  "rhomboid",
+                  "diamond",
+                  "round-diamond",
+                  "pentagon",
+                  "round-pentagon",
+                  "hexagon",
+                  "round-hexagon",
+                  "concave-hexagon",
+                  "heptagon",
+                  "round-heptagon",
+                  "octagon",
+                  "round-octagon",
+                  "star",
+                  "tag",
+                  "round-tag",
+                  "vee",
+                  "polygon"
+                ]
+              },
+              "position": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node. If the position is set, the node is drawn at that position in the given dimensions. If the position is not set, the node is drawn at a random position.",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x-coordinate of the node.",
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "x-go-type": "float64"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y-coordinate of the node.",
+                    "minimum": -1000000,
+                    "maximum": 1000000,
+                    "x-go-type": "float64"
+                  }
+                }
+              },
+              "bodyText": {
+                "type": "string",
+                "description": "The text to display for an element's body. Can give a path, e.g. data(id) will label with the elements id",
+                "maxLength": 500
+              },
+              "bodyTextWrap": {
+                "type": "string",
+                "description": "How to wrap the text in the node. Can be 'none', 'wrap', or 'ellipsis'.",
+                "enum": [
+                  "none",
+                  "wrap",
+                  "ellipsis"
+                ]
+              },
+              "bodyTextMaxWidth": {
+                "type": "string",
+                "description": "The maximum width for wrapping text in the node.",
+                "maxLength": 50
+              },
+              "bodyTextOpacity": {
+                "type": "number",
+                "description": "The opacity of the node's body text, including its outline.",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "bodyTextBackgroundColor": {
+                "type": "string",
+                "description": "The colour of the node's body text background. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "bodyTextFontSize": {
+                "type": "number",
+                "description": "The size of the node's body text.",
+                "minimum": 0
+              },
+              "bodyTextColor": {
+                "type": "string",
+                "description": "The colour of the node's body text. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "bodyTextFontWeight": {
+                "type": "string",
+                "description": "A CSS font weight to be applied to the node's body text.",
+                "maxLength": 50
+              },
+              "bodyTextHorizontalAlign": {
+                "type": "string",
+                "description": "A CSS horizontal alignment to be applied to the node's body text.",
+                "maxLength": 50
+              },
+              "bodyTextDecoration": {
+                "type": "string",
+                "description": "A CSS text decoration to be applied to the node's body text.",
+                "maxLength": 100
+              },
+              "bodyTextVerticalAlign": {
+                "type": "string",
+                "description": "A CSS vertical alignment to be applied to the node's body text.",
+                "maxLength": 50
+              },
+              "width": {
+                "type": "number",
+                "description": "The width of the node's body or the width of an edge's line.",
+                "minimum": 0
+              },
+              "height": {
+                "type": "number",
+                "description": "The height of the node's body",
+                "minimum": 0
+              },
+              "backgroundImage": {
+                "type": "string",
+                "format": "uri",
+                "description": "The URL that points to the image to show in the node.",
+                "maxLength": 2048
+              },
+              "backgroundColor": {
+                "type": "string",
+                "description": "The colour of the node's body. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "backgroundBlacken": {
+                "type": "number",
+                "description": "Blackens the node's body for values from 0 to 1; whitens the node's body for values from 0 to -1.",
+                "maximum": 1,
+                "minimum": -1
+              },
+              "backgroundOpacity": {
+                "type": "number",
+                "description": "The opacity level of the node's background colour",
+                "maximum": 1,
+                "minimum": 0
+              },
+              "backgroundPositionX": {
+                "type": "string",
+                "description": "The x position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                "maxLength": 50
+              },
+              "backgroundPositionY": {
+                "type": "string",
+                "description": "The y position of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                "maxLength": 50
+              },
+              "backgroundOffsetX": {
+                "type": "string",
+                "description": "The x offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                "maxLength": 50
+              },
+              "backgroundOffsetY": {
+                "type": "string",
+                "description": "The y offset of the background image, measured in percent (e.g. 50%) or pixels (e.g. 10px)",
+                "maxLength": 50
+              },
+              "backgroundFit": {
+                "type": "string",
+                "description": "How the background image is fit to the node. Can be 'none', 'contain', or 'cover'.",
+                "enum": [
+                  "none",
+                  "contain",
+                  "cover"
+                ]
+              },
+              "backgroundClip": {
+                "type": "string",
+                "description": "How the background image is clipped to the node. Can be 'none', 'node', or 'node-border'.",
+                "enum": [
+                  "none",
+                  "node",
+                  "node-border"
+                ]
+              },
+              "backgroundWidthRelativeTo": {
+                "type": "string",
+                "description": "How the background image's width is determined. Can be 'none', 'inner', or 'outer'.",
+                "enum": [
+                  "none",
+                  "inner",
+                  "outer"
+                ]
+              },
+              "backgroundHeightRelativeTo": {
+                "type": "string",
+                "description": "How the background image's height is determined. Can be 'none', 'inner', or 'outer'.",
+                "enum": [
+                  "none",
+                  "inner",
+                  "outer"
+                ]
+              },
+              "borderWidth": {
+                "type": "number",
+                "description": "The size of the node's border.",
+                "minimum": 0
+              },
+              "borderStyle": {
+                "type": "string",
+                "description": "The style of the node's border",
+                "enum": [
+                  "solid",
+                  "dotted",
+                  "dashed",
+                  "double"
+                ]
+              },
+              "borderColor": {
+                "type": "string",
+                "description": "The colour of the node's border. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "borderOpacity": {
+                "type": "number",
+                "description": "The opacity of the node's border",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "padding": {
+                "type": "number",
+                "description": "The amount of padding around all sides of the node.",
+                "minimum": 0
+              },
+              "textHalign": {
+                "type": "string",
+                "description": "The horizontal alignment of a node's label",
+                "enum": [
+                  "left",
+                  "center",
+                  "right"
+                ]
+              },
+              "textValign": {
+                "type": "string",
+                "description": "The vertical alignment of a node's label",
+                "enum": [
+                  "top",
+                  "center",
+                  "bottom"
+                ]
+              },
+              "ghost": {
+                "type": "string",
+                "description": "Whether to use the ghost effect, a semitransparent duplicate of the element drawn at an offset.",
+                "default": "no",
+                "enum": [
+                  "yes",
+                  "no"
+                ]
+              },
+              "activeBgColor": {
+                "type": "string",
+                "description": "The colour of the indicator shown when the background is grabbed by the user. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "activeBgOpacity": {
+                "type": "string",
+                "description": "The opacity of the active background indicator. Selector needs to be *core*.",
+                "maxLength": 50
+              },
+              "activeBgSize": {
+                "type": "string",
+                "description": "The opacity of the active background indicator. Selector needs to be *core*.",
+                "maxLength": 50
+              },
+              "selectionBoxColor": {
+                "type": "string",
+                "description": "The background colour of the selection box used for drag selection. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "selectionBoxBorderWidth": {
+                "type": "number",
+                "description": "The size of the border on the selection box. Selector needs to be *core*",
+                "minimum": 0
+              },
+              "selectionBoxOpacity": {
+                "type": "number",
+                "description": "The opacity of the selection box. Selector needs to be *core*",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "outsideTextureBgColor": {
+                "type": "string",
+                "description": "The colour of the area outside the viewport texture when initOptions.textureOnViewport === true. Selector needs to be *core*. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "outsideTextureBgOpacity": {
+                "type": "number",
+                "description": "The opacity of the area outside the viewport texture. Selector needs to be *core*",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "shapePolygonPoints": {
+                "type": "string",
+                "description": "An array (or a space-separated string) of numbers ranging on [-1, 1], representing alternating x and y values (i.e. x1 y1 x2 y2, x3 y3 ...). This represents the points in the polygon for the node's shape. The bounding box of the node is given by (-1, -1), (1, -1), (1, 1), (-1, 1). The node's position is the origin (0, 0 )",
+                "maxLength": 2000
+              },
+              "menuBackgroundColor": {
+                "type": "string",
+                "description": "The colour of the background of the component menu. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              },
+              "menuBackgroundOpacity": {
+                "type": "number",
+                "description": "The opacity of the background of the component menu.",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "menuForgroundColor": {
+                "type": "string",
+                "description": "The colour of the text or icons in the component menu. Colours may be specified by name (e.g. red), hex (e.g.",
+                "maxLength": 100
+              }
+            }
+          }
+        ]
+      },
+      "RelationshipStyles": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "Visualization styles for a relationship",
+            "allOf": [
+              {
+                "type": "object",
+                "description": "Common styles for all entities",
+                "additionalProperties": true,
+                "required": [
+                  "primaryColor",
+                  "svgColor",
+                  "svgWhite",
+                  "svgComplete"
+                ],
+                "properties": {
+                  "primaryColor": {
+                    "type": "string",
+                    "description": "Primary color of the component used for UI representation.",
+                    "maxLength": 500
+                  },
+                  "secondaryColor": {
+                    "type": "string",
+                    "description": "Secondary color of the entity used for UI representation.",
+                    "maxLength": 500
+                  },
+                  "svgWhite": {
+                    "type": "string",
+                    "description": "White SVG of the entity used for UI representation on dark background.",
+                    "maxLength": 500
+                  },
+                  "svgColor": {
+                    "type": "string",
+                    "description": "Colored SVG of the entity used for UI representation on light background.",
+                    "maxLength": 500
+                  },
+                  "svgComplete": {
+                    "type": "string",
+                    "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+                    "maxLength": 500
+                  },
+                  "color": {
+                    "type": "string",
+                    "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+                    "maxLength": 500
+                  },
+                  "textOpacity": {
+                    "type": "number",
+                    "description": "The opacity of the label text, including its outline.",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "fontFamily": {
+                    "type": "string",
+                    "description": "A comma-separated list of font names to use on the label text.",
+                    "maxLength": 500
+                  },
+                  "fontSize": {
+                    "type": "string",
+                    "description": "The size of the label text.",
+                    "maxLength": 500
+                  },
+                  "fontStyle": {
+                    "type": "string",
+                    "description": "A CSS font style to be applied to the label text.",
+                    "maxLength": 500
+                  },
+                  "fontWeight": {
+                    "type": "string",
+                    "description": "A CSS font weight to be applied to the label text.",
+                    "maxLength": 500
+                  },
+                  "textTransform": {
+                    "type": "string",
+                    "description": "A transformation to apply to the label text",
+                    "enum": [
+                      "none",
+                      "uppercase",
+                      "lowercase"
+                    ]
+                  },
+                  "opacity": {
+                    "type": "number",
+                    "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "zIndex": {
+                    "type": "integer",
+                    "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+                    "minimum": 0
+                  },
+                  "label": {
+                    "type": "string",
+                    "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+                    "maxLength": 500
+                  },
+                  "animation": {
+                    "type": "object",
+                    "description": "The animation to apply to the element. example ripple,bounce,etc"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "edgeAnimation": {
+                    "type": "string",
+                    "description": "The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .",
+                    "maxLength": 100
+                  },
+                  "curveStyle": {
+                    "type": "string",
+                    "description": "The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.",
+                    "default": "straight",
+                    "enum": [
+                      "straight",
+                      "haystack",
+                      "bezier",
+                      "unbundled-bezier",
+                      "segments",
+                      "taxi"
+                    ]
+                  },
+                  "lineColor": {
+                    "type": "string",
+                    "description": "The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g.",
+                    "maxLength": 100
+                  },
+                  "lineStyle": {
+                    "type": "string",
+                    "description": "The style of the edge's line.",
+                    "enum": [
+                      "solid",
+                      "dotted",
+                      "dashed"
+                    ]
+                  },
+                  "lineCap": {
+                    "type": "string",
+                    "description": "The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.",
+                    "enum": [
+                      "butt",
+                      "round",
+                      "square"
+                    ],
+                    "default": "butt"
+                  },
+                  "lineOpacity": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "default": 1,
+                    "description": "The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents."
+                  },
+                  "targetArrowColor": {
+                    "type": "string",
+                    "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.",
+                    "maxLength": 100
+                  },
+                  "targetArrowShape": {
+                    "type": "string",
+                    "description": "The shape of the edge's source arrow",
+                    "enum": [
+                      "triangle",
+                      "triangle-tee",
+                      "circle-triangle",
+                      "triangle-cross",
+                      "triangle-backcurve",
+                      "vee",
+                      "tee",
+                      "square",
+                      "circle",
+                      "diamond",
+                      "chevron",
+                      "none"
+                    ]
+                  },
+                  "targetArrowFill": {
+                    "type": "string",
+                    "description": "The fill state of the edge's source arrow",
+                    "enum": [
+                      "filled",
+                      "hollow"
+                    ]
+                  },
+                  "midTargetArrowColor": {
+                    "type": "string",
+                    "description": "The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g.",
+                    "maxLength": 100
+                  },
+                  "midTargetArrowShape": {
+                    "type": "string",
+                    "description": "The shape of the edge's source arrow",
+                    "enum": [
+                      "triangle",
+                      "triangle-tee",
+                      "circle-triangle",
+                      "triangle-cross",
+                      "triangle-backcurve",
+                      "vee",
+                      "tee",
+                      "square",
+                      "circle",
+                      "diamond",
+                      "chevron",
+                      "none"
+                    ]
+                  },
+                  "midTargetArrowFill": {
+                    "type": "string",
+                    "description": "The fill state of the edge's source arrow",
+                    "enum": [
+                      "filled",
+                      "hollow"
+                    ]
+                  },
+                  "arrowScale": {
+                    "type": "number",
+                    "description": "Scaling for the arrow size.",
+                    "minimum": 0
+                  },
+                  "sourceLabel": {
+                    "type": "string",
+                    "description": "The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id",
+                    "maxLength": 500
+                  },
+                  "targetLabel": {
+                    "type": "string",
+                    "description": "The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id",
+                    "maxLength": 500
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "allOf": [
+              {
+                "type": "object",
+                "description": "Common styles for all entities",
+                "additionalProperties": true,
+                "required": [
+                  "primaryColor",
+                  "svgColor",
+                  "svgWhite",
+                  "svgComplete"
+                ],
+                "properties": {
+                  "primaryColor": {
+                    "type": "string",
+                    "description": "Primary color of the component used for UI representation.",
+                    "maxLength": 500
+                  },
+                  "secondaryColor": {
+                    "type": "string",
+                    "description": "Secondary color of the entity used for UI representation.",
+                    "maxLength": 500
+                  },
+                  "svgWhite": {
+                    "type": "string",
+                    "description": "White SVG of the entity used for UI representation on dark background.",
+                    "maxLength": 500
+                  },
+                  "svgColor": {
+                    "type": "string",
+                    "description": "Colored SVG of the entity used for UI representation on light background.",
+                    "maxLength": 500
+                  },
+                  "svgComplete": {
+                    "type": "string",
+                    "description": "Complete SVG of the entity used for UI representation, often inclusive of background.",
+                    "maxLength": 500
+                  },
+                  "color": {
+                    "type": "string",
+                    "description": "The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g.",
+                    "maxLength": 500
+                  },
+                  "textOpacity": {
+                    "type": "number",
+                    "description": "The opacity of the label text, including its outline.",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "fontFamily": {
+                    "type": "string",
+                    "description": "A comma-separated list of font names to use on the label text.",
+                    "maxLength": 500
+                  },
+                  "fontSize": {
+                    "type": "string",
+                    "description": "The size of the label text.",
+                    "maxLength": 500
+                  },
+                  "fontStyle": {
+                    "type": "string",
+                    "description": "A CSS font style to be applied to the label text.",
+                    "maxLength": 500
+                  },
+                  "fontWeight": {
+                    "type": "string",
+                    "description": "A CSS font weight to be applied to the label text.",
+                    "maxLength": 500
+                  },
+                  "textTransform": {
+                    "type": "string",
+                    "description": "A transformation to apply to the label text",
+                    "enum": [
+                      "none",
+                      "uppercase",
+                      "lowercase"
+                    ]
+                  },
+                  "opacity": {
+                    "type": "number",
+                    "description": "The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "zIndex": {
+                    "type": "integer",
+                    "description": "An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.",
+                    "minimum": 0
+                  },
+                  "label": {
+                    "type": "string",
+                    "description": "The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id",
+                    "maxLength": 500
+                  },
+                  "animation": {
+                    "type": "object",
+                    "description": "The animation to apply to the element. example ripple,bounce,etc"
+                  }
+                }
+              },
+              {
+                "additionalProperties": true
+              }
+            ],
+            "description": "Extension point for additional styles"
+          }
+        ]
+      },
+      "NonResolvedAlias": {
+        "description": "An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents",
+        "type": "object",
+        "properties": {
+          "relationshipId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "aliasComponentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "immediateParentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "immediateRefFieldPath": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The immediate ref field path of the nonresolvedalias."
+          }
+        },
+        "required": [
+          "relationshipId",
+          "aliasComponentId",
+          "immediateParentId",
+          "immediateRefFieldPath"
+        ]
+      },
+      "ResolvedAlias": {
+        "description": "An resolved alias is an component that acts as an ref/pointer to a field in another component, resolvedAlias are aware of there immediate parents and completely resolved parents also",
+        "allOf": [
+          {
+            "description": "An alias is an component that acts as an ref/pointer to a field in another component, nonResolvedAlias are not aware of there immediate parents",
+            "type": "object",
+            "properties": {
+              "relationshipId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "aliasComponentId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "immediateParentId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "immediateRefFieldPath": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The immediate ref field path of the nonresolvedalias."
+              }
+            },
+            "required": [
+              "relationshipId",
+              "aliasComponentId",
+              "immediateParentId",
+              "immediateRefFieldPath"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "resolvedParentId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                "x-go-type": "uuid.UUID",
+                "x-go-type-import": {
+                  "path": "github.com/gofrs/uuid"
+                }
+              },
+              "resolvedRefFieldPath": {
+                "type": "array",
+                "description": "Fully resolved field path targeted by the alias.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "resolvedParentId",
+              "resolvedRefFieldPath"
+            ]
+          }
+        ]
+      },
+      "IaCFileTypes": {
+        "type": "string",
+        "description": "The type of the IaC file",
+        "enum": [
+          "meshery-design",
+          "helm-chart",
+          "k8s-manifest",
+          "docker-compose",
+          "k8s-kustomize"
+        ]
+      }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "description": "Unique identifier",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "x-go-type": "uuid.UUID",
+          "x-go-type-import": {
+            "path": "github.com/gofrs/uuid"
+          },
+          "x-go-type-skip-optional-pointer": true
+        },
+        "required": true
+      },
+      "all": {
+        "name": "all",
+        "in": "query",
+        "description": "Get all possible entries",
+        "schema": {
+          "type": "boolean"
+        }
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Get responses by page",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "userId": {
+        "name": "userId",
+        "in": "query",
+        "description": "Filter catalog items by user ID. Pass multiple user IDs to fetch content for several users simultaneously.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "metrics": {
+        "name": "metrics",
+        "in": "query",
+        "description": "Include metrics associated with the designs.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "class": {
+        "name": "class",
+        "in": "query",
+        "description": "Filter catalog items based on their support class. Specify one or more classes per request as needed. Example: 'official' and 'verified'",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pagesize": {
+        "name": "pagesize",
+        "in": "query",
+        "description": "Get responses by pagesize",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pagesizeWithAll": {
+        "name": "pagesize",
+        "in": "query",
+        "description": "Get responses by pagesize (pass all to get all responses)",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "order": {
+        "name": "order",
+        "in": "query",
+        "description": "Get ordered responses",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "visibility": {
+        "name": "visibility",
+        "in": "query",
+        "description": "Get responses based on visibility - private, public or published",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "populate": {
+        "name": "populate",
+        "in": "query",
+        "description": "Populate the response with additional data like pattern_file",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "search": {
+        "name": "search",
+        "in": "query",
+        "description": "Get responses that match search param value",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "filter": {
+        "name": "filter",
+        "in": "query",
+        "description": "Get filtered reponses",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "isOAuth": {
+        "name": "isOAuth",
+        "in": "query",
+        "description": "To get OAuth tokens as well",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "name": {
+        "name": "name",
+        "in": "query",
+        "description": "Name of the resource",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "purpose": {
+        "name": "purpose",
+        "in": "query",
+        "description": "Purpose for which token is generated",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "cumulative": {
+        "name": "cumulative",
+        "in": "query",
+        "description": "Cumulative events",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "mesheryVersion": {
+        "name": "meshery-version",
+        "in": "path",
+        "description": "meshery version",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "os": {
+        "name": "os",
+        "in": "query",
+        "description": "user's os",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "playground": {
+        "name": "playground",
+        "in": "query",
+        "description": "Is playground mode",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "namespace": {
+        "name": "namespace",
+        "in": "query",
+        "description": "Namespace",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "type": {
+        "name": "type",
+        "in": "query",
+        "description": "Type",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "actorType": {
+        "name": "actorType",
+        "in": "path",
+        "description": "Type of actor e.g user, team, system, registrant",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "resourceType": {
+        "name": "resourceType",
+        "in": "path",
+        "description": "Type of resource e.g design, filter, view, environment, workspace",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      },
+      "contentType": {
+        "in": "query",
+        "required": false,
+        "name": "type",
+        "description": "Filter catalog data based on type of content e.g (deployment, workloads, scaling...) multiple params can be passed",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "contentTechnology": {
+        "in": "query",
+        "required": false,
+        "name": "technology",
+        "description": "Filter catalog data based on technology(compatibility) of content e.g (kubernetes, istio...) multiple params can be passed",
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "ok",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "201": {
+        "description": "",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "Publish request already exists",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export default CoreSchema;

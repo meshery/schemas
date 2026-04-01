@@ -69,7 +69,7 @@ Find out more on the <a href="https://meshery.io/community#meshmates">Meshery co
 <br /><br />
 <div style="display: flex; justify-content: center; align-items:center;">
 <div>
-<a href="https://meshery.io/community"><img alt="Meshery Cloud Native Community" src="https://docs.meshery.io/assets/img/readme/community.png" width="140px" style="margin-right:36px; margin-bottom:7px;" width="140px" align="left"/></a>
+<a href="https://meshery.io/community"><img alt="Meshery Cloud Native Community" src="https://raw.githubusercontent.com/meshery/meshery/master/.github/assets/images/readme/community.png" width="140px" style="margin-right:36px; margin-bottom:7px;" width="140px" align="left"/></a>
 </div>
 <div style="width:60%; padding-left: 16px; padding-right: 16px">
 <p>
@@ -168,6 +168,125 @@ schemas/
       * **`templates/`** – A subdirectory containing manually defined template files. You can add as many different templates here for different variants, use cases, or configurations. Templates are example instances of the schema with default or sample values.
         * `<construct>_template.json` / `<construct>_template.yaml` – Default templates in JSON/YAML format.
         * Additional variant templates can be added (e.g., `<construct>_minimal_template.json`, `<construct>_full_template.yaml`) for different use cases.
+
+---
+
+## Schema Design Principles: The Dual-Schema Pattern
+
+Every persisted entity in Meshery follows a strict two-schema contract. Violating this contract causes generated Go structs and API clients to be incorrect.
+
+### Rule 1 — Entity schema = response schema only
+
+The `<construct>.yaml` file represents the **full server-side object** as returned in API responses. It must:
+
+- Include **all** server-generated fields: `id`, `created_at`, `updated_at`, `deleted_at`
+- List server-generated required fields in `required` (they are always present in responses)
+- Have `additionalProperties: false` at the top level
+
+```yaml
+# keychain.yaml — response schema ✅
+type: object
+additionalProperties: false
+required:
+  - id
+  - name
+  - owner
+  - created_at
+  - updated_at
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+  name:
+    type: string
+  owner:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+  created_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+  updated_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+  deleted_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+```
+
+### Rule 2 — Write operations use a separate `*Payload` schema
+
+Every entity that supports `POST` or `PUT` must define a dedicated `{Entity}Payload` schema in `api.yml`. The payload schema:
+
+- Contains **only client-settable fields** (no `created_at`, `updated_at`, `deleted_at`)
+- Makes `id` optional with `omitempty` for upsert patterns, or omits it entirely for create-only
+- Is referenced by `requestBody` in `POST`/`PUT` operations
+- Is **never** reused as a response body
+
+```yaml
+# In api.yml — write schema ✅
+components:
+  schemas:
+    KeychainPayload:
+      type: object
+      description: Payload for creating or updating a keychain.
+      required:
+        - name
+      properties:
+        id:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Existing keychain ID for updates; omit on create.
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Name of the keychain.
+        owner:
+          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          description: Owner UUID; set server-side from auth context if omitted.
+          x-oapi-codegen-extra-tags:
+            json: "owner,omitempty"
+
+paths:
+  /api/auth/keychains:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainPayload"   # ← Payload, not Keychain
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Keychain"        # ← Full entity in response
+```
+
+### Rule 3 — Never use the entity schema as a POST/PUT request body
+
+Using the full entity schema as a `requestBody` forces clients to supply server-generated fields (`id`, `created_at`, `updated_at`) and produces incorrect generated client code.
+
+```yaml
+# ❌ Wrong — exposes server-generated required fields to clients
+post:
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: "#/components/schemas/Keychain"
+
+# ✅ Correct — separate payload type for writes
+post:
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: "#/components/schemas/KeychainPayload"
+```
+
+### Checklist when adding a new entity
+
+- [ ] `<construct>.yaml` has `additionalProperties: false`
+- [ ] `<construct>.yaml` lists all server-generated fields in `properties` and `required`
+- [ ] `api.yml` defines a `{Construct}Payload` schema with only client-settable fields
+- [ ] All `POST`/`PUT` `requestBody` entries reference `{Construct}Payload`, not `{Construct}`
+- [ ] `GET` responses reference the full `{Construct}` entity schema
 
 ---
 
@@ -477,6 +596,75 @@ paths:
 
 ---
 
+### `x-generate-db-helpers`
+
+Use `x-generate-db-helpers: true` as a **schema-level** annotation (not per-property) on a named component under `components/schemas` to instruct the Go generator to automatically produce SQL driver helper methods (`Scan` and `Value`) for that type.
+
+**When to use it**: The annotated schema type must satisfy both conditions:
+
+1. It has a **dedicated OpenAPI schema definition** (i.e., it is a named component with explicit properties, not a generic map).
+2. It is **persisted as a JSON blob** in a single database column — not spread across a dedicated table with one column per field.
+
+**When NOT to use it**: Do not annotate amorphous types that have no fixed schema definition (e.g., a generic `metadata` object). Those fields should use `x-go-type: "core.Map"` instead. Also do not annotate types that map to full database tables with individual columns for each property — those are handled by the normal DB tag generation.
+
+#### Example
+
+```yaml
+components:
+  schemas:
+    Quiz:
+      x-generate-db-helpers: true   # ← schema-level; not on individual properties
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+        title:
+          type: string
+```
+
+The generator produces `zz_generated.helpers.go` containing:
+
+```go
+func (value *Quiz) Scan(src interface{}) error {
+    if src == nil {
+        *value = Quiz{}
+        return nil
+    }
+    mapVal := core.Map{}
+    if err := mapVal.Scan(src); err != nil {
+        return err
+    }
+    return core.MapToStruct(mapVal, value)
+}
+
+func (value Quiz) Value() (driver.Value, error) {
+    mapVal, err := core.StructToMap(value)
+    if err != nil {
+        return nil, err
+    }
+    return core.Map(mapVal).Value()
+}
+```
+
+These implement Go's `sql.Scanner` and `driver.Valuer` interfaces so the struct is transparently serialized as JSON when reading from or writing to a database column.
+
+**Counter-example — `metadata`**: A `metadata` field stored as JSON in the database is intentionally *not* annotated with `x-generate-db-helpers` because it is amorphous — it has no fixed property list. Use `x-go-type: "core.Map"` for those fields instead:
+
+```yaml
+metadata:
+  type: object
+  additionalProperties: true
+  x-go-type: "core.Map"
+  x-go-type-skip-optional-pointer: true
+  x-oapi-codegen-extra-tags:
+    db: "metadata"
+```
+
+---
+
 ## 🛠️ Advanced Usage (Optional)
 
 ### 📌 Custom Generation in `generate.sh`
@@ -702,17 +890,98 @@ Or validate a single file:
 npx @redocly/cli lint schemas/constructs/v1beta1/pattern/api.yml
 ```
 
+### Schema Validation Modes
+
+`build/validate-schemas.js` enforces 33 rules organized into four issue tiers. Different `make` targets control which tiers are visible and whether violations block the build.
+
+| Mode | Command | Blocking | Style | Design | Contract |
+| --- | --- | --- | --- | --- | --- |
+| Build default | `make validate-schemas` | Exit 1 | Silent | Silent | Silent |
+| Advisory audit | `make audit-schemas` | Exit 0 | Silent | Visible | Visible |
+| Full advisory backlog | `make audit-schemas-full` | Exit 0 | Silent | Visible | Visible |
+| Style debt report | `make audit-schemas-style-full` | Exit 0 | Visible | Visible | Visible |
+| Full debt report | `make audit-schemas-debt-full` | Exit 0 | Visible | Visible | Visible |
+| Strict CI gate | `make validate-schemas-strict` | Exit 1 | Error | Error | Error |
+
+- **Blocking** (Rules 1-2, 5, 11-22, 27, 32-33): Always enforced. Break code generation or violate structural contracts.
+- **Style** (Rules 3-4, 6-10, 19): Naming conventions. Silent by default; visible with `--style-debt`; blocking in v1beta2-draft files and `--strict-consistency`.
+- **Design** (Rules 23-26, 30-31): API design patterns. Visible as advisories in `--warn` mode.
+- **Contract** (Rules 28-29): Published API contract checks (response codes, duplicate schemas). Visible as advisories in `--warn` mode.
+
+Run unit tests for the validation logic:
+
+```bash
+npm run test:validate-schemas
+```
+
+### Build Pipeline
+
+`make build` runs 8 steps in sequence. Each step depends on the previous.
+
+```
+schemas/constructs/          (OpenAPI YAML source files)
+        |
+        v
+[1] validate-schemas         node build/validate-schemas.js
+        |                    34 rules: casing, dual-schema, templates, pagination
+        v
+[2] bundle-openapi           node build/bundle-openapi.js
+        |                    Per-construct: swagger-cli bundle --dereference
+        |                    Merge all: @redocly/cli join → merged_openapi.yml
+        |                    Filter: cloud_openapi.yml, meshery_openapi.yml
+        v
+[3] generate-golang          node build/generate-golang.js
+        |                    Per-package: oapi-codegen → models/<ver>/<pkg>/<pkg>.go
+        |                    Post-processing pipeline (see below)
+        v
+[4] generate-rtk             node build/generate-rtk.js
+        |                    RTK Query clients from bundled OpenAPI specs
+        v
+[5] generate-ts              npm run generate:types
+        |                    openapi-typescript → typescript/generated/<ver>/<pkg>/
+        v
+[6] generate-permissions     Go + TypeScript permission key generation
+        v
+[7] build-ts                 npm run build (tsup)
+        |                    Bundles TypeScript distribution → dist/
+        v
+[8] test-golang              go build ./... && go test ./...
+```
+
+### Go Generation Pipeline
+
+`build/generate-golang.js` runs a 10-stage pipeline per package. The pipeline generates, transforms, and validates Go structs.
+
+| Stage | Function | What it does |
+| --- | --- | --- |
+| 1 | `oapi-codegen` | Generates Go structs with `json` tags from schema property names (verbatim) |
+| 2 | `addYamlTags()` | Copies each `json` tag value to a `yaml` tag |
+| 3 | `removeSelfReferentialAliases()` | Strips `type X = X` aliases when manual definitions exist in same package |
+| 4 | `addSchemaExtraTags()` | Merges `db`, `gorm`, etc. from `x-oapi-codegen-extra-tags` into struct tags |
+| 5 | `rewriteExternalRefAliases()` | Normalizes import aliases from opaque names to readable ones |
+| 6 | `validateReadableImportAliases()` | Verifies no opaque import aliases remain |
+| 7 | `addCompatibilityParameterAliases()` | Adds backward-compatible parameter type aliases |
+| 8 | `ensureRequiredImports()` | Adds missing Go imports (e.g., `uuid`) when inlined `x-go-type` requires them |
+| 9 | `validateGeneratedDbTags()` | Verifies every `db:` tag declared in the schema is present in generated Go |
+| 10 | `validateGeneratedJsonTags()` | Verifies every `json:` tag in generated Go matches the schema property name |
+
+The **property name is the single source of truth** for the json wire format. oapi-codegen reads it verbatim (stage 1), and `validateGeneratedJsonTags` confirms it survived the pipeline unchanged (stage 10).
+
 ---
 
 ## ✅ Summary
 
-| Task                         | Command                 |
-| ---------------------------- | ----------------------- |
-| Generate everything          | `make build`            |
-| Build TypeScript dist        | `npm run build`         |
-| Generate Go code only        | `make golang-generate`  |
-| Generate TS types + schemas  | `make generate-ts`      |
-| Lint OpenAPI                 | `npx @redocly/cli lint` |
+| Task                         | Command                          |
+| ---------------------------- | -------------------------------- |
+| Generate everything          | `make build`                     |
+| Build TypeScript dist        | `npm run build`                  |
+| Generate Go code only        | `make golang-generate`           |
+| Generate TS types + schemas  | `make generate-ts`               |
+| Lint OpenAPI                 | `npx @redocly/cli lint`          |
+| Schema validation (blocking) | `make validate-schemas`          |
+| Schema audit (advisory)      | `make audit-schemas`             |
+| Full schema debt report      | `make audit-schemas-debt-full`   |
+| Validation unit tests        | `npm run test:validate-schemas`  |
 
 ### Importing Schemas
 

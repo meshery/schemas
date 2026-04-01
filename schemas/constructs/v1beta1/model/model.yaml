@@ -6,14 +6,14 @@ type: object
 properties:
   id:
     description: Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     x-order: 1
     x-oapi-codegen-extra-tags:
       yaml: id
       json: id
   schemaVersion:
     description: Specifies the version of the schema used for the definition.
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    $ref: ../core/api.yml#/components/schemas/versionString
     x-order: 2
     x-oapi-codegen-extra-tags:
       yaml: schemaVersion
@@ -22,7 +22,7 @@ properties:
   version:
     description: Version of the model definition.
     type: string
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
+    $ref: ../core/api.yml#/components/schemas/semverString
     x-order: 3
     x-oapi-codegen-extra-tags:
       yaml: version
@@ -86,13 +86,14 @@ properties:
       json: registrant
       gorm: foreignKey:RegistrantId;references:ID
     x-order: 8
-    x-go-type: connection.Connection
+    x-go-type: connectionv1beta1.Connection
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/connection
-    $ref: ../connection/connection.yaml
+      name: connectionv1beta1
+    $ref: ../connection/api.yml#/components/schemas/Connection
   registrantId:
     description: ID of the registrant.
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     x-oapi-codegen-extra-tags:
       yaml: connection_id
       json: connection_id
@@ -100,28 +101,30 @@ properties:
     x-order: 8
   categoryId:
     description: ID of the category.
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     x-oapi-codegen-extra-tags:
       yaml: "-"
       json: "-"
       gorm: categoryID
     x-order: 8
   category:
-    $ref: ../category/category.yaml
+    $ref: ../category/api.yml#/components/schemas/CategoryDefinition
     x-order: 9
     x-oapi-codegen-extra-tags:
       yaml: category
       json: category
-      gorm: foreignKey:CategoryId;references:Id
-    x-go-type: category.CategoryDefinition
+      gorm: foreignKey:CategoryId;references:ID
+    x-go-type: categoryv1beta1.CategoryDefinition
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/category
+      name: categoryv1beta1
   subCategory:
-    $ref: ../subcategory/subcategory.yaml
+    $ref: ../subcategory/api.yml#/components/schemas/SubCategoryDefinition
     x-order: 10
-    x-go-type: subcategory.SubCategoryDefinition
+    x-go-type: subcategoryv1beta1.SubCategoryDefinition
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/subcategory
+      name: subcategoryv1beta1
   metadata:
     type: object
     description: Metadata containing additional information associated with the model.
@@ -133,10 +136,11 @@ properties:
         type: array
         description: Capabilities associated with the model
         items:
-          $ref: ../../v1alpha1/capability/capability.yaml
-          x-go-type: capability.Capability
+          $ref: ../capability/api.yml#/components/schemas/Capability
+          x-go-type: capabilityv1alpha1.Capability
           x-go-type-import:
             path: github.com/meshery/schemas/models/v1alpha1/capability
+            name: capabilityv1alpha1
         x-order: 1
       isAnnotation:
         type: boolean
@@ -194,7 +198,7 @@ properties:
         x-order: 7
       shape:
         x-order: 8
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/shape
+        $ref: ../core/api.yml#/components/schemas/shape
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
       json: metadata
@@ -213,6 +217,7 @@ properties:
       gorm: "-"
       json: relationships
       yaml: relationships
+    description: The relationships of the model.
   components:
     type: array
     x-go-type: interface{}
@@ -220,6 +225,7 @@ properties:
       gorm: "-"
       json: components
       yaml: components
+    description: The components of the model.
   componentsCount:
     type: integer
     description: Number of components associated with the model.
@@ -229,6 +235,7 @@ properties:
       yaml: components_count
       gorm: "-"
     default: 0
+    minimum: 0
   relationshipsCount:
     type: integer
     description: Number of relationships associated with the model.
@@ -238,11 +245,12 @@ properties:
       json: relationships_count
       yaml: relationships_count
     default: 0
+    minimum: 0
   created_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+    $ref: ../core/api.yml#/components/schemas/created_at
     x-order: 14
   updated_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+    $ref: ../core/api.yml#/components/schemas/updated_at
     x-order: 15
 required:
   - id

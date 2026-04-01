@@ -1,0 +1,17 @@
+openapi: 3.0.0
+info:
+  title: Catalog
+  description: OpenAPI schema for Meshery catalog data and content management.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths: {}
+components:
+  schemas:
+    CatalogData:
+      $ref: "./catalog.yaml"

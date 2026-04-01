@@ -1,15 +1,28 @@
 openapi: 3.0.0
 info:
   title: Academy API
-  version: 1.0.0
+  description: OpenAPI schema for Meshery Academy content and curriculum management.
+  x-deprecated: true
+  x-superseded-by: v1beta2
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
 
 paths:
-  /api/academy/cirricula/registered:
+  /api/academy/Curricula/registered:
     get:
       x-internal: ["cloud"]
       tags:
         - Academy
-      operationId: getMyAcademyCirricula
+      operationId: getMyAcademyCurricula
       summary: Get academy content
       description: Returns a list of academy content registered by the user with optional filtering.
       parameters:
@@ -17,34 +30,36 @@ paths:
           in: query
           description: Filter content by content types
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
         - name: orgId
           in: query
           description: Filter content by organization IDs
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
 
-    responses:
-      "200":
-        description: A list of content with total count
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AcademyCirriculaListResponse"
-      "400":
-        description: Invalid request parameters
-      "500":
-        description: Server error
+      responses:
+        "200":
+          description: A list of content with total count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AcademyCurriculaListResponse"
+        "400":
+          description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Server error
 
   /api/academy/curricula:
     post:
@@ -66,18 +81,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcademyCirricula"
+                $ref: "#/components/schemas/AcademyCurricula"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           description: Server error
 
-  /api/academy/cirricula:
+  /api/academy/Curricula:
     get:
       x-internal: ["cloud"]
       tags:
         - Academy
-      operationId: getAcademyCirricula
+      operationId: getAcademyCurricula
       summary: Get academy content
       description: Returns a list of academy content with optional filtering.
       parameters:
@@ -85,66 +102,66 @@ paths:
           in: query
           description: Filter content by content types
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
         - name: visibility
           in: query
           description: Filter content by visibility (public/private)
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
 
         - name: level
           in: query
           description: Filter content by difficulty level
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
 
         - name: orgId
           in: query
           description: Filter content by organization IDs
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
 
         - name: category
           in: query
           description: Filter content by categories
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
 
         - name: status
           in: query
           description: Filter by registration status
           required: false
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
 
         - name: search
           in: query
@@ -178,17 +195,19 @@ paths:
           schema:
             type: integer
 
-    responses:
-      "200":
-        description: A list of content with total count
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AcademyCurriculaWithMetricsListResponse"
-      "400":
-        description: Invalid request parameters
-      "500":
-        description: Server error
+      responses:
+        "200":
+          description: A list of content with total count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AcademyCurriculaWithMetricsListResponse"
+        "400":
+          description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Server error
 
   /api/academy/{type}/{orgId}/{slug}:
     get:
@@ -218,9 +237,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AcademyCirricula"
+                $ref: "#/components/schemas/AcademyCurricula"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           description: Server error
 
@@ -239,7 +262,7 @@ paths:
               $ref: "#/components/schemas/RegisterToAcademyContentRequest"
 
       responses:
-        "200":
+        "201":
           description: registered content
           content:
             application/json:
@@ -247,6 +270,8 @@ paths:
                 $ref: "#/components/schemas/AcademyRegistration"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           description: Server error
 
@@ -269,6 +294,10 @@ paths:
                 $ref: "#/components/schemas/AcademyRegistration"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           description: Server error
 
@@ -277,7 +306,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - Academy
-      operationId: updateAcademyCurriculaByID
+      operationId: updateAcademyCurriculaById
       summary: Update an existing academy curricula by ID
       description: Updates the details of an existing academy curricula identified by its ID.
       parameters:
@@ -297,6 +326,8 @@ paths:
                 $ref: "#/components/schemas/SingleAcademyCurriculaResponse"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Curricula not found
         "500":
@@ -306,16 +337,18 @@ paths:
       x-internal: ["cloud"]
       tags:
         - Academy
-      operationId: deleteAcademyCurriculaByID
+      operationId: deleteAcademyCurriculaById
       summary: Delete an academy curricula by ID
       description: Deletes an existing academy curricula identified by its ID.
       parameters:
         - $ref: "#/components/parameters/id"
       responses:
         "204":
-          description: Successfully deleted the curricula
+          description: Curricula deleted
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Curricula not found
         "500":
@@ -324,7 +357,7 @@ paths:
       x-internal: ["cloud"]
       tags:
         - Academy
-      operationId: getAcademyCurriculaByID
+      operationId: getAcademyCurriculaById
       summary: Get a single academy curricula by ID
       description: Returns a single academy curricula identified by its ID.
       parameters:
@@ -339,6 +372,8 @@ paths:
                 $ref: "#/components/schemas/SingleAcademyCurriculaResponse"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Curricula not found
         "500":
@@ -376,6 +411,8 @@ paths:
                 $ref: "#/components/schemas/AcademyRegistration"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Content not found
         "500":
@@ -403,28 +440,21 @@ paths:
               $ref: "#/components/schemas/UpdateCurrentItemRequest"
       responses:
         "200":
-          description: Successfully updated the progress tracker
+          description: Progress tracker updated
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  progress_tracker:
-                    $ref: "#/components/schemas/CirriculaProgressTracker"
-                  registration_id:
-                    type: string
-                  content_type:
-                    $ref: "#/components/schemas/ContentType"
-                  item_data:
-                    $ref: "#/components/schemas/CirriculaCurrentItemData"
+                $ref: "#/components/schemas/UpdateCurrentItemProgressResponse"
         "400":
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           description: Server error
           content:
@@ -456,6 +486,8 @@ paths:
                 $ref: "#/components/schemas/Quiz"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Quiz not found
         "500":
@@ -466,7 +498,7 @@ paths:
       tags:
         - Academy
       x-internal: ["cloud"]
-      operationId: startTestByID
+      operationId: startTestById
       summary: Start a Test by ID
       description: Starts a new test session for the quiz identified by its ID.
 
@@ -486,6 +518,8 @@ paths:
                 $ref: "#/components/schemas/Quiz"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Quiz not found
         "500":
@@ -506,6 +540,8 @@ paths:
           description: The ID of the registration to retrieve tests for
           schema:
             type: string
+        - $ref: "../core/api.yml#/components/parameters/page"
+        - $ref: "../core/api.yml#/components/parameters/pagesize"
         - name: testAbsPath
           in: query
           required: false
@@ -524,6 +560,8 @@ paths:
                   $ref: "#/components/schemas/TestSubmissions"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Registration not found
         "500":
@@ -545,7 +583,7 @@ paths:
               $ref: "#/components/schemas/QuizSubmission"
       responses:
         "200":
-          description: Successfully updated the progress tracker
+          description: Progress tracker updated
           content:
             application/json:
               schema:
@@ -556,6 +594,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           description: Server error
           content:
@@ -580,6 +620,8 @@ paths:
                 type: object
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           description: Server error
 
@@ -604,26 +646,26 @@ paths:
           description: Page number
           schema:
             type: integer
-        - name: content_type
+        - name: contentType
           in: query
           required: false
           description: Filter by content types
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
         - name: status
           in: query
           required: false
           description: Filter by registration status
+          style: form
+          explode: true
           schema:
             type: array
             items:
               type: string
-            style: form
-            explode: true
       responses:
         "200":
           description: List of registrations with pagination info
@@ -633,6 +675,8 @@ paths:
                 $ref: "#/components/schemas/CurriculaRegistrationsResponse"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           description: Server error
 
@@ -661,12 +705,30 @@ paths:
                 $ref: "#/components/schemas/Certificate"
         "400":
           description: Invalid request parameters
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           description: Certificate not found
         "500":
           description: Server error
 
 components:
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   parameters:
     id:
       name: id
@@ -677,16 +739,95 @@ components:
         type: string
 
   schemas:
+    AcademyCurriculaOrgId:
+      type: string
+      description: Organization ID that owns this learning path
+      example: layer5
+      x-oapi-codegen-extra-tags:
+        db: "org_id"
+        json: "org_id"
+
+    AcademyCurriculaBadgeId:
+      allOf:
+        - $ref: "../core/api.yml#/components/schemas/uuid"
+      description: ID of the badge to be awarded on completion of this curricula
+      x-oapi-codegen-extra-tags:
+        db: "badge_id"
+        json: "badge_id"
+
+    AcademyCurriculaInviteId:
+      allOf:
+        - $ref: "../core/api.yml#/components/schemas/uuid"
+      description: ID of the invite associated with this Curricula
+      x-oapi-codegen-extra-tags:
+        db: "invite_id"
+        json: "invite_id"
+
+    AcademyCurriculaWorkspaceId:
+      allOf:
+        - $ref: "../core/api.yml#/components/schemas/uuid"
+      description: ID of the workspace to which this Curricula belongs
+      x-oapi-codegen-extra-tags:
+        db: "workspace_id"
+        json: "workspace_id"
+
+    AcademyCurriculaCreatedAt:
+      allOf:
+        - $ref: "../core/api.yml#/components/schemas/Time"
+      description: When the Curricula item was created
+      x-oapi-codegen-extra-tags:
+        db: "created_at"
+        json: "created_at"
+
+    AcademyCurriculaUpdatedAt:
+      allOf:
+        - $ref: "../core/api.yml#/components/schemas/Time"
+      description: When the Curricula was last updated
+      x-go-type: "core.Time"
+      x-oapi-codegen-extra-tags:
+        db: "updated_at"
+        json: "updated_at"
+
+    AcademyCurriculaDeletedAt:
+      allOf:
+        - $ref: "../core/api.yml#/components/schemas/deleted_at"
+      x-go-type: "core.NullTime"
+      x-oapi-codegen-extra-tags:
+        db: "deleted_at"
+        json: "deleted_at"
+
+    AcademyCurriculaMetadata:
+      type: object
+      description: Additional metadata about the Curricula
+      additionalProperties: true
+      x-go-type: "core.Map"
+      x-go-type-skip-optional-pointer: true
+      x-oapi-codegen-extra-tags:
+        db: "metadata"
+        json: "metadata"
+      oneOf:
+        - $ref: "#/components/schemas/CurriculaMetadata"
+          x-go-type: "CurriculaMetadata"
+
+    AcademyCurriculaAccessExpiresAt:
+      allOf:
+        - $ref: "../core/api.yml#/components/schemas/Time"
+      description: Expiry time for curricula access
+      x-go-type: "*time.Time"
+      x-oapi-codegen-extra-tags:
+        json: "access_expires_at"
+        db: "access_expires_at"
+
     RegisterToAcademyContentRequest:
       type: object
       required:
-        - content_id
+        - contentId
         - user_id
       properties:
-        content_id:
+        contentId:
           type: string
           description: ID of the academy content to register for
-        content_type:
+        contentType:
           $ref: "#/components/schemas/ContentType"
 
     ContentType:
@@ -715,18 +856,17 @@ components:
         - archived
         - not_ready
 
-    AcademyCirricula:
+    AcademyCurricula:
       type: object
       properties:
         id:
           type: string
-          description: Id of the cirricula
+          description: Id of the Curricula
           example: 923458-3490394-934893
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: "id"
             json: "id"
-            yaml: "id"
 
         type:
           $ref: "#/components/schemas/ContentType"
@@ -734,105 +874,63 @@ components:
           x-oapi-codegen-extra-tags:
             db: "type"
         orgId:
-          type: string
-          description: Organization ID that owns this learning path
-          example: layer5
-          x-oapi-codegen-extra-tags:
-            db: "org_id"
-            json: "org_id"
-            yaml: "org_id"
+          $ref: "#/components/schemas/AcademyCurriculaOrgId"
         visibility:
           $ref: "#/components/schemas/Visibility"
-          description: Visibility of the cirricula
+          description: Visibility of the Curricula
           x-go-type: "Visibility"
           x-oapi-codegen-extra-tags:
             db: "visibility"
             json: "visibility"
-            yaml: "visibility"
         status:
           $ref: "#/components/schemas/Status"
           example: ready
-          description: Status of the cirricula
+          description: Status of the Curricula
           x-go-type: "Status"
           x-oapi-codegen-extra-tags:
             db: "status"
             json: "status"
-            yaml: "status"
 
         slug:
           type: string
-          description: slug of the cirricula
+          description: slug of the Curricula
           example: intro-kubernetes-course
 
         level:
           $ref: "#/components/schemas/Level"
-          description: Level of the cirricula
+          description: Level of the Curricula
           x-go-type: "Level"
           x-oapi-codegen-extra-tags:
             db: "level"
             json: "level"
-            yaml: "level"
 
         badge_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          type: string
+          format: uuid
           description: ID of the badge to be awarded on completion of this curricula
+          x-go-type: "core.Uuid"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/core"
+            name: core
           x-oapi-codegen-extra-tags:
             db: "badge_id"
             json: "badge_id"
-            yaml: "badge_id"
 
-        invite_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-          description: ID of the invite associated with this cirricula
-          x-oapi-codegen-extra-tags:
-            db: "invite_id"
-            json: "invite_id"
-            yaml: "invite_id"
+        inviteId:
+          $ref: "#/components/schemas/AcademyCurriculaInviteId"
 
         workspace_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-          description: ID of the workspace to which this cirricula belongs
-          x-oapi-codegen-extra-tags:
-            db: "workspace_id"
-            json: "workspace_id"
-            yaml: "workspace_id"
+          $ref: "#/components/schemas/AcademyCurriculaWorkspaceId"
 
         createdAt:
-          description: When the cirricula item was created
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          x-oapi-codegen-extra-tags:
-            db: "created_at"
-            json: "created_at"
-            yaml: "created_at"
+          $ref: "#/components/schemas/AcademyCurriculaCreatedAt"
 
         updatedAt:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          description: When the cirricula was last updated
-          x-go-type: "core.Time"
-          x-oapi-codegen-extra-tags:
-            db: "updated_at"
-            json: "updated_at"
-            yaml: "updated_at"
+          $ref: "#/components/schemas/AcademyCurriculaUpdatedAt"
         deletedAt:
-          x-go-type: "core.NullTime"
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
-          x-oapi-codegen-extra-tags:
-            db: "deleted_at"
-            json: "deleted_at"
-            yaml: "deleted_at"
+          $ref: "#/components/schemas/AcademyCurriculaDeletedAt"
         metadata:
-          type: object
-          description: Additional metadata about the cirricula
-          additionalProperties: true
-          x-go-type: "core.Map"
-          x-go-type-skip-optional-pointer: true
-          x-oapi-codegen-extra-tags:
-            db: "metadata"
-            json: "metadata"
-            yaml: "metadata"
-          oneOf:
-            - $ref: "#/components/schemas/CurriculaMetadata"
-              x-go-type: "CurriculaMetadata"
+          $ref: "#/components/schemas/AcademyCurriculaMetadata"
 
       required:
         - id
@@ -850,22 +948,22 @@ components:
     SingleAcademyCurriculaResponse:
       type: object
       allOf:
-        - $ref: "#/components/schemas/AcademyCirricula"
+        - $ref: "#/components/schemas/AcademyCurricula"
         - type: object
           required:
-            - RegistrationCount
+            - registration_count
           properties:
-            RegistrationCount:
+            registration_count:
               type: number
               x-oapi-codegen-extra-tags:
                 db: "registration_count,omitempty"
                 json: "registration_count,omitempty"
-                yaml: "registration_count,omitempty"
-            Invitation:
+            invitation:
               $ref: "../invitation/api.yml#/components/schemas/Invitation"
-              x-go-type: "invitation.Invitation"
+              x-go-type: "invitationv1beta1.Invitation"
               x-go-type-import:
                 path: "github.com/meshery/schemas/models/v1beta1/invitation"
+                name: invitationv1beta1
 
     CreateAcademyCurriculaRequest:
       type: object
@@ -887,53 +985,48 @@ components:
             json: "title"
 
         orgId:
-          $ref: "#/components/schemas/AcademyCirricula/properties/orgId"
-          description: Organization ID that owns this curricula
-          x-go-name: OrgId
-          x-oapi-codegen-extra-tags:
-            json: "org_id"
-            db: "org_id"
-            yaml: "org_id"
+          $ref: "#/components/schemas/AcademyCurriculaOrgId"
 
         workspace_id:
-          $ref: "#/components/schemas/AcademyCirricula/properties/workspace_id"
+          $ref: "#/components/schemas/AcademyCurriculaWorkspaceId"
 
         badge_id:
-          $ref: "#/components/schemas/AcademyCirricula/properties/badge_id"
+          type: string
+          format: uuid
+          description: ID of the badge to be awarded on completion of this curricula
+          x-go-type: "core.Uuid"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/core"
+            name: core
+          x-oapi-codegen-extra-tags:
+            db: "badge_id"
+            json: "badge_id"
 
         team_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           description: ID of the team associated with this curricula
           x-go-name: TeamId
           x-oapi-codegen-extra-tags:
             json: "team_id"
             db: "team_id"
-            yaml: "team_id"
 
         access_expires_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
-          description: Expiry time for curricula access
-          x-go-name: AccessExpiresAt
-          x-go-type: "*time.Time"
-          x-oapi-codegen-extra-tags:
-            json: "access_expires_at"
-            db: "access_expires_at"
-            yaml: "access_expires_at"
+          $ref: "#/components/schemas/AcademyCurriculaAccessExpiresAt"
 
         access_status:
           $ref: "../invitation/api.yml#/components/schemas/InvitationStatus"
           description: Current access status of the curricula
           x-go-name: AccessStatus
-          x-go-type: "invitation.InvitationStatus"
+          x-go-type: "invitationv1beta1.InvitationStatus"
           x-go-type-import:
             path: "github.com/meshery/schemas/models/v1beta1/invitation"
+            name: invitationv1beta1
           x-oapi-codegen-extra-tags:
             json: "access_status"
             db: "access_status"
-            yaml: "access_status"
 
         metadata:
-          $ref: "#/components/schemas/AcademyCirricula/properties/metadata"
+          $ref: "#/components/schemas/AcademyCurriculaMetadata"
 
       required:
         - type
@@ -946,30 +1039,29 @@ components:
 
     AcademyCurriculaWithMetrics:
       allOf:
-        - $ref: "#/components/schemas/AcademyCirricula"
+        - $ref: "#/components/schemas/AcademyCurricula"
         - type: object
           required:
-            - RegistrationCount
+            - registration_count
           properties:
-            RegistrationCount:
+            registration_count:
               type: number
               x-oapi-codegen-extra-tags:
                 db: "registration_count,omitempty"
                 json: "registration_count,omitempty"
-                yaml: "registration_count,omitempty"
 
-    AcademyCirriculaListResponse:
+    AcademyCurriculaListResponse:
       type: object
       properties:
         total:
           type: integer
-          description: Total number of cirricula
+          description: Total number of Curricula
           example: 7
         data:
           type: array
           items:
-            x-go-type: "AcademyCirricula"
-            $ref: "#/components/schemas/AcademyCirricula"
+            x-go-type: "AcademyCurricula"
+            $ref: "#/components/schemas/AcademyCurricula"
       required:
         - total
         - data
@@ -979,7 +1071,7 @@ components:
       properties:
         total:
           type: integer
-          description: Total number of cirricula
+          description: Total number of Curricula
           example: 7
         data:
           type: array
@@ -1014,7 +1106,7 @@ components:
           type: string
           description: Role of the issuing authority
           example: COO
-        signature_url:
+        signatureUrl:
           type: string
           format: uri
           description: URL to the signature image of the issuing authority should be a publicly accessible URL and transparent PNG or SVG format
@@ -1024,13 +1116,13 @@ components:
       type: object
       required:
         - id
-        - org_id
+        - orgId
         - title
         - description
-        - issuing_authorities
-        - issued_date
-        - recipient_id
-        - recipient_name
+        - issuingAuthorities
+        - issuedDate
+        - recipientId
+        - recipientName
 
       properties:
         id:
@@ -1039,16 +1131,16 @@ components:
           example: 1234567890abcdef
           x-go-name: ID
 
-        org_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+        orgId:
+          $ref: "../core/api.yml#/components/schemas/uuid"
           description: UUID of the organization that issued the certificate
 
-        recipient_id:
+        recipientId:
           type: string
           description: ID of the recipient (user) who received the certificate
           example: 1234567890abcdef
 
-        recipient_name:
+        recipientName:
           type: string
           description: Name of the recipient (user) who received the certificate
           example: John Doe
@@ -1063,27 +1155,27 @@ components:
           description: Description of the certificate
           example: Awarded for successfully completing the Kubernetes Expert course
 
-        issuing_authorities:
+        issuingAuthorities:
           type: array
           items:
             $ref: "#/components/schemas/CertificateIssuingAuthority"
             x-go-type: "CertificateIssuingAuthority"
           description: List of issuing authorities for the certificate
 
-        issued_date:
+        issuedDate:
           type: string
           format: date-time
           description: Date when the certificate was issued
           example: 2023-10-01T12:00:00Z
 
         # this field is dynamically calculated based on issued_date and expires_in ( not specified by instructors )
-        expiration_date:
+        expirationDate:
           type: string
           format: date-time
           description: Date when the certificate expires (optional)
           example: 2025-10-01T12:00:00Z
 
-        expires_in:
+        expiresIn:
           type: integer
           description: Number of months after which the certificate expires
           example: 24
@@ -1099,7 +1191,7 @@ components:
           type: string
           description: Short description of the curricula
           example: Learn how to configure your Kubernetes clusters and manage the lifecycle of your workloads
-        detailed_description:
+        detailedDescription:
           type: string
           description: Detailed description of the curricula
           example: This learning path covers everything from Kubernetes architecture to advanced deployment strategies, including hands-on labs and real-world scenarios.
@@ -1157,15 +1249,14 @@ components:
         - metadata
       properties:
         id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: "id"
             json: "id"
-            yaml: "id"
 
         org_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           description: ID of the organization
 
           x-oapi-codegen-extra-tags:
@@ -1179,7 +1270,7 @@ components:
             db: "content_id"
 
         user_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           description: ID of the user (foreign key to User)
 
           x-oapi-codegen-extra-tags:
@@ -1194,25 +1285,26 @@ components:
 
         updated_at:
           description: When the registration was updated
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "updated_at"
 
         created_at:
           description: When the registration was created
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "created_at"
 
         deleted_at:
           x-go-type: "core.NullTime"
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
+          $ref: "../core/api.yml#/components/schemas/deleted_at"
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
 
         certificate:
           $ref: "#/components/schemas/Certificate"
           x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
           description: Issued certificate for completing the curricula under registration
           x-oapi-codegen-extra-tags:
             db: "certificate"
@@ -1251,7 +1343,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "id"
             json: "id"
-            yaml: "id"
         title:
           type: string
           description: Title of the course
@@ -1308,46 +1399,46 @@ components:
         - total
         - data
 
-    CirriculaCurrentItemData:
+    CurriculaCurrentItemData:
       type: object
       required:
         - id
-        - last_opened
-        - content_type
+        - lastOpened
+        - contentType
       properties:
         id:
           type: string
-        last_opened:
+        lastOpened:
           type: string
           format: date-time
-        content_type:
+        contentType:
           $ref: "#/components/schemas/ContentType"
           x-go-type: "ContentType"
 
-    CirriculaProgressTracker:
+    CurriculaProgressTracker:
       type: object
       required:
-        - current_item
+        - currentItem
         - grades
-        - time_spent
+        - timeSpent
         - completed
-        - completed_items
+        - completedItems
       properties:
-        current_item:
+        currentItem:
           type: object
           additionalProperties:
-            $ref: "#/components/schemas/CirriculaCurrentItemData"
-            x-go-type: "CirriculaCurrentItemData"
+            $ref: "#/components/schemas/CurriculaCurrentItemData"
+            x-go-type: "CurriculaCurrentItemData"
         grades:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/QuizEvaluationResult"
             x-go-type: "QuizEvaluationResult"
-        time_spent:
+        timeSpent:
           type: integer
           description: Total time spent in seconds
 
-        completed_items:
+        completedItems:
           type: object
           description: Items that have been completed (map of item IDs to item data)
           additionalProperties:
@@ -1362,29 +1453,29 @@ components:
     ProgressItemCompleted:
       type: object
       required:
-        - completed_at
-        - item_data
+        - completedAt
+        - itemData
       properties:
-        completed_at:
+        completedAt:
           type: string
           format: date-time
           description: Timestamp when the item was completed
-        item_data:
+        itemData:
           $ref: "#/components/schemas/Parent"
           x-go-type: "Parent"
 
     UpdateCurrentItemRequest:
       type: object
       properties:
-        content_type:
+        contentType:
           $ref: "#/components/schemas/ContentType"
           x-go-type: "ContentType"
-        item_data:
-          $ref: "#/components/schemas/CirriculaCurrentItemData"
-          x-go-type: "CirriculaCurrentItemData"
+        itemData:
+          $ref: "#/components/schemas/CurriculaCurrentItemData"
+          x-go-type: "CurriculaCurrentItemData"
       required:
-        - content_type
-        - item_data
+        - contentType
+        - itemData
 
     ErrorResponse:
       type: object
@@ -1395,11 +1486,12 @@ components:
           type: string
 
     Quiz:
+      x-generate-db-helpers: true
       type: object
       required:
         - id
         - title
-        - orgId
+        - org_id
         - description
         - slug
         - relPermalink
@@ -1429,14 +1521,13 @@ components:
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             json: "id"
-        orgId:
+        org_id:
           type: string
           description: Organization ID that owns this quiz
           example: layer5
           x-oapi-codegen-extra-tags:
             db: "org_id"
             json: "org_id"
-            yaml: "org_id"
         final:
           type: boolean
           description: Indicates if the quiz is final . i.e this quiz will used to evaluate the completion of parent section eg course , module , learning path
@@ -1542,7 +1633,7 @@ components:
         - type
         - marks
         - options
-        - correct_answer
+        - correctAnswer
 
       properties:
         id:
@@ -1554,14 +1645,14 @@ components:
           x-go-type: QuestionType
         marks:
           type: integer
-        multiple_answers:
+        multipleAnswers:
           type: boolean
         options:
           type: array
           items:
             $ref: "#/components/schemas/QuestionOption"
             x-go-type: QuestionOption
-        correct_answer:
+        correctAnswer:
           type: string
 
     QuestionOption:
@@ -1569,40 +1660,40 @@ components:
       required:
         - id
         - text
-        - is_correct
+        - isCorrect
       properties:
         id:
           type: string
         text:
           type: string
-        is_correct:
+        isCorrect:
           type: boolean
 
     StartTestRequest:
       type: object
       required:
-        - test_abs_path
-        - registration_id
+        - testAbsPath
+        - registrationId
       properties:
-        test_abs_path:
+        testAbsPath:
           type: string
-        registration_id:
+        registrationId:
           type: string
 
     QuizSubmission:
       type: object
       required:
-        - quiz_abs_path
-        - registration_id
-        - test_session_id
+        - quizAbsPath
+        - registrationId
+        - testSessionId
         - user_id
         - answers
       properties:
-        test_session_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
-        quiz_abs_path:
+        testSessionId:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+        quizAbsPath:
           type: string
-        registration_id:
+        registrationId:
           type: string
         user_id:
           type: string
@@ -1615,17 +1706,17 @@ components:
     SubmittedAnswer:
       type: object
       required:
-        - question_id
-        - selected_option_id
-        - answer_text
+        - questionId
+        - selectedOptionId
+        - answerText
       properties:
-        question_id:
+        questionId:
           type: string
-        selected_option_id:
+        selectedOptionId:
           type: object
           additionalProperties:
             type: boolean
-        answer_text:
+        answerText:
           type: string
 
     TestSubmissionStatus:
@@ -1652,19 +1743,17 @@ components:
 
       properties:
         id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: "id"
             json: "id"
-            yaml: "id"
 
         registration_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           x-oapi-codegen-extra-tags:
             db: "registration_id"
             json: "registration_id"
-            yaml: "registration_id"
 
         test_abs_path:
           type: string
@@ -1672,7 +1761,7 @@ components:
             db: "test_abs_path"
 
         user_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           x-oapi-codegen-extra-tags:
             db: "user_id"
 
@@ -1692,7 +1781,7 @@ components:
 
         deleted_at:
           x-go-type: "core.NullTime"
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/deleted_at"
+          $ref: "../core/api.yml#/components/schemas/deleted_at"
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
 
@@ -1896,3 +1985,17 @@ components:
           type: integer
         page:
           type: integer
+
+    UpdateCurrentItemProgressResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        progressTracker:
+          $ref: "#/components/schemas/CurriculaProgressTracker"
+        registrationId:
+          type: string
+        contentType:
+          $ref: "#/components/schemas/ContentType"
+        itemData:
+          $ref: "#/components/schemas/CurriculaCurrentItemData"

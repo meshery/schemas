@@ -6,7 +6,8 @@ package evaluation
 import (
 	"time"
 
-	"github.com/meshery/schemas/models/v1beta1/pattern"
+	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for ActionOp.
@@ -69,33 +70,42 @@ const (
 
 // Action defines model for Action.
 type Action struct {
-	Op    ActionOp               `json:"op" yaml:"op"`
+	// Op The op of the action.
+	Op ActionOp `json:"op" yaml:"op"`
+
+	// Value The value of the action.
 	Value map[string]interface{} `json:"value" yaml:"value"`
 }
 
-// ActionOp defines model for Action.Op.
+// ActionOp The op of the action.
 type ActionOp string
 
 // AddComponentOp defines model for AddComponentOp.
 type AddComponentOp struct {
-	Op    *AddComponentOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+	// Op The op of the addcomponentop.
+	Op *AddComponentOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+
+	// Value The value of the addcomponentop.
 	Value *struct {
-		Item map[string]interface{} `json:"item" yaml:"item"`
+		Item ComponentDeclaration `json:"item" yaml:"item"`
 	} `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// AddComponentOpOp defines model for AddComponentOp.Op.
+// AddComponentOpOp The op of the addcomponentop.
 type AddComponentOpOp string
 
 // AddRelationshipOp defines model for AddRelationshipOp.
 type AddRelationshipOp struct {
-	Op    *AddRelationshipOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+	// Op The op of the addrelationshipop.
+	Op *AddRelationshipOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+
+	// Value The value of the addrelationshipop.
 	Value *struct {
-		Item map[string]interface{} `json:"item" yaml:"item"`
+		Item RelationshipDeclaration `json:"item" yaml:"item"`
 	} `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// AddRelationshipOpOp defines model for AddRelationshipOp.Op.
+// AddRelationshipOpOp The op of the addrelationshipop.
 type AddRelationshipOpOp string
 
 // ComponentDeclaration defines model for ComponentDeclaration.
@@ -103,30 +113,40 @@ type ComponentDeclaration map[string]interface{}
 
 // DeleteComponentOp defines model for DeleteComponentOp.
 type DeleteComponentOp struct {
-	Op    *DeleteComponentOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+	// Op The op of the deletecomponentop.
+	Op *DeleteComponentOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+
+	// Value The value of the deletecomponentop.
 	Value *struct {
-		Id string `json:"id" yaml:"id"`
+		// Id Identifier of the component to delete.
+		Id openapi_types.UUID `json:"id" yaml:"id"`
 	} `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// DeleteComponentOpOp defines model for DeleteComponentOp.Op.
+// DeleteComponentOpOp The op of the deletecomponentop.
 type DeleteComponentOpOp string
 
 // DeleteRelationshipOp defines model for DeleteRelationshipOp.
 type DeleteRelationshipOp struct {
-	Op    *DeleteRelationshipOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+	// Op The op of the deleterelationshipop.
+	Op *DeleteRelationshipOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+
+	// Value The value of the deleterelationshipop.
 	Value *struct {
-		Id string `json:"id" yaml:"id"`
+		// Id Identifier of the relationship to delete.
+		Id openapi_types.UUID `json:"id" yaml:"id"`
 	} `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// DeleteRelationshipOpOp defines model for DeleteRelationshipOp.Op.
+// DeleteRelationshipOpOp The op of the deleterelationshipop.
 type DeleteRelationshipOpOp string
 
 // EvaluationRequest defines model for EvaluationRequest.
 type EvaluationRequest struct {
 	// Design Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-	Design  pattern.PatternFile `json:"design" yaml:"design"`
+	Design patternv1beta1.PatternFile `json:"design" yaml:"design"`
+
+	// Options The options of the evaluationrequest.
 	Options *struct {
 		// EnableTrace If true, include detailed trace information in the response
 		EnableTrace *bool `json:"enableTrace,omitempty" yaml:"enableTrace,omitempty"`
@@ -138,10 +158,11 @@ type EvaluationRequest struct {
 
 // EvaluationResponse Schema for the response of a relationship evaluation process in Meshery
 type EvaluationResponse struct {
-	Actions []interface{} `json:"actions" yaml:"actions"`
+	// Actions The actions of the evaluationresponse.
+	Actions []Action `json:"actions" yaml:"actions"`
 
-	// Design The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed.
-	Design pattern.PatternFile `json:"design" yaml:"design"`
+	// Design Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
+	Design patternv1beta1.PatternFile `json:"design" yaml:"design"`
 
 	// EvaluationHash Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.
 	EvaluationHash *string `json:"evaluationHash,omitempty" yaml:"evaluationHash,omitempty"`
@@ -158,47 +179,75 @@ type RelationshipDeclaration map[string]interface{}
 
 // UpdateComponentConfigurationOp defines model for UpdateComponentConfigurationOp.
 type UpdateComponentConfigurationOp struct {
-	Op    *UpdateComponentConfigurationOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+	// Op The op of the updatecomponentconfigurationop.
+	Op *UpdateComponentConfigurationOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+
+	// Value The value of the updatecomponentconfigurationop.
 	Value *struct {
-		Id    string                                   `json:"id" yaml:"id"`
-		Mode  *UpdateComponentConfigurationOpValueMode `json:"mode,omitempty" yaml:"mode,omitempty"`
-		Path  []string                                 `json:"path" yaml:"path"`
-		Value interface{}                              `json:"value" yaml:"value"`
-	} `json:"value,omitempty" yaml:"value,omitempty"`
-}
+		// Id Identifier of the component whose configuration will be updated.
+		Id openapi_types.UUID `json:"id" yaml:"id"`
 
-// UpdateComponentConfigurationOpOp defines model for UpdateComponentConfigurationOp.Op.
-type UpdateComponentConfigurationOpOp string
+		// Mode Strategy to use when applying the configuration update value.
+		Mode *UpdateComponentConfigurationOpValueMode `json:"mode,omitempty" yaml:"mode,omitempty"`
 
-// UpdateComponentConfigurationOpValueMode defines model for UpdateComponentConfigurationOp.Value.Mode.
-type UpdateComponentConfigurationOpValueMode string
+		// Path Path to the configuration field being updated.
+		Path []string `json:"path" yaml:"path"`
 
-// UpdateComponentOp defines model for UpdateComponentOp.
-type UpdateComponentOp struct {
-	Op    *UpdateComponentOpOp `json:"op,omitempty" yaml:"op,omitempty"`
-	Value *struct {
-		Id    string                      `json:"id" yaml:"id"`
-		Mode  *UpdateComponentOpValueMode `json:"mode,omitempty" yaml:"mode,omitempty"`
-		Path  []string                    `json:"path" yaml:"path"`
-		Value interface{}                 `json:"value" yaml:"value"`
-	} `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// UpdateComponentOpOp defines model for UpdateComponentOp.Op.
-type UpdateComponentOpOp string
-
-// UpdateComponentOpValueMode defines model for UpdateComponentOp.Value.Mode.
-type UpdateComponentOpValueMode string
-
-// UpdateRelationshipOp defines model for UpdateRelationshipOp.
-type UpdateRelationshipOp struct {
-	Op    *UpdateRelationshipOpOp `json:"op,omitempty" yaml:"op,omitempty"`
-	Value *struct {
-		Id    string      `json:"id" yaml:"id"`
-		Path  []string    `json:"path" yaml:"path"`
+		// Value New configuration value to write at the specified path.
 		Value interface{} `json:"value" yaml:"value"`
 	} `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// UpdateRelationshipOpOp defines model for UpdateRelationshipOp.Op.
+// UpdateComponentConfigurationOpOp The op of the updatecomponentconfigurationop.
+type UpdateComponentConfigurationOpOp string
+
+// UpdateComponentConfigurationOpValueMode Strategy to use when applying the configuration update value.
+type UpdateComponentConfigurationOpValueMode string
+
+// UpdateComponentOp defines model for UpdateComponentOp.
+type UpdateComponentOp struct {
+	// Op The op of the updatecomponentop.
+	Op *UpdateComponentOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+
+	// Value The value of the updatecomponentop.
+	Value *struct {
+		// Id Identifier of the component to update.
+		Id openapi_types.UUID `json:"id" yaml:"id"`
+
+		// Mode Strategy to use when applying the component update value.
+		Mode *UpdateComponentOpValueMode `json:"mode,omitempty" yaml:"mode,omitempty"`
+
+		// Path Path to the field being updated on the component.
+		Path []string `json:"path" yaml:"path"`
+
+		// Value New value to write at the specified component path.
+		Value interface{} `json:"value" yaml:"value"`
+	} `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// UpdateComponentOpOp The op of the updatecomponentop.
+type UpdateComponentOpOp string
+
+// UpdateComponentOpValueMode Strategy to use when applying the component update value.
+type UpdateComponentOpValueMode string
+
+// UpdateRelationshipOp defines model for UpdateRelationshipOp.
+type UpdateRelationshipOp struct {
+	// Op The op of the updaterelationshipop.
+	Op *UpdateRelationshipOpOp `json:"op,omitempty" yaml:"op,omitempty"`
+
+	// Value The value of the updaterelationshipop.
+	Value *struct {
+		// Id Identifier of the relationship to update.
+		Id openapi_types.UUID `json:"id" yaml:"id"`
+
+		// Path Path to the field being updated on the relationship.
+		Path []string `json:"path" yaml:"path"`
+
+		// Value New value to write at the specified relationship path.
+		Value interface{} `json:"value" yaml:"value"`
+	} `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// UpdateRelationshipOpOp The op of the updaterelationshipop.
 type UpdateRelationshipOpOp string

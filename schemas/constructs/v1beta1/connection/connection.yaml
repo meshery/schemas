@@ -13,7 +13,7 @@ required:
   - status
 properties:
   id:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: Connection ID
     x-order: 1
     x-go-name: ID
@@ -33,7 +33,7 @@ properties:
       db: credential_id
       yaml: credential_id
     x-order: 3
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: Associated Credential ID
   type:
     x-oapi-codegen-extra-tags:
@@ -89,37 +89,35 @@ properties:
       db: user_id
       yaml: user_id
     x-order: 9
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: User ID who owns this connection
   created_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    $ref: ../core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: created_at
       yaml: created_at
     x-order: 10
   updated_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    $ref: ../core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: updated_at
       yaml: updated_at
     x-order: 11
   deleted_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    $ref: ../core/api.yml#/components/schemas/nullTime
     x-oapi-codegen-extra-tags:
       db: deleted_at
       yaml: deleted_at
-    x-go-type: core.NullTime
-    x-go-type-import:
-      path: github.com/meshery/schemas/models/core
     x-order: 12
   environments:
     type: array
     description: Associated environments for this connection
     items:
-      x-go-type: "*environment.Environment"
+      x-go-type: "*environmentv1beta1.Environment"
       x-go-type-import:
         path: github.com/meshery/schemas/models/v1beta1/environment
-      $ref: ../environment/environment.yaml
+        name: environmentv1beta1
+      $ref: ../environment/api.yml#/components/schemas/Environment
     x-oapi-codegen-extra-tags:
       db: "-"
       yaml: environments
@@ -128,7 +126,7 @@ properties:
     x-order: 13
   schemaVersion:
     description: Specifies the version of the schema used for the definition.
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    $ref: ../core/api.yml#/components/schemas/versionString
     x-order: 14
     x-oapi-codegen-extra-tags:
       yaml: schemaVersion

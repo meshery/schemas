@@ -1,12 +1,30 @@
 openapi: 3.0.0
 info:
-  title: model
-  version: 1.0.0
+  title: Model
+  description: OpenAPI schema for Meshery model registration and management.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: Models
+    description: Operations related to mesh models
+
 paths:
   /api/meshmodels/register:
     post:
+      tags:
+        - Models
       summary: Register mesh models
-      operationId: RegisterMeshmodels
+      operationId: registerMeshmodels
       requestBody:
         required: true
         content:
@@ -14,7 +32,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ImportRequest"
       responses:
-        "200":
+        "201":
           description: Successful registration
           content:
             application/json:
@@ -25,9 +43,61 @@ paths:
                     type: string
         "400":
           description: Invalid request format
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          description: Internal server error
+
+  /api/integrations/meshmodels/models:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - Models
+      summary: Get mesh model models
+      operationId: getMeshModelModels
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pagesize
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Model and capabilities registry entries retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeshModelModelsPage"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           description: Internal server error
 components:
+  responses:
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Model:
       type: object
@@ -37,10 +107,8 @@ components:
       properties:
         version:
           description: "Version of the model as defined by the registrant."
-          allOf:
-            - $ref: "../../v1alpha1/core/api.yml#/components/schemas/semverString"
+          $ref: "../core/api.yml#/components/schemas/semverString"
           x-oapi-codegen-extra-tags:
-            yaml: "version"
             json: "version"
           x-order: 1
 
@@ -54,6 +122,8 @@ components:
       "properties":
         "kind":
           "type": "string"
+          description: Kind of the registrant.
+          maxLength: 255
 
     ModelReference:
       type: "object"
@@ -61,20 +131,30 @@ components:
         ["id", "name", "version", "displayName", "model", "registrant"]
       "properties":
         id:
-          "$ref": "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          "$ref": "../core/api.yml#/components/schemas/uuid"
         name:
-          "$ref": "./model.yaml#/properties/name"
+          type: string
+          description: The unique name for the model within the scope of a registrant.
+          pattern: ^[a-z0-9-]+$
+          examples:
+            - cert-manager
         version:
-          "$ref": "./model.yaml#/properties/version"
+          "$ref": "../core/api.yml#/components/schemas/semverString"
+          description: Version of the model definition.
         displayName:
-          "$ref": "./model.yaml#/properties/displayName"
+          type: string
+          description: Human-readable name for the model.
+          minLength: 1
+          maxLength: 100
+          pattern: ^[a-zA-Z0-9 ]+$
+          examples:
+            - Cert Manager
         model:
-          "$ref": "./model.yaml#/properties/model"
+          "$ref": "./api.yml#/components/schemas/Model"
         registrant:
           "x-go-type": "RegistrantReference"
           "$ref": "#/components/schemas/RegistrantReference"
           x-oapi-codegen-extra-tags:
-            yaml: "registrant"
             json: "registrant"
 
       "description": "Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models"
@@ -91,6 +171,7 @@ components:
         uploadType:
           type: string
           title: "Upload method"
+          x-enum-casing-exempt: true
           enum: ["file", "urlImport", "csv", "url"]
           enumDescriptions:
             [
@@ -102,6 +183,7 @@ components:
         register:
           type: boolean
           nullable: false
+          description: The register of the importrequest.
 
     ImportBody:
       oneOf:
@@ -112,6 +194,7 @@ components:
             fileName:
               type: string
               description: "Name of the file being uploaded."
+              maxLength: 255
             modelFile:
               type: string
               format: file
@@ -168,3 +251,25 @@ components:
                   x-metadata:
                     uiType: "url"
                     validationHint: "Enter an Artifact Hub URL (e.g., https://artifacthub.io/packages/search?ts_query_web={meshery-operator})"
+
+    MeshModelModelsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        models:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: The models of the meshmodelmodelspage.

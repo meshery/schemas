@@ -8,7 +8,7 @@ required:
   - name
 properties:
   id:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: Team ID
     x-order: 1
     x-go-name: ID
@@ -22,6 +22,8 @@ properties:
     x-order: 2
     type: string
     description: Team name
+    minLength: 1
+    maxLength: 255
   description:
     x-oapi-codegen-extra-tags:
       db: description
@@ -29,12 +31,13 @@ properties:
     x-order: 3
     type: string
     description: Team description
+    maxLength: 5000
   owner:
     x-oapi-codegen-extra-tags:
       db: owner
       yaml: owner
     x-order: 4
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: User ID of the owner of the team
   metadata:
     x-oapi-codegen-extra-tags:
@@ -46,22 +49,20 @@ properties:
     type: object
     description: Additional metadata for the team
   created_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    $ref: ../core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: created_at
       yaml: created_at
     x-order: 6
   updated_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    $ref: ../core/api.yml#/components/schemas/Time
     x-oapi-codegen-extra-tags:
       db: updated_at
       yaml: updated_at
     x-order: 7
   deleted_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+    $ref: ../core/api.yml#/components/schemas/nullTime
     x-oapi-codegen-extra-tags:
       db: deleted_at
       yaml: deleted_at
-    x-go-type: core.NullTime
-    x-go-import: database/sql
     x-order: 8

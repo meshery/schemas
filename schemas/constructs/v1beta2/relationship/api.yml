@@ -1,0 +1,558 @@
+openapi: 3.0.0
+info:
+  title: Relationship
+  description: OpenAPI schema for relationship definitions between Meshery components.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths: {}
+components:
+  schemas:
+    RelationshipDefinition:
+      $ref: "./relationship.yaml"
+
+    # Reusable schema components from selector definitions
+    MutatorRef:
+      type: array
+      description: JSON ref to value from where patch should be applied.
+      items:
+        type: array
+        items:
+          type: string
+        description: "The sequence of mutatorRef and mutatedRef must match. eg: mutatorRef: [[config, url], [config, name]], mutatedRef: [[configPatch, value], [name]]. The value [config, url] will be patched at [configPatch, value]. Similarly [config,name] will be patched at [name]."
+
+    MutatedRef:
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+        description: "JSONPath (https://en.wikipedia.org/wiki/JSONPath) to property to be patched."
+
+    RelationshipDefinitionSelectorsPatchStrategy:
+      type: string
+      description: |
+        patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+
+        add: Inserts a value into an array or adds a member to an object.
+        merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+        strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+        remove: Removes a value.
+        copy: Copies a value from one location to another.
+        move: Moves a value from one location to another.
+        test: Tests that a value at the target location is equal to a specified value.
+      enum:
+        - merge
+        - strategic
+        - add
+        - remove
+        - copy
+        - move
+        - test
+
+    RelationshipDefinitionSelectorsPatch:
+      type: object
+      description: Patch configuration for the selector
+      x-go-name: RelationshipDefinitionSelectorsPatch
+      properties:
+        patchStrategy:
+          $ref: "#/components/schemas/RelationshipDefinitionSelectorsPatchStrategy"
+          x-oapi-codegen-extra-tags:
+            json: "patchStrategy,omitempty"
+        mutatorRef:
+          $ref: "#/components/schemas/MutatorRef"
+          x-oapi-codegen-extra-tags:
+            json: "mutatorRef,omitempty"
+        mutatedRef:
+          $ref: "#/components/schemas/MutatedRef"
+          x-oapi-codegen-extra-tags:
+            json: "mutatedRef,omitempty"
+
+    MatchSelectorItem:
+      type: object
+      description: Match selector item for binding between nodes
+      required:
+        - kind
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          x-oapi-codegen-extra-tags:
+            json: "id"
+        kind:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "kind"
+          description: Kind of the resource.
+          maxLength: 255
+        mutatorRef:
+          $ref: "#/components/schemas/MutatorRef"
+          x-oapi-codegen-extra-tags:
+            json: "mutatorRef,omitempty"
+        mutatedRef:
+          $ref: "#/components/schemas/MutatedRef"
+          x-oapi-codegen-extra-tags:
+            json: "mutatedRef,omitempty"
+
+    MatchSelector:
+      type: object
+      description: Match configuration for selector
+      properties:
+        refs:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+          x-oapi-codegen-extra-tags:
+            json: "refs,omitempty"
+          description: The refs of the matchselector.
+        from:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatchSelectorItem"
+            x-go-type: MatchSelectorItem
+          x-oapi-codegen-extra-tags:
+            json: "from,omitempty"
+          description: The from of the matchselector.
+        to:
+          type: array
+          items:
+            $ref: "#/components/schemas/MatchSelectorItem"
+            x-go-type: MatchSelectorItem
+          x-oapi-codegen-extra-tags:
+            json: "to,omitempty"
+          description: The to of the matchselector.
+      x-oapi-codegen-extra-tags:
+        json: "match,omitempty"
+
+    SelectorItem:
+      type: object
+      description: Optional fields that are a part of the selector. Absence of a field has an implied * meaning.
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/Uuid"
+          x-oapi-codegen-extra-tags:
+            json: "id"
+        kind:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "kind"
+          description: Kind of the resource.
+          maxLength: 255
+        match:
+          $ref: "#/components/schemas/MatchSelector"
+          x-go-type: MatchSelector
+          x-oapi-codegen-extra-tags:
+            json: "match,omitempty"
+        matchStrategyMatrix:
+          description: Match strategy matrix for the selector
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+          x-oapi-codegen-extra-tags:
+            json: "matchStrategyMatrix"
+        model:
+          $ref: "../../v1beta1/model/api.yml#/components/schemas/ModelReference"
+          x-go-type: "modelv1beta1.ModelReference"
+          x-go-type-import:
+            path: "github.com/meshery/schemas/models/v1beta1/model"
+            name: modelv1beta1
+          description: "Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models"
+          x-oapi-codegen-extra-tags:
+            json: "model,omitempty"
+        patch:
+          $ref: "#/components/schemas/RelationshipDefinitionSelectorsPatch"
+          x-go-type: RelationshipDefinitionSelectorsPatch
+          x-oapi-codegen-extra-tags:
+            json: "patch"
+
+    Selector:
+      type: object
+      description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+      required:
+        - from
+        - to
+      properties:
+        from:
+          description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+          type: array
+          items:
+            $ref: "#/components/schemas/SelectorItem"
+            x-go-type: SelectorItem
+          x-oapi-codegen-extra-tags:
+            json: "from"
+        to:
+          description: Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
+          type: array
+          items:
+            $ref: "#/components/schemas/SelectorItem"
+            x-go-type: SelectorItem
+          x-oapi-codegen-extra-tags:
+            json: "to"
+
+    SelectorSetItem:
+      type: object
+      description: Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
+      required:
+        - allow
+      properties:
+        allow:
+          description: Selectors used to define relationships which are allowed.
+          $ref: "#/components/schemas/Selector"
+          x-go-type: Selector
+          x-oapi-codegen-extra-tags:
+            json: "allow"
+        deny:
+          description: Optional selectors used to define relationships which should not be created / is restricted.
+          $ref: "#/components/schemas/Selector"
+          x-go-type: Selector
+          x-oapi-codegen-extra-tags:
+            json: "deny,omitempty"
+
+    SelectorSet:
+      type: array
+      description: "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved."
+      x-oapi-codegen-extra-tags:
+        gorm: "type:bytes;serializer:json"
+      items:
+        $ref: "#/components/schemas/SelectorSetItem"
+        x-go-type: SelectorSetItem
+
+    # Relationship Metadata Styles
+    RelationshipDefinitionMetadataStylesTextTransform:
+      type: string
+      description: A transformation to apply to the label text
+      enum:
+        - none
+        - uppercase
+        - lowercase
+
+    RelationshipDefinitionMetadataStylesLineStyle:
+      type: string
+      description: The style of the edge's line.
+      enum:
+        - solid
+        - dotted
+        - dashed
+
+    RelationshipDefinitionMetadataStylesCurveStyle:
+      type: string
+      description: The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
+      enum:
+        - haystack
+        - straight
+        - bezier
+        - unbundled-bezier
+        - segments
+        - taxi
+
+    RelationshipDefinitionMetadataStylesLineCap:
+      type: string
+      description: The cap style of the edge's line; may be butt (default), round, or square. The cap may or may not be visible, depending on the shape of the node and the relative size of the node and edge. Caps other than butt extend beyond the specified endpoint of the edge.
+      enum:
+        - butt
+        - round
+        - square
+
+    RelationshipDefinitionMetadataStylesArrowShape:
+      type: string
+      description: The shape of the edge's arrow
+      enum:
+        - triangle
+        - triangle-tee
+        - circle-triangle
+        - triangle-cross
+        - triangle-backcurve
+        - vee
+        - tee
+        - square
+        - circle
+        - diamond
+        - chevron
+        - none
+
+    RelationshipDefinitionMetadataStylesMidTargetArrowShape:
+      type: string
+      description: The shape of the edge's source arrow
+      enum:
+        - triangle
+        - triangle-tee
+        - circle-triangle
+        - triangle-cross
+        - triangle-backcurve
+        - vee
+        - tee
+        - square
+        - circle
+        - diamond
+        - chevron
+        - none
+
+    RelationshipDefinitionMetadataStylesMidTargetArrowFill:
+      type: string
+      description: The fill state of the edge's source arrow
+      enum:
+        - filled
+        - hollow
+
+    RelationshipDefinitionMetadataStylesTargetArrowShape:
+      type: string
+      description: The shape of the edge's source arrow
+      enum:
+        - triangle
+        - triangle-tee
+        - circle-triangle
+        - triangle-cross
+        - triangle-backcurve
+        - vee
+        - tee
+        - square
+        - circle
+        - diamond
+        - chevron
+        - none
+
+    RelationshipDefinitionMetadataStylesTargetArrowFill:
+      type: string
+      description: The fill state of the edge's source arrow
+      enum:
+        - filled
+        - hollow
+
+    RelationshipDefinitionMetadataStyles:
+      type: object
+      description: Visualization styles for a relationship
+      required:
+        - primaryColor
+        - svgColor
+        - svgWhite
+      properties:
+        primaryColor:
+          type: string
+          description: Primary color of the component used for UI representation.
+          x-oapi-codegen-extra-tags:
+            json: "primaryColor"
+          maxLength: 500
+        secondaryColor:
+          type: string
+          description: Secondary color of the entity used for UI representation.
+          x-oapi-codegen-extra-tags:
+            json: "secondaryColor,omitempty"
+          maxLength: 500
+        svgWhite:
+          type: string
+          description: White SVG of the entity used for UI representation on dark background.
+          x-oapi-codegen-extra-tags:
+            json: "svgWhite"
+          maxLength: 500
+        svgColor:
+          type: string
+          description: Colored SVG of the entity used for UI representation on light background.
+          x-oapi-codegen-extra-tags:
+            json: "svgColor"
+          maxLength: 500
+        svgComplete:
+          type: string
+          description: Complete SVG of the entity used for UI representation, often inclusive of background.
+          x-oapi-codegen-extra-tags:
+            json: "svgComplete,omitempty"
+          maxLength: 500
+        color:
+          type: string
+          description: The color of the element's label. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+          x-oapi-codegen-extra-tags:
+            json: "color,omitempty"
+          maxLength: 500
+        textOpacity:
+          type: number
+          format: float
+          description: The opacity of the label text, including its outline.
+          x-go-name: TextOpacity
+          x-oapi-codegen-extra-tags:
+            json: "textOpacity,omitempty"
+          minimum: 0
+          maximum: 1
+        fontFamily:
+          type: string
+          description: A comma-separated list of font names to use on the label text.
+          x-go-name: FontFamily
+          x-oapi-codegen-extra-tags:
+            json: "fontFamily,omitempty"
+          maxLength: 500
+        fontSize:
+          type: string
+          description: The size of the label text.
+          x-go-name: FontSize
+          x-oapi-codegen-extra-tags:
+            json: "fontSize,omitempty"
+          maxLength: 500
+        fontStyle:
+          type: string
+          description: A CSS font style to be applied to the label text.
+          x-go-name: FontStyle
+          x-oapi-codegen-extra-tags:
+            json: "fontStyle,omitempty"
+          maxLength: 500
+        fontWeight:
+          type: string
+          description: A CSS font weight to be applied to the label text.
+          x-go-name: FontWeight
+          x-oapi-codegen-extra-tags:
+            json: "fontWeight,omitempty"
+          maxLength: 500
+        textTransform:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesTextTransform"
+          description: A transformation to apply to the label text
+          x-go-name: TextTransform
+          x-oapi-codegen-extra-tags:
+            json: "textTransform,omitempty"
+        opacity:
+          type: number
+          format: float
+          description: The opacity of the element, ranging from 0 to 1. Note that the opacity of a compound node parent affects the effective opacity of its children.See https://js.cytoscape.org/#style/visibility
+          x-go-name: Opacity
+          x-oapi-codegen-extra-tags:
+            json: "opacity,omitempty"
+          minimum: 0
+          maximum: 1
+        zIndex:
+          type: integer
+          description: An integer value that affects the relative draw order of elements. In general, an element with a higher z-index will be drawn on top of an element with a lower z-index. Note that edges are under nodes despite z-index.
+          x-go-name: ZIndex
+          x-oapi-codegen-extra-tags:
+            json: "zIndex,omitempty"
+          minimum: 0
+        label:
+          type: string
+          description: The text to display for an element's label. Can give a path, e.g. data(id) will label with the elements id
+          x-go-name: Label
+          x-oapi-codegen-extra-tags:
+            json: "label,omitempty"
+          maxLength: 500
+        edgeAnimation:
+          type: string
+          description: The animation to use for the edge. Can be like 'marching-ants' , 'blink' , 'moving-gradient',etc .
+          x-go-name: EdgeAnimation
+          x-oapi-codegen-extra-tags:
+            json: "edgeAnimation,omitempty"
+          maxLength: 500
+        curveStyle:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesCurveStyle"
+          x-go-name: CurveStyle
+          x-oapi-codegen-extra-tags:
+            json: "curveStyle,omitempty"
+        lineColor:
+          type: string
+          description: The colour of the edge's line. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+          x-go-name: LineColor
+          x-oapi-codegen-extra-tags:
+            json: "lineColor,omitempty"
+          maxLength: 500
+        lineStyle:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesLineStyle"
+          x-go-name: LineStyle
+          x-oapi-codegen-extra-tags:
+            json: "lineStyle,omitempty"
+        lineCap:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesLineCap"
+          x-go-name: LineCap
+          x-oapi-codegen-extra-tags:
+            json: "lineCap,omitempty"
+        lineOpacity:
+          type: number
+          format: float
+          description: The opacity of the edge's line and arrow. Useful if you wish to have a separate opacity for the edge label versus the edge line. Note that the opacity value of the edge element affects the effective opacity of its line and label subcomponents.
+          x-go-name: LineOpacity
+          x-oapi-codegen-extra-tags:
+            json: "lineOpacity,omitempty"
+          minimum: 0
+          maximum: 1
+        targetArrowColor:
+          type: string
+          description: The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+          x-go-name: TargetArrowColor
+          x-oapi-codegen-extra-tags:
+            json: "targetArrowColor,omitempty"
+          maxLength: 500
+        targetArrowShape:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesTargetArrowShape"
+          x-go-name: TargetArrowShape
+          x-oapi-codegen-extra-tags:
+            json: "targetArrowShape,omitempty"
+        targetArrowFill:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesTargetArrowFill"
+          x-go-name: TargetArrowFill
+          x-oapi-codegen-extra-tags:
+            json: "targetArrowFill,omitempty"
+        midTargetArrowColor:
+          type: string
+          description: The colour of the edge's source arrow. Colours may be specified by name (e.g. red), hex (e.g. #ff0000 or #f00), RGB (e.g. rgb(255, 0, 0)), or HSL (e.g. hsl(0, 100%, 50%)).
+          x-go-name: MidTargetArrowColor
+          x-oapi-codegen-extra-tags:
+            json: "midTargetArrowColor,omitempty"
+          maxLength: 500
+        midTargetArrowShape:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesMidTargetArrowShape"
+          x-go-name: MidTargetArrowShape
+          x-oapi-codegen-extra-tags:
+            json: "midTargetArrowShape,omitempty"
+        midTargetArrowFill:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStylesMidTargetArrowFill"
+          x-go-name: MidTargetArrowFill
+          x-oapi-codegen-extra-tags:
+            json: "midTargetArrowFill,omitempty"
+        arrowScale:
+          type: number
+          format: float
+          description: Scaling for the arrow size.
+          x-go-name: ArrowScale
+          x-oapi-codegen-extra-tags:
+            json: "arrowScale,omitempty"
+          minimum: 0
+        sourceLabel:
+          type: string
+          description: The text to display for an edge's source label. Can give a path, e.g. data(id) will label with the elements id
+          x-go-name: SourceLabel
+          x-oapi-codegen-extra-tags:
+            json: "sourceLabel,omitempty"
+          maxLength: 500
+        targetLabel:
+          type: string
+          description: The text to display for an edge's target label. Can give a path, e.g. data(id) will label with the elements id
+          x-go-name: TargetLabel
+          x-oapi-codegen-extra-tags:
+            json: "targetLabel,omitempty"
+          maxLength: 500
+
+    # Relationship Metadata
+    RelationshipMetadata:
+      type: object
+      description: Metadata contains additional information associated with the Relationship.
+      additionalProperties: true
+      x-go-name: "RelationshipMetadata"
+      x-oapi-codegen-extra-tags:
+        gorm: "type:bytes;serializer:json"
+      properties:
+        description:
+          description: Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "description"
+          maxLength: 5000
+        styles:
+          $ref: "#/components/schemas/RelationshipDefinitionMetadataStyles"
+          x-go-type: RelationshipDefinitionMetadataStyles
+          x-oapi-codegen-extra-tags:
+            json: "styles"
+        isAnnotation:
+          type: boolean
+          description: Indicates whether the relationship should be treated as a logical representation only
+          x-oapi-codegen-extra-tags:
+            json: "isAnnotation"

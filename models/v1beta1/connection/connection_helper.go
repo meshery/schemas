@@ -43,7 +43,7 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 	// if not exists then create a new host and return the id
 	if err == gorm.ErrRecordNotFound {
 		h.ID = hID
-		err = db.Create(&h).Error
+		err = db.Create(h).Error
 		if err != nil {
 			return uuid.UUID{}, err
 		}
@@ -52,10 +52,6 @@ func (h *Connection) Create(db *database.Handler) (uuid.UUID, error) {
 
 	// else return the id of the existing connection
 	return connection.ID, nil
-}
-
-func (c *Connection) EventCategory() string {
-	return "connection"
 }
 
 type MeshsyncDeploymentMode string
@@ -98,8 +94,4 @@ func MeshsyncDeploymentModeFromMetadata(metadata core.Map) MeshsyncDeploymentMod
 
 func SetMeshsyncDeploymentModeToMetadata(metadata core.Map, value MeshsyncDeploymentMode) {
 	metadata[MeshsyncDeploymentModeMetadataKey] = value
-}
-
-func (*MesheryInstance) EventCategory() string {
-	return "connection"
 }

@@ -1,0 +1,61 @@
+name: Schema Audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/schema-audit.yml'
+      - 'Makefile'
+      - 'build/**'
+      - 'package.json'
+      - 'schemas/**'
+  push:
+    branches:
+      - master
+    paths:
+      - '.github/workflows/schema-audit.yml'
+      - 'Makefile'
+      - 'build/**'
+      - 'package.json'
+      - 'schemas/**'
+
+jobs:
+  strict-consistency-audit:
+    name: Strict schema consistency audit
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run strict schema consistency audit
+        run: make validate-schemas-strict
+
+  advisory-audit:
+    name: Advisory schema audit
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run advisory schema audit
+        run: make audit-schemas

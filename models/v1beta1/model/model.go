@@ -6,13 +6,12 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
-	"github.com/gofrs/uuid"
-	"github.com/meshery/schemas/models/v1alpha1/capability"
-	"github.com/meshery/schemas/models/v1beta1/category"
-	"github.com/meshery/schemas/models/v1beta1/connection"
-	"github.com/meshery/schemas/models/v1beta1/subcategory"
+	core "github.com/meshery/schemas/models/core"
+	capabilityv1alpha1 "github.com/meshery/schemas/models/v1alpha1/capability"
+	categoryv1beta1 "github.com/meshery/schemas/models/v1beta1/category"
+	connectionv1beta1 "github.com/meshery/schemas/models/v1beta1/connection"
+	subcategoryv1beta1 "github.com/meshery/schemas/models/v1beta1/subcategory"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -30,35 +29,6 @@ const (
 	Duplicate ModelDefinitionStatus = "duplicate"
 	Enabled   ModelDefinitionStatus = "enabled"
 	Ignored   ModelDefinitionStatus = "ignored"
-)
-
-// Defines values for ModelDefinitionMetadataShape.
-const (
-	Barrel               ModelDefinitionMetadataShape = "barrel"
-	BottomRoundRectangle ModelDefinitionMetadataShape = "bottom-round-rectangle"
-	ConcaveHexagon       ModelDefinitionMetadataShape = "concave-hexagon"
-	CutRectangle         ModelDefinitionMetadataShape = "cut-rectangle"
-	Diamond              ModelDefinitionMetadataShape = "diamond"
-	Ellipse              ModelDefinitionMetadataShape = "ellipse"
-	Heptagon             ModelDefinitionMetadataShape = "heptagon"
-	Hexagon              ModelDefinitionMetadataShape = "hexagon"
-	Octagon              ModelDefinitionMetadataShape = "octagon"
-	Pentagon             ModelDefinitionMetadataShape = "pentagon"
-	Polygon              ModelDefinitionMetadataShape = "polygon"
-	Rectangle            ModelDefinitionMetadataShape = "rectangle"
-	Rhomboid             ModelDefinitionMetadataShape = "rhomboid"
-	RoundDiamond         ModelDefinitionMetadataShape = "round-diamond"
-	RoundHeptagon        ModelDefinitionMetadataShape = "round-heptagon"
-	RoundHexagon         ModelDefinitionMetadataShape = "round-hexagon"
-	RoundOctagon         ModelDefinitionMetadataShape = "round-octagon"
-	RoundPentagon        ModelDefinitionMetadataShape = "round-pentagon"
-	RoundRectangle       ModelDefinitionMetadataShape = "round-rectangle"
-	RoundTag             ModelDefinitionMetadataShape = "round-tag"
-	RoundTriangle        ModelDefinitionMetadataShape = "round-triangle"
-	Star                 ModelDefinitionMetadataShape = "star"
-	Tag                  ModelDefinitionMetadataShape = "tag"
-	Triangle             ModelDefinitionMetadataShape = "triangle"
-	Vee                  ModelDefinitionMetadataShape = "vee"
 )
 
 // ImportBody defines model for ImportBody.
@@ -101,70 +71,49 @@ type ImportBody3 struct {
 
 // ImportRequest defines model for ImportRequest.
 type ImportRequest struct {
-	ImportBody ImportRequest_ImportBody `json:"importBody" yaml:"importBody"`
-	Register   bool                     `json:"register" yaml:"register"`
+	ImportBody ImportBody `json:"importBody" yaml:"importBody"`
+
+	// Register The register of the importrequest.
+	Register bool `json:"register" yaml:"register"`
 
 	// UploadType Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.
 	UploadType ImportRequestUploadType `json:"uploadType" yaml:"uploadType"`
 }
 
-// ImportRequestImportBody0 defines model for .
-type ImportRequestImportBody0 struct {
-	// FileName Name of the file being uploaded.
-	FileName string `json:"fileName" yaml:"fileName"`
-
-	// ModelFile Supported model file formats are: .tar, .tar.gz, and .tgz. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-	ModelFile string `json:"modelFile" yaml:"modelFile"`
-}
-
-// ImportRequestImportBody1 defines model for .
-type ImportRequestImportBody1 struct {
-	// Url A direct URL to a single model file, for example: https://raw.github.com/your-model-file.tar. Supported model file formats are: .tar, .tar.gz, and .tgz. \n\nFor bulk import of your model use the GitHub connection or CSV files. See [Import Models Documentation](https://docs.meshery.io/guides/configuration-management/importing-models#import-models-using-meshery-ui) for details
-	Url string `json:"url" yaml:"url"`
-}
-
-// ImportRequestImportBody2 defines model for .
-type ImportRequestImportBody2 struct {
-	// ComponentCsv Upload a CSV file containing component definitions
-	ComponentCsv openapi_types.File `json:"componentCsv" yaml:"componentCsv"`
-
-	// ModelCsv Upload a CSV file containing model definitions
-	ModelCsv openapi_types.File `json:"modelCsv" yaml:"modelCsv"`
-
-	// RelationshipCsv Upload a CSV file containing relationship definitions
-	RelationshipCsv openapi_types.File `json:"relationshipCsv" yaml:"relationshipCsv"`
-}
-
-// ImportRequestImportBody3 defines model for .
-type ImportRequestImportBody3 struct {
-	// Url URI to the source code or package of the model.
-	Url string `json:"url" yaml:"url"`
-}
-
-// ImportRequest_ImportBody defines model for ImportRequest.ImportBody.
-type ImportRequest_ImportBody struct {
-	union json.RawMessage
-}
-
 // ImportRequestUploadType Choose the method you prefer to upload your model file. Select 'File Import' or 'CSV Import' if you have the file on your local system or 'URL Import' if you have the file hosted online.
 type ImportRequestUploadType string
 
+// MeshModelModelsPage defines model for MeshModelModelsPage.
+type MeshModelModelsPage struct {
+	// Models The models of the meshmodelmodelspage.
+	Models *[]map[string]interface{} `json:"models,omitempty" yaml:"models,omitempty"`
+
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+
+	// TotalCount Total number of items available.
+	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
 type Model struct {
-	// Version Version of the model as defined by the registrant.
-	Version string `json:"version" yaml:"version"`
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
+	Version core.SemverString `json:"version" yaml:"version"`
 }
 
 // ModelDefinition Meshery Models serve as a portable unit of packaging to define managed entities, their relationships, and capabilities.
 type ModelDefinition struct {
-	// Id Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-	Id uuid.UUID `json:"id" yaml:"id"`
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `json:"id" yaml:"id"`
 
-	// SchemaVersion Specifies the version of the schema used for the definition.
-	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
+	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
+	SchemaVersion core.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
 
-	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
-	Version string `json:"version" yaml:"version"`
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
+	Version core.SemverString `json:"version" yaml:"version"`
 
 	// Name The unique name for the model within the scope of a registrant.
 	Name string `json:"name" yaml:"name"`
@@ -182,29 +131,26 @@ type ModelDefinition struct {
 	// - ignored: model is unavailable for use for all users of this Meshery Server.
 	Status ModelDefinitionStatus `json:"status" yaml:"status"`
 
-	// CategoryId ID of the category.
-	CategoryId uuid.UUID `gorm:"categoryID" json:"-" yaml:"-"`
+	// CategoryId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	CategoryId core.Uuid `gorm:"categoryID" json:"-" yaml:"-"`
 
 	// Registrant Meshery Connections are managed and unmanaged resources that either through discovery or manual entry are tracked by Meshery. Learn more at https://docs.meshery.io/concepts/logical/connections
-	Registrant connection.Connection `gorm:"foreignKey:RegistrantId;references:ID" json:"registrant" yaml:"registrant"`
+	Registrant connectionv1beta1.Connection `gorm:"foreignKey:RegistrantId;references:ID" json:"registrant" yaml:"registrant"`
 
-	// RegistrantId ID of the registrant.
-	RegistrantId uuid.UUID `gorm:"column:connection_id" json:"connection_id" yaml:"connection_id"`
+	// RegistrantId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	RegistrantId core.Uuid `gorm:"column:connection_id" json:"connection_id" yaml:"connection_id"`
 
 	// Category Category of the model.
-	Category category.CategoryDefinition `gorm:"foreignKey:CategoryId;references:Id" json:"category" yaml:"category"`
+	Category categoryv1beta1.CategoryDefinition `gorm:"foreignKey:CategoryId;references:ID" json:"category" yaml:"category"`
 
 	// SubCategory Sub category of the model determines the secondary grouping.
-	SubCategory subcategory.SubCategoryDefinition `json:"subCategory" yaml:"subCategory"`
+	SubCategory subcategoryv1beta1.SubCategoryDefinition `json:"subCategory" yaml:"subCategory"`
 
 	// Metadata Metadata containing additional information associated with the model.
 	Metadata *ModelDefinition_Metadata `gorm:"type:bytes;serializer:json" json:"metadata" yaml:"metadata"`
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
-	Model struct {
-		// Version Version of the model as defined by the registrant.
-		Version string `json:"version" yaml:"version"`
-	} `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
+	Model Model `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
 
 	// ComponentsCount Number of components associated with the model.
 	ComponentsCount int `gorm:"-" json:"components_count" yaml:"components_count"`
@@ -213,11 +159,15 @@ type ModelDefinition struct {
 	RelationshipsCount int `gorm:"-" json:"relationships_count" yaml:"relationships_count"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt time.Time `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt     time.Time   `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	Components    interface{} `gorm:"-" json:"components" yaml:"components"`
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+
+	// Components The components of the model.
+	Components interface{} `gorm:"-" json:"components" yaml:"components"`
+
+	// Relationships The relationships of the model.
 	Relationships interface{} `gorm:"-" json:"relationships" yaml:"relationships"`
 }
 
@@ -228,13 +178,10 @@ type ModelDefinition struct {
 // - ignored: model is unavailable for use for all users of this Meshery Server.
 type ModelDefinitionStatus string
 
-// ModelDefinitionMetadataShape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-type ModelDefinitionMetadataShape string
-
 // ModelDefinition_Metadata Metadata containing additional information associated with the model.
 type ModelDefinition_Metadata struct {
 	// Capabilities Capabilities associated with the model
-	Capabilities *[]capability.Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
+	Capabilities *[]capabilityv1alpha1.Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
 
 	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
 	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
@@ -255,34 +202,32 @@ type ModelDefinition_Metadata struct {
 	SvgComplete *string `json:"svgComplete" yaml:"svgComplete"`
 
 	// Shape The shape of the node's body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
-	Shape                *ModelDefinitionMetadataShape `json:"shape,omitempty" yaml:"shape,omitempty"`
-	AdditionalProperties map[string]interface{}        `json:"-" yaml:"-"`
+	Shape                *core.Shape    `json:"shape,omitempty" yaml:"shape,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
 }
 
 // ModelReference Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 type ModelReference struct {
-	// Version A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.
-	Version string `json:"version" yaml:"version"`
-
-	// Name The unique name for the model within the scope of a registrant.
-	Name string `json:"name" yaml:"name"`
-
 	// DisplayName Human-readable name for the model.
 	DisplayName string `json:"displayName" yaml:"displayName"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id         uuid.UUID           `json:"id" yaml:"id"`
-	Registrant RegistrantReference `json:"registrant" yaml:"registrant"`
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Model Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).
-	Model struct {
-		// Version Version of the model as defined by the registrant.
-		Version string `json:"version" yaml:"version"`
-	} `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
+	Model Model `json:"model" yaml:"model"`
+
+	// Name The unique name for the model within the scope of a registrant.
+	Name       string              `json:"name" yaml:"name"`
+	Registrant RegistrantReference `json:"registrant" yaml:"registrant"`
+
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
+	Version core.SemverString `json:"version" yaml:"version"`
 }
 
 // RegistrantReference defines model for RegistrantReference.
 type RegistrantReference struct {
+	// Kind Kind of the registrant.
 	Kind string `json:"kind" yaml:"kind"`
 }
 
@@ -565,120 +510,6 @@ func (t ImportBody) MarshalJSON() ([]byte, error) {
 }
 
 func (t *ImportBody) UnmarshalJSON(b []byte) error {
-	err := t.union.UnmarshalJSON(b)
-	return err
-}
-
-// AsImportRequestImportBody0 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody0
-func (t ImportRequest_ImportBody) AsImportRequestImportBody0() (ImportRequestImportBody0, error) {
-	var body ImportRequestImportBody0
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromImportRequestImportBody0 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody0
-func (t *ImportRequest_ImportBody) FromImportRequestImportBody0(v ImportRequestImportBody0) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeImportRequestImportBody0 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody0
-func (t *ImportRequest_ImportBody) MergeImportRequestImportBody0(v ImportRequestImportBody0) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsImportRequestImportBody1 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody1
-func (t ImportRequest_ImportBody) AsImportRequestImportBody1() (ImportRequestImportBody1, error) {
-	var body ImportRequestImportBody1
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromImportRequestImportBody1 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody1
-func (t *ImportRequest_ImportBody) FromImportRequestImportBody1(v ImportRequestImportBody1) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeImportRequestImportBody1 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody1
-func (t *ImportRequest_ImportBody) MergeImportRequestImportBody1(v ImportRequestImportBody1) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsImportRequestImportBody2 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody2
-func (t ImportRequest_ImportBody) AsImportRequestImportBody2() (ImportRequestImportBody2, error) {
-	var body ImportRequestImportBody2
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromImportRequestImportBody2 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody2
-func (t *ImportRequest_ImportBody) FromImportRequestImportBody2(v ImportRequestImportBody2) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeImportRequestImportBody2 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody2
-func (t *ImportRequest_ImportBody) MergeImportRequestImportBody2(v ImportRequestImportBody2) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-// AsImportRequestImportBody3 returns the union data inside the ImportRequest_ImportBody as a ImportRequestImportBody3
-func (t ImportRequest_ImportBody) AsImportRequestImportBody3() (ImportRequestImportBody3, error) {
-	var body ImportRequestImportBody3
-	err := json.Unmarshal(t.union, &body)
-	return body, err
-}
-
-// FromImportRequestImportBody3 overwrites any union data inside the ImportRequest_ImportBody as the provided ImportRequestImportBody3
-func (t *ImportRequest_ImportBody) FromImportRequestImportBody3(v ImportRequestImportBody3) error {
-	b, err := json.Marshal(v)
-	t.union = b
-	return err
-}
-
-// MergeImportRequestImportBody3 performs a merge with any union data inside the ImportRequest_ImportBody, using the provided ImportRequestImportBody3
-func (t *ImportRequest_ImportBody) MergeImportRequestImportBody3(v ImportRequestImportBody3) error {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return err
-	}
-
-	merged, err := runtime.JSONMerge(t.union, b)
-	t.union = merged
-	return err
-}
-
-func (t ImportRequest_ImportBody) MarshalJSON() ([]byte, error) {
-	b, err := t.union.MarshalJSON()
-	return b, err
-}
-
-func (t *ImportRequest_ImportBody) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }

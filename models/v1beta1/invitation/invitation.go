@@ -6,7 +6,6 @@ package invitation
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/lib/pq"
 	"github.com/meshery/schemas/models/core"
 )
@@ -35,8 +34,8 @@ type Invitation struct {
 	// ExpiresAt Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
 	ExpiresAt *time.Time `db:"expires_at" json:"expires_at" yaml:"expires_at"`
 
-	// ID Unique identifier for the invitation , is also used as the invitation code
-	ID uuid.UUID `json:"id" yaml:"id"`
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// IsDefault Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation
 	IsDefault *bool `db:"is_default" json:"is_default" yaml:"is_default"`
@@ -47,8 +46,8 @@ type Invitation struct {
 	// OrgId ID of the organization to which the user is invited
 	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
 
-	// OwnerId ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes
-	OwnerId uuid.UUID `db:"owner_id" json:"owner_id" yaml:"owner_id"`
+	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OwnerId core.Uuid `db:"owner_id" json:"owner_id" yaml:"owner_id"`
 
 	// Quota Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota
 	Quota *int           `json:"quota,omitempty" yaml:"quota,omitempty"`
@@ -60,6 +59,39 @@ type Invitation struct {
 
 	// UpdatedAt Timestamp when the invitation was last updated
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+}
+
+// InvitationPayload Payload for creating or updating an invitation.
+type InvitationPayload struct {
+	// Description Description of the invitation.
+	Description string         `json:"description" yaml:"description"`
+	Emails      pq.StringArray `json:"emails" yaml:"emails"`
+
+	// ExpiresAt Timestamp when the invitation expires, if applicable.
+	ExpiresAt *time.Time `db:"expires_at" json:"expires_at,omitempty" yaml:"expires_at,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID *core.Uuid `json:"id,omitempty" yaml:"id,omitempty"`
+
+	// IsDefault Indicates whether the invitation is a default invitation (open invite).
+	IsDefault *bool `db:"is_default" json:"is_default,omitempty" yaml:"is_default,omitempty"`
+
+	// Name Name of the invitation.
+	Name string `json:"name" yaml:"name"`
+
+	// OrgId ID of the organization to which the user is invited.
+	OrgId string `db:"org_id" json:"org_id" yaml:"org_id"`
+
+	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OwnerId *core.Uuid `db:"owner_id" json:"owner_id,omitempty" yaml:"owner_id,omitempty"`
+
+	// Quota Quota for the invitation.
+	Quota *int           `json:"quota,omitempty" yaml:"quota,omitempty"`
+	Roles pq.StringArray `json:"roles" yaml:"roles"`
+
+	// Status Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+	Status InvitationStatus `json:"status" yaml:"status"`
+	Teams  pq.StringArray   `json:"teams" yaml:"teams"`
 }
 
 // InvitationStatus Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -74,8 +106,19 @@ type InvitationsPage struct {
 	Total int `json:"total" yaml:"total"`
 }
 
+// SignupRequest defines model for SignupRequest.
+type SignupRequest map[string]interface{}
+
+// SignupRequestsPage defines model for SignupRequestsPage.
+type SignupRequestsPage struct {
+	Data       *[]SignupRequest `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int             `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int             `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int             `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // Uuid A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type Uuid = uuid.UUID
+type Uuid = core.Uuid
 
 // InvitationId defines model for invitation_id.
 type InvitationId = string

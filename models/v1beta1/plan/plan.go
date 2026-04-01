@@ -4,7 +4,7 @@
 package plan
 
 import (
-	"github.com/gofrs/uuid"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // Defines values for Currency.
@@ -41,7 +41,7 @@ type Plan struct {
 	Currency Currency    `csv:"currency" db:"currency" json:"currency" yaml:"currency"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id uuid.UUID `csv:"id" db:"id" json:"id" yaml:"id"`
+	ID core.Uuid `csv:"id" db:"id" json:"id" yaml:"id"`
 
 	// MinimumUnits Minimum number of units required for the plan
 	MinimumUnits int `csv:"minimum_units" db:"minimum_units" json:"minimum_units" yaml:"minimum_units"`

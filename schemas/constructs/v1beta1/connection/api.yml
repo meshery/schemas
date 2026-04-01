@@ -1,16 +1,26 @@
 openapi: 3.0.0
 info:
   title: Connection API
+  description: API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.
+  x-deprecated: true
+  x-superseded-by: v1beta2
   version: v1beta1
-  description: API for managing Meshery connections - managed and unmanaged resources tracked by Meshery
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+security:
+  - jwt: []
 
 paths:
   /api/integrations/connections:
     get:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: GetConnections
+      operationId: getConnections
       summary: Get all connections
       description: Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
       parameters:
@@ -61,14 +71,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
     post:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: RegisterConnection
+      operationId: registerConnection
       summary: Register a new connection
       description: Register a new connection with credentials
       requestBody:
@@ -79,22 +90,23 @@ paths:
               $ref: "#/components/schemas/ConnectionPayload"
       responses:
         "201":
-          description: Connection registered successfully
+          description: Connection registered
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
         "400":
-          description: Invalid request parameters
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/integrations/connections/{connectionId}:
     get:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: GetConnectionById
+      operationId: getConnectionById
       summary: Get connection by ID
       description: Returns a specific connection by its ID
       parameters:
@@ -107,15 +119,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Connection"
         "404":
-          description: Connection not found
+          $ref: "#/components/responses/404"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
     put:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: UpdateConnection
+      operationId: updateConnection
       summary: Update a connection
       description: Update an existing connection
       parameters:
@@ -128,39 +141,43 @@ paths:
               $ref: "#/components/schemas/ConnectionPayload"
       responses:
         "200":
-          description: Connection updated successfully
+          description: Connection updated
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          description: Connection not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
     delete:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: DeleteConnection
+      operationId: deleteConnection
       summary: Delete a connection
       description: Delete a specific connection
       parameters:
         - $ref: "#/components/parameters/connectionId"
       responses:
         "204":
-          description: Connection deleted successfully
+          description: Connection deleted
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          description: Connection not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/integrations/connections/meshery/{mesheryServerId}:
     delete:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: DeleteMesheryConnection
+      operationId: deleteMesheryConnection
       summary: Delete Meshery instance connection
       description: Delete a Meshery server connection by server ID
       parameters:
@@ -173,18 +190,19 @@ paths:
             format: uuid
       responses:
         "204":
-          description: Meshery connection deleted successfully
+          description: Meshery connection deleted
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          description: Connection not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/integrations/connections/kubernetes/{connectionId}/context:
     get:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: GetKubernetesContext
+      operationId: getKubernetesContext
       summary: Get Kubernetes context
       description: Get Kubernetes context for a specific connection
       parameters:
@@ -196,35 +214,39 @@ paths:
             application/json:
               schema:
                 type: object
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          description: Connection not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/environments/{environmentId}/connections/{connectionId}:
     post:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: AddConnectionToEnvironment
+      operationId: addConnectionToEnvironment
       summary: Add connection to environment
       description: Associate a connection with an environment
       parameters:
         - $ref: "#/components/parameters/environmentId"
         - $ref: "#/components/parameters/connectionId"
       responses:
-        "200":
-          description: Connection added to environment successfully
+        "201":
+          description: Connection added to environment
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          description: Connection or environment not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
     delete:
-      x-internal: ["cloud"]
       tags:
         - Connections
-      operationId: RemoveConnectionFromEnvironment
+      operationId: removeConnectionFromEnvironment
       summary: Remove connection from environment
       description: Disassociate a connection from an environment
       parameters:
@@ -232,13 +254,31 @@ paths:
         - $ref: "#/components/parameters/connectionId"
       responses:
         "204":
-          description: Connection removed from environment successfully
+          description: Connection removed from environment
+        "401":
+          $ref: "#/components/responses/401"
         "404":
-          description: Connection or environment not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
 components:
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   parameters:
     connectionId:
       name: connectionId
@@ -350,9 +390,7 @@ components:
         sub_type:
           type: string
           description: Connection sub-type
-          x-oapi-codegen-extra-tags:
-            json: "sub_type"
-        credential_secret:
+        credentialSecret:
           type: object
           description: Credential secret data
           x-go-type: core.Map
@@ -360,7 +398,7 @@ components:
             path: github.com/meshery/schemas/models/core
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
-            json: "credential_secret"
+            json: "credentialSecret"
         metadata:
           type: object
           description: Connection metadata
@@ -428,18 +466,18 @@ components:
           description: Number of items per page
           x-oapi-codegen-extra-tags:
             json: "page_size"
-        connections_status:
+        connectionsStatus:
           type: array
           description: List of status counts
           items:
             $ref: "#/components/schemas/ConnectionStatusInfo"
           x-oapi-codegen-extra-tags:
-            json: "connections_status"
+            json: "connectionsStatus"
       required:
         - total_count
         - page
         - page_size
-        - connections_status
+        - connectionsStatus
 
     MesheryInstance:
       type: object
@@ -506,13 +544,13 @@ components:
       type: object
       description: Paginated list of Meshery instances
       properties:
-        meshery_instances:
+        mesheryInstances:
           type: array
           description: List of Meshery instances
           items:
             $ref: "#/components/schemas/MesheryInstance"
           x-oapi-codegen-extra-tags:
-            json: "meshery_instances"
+            json: "mesheryInstances"
         page:
           type: integer
           description: Current page number
@@ -529,7 +567,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: "total_count"
       required:
-        - meshery_instances
+        - mesheryInstances
         - page
         - page_size
         - total_count
@@ -538,13 +576,13 @@ components:
       type: object
       description: Meshery version compatibility check
       properties:
-        meshery_version:
+        mesheryVersion:
           type: string
           description: Meshery version string
           x-oapi-codegen-extra-tags:
-            json: "meshery_version,omitempty"
-        check_compatibility:
+            json: "mesheryVersion,omitempty"
+        checkCompatibility:
           type: boolean
           description: Whether to check compatibility
           x-oapi-codegen-extra-tags:
-            json: "check_compatibility,omitempty"
+            json: "checkCompatibility,omitempty"

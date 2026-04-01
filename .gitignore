@@ -1,3 +1,6 @@
+# Claude Code worktrees (local state, not project files)
+.claude/worktrees/
+
 # mesheryctl
 mesheryctl/cmd/mesheryctl/mesheryctl
 mesheryctl/.meshery/
@@ -66,3 +69,6 @@ default.profraw
 
 wasm/policies/temp-bundle-extract-dir/**
 .nvim.lua
+
+.claude/worktrees/
+.claude/settings.local.json

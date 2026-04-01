@@ -1,9 +1,170 @@
 openapi: 3.0.3
 info:
-  title: User Schema
-  version: 1.0.0
-paths: {}
+  title: User
+  description: OpenAPI schema for user management in Meshery Cloud.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+paths:
+  /api/identity/orgs/{orgId}/users:
+    get:
+      tags:
+        - users
+      operationId: getUsersForOrg
+      summary: Get organization users
+      description: Returns organization users, optionally filtered by team membership.
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+        - $ref: "#/components/parameters/teamId"
+      responses:
+        "200":
+          description: Paginated list of organization users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersPageForAdmin"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/users:
+    get:
+      tags:
+        - users
+      operationId: getUsers
+      summary: Get public users
+      description: Returns publicly viewable user records.
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/filter"
+      responses:
+        "200":
+          description: Paginated list of public users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersPageForNonAdmin"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/profile/{id}:
+    get:
+      tags:
+        - users
+      operationId: getUserProfileById
+      summary: Get user profile by ID
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: User profile for the requested ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/users/profile:
+    get:
+      tags:
+        - users
+      operationId: getUser
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user profile and role context
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
 components:
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      description: User ID
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    orgId:
+      name: orgId
+      in: path
+      required: true
+      description: Organization ID
+      schema:
+        $ref: "../core/api.yml#/components/schemas/organization_id"
+    page:
+      $ref: "../core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../core/api.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../core/api.yml#/components/parameters/order"
+    filter:
+      $ref: "../core/api.yml#/components/parameters/filter"
+    teamId:
+      name: teamId
+      in: query
+      required: false
+      description: Optional team filter when listing organization users
+      schema:
+        $ref: "../core/api.yml#/components/schemas/team_id"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     User:
       type: object
@@ -22,13 +183,12 @@ components:
         - deleted_at
       properties:
         id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           description: Unique identifier for the user
           x-go-name: ID
           x-oapi-codegen-extra-tags:
             db: "id"
             json: "id"
-            yaml: "id"
         user_id:
           type: string
           maxLength: 200
@@ -36,7 +196,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: "user_id"
             json: "user_id"
-            yaml: "user_id"
+          x-id-format: external
         provider:
           type: string
           maxLength: 100
@@ -49,7 +209,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "provider"
             json: "provider"
-            yaml: "provider"
         email:
           type: string
           format: email
@@ -58,7 +217,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "email"
             json: "email"
-            yaml: "email"
         first_name:
           type: string
           maxLength: 200
@@ -66,7 +224,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "first_name"
             json: "first_name"
-            yaml: "first_name"
         last_name:
           type: string
           maxLength: 300
@@ -74,7 +231,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "last_name"
             json: "last_name"
-            yaml: "last_name"
         avatar_url:
           type: string
           format: uri
@@ -83,7 +239,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "avatar_url"
             json: "avatar_url"
-            yaml: "avatar_url"
         status:
           type: string
           maxLength: 100
@@ -96,7 +251,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "status"
             json: "status"
-            yaml: "status"
         bio:
           type: string
           maxLength: 1000
@@ -105,25 +259,24 @@ components:
           x-oapi-codegen-extra-tags:
             db: "bio"
             json: "bio"
-            yaml: "bio"
         country:
           type: object
           description: User's country information stored as JSONB
           additionalProperties: true
           x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "country"
             json: "country"
-            yaml: "country"
         region:
           type: object
           description: User's region information stored as JSONB
           additionalProperties: true
           x-go-type: "core.Map"
+          x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: "region"
             json: "region"
-            yaml: "region"
         preferences:
           $ref: "#/components/schemas/Preference"
           x-go-type: "Preference"
@@ -131,42 +284,36 @@ components:
           x-oapi-codegen-extra-tags:
             db: "preferences"
             json: "preferences"
-            yaml: "preferences"
         accepted_terms_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           description: Timestamp when user accepted terms and conditions
           x-oapi-codegen-extra-tags:
             db: "accepted_terms_at"
             json: "accepted_terms_at"
-            yaml: "accepted_terms_at"
         first_login_time:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           description: Timestamp of user's first login
           x-oapi-codegen-extra-tags:
             db: "first_login_time"
             json: "first_login_time"
-            yaml: "first_login_time"
         last_login_time:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           description: Timestamp of user's most recent login
           x-oapi-codegen-extra-tags:
             db: "last_login_time"
             json: "last_login_time"
-            yaml: "last_login_time"
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           description: Timestamp when the user record was created
           x-oapi-codegen-extra-tags:
             db: "created_at"
             json: "created_at"
-            yaml: "created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           description: Timestamp when the user record was last updated
           x-oapi-codegen-extra-tags:
             db: "updated_at"
             json: "updated_at"
-            yaml: "updated_at"
         socials:
           type: array
           description: Various online profiles associated with the user account
@@ -179,7 +326,6 @@ components:
           x-oapi-codegen-extra-tags:
             db: "socials"
             json: "socials"
-            yaml: "socials"
         deleted_at:
           type: string
           format: date-time
@@ -189,92 +335,126 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
             json: "deleted_at"
-            yaml: "deleted_at"
+        role_names:
+          type: array
+          items:
+            type: string
+            enum:
+              - admin
+              - meshmap
+              - curator
+              - team admin
+              - workspace admin
+              - workspace manager
+              - organization admin
+              - user
+          description: List of global roles assigned to the user
+          example: ["admin", "meshmap"]
+          x-oapi-codegen-extra-tags:
+            db: "role_names"
+            json: "role_names"
+        teams:
+          type: object
+          description: Teams the user belongs to with role information
+          x-oapi-codegen-extra-tags:
+            db: "teams"
+            json: "teams"
+          properties:
+            teams_with_roles:
+              type: array
+              description: Team memberships for the user with their assigned roles.
+              items:
+                type: object
+              x-oapi-codegen-extra-tags:
+                db: "teams_with_roles"
+                json: "teams_with_roles"
+            total_count:
+              type: integer
+              description: Total number of team memberships returned for the user.
+              minimum: 0
+              x-oapi-codegen-extra-tags:
+                db: "total_count"
+                json: "total_count"
+        organizations:
+          type: object
+          description: Organizations the user belongs to with role information
+          x-oapi-codegen-extra-tags:
+            db: "organizations"
+            json: "organizations"
+          properties:
+            organizations_with_roles:
+              type: array
+              description: Organization memberships for the user with their assigned roles.
+              items:
+                type: object
+              x-oapi-codegen-extra-tags:
+                db: "organizations_with_roles"
+                json: "organizations_with_roles"
+            total_count:
+              type: integer
+              description: Total number of organization memberships returned for the user.
+              minimum: 0
+              x-oapi-codegen-extra-tags:
+                db: "total_count"
+                json: "total_count"
       additionalProperties: false
 
-    GetUserResponse:
-      description: Response schema for getting user information, includes user data with roles, teams, and organizations
-      allOf:
-        - $ref: "#/components/schemas/User"
-        - type: object
-          properties:
-            role_names:
-              type: array
-              items:
-                type: string
-                enum:
-                  - admin
-                  - meshmap
-                  - curator
-                  - team admin
-                  - workspace admin
-                  - workspace manager
-                  - organization admin
-                  - user
-              description: List of global roles assigned to the user
-              example:
-                - ["admin", "meshmap"]
-                - ["user"]
-              x-oapi-codegen-extra-tags:
-                db: "role_names"
-                json: "role_names"
-                yaml: "role_names"
-            teams:
-              type: object
-              description: Teams the user belongs to with role information
-              x-oapi-codegen-extra-tags:
-                db: "teams"
-                json: "teams"
-                yaml: "teams"
-              properties:
-                teams_with_roles:
-                  type: array
-                  items:
-                    type: object
-                  x-oapi-codegen-extra-tags:
-                    db: "teams_with_roles"
-                    json: "teams_with_roles"
-                    yaml: "teams_with_roles"
-                total_count:
-                  type: integer
-                  x-oapi-codegen-extra-tags:
-                    db: "total_count"
-                    json: "total_count"
-                    yaml: "total_count"
-            organizations:
-              type: object
-              description: Organizations the user belongs to with role information
-              x-oapi-codegen-extra-tags:
-                db: "organizations"
-                json: "organizations"
-                yaml: "organizations"
-              properties:
-                organizations_with_roles:
-                  type: array
-                  items:
-                    type: object
-                  x-oapi-codegen-extra-tags:
-                    db: "organizations_with_roles"
-                    json: "organizations_with_roles"
-                    yaml: "organizations_with_roles"
-                total_count:
-                  type: integer
-                  x-oapi-codegen-extra-tags:
-                    db: "total_count"
-                    json: "total_count"
-                    yaml: "total_count"
+    UsersPageForAdmin:
+      type: object
+      description: Paginated list of users with organization and team role context
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          description: The data of the userspageforadmin.
+
+    UsersPageForNonAdmin:
+      type: object
+      description: Paginated list of public user records
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          description: The data of the userspagefornonadmin.
 
     Preference:
+      x-generate-db-helpers: true
       type: object
       required:
         - anonymousUsageStats
         - anonymousPerfResults
-        - updatedAt
+        - updated_at
         - dashboardPreferences
-        - selectedOrganizationID
+        - selectedOrganizationId
         - selectedWorkspaceForOrganizations
         - usersExtensionPreferences
-        - RemoteProviderPreferences
+        - remoteProviderPreferences
 
       properties:
         meshAdapters:
@@ -282,6 +462,7 @@ components:
           items:
             x-go-type: Adapter
             $ref: "#/components/schemas/Adapter"
+          description: The mesh adapters of the preference.
         grafana:
           x-go-type: Grafana
           $ref: "#/components/schemas/Grafana"
@@ -293,26 +474,36 @@ components:
           $ref: "#/components/schemas/LoadTestPreferences"
         anonymousUsageStats:
           type: boolean
+          description: The anonymous usage stats of the preference.
         anonymousPerfResults:
           type: boolean
+          description: The anonymous perf results of the preference.
         updated_at:
           type: string
           format: date-time
+          description: Timestamp of when the resource was last updated.
         dashboardPreferences:
           type: object
           additionalProperties: true
-        selectedOrganizationID:
+          description: The dashboard preferences of the preference.
+        selectedOrganizationId:
           type: string
+          description: ID of the associated selectedOrganization.
+          maxLength: 500
+          format: uuid
         selectedWorkspaceForOrganizations:
           type: object
           additionalProperties:
             type: string
+          description: The selected workspace for organizations of the preference.
         usersExtensionPreferences:
           type: object
           additionalProperties: true
+          description: The users extension preferences of the preference.
         remoteProviderPreferences:
           type: object
           additionalProperties: true
+          description: The remote provider preferences of the preference.
 
     Adapter:
       type: object
@@ -323,12 +514,17 @@ components:
       properties:
         grafanaURL:
           type: string
+          description: Grafana URL for the user configuration.
+          maxLength: 500
         grafanaAPIKey:
           type: string
+          description: Grafana API key for the user configuration.
+          maxLength: 500
         selectedBoardsConfigs:
           type: array
           items:
             $ref: "#/components/schemas/SelectedGrafanaConfig"
+          description: Selected Grafana board configurations for the user.
 
     SelectedGrafanaConfig:
       type: object
@@ -339,10 +535,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Panel"
+          description: Panels selected for the Grafana board configuration.
         templateVars:
           type: array
           items:
             type: string
+          description: Template variables applied to the selected Grafana board configuration.
 
     GrafanaBoard:
       type: object
@@ -357,10 +555,13 @@ components:
       properties:
         prometheusURL:
           type: string
+          description: The prometheus u r l of the prometheus.
+          maxLength: 500
         selectedPrometheusBoardsConfigs:
           type: array
           items:
             $ref: "#/components/schemas/SelectedGrafanaConfig"
+          description: The selected prometheus boards configs of the prometheus.
 
     LoadTestPreferences:
       type: object
@@ -368,15 +569,19 @@ components:
         c:
           type: integer
           description: Concurrent requests
+          minimum: 0
         qps:
           type: integer
           description: Queries per second
+          minimum: 0
         t:
           type: string
           description: Duration
+          maxLength: 500
         gen:
           type: string
           description: Load generator
+          maxLength: 500
 
     Social:
       description: "Various online profiles associated with the user account, like GitHub, LinkedIn, X, and so on."
@@ -385,9 +590,11 @@ components:
         site:
           type: string
           maxLength: 50
+          description: The site of the social.
         link:
           type: string
           format: uri
+          description: The link of the social.
       required: ["site", "link"]
 
     # UsersPage:

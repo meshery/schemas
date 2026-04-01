@@ -6,7 +6,7 @@ package pattern
 import (
 	"time"
 
-	externalRef0 "github.com/meshery/schemas/models/core"
+	coretypes "github.com/meshery/schemas/models/core"
 	"github.com/meshery/schemas/models/v1alpha3/relationship"
 	"github.com/meshery/schemas/models/v1beta1/component"
 )
@@ -34,10 +34,9 @@ type Trace struct {
 	RelationshipsUpdated []relationship.RelationshipDefinition `json:"relationshipsUpdated" yaml:"relationshipsUpdated"`
 }
 
-
 type Action struct {
-	Op string `json:"op"`
-	Value  map[string]interface{} `json:"value"`
+	Op    string                 `json:"op"`
+	Value map[string]interface{} `json:"value"`
 }
 
 // EvaluationResponse Schema for the response of a relationship evaluation process in Meshery
@@ -46,8 +45,8 @@ type EvaluationResponse struct {
 	Design PatternFile `json:"design" yaml:"design"`
 
 	// EvaluationHash Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.
-	EvaluationHash *string           `json:"evaluationHash,omitempty" yaml:"evaluationHash"`
-	SchemaVersion  externalRef0.Text `json:"schemaVersion" yaml:"schemaVersion"`
+	EvaluationHash *string        `json:"evaluationHash,omitempty" yaml:"evaluationHash"`
+	SchemaVersion  coretypes.Text `json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Timestamp ISO 8601 formatted timestamp of when the evaluation was completed.
 	Timestamp *time.Time `json:"timestamp,omitempty" yaml:"timestamp"`

@@ -3,11 +3,21 @@
  * Do not manually modify this file.
  */
 
-const CatalogSchema = {
+const CatalogSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Catalog API",
-    "version": "1.0.0"
+    "title": "Catalog",
+    "description": "OpenAPI schema for Meshery catalog data and content management.",
+    "version": "v1alpha2",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "paths": {},
   "components": {
@@ -96,6 +106,6 @@ const CatalogSchema = {
       }
     }
   }
-} as const;
+};
 
 export default CatalogSchema;

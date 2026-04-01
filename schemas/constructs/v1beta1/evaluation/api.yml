@@ -1,13 +1,29 @@
 openapi: 3.0.0
 info:
-  title: evaluation
-  version: 1.0.0
-  description: API for evaluating relationships in Meshery designs
+  title: Evaluation
+  description: API for evaluating relationships in Meshery designs.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
+
+tags:
+  - name: Evaluation
+    description: Operations related to design evaluation
 
 paths:
   /evaluate:
     post:
       x-internal: ["meshery"]
+      tags:
+        - Evaluation
       summary: Evaluate relationships in a design
       description: Performs relationship evaluation on a given design, applying policies and updating components and relationships as needed.
       requestBody:
@@ -25,10 +41,22 @@ paths:
                 $ref: "#/components/schemas/EvaluationResponse"
         "400":
           description: Bad request
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           description: Internal server error
 
 components:
+  responses:
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     EvaluationRequest:
       type: object
@@ -36,11 +64,12 @@ components:
         - design
       properties:
         design:
-          $ref: ../design/design.yaml
+          $ref: ../design/api.yml#/components/schemas/PatternFile
 
-          "x-go-type": "pattern.PatternFile"
+          "x-go-type": "patternv1beta1.PatternFile"
           "x-go-type-import":
             "path": "github.com/meshery/schemas/models/v1beta1/pattern"
+            "name": "patternv1beta1"
 
         options:
           type: object
@@ -51,6 +80,7 @@ components:
             enableTrace:
               type: boolean
               description: If true, include detailed trace information in the response
+          description: The options of the evaluationrequest.
 
     EvaluationResponse:
       type: object
@@ -63,13 +93,15 @@ components:
         schemaVersion:
           type: string
           description: Specifies the version of the schema to which the evaluation response conforms.
+          maxLength: 500
 
         design:
-          $ref: ../design/design.yaml
+          $ref: ../design/api.yml#/components/schemas/PatternFile
 
-          "x-go-type": "pattern.PatternFile"
+          "x-go-type": "patternv1beta1.PatternFile"
           "x-go-type-import":
             "path": "github.com/meshery/schemas/models/v1beta1/pattern"
+            "name": "patternv1beta1"
 
           description: The final evaluated design, including all updated components and relationships. This can be either the complete updated design or only a diff of changes. The version of the design will be automatically incremented if any modifications are made during the evaluation process. This field provides a comprehensive view of the design state after all relationship evaluations and policy applications have been completed.
 
@@ -77,6 +109,7 @@ components:
           type: string
           description: Hash of the input parameters and configuration used for this evaluation. Useful for identifying duplicate evaluations or caching results.
           example: "a1b2c3d4e5f6g7h8i9j0"
+          maxLength: 500
 
         timestamp:
           type: string
@@ -85,8 +118,9 @@ components:
 
         actions:
           type: array
-          item:
+          items:
             $ref: "#/components/schemas/Action"
+          description: The actions of the evaluationresponse.
 
     Action:
       type: object
@@ -106,8 +140,10 @@ components:
               "update_relationship",
               "delete_relationship",
             ]
+          description: The op of the action.
         value:
           type: object
+          description: The value of the action.
 
     UpdateComponentOp:
       type: object
@@ -115,21 +151,28 @@ components:
         op:
           type: string
           enum: [update_component]
+          description: The op of the updatecomponentop.
         value:
           type: object
           required: [id, path, value]
           properties:
             id:
               type: string
+              format: uuid
+              description: Identifier of the component to update.
             path:
               type: array
+              description: Path to the field being updated on the component.
               items:
                 type: string
-            value: {}
+            value:
+              description: New value to write at the specified component path.
             mode:
               type: string
+              description: Strategy to use when applying the component update value.
               enum: [replace, merge]
               default: replace
+          description: The value of the updatecomponentop.
 
     UpdateComponentConfigurationOp:
       type: object
@@ -137,21 +180,28 @@ components:
         op:
           type: string
           enum: [update_component_configuration]
+          description: The op of the updatecomponentconfigurationop.
         value:
           type: object
           required: [id, path, value]
           properties:
             id:
               type: string
+              format: uuid
+              description: Identifier of the component whose configuration will be updated.
             path:
               type: array
+              description: Path to the configuration field being updated.
               items:
                 type: string
-            value: {}
+            value:
+              description: New configuration value to write at the specified path.
             mode:
               type: string
+              description: Strategy to use when applying the configuration update value.
               enum: [replace, merge]
               default: replace
+          description: The value of the updatecomponentconfigurationop.
 
     DeleteComponentOp:
       type: object
@@ -159,12 +209,16 @@ components:
         op:
           type: string
           enum: [delete_component]
+          description: The op of the deletecomponentop.
         value:
           type: object
           required: [id]
           properties:
             id:
               type: string
+              format: uuid
+              description: Identifier of the component to delete.
+          description: The value of the deletecomponentop.
 
     AddComponentOp:
       type: object
@@ -172,12 +226,14 @@ components:
         op:
           type: string
           enum: [add_component]
+          description: The op of the addcomponentop.
         value:
           type: object
           required: [item]
           properties:
             item:
               $ref: "#/components/schemas/ComponentDeclaration"
+          description: The value of the addcomponentop.
 
     UpdateRelationshipOp:
       type: object
@@ -185,17 +241,23 @@ components:
         op:
           type: string
           enum: [update_relationship]
+          description: The op of the updaterelationshipop.
         value:
           type: object
           required: [id, path, value]
           properties:
             id:
               type: string
+              format: uuid
+              description: Identifier of the relationship to update.
             path:
               type: array
+              description: Path to the field being updated on the relationship.
               items:
                 type: string
-            value: {}
+            value:
+              description: New value to write at the specified relationship path.
+          description: The value of the updaterelationshipop.
 
     DeleteRelationshipOp:
       type: object
@@ -203,12 +265,16 @@ components:
         op:
           type: string
           enum: [delete_relationship]
+          description: The op of the deleterelationshipop.
         value:
           type: object
           required: [id]
           properties:
             id:
               type: string
+              format: uuid
+              description: Identifier of the relationship to delete.
+          description: The value of the deleterelationshipop.
 
     AddRelationshipOp:
       type: object
@@ -216,12 +282,14 @@ components:
         op:
           type: string
           enum: [add_relationship]
+          description: The op of the addrelationshipop.
         value:
           type: object
           required: [item]
           properties:
             item:
               $ref: "#/components/schemas/RelationshipDeclaration"
+          description: The value of the addrelationshipop.
 
     ComponentDeclaration:
       type: object

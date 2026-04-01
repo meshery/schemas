@@ -1,8 +1,18 @@
 openapi: 3.0.0
 info:
-  title: feature
-  description: OpenAPI schema for the Features construct with entitlement-related properties
+  title: Feature
+  description: OpenAPI schema for the Features construct with entitlement-related properties.
   version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+security:
+  - jwt: []
 
 tags:
   - name: Features
@@ -18,17 +28,17 @@ paths:
       summary: Get all features associated with plans
       responses:
         "200":
-          description: Features fetched successfully
+          description: Features response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/FeaturesPage"
         "400":
-          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+          $ref: "../core/api.yml#/components/responses/400"
         "401":
-          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+          $ref: "../core/api.yml#/components/responses/401"
         "500":
-          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+          $ref: "../core/api.yml#/components/responses/500"
 
   /api/entitlement/subscriptions/organizations/{organizationId}/features:
     get:
@@ -42,20 +52,28 @@ paths:
 
       responses:
         "200":
-          description: Features fetched successfully
+          description: Features response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/FeaturesPage"
 
         "400":
-          $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+          $ref: "../core/api.yml#/components/responses/400"
+        "404":
+          $ref: "../core/api.yml#/components/responses/404"
         "401":
-          $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+          $ref: "../core/api.yml#/components/responses/401"
         "500":
-          $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+          $ref: "../core/api.yml#/components/responses/500"
 
 components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   parameters:
     organization_id:
       name: organizationId
@@ -78,7 +96,7 @@ components:
 
     FeatureName:
       type: string
-
+      x-enum-casing-exempt: true
       enum:
         - ComponentsInDesign
         - RelationshipsInDesign
@@ -94,25 +112,25 @@ components:
         - id
         - plan_id
         - quantity
-        - feature
+        - name
       properties:
         id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           x-oapi-codegen-extra-tags:
             db: "id"
         plan_id:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/uuid"
+          $ref: "../core/api.yml#/components/schemas/uuid"
           x-oapi-codegen-extra-tags:
             db: "plan_id"
         plan:
           $ref: "../plan/api.yml#/components/schemas/Plan"
-          x-go-type: plan.Plan
+          x-go-type: planv1beta1.Plan
           x-go-type-import:
             path: github.com/meshery/schemas/models/v1beta1/plan
+            name: planv1beta1
           x-oapi-codegen-extra-tags:
             belongs_to: "plans"
             fk_id: "PlanId"
-            yaml: "plan,omitempty"
             json: "plan,omitempty"
         name:
           $ref: "#/components/schemas/FeatureName"
@@ -124,12 +142,13 @@ components:
           description: Quantity of the feature allowed, use 9999999999 for unlimited
           x-oapi-codegen-extra-tags:
             db: "quantity"
+          minimum: 0
         created_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "created_at"
         updated_at:
-          $ref: "../../v1alpha1/core/api.yml#/components/schemas/Time"
+          $ref: "../core/api.yml#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "updated_at"
       additionalProperties: false

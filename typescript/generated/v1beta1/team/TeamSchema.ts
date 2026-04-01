@@ -3,15 +3,21 @@
  * Do not manually modify this file.
  */
 
-const TeamSchema = {
+const TeamSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "team",
-    "description": "Documentation for Meshery Cloud REST APIs for Teams",
+    "title": "Team",
+    "description": "OpenAPI schema for team management in Meshery Cloud.",
+    "version": "v1beta1",
     "contact": {
-      "email": "maintainers@meshery.io"
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
     },
-    "version": "v1beta1"
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "servers": [
     {
@@ -168,12 +174,12 @@ const TeamSchema = {
     "securitySchemes": {
       "jwt": {
         "type": "http",
-        "scheme": "Bearer",
+        "scheme": "bearer",
         "bearerFormat": "JWT"
       }
     },
     "schemas": {
-      "team": {
+      "Team": {
         "$id": "https://schemas.meshery.io/team.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "description": "A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams",
@@ -206,7 +212,9 @@ const TeamSchema = {
             },
             "x-order": 2,
             "type": "string",
-            "description": "Team name"
+            "description": "Team name",
+            "minLength": 1,
+            "maxLength": 255
           },
           "description": {
             "x-oapi-codegen-extra-tags": {
@@ -215,7 +223,8 @@ const TeamSchema = {
             },
             "x-order": 3,
             "type": "string",
-            "description": "Team description"
+            "description": "Team description",
+            "maxLength": 5000
           },
           "owner": {
             "x-oapi-codegen-extra-tags": {
@@ -267,16 +276,20 @@ const TeamSchema = {
               "db": "deleted_at",
               "yaml": "deleted_at"
             },
-            "x-go-type": "core.NullTime",
-            "x-go-import": "database/sql",
             "x-order": 8,
+            "description": "SQL null Timestamp to handle null values of time.",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
       },
-      "teamPayload": {
+      "TeamPayload": {
         "type": "object",
         "description": "Payload for creating a new team",
         "required": [
@@ -295,7 +308,7 @@ const TeamSchema = {
           }
         }
       },
-      "teamUpdatePayload": {
+      "TeamUpdatePayload": {
         "type": "object",
         "description": "Payload for updating an existing team",
         "properties": {
@@ -311,7 +324,7 @@ const TeamSchema = {
           }
         }
       },
-      "teamPage": {
+      "TeamPage": {
         "type": "object",
         "description": "Paginated list of teams",
         "properties": {
@@ -364,7 +377,9 @@ const TeamSchema = {
                   },
                   "x-order": 2,
                   "type": "string",
-                  "description": "Team name"
+                  "description": "Team name",
+                  "minLength": 1,
+                  "maxLength": 255
                 },
                 "description": {
                   "x-oapi-codegen-extra-tags": {
@@ -373,7 +388,8 @@ const TeamSchema = {
                   },
                   "x-order": 3,
                   "type": "string",
-                  "description": "Team description"
+                  "description": "Team description",
+                  "maxLength": 5000
                 },
                 "owner": {
                   "x-oapi-codegen-extra-tags": {
@@ -425,19 +441,24 @@ const TeamSchema = {
                     "db": "deleted_at",
                     "yaml": "deleted_at"
                   },
-                  "x-go-type": "core.NullTime",
-                  "x-go-import": "database/sql",
                   "x-order": 8,
+                  "description": "SQL null Timestamp to handle null values of time.",
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
                   "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            }
+            },
+            "description": "The teams of the teampage."
           }
         }
       },
-      "teamsUsersMapping": {
+      "TeamsUsersMapping": {
         "type": "object",
         "description": "Mapping between teams and users",
         "properties": {
@@ -471,29 +492,54 @@ const TeamSchema = {
             "x-go-type-skip-optional-pointer": true
           },
           "user_id": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id"
+            },
             "type": "string",
             "description": "user's email or username",
             "x-go-type-skip-optional-pointer": true
           },
           "created_at": {
+            "description": "Timestamp when the resource was created.",
+            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
             "x-go-type-skip-optional-pointer": true
           },
           "updated_at": {
+            "description": "Timestamp when the resource was updated.",
+            "x-go-type": "time.Time",
             "type": "string",
             "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            },
             "description": "SQL null Timestamp to handle null values of time.",
-            "x-go-type": "sql.NullTime",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "type": "string",
+            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
       },
-      "teamsUsersMappingPage": {
+      "TeamsUsersMappingPage": {
         "type": "object",
         "description": "Paginated list of team-user mappings",
         "properties": {
@@ -509,7 +555,7 @@ const TeamSchema = {
             "type": "integer",
             "x-go-type-skip-optional-pointer": true
           },
-          "teams_users_mapping": {
+          "teamsUsersMapping": {
             "type": "array",
             "x-go-type-skip-optional-pointer": true,
             "items": {
@@ -547,28 +593,86 @@ const TeamSchema = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "user_id": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_id"
+                  },
                   "type": "string",
                   "description": "user's email or username",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "created_at": {
+                  "description": "Timestamp when the resource was created.",
+                  "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
+                  "x-go-name": "CreatedAt",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "created_at",
+                    "yaml": "created_at"
+                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "updated_at": {
+                  "description": "Timestamp when the resource was updated.",
+                  "x-go-type": "time.Time",
                   "type": "string",
                   "format": "date-time",
+                  "x-go-name": "UpdatedAt",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "updated_at",
+                    "yaml": "updated_at"
+                  },
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "deleted_at"
+                  },
                   "description": "SQL null Timestamp to handle null values of time.",
-                  "x-go-type": "sql.NullTime",
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
+                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            }
+            },
+            "description": "The teams users mapping of the teamsusersmappingpage."
+          }
+        }
+      },
+      "TeamMember": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "TeamMembersPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "The data of the teammemberspage."
           }
         }
       }
@@ -633,7 +737,7 @@ const TeamSchema = {
         "tags": [
           "teams"
         ],
-        "operationId": "GetTeams",
+        "operationId": "getTeams",
         "summary": "Get all teams for an organization",
         "description": "Gets all teams within an organization",
         "parameters": [
@@ -748,7 +852,9 @@ const TeamSchema = {
                             },
                             "x-order": 2,
                             "type": "string",
-                            "description": "Team name"
+                            "description": "Team name",
+                            "minLength": 1,
+                            "maxLength": 255
                           },
                           "description": {
                             "x-oapi-codegen-extra-tags": {
@@ -757,7 +863,8 @@ const TeamSchema = {
                             },
                             "x-order": 3,
                             "type": "string",
-                            "description": "Team description"
+                            "description": "Team description",
+                            "maxLength": 5000
                           },
                           "owner": {
                             "x-oapi-codegen-extra-tags": {
@@ -809,15 +916,20 @@ const TeamSchema = {
                               "db": "deleted_at",
                               "yaml": "deleted_at"
                             },
-                            "x-go-type": "core.NullTime",
-                            "x-go-import": "database/sql",
                             "x-order": 8,
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
                             "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      }
+                      },
+                      "description": "The teams of the teampage."
                     }
                   }
                 }
@@ -826,6 +938,16 @@ const TeamSchema = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -850,7 +972,7 @@ const TeamSchema = {
         "tags": [
           "teams"
         ],
-        "operationId": "CreateTeam",
+        "operationId": "createTeam",
         "summary": "Create a team",
         "description": "Creates a new team within an organization",
         "parameters": [
@@ -940,7 +1062,9 @@ const TeamSchema = {
                       },
                       "x-order": 2,
                       "type": "string",
-                      "description": "Team name"
+                      "description": "Team name",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "x-oapi-codegen-extra-tags": {
@@ -949,7 +1073,8 @@ const TeamSchema = {
                       },
                       "x-order": 3,
                       "type": "string",
-                      "description": "Team description"
+                      "description": "Team description",
+                      "maxLength": 5000
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -1001,9 +1126,13 @@ const TeamSchema = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-import": "database/sql",
                       "x-order": 8,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1015,6 +1144,26 @@ const TeamSchema = {
           },
           "400": {
             "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1041,7 +1190,7 @@ const TeamSchema = {
         "tags": [
           "teams"
         ],
-        "operationId": "GetTeamByID",
+        "operationId": "getTeamById",
         "summary": "Get a team by ID",
         "description": "Gets a team by its ID",
         "parameters": [
@@ -1124,7 +1273,9 @@ const TeamSchema = {
                       },
                       "x-order": 2,
                       "type": "string",
-                      "description": "Team name"
+                      "description": "Team name",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "x-oapi-codegen-extra-tags": {
@@ -1133,7 +1284,8 @@ const TeamSchema = {
                       },
                       "x-order": 3,
                       "type": "string",
-                      "description": "Team description"
+                      "description": "Team description",
+                      "maxLength": 5000
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -1185,9 +1337,13 @@ const TeamSchema = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-import": "database/sql",
                       "x-order": 8,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1243,7 +1399,7 @@ const TeamSchema = {
         "tags": [
           "teams"
         ],
-        "operationId": "UpdateTeam",
+        "operationId": "updateTeam",
         "summary": "Update a team",
         "description": "Updates a team's information",
         "parameters": [
@@ -1350,7 +1506,9 @@ const TeamSchema = {
                       },
                       "x-order": 2,
                       "type": "string",
-                      "description": "Team name"
+                      "description": "Team name",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "description": {
                       "x-oapi-codegen-extra-tags": {
@@ -1359,7 +1517,8 @@ const TeamSchema = {
                       },
                       "x-order": 3,
                       "type": "string",
-                      "description": "Team description"
+                      "description": "Team description",
+                      "maxLength": 5000
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -1411,9 +1570,13 @@ const TeamSchema = {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
-                      "x-go-type": "core.NullTime",
-                      "x-go-import": "database/sql",
                       "x-order": 8,
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -1469,7 +1632,7 @@ const TeamSchema = {
         "tags": [
           "teams"
         ],
-        "operationId": "DeleteTeam",
+        "operationId": "deleteTeam",
         "summary": "Delete a team",
         "description": "Deletes a team by its ID",
         "parameters": [
@@ -1516,7 +1679,524 @@ const TeamSchema = {
         ],
         "responses": {
           "204": {
-            "description": "Team deleted successfully"
+            "description": "Team deleted"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/teams/{teamId}/users": {
+      "get": {
+        "tags": [
+          "teams"
+        ],
+        "operationId": "getTeamUsers",
+        "summary": "Get all users in a team",
+        "description": "Gets all users that belong to a team",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "Team ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "team_id",
+                "json": "team_id"
+              },
+              "x-go-type-name": "TeamId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Team users mapping",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Paginated list of team-user mappings",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "page_size": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "teamsUsersMapping": {
+                      "type": "array",
+                      "x-go-type-skip-optional-pointer": true,
+                      "items": {
+                        "x-go-type": "TeamsUsersMapping",
+                        "type": "object",
+                        "description": "Mapping between teams and users",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "id",
+                              "json": "id"
+                            },
+                            "x-go-type-name": "GeneralId",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "team_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "team_id",
+                              "json": "team_id"
+                            },
+                            "x-go-type-name": "TeamId",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "user_id": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id"
+                            },
+                            "type": "string",
+                            "description": "user's email or username",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "created_at": {
+                            "description": "Timestamp when the resource was created.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "CreatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "created_at",
+                              "yaml": "created_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "description": "Timestamp when the resource was updated.",
+                            "x-go-type": "time.Time",
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-name": "UpdatedAt",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "updated_at",
+                              "yaml": "updated_at"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "deleted_at"
+                            },
+                            "description": "SQL null Timestamp to handle null values of time.",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "The teams users mapping of the teamsusersmappingpage."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
+      "post": {
+        "tags": [
+          "teams"
+        ],
+        "operationId": "addUserToTeam",
+        "summary": "Add a user to a team",
+        "description": "Assigns a user to a team",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "Team ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "team_id",
+                "json": "team_id"
+              },
+              "x-go-type-name": "TeamId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "description": "user's email or username",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User added to team",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Mapping between teams and users",
+                  "properties": {
+                    "id": {
+                      "x-go-name": "ID",
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "id",
+                        "json": "id"
+                      },
+                      "x-go-type-name": "GeneralId",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "team_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      },
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "team_id",
+                        "json": "team_id"
+                      },
+                      "x-go-type-name": "TeamId",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "user_id": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "user_id"
+                      },
+                      "type": "string",
+                      "description": "user's email or username",
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "created_at": {
+                      "description": "Timestamp when the resource was created.",
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "CreatedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "created_at",
+                        "yaml": "created_at"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "updated_at": {
+                      "description": "Timestamp when the resource was updated.",
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "UpdatedAt",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at",
+                        "yaml": "updated_at"
+                      },
+                      "x-go-type-skip-optional-pointer": true
+                    },
+                    "deleted_at": {
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      },
+                      "description": "SQL null Timestamp to handle null values of time.",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "teams"
+        ],
+        "operationId": "removeUserFromTeam",
+        "summary": "Remove a user from a team",
+        "description": "Unassigns a user from a team",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "teamId",
+            "in": "path",
+            "description": "Team ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "team_id",
+                "json": "team_id"
+              },
+              "x-go-type-name": "TeamId",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "description": "user's email or username",
+              "x-go-type-skip-optional-pointer": true
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User removed from team"
           },
           "400": {
             "description": "Invalid request body or request param",
@@ -1566,9 +2246,8 @@ const TeamSchema = {
         "tags": [
           "teams"
         ],
-        "operationId": "GetTeamUsers",
-        "summary": "Get all users in a team",
-        "description": "Gets all users that belong to a team",
+        "operationId": "listUsersNotInTeam",
+        "summary": "Get users that are not in a team",
         "parameters": [
           {
             "name": "orgId",
@@ -1645,409 +2324,34 @@ const TeamSchema = {
         ],
         "responses": {
           "200": {
-            "description": "Team users mapping",
+            "description": "Users not currently in the team",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "description": "Paginated list of team-user mappings",
                   "properties": {
                     "page": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     },
                     "page_size": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "total_count": {
                       "type": "integer",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
-                    "teams_users_mapping": {
+                    "data": {
                       "type": "array",
-                      "x-go-type-skip-optional-pointer": true,
                       "items": {
-                        "x-go-type": "TeamsUsersMapping",
                         "type": "object",
-                        "description": "Mapping between teams and users",
-                        "properties": {
-                          "id": {
-                            "x-go-name": "ID",
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "id",
-                              "json": "id"
-                            },
-                            "x-go-type-name": "GeneralId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "team_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "team_id",
-                              "json": "team_id"
-                            },
-                            "x-go-type-name": "TeamId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "user_id": {
-                            "type": "string",
-                            "description": "user's email or username",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "created_at": {
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "deleted_at": {
-                            "description": "SQL null Timestamp to handle null values of time.",
-                            "x-go-type": "sql.NullTime",
-                            "type": "string",
-                            "x-go-type-skip-optional-pointer": true
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
-      "post": {
-        "tags": [
-          "teams"
-        ],
-        "operationId": "AddUserToTeam",
-        "summary": "Add a user to a team",
-        "description": "Assigns a user to a team",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "description": "Organization ID",
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "org_id",
-                "json": "org_id"
-              },
-              "x-go-type-name": "OrganizationId",
-              "x-go-type-skip-optional-pointer": true
-            },
-            "required": true
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "description": "Team ID",
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "team_id",
-                "json": "team_id"
-              },
-              "x-go-type-name": "TeamId",
-              "x-go-type-skip-optional-pointer": true
-            },
-            "required": true
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "User ID",
-            "schema": {
-              "type": "string",
-              "description": "user's email or username",
-              "x-go-type-skip-optional-pointer": true
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User added to team",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "Mapping between teams and users",
-                  "properties": {
-                    "id": {
-                      "x-go-name": "ID",
-                      "type": "string",
-                      "format": "uuid",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
+                        "additionalProperties": true
                       },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "id",
-                        "json": "id"
-                      },
-                      "x-go-type-name": "GeneralId",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "team_id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "team_id",
-                        "json": "team_id"
-                      },
-                      "x-go-type-name": "TeamId",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "user_id": {
-                      "type": "string",
-                      "description": "user's email or username",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "created_at": {
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updated_at": {
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deleted_at": {
-                      "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
-                      "type": "string",
-                      "x-go-type-skip-optional-pointer": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "teams"
-        ],
-        "operationId": "RemoveUserFromTeam",
-        "summary": "Remove a user from a team",
-        "description": "Unassigns a user from a team",
-        "parameters": [
-          {
-            "name": "orgId",
-            "in": "path",
-            "description": "Organization ID",
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "org_id",
-                "json": "org_id"
-              },
-              "x-go-type-name": "OrganizationId",
-              "x-go-type-skip-optional-pointer": true
-            },
-            "required": true
-          },
-          {
-            "name": "teamId",
-            "in": "path",
-            "description": "Team ID",
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "x-go-type": "uuid.UUID",
-              "x-go-type-import": {
-                "path": "github.com/gofrs/uuid"
-              },
-              "x-oapi-codegen-extra-tags": {
-                "db": "team_id",
-                "json": "team_id"
-              },
-              "x-go-type-name": "TeamId",
-              "x-go-type-skip-optional-pointer": true
-            },
-            "required": true
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "User ID",
-            "schema": {
-              "type": "string",
-              "description": "user's email or username",
-              "x-go-type-skip-optional-pointer": true
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User removed from team",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "Mapping between teams and users",
-                  "properties": {
-                    "id": {
-                      "x-go-name": "ID",
-                      "type": "string",
-                      "format": "uuid",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "id",
-                        "json": "id"
-                      },
-                      "x-go-type-name": "GeneralId",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "team_id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "x-go-type": "uuid.UUID",
-                      "x-go-type-import": {
-                        "path": "github.com/gofrs/uuid"
-                      },
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "team_id",
-                        "json": "team_id"
-                      },
-                      "x-go-type-name": "TeamId",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "user_id": {
-                      "type": "string",
-                      "description": "user's email or username",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "created_at": {
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "updated_at": {
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
-                    },
-                    "deleted_at": {
-                      "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
-                      "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "The data of the teammemberspage."
                     }
                   }
                 }
@@ -2098,6 +2402,6 @@ const TeamSchema = {
       }
     }
   }
-} as const;
+};
 
 export default TeamSchema;

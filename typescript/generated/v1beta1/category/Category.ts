@@ -35,6 +35,7 @@ export interface components {
         | "Serverless"
         | "Tools"
         | "Uncategorized";
+      /** @description Additional metadata associated with the category. */
       metadata: { [key: string]: unknown };
     };
   };

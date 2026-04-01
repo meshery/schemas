@@ -6,34 +6,37 @@
 export interface paths {
   "/api/identity/orgs/{orgId}/teams": {
     /** Gets all teams within an organization */
-    get: operations["GetTeams"];
+    get: operations["getTeams"];
     /** Creates a new team within an organization */
-    post: operations["CreateTeam"];
+    post: operations["createTeam"];
   };
   "/api/identity/orgs/{orgId}/teams/{teamId}": {
     /** Gets a team by its ID */
-    get: operations["GetTeamByID"];
+    get: operations["getTeamById"];
     /** Updates a team's information */
-    put: operations["UpdateTeam"];
+    put: operations["updateTeam"];
     /** Deletes a team by its ID */
-    delete: operations["DeleteTeam"];
+    delete: operations["deleteTeam"];
   };
-  "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
+  "/api/identity/teams/{teamId}/users": {
     /** Gets all users that belong to a team */
-    get: operations["GetTeamUsers"];
+    get: operations["getTeamUsers"];
   };
   "/api/identity/orgs/{orgId}/teams/{teamId}/users/{userId}": {
     /** Assigns a user to a team */
-    post: operations["AddUserToTeam"];
+    post: operations["addUserToTeam"];
     /** Unassigns a user from a team */
-    delete: operations["RemoveUserFromTeam"];
+    delete: operations["removeUserFromTeam"];
+  };
+  "/api/identity/orgs/{orgId}/teams/{teamId}/users": {
+    get: operations["listUsersNotInTeam"];
   };
 }
 
 export interface components {
   schemas: {
     /** @description A Team is a group of one or more users. Teams are often used as a grouping mechanism for assigning permissions, whether in the context of an organization, a workspace, or some other domain within Meshery. Learn more at https://docs.meshery.io/concepts/logical/teams */
-    team: {
+    Team: {
       /**
        * Format: uuid
        * @description Team ID
@@ -54,28 +57,32 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
     };
     /** @description Payload for creating a new team */
-    teamPayload: {
+    TeamPayload: {
       /** @description Team name. Provide a meaningful name that represents this team. */
       name: string;
       /** @description A detailed description of the team's purpose and responsibilities. */
       description?: string;
     };
     /** @description Payload for updating an existing team */
-    teamUpdatePayload: {
+    TeamUpdatePayload: {
       /** @description Updated team name */
       name?: string;
       /** @description Updated team description */
       description?: string;
     };
     /** @description Paginated list of teams */
-    teamPage: {
+    TeamPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
+      /** @description The teams of the teampage. */
       teams?: {
         /**
          * Format: uuid
@@ -97,44 +104,77 @@ export interface components {
         created_at?: string;
         /** Format: date-time */
         updated_at?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
       }[];
     };
     /** @description Mapping between teams and users */
-    teamsUsersMapping: {
+    TeamsUsersMapping: {
       /** Format: uuid */
       id?: string;
       /** Format: uuid */
       team_id?: string;
       /** @description user's email or username */
       user_id?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
       created_at?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was updated.
+       */
       updated_at?: string;
-      /** @description SQL null Timestamp to handle null values of time. */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
     };
     /** @description Paginated list of team-user mappings */
-    teamsUsersMappingPage: {
+    TeamsUsersMappingPage: {
       page?: number;
       page_size?: number;
       total_count?: number;
-      teams_users_mapping?: {
+      /** @description The teams users mapping of the teamsusersmappingpage. */
+      teamsUsersMapping?: {
         /** Format: uuid */
         id?: string;
         /** Format: uuid */
         team_id?: string;
         /** @description user's email or username */
         user_id?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
         created_at?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
         updated_at?: string;
-        /** @description SQL null Timestamp to handle null values of time. */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
       }[];
+    };
+    TeamMember: { [key: string]: unknown };
+    TeamMembersPage: {
+      /** @description Current page number of the result set. */
+      page?: number;
+      /** @description Number of items per page. */
+      page_size?: number;
+      /** @description Total number of items available. */
+      total_count?: number;
+      /** @description The data of the teammemberspage. */
+      data?: { [key: string]: unknown }[];
     };
   };
   responses: {
@@ -211,7 +251,7 @@ export interface components {
 
 export interface operations {
   /** Gets all teams within an organization */
-  GetTeams: {
+  getTeams: {
     parameters: {
       path: {
         /** Organization ID */
@@ -236,6 +276,7 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
+            /** @description The teams of the teampage. */
             teams?: {
               /**
                * Format: uuid
@@ -257,7 +298,10 @@ export interface operations {
               created_at?: string;
               /** Format: date-time */
               updated_at?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };
@@ -265,6 +309,12 @@ export interface operations {
       };
       /** Expired JWT token used or insufficient privilege */
       401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
         content: {
           "text/plain": string;
         };
@@ -278,7 +328,7 @@ export interface operations {
     };
   };
   /** Creates a new team within an organization */
-  CreateTeam: {
+  createTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -310,13 +360,28 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
       };
       /** Invalid request body or request param */
       400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
         content: {
           "text/plain": string;
         };
@@ -341,7 +406,7 @@ export interface operations {
     };
   };
   /** Gets a team by its ID */
-  GetTeamByID: {
+  getTeamById: {
     parameters: {
       path: {
         /** Organization ID */
@@ -375,7 +440,10 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -407,7 +475,7 @@ export interface operations {
     };
   };
   /** Updates a team's information */
-  UpdateTeam: {
+  updateTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -441,7 +509,10 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -484,7 +555,7 @@ export interface operations {
     };
   };
   /** Deletes a team by its ID */
-  DeleteTeam: {
+  deleteTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -494,7 +565,7 @@ export interface operations {
       };
     };
     responses: {
-      /** Team deleted successfully */
+      /** Team deleted */
       204: never;
       /** Invalid request body or request param */
       400: {
@@ -523,11 +594,9 @@ export interface operations {
     };
   };
   /** Gets all users that belong to a team */
-  GetTeamUsers: {
+  getTeamUsers: {
     parameters: {
       path: {
-        /** Organization ID */
-        orgId: string;
         /** Team ID */
         teamId: string;
       };
@@ -550,18 +619,28 @@ export interface operations {
             page?: number;
             page_size?: number;
             total_count?: number;
-            teams_users_mapping?: {
+            /** @description The teams users mapping of the teamsusersmappingpage. */
+            teamsUsersMapping?: {
               /** Format: uuid */
               id?: string;
               /** Format: uuid */
               team_id?: string;
               /** @description user's email or username */
               user_id?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
               created_at?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
               updated_at?: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };
@@ -594,7 +673,7 @@ export interface operations {
     };
   };
   /** Assigns a user to a team */
-  AddUserToTeam: {
+  addUserToTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -607,7 +686,7 @@ export interface operations {
     };
     responses: {
       /** User added to team */
-      200: {
+      201: {
         content: {
           "application/json": {
             /** Format: uuid */
@@ -616,11 +695,20 @@ export interface operations {
             team_id?: string;
             /** @description user's email or username */
             user_id?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
             created_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
             updated_at?: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -637,6 +725,12 @@ export interface operations {
           "text/plain": string;
         };
       };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
       /** Internal server error */
       500: {
         content: {
@@ -646,7 +740,7 @@ export interface operations {
     };
   };
   /** Unassigns a user from a team */
-  RemoveUserFromTeam: {
+  removeUserFromTeam: {
     parameters: {
       path: {
         /** Organization ID */
@@ -659,21 +753,65 @@ export interface operations {
     };
     responses: {
       /** User removed from team */
+      204: never;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  listUsersNotInTeam: {
+    parameters: {
+      path: {
+        /** Organization ID */
+        orgId: string;
+        /** Team ID */
+        teamId: string;
+      };
+      query: {
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Users not currently in the team */
       200: {
         content: {
           "application/json": {
-            /** Format: uuid */
-            id?: string;
-            /** Format: uuid */
-            team_id?: string;
-            /** @description user's email or username */
-            user_id?: string;
-            /** Format: date-time */
-            created_at?: string;
-            /** Format: date-time */
-            updated_at?: string;
-            /** @description SQL null Timestamp to handle null values of time. */
-            deleted_at?: string;
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            page_size?: number;
+            /** @description Total number of items available. */
+            total_count?: number;
+            /** @description The data of the teammemberspage. */
+            data?: { [key: string]: unknown }[];
           };
         };
       };

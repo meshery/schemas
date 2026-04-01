@@ -5,7 +5,10 @@
 
 export interface paths {
   "/api/meshmodels/register": {
-    post: operations["RegisterMeshmodels"];
+    post: operations["registerMeshmodels"];
+  };
+  "/api/integrations/meshmodels/models": {
+    get: operations["getMeshModelModels"];
   };
 }
 
@@ -30,11 +33,13 @@ export interface components {
        *   "v1",
        *   "v1alpha1",
        *   "v2beta3",
-       *   "v1.custom-suffix"
+       *   "v1.custom-suffix",
+       *   "models.meshery.io/v1beta1",
+       *   "capability.meshery.io/v1alpha1"
        * ]
        */
       schemaVersion: string;
-      /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+      /** @description Version of the model definition. */
       version: string;
       /**
        * @description The unique name for the model within the scope of a registrant.
@@ -105,7 +110,10 @@ export interface components {
         created_at?: string;
         /** Format: date-time */
         updated_at?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
         /** @description Associated environments for this connection */
         environments?: {
@@ -114,6 +122,19 @@ export interface components {
            * @description ID
            */
           id: string;
+          /**
+           * @description Specifies the version of the schema to which the environment conforms.
+           * @default environments.meshery.io/v1beta1
+           * @example [
+           *   "v1",
+           *   "v1alpha1",
+           *   "v2beta3",
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
+           * ]
+           */
+          schemaVersion: string;
           /** @description Environment name */
           name: string;
           /** @description Environment description */
@@ -128,13 +149,23 @@ export interface components {
            * @description Environment owner
            */
           owner?: string;
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was created.
+           */
           created_at?: string;
+          /** @description Additional metadata associated with the environment. */
           metadata?: { [key: string]: unknown };
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was updated.
+           */
           updated_at?: string;
-          /** Format: date-time */
-          deleted_at?: string;
+          /**
+           * Format: date-time
+           * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+           */
+          deleted_at?: string | null;
         }[];
         /**
          * @description Specifies the version of the schema used for the definition.
@@ -143,7 +174,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;
@@ -186,6 +219,7 @@ export interface components {
           | "Serverless"
           | "Tools"
           | "Uncategorized";
+        /** @description Additional metadata associated with the category. */
         metadata: { [key: string]: unknown };
       };
       /**
@@ -251,11 +285,13 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
-          /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+          /** @description Version of the capability definition. */
           version: string;
           /** @description Name of the capability in human-readible format. */
           displayName: string;
@@ -343,7 +379,9 @@ export interface components {
         /** @description Version of the model as defined by the registrant. */
         version: string;
       };
+      /** @description The relationships of the model. */
       relationships: unknown[];
+      /** @description The components of the model. */
       components: unknown[];
       /**
        * @description Number of components associated with the model.
@@ -367,6 +405,7 @@ export interface components {
       updated_at?: string;
     };
     RegistrantReference: {
+      /** @description Kind of the registrant. */
       kind: string;
     };
     /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
@@ -376,17 +415,11 @@ export interface components {
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
       id: string;
-      /**
-       * @description The unique name for the model within the scope of a registrant.
-       * @default untitled-model
-       */
+      /** @description The unique name for the model within the scope of a registrant. */
       name: string;
-      /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+      /** @description Version of the model definition. */
       version: string;
-      /**
-       * @description Human-readable name for the model.
-       * @default Untitled Model
-       */
+      /** @description Human-readable name for the model. */
       displayName: string;
       /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
       model: {
@@ -394,6 +427,7 @@ export interface components {
         version: string;
       };
       registrant: {
+        /** @description Kind of the registrant. */
         kind: string;
       };
     };
@@ -447,6 +481,7 @@ export interface components {
        * @enum {string}
        */
       uploadType: "file" | "urlImport" | "csv" | "url";
+      /** @description The register of the importrequest. */
       register: boolean;
     };
     ImportBody:
@@ -492,14 +527,32 @@ export interface components {
         } & {
           model: unknown;
         });
+    MeshModelModelsPage: {
+      /** @description Current page number of the result set. */
+      page?: number;
+      /** @description Number of items per page. */
+      page_size?: number;
+      /** @description Total number of items available. */
+      total_count?: number;
+      /** @description The models of the meshmodelmodelspage. */
+      models?: { [key: string]: unknown }[];
+    };
+  };
+  responses: {
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
   };
 }
 
 export interface operations {
-  RegisterMeshmodels: {
+  registerMeshmodels: {
     responses: {
       /** Successful registration */
-      200: {
+      201: {
         content: {
           "application/json": {
             message?: string;
@@ -508,6 +561,12 @@ export interface operations {
       };
       /** Invalid request format */
       400: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
       /** Internal server error */
       500: unknown;
     };
@@ -563,9 +622,45 @@ export interface operations {
            * @enum {string}
            */
           uploadType: "file" | "urlImport" | "csv" | "url";
+          /** @description The register of the importrequest. */
           register: boolean;
         };
       };
+    };
+  };
+  getMeshModelModels: {
+    parameters: {
+      query: {
+        page?: string;
+        pagesize?: string;
+        search?: string;
+        order?: string;
+      };
+    };
+    responses: {
+      /** Model and capabilities registry entries retrieved. */
+      200: {
+        content: {
+          "application/json": {
+            /** @description Current page number of the result set. */
+            page?: number;
+            /** @description Number of items per page. */
+            page_size?: number;
+            /** @description Total number of items available. */
+            total_count?: number;
+            /** @description The models of the meshmodelmodelspage. */
+            models?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: unknown;
     };
   };
 }

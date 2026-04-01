@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  title: Plan
+  description: OpenAPI schema for subscription plan management in Meshery Cloud.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+security:
+- jwt: []
+tags:
+- name: Plans
+  description: Operations related to plans
+paths:
+  /api/entitlement/plans:
+    get:
+      x-internal:
+      - cloud
+      operationId: getPlans
+      tags:
+      - Plans
+      summary: Get all plans supported by the system
+      parameters:
+      - $ref: ../core/api.yml#/components/parameters/page
+      - $ref: ../core/api.yml#/components/parameters/pagesize
+      responses:
+        '200':
+          description: Plans response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plan'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  responses:
+    400:
+      $ref: ../core/api.yml#/components/responses/400
+    401:
+      $ref: ../core/api.yml#/components/responses/401
+    500:
+      $ref: ../core/api.yml#/components/responses/500
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    PlanPage:
+      type: object
+      required:
+      - page
+      - page_size
+      - total_count
+      - plans
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        plans:
+          type: array
+          items:
+            $ref: '#/components/schemas/Plan'
+            x-go-type: Plan
+          description: The plans of the planpage.
+    Plan:
+      $ref: ./plan.yaml
+    PlanName:
+      type: string
+      description: Name of the plan
+      x-enum-casing-exempt: true
+      enum:
+      - Free
+      - Team Designer
+      - Team Operator
+      - Enterprise
+    PlanCadence:
+      type: string
+      enum:
+      - none
+      - monthly
+      - annually
+    PlanUnit:
+      type: string
+      enum:
+      - user
+      - free
+    Currency:
+      type: string
+      enum:
+      - usd

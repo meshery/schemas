@@ -1,0 +1,83 @@
+type: object
+additionalProperties: false
+description: AcademyCurricula entity schema.
+required:
+- id
+- type
+- org_id
+- visibility
+- status
+- slug
+- created_at
+- updated_at
+- deleted_at
+- metadata
+- level
+properties:
+  id:
+    type: string
+    description: Id of the Curricula
+    example: 923458-3490394-934893
+    x-go-name: ID
+    x-oapi-codegen-extra-tags:
+      db: id
+      json: id
+    maxLength: 500
+    format: uuid
+  type:
+    $ref: './api.yml#/components/schemas/ContentType'
+    x-go-type: ContentType
+    x-oapi-codegen-extra-tags:
+      db: type
+  org_id:
+    $ref: './api.yml#/components/schemas/AcademyCurriculaOrgId'
+  visibility:
+    $ref: './api.yml#/components/schemas/Visibility'
+    description: Visibility of the Curricula
+    x-go-type: Visibility
+    x-oapi-codegen-extra-tags:
+      db: visibility
+      json: visibility
+  status:
+    $ref: './api.yml#/components/schemas/Status'
+    example: ready
+    description: Status of the Curricula
+    x-go-type: Status
+    x-oapi-codegen-extra-tags:
+      db: status
+      json: status
+  slug:
+    type: string
+    description: slug of the Curricula
+    example: intro-kubernetes-course
+    maxLength: 500
+  level:
+    $ref: './api.yml#/components/schemas/Level'
+    description: Level of the Curricula
+    x-go-type: Level
+    x-oapi-codegen-extra-tags:
+      db: level
+      json: level
+  badge_id:
+    type: string
+    format: uuid
+    description: ID of the badge to be awarded on completion of this curricula
+    x-go-type: core.Uuid
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/core
+      name: core
+    x-oapi-codegen-extra-tags:
+      db: badge_id
+      json: badge_id
+  invite_id:
+    $ref: './api.yml#/components/schemas/AcademyCurriculaInviteId'
+  workspace_id:
+    $ref: './api.yml#/components/schemas/AcademyCurriculaWorkspaceId'
+  created_at:
+    $ref: './api.yml#/components/schemas/AcademyCurriculaCreatedAt'
+  updated_at:
+    $ref: './api.yml#/components/schemas/AcademyCurriculaUpdatedAt'
+  deleted_at:
+    $ref: './api.yml#/components/schemas/AcademyCurriculaDeletedAt'
+  metadata:
+    $ref: './api.yml#/components/schemas/AcademyCurriculaMetadata'

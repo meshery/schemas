@@ -3,11 +3,21 @@
  * Do not manually modify this file.
  */
 
-const CapabilitySchema = {
+const CapabilitySchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "Model API",
-    "version": "1.0.0"
+    "title": "Capability",
+    "description": "OpenAPI schema for Meshery capability definitions.",
+    "version": "v1alpha1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "paths": {},
   "components": {
@@ -39,12 +49,14 @@ const CapabilitySchema = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
               "v2beta3",
-              "v1.custom-suffix"
+              "v1.custom-suffix",
+              "models.meshery.io/v1beta1",
+              "capability.meshery.io/v1alpha1"
             ]
           },
           "version": {
@@ -191,6 +203,6 @@ const CapabilitySchema = {
       }
     }
   }
-} as const;
+};
 
 export default CapabilitySchema;

@@ -1,0 +1,68 @@
+type: object
+additionalProperties: false
+description: Represents a user-owned API token or OAuth session.
+properties:
+  id:
+    $ref: ../core/api.yml#/components/schemas/Uuid
+    description: Unique identifier for the token.
+    x-order: 1
+    x-oapi-codegen-extra-tags:
+      db: id
+  user_id:
+    $ref: ../core/api.yml#/components/schemas/Uuid
+    description: UUID of the user who owns the token.
+    x-order: 2
+    x-oapi-codegen-extra-tags:
+      db: user_id
+  provider:
+    type: string
+    description: Authentication provider associated with the token.
+    x-order: 3
+    x-oapi-codegen-extra-tags:
+      db: provider
+    maxLength: 500
+  access_token:
+    type: string
+    description: Access token value.
+    x-order: 4
+    x-oapi-codegen-extra-tags:
+      db: access_token
+    maxLength: 4096
+  refresh_token:
+    type: string
+    description: Refresh token value when applicable.
+    x-order: 5
+    x-oapi-codegen-extra-tags:
+      db: refresh_token
+    maxLength: 4096
+  name:
+    type: string
+    description: Human-readable token name.
+    x-order: 6
+    x-oapi-codegen-extra-tags:
+      db: name
+    minLength: 1
+    maxLength: 255
+  purpose:
+    type: string
+    description: Purpose for which the token was created.
+    x-order: 7
+    x-oapi-codegen-extra-tags:
+      db: purpose
+    maxLength: 500
+  is_oauth:
+    type: boolean
+    description: Whether this entry represents an OAuth session.
+    x-order: 8
+    x-oapi-codegen-extra-tags:
+      db: is_oauth
+  created_at:
+    $ref: ../core/api.yml#/components/schemas/CreatedAt
+    x-order: 9
+  updated_at:
+    $ref: ../core/api.yml#/components/schemas/UpdatedAt
+    x-order: 10
+required:
+- id
+- user_id
+- provider

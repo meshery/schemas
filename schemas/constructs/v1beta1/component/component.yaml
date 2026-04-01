@@ -6,13 +6,13 @@ type: object
 properties:
   id:
     description: Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     x-order: 1
     x-oapi-codegen-extra-tags:
       yaml: id
       json: id
   schemaVersion:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/versionString
+    $ref: ../core/api.yml#/components/schemas/versionString
     x-order: 2
     description: Specifies the version of the schema to which the component definition conforms.
     x-oapi-codegen-extra-tags:
@@ -20,7 +20,7 @@ properties:
       json: schemaVersion
     default: components.meshery.io/v1beta1
   version:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/semverString
+    $ref: ../core/api.yml#/components/schemas/semverString
     x-order: 3
     description: Version of the component definition.
     minLength: 1
@@ -29,7 +29,7 @@ properties:
       yaml: version
       json: version
   displayName:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/inputString
+    $ref: ../core/api.yml#/components/schemas/inputString
     x-order: 4
     description: Name of the component in human-readible format.
     x-oapi-codegen-extra-tags:
@@ -54,57 +54,61 @@ properties:
       yaml: format
       json: format
   model:
-    $ref: ../model/model.yaml
-    x-go-type: model.ModelDefinition
+    $ref: ../model/api.yml#/components/schemas/ModelDefinition
+    x-go-type: '*modelv1beta1.ModelDefinition'
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/model
+      name: modelv1beta1
     x-order: 7
     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
     x-oapi-codegen-extra-tags:
-      gorm: foreignKey:ModelId;references:Id
-      json: model,omitempty
-      yaml: model,omitempty
+      gorm: foreignKey:ModelId;references:ID
+      json: model
+      yaml: model
   modelReference:
     $ref: ../model/api.yml#/components/schemas/ModelReference
-    x-go-type: model.ModelReference
+    x-go-type: modelv1beta1.ModelReference
     x-go-type-import:
       path: github.com/meshery/schemas/models/v1beta1/model
+      name: modelv1beta1
     x-order: 8
     description: Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
     x-oapi-codegen-extra-tags:
       gorm: "-"
   modelId:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: ModelId is the foreign key to the model to which the component belongs.
     x-oapi-codegen-extra-tags:
       gorm: index:idx_component_definition_dbs_model_id,column:model_id
       yaml: "-"
       json: "-"
   styles:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/componentStyles
+    $ref: ../core/api.yml#/components/schemas/componentStyles
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
       yaml: styles
       json: styles
     x-go-type: core.ComponentStyles
     x-go-type-import:
-      path: github.com/meshery/schemas/models/v1alpha1/core
+      path: github.com/meshery/schemas/models/core
+      name: core
     x-order: 8
   capabilities:
     x-order: 9
     type: array
     description: Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
     items:
-      $ref: ../../v1alpha1/capability/capability.yaml
-      x-go-type: capability.Capability
+      $ref: ../capability/api.yml#/components/schemas/Capability
+      x-go-type: capabilityv1alpha1.Capability
       x-go-type-import:
         path: github.com/meshery/schemas/models/v1alpha1/capability
+        name: capabilityv1alpha1
     x-oapi-codegen-extra-tags:
       gorm: type:bytes;serializer:json
       yaml: capabilities
       json: capabilities
     default:
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Performance Test
         description: Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.
@@ -116,7 +120,7 @@ properties:
           - instance
         status: enabled
         metadata: null
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Workload Configuration
         description: Configure the workload specific setting of a component
@@ -128,7 +132,7 @@ properties:
           - declaration
         status: enabled
         metadata: null
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Labels and Annotations Configuration
         description: "Configure Labels And Annotations for  the component "
@@ -140,7 +144,7 @@ properties:
           - declaration
         status: enabled
         metadata: null
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Relationships
         description: View relationships for the component
@@ -153,7 +157,7 @@ properties:
           - instance
         status: enabled
         metadata: null
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Json Schema
         description: "View Component Definition "
@@ -166,7 +170,7 @@ properties:
           - instance
         status: enabled
         metadata: null
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Styling
         description: Configure the visual styles for the component
@@ -178,7 +182,7 @@ properties:
           - declaration
         status: enabled
         metadata: null
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Change Shape
         description: Change the shape of the component
@@ -190,7 +194,7 @@ properties:
           - declaration
         status: enabled
         metadata: null
-      - schemaVersion: capability.meshery.io/v1alpha1
+      - schemaVersion: capability.meshery.io/v1beta1
         version: 0.7.0
         displayName: Compound Drag And Drop
         description: Drag and Drop a component into a parent component in graph view
@@ -275,10 +279,10 @@ properties:
       gorm: type:bytes;serializer:json
     x-go-type: Component
   created_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+    $ref: ../core/api.yml#/components/schemas/created_at
     x-order: 14
   updated_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+    $ref: ../core/api.yml#/components/schemas/updated_at
     x-order: 15
 required:
   - id
@@ -289,6 +293,6 @@ required:
   - version
   - configuration
   - metadata
-  - modelId
+  - model
   - modelReference
   - component

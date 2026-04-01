@@ -3,12 +3,29 @@
  * Do not manually modify this file.
  */
 
-const PlanSchema = {
+const PlanSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "plan",
-    "version": "1.0.0"
+    "title": "Plan",
+    "description": "OpenAPI schema for subscription plan management in Meshery Cloud.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
+  "security": [
+    {
+      "jwt": []
+    }
+  ],
   "tags": [
     {
       "name": "Plans",
@@ -28,7 +45,7 @@ const PlanSchema = {
         "summary": "Get all plans supported by the system",
         "responses": {
           "200": {
-            "description": "Plans fetched successfully",
+            "description": "Plans response",
             "content": {
               "application/json": {
                 "schema": {
@@ -130,7 +147,6 @@ const PlanSchema = {
                       "unit",
                       "price_per_unit",
                       "minimum_units",
-                      "price_id",
                       "currency"
                     ]
                   }
@@ -139,16 +155,79 @@ const PlanSchema = {
             }
           },
           "400": {
-            "description": "Invalid request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     }
   },
   "components": {
+    "responses": {
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "PlanPage": {
         "type": "object",
@@ -267,7 +346,6 @@ const PlanSchema = {
                 "unit",
                 "price_per_unit",
                 "minimum_units",
-                "price_id",
                 "currency"
               ],
               "x-go-type": "Plan"
@@ -372,7 +450,6 @@ const PlanSchema = {
           "unit",
           "price_per_unit",
           "minimum_units",
-          "price_id",
           "currency"
         ]
       },
@@ -408,6 +485,6 @@ const PlanSchema = {
       }
     }
   }
-} as const;
+};
 
 export default PlanSchema;

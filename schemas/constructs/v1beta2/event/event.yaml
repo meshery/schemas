@@ -1,0 +1,38 @@
+type: object
+additionalProperties: false
+description: EventResult entity schema.
+properties:
+  user_id:
+    $ref: ../core/api.yml#/components/schemas/UserUuid
+  system_id:
+    $ref: ../core/api.yml#/components/schemas/SystemId
+  category:
+    type: string
+    description: The category of the event.
+    maxLength: 500
+  action:
+    type: string
+    description: The action of the event.
+    maxLength: 500
+  description:
+    type: string
+    description: Description of the event.
+    maxLength: 5000
+  firstName:
+    type: string
+    description: The first name of the event.
+    maxLength: 500
+  lastName:
+    type: string
+    description: The last name of the event.
+    maxLength: 500
+  email:
+    $ref: ../core/api.yml#/components/schemas/Email
+  provider:
+    $ref: ../core/api.yml#/components/schemas/Provider
+  created_at:
+    $ref: ../core/api.yml#/components/schemas/CreatedAt
+required:
+- user_id
+- category
+- action

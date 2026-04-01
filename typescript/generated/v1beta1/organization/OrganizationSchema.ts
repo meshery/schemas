@@ -3,15 +3,770 @@
  * Do not manually modify this file.
  */
 
-const OrganizationSchema = {
+const OrganizationSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Organization",
-    "version": "1.0.0"
+    "description": "OpenAPI schema for organization management in Meshery Cloud.",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
+  "tags": [
+    {
+      "name": "Organizations",
+      "description": "Operations related to organization management"
+    }
+  ],
   "paths": {
+    "/api/identity/orgs": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Read organizations",
+        "description": "Returns organizations for the current user.",
+        "operationId": "getOrgs",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "all",
+            "in": "query",
+            "description": "Get all possible entries",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organizations response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "page_size": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Theme ID.",
+                                        "maxLength": 500,
+                                        "format": "uuid"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktopView",
+                                          "mobileView",
+                                          "darkDesktopView",
+                                          "darkMobileView"
+                                        ],
+                                        "properties": {
+                                          "desktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "mobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkDesktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkMobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true,
+                                        "description": "The vars of the theme."
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "The organizations of the organizationspage."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Create an organization",
+        "description": "Creates a new organization.",
+        "operationId": "createOrg",
+        "requestBody": {
+          "description": "Body for creating or updating an organization",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "country": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "region": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "notifyOrgUpdate": {
+                    "type": "boolean",
+                    "description": "The notify org update of the organization."
+                  },
+                  "preferences": {
+                    "type": "object",
+                    "required": [
+                      "theme",
+                      "dashboard"
+                    ],
+                    "properties": {
+                      "theme": {
+                        "x-go-type": "Theme",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "logo"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Theme ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
+                          },
+                          "logo": {
+                            "x-go-type": "Logo",
+                            "type": "object",
+                            "required": [
+                              "desktopView",
+                              "mobileView",
+                              "darkDesktopView",
+                              "darkMobileView"
+                            ],
+                            "properties": {
+                              "desktopView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              },
+                              "mobileView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              },
+                              "darkDesktopView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              },
+                              "darkMobileView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "vars": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "description": "The vars of the theme."
+                          }
+                        }
+                      },
+                      "dashboard": {
+                        "x-go-type": "DashboardPrefs",
+                        "type": "object",
+                        "description": "Preferences specific to dashboard behavior",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Single-organization page response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "page_size": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Theme ID.",
+                                        "maxLength": 500,
+                                        "format": "uuid"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktopView",
+                                          "mobileView",
+                                          "darkDesktopView",
+                                          "darkMobileView"
+                                        ],
+                                        "properties": {
+                                          "desktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "mobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkDesktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkMobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true,
+                                        "description": "The vars of the theme."
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "The organizations of the organizationpage."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/identity/orgs/by-domain": {
       "get": {
+        "tags": [
+          "Organizations"
+        ],
         "summary": "Get organization by domain",
         "operationId": "getOrgByDomain",
         "parameters": [
@@ -59,25 +814,34 @@ const OrganizationSchema = {
                       "type": "string",
                       "x-oapi-codegen-extra-tags": {
                         "db": "name"
-                      }
+                      },
+                      "description": "Name of the organization.",
+                      "minLength": 1,
+                      "maxLength": 255
                     },
                     "country": {
                       "type": "string",
                       "x-oapi-codegen-extra-tags": {
                         "db": "country"
-                      }
+                      },
+                      "description": "The country of the organization.",
+                      "maxLength": 500
                     },
                     "region": {
                       "type": "string",
                       "x-oapi-codegen-extra-tags": {
                         "db": "region"
-                      }
+                      },
+                      "description": "The region of the organization.",
+                      "maxLength": 500
                     },
                     "description": {
                       "type": "string",
                       "x-oapi-codegen-extra-tags": {
                         "db": "description"
-                      }
+                      },
+                      "description": "Description of the organization.",
+                      "maxLength": 5000
                     },
                     "owner": {
                       "x-oapi-codegen-extra-tags": {
@@ -118,19 +882,22 @@ const OrganizationSchema = {
                               ],
                               "properties": {
                                 "id": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "description": "Theme ID.",
+                                  "maxLength": 500,
+                                  "format": "uuid"
                                 },
                                 "logo": {
                                   "x-go-type": "Logo",
                                   "type": "object",
                                   "required": [
-                                    "desktop_view",
-                                    "mobile_view",
-                                    "dark_desktop_view",
-                                    "dark_mobile_view"
+                                    "desktopView",
+                                    "mobileView",
+                                    "darkDesktopView",
+                                    "darkMobileView"
                                   ],
                                   "properties": {
-                                    "desktop_view": {
+                                    "desktopView": {
                                       "x-go-type": "Location",
                                       "type": "object",
                                       "required": [
@@ -139,14 +906,18 @@ const OrganizationSchema = {
                                       ],
                                       "properties": {
                                         "svg": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The svg of the location.",
+                                          "maxLength": 500
                                         },
                                         "location": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The location of the location.",
+                                          "maxLength": 500
                                         }
                                       }
                                     },
-                                    "mobile_view": {
+                                    "mobileView": {
                                       "x-go-type": "Location",
                                       "type": "object",
                                       "required": [
@@ -155,14 +926,18 @@ const OrganizationSchema = {
                                       ],
                                       "properties": {
                                         "svg": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The svg of the location.",
+                                          "maxLength": 500
                                         },
                                         "location": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The location of the location.",
+                                          "maxLength": 500
                                         }
                                       }
                                     },
-                                    "dark_desktop_view": {
+                                    "darkDesktopView": {
                                       "x-go-type": "Location",
                                       "type": "object",
                                       "required": [
@@ -171,14 +946,18 @@ const OrganizationSchema = {
                                       ],
                                       "properties": {
                                         "svg": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The svg of the location.",
+                                          "maxLength": 500
                                         },
                                         "location": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The location of the location.",
+                                          "maxLength": 500
                                         }
                                       }
                                     },
-                                    "dark_mobile_view": {
+                                    "darkMobileView": {
                                       "x-go-type": "Location",
                                       "type": "object",
                                       "required": [
@@ -187,10 +966,14 @@ const OrganizationSchema = {
                                       ],
                                       "properties": {
                                         "svg": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The svg of the location.",
+                                          "maxLength": 500
                                         },
                                         "location": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "description": "The location of the location.",
+                                          "maxLength": 500
                                         }
                                       }
                                     }
@@ -198,7 +981,8 @@ const OrganizationSchema = {
                                 },
                                 "vars": {
                                   "type": "object",
-                                  "additionalProperties": true
+                                  "additionalProperties": true,
+                                  "description": "The vars of the theme."
                                 }
                               }
                             },
@@ -213,41 +997,53 @@ const OrganizationSchema = {
                       }
                     },
                     "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at"
-                      },
-                      "type": "string",
-                      "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
+                      }
                     },
                     "updated_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "updated_at"
-                      },
                       "type": "string",
                       "format": "date-time",
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "updated_at"
+                      }
                     },
                     "deleted_at": {
-                      "x-oapi-codegen-extra-tags": {
-                        "db": "deleted_at"
-                      },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type": "sql.NullTime",
                       "x-go-type-import": {
                         "path": "database/sql"
                       },
-                      "x-go-type-skip-optional-pointer": true
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "deleted_at"
+                      }
                     },
                     "domain": {
                       "type": "string",
                       "nullable": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "domain"
-                      }
+                      },
+                      "description": "The domain of the organization.",
+                      "maxLength": 500
                     }
                   }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -261,14 +1057,1068 @@ const OrganizationSchema = {
         }
       }
     },
-    "/api/identity/orgs/{orgID}/teams/{teamId}": {
-      "post": {
-        "summary": "Add team to organization or soft delete team",
-        "description": "Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.",
-        "operationId": "AddTeamToOrg",
+    "/api/identity/orgs/{orgId}": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Read an organization",
+        "description": "Returns the organization in the single-item page wrapper currently emitted by meshery-cloud.",
+        "operationId": "getOrg",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single-organization page response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "page_size": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Theme ID.",
+                                        "maxLength": 500,
+                                        "format": "uuid"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktopView",
+                                          "mobileView",
+                                          "darkDesktopView",
+                                          "darkMobileView"
+                                        ],
+                                        "properties": {
+                                          "desktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "mobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkDesktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkMobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true,
+                                        "description": "The vars of the theme."
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "The organizations of the organizationpage."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Delete an organization",
+        "description": "Deletes the organization.",
+        "operationId": "deleteOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Organization deleted"
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Update an organization",
+        "description": "Updates the organization.",
+        "operationId": "handleUpdateOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Body for creating or updating an organization",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "country": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "region": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "x-go-type-skip-optional-pointer": true
+                  },
+                  "notifyOrgUpdate": {
+                    "type": "boolean",
+                    "description": "The notify org update of the organization."
+                  },
+                  "preferences": {
+                    "type": "object",
+                    "required": [
+                      "theme",
+                      "dashboard"
+                    ],
+                    "properties": {
+                      "theme": {
+                        "x-go-type": "Theme",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "logo"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Theme ID.",
+                            "maxLength": 500,
+                            "format": "uuid"
+                          },
+                          "logo": {
+                            "x-go-type": "Logo",
+                            "type": "object",
+                            "required": [
+                              "desktopView",
+                              "mobileView",
+                              "darkDesktopView",
+                              "darkMobileView"
+                            ],
+                            "properties": {
+                              "desktopView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              },
+                              "mobileView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              },
+                              "darkDesktopView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              },
+                              "darkMobileView": {
+                                "x-go-type": "Location",
+                                "type": "object",
+                                "required": [
+                                  "svg",
+                                  "location"
+                                ],
+                                "properties": {
+                                  "svg": {
+                                    "type": "string",
+                                    "description": "The svg of the location.",
+                                    "maxLength": 500
+                                  },
+                                  "location": {
+                                    "type": "string",
+                                    "description": "The location of the location.",
+                                    "maxLength": 500
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "vars": {
+                            "type": "object",
+                            "additionalProperties": true,
+                            "description": "The vars of the theme."
+                          }
+                        }
+                      },
+                      "dashboard": {
+                        "x-go-type": "DashboardPrefs",
+                        "type": "object",
+                        "description": "Preferences specific to dashboard behavior",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Single-organization page response for the updated organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "page_size": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "maxItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "x-go-name": "ID",
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "description": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "country": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "region": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "owner": {
+                            "type": "string",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "metadata": {
+                            "x-go-type": "OrgMetadata",
+                            "type": "object",
+                            "required": [
+                              "preferences"
+                            ],
+                            "properties": {
+                              "preferences": {
+                                "x-go-type": "Preferences",
+                                "type": "object",
+                                "required": [
+                                  "theme",
+                                  "dashboard"
+                                ],
+                                "properties": {
+                                  "theme": {
+                                    "x-go-type": "Theme",
+                                    "type": "object",
+                                    "required": [
+                                      "id",
+                                      "logo"
+                                    ],
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "description": "Theme ID.",
+                                        "maxLength": 500,
+                                        "format": "uuid"
+                                      },
+                                      "logo": {
+                                        "x-go-type": "Logo",
+                                        "type": "object",
+                                        "required": [
+                                          "desktopView",
+                                          "mobileView",
+                                          "darkDesktopView",
+                                          "darkMobileView"
+                                        ],
+                                        "properties": {
+                                          "desktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "mobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkDesktopView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          },
+                                          "darkMobileView": {
+                                            "x-go-type": "Location",
+                                            "type": "object",
+                                            "required": [
+                                              "svg",
+                                              "location"
+                                            ],
+                                            "properties": {
+                                              "svg": {
+                                                "type": "string",
+                                                "description": "The svg of the location.",
+                                                "maxLength": 500
+                                              },
+                                              "location": {
+                                                "type": "string",
+                                                "description": "The location of the location.",
+                                                "maxLength": 500
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "vars": {
+                                        "type": "object",
+                                        "additionalProperties": true,
+                                        "description": "The vars of the theme."
+                                      }
+                                    }
+                                  },
+                                  "dashboard": {
+                                    "x-go-type": "DashboardPrefs",
+                                    "type": "object",
+                                    "description": "Preferences specific to dashboard behavior",
+                                    "additionalProperties": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "deleted_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "x-go-type": "sql.NullTime",
+                            "x-go-type-import": {
+                              "path": "database/sql"
+                            },
+                            "x-go-type-skip-optional-pointer": true
+                          }
+                        }
+                      },
+                      "description": "The organizations of the organizationpage."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/preferences": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Get organization preferences",
+        "description": "Returns preferences for the specified organization.",
+        "operationId": "getOrgPreferences",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization metadata, including preferences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "preferences"
+                  ],
+                  "properties": {
+                    "preferences": {
+                      "x-go-type": "Preferences",
+                      "type": "object",
+                      "required": [
+                        "theme",
+                        "dashboard"
+                      ],
+                      "properties": {
+                        "theme": {
+                          "x-go-type": "Theme",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "logo"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Theme ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
+                            },
+                            "logo": {
+                              "x-go-type": "Logo",
+                              "type": "object",
+                              "required": [
+                                "desktopView",
+                                "mobileView",
+                                "darkDesktopView",
+                                "darkMobileView"
+                              ],
+                              "properties": {
+                                "desktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "mobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkDesktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkMobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "vars": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The vars of the theme."
+                            }
+                          }
+                        },
+                        "dashboard": {
+                          "x-go-type": "DashboardPrefs",
+                          "type": "object",
+                          "description": "Preferences specific to dashboard behavior",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/teams/{teamId}": {
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Add team to organization or soft delete team",
+        "description": "Adds a team to an organization. If request body contains action=delete, tombstones a team by setting its deleted_at timestamp. The team's organization mapping remains intact.",
+        "operationId": "addTeamToOrg",
+        "parameters": [
+          {
+            "name": "orgId",
             "in": "path",
             "required": true,
             "schema": {
@@ -312,7 +2162,7 @@ const OrganizationSchema = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.",
+                "description": "Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.",
                 "properties": {
                   "action": {
                     "type": "string",
@@ -327,7 +2177,7 @@ const OrganizationSchema = {
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Team added to organization or team tombstoned",
             "content": {
               "application/json": {
@@ -337,20 +2187,26 @@ const OrganizationSchema = {
                       "type": "object",
                       "properties": {
                         "page": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "Current page number of the result set.",
+                          "minimum": 0
                         },
                         "page_size": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "Number of items per page.",
+                          "minimum": 1
                         },
                         "total_count": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "Total number of items available.",
+                          "minimum": 0
                         },
-                        "teams_organizations_mapping": {
+                        "teamsOrganizationsMapping": {
                           "type": "array",
                           "items": {
                             "type": "object",
                             "properties": {
-                              "ID": {
+                              "id": {
                                 "type": "string",
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
@@ -364,7 +2220,7 @@ const OrganizationSchema = {
                                 "x-go-type-name": "GeneralId",
                                 "x-go-type-skip-optional-pointer": true
                               },
-                              "org_id": {
+                              "orgId": {
                                 "type": "string",
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
@@ -412,7 +2268,8 @@ const OrganizationSchema = {
                                 "x-go-type-skip-optional-pointer": true
                               }
                             }
-                          }
+                          },
+                          "description": "The teams organizations mapping of the teamsorganizationsmappingpage."
                         }
                       }
                     },
@@ -420,20 +2277,26 @@ const OrganizationSchema = {
                       "type": "object",
                       "properties": {
                         "page": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "Current page number of the result set.",
+                          "minimum": 0
                         },
                         "page_size": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "Number of items per page.",
+                          "minimum": 1
                         },
                         "total_count": {
-                          "type": "integer"
+                          "type": "integer",
+                          "description": "Total number of items available.",
+                          "minimum": 0
                         },
                         "teams": {
                           "type": "array",
                           "items": {
                             "type": "object",
                             "properties": {
-                              "ID": {
+                              "id": {
                                 "type": "string",
                                 "format": "uuid",
                                 "x-go-type": "uuid.UUID",
@@ -486,7 +2349,8 @@ const OrganizationSchema = {
                                 "x-go-type-skip-optional-pointer": true
                               }
                             }
-                          }
+                          },
+                          "description": "The teams of the teamspage."
                         }
                       }
                     }
@@ -508,14 +2372,24 @@ const OrganizationSchema = {
             "description": "Internal server error"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/api/identity/orgs/{orgId}/teams/{teamId}/remove": {
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
         "summary": "Remove team from organization",
         "description": "Removes (unassigns) a team from an organization.",
-        "operationId": "RemoveTeamFromOrg",
+        "operationId": "removeTeamFromOrg",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "required": true,
             "schema": {
@@ -562,20 +2436,26 @@ const OrganizationSchema = {
                   "type": "object",
                   "properties": {
                     "page": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
                     },
                     "page_size": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
                     },
                     "total_count": {
-                      "type": "integer"
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
                     },
-                    "teams_organizations_mapping": {
+                    "teamsOrganizationsMapping": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "ID": {
+                          "id": {
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -589,7 +2469,7 @@ const OrganizationSchema = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "org_id": {
+                          "orgId": {
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -637,7 +2517,8 @@ const OrganizationSchema = {
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
-                      }
+                      },
+                      "description": "The teams organizations mapping of the teamsorganizationsmappingpage."
                     }
                   }
                 }
@@ -658,12 +2539,209 @@ const OrganizationSchema = {
           }
         }
       }
+    },
+    "/api/identity/orgs/{orgId}/users/{userId}": {
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Add user to organization",
+        "operationId": "addUserToOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "user's email or username",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User added to organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Organizations"
+        ],
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
+        "summary": "Remove user from organization",
+        "operationId": "deleteUserFromOrg",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "x-go-type": "uuid.UUID",
+              "x-go-type-import": {
+                "path": "github.com/gofrs/uuid"
+              },
+              "x-oapi-codegen-extra-tags": {
+                "db": "org_id",
+                "json": "org_id"
+              },
+              "x-go-type-name": "OrganizationId",
+              "x-go-type-skip-optional-pointer": true
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "user's email or username",
+              "x-go-type-skip-optional-pointer": true
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User removed from organization"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
     }
   },
   "components": {
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "parameters": {
-      "orgID": {
-        "name": "orgID",
+      "orgId": {
+        "name": "orgId",
         "in": "path",
         "required": true,
         "schema": {
@@ -679,6 +2757,46 @@ const OrganizationSchema = {
           },
           "x-go-type-name": "OrganizationId",
           "x-go-type-skip-optional-pointer": true
+        }
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "Get responses by page",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "pagesize": {
+        "name": "pagesize",
+        "in": "query",
+        "description": "Get responses by pagesize",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "search": {
+        "name": "search",
+        "in": "query",
+        "description": "Get responses that match search param value",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "order": {
+        "name": "order",
+        "in": "query",
+        "description": "Get ordered responses",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "all": {
+        "name": "all",
+        "in": "query",
+        "description": "Get all possible entries",
+        "schema": {
+          "type": "boolean"
         }
       },
       "teamId": {
@@ -698,6 +2816,169 @@ const OrganizationSchema = {
           },
           "x-go-type-name": "TeamId",
           "x-go-type-skip-optional-pointer": true
+        }
+      }
+    },
+    "requestBodies": {
+      "organizationPayload": {
+        "description": "Body for creating or updating an organization",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "country": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "region": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "notifyOrgUpdate": {
+                  "type": "boolean",
+                  "description": "The notify org update of the organization."
+                },
+                "preferences": {
+                  "type": "object",
+                  "required": [
+                    "theme",
+                    "dashboard"
+                  ],
+                  "properties": {
+                    "theme": {
+                      "x-go-type": "Theme",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "logo"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Theme ID.",
+                          "maxLength": 500,
+                          "format": "uuid"
+                        },
+                        "logo": {
+                          "x-go-type": "Logo",
+                          "type": "object",
+                          "required": [
+                            "desktopView",
+                            "mobileView",
+                            "darkDesktopView",
+                            "darkMobileView"
+                          ],
+                          "properties": {
+                            "desktopView": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string",
+                                  "description": "The svg of the location.",
+                                  "maxLength": 500
+                                },
+                                "location": {
+                                  "type": "string",
+                                  "description": "The location of the location.",
+                                  "maxLength": 500
+                                }
+                              }
+                            },
+                            "mobileView": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string",
+                                  "description": "The svg of the location.",
+                                  "maxLength": 500
+                                },
+                                "location": {
+                                  "type": "string",
+                                  "description": "The location of the location.",
+                                  "maxLength": 500
+                                }
+                              }
+                            },
+                            "darkDesktopView": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string",
+                                  "description": "The svg of the location.",
+                                  "maxLength": 500
+                                },
+                                "location": {
+                                  "type": "string",
+                                  "description": "The location of the location.",
+                                  "maxLength": 500
+                                }
+                              }
+                            },
+                            "darkMobileView": {
+                              "x-go-type": "Location",
+                              "type": "object",
+                              "required": [
+                                "svg",
+                                "location"
+                              ],
+                              "properties": {
+                                "svg": {
+                                  "type": "string",
+                                  "description": "The svg of the location.",
+                                  "maxLength": 500
+                                },
+                                "location": {
+                                  "type": "string",
+                                  "description": "The location of the location.",
+                                  "maxLength": 500
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "vars": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "The vars of the theme."
+                        }
+                      }
+                    },
+                    "dashboard": {
+                      "x-go-type": "DashboardPrefs",
+                      "type": "object",
+                      "description": "Preferences specific to dashboard behavior",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -738,7 +3019,7 @@ const OrganizationSchema = {
       },
       "OrgTeamActionPayload": {
         "type": "object",
-        "description": "Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.",
+        "description": "Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.",
         "properties": {
           "action": {
             "type": "string",
@@ -757,23 +3038,27 @@ const OrganizationSchema = {
         ],
         "properties": {
           "svg": {
-            "type": "string"
+            "type": "string",
+            "description": "The svg of the location.",
+            "maxLength": 500
           },
           "location": {
-            "type": "string"
+            "type": "string",
+            "description": "The location of the location.",
+            "maxLength": 500
           }
         }
       },
       "Logo": {
         "type": "object",
         "required": [
-          "desktop_view",
-          "mobile_view",
-          "dark_desktop_view",
-          "dark_mobile_view"
+          "desktopView",
+          "mobileView",
+          "darkDesktopView",
+          "darkMobileView"
         ],
         "properties": {
-          "desktop_view": {
+          "desktopView": {
             "x-go-type": "Location",
             "type": "object",
             "required": [
@@ -782,14 +3067,18 @@ const OrganizationSchema = {
             ],
             "properties": {
               "svg": {
-                "type": "string"
+                "type": "string",
+                "description": "The svg of the location.",
+                "maxLength": 500
               },
               "location": {
-                "type": "string"
+                "type": "string",
+                "description": "The location of the location.",
+                "maxLength": 500
               }
             }
           },
-          "mobile_view": {
+          "mobileView": {
             "x-go-type": "Location",
             "type": "object",
             "required": [
@@ -798,14 +3087,18 @@ const OrganizationSchema = {
             ],
             "properties": {
               "svg": {
-                "type": "string"
+                "type": "string",
+                "description": "The svg of the location.",
+                "maxLength": 500
               },
               "location": {
-                "type": "string"
+                "type": "string",
+                "description": "The location of the location.",
+                "maxLength": 500
               }
             }
           },
-          "dark_desktop_view": {
+          "darkDesktopView": {
             "x-go-type": "Location",
             "type": "object",
             "required": [
@@ -814,14 +3107,18 @@ const OrganizationSchema = {
             ],
             "properties": {
               "svg": {
-                "type": "string"
+                "type": "string",
+                "description": "The svg of the location.",
+                "maxLength": 500
               },
               "location": {
-                "type": "string"
+                "type": "string",
+                "description": "The location of the location.",
+                "maxLength": 500
               }
             }
           },
-          "dark_mobile_view": {
+          "darkMobileView": {
             "x-go-type": "Location",
             "type": "object",
             "required": [
@@ -830,10 +3127,14 @@ const OrganizationSchema = {
             ],
             "properties": {
               "svg": {
-                "type": "string"
+                "type": "string",
+                "description": "The svg of the location.",
+                "maxLength": 500
               },
               "location": {
-                "type": "string"
+                "type": "string",
+                "description": "The location of the location.",
+                "maxLength": 500
               }
             }
           }
@@ -847,19 +3148,22 @@ const OrganizationSchema = {
         ],
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "description": "Theme ID.",
+            "maxLength": 500,
+            "format": "uuid"
           },
           "logo": {
             "x-go-type": "Logo",
             "type": "object",
             "required": [
-              "desktop_view",
-              "mobile_view",
-              "dark_desktop_view",
-              "dark_mobile_view"
+              "desktopView",
+              "mobileView",
+              "darkDesktopView",
+              "darkMobileView"
             ],
             "properties": {
-              "desktop_view": {
+              "desktopView": {
                 "x-go-type": "Location",
                 "type": "object",
                 "required": [
@@ -868,14 +3172,18 @@ const OrganizationSchema = {
                 ],
                 "properties": {
                   "svg": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The svg of the location.",
+                    "maxLength": 500
                   },
                   "location": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The location of the location.",
+                    "maxLength": 500
                   }
                 }
               },
-              "mobile_view": {
+              "mobileView": {
                 "x-go-type": "Location",
                 "type": "object",
                 "required": [
@@ -884,14 +3192,18 @@ const OrganizationSchema = {
                 ],
                 "properties": {
                   "svg": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The svg of the location.",
+                    "maxLength": 500
                   },
                   "location": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The location of the location.",
+                    "maxLength": 500
                   }
                 }
               },
-              "dark_desktop_view": {
+              "darkDesktopView": {
                 "x-go-type": "Location",
                 "type": "object",
                 "required": [
@@ -900,14 +3212,18 @@ const OrganizationSchema = {
                 ],
                 "properties": {
                   "svg": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The svg of the location.",
+                    "maxLength": 500
                   },
                   "location": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The location of the location.",
+                    "maxLength": 500
                   }
                 }
               },
-              "dark_mobile_view": {
+              "darkMobileView": {
                 "x-go-type": "Location",
                 "type": "object",
                 "required": [
@@ -916,10 +3232,14 @@ const OrganizationSchema = {
                 ],
                 "properties": {
                   "svg": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The svg of the location.",
+                    "maxLength": 500
                   },
                   "location": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The location of the location.",
+                    "maxLength": 500
                   }
                 }
               }
@@ -927,7 +3247,8 @@ const OrganizationSchema = {
           },
           "vars": {
             "type": "object",
-            "additionalProperties": true
+            "additionalProperties": true,
+            "description": "The vars of the theme."
           }
         }
       },
@@ -952,19 +3273,22 @@ const OrganizationSchema = {
             ],
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "Theme ID.",
+                "maxLength": 500,
+                "format": "uuid"
               },
               "logo": {
                 "x-go-type": "Logo",
                 "type": "object",
                 "required": [
-                  "desktop_view",
-                  "mobile_view",
-                  "dark_desktop_view",
-                  "dark_mobile_view"
+                  "desktopView",
+                  "mobileView",
+                  "darkDesktopView",
+                  "darkMobileView"
                 ],
                 "properties": {
-                  "desktop_view": {
+                  "desktopView": {
                     "x-go-type": "Location",
                     "type": "object",
                     "required": [
@@ -973,14 +3297,18 @@ const OrganizationSchema = {
                     ],
                     "properties": {
                       "svg": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The svg of the location.",
+                        "maxLength": 500
                       },
                       "location": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The location of the location.",
+                        "maxLength": 500
                       }
                     }
                   },
-                  "mobile_view": {
+                  "mobileView": {
                     "x-go-type": "Location",
                     "type": "object",
                     "required": [
@@ -989,14 +3317,18 @@ const OrganizationSchema = {
                     ],
                     "properties": {
                       "svg": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The svg of the location.",
+                        "maxLength": 500
                       },
                       "location": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The location of the location.",
+                        "maxLength": 500
                       }
                     }
                   },
-                  "dark_desktop_view": {
+                  "darkDesktopView": {
                     "x-go-type": "Location",
                     "type": "object",
                     "required": [
@@ -1005,14 +3337,18 @@ const OrganizationSchema = {
                     ],
                     "properties": {
                       "svg": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The svg of the location.",
+                        "maxLength": 500
                       },
                       "location": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The location of the location.",
+                        "maxLength": 500
                       }
                     }
                   },
-                  "dark_mobile_view": {
+                  "darkMobileView": {
                     "x-go-type": "Location",
                     "type": "object",
                     "required": [
@@ -1021,10 +3357,14 @@ const OrganizationSchema = {
                     ],
                     "properties": {
                       "svg": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The svg of the location.",
+                        "maxLength": 500
                       },
                       "location": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The location of the location.",
+                        "maxLength": 500
                       }
                     }
                   }
@@ -1032,7 +3372,8 @@ const OrganizationSchema = {
               },
               "vars": {
                 "type": "object",
-                "additionalProperties": true
+                "additionalProperties": true,
+                "description": "The vars of the theme."
               }
             }
           },
@@ -1067,19 +3408,22 @@ const OrganizationSchema = {
                 ],
                 "properties": {
                   "id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Theme ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
                   },
                   "logo": {
                     "x-go-type": "Logo",
                     "type": "object",
                     "required": [
-                      "desktop_view",
-                      "mobile_view",
-                      "dark_desktop_view",
-                      "dark_mobile_view"
+                      "desktopView",
+                      "mobileView",
+                      "darkDesktopView",
+                      "darkMobileView"
                     ],
                     "properties": {
-                      "desktop_view": {
+                      "desktopView": {
                         "x-go-type": "Location",
                         "type": "object",
                         "required": [
@@ -1088,14 +3432,18 @@ const OrganizationSchema = {
                         ],
                         "properties": {
                           "svg": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
                           },
                           "location": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
                           }
                         }
                       },
-                      "mobile_view": {
+                      "mobileView": {
                         "x-go-type": "Location",
                         "type": "object",
                         "required": [
@@ -1104,14 +3452,18 @@ const OrganizationSchema = {
                         ],
                         "properties": {
                           "svg": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
                           },
                           "location": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
                           }
                         }
                       },
-                      "dark_desktop_view": {
+                      "darkDesktopView": {
                         "x-go-type": "Location",
                         "type": "object",
                         "required": [
@@ -1120,14 +3472,18 @@ const OrganizationSchema = {
                         ],
                         "properties": {
                           "svg": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
                           },
                           "location": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
                           }
                         }
                       },
-                      "dark_mobile_view": {
+                      "darkMobileView": {
                         "x-go-type": "Location",
                         "type": "object",
                         "required": [
@@ -1136,10 +3492,14 @@ const OrganizationSchema = {
                         ],
                         "properties": {
                           "svg": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
                           },
                           "location": {
-                            "type": "string"
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
                           }
                         }
                       }
@@ -1147,7 +3507,8 @@ const OrganizationSchema = {
                   },
                   "vars": {
                     "type": "object",
-                    "additionalProperties": true
+                    "additionalProperties": true,
+                    "description": "The vars of the theme."
                   }
                 }
               },
@@ -1191,25 +3552,34 @@ const OrganizationSchema = {
             "type": "string",
             "x-oapi-codegen-extra-tags": {
               "db": "name"
-            }
+            },
+            "description": "Name of the organization.",
+            "minLength": 1,
+            "maxLength": 255
           },
           "country": {
             "type": "string",
             "x-oapi-codegen-extra-tags": {
               "db": "country"
-            }
+            },
+            "description": "The country of the organization.",
+            "maxLength": 500
           },
           "region": {
             "type": "string",
             "x-oapi-codegen-extra-tags": {
               "db": "region"
-            }
+            },
+            "description": "The region of the organization.",
+            "maxLength": 500
           },
           "description": {
             "type": "string",
             "x-oapi-codegen-extra-tags": {
               "db": "description"
-            }
+            },
+            "description": "Description of the organization.",
+            "maxLength": 5000
           },
           "owner": {
             "x-oapi-codegen-extra-tags": {
@@ -1250,19 +3620,22 @@ const OrganizationSchema = {
                     ],
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "Theme ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
                       },
                       "logo": {
                         "x-go-type": "Logo",
                         "type": "object",
                         "required": [
-                          "desktop_view",
-                          "mobile_view",
-                          "dark_desktop_view",
-                          "dark_mobile_view"
+                          "desktopView",
+                          "mobileView",
+                          "darkDesktopView",
+                          "darkMobileView"
                         ],
                         "properties": {
-                          "desktop_view": {
+                          "desktopView": {
                             "x-go-type": "Location",
                             "type": "object",
                             "required": [
@@ -1271,14 +3644,18 @@ const OrganizationSchema = {
                             ],
                             "properties": {
                               "svg": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
                               },
                               "location": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
                               }
                             }
                           },
-                          "mobile_view": {
+                          "mobileView": {
                             "x-go-type": "Location",
                             "type": "object",
                             "required": [
@@ -1287,14 +3664,18 @@ const OrganizationSchema = {
                             ],
                             "properties": {
                               "svg": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
                               },
                               "location": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
                               }
                             }
                           },
-                          "dark_desktop_view": {
+                          "darkDesktopView": {
                             "x-go-type": "Location",
                             "type": "object",
                             "required": [
@@ -1303,14 +3684,18 @@ const OrganizationSchema = {
                             ],
                             "properties": {
                               "svg": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
                               },
                               "location": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
                               }
                             }
                           },
-                          "dark_mobile_view": {
+                          "darkMobileView": {
                             "x-go-type": "Location",
                             "type": "object",
                             "required": [
@@ -1319,10 +3704,14 @@ const OrganizationSchema = {
                             ],
                             "properties": {
                               "svg": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
                               },
                               "location": {
-                                "type": "string"
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
                               }
                             }
                           }
@@ -1330,7 +3719,8 @@ const OrganizationSchema = {
                       },
                       "vars": {
                         "type": "object",
-                        "additionalProperties": true
+                        "additionalProperties": true,
+                        "description": "The vars of the theme."
                       }
                     }
                   },
@@ -1345,25 +3735,226 @@ const OrganizationSchema = {
             }
           },
           "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "created_at"
+            }
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at"
+            }
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time",
+            "x-go-type": "sql.NullTime",
+            "x-go-type-import": {
+              "path": "database/sql"
             },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at"
+            }
+          },
+          "domain": {
+            "type": "string",
+            "nullable": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "domain"
+            },
+            "description": "The domain of the organization.",
+            "maxLength": 500
+          }
+        }
+      },
+      "AvailableOrganization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "x-go-name": "ID",
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "name": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "description": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "country": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "region": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "owner": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "metadata": {
+            "x-go-type": "OrgMetadata",
+            "type": "object",
+            "required": [
+              "preferences"
+            ],
+            "properties": {
+              "preferences": {
+                "x-go-type": "Preferences",
+                "type": "object",
+                "required": [
+                  "theme",
+                  "dashboard"
+                ],
+                "properties": {
+                  "theme": {
+                    "x-go-type": "Theme",
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "logo"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Theme ID.",
+                        "maxLength": 500,
+                        "format": "uuid"
+                      },
+                      "logo": {
+                        "x-go-type": "Logo",
+                        "type": "object",
+                        "required": [
+                          "desktopView",
+                          "mobileView",
+                          "darkDesktopView",
+                          "darkMobileView"
+                        ],
+                        "properties": {
+                          "desktopView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
+                              }
+                            }
+                          },
+                          "mobileView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
+                              }
+                            }
+                          },
+                          "darkDesktopView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
+                              }
+                            }
+                          },
+                          "darkMobileView": {
+                            "x-go-type": "Location",
+                            "type": "object",
+                            "required": [
+                              "svg",
+                              "location"
+                            ],
+                            "properties": {
+                              "svg": {
+                                "type": "string",
+                                "description": "The svg of the location.",
+                                "maxLength": 500
+                              },
+                              "location": {
+                                "type": "string",
+                                "description": "The location of the location.",
+                                "maxLength": 500
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "vars": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "The vars of the theme."
+                      }
+                    }
+                  },
+                  "dashboard": {
+                    "x-go-type": "DashboardPrefs",
+                    "type": "object",
+                    "description": "Preferences specific to dashboard behavior",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          },
+          "created_at": {
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "updated_at": {
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at"
-            },
             "type": "string",
             "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at"
-            },
             "type": "string",
             "format": "date-time",
             "x-go-type": "sql.NullTime",
@@ -1371,12 +3962,592 @@ const OrganizationSchema = {
               "path": "database/sql"
             },
             "x-go-type-skip-optional-pointer": true
+          }
+        }
+      },
+      "OrganizationsPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
-          "domain": {
+          "page_size": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "organizations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "x-go-name": "ID",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "country": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "region": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "owner": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "metadata": {
+                  "x-go-type": "OrgMetadata",
+                  "type": "object",
+                  "required": [
+                    "preferences"
+                  ],
+                  "properties": {
+                    "preferences": {
+                      "x-go-type": "Preferences",
+                      "type": "object",
+                      "required": [
+                        "theme",
+                        "dashboard"
+                      ],
+                      "properties": {
+                        "theme": {
+                          "x-go-type": "Theme",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "logo"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Theme ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
+                            },
+                            "logo": {
+                              "x-go-type": "Logo",
+                              "type": "object",
+                              "required": [
+                                "desktopView",
+                                "mobileView",
+                                "darkDesktopView",
+                                "darkMobileView"
+                              ],
+                              "properties": {
+                                "desktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "mobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkDesktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkMobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "vars": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The vars of the theme."
+                            }
+                          }
+                        },
+                        "dashboard": {
+                          "x-go-type": "DashboardPrefs",
+                          "type": "object",
+                          "description": "Preferences specific to dashboard behavior",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  }
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deleted_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type": "sql.NullTime",
+                  "x-go-type-import": {
+                    "path": "database/sql"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            },
+            "description": "The organizations of the organizationspage."
+          }
+        }
+      },
+      "OrganizationPage": {
+        "type": "object",
+        "description": "Single-organization wrapper used by current meshery-cloud organization handlers.",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "organizations": {
+            "type": "array",
+            "maxItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "x-go-name": "ID",
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
+                },
+                "name": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "description": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "country": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "region": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "owner": {
+                  "type": "string",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "metadata": {
+                  "x-go-type": "OrgMetadata",
+                  "type": "object",
+                  "required": [
+                    "preferences"
+                  ],
+                  "properties": {
+                    "preferences": {
+                      "x-go-type": "Preferences",
+                      "type": "object",
+                      "required": [
+                        "theme",
+                        "dashboard"
+                      ],
+                      "properties": {
+                        "theme": {
+                          "x-go-type": "Theme",
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "logo"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Theme ID.",
+                              "maxLength": 500,
+                              "format": "uuid"
+                            },
+                            "logo": {
+                              "x-go-type": "Logo",
+                              "type": "object",
+                              "required": [
+                                "desktopView",
+                                "mobileView",
+                                "darkDesktopView",
+                                "darkMobileView"
+                              ],
+                              "properties": {
+                                "desktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "mobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkDesktopView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                },
+                                "darkMobileView": {
+                                  "x-go-type": "Location",
+                                  "type": "object",
+                                  "required": [
+                                    "svg",
+                                    "location"
+                                  ],
+                                  "properties": {
+                                    "svg": {
+                                      "type": "string",
+                                      "description": "The svg of the location.",
+                                      "maxLength": 500
+                                    },
+                                    "location": {
+                                      "type": "string",
+                                      "description": "The location of the location.",
+                                      "maxLength": 500
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "vars": {
+                              "type": "object",
+                              "additionalProperties": true,
+                              "description": "The vars of the theme."
+                            }
+                          }
+                        },
+                        "dashboard": {
+                          "x-go-type": "DashboardPrefs",
+                          "type": "object",
+                          "description": "Preferences specific to dashboard behavior",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  }
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "deleted_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-go-type": "sql.NullTime",
+                  "x-go-type-import": {
+                    "path": "database/sql"
+                  },
+                  "x-go-type-skip-optional-pointer": true
+                }
+              }
+            },
+            "description": "The organizations of the organizationpage."
+          }
+        }
+      },
+      "OrganizationPayload": {
+        "type": "object",
+        "properties": {
+          "name": {
             "type": "string",
-            "nullable": true,
-            "x-oapi-codegen-extra-tags": {
-              "db": "domain"
+            "x-go-type-skip-optional-pointer": true
+          },
+          "country": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "region": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "description": {
+            "type": "string",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "notifyOrgUpdate": {
+            "type": "boolean",
+            "description": "The notify org update of the organization."
+          },
+          "preferences": {
+            "type": "object",
+            "required": [
+              "theme",
+              "dashboard"
+            ],
+            "properties": {
+              "theme": {
+                "x-go-type": "Theme",
+                "type": "object",
+                "required": [
+                  "id",
+                  "logo"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Theme ID.",
+                    "maxLength": 500,
+                    "format": "uuid"
+                  },
+                  "logo": {
+                    "x-go-type": "Logo",
+                    "type": "object",
+                    "required": [
+                      "desktopView",
+                      "mobileView",
+                      "darkDesktopView",
+                      "darkMobileView"
+                    ],
+                    "properties": {
+                      "desktopView": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
+                          },
+                          "location": {
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
+                          }
+                        }
+                      },
+                      "mobileView": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
+                          },
+                          "location": {
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
+                          }
+                        }
+                      },
+                      "darkDesktopView": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
+                          },
+                          "location": {
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
+                          }
+                        }
+                      },
+                      "darkMobileView": {
+                        "x-go-type": "Location",
+                        "type": "object",
+                        "required": [
+                          "svg",
+                          "location"
+                        ],
+                        "properties": {
+                          "svg": {
+                            "type": "string",
+                            "description": "The svg of the location.",
+                            "maxLength": 500
+                          },
+                          "location": {
+                            "type": "string",
+                            "description": "The location of the location.",
+                            "maxLength": 500
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "vars": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The vars of the theme."
+                  }
+                }
+              },
+              "dashboard": {
+                "x-go-type": "DashboardPrefs",
+                "type": "object",
+                "description": "Preferences specific to dashboard behavior",
+                "additionalProperties": true
+              }
             }
           }
         }
@@ -1384,7 +4555,7 @@ const OrganizationSchema = {
       "AvailableTeam": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -1442,20 +4613,26 @@ const OrganizationSchema = {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
           "teams": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "ID": {
+                "id": {
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -1508,14 +4685,15 @@ const OrganizationSchema = {
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            }
+            },
+            "description": "The teams of the teamspage."
           }
         }
       },
       "TeamsOrganizationsMapping": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -1529,7 +4707,7 @@ const OrganizationSchema = {
             "x-go-type-name": "GeneralId",
             "x-go-type-skip-optional-pointer": true
           },
-          "org_id": {
+          "orgId": {
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -1582,20 +4760,26 @@ const OrganizationSchema = {
         "type": "object",
         "properties": {
           "page": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
           },
           "page_size": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
           },
           "total_count": {
-            "type": "integer"
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
           },
-          "teams_organizations_mapping": {
+          "teamsOrganizationsMapping": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "ID": {
+                "id": {
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -1609,7 +4793,7 @@ const OrganizationSchema = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "org_id": {
+                "orgId": {
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -1657,12 +4841,13 @@ const OrganizationSchema = {
                   "x-go-type-skip-optional-pointer": true
                 }
               }
-            }
+            },
+            "description": "The teams organizations mapping of the teamsorganizationsmappingpage."
           }
         }
       }
     }
   }
-} as const;
+};
 
 export default OrganizationSchema;

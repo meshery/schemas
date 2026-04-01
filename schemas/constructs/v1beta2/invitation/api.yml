@@ -1,0 +1,490 @@
+openapi: 3.0.0
+info:
+  title: Invitation
+  description: OpenAPI schema for managing invitations.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+- name: Invitation
+  description: Operations related to invitation
+security:
+- jwt: []
+paths:
+  /api/organizations/invitations/{invitationId}:
+    get:
+      x-internal:
+      - cloud
+      operationId: getInvitation
+      tags:
+      - Invitation
+      summary: Get an invitation by ID
+      parameters:
+      - $ref: '#/components/parameters/invitation_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    delete:
+      x-internal:
+      - cloud
+      operationId: deleteInvitation
+      tags:
+      - Invitation
+      summary: Delete an invitation by ID
+      parameters:
+      - $ref: '#/components/parameters/invitation_id'
+      responses:
+        '204':
+          description: Invitation deleted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+    put:
+      x-internal:
+      - cloud
+      operationId: updateInvitation
+      tags:
+      - Invitation
+      summary: Update an existing invitation
+      parameters:
+      - $ref: '#/components/parameters/invitation_id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationPayload'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/organizations/invitations:
+    get:
+      x-internal:
+      - cloud
+      operationId: getInvitations
+      tags:
+      - Invitation
+      summary: Get all invitations for the organization
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationsPage'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    post:
+      x-internal:
+      - cloud
+      operationId: createInvitation
+      tags:
+      - Invitation
+      summary: Create a new invitation for the organization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationPayload'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/organizations/invitations/{invitationId}/accept:
+    post:
+      x-internal:
+      - cloud
+      operationId: acceptInvitation
+      tags:
+      - Invitation
+      summary: Accept an invitation by ID
+      parameters:
+      - $ref: '#/components/parameters/invitation_id'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/identity/orgs/{orgId}/users/invite:
+    post:
+      x-internal:
+      - cloud
+      operationId: handleUserInvite
+      tags:
+      - Invitation
+      summary: Invite users to an organization
+      parameters:
+      - name: orgId
+        in: path
+        required: true
+        description: The ID of the organization
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Invitation request accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/identity/users/request:
+    post:
+      x-internal:
+      - cloud
+      operationId: signupRequest
+      tags:
+      - Invitation
+      summary: Create a signup request
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '201':
+          description: Signup request created
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+    get:
+      x-internal:
+      - cloud
+      operationId: getSignupRequests
+      tags:
+      - Invitation
+      summary: Get signup requests
+      parameters:
+      - $ref: ../core/api.yml#/components/parameters/page
+      - $ref: ../core/api.yml#/components/parameters/pagesize
+      - $ref: ../core/api.yml#/components/parameters/search
+      - $ref: ../core/api.yml#/components/parameters/order
+      - $ref: ../core/api.yml#/components/parameters/filter
+      responses:
+        '200':
+          description: Signup requests page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupRequestsPage'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/identity/users/request/approve:
+    post:
+      x-internal:
+      - cloud
+      operationId: approveSignupRequest
+      tags:
+      - Invitation
+      summary: Approve a signup request
+      responses:
+        '200':
+          description: Signup request approved
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/identity/users/request/deny:
+    post:
+      x-internal:
+      - cloud
+      operationId: denySignupRequest
+      tags:
+      - Invitation
+      summary: Deny a signup request
+      responses:
+        '200':
+          description: Signup request denied
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/identity/users/request/notification:
+    get:
+      x-internal:
+      - cloud
+      operationId: getSignupRequestNotification
+      tags:
+      - Invitation
+      summary: Get signup request notification summary
+      responses:
+        '200':
+          description: Signup request notification payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '204':
+          description: No pending signup request notifications
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+components:
+  parameters:
+    organization_id:
+      name: organizationId
+      in: path
+      required: true
+      description: The ID of the organization
+      schema:
+        type: string
+    invitation_id:
+      name: invitationId
+      in: path
+      required: true
+      description: The ID of the invitation
+      schema:
+        type: string
+  responses:
+    400:
+      $ref: ../core/api.yml#/components/responses/400
+    401:
+      $ref: ../core/api.yml#/components/responses/401
+    404:
+      $ref: ../core/api.yml#/components/responses/404
+    500:
+      $ref: ../core/api.yml#/components/responses/500
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Uuid:
+      $ref: ../core/api.yml#/components/schemas/Uuid
+    InvitationsPage:
+      type: object
+      required:
+      - data
+      - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invitation'
+            x-go-type: Invitation
+          description: List of invitations
+          x-oapi-codegen-extra-tags:
+            json: data
+        total:
+          type: integer
+          description: Total number of invitations available
+          x-oapi-codegen-extra-tags:
+            json: total
+          minimum: 0
+    SignupRequest:
+      type: object
+      additionalProperties: true
+    SignupRequestsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignupRequest'
+          description: The data of the signuprequestspage.
+    InvitationPayload:
+      type: object
+      description: Payload for creating or updating an invitation.
+      required:
+      - name
+      - description
+      - org_id
+      - emails
+      - roles
+      - teams
+      - status
+      properties:
+        id:
+          $ref: ../core/api.yml#/components/schemas/Uuid
+          x-go-name: ID
+          description: Existing invitation ID for updates; omit on create.
+          x-oapi-codegen-extra-tags:
+            json: id,omitempty
+        owner_id:
+          $ref: ../core/api.yml#/components/schemas/Uuid
+          description: ID of the user who created the invitation.
+          x-oapi-codegen-extra-tags:
+            db: owner_id
+            json: owner_id,omitempty
+        is_default:
+          type: boolean
+          description: Indicates whether the invitation is a default invitation (open invite).
+          x-oapi-codegen-extra-tags:
+            db: is_default
+            json: is_default,omitempty
+        name:
+          type: string
+          description: Name of the invitation.
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+          description: Description of the invitation.
+          maxLength: 5000
+        emails:
+          type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          items:
+            type: string
+            pattern: ^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|@[a-zA-Z0-9.-]+\.[a-z]{2,})$
+            x-go-type: string
+          description: The emails of the invitation.
+        org_id:
+          type: string
+          description: ID of the organization to which the user is invited.
+          x-oapi-codegen-extra-tags:
+            db: org_id
+            json: org_id
+          maxLength: 500
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+          description: Timestamp when the invitation expires, if applicable.
+          x-oapi-codegen-extra-tags:
+            db: expires_at
+            json: expires_at,omitempty
+        quota:
+          type: integer
+          description: Quota for the invitation.
+          minimum: 0
+        roles:
+          type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          items:
+            type: string
+          description: The roles of the invitation.
+        teams:
+          type: array
+          x-go-type: pq.StringArray
+          x-go-type-import:
+            path: github.com/lib/pq
+          items:
+            type: string
+          description: The teams of the invitation.
+        status:
+          $ref: '#/components/schemas/InvitationStatus'
+          x-go-type: InvitationStatus
+    InvitationStatus:
+      type: string
+      enum:
+      - enabled
+      - disabled
+      description: Status of the invitation, where enabled means the invitation is active and can be used, disabled means
+        the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+    Invitation:
+      $ref: ./invitation.yaml

@@ -1,4 +1,5 @@
 id: 00000000-0000-0000-0000-000000000000
+schemaVersion: environments.meshery.io/v1beta1
 name: ''
 description: ''
 organization_id: 00000000-0000-0000-0000-000000000000

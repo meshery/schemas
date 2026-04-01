@@ -4,34 +4,16 @@
 package subscription
 
 import (
-	"time"
-
-	"database/sql"
-
-	"github.com/gofrs/uuid"
-	"github.com/meshery/schemas/models/v1beta1/plan"
+	core "github.com/meshery/schemas/models/core"
+	planv1beta1 "github.com/meshery/schemas/models/v1beta1/plan"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-)
-
-// Defines values for CancelSubscriptionRequestPaymentProcessor.
-const (
-	CancelSubscriptionRequestPaymentProcessorBraintree CancelSubscriptionRequestPaymentProcessor = "braintree"
-	CancelSubscriptionRequestPaymentProcessorPaypal    CancelSubscriptionRequestPaymentProcessor = "paypal"
-	CancelSubscriptionRequestPaymentProcessorStripe    CancelSubscriptionRequestPaymentProcessor = "stripe"
-)
-
-// Defines values for CreateSubscriptionRequestPaymentProcessor.
-const (
-	CreateSubscriptionRequestPaymentProcessorBraintree CreateSubscriptionRequestPaymentProcessor = "braintree"
-	CreateSubscriptionRequestPaymentProcessorPaypal    CreateSubscriptionRequestPaymentProcessor = "paypal"
-	CreateSubscriptionRequestPaymentProcessorStripe    CreateSubscriptionRequestPaymentProcessor = "stripe"
 )
 
 // Defines values for PaymentProcessor.
 const (
-	PaymentProcessorBraintree PaymentProcessor = "braintree"
-	PaymentProcessorPaypal    PaymentProcessor = "paypal"
-	PaymentProcessorStripe    PaymentProcessor = "stripe"
+	Braintree PaymentProcessor = "braintree"
+	Paypal    PaymentProcessor = "paypal"
+	Stripe    PaymentProcessor = "stripe"
 )
 
 // Defines values for SubscriptionStatus.
@@ -45,53 +27,40 @@ const (
 	Unpaid            SubscriptionStatus = "unpaid"
 )
 
-// Defines values for UpdateUsersRequestPaymentProcessor.
-const (
-	UpdateUsersRequestPaymentProcessorBraintree UpdateUsersRequestPaymentProcessor = "braintree"
-	UpdateUsersRequestPaymentProcessorPaypal    UpdateUsersRequestPaymentProcessor = "paypal"
-	UpdateUsersRequestPaymentProcessorStripe    UpdateUsersRequestPaymentProcessor = "stripe"
-)
-
 // CancelSubscriptionRequest defines model for CancelSubscriptionRequest.
 type CancelSubscriptionRequest struct {
 	// PaymentProcessor Supported payment processors
-	PaymentProcessor *CancelSubscriptionRequestPaymentProcessor `json:"payment_processor,omitempty" yaml:"payment_processor,omitempty"`
+	PaymentProcessor *PaymentProcessor `json:"paymentProcessor,omitempty" yaml:"paymentProcessor,omitempty"`
 
 	// SubscriptionId Subscription ID from the payment processor
-	SubscriptionId *string `json:"subscription_id,omitempty" yaml:"subscription_id,omitempty"`
+	SubscriptionId *string `json:"subscriptionId,omitempty" yaml:"subscriptionId,omitempty"`
 }
-
-// CancelSubscriptionRequestPaymentProcessor Supported payment processors
-type CancelSubscriptionRequestPaymentProcessor string
 
 // CreateSubscriptionRequest defines model for CreateSubscriptionRequest.
 type CreateSubscriptionRequest struct {
 	// CouponId Coupon ID to apply
-	CouponId *string `json:"coupon_id,omitempty" yaml:"coupon_id,omitempty"`
+	CouponId *string `json:"couponId,omitempty" yaml:"couponId,omitempty"`
 
 	// Email Email of the customer
 	Email *openapi_types.Email `json:"email,omitempty" yaml:"email,omitempty"`
 
 	// OrgId Organization ID
-	OrgId *string `json:"org_id,omitempty" yaml:"org_id,omitempty"`
+	OrgId *string `json:"orgId,omitempty" yaml:"orgId,omitempty"`
 
 	// PaymentProcessor Supported payment processors
-	PaymentProcessor *CreateSubscriptionRequestPaymentProcessor `json:"payment_processor,omitempty" yaml:"payment_processor,omitempty"`
+	PaymentProcessor *PaymentProcessor `json:"paymentProcessor,omitempty" yaml:"paymentProcessor,omitempty"`
 
 	// PlanId Price ID from the payment processor
-	PlanId *string `json:"plan_id,omitempty" yaml:"plan_id,omitempty"`
+	PlanId *string `json:"planId,omitempty" yaml:"planId,omitempty"`
 
 	// UserCount Number of users in the organization
-	UserCount *int `json:"user_count,omitempty" yaml:"user_count,omitempty"`
+	UserCount *int `json:"userCount,omitempty" yaml:"userCount,omitempty"`
 }
-
-// CreateSubscriptionRequestPaymentProcessor Supported payment processors
-type CreateSubscriptionRequestPaymentProcessor string
 
 // CreateSubscriptionResponse defines model for CreateSubscriptionResponse.
 type CreateSubscriptionResponse struct {
 	ClientSecret   *string `json:"clientSecret,omitempty" yaml:"clientSecret,omitempty"`
-	SubscriptionId *string `json:"subscription_id,omitempty" yaml:"subscription_id,omitempty"`
+	SubscriptionId *string `json:"subscriptionId,omitempty" yaml:"subscriptionId,omitempty"`
 }
 
 // PaymentProcessor Supported payment processors
@@ -99,27 +68,27 @@ type PaymentProcessor string
 
 // Subscription defines model for Subscription.
 type Subscription struct {
-	// ID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ID uuid.UUID `db:"id" json:"ID" yaml:"ID"`
-
 	// BillingId Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe
-	BillingId string       `db:"billing_id" json:"billing_id" yaml:"billing_id"`
-	CreatedAt time.Time    `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	EndDate   time.Time    `db:"end_date" json:"end_date,omitempty" yaml:"end_date,omitempty"`
+	BillingId string                   `db:"billing_id" json:"billing_id" yaml:"billing_id"`
+	CreatedAt core.Time        `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt core.SqlNullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	EndDate   core.Time        `db:"end_date" json:"end_date,omitempty" yaml:"end_date,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// OrgId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrgId uuid.UUID  `db:"org_id" json:"org_id" yaml:"org_id"`
-	Plan  *plan.Plan `belongs_to:"plans" fk_id:"PlanId" json:"plan,omitempty" yaml:"plan,omitempty"`
+	OrgId core.Uuid  `db:"org_id" json:"org_id" yaml:"org_id"`
+	Plan  *planv1beta1.Plan `fk_id:"PlanId" belongs_to:"plans" json:"plan,omitempty" yaml:"plan,omitempty"`
 
 	// PlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	PlanId    uuid.UUID `db:"plan_id" json:"plan_id" yaml:"plan_id"`
-	Quantity  int       `db:"quantity" json:"quantity" yaml:"quantity"`
-	StartDate time.Time `db:"start_date" json:"start_date,omitempty" yaml:"start_date,omitempty"`
+	PlanId    core.Uuid `db:"plan_id" json:"plan_id" yaml:"plan_id"`
+	Quantity  int               `db:"quantity" json:"quantity" yaml:"quantity"`
+	StartDate core.Time `db:"start_date" json:"start_date,omitempty" yaml:"start_date,omitempty"`
 
 	// Status Possible statuses of a Stripe subscription.
 	Status    SubscriptionStatus `db:"status" json:"status" yaml:"status"`
-	UpdatedAt time.Time          `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.Time  `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // SubscriptionPage defines model for SubscriptionPage.
@@ -136,19 +105,16 @@ type SubscriptionStatus string
 // UpdateUsersRequest defines model for UpdateUsersRequest.
 type UpdateUsersRequest struct {
 	// PaymentProcessor Supported payment processors
-	PaymentProcessor *UpdateUsersRequestPaymentProcessor `json:"payment_processor,omitempty" yaml:"payment_processor,omitempty"`
+	PaymentProcessor *PaymentProcessor `json:"paymentProcessor,omitempty" yaml:"paymentProcessor,omitempty"`
 }
-
-// UpdateUsersRequestPaymentProcessor Supported payment processors
-type UpdateUsersRequestPaymentProcessor string
 
 // UpgradeSubscriptionRequest defines model for UpgradeSubscriptionRequest.
 type UpgradeSubscriptionRequest struct {
-	// NewPlanId New Plan id that is being changed to
-	NewPlanId *uuid.UUID `json:"new_plan_id,omitempty" yaml:"new_plan_id,omitempty"`
+	// NewPlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	NewPlanId *core.Uuid `json:"newPlanId,omitempty" yaml:"newPlanId,omitempty"`
 
-	// OldPlanId Old Plan id that is being changed
-	OldPlanId *uuid.UUID `json:"old_plan_id,omitempty" yaml:"old_plan_id,omitempty"`
+	// OldPlanId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OldPlanId *core.Uuid `json:"oldPlanId,omitempty" yaml:"oldPlanId,omitempty"`
 }
 
 // WebhookEvent Payload for webhook events from payment processors

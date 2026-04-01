@@ -1,18 +1,21 @@
 openapi: 3.0.0
 info:
   title: Meshery Cloud
-  description: Documentation for Meshery Cloud REST APIs
+  description: Documentation for Meshery Cloud REST APIs.
+  version: v0.8.0
   contact:
+    name: Meshery Maintainers
     email: maintainers@meshery.io
-  version: v0.6.394
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
   - url: https://cloud.meshery.io
     description: Meshery Cloud production server URL
   - url: https://staging-cloud.meshery.io
     description: Meshery Cloud staging server URL
   - url: http://localhost:9876
-    description: >
-      Meshery Cloud development server URL (controlled via PORT environment
+    description: Meshery Cloud development server URL (controlled via PORT environment
       variable)
-  - url: http://localhost:8080
-    description: Local development server
+

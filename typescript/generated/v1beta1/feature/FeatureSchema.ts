@@ -3,13 +3,27 @@
  * Do not manually modify this file.
  */
 
-const FeatureSchema = {
+const FeatureSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "feature",
-    "description": "OpenAPI schema for the Features construct with entitlement-related properties",
-    "version": "v1beta1"
+    "title": "Feature",
+    "description": "OpenAPI schema for the Features construct with entitlement-related properties.",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
+  "security": [
+    {
+      "jwt": []
+    }
+  ],
   "tags": [
     {
       "name": "Features",
@@ -29,7 +43,7 @@ const FeatureSchema = {
         "summary": "Get all features associated with plans",
         "responses": {
           "200": {
-            "description": "Features fetched successfully",
+            "description": "Features response",
             "content": {
               "application/json": {
                 "schema": {
@@ -41,7 +55,7 @@ const FeatureSchema = {
                       "id",
                       "plan_id",
                       "quantity",
-                      "feature"
+                      "name"
                     ],
                     "properties": {
                       "id": {
@@ -69,14 +83,14 @@ const FeatureSchema = {
                         }
                       },
                       "plan": {
-                        "x-go-type": "plan.Plan",
+                        "x-go-type": "planv1beta1.Plan",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                          "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                          "name": "planv1beta1"
                         },
                         "x-oapi-codegen-extra-tags": {
                           "belongs_to": "plans",
                           "fk_id": "PlanId",
-                          "yaml": "plan,omitempty",
                           "json": "plan,omitempty"
                         },
                         "type": "object",
@@ -175,7 +189,6 @@ const FeatureSchema = {
                           "unit",
                           "price_per_unit",
                           "minimum_units",
-                          "price_id",
                           "currency"
                         ]
                       },
@@ -185,6 +198,7 @@ const FeatureSchema = {
                           "db": "name"
                         },
                         "type": "string",
+                        "x-enum-casing-exempt": true,
                         "enum": [
                           "ComponentsInDesign",
                           "RelationshipsInDesign",
@@ -200,7 +214,8 @@ const FeatureSchema = {
                         "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
                         "x-oapi-codegen-extra-tags": {
                           "db": "quantity"
-                        }
+                        },
+                        "minimum": 0
                       },
                       "created_at": {
                         "x-oapi-codegen-extra-tags": {
@@ -286,7 +301,7 @@ const FeatureSchema = {
         ],
         "responses": {
           "200": {
-            "description": "Features fetched successfully",
+            "description": "Features response",
             "content": {
               "application/json": {
                 "schema": {
@@ -298,7 +313,7 @@ const FeatureSchema = {
                       "id",
                       "plan_id",
                       "quantity",
-                      "feature"
+                      "name"
                     ],
                     "properties": {
                       "id": {
@@ -326,14 +341,14 @@ const FeatureSchema = {
                         }
                       },
                       "plan": {
-                        "x-go-type": "plan.Plan",
+                        "x-go-type": "planv1beta1.Plan",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                          "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                          "name": "planv1beta1"
                         },
                         "x-oapi-codegen-extra-tags": {
                           "belongs_to": "plans",
                           "fk_id": "PlanId",
-                          "yaml": "plan,omitempty",
                           "json": "plan,omitempty"
                         },
                         "type": "object",
@@ -432,7 +447,6 @@ const FeatureSchema = {
                           "unit",
                           "price_per_unit",
                           "minimum_units",
-                          "price_id",
                           "currency"
                         ]
                       },
@@ -442,6 +456,7 @@ const FeatureSchema = {
                           "db": "name"
                         },
                         "type": "string",
+                        "x-enum-casing-exempt": true,
                         "enum": [
                           "ComponentsInDesign",
                           "RelationshipsInDesign",
@@ -457,7 +472,8 @@ const FeatureSchema = {
                         "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
                         "x-oapi-codegen-extra-tags": {
                           "db": "quantity"
-                        }
+                        },
+                        "minimum": 0
                       },
                       "created_at": {
                         "x-oapi-codegen-extra-tags": {
@@ -502,6 +518,16 @@ const FeatureSchema = {
               }
             }
           },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error",
             "content": {
@@ -517,6 +543,13 @@ const FeatureSchema = {
     }
   },
   "components": {
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "parameters": {
       "organization_id": {
         "name": "organizationId",
@@ -543,7 +576,7 @@ const FeatureSchema = {
             "id",
             "plan_id",
             "quantity",
-            "feature"
+            "name"
           ],
           "properties": {
             "id": {
@@ -571,14 +604,14 @@ const FeatureSchema = {
               }
             },
             "plan": {
-              "x-go-type": "plan.Plan",
+              "x-go-type": "planv1beta1.Plan",
               "x-go-type-import": {
-                "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                "name": "planv1beta1"
               },
               "x-oapi-codegen-extra-tags": {
                 "belongs_to": "plans",
                 "fk_id": "PlanId",
-                "yaml": "plan,omitempty",
                 "json": "plan,omitempty"
               },
               "type": "object",
@@ -677,7 +710,6 @@ const FeatureSchema = {
                 "unit",
                 "price_per_unit",
                 "minimum_units",
-                "price_id",
                 "currency"
               ]
             },
@@ -687,6 +719,7 @@ const FeatureSchema = {
                 "db": "name"
               },
               "type": "string",
+              "x-enum-casing-exempt": true,
               "enum": [
                 "ComponentsInDesign",
                 "RelationshipsInDesign",
@@ -702,7 +735,8 @@ const FeatureSchema = {
               "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
               "x-oapi-codegen-extra-tags": {
                 "db": "quantity"
-              }
+              },
+              "minimum": 0
             },
             "created_at": {
               "x-oapi-codegen-extra-tags": {
@@ -726,6 +760,7 @@ const FeatureSchema = {
       },
       "FeatureName": {
         "type": "string",
+        "x-enum-casing-exempt": true,
         "enum": [
           "ComponentsInDesign",
           "RelationshipsInDesign",
@@ -742,7 +777,7 @@ const FeatureSchema = {
           "id",
           "plan_id",
           "quantity",
-          "feature"
+          "name"
         ],
         "properties": {
           "id": {
@@ -770,14 +805,14 @@ const FeatureSchema = {
             }
           },
           "plan": {
-            "x-go-type": "plan.Plan",
+            "x-go-type": "planv1beta1.Plan",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/plan"
+              "path": "github.com/meshery/schemas/models/v1beta1/plan",
+              "name": "planv1beta1"
             },
             "x-oapi-codegen-extra-tags": {
               "belongs_to": "plans",
               "fk_id": "PlanId",
-              "yaml": "plan,omitempty",
               "json": "plan,omitempty"
             },
             "type": "object",
@@ -876,7 +911,6 @@ const FeatureSchema = {
               "unit",
               "price_per_unit",
               "minimum_units",
-              "price_id",
               "currency"
             ]
           },
@@ -886,6 +920,7 @@ const FeatureSchema = {
               "db": "name"
             },
             "type": "string",
+            "x-enum-casing-exempt": true,
             "enum": [
               "ComponentsInDesign",
               "RelationshipsInDesign",
@@ -901,7 +936,8 @@ const FeatureSchema = {
             "description": "Quantity of the feature allowed, use 9999999999 for unlimited",
             "x-oapi-codegen-extra-tags": {
               "db": "quantity"
-            }
+            },
+            "minimum": 0
           },
           "created_at": {
             "x-oapi-codegen-extra-tags": {
@@ -924,6 +960,6 @@ const FeatureSchema = {
       }
     }
   }
-} as const;
+};
 
 export default FeatureSchema;

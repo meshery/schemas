@@ -11,10 +11,11 @@ import (
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
+	core "github.com/meshery/schemas/models/core"
 	"gorm.io/gorm/clause"
 )
 
-type Styles = ComponentDefinition_Styles
+type Styles = core.ComponentStyles
 
 func (c ComponentDefinition) TableName() string {
 	return "component_definition_dbs"
@@ -29,21 +30,33 @@ func (c *ComponentDefinition) GenerateID() (uuid.UUID, error) {
 }
 
 func (c ComponentDefinition) GetID() uuid.UUID {
-	return c.Id
+	return c.ID
 }
 
 func (c *ComponentDefinition) GetEntityDetail() string {
+	if c.Model == nil {
+		return fmt.Sprintf("type: %s, definition version: %s, name: %s", c.Type(), c.Version, c.DisplayName)
+	}
+
 	return fmt.Sprintf("type: %s, definition version: %s, name: %s, model: %s, version: %s", c.Type(), c.Version, c.DisplayName, c.Model.Name, c.Model.Version)
 }
 
 func (c *ComponentDefinition) Create(db *database.Handler, hostID uuid.UUID) (uuid.UUID, error) {
-	c.Id, _ = c.GenerateID()
+	generatedID, err := c.GenerateID()
+	if err != nil {
+		return uuid.Nil, err
+	}
+	c.ID = generatedID
 
 	isAnnotation := c.Metadata.IsAnnotation
 
 	if c.Component.Schema == "" && !isAnnotation { //For components which has an empty schema and is not an annotation, return error
 		// return ErrEmptySchema()
 		return uuid.Nil, nil
+	}
+
+	if c.Model == nil {
+		return uuid.Nil, fmt.Errorf("component model is nil for component %q (%s %s)", c.DisplayName, c.Component.Kind, c.Version)
 	}
 
 	mid, err := c.Model.Create(db, hostID)
@@ -58,9 +71,10 @@ func (c *ComponentDefinition) Create(db *database.Handler, hostID uuid.UUID) (uu
 		c.Metadata.AdditionalProperties["hasInvalidSchema"] = true
 	}
 
-	c.ModelId = mid
+	modelID := core.Uuid(mid)
+	c.ModelId = &modelID
 	err = db.Omit(clause.Associations).Create(&c).Error
-	return c.Id, err
+	return c.ID, err
 }
 
 func (m *ComponentDefinition) UpdateStatus(db *database.Handler, status entity.EntityStatus) error {
@@ -86,19 +100,23 @@ func (c ComponentDefinition) WriteComponentDefinition(componentDirPath string, f
 func (c *ComponentDefinition) ReplaceSVGData(baseDir string) error {
 
 	compStyle := c.Styles
-	if compStyle != nil {
+	if compStyle.SvgColor != "" {
 		svgColor, err := utils.ReadSVGData(baseDir, compStyle.SvgColor)
 		if err == nil {
 			compStyle.SvgColor = svgColor
 		} else {
 			return err
 		}
+	}
+	if compStyle.SvgWhite != "" {
 		svgWhite, err := utils.ReadSVGData(baseDir, compStyle.SvgWhite)
 		if err == nil {
 			compStyle.SvgWhite = svgWhite
 		} else {
 			return err
 		}
+	}
+	if compStyle.SvgComplete != "" {
 		svgComplete, err := utils.ReadSVGData(baseDir, compStyle.SvgComplete)
 		if err == nil {
 			compStyle.SvgComplete = svgComplete

@@ -1,7 +1,17 @@
 openapi: 3.0.0
 info:
-  title: component
-  version: 1.0.0
+  title: Component
+  description: OpenAPI schema for component definitions in Meshery.
+  x-deprecated: true
+  x-superseded-by: v1beta2
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 paths: {}
 components:
   schemas:

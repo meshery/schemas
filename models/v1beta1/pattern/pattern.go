@@ -6,13 +6,11 @@ package pattern
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
-	"github.com/gofrs/uuid"
-	corev1alpha1 "github.com/meshery/schemas/models/v1alpha1/core"
-	"github.com/meshery/schemas/models/v1alpha2/catalog"
-	"github.com/meshery/schemas/models/v1alpha3/relationship"
-	"github.com/meshery/schemas/models/v1beta1/component"
+	core "github.com/meshery/schemas/models/core"
+	relationship "github.com/meshery/schemas/models/v1alpha3/relationship"
+	catalogv1beta1 "github.com/meshery/schemas/models/v1beta1/catalog"
+	component "github.com/meshery/schemas/models/v1beta1/component"
 )
 
 // DesignPreferences Design-level preferences
@@ -21,25 +19,60 @@ type DesignPreferences struct {
 	Layers map[string]interface{} `json:"layers" yaml:"layers"`
 }
 
+// CatalogContentClass defines model for CatalogContentClass.
+type CatalogContentClass struct {
+	Class                *string                `json:"class,omitempty" yaml:"class,omitempty"`
+	Description          *string                `json:"description,omitempty" yaml:"description,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
+// CatalogContentItem defines model for CatalogContentItem.
+type CatalogContentItem map[string]interface{}
+
+// CatalogContentPage defines model for CatalogContentPage.
+type CatalogContentPage struct {
+	CategoryCount *[]map[string]interface{} `json:"categoryCount,omitempty" yaml:"categoryCount,omitempty"`
+	Filters       *[]MesheryFilter          `json:"filters,omitempty" yaml:"filters,omitempty"`
+	ModelsCount   *[]map[string]interface{} `json:"modelsCount,omitempty" yaml:"modelsCount,omitempty"`
+	Page          *int                      `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize      *int                      `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	Patterns      *[]MesheryPattern         `json:"patterns,omitempty" yaml:"patterns,omitempty"`
+	TotalCount    *int                      `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// CatalogRequest defines model for CatalogRequest.
+type CatalogRequest map[string]interface{}
+
+// CatalogRequestsPage defines model for CatalogRequestsPage.
+type CatalogRequestsPage struct {
+	CatalogRequests *[]CatalogRequest `json:"catalogRequests,omitempty" yaml:"catalogRequests,omitempty"`
+	Page            *int              `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize        *int              `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount      *int              `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // DeletePatternModel defines model for DeletePatternModel.
 type DeletePatternModel struct {
-	Id   uuid.UUID `json:"id,omitempty" yaml:"id,omitempty"`
-	Name string    `json:"name,omitempty" yaml:"name,omitempty"`
+	ID   core.Id   `json:"id,omitempty" yaml:"id,omitempty"`
+	Name core.Text `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
+// MesheryFilter defines model for MesheryFilter.
+type MesheryFilter map[string]interface{}
 
 // MesheryPattern defines model for MesheryPattern.
 type MesheryPattern struct {
-	CatalogData *catalog.CatalogData `json:"catalog_data,omitempty" yaml:"catalog_data,omitempty"`
-	CreatedAt   time.Time            `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	Id          uuid.UUID            `json:"id,omitempty" yaml:"id,omitempty"`
-	Location    map[string]string    `json:"location,omitempty" yaml:"location,omitempty"`
-	Name        string               `json:"name,omitempty" yaml:"name,omitempty"`
+	CatalogData *catalogv1beta1.CatalogData `json:"catalogData,omitempty" yaml:"catalogData,omitempty"`
+	CreatedAt   core.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	ID          core.Id           `json:"id,omitempty" yaml:"id,omitempty"`
+	Location    core.MapObject    `json:"location,omitempty" yaml:"location,omitempty"`
+	Name        core.Text         `json:"name,omitempty" yaml:"name,omitempty"`
 
 	// PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
-	PatternFile *PatternFile `json:"pattern_file,omitempty" yaml:"pattern_file,omitempty"`
-	UpdatedAt   time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	UserId      uuid.UUID    `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Visibility  string       `json:"visibility,omitempty" yaml:"visibility,omitempty"`
+	PatternFile *PatternFile      `json:"patternFile,omitempty" yaml:"patternFile,omitempty"`
+	UpdatedAt   core.Time `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UserId      core.Id   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Visibility  core.Text `json:"visibility,omitempty" yaml:"visibility,omitempty"`
 }
 
 // MesheryPatternDeleteRequestBody defines model for MesheryPatternDeleteRequestBody.
@@ -53,7 +86,7 @@ type MesheryPatternImportRequestBody struct {
 	File *string `json:"file,omitempty" yaml:"file,omitempty"`
 
 	// FileName The name of the pattern file being imported.
-	FileName *string `json:"file_name,omitempty" yaml:"file_name,omitempty"`
+	FileName *string `json:"fileName,omitempty" yaml:"fileName,omitempty"`
 
 	// Name Provide a name for your design file. This name will help you identify the file more easily. You can also change the name of your design after importing it.
 	Name *string `json:"name,omitempty" yaml:"name,omitempty"`
@@ -73,29 +106,38 @@ type MesheryPatternPage struct {
 
 // MesheryPatternRequestBody defines model for MesheryPatternRequestBody.
 type MesheryPatternRequestBody struct {
-	Name        *string         `json:"name,omitempty" yaml:"name,omitempty"`
-	Path        string          `json:"path,omitempty" yaml:"path,omitempty"`
-	PatternData *MesheryPattern `json:"pattern_data,omitempty" yaml:"pattern_data,omitempty"`
-	Save        *bool           `json:"save,omitempty" yaml:"save,omitempty"`
+	Name        *string               `json:"name,omitempty" yaml:"name,omitempty"`
+	Path        core.Text     `json:"path,omitempty" yaml:"path,omitempty"`
+	PatternData *MesheryPattern       `json:"patternData,omitempty" yaml:"patternData,omitempty"`
+	Save        *bool                 `json:"save,omitempty" yaml:"save,omitempty"`
+	Url         core.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
+}
 
-	// Url endpoint
-	Url string `json:"url,omitempty" yaml:"url,omitempty"`
+// MesheryView defines model for MesheryView.
+type MesheryView map[string]interface{}
+
+// MesheryViewPage defines model for MesheryViewPage.
+type MesheryViewPage struct {
+	Page       *int           `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int           `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int           `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+	Views      *[]MesheryView `json:"views,omitempty" yaml:"views,omitempty"`
 }
 
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type PatternFile struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id uuid.UUID `json:"id" yaml:"id"`
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Name Name of the design; a descriptive, but concise title for the design document.
 	Name string `json:"name" yaml:"name"`
 
-	// SchemaVersion Specifies the version of the schema to which the design conforms.
-	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
+	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
+	SchemaVersion core.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
 
-	// Version Revision of the design as expressed by an auto-incremented, SemVer-compliant version number. May be manually set by a user or third-party system, but will always be required to be of version number higher than the previously defined version number.
-	Version  string                `json:"version" yaml:"version"`
-	Metadata *PatternFile_Metadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
+	Version  core.SemverString `json:"version" yaml:"version"`
+	Metadata *PatternFile_Metadata     `json:"metadata,omitempty" yaml:"metadata,omitempty"`
 
 	// Components A list of one or more component declarations.
 	Components []*component.ComponentDefinition `json:"components" yaml:"components"`
@@ -110,8 +152,123 @@ type PatternFile struct {
 // PatternFile_Metadata defines model for PatternFile.Metadata.
 type PatternFile_Metadata struct {
 	// ResolvedAliases Map of resolved aliases present in the design
-	ResolvedAliases      *map[string]corev1alpha1.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
-	AdditionalProperties map[string]interface{}                 `json:"-" yaml:"-"`
+	ResolvedAliases      *map[string]core.ResolvedAlias `json:"resolvedAliases,omitempty" yaml:"resolvedAliases,omitempty"`
+	AdditionalProperties map[string]interface{}         `json:"-" yaml:"-"`
+}
+
+// ResourceAccessActorsResponse defines model for ResourceAccessActorsResponse.
+type ResourceAccessActorsResponse struct {
+	Users *[]map[string]interface{} `json:"users,omitempty" yaml:"users,omitempty"`
+}
+
+// ResourceAccessMapping defines model for ResourceAccessMapping.
+type ResourceAccessMapping map[string]interface{}
+
+// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type Id = core.Uuid
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
+
+// CatalogContentPayload defines model for catalogContentPayload.
+type CatalogContentPayload map[string]interface{}
+
+// ResourceSharePayload defines model for resourceSharePayload.
+type ResourceSharePayload map[string]interface{}
+
+// ViewUpdatePayload defines model for viewUpdatePayload.
+type ViewUpdatePayload map[string]interface{}
+
+// Getter for additional properties for CatalogContentClass. Returns the specified
+// element and whether it was found
+func (a CatalogContentClass) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for CatalogContentClass
+func (a *CatalogContentClass) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for CatalogContentClass to handle AdditionalProperties
+func (a *CatalogContentClass) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["class"]; found {
+		err = json.Unmarshal(raw, &a.Class)
+		if err != nil {
+			return fmt.Errorf("error reading 'class': %w", err)
+		}
+		delete(object, "class")
+	}
+
+	if raw, found := object["description"]; found {
+		err = json.Unmarshal(raw, &a.Description)
+		if err != nil {
+			return fmt.Errorf("error reading 'description': %w", err)
+		}
+		delete(object, "description")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for CatalogContentClass to handle AdditionalProperties
+func (a CatalogContentClass) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Class != nil {
+		object["class"], err = json.Marshal(a.Class)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'class': %w", err)
+		}
+	}
+
+	if a.Description != nil {
+		object["description"], err = json.Marshal(a.Description)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'description': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
 }
 
 // Getter for additional properties for PatternFile_Metadata. Returns the specified

@@ -1,4 +1,5 @@
 type: object
+additionalProperties: false
 description: Represents an authorization key used for access control.
 required:
   - id
@@ -11,14 +12,14 @@ required:
   - updated_at
 properties:
   id:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: Unique identifier for the key.
     x-go-name: ID
     x-oapi-codegen-extra-tags:
       db: id
     x-order: 1
   owner:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: Owner of the key.
     x-go-name: Owner
     x-oapi-codegen-extra-tags:
@@ -30,32 +31,36 @@ properties:
     x-oapi-codegen-extra-tags:
       db: function
     x-order: 3
+    maxLength: 500
   category:
     type: string
     description: Category for the key.
     x-oapi-codegen-extra-tags:
       db: category
     x-order: 4
+    maxLength: 500
   subcategory:
     type: string
     description: Subcategory for the key.
     x-oapi-codegen-extra-tags:
       db: subcategory
     x-order: 5
+    maxLength: 500
   description:
     type: string
     description: Human readable description of the key.
     x-oapi-codegen-extra-tags:
       db: description
     x-order: 6
+    maxLength: 5000
   created_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+    $ref: ../core/api.yml#/components/schemas/created_at
     x-order: 7
   updated_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+    $ref: ../core/api.yml#/components/schemas/updated_at
     x-order: 8
   deleted_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+    $ref: ../core/api.yml#/components/schemas/nullTime
     x-oapi-codegen-extra-tags:
       db: deleted_at
     x-order: 9

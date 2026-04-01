@@ -32,7 +32,9 @@ export interface paths {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -85,7 +87,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -102,7 +106,7 @@ export interface paths {
                    */
                   format: "JSON" | "CUE";
                   /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-                  model?: {
+                  model: {
                     /**
                      * Format: uuid
                      * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -115,7 +119,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -190,7 +196,10 @@ export interface paths {
                       created_at?: string;
                       /** Format: date-time */
                       updated_at?: string;
-                      /** Format: date-time */
+                      /**
+                       * Format: date-time
+                       * @description SQL null Timestamp to handle null values of time.
+                       */
                       deleted_at?: string;
                       /** @description Associated environments for this connection */
                       environments?: {
@@ -199,6 +208,19 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
+                        /**
+                         * @description Specifies the version of the schema to which the environment conforms.
+                         * @default environments.meshery.io/v1beta1
+                         * @example [
+                         *   "v1",
+                         *   "v1alpha1",
+                         *   "v2beta3",
+                         *   "v1.custom-suffix",
+                         *   "models.meshery.io/v1beta1",
+                         *   "capability.meshery.io/v1alpha1"
+                         * ]
+                         */
+                        schemaVersion: string;
                         /** @description Environment name */
                         name: string;
                         /** @description Environment description */
@@ -213,13 +235,23 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         owner?: string;
-                        /** Format: date-time */
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was created.
+                         */
                         created_at?: string;
+                        /** @description Additional metadata associated with the environment. */
                         metadata?: { [key: string]: unknown };
-                        /** Format: date-time */
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the resource was updated.
+                         */
                         updated_at?: string;
-                        /** Format: date-time */
-                        deleted_at?: string;
+                        /**
+                         * Format: date-time
+                         * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                         */
+                        deleted_at?: string | null;
                       }[];
                       /**
                        * @description Specifies the version of the schema used for the definition.
@@ -228,7 +260,9 @@ export interface paths {
                        *   "v1",
                        *   "v1alpha1",
                        *   "v2beta3",
-                       *   "v1.custom-suffix"
+                       *   "v1.custom-suffix",
+                       *   "models.meshery.io/v1beta1",
+                       *   "capability.meshery.io/v1alpha1"
                        * ]
                        */
                       schemaVersion: string;
@@ -271,6 +305,7 @@ export interface paths {
                         | "Serverless"
                         | "Tools"
                         | "Uncategorized";
+                      /** @description Additional metadata associated with the category. */
                       metadata: { [key: string]: unknown };
                     };
                     /**
@@ -336,7 +371,9 @@ export interface paths {
                          *   "v1",
                          *   "v1alpha1",
                          *   "v2beta3",
-                         *   "v1.custom-suffix"
+                         *   "v1.custom-suffix",
+                         *   "models.meshery.io/v1beta1",
+                         *   "capability.meshery.io/v1alpha1"
                          * ]
                          */
                         schemaVersion: string;
@@ -428,7 +465,9 @@ export interface paths {
                       /** @description Version of the model as defined by the registrant. */
                       version: string;
                     };
+                    /** @description The relationships of the model. */
                     relationships: unknown[];
+                    /** @description The components of the model. */
                     components: unknown[];
                     /**
                      * @description Number of components associated with the model.
@@ -458,17 +497,11 @@ export interface paths {
                      * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
                     id: string;
-                    /**
-                     * @description The unique name for the model within the scope of a registrant.
-                     * @default untitled-model
-                     */
+                    /** @description The unique name for the model within the scope of a registrant. */
                     name: string;
                     /** @description Version of the model definition. */
                     version: string;
-                    /**
-                     * @description Human-readable name for the model.
-                     * @default Untitled Model
-                     */
+                    /** @description Human-readable name for the model. */
                     displayName: string;
                     /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                     model: {
@@ -476,6 +509,7 @@ export interface paths {
                       version: string;
                     };
                     registrant: {
+                      /** @description Kind of the registrant. */
                       kind: string;
                     };
                   };
@@ -483,7 +517,7 @@ export interface paths {
                    * Format: uuid
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
-                  modelId: string;
+                  modelId?: string;
                   /** @description Visualization styles for a component */
                   styles?: ({
                     /** @description Primary color of the component used for UI representation. */
@@ -673,7 +707,7 @@ export interface paths {
                    * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
                    * @default [
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Performance Test",
                    *     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -688,7 +722,7 @@ export interface paths {
                    *     "metadata": null
                    *   },
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Workload Configuration",
                    *     "description": "Configure the workload specific setting of a component",
@@ -703,7 +737,7 @@ export interface paths {
                    *     "metadata": null
                    *   },
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Labels and Annotations Configuration",
                    *     "description": "Configure Labels And Annotations for  the component ",
@@ -718,7 +752,7 @@ export interface paths {
                    *     "metadata": null
                    *   },
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Relationships",
                    *     "description": "View relationships for the component",
@@ -734,7 +768,7 @@ export interface paths {
                    *     "metadata": null
                    *   },
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Json Schema",
                    *     "description": "View Component Definition ",
@@ -750,7 +784,7 @@ export interface paths {
                    *     "metadata": null
                    *   },
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Styling",
                    *     "description": "Configure the visual styles for the component",
@@ -765,7 +799,7 @@ export interface paths {
                    *     "metadata": null
                    *   },
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Change Shape",
                    *     "description": "Change the shape of the component",
@@ -780,7 +814,7 @@ export interface paths {
                    *     "metadata": null
                    *   },
                    *   {
-                   *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                   *     "schemaVersion": "capability.meshery.io/v1beta1",
                    *     "version": "0.7.0",
                    *     "displayName": "Compound Drag And Drop",
                    *     "description": "Drag and Drop a component into a parent component in graph view",
@@ -803,7 +837,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -905,11 +941,13 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
-                  /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                  /** @description Specifies the version of the relationship definition. */
                   version: string;
                   /**
                    * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -938,7 +976,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -1110,17 +1150,11 @@ export interface paths {
                      * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                      */
                     id: string;
-                    /**
-                     * @description The unique name for the model within the scope of a registrant.
-                     * @default untitled-model
-                     */
+                    /** @description The unique name for the model within the scope of a registrant. */
                     name: string;
                     /** @description Version of the model definition. */
                     version: string;
-                    /**
-                     * @description Human-readable name for the model.
-                     * @default Untitled Model
-                     */
+                    /** @description Human-readable name for the model. */
                     displayName: string;
                     /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                     model: {
@@ -1128,6 +1162,7 @@ export interface paths {
                       version: string;
                     };
                     registrant: {
+                      /** @description Kind of the registrant. */
                       kind: string;
                     };
                   };
@@ -1185,17 +1220,11 @@ export interface paths {
                            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                            */
                           id: string;
-                          /**
-                           * @description The unique name for the model within the scope of a registrant.
-                           * @default untitled-model
-                           */
+                          /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
                           /** @description Version of the model definition. */
                           version: string;
-                          /**
-                           * @description Human-readable name for the model.
-                           * @default Untitled Model
-                           */
+                          /** @description Human-readable name for the model. */
                           displayName: string;
                           /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                           model: {
@@ -1203,6 +1232,7 @@ export interface paths {
                             version: string;
                           };
                           registrant: {
+                            /** @description Kind of the registrant. */
                             kind: string;
                           };
                         };
@@ -1278,17 +1308,11 @@ export interface paths {
                            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                            */
                           id: string;
-                          /**
-                           * @description The unique name for the model within the scope of a registrant.
-                           * @default untitled-model
-                           */
+                          /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
                           /** @description Version of the model definition. */
                           version: string;
-                          /**
-                           * @description Human-readable name for the model.
-                           * @default Untitled Model
-                           */
+                          /** @description Human-readable name for the model. */
                           displayName: string;
                           /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                           model: {
@@ -1296,6 +1320,7 @@ export interface paths {
                             version: string;
                           };
                           registrant: {
+                            /** @description Kind of the registrant. */
                             kind: string;
                           };
                         };
@@ -1374,17 +1399,11 @@ export interface paths {
                            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                            */
                           id: string;
-                          /**
-                           * @description The unique name for the model within the scope of a registrant.
-                           * @default untitled-model
-                           */
+                          /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
                           /** @description Version of the model definition. */
                           version: string;
-                          /**
-                           * @description Human-readable name for the model.
-                           * @default Untitled Model
-                           */
+                          /** @description Human-readable name for the model. */
                           displayName: string;
                           /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                           model: {
@@ -1392,6 +1411,7 @@ export interface paths {
                             version: string;
                           };
                           registrant: {
+                            /** @description Kind of the registrant. */
                             kind: string;
                           };
                         };
@@ -1467,17 +1487,11 @@ export interface paths {
                            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                            */
                           id: string;
-                          /**
-                           * @description The unique name for the model within the scope of a registrant.
-                           * @default untitled-model
-                           */
+                          /** @description The unique name for the model within the scope of a registrant. */
                           name: string;
                           /** @description Version of the model definition. */
                           version: string;
-                          /**
-                           * @description Human-readable name for the model.
-                           * @default Untitled Model
-                           */
+                          /** @description Human-readable name for the model. */
                           displayName: string;
                           /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                           model: {
@@ -1485,6 +1499,7 @@ export interface paths {
                             version: string;
                           };
                           registrant: {
+                            /** @description Kind of the registrant. */
                             kind: string;
                           };
                         };
@@ -1531,12 +1546,34 @@ export interface paths {
                * @description ISO 8601 formatted timestamp of when the evaluation was completed.
                */
               timestamp?: string;
-              actions: unknown[];
+              /** @description The actions of the evaluationresponse. */
+              actions: {
+                /**
+                 * @description The op of the action.
+                 * @enum {string}
+                 */
+                op:
+                  | "update_component"
+                  | "update_component_configuration"
+                  | "add_component"
+                  | "delete_component"
+                  | "add_relationship"
+                  | "update_relationship"
+                  | "delete_relationship";
+                /** @description The value of the action. */
+                value: { [key: string]: unknown };
+              }[];
             };
           };
         };
         /** Bad request */
         400: unknown;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
         /** Internal server error */
         500: unknown;
       };
@@ -1561,7 +1598,9 @@ export interface paths {
                *   "v1",
                *   "v1alpha1",
                *   "v2beta3",
-               *   "v1.custom-suffix"
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
                * ]
                */
               schemaVersion: string;
@@ -1614,7 +1653,9 @@ export interface paths {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -1631,7 +1672,7 @@ export interface paths {
                  */
                 format: "JSON" | "CUE";
                 /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-                model?: {
+                model: {
                   /**
                    * Format: uuid
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -1644,7 +1685,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -1719,7 +1762,10 @@ export interface paths {
                     created_at?: string;
                     /** Format: date-time */
                     updated_at?: string;
-                    /** Format: date-time */
+                    /**
+                     * Format: date-time
+                     * @description SQL null Timestamp to handle null values of time.
+                     */
                     deleted_at?: string;
                     /** @description Associated environments for this connection */
                     environments?: {
@@ -1728,6 +1774,19 @@ export interface paths {
                        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                        */
                       id: string;
+                      /**
+                       * @description Specifies the version of the schema to which the environment conforms.
+                       * @default environments.meshery.io/v1beta1
+                       * @example [
+                       *   "v1",
+                       *   "v1alpha1",
+                       *   "v2beta3",
+                       *   "v1.custom-suffix",
+                       *   "models.meshery.io/v1beta1",
+                       *   "capability.meshery.io/v1alpha1"
+                       * ]
+                       */
+                      schemaVersion: string;
                       /** @description Environment name */
                       name: string;
                       /** @description Environment description */
@@ -1742,13 +1801,23 @@ export interface paths {
                        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                        */
                       owner?: string;
-                      /** Format: date-time */
+                      /**
+                       * Format: date-time
+                       * @description Timestamp when the resource was created.
+                       */
                       created_at?: string;
+                      /** @description Additional metadata associated with the environment. */
                       metadata?: { [key: string]: unknown };
-                      /** Format: date-time */
+                      /**
+                       * Format: date-time
+                       * @description Timestamp when the resource was updated.
+                       */
                       updated_at?: string;
-                      /** Format: date-time */
-                      deleted_at?: string;
+                      /**
+                       * Format: date-time
+                       * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                       */
+                      deleted_at?: string | null;
                     }[];
                     /**
                      * @description Specifies the version of the schema used for the definition.
@@ -1757,7 +1826,9 @@ export interface paths {
                      *   "v1",
                      *   "v1alpha1",
                      *   "v2beta3",
-                     *   "v1.custom-suffix"
+                     *   "v1.custom-suffix",
+                     *   "models.meshery.io/v1beta1",
+                     *   "capability.meshery.io/v1alpha1"
                      * ]
                      */
                     schemaVersion: string;
@@ -1800,6 +1871,7 @@ export interface paths {
                       | "Serverless"
                       | "Tools"
                       | "Uncategorized";
+                    /** @description Additional metadata associated with the category. */
                     metadata: { [key: string]: unknown };
                   };
                   /**
@@ -1865,7 +1937,9 @@ export interface paths {
                        *   "v1",
                        *   "v1alpha1",
                        *   "v2beta3",
-                       *   "v1.custom-suffix"
+                       *   "v1.custom-suffix",
+                       *   "models.meshery.io/v1beta1",
+                       *   "capability.meshery.io/v1alpha1"
                        * ]
                        */
                       schemaVersion: string;
@@ -1957,7 +2031,9 @@ export interface paths {
                     /** @description Version of the model as defined by the registrant. */
                     version: string;
                   };
+                  /** @description The relationships of the model. */
                   relationships: unknown[];
+                  /** @description The components of the model. */
                   components: unknown[];
                   /**
                    * @description Number of components associated with the model.
@@ -1987,17 +2063,11 @@ export interface paths {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -2005,6 +2075,7 @@ export interface paths {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -2012,7 +2083,7 @@ export interface paths {
                  * Format: uuid
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
-                modelId: string;
+                modelId?: string;
                 /** @description Visualization styles for a component */
                 styles?: ({
                   /** @description Primary color of the component used for UI representation. */
@@ -2202,7 +2273,7 @@ export interface paths {
                  * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
                  * @default [
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Performance Test",
                  *     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -2217,7 +2288,7 @@ export interface paths {
                  *     "metadata": null
                  *   },
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Workload Configuration",
                  *     "description": "Configure the workload specific setting of a component",
@@ -2232,7 +2303,7 @@ export interface paths {
                  *     "metadata": null
                  *   },
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Labels and Annotations Configuration",
                  *     "description": "Configure Labels And Annotations for  the component ",
@@ -2247,7 +2318,7 @@ export interface paths {
                  *     "metadata": null
                  *   },
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Relationships",
                  *     "description": "View relationships for the component",
@@ -2263,7 +2334,7 @@ export interface paths {
                  *     "metadata": null
                  *   },
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Json Schema",
                  *     "description": "View Component Definition ",
@@ -2279,7 +2350,7 @@ export interface paths {
                  *     "metadata": null
                  *   },
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Styling",
                  *     "description": "Configure the visual styles for the component",
@@ -2294,7 +2365,7 @@ export interface paths {
                  *     "metadata": null
                  *   },
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Change Shape",
                  *     "description": "Change the shape of the component",
@@ -2309,7 +2380,7 @@ export interface paths {
                  *     "metadata": null
                  *   },
                  *   {
-                 *     "schemaVersion": "capability.meshery.io/v1alpha1",
+                 *     "schemaVersion": "capability.meshery.io/v1beta1",
                  *     "version": "0.7.0",
                  *     "displayName": "Compound Drag And Drop",
                  *     "description": "Drag and Drop a component into a parent component in graph view",
@@ -2332,7 +2403,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -2434,11 +2507,13 @@ export interface paths {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
-                /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+                /** @description Specifies the version of the relationship definition. */
                 version: string;
                 /**
                  * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -2467,7 +2542,9 @@ export interface paths {
                    *   "v1",
                    *   "v1alpha1",
                    *   "v2beta3",
-                   *   "v1.custom-suffix"
+                   *   "v1.custom-suffix",
+                   *   "models.meshery.io/v1beta1",
+                   *   "capability.meshery.io/v1alpha1"
                    * ]
                    */
                   schemaVersion: string;
@@ -2639,17 +2716,11 @@ export interface paths {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -2657,6 +2728,7 @@ export interface paths {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -2714,17 +2786,11 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @default untitled-model
-                         */
+                        /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
                         /** @description Version of the model definition. */
                         version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @default Untitled Model
-                         */
+                        /** @description Human-readable name for the model. */
                         displayName: string;
                         /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                         model: {
@@ -2732,6 +2798,7 @@ export interface paths {
                           version: string;
                         };
                         registrant: {
+                          /** @description Kind of the registrant. */
                           kind: string;
                         };
                       };
@@ -2807,17 +2874,11 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @default untitled-model
-                         */
+                        /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
                         /** @description Version of the model definition. */
                         version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @default Untitled Model
-                         */
+                        /** @description Human-readable name for the model. */
                         displayName: string;
                         /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                         model: {
@@ -2825,6 +2886,7 @@ export interface paths {
                           version: string;
                         };
                         registrant: {
+                          /** @description Kind of the registrant. */
                           kind: string;
                         };
                       };
@@ -2903,17 +2965,11 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @default untitled-model
-                         */
+                        /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
                         /** @description Version of the model definition. */
                         version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @default Untitled Model
-                         */
+                        /** @description Human-readable name for the model. */
                         displayName: string;
                         /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                         model: {
@@ -2921,6 +2977,7 @@ export interface paths {
                           version: string;
                         };
                         registrant: {
+                          /** @description Kind of the registrant. */
                           kind: string;
                         };
                       };
@@ -2996,17 +3053,11 @@ export interface paths {
                          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                          */
                         id: string;
-                        /**
-                         * @description The unique name for the model within the scope of a registrant.
-                         * @default untitled-model
-                         */
+                        /** @description The unique name for the model within the scope of a registrant. */
                         name: string;
                         /** @description Version of the model definition. */
                         version: string;
-                        /**
-                         * @description Human-readable name for the model.
-                         * @default Untitled Model
-                         */
+                        /** @description Human-readable name for the model. */
                         displayName: string;
                         /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                         model: {
@@ -3014,6 +3065,7 @@ export interface paths {
                           version: string;
                         };
                         registrant: {
+                          /** @description Kind of the registrant. */
                           kind: string;
                         };
                       };
@@ -3050,6 +3102,7 @@ export interface paths {
                 }[];
               }[];
             };
+            /** @description The options of the evaluationrequest. */
             options?: {
               /** @description If true, only return the diff of changes instead of the complete updated design */
               returnDiffOnly?: boolean;
@@ -3084,7 +3137,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;
@@ -3137,7 +3192,9 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
@@ -3154,7 +3211,7 @@ export interface components {
            */
           format: "JSON" | "CUE";
           /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-          model?: {
+          model: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -3167,7 +3224,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -3242,7 +3301,10 @@ export interface components {
               created_at?: string;
               /** Format: date-time */
               updated_at?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
               /** @description Associated environments for this connection */
               environments?: {
@@ -3251,6 +3313,19 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
+                /**
+                 * @description Specifies the version of the schema to which the environment conforms.
+                 * @default environments.meshery.io/v1beta1
+                 * @example [
+                 *   "v1",
+                 *   "v1alpha1",
+                 *   "v2beta3",
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
+                 * ]
+                 */
+                schemaVersion: string;
                 /** @description Environment name */
                 name: string;
                 /** @description Environment description */
@@ -3265,13 +3340,23 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 owner?: string;
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was created.
+                 */
                 created_at?: string;
+                /** @description Additional metadata associated with the environment. */
                 metadata?: { [key: string]: unknown };
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was updated.
+                 */
                 updated_at?: string;
-                /** Format: date-time */
-                deleted_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                 */
+                deleted_at?: string | null;
               }[];
               /**
                * @description Specifies the version of the schema used for the definition.
@@ -3280,7 +3365,9 @@ export interface components {
                *   "v1",
                *   "v1alpha1",
                *   "v2beta3",
-               *   "v1.custom-suffix"
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
                * ]
                */
               schemaVersion: string;
@@ -3323,6 +3410,7 @@ export interface components {
                 | "Serverless"
                 | "Tools"
                 | "Uncategorized";
+              /** @description Additional metadata associated with the category. */
               metadata: { [key: string]: unknown };
             };
             /**
@@ -3388,7 +3476,9 @@ export interface components {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -3480,7 +3570,9 @@ export interface components {
               /** @description Version of the model as defined by the registrant. */
               version: string;
             };
+            /** @description The relationships of the model. */
             relationships: unknown[];
+            /** @description The components of the model. */
             components: unknown[];
             /**
              * @description Number of components associated with the model.
@@ -3510,17 +3602,11 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
-            /**
-             * @description The unique name for the model within the scope of a registrant.
-             * @default untitled-model
-             */
+            /** @description The unique name for the model within the scope of a registrant. */
             name: string;
             /** @description Version of the model definition. */
             version: string;
-            /**
-             * @description Human-readable name for the model.
-             * @default Untitled Model
-             */
+            /** @description Human-readable name for the model. */
             displayName: string;
             /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
             model: {
@@ -3528,6 +3614,7 @@ export interface components {
               version: string;
             };
             registrant: {
+              /** @description Kind of the registrant. */
               kind: string;
             };
           };
@@ -3535,7 +3622,7 @@ export interface components {
            * Format: uuid
            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
-          modelId: string;
+          modelId?: string;
           /** @description Visualization styles for a component */
           styles?: ({
             /** @description Primary color of the component used for UI representation. */
@@ -3725,7 +3812,7 @@ export interface components {
            * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
            * @default [
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Performance Test",
            *     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -3740,7 +3827,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Workload Configuration",
            *     "description": "Configure the workload specific setting of a component",
@@ -3755,7 +3842,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Labels and Annotations Configuration",
            *     "description": "Configure Labels And Annotations for  the component ",
@@ -3770,7 +3857,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Relationships",
            *     "description": "View relationships for the component",
@@ -3786,7 +3873,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Json Schema",
            *     "description": "View Component Definition ",
@@ -3802,7 +3889,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Styling",
            *     "description": "Configure the visual styles for the component",
@@ -3817,7 +3904,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Change Shape",
            *     "description": "Change the shape of the component",
@@ -3832,7 +3919,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Compound Drag And Drop",
            *     "description": "Drag and Drop a component into a parent component in graph view",
@@ -3855,7 +3942,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -3952,11 +4041,13 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
-          /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+          /** @description Specifies the version of the relationship definition. */
           version: string;
           /**
            * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -3980,7 +4071,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -4152,17 +4245,11 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
-            /**
-             * @description The unique name for the model within the scope of a registrant.
-             * @default untitled-model
-             */
+            /** @description The unique name for the model within the scope of a registrant. */
             name: string;
             /** @description Version of the model definition. */
             version: string;
-            /**
-             * @description Human-readable name for the model.
-             * @default Untitled Model
-             */
+            /** @description Human-readable name for the model. */
             displayName: string;
             /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
             model: {
@@ -4170,6 +4257,7 @@ export interface components {
               version: string;
             };
             registrant: {
+              /** @description Kind of the registrant. */
               kind: string;
             };
           };
@@ -4227,17 +4315,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -4245,6 +4327,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -4320,17 +4403,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -4338,6 +4415,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -4416,17 +4494,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -4434,6 +4506,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -4509,17 +4582,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -4527,6 +4594,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -4563,6 +4631,7 @@ export interface components {
           }[];
         }[];
       };
+      /** @description The options of the evaluationrequest. */
       options?: {
         /** @description If true, only return the diff of changes instead of the complete updated design */
         returnDiffOnly?: boolean;
@@ -4592,7 +4661,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;
@@ -4645,7 +4716,9 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
@@ -4662,7 +4735,7 @@ export interface components {
            */
           format: "JSON" | "CUE";
           /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-          model?: {
+          model: {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -4675,7 +4748,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -4750,7 +4825,10 @@ export interface components {
               created_at?: string;
               /** Format: date-time */
               updated_at?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
               /** @description Associated environments for this connection */
               environments?: {
@@ -4759,6 +4837,19 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 id: string;
+                /**
+                 * @description Specifies the version of the schema to which the environment conforms.
+                 * @default environments.meshery.io/v1beta1
+                 * @example [
+                 *   "v1",
+                 *   "v1alpha1",
+                 *   "v2beta3",
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
+                 * ]
+                 */
+                schemaVersion: string;
                 /** @description Environment name */
                 name: string;
                 /** @description Environment description */
@@ -4773,13 +4864,23 @@ export interface components {
                  * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                  */
                 owner?: string;
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was created.
+                 */
                 created_at?: string;
+                /** @description Additional metadata associated with the environment. */
                 metadata?: { [key: string]: unknown };
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was updated.
+                 */
                 updated_at?: string;
-                /** Format: date-time */
-                deleted_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                 */
+                deleted_at?: string | null;
               }[];
               /**
                * @description Specifies the version of the schema used for the definition.
@@ -4788,7 +4889,9 @@ export interface components {
                *   "v1",
                *   "v1alpha1",
                *   "v2beta3",
-               *   "v1.custom-suffix"
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
                * ]
                */
               schemaVersion: string;
@@ -4831,6 +4934,7 @@ export interface components {
                 | "Serverless"
                 | "Tools"
                 | "Uncategorized";
+              /** @description Additional metadata associated with the category. */
               metadata: { [key: string]: unknown };
             };
             /**
@@ -4896,7 +5000,9 @@ export interface components {
                  *   "v1",
                  *   "v1alpha1",
                  *   "v2beta3",
-                 *   "v1.custom-suffix"
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
                  * ]
                  */
                 schemaVersion: string;
@@ -4988,7 +5094,9 @@ export interface components {
               /** @description Version of the model as defined by the registrant. */
               version: string;
             };
+            /** @description The relationships of the model. */
             relationships: unknown[];
+            /** @description The components of the model. */
             components: unknown[];
             /**
              * @description Number of components associated with the model.
@@ -5018,17 +5126,11 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
-            /**
-             * @description The unique name for the model within the scope of a registrant.
-             * @default untitled-model
-             */
+            /** @description The unique name for the model within the scope of a registrant. */
             name: string;
             /** @description Version of the model definition. */
             version: string;
-            /**
-             * @description Human-readable name for the model.
-             * @default Untitled Model
-             */
+            /** @description Human-readable name for the model. */
             displayName: string;
             /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
             model: {
@@ -5036,6 +5138,7 @@ export interface components {
               version: string;
             };
             registrant: {
+              /** @description Kind of the registrant. */
               kind: string;
             };
           };
@@ -5043,7 +5146,7 @@ export interface components {
            * Format: uuid
            * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
            */
-          modelId: string;
+          modelId?: string;
           /** @description Visualization styles for a component */
           styles?: ({
             /** @description Primary color of the component used for UI representation. */
@@ -5233,7 +5336,7 @@ export interface components {
            * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
            * @default [
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Performance Test",
            *     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -5248,7 +5351,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Workload Configuration",
            *     "description": "Configure the workload specific setting of a component",
@@ -5263,7 +5366,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Labels and Annotations Configuration",
            *     "description": "Configure Labels And Annotations for  the component ",
@@ -5278,7 +5381,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Relationships",
            *     "description": "View relationships for the component",
@@ -5294,7 +5397,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Json Schema",
            *     "description": "View Component Definition ",
@@ -5310,7 +5413,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Styling",
            *     "description": "Configure the visual styles for the component",
@@ -5325,7 +5428,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Change Shape",
            *     "description": "Change the shape of the component",
@@ -5340,7 +5443,7 @@ export interface components {
            *     "metadata": null
            *   },
            *   {
-           *     "schemaVersion": "capability.meshery.io/v1alpha1",
+           *     "schemaVersion": "capability.meshery.io/v1beta1",
            *     "version": "0.7.0",
            *     "displayName": "Compound Drag And Drop",
            *     "description": "Drag and Drop a component into a parent component in graph view",
@@ -5363,7 +5466,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -5460,11 +5565,13 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
-          /** @description A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1. */
+          /** @description Specifies the version of the relationship definition. */
           version: string;
           /**
            * @description Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -5488,7 +5595,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -5660,17 +5769,11 @@ export interface components {
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
              */
             id: string;
-            /**
-             * @description The unique name for the model within the scope of a registrant.
-             * @default untitled-model
-             */
+            /** @description The unique name for the model within the scope of a registrant. */
             name: string;
             /** @description Version of the model definition. */
             version: string;
-            /**
-             * @description Human-readable name for the model.
-             * @default Untitled Model
-             */
+            /** @description Human-readable name for the model. */
             displayName: string;
             /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
             model: {
@@ -5678,6 +5781,7 @@ export interface components {
               version: string;
             };
             registrant: {
+              /** @description Kind of the registrant. */
               kind: string;
             };
           };
@@ -5735,17 +5839,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -5753,6 +5851,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -5828,17 +5927,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -5846,6 +5939,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -5924,17 +6018,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -5942,6 +6030,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -6017,17 +6106,11 @@ export interface components {
                    * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                    */
                   id: string;
-                  /**
-                   * @description The unique name for the model within the scope of a registrant.
-                   * @default untitled-model
-                   */
+                  /** @description The unique name for the model within the scope of a registrant. */
                   name: string;
                   /** @description Version of the model definition. */
                   version: string;
-                  /**
-                   * @description Human-readable name for the model.
-                   * @default Untitled Model
-                   */
+                  /** @description Human-readable name for the model. */
                   displayName: string;
                   /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
                   model: {
@@ -6035,6 +6118,7 @@ export interface components {
                     version: string;
                   };
                   registrant: {
+                    /** @description Kind of the registrant. */
                     kind: string;
                   };
                 };
@@ -6081,10 +6165,29 @@ export interface components {
        * @description ISO 8601 formatted timestamp of when the evaluation was completed.
        */
       timestamp?: string;
-      actions: unknown[];
+      /** @description The actions of the evaluationresponse. */
+      actions: {
+        /**
+         * @description The op of the action.
+         * @enum {string}
+         */
+        op:
+          | "update_component"
+          | "update_component_configuration"
+          | "add_component"
+          | "delete_component"
+          | "add_relationship"
+          | "update_relationship"
+          | "delete_relationship";
+        /** @description The value of the action. */
+        value: { [key: string]: unknown };
+      }[];
     };
     Action: {
-      /** @enum {string} */
+      /**
+       * @description The op of the action.
+       * @enum {string}
+       */
       op:
         | "update_component"
         | "update_component_configuration"
@@ -6093,16 +6196,28 @@ export interface components {
         | "add_relationship"
         | "update_relationship"
         | "delete_relationship";
+      /** @description The value of the action. */
       value: { [key: string]: unknown };
     };
     UpdateComponentOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the updatecomponentop.
+       * @enum {string}
+       */
       op?: "update_component";
+      /** @description The value of the updatecomponentop. */
       value?: {
+        /**
+         * Format: uuid
+         * @description Identifier of the component to update.
+         */
         id: string;
+        /** @description Path to the field being updated on the component. */
         path: string[];
+        /** @description New value to write at the specified component path. */
         value: unknown;
         /**
+         * @description Strategy to use when applying the component update value.
          * @default replace
          * @enum {string}
          */
@@ -6110,13 +6225,24 @@ export interface components {
       };
     };
     UpdateComponentConfigurationOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the updatecomponentconfigurationop.
+       * @enum {string}
+       */
       op?: "update_component_configuration";
+      /** @description The value of the updatecomponentconfigurationop. */
       value?: {
+        /**
+         * Format: uuid
+         * @description Identifier of the component whose configuration will be updated.
+         */
         id: string;
+        /** @description Path to the configuration field being updated. */
         path: string[];
+        /** @description New configuration value to write at the specified path. */
         value: unknown;
         /**
+         * @description Strategy to use when applying the configuration update value.
          * @default replace
          * @enum {string}
          */
@@ -6124,44 +6250,86 @@ export interface components {
       };
     };
     DeleteComponentOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the deletecomponentop.
+       * @enum {string}
+       */
       op?: "delete_component";
+      /** @description The value of the deletecomponentop. */
       value?: {
+        /**
+         * Format: uuid
+         * @description Identifier of the component to delete.
+         */
         id: string;
       };
     };
     AddComponentOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the addcomponentop.
+       * @enum {string}
+       */
       op?: "add_component";
+      /** @description The value of the addcomponentop. */
       value?: {
         item: { [key: string]: unknown };
       };
     };
     UpdateRelationshipOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the updaterelationshipop.
+       * @enum {string}
+       */
       op?: "update_relationship";
+      /** @description The value of the updaterelationshipop. */
       value?: {
+        /**
+         * Format: uuid
+         * @description Identifier of the relationship to update.
+         */
         id: string;
+        /** @description Path to the field being updated on the relationship. */
         path: string[];
+        /** @description New value to write at the specified relationship path. */
         value: unknown;
       };
     };
     DeleteRelationshipOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the deleterelationshipop.
+       * @enum {string}
+       */
       op?: "delete_relationship";
+      /** @description The value of the deleterelationshipop. */
       value?: {
+        /**
+         * Format: uuid
+         * @description Identifier of the relationship to delete.
+         */
         id: string;
       };
     };
     AddRelationshipOp: {
-      /** @enum {string} */
+      /**
+       * @description The op of the addrelationshipop.
+       * @enum {string}
+       */
       op?: "add_relationship";
+      /** @description The value of the addrelationshipop. */
       value?: {
         item: { [key: string]: unknown };
       };
     };
     ComponentDeclaration: { [key: string]: unknown };
     RelationshipDeclaration: { [key: string]: unknown };
+  };
+  responses: {
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
   };
 }
 

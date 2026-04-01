@@ -1,0 +1,655 @@
+openapi: 3.0.0
+info:
+  title: Connection API
+  description: API for managing Meshery connections - managed and unmanaged resources tracked by Meshery.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+security:
+  - jwt: []
+
+paths:
+  /api/integrations/connections:
+    get:
+      tags:
+        - Connections
+      operationId: getConnections
+      summary: Get all connections
+      description: Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - name: filter
+          in: query
+          description: Filter connections (general filter string)
+          required: false
+          schema:
+            type: string
+        - name: kind
+          in: query
+          description: Filter by connection kind (e.g., kubernetes, prometheus, grafana)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: status
+          in: query
+          description: Filter by connection status
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ConnectionStatusValue"
+        - name: type
+          in: query
+          description: Filter by connection type
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: name
+          in: query
+          description: Filter by connection name (partial match supported)
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paginated list of connections with summary information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConnectionPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    post:
+      tags:
+        - Connections
+      operationId: registerConnection
+      summary: Register a new connection
+      description: Register a new connection with credentials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionPayload"
+      responses:
+        "201":
+          description: Connection registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/{connectionId}:
+    get:
+      tags:
+        - Connections
+      operationId: getConnectionById
+      summary: Get connection by ID
+      description: Returns a specific connection by its ID
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Connection details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "404":
+          $ref: "#/components/responses/404"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    put:
+      tags:
+        - Connections
+      operationId: updateConnection
+      summary: Update a connection
+      description: Update an existing connection
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectionPayload"
+      responses:
+        "200":
+          description: Connection updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - Connections
+      operationId: deleteConnection
+      summary: Delete a connection
+      description: Delete a specific connection
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "204":
+          description: Connection deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/meshery/{mesheryServerId}:
+    delete:
+      tags:
+        - Connections
+      operationId: deleteMesheryConnection
+      summary: Delete Meshery instance connection
+      description: Delete a Meshery server connection by server ID
+      parameters:
+        - name: mesheryServerId
+          in: path
+          required: true
+          description: Meshery server ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Meshery connection deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/integrations/connections/kubernetes/{connectionId}/context:
+    get:
+      tags:
+        - Connections
+      operationId: getKubernetesContext
+      summary: Get Kubernetes context
+      description: Get Kubernetes context for a specific connection
+      parameters:
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "200":
+          description: Kubernetes context
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}/connections/{connectionId}:
+    post:
+      tags:
+        - Connections
+      operationId: addConnectionToEnvironment
+      summary: Add connection to environment
+      description: Associate a connection with an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "201":
+          description: Connection added to environment
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      tags:
+        - Connections
+      operationId: removeConnectionFromEnvironment
+      summary: Remove connection from environment
+      description: Disassociate a connection from an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/connectionId"
+      responses:
+        "204":
+          description: Connection removed from environment
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    connectionId:
+      name: connectionId
+      in: path
+      required: true
+      description: Connection ID
+      schema:
+        type: string
+        format: uuid
+
+    connectionKind:
+      name: connectionKind
+      in: path
+      required: true
+      description: Connection kind (meshery, kubernetes, prometheus, grafana, etc.)
+      schema:
+        type: string
+
+    environmentId:
+      name: environmentId
+      in: path
+      required: true
+      description: Environment ID
+      schema:
+        type: string
+        format: uuid
+
+    page:
+      name: page
+      in: query
+      description: Page number
+      required: false
+      schema:
+        type: integer
+        default: 0
+
+    pagesize:
+      name: pagesize
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        default: 10
+
+    search:
+      name: search
+      in: query
+      description: Search term
+      required: false
+      schema:
+        type: string
+
+    order:
+      name: order
+      in: query
+      description: Sort order
+      required: false
+      schema:
+        type: string
+
+  schemas:
+    Connection:
+      $ref: "./connection.yaml"
+
+    ConnectionPage:
+      description: Represents a page of connections with meta information about connections count
+      additionalProperties: false
+      type: object
+      required:
+        - connections
+        - total_count
+        - page
+        - page_size
+      properties:
+        connections:
+          type: array
+          description: List of connections on this page
+          x-go-type: "[]*Connection"
+          items:
+            $ref: "./connection.yaml"
+          x-order: 1
+        total_count:
+          type: integer
+          description: Total number of connections on all pages
+          x-order: 2
+          minimum: 0
+        page:
+          type: integer
+          description: Current page number
+          x-order: 3
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of elements per page
+          x-order: 4
+          minimum: 1
+        statusSummary:
+          type: object
+          description: Aggregate count of connections grouped by status
+          additionalProperties:
+            type: integer
+          x-go-type: map[ConnectionStatusValue]int
+          x-oapi-codegen-extra-tags:
+            json: "statusSummary,omitempty"
+          x-order: 5
+
+    ConnectionStatusValue:
+      type: string
+      description: Connection Status Value
+      x-go-name: ConnectionStatusValue
+      enum:
+        - discovered
+        - registered
+        - connected
+        - ignored
+        - maintenance
+        - disconnected
+        - deleted
+        - not found
+
+    ConnectionPayload:
+      type: object
+      description: Payload for creating or updating a connection
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Connection ID
+          x-go-name: ConnectionID
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+        name:
+          type: string
+          description: Connection name
+          x-oapi-codegen-extra-tags:
+            json: "name"
+          minLength: 1
+          maxLength: 255
+        kind:
+          type: string
+          description: Connection kind
+          x-oapi-codegen-extra-tags:
+            json: "kind"
+          maxLength: 255
+        type:
+          type: string
+          description: Connection type
+          x-oapi-codegen-extra-tags:
+            json: "type"
+          maxLength: 255
+        sub_type:
+          type: string
+          description: Connection sub-type
+          x-oapi-codegen-extra-tags:
+            db: "sub_type"
+            json: "sub_type"
+          maxLength: 255
+        credentialSecret:
+          type: object
+          description: Credential secret data
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "credentialSecret"
+        metadata:
+          type: object
+          description: Connection metadata
+          x-go-type: core.Map
+          x-go-type-import:
+            path: github.com/meshery/schemas/models/core
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata"
+        status:
+          type: string
+          description: Connection status
+          x-oapi-codegen-extra-tags:
+            json: "status"
+          maxLength: 255
+        credential_id:
+          type: string
+          format: uuid
+          description: Associated credential ID
+          x-go-name: CredentialID
+          x-oapi-codegen-extra-tags:
+            json: "credential_id,omitempty"
+      required:
+        - name
+        - kind
+        - type
+        - sub_type
+        - status
+
+    ConnectionStatusInfo:
+      type: object
+      description: Status count information for connections
+      properties:
+        status:
+          type: string
+          description: Status value
+          x-oapi-codegen-extra-tags:
+            json: "status"
+            db: "status"
+          maxLength: 255
+        count:
+          type: integer
+          description: Number of connections with this status
+          x-oapi-codegen-extra-tags:
+            json: "count"
+            db: "count"
+          minimum: 0
+      required:
+        - status
+        - count
+
+    ConnectionsStatusPage:
+      type: object
+      description: Paginated list of connection status counts
+      properties:
+        total_count:
+          type: integer
+          description: Total number of status entries
+          x-oapi-codegen-extra-tags:
+            json: "total_count"
+          minimum: 0
+        page:
+          type: integer
+          description: Current page number
+          x-oapi-codegen-extra-tags:
+            json: "page"
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page
+          x-oapi-codegen-extra-tags:
+            json: "page_size"
+          minimum: 1
+        connectionsStatus:
+          type: array
+          description: List of status counts
+          items:
+            $ref: "#/components/schemas/ConnectionStatusInfo"
+          x-oapi-codegen-extra-tags:
+            json: "connectionsStatus"
+      required:
+        - total_count
+        - page
+        - page_size
+        - connectionsStatus
+
+    MesheryInstance:
+      type: object
+      description: Meshery server instance information
+      properties:
+        id:
+          type: string
+          description: Instance ID
+          x-oapi-codegen-extra-tags:
+            json: "id,omitempty"
+            db: "id"
+          maxLength: 500
+          format: uuid
+        name:
+          type: string
+          description: Instance name
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
+            db: "name"
+          minLength: 1
+          maxLength: 255
+        server_id:
+          type: string
+          description: Server ID
+          x-go-name: ServerID
+          x-oapi-codegen-extra-tags:
+            json: "server_id,omitempty"
+            db: "server_id"
+          maxLength: 500
+          format: uuid
+        server_version:
+          type: string
+          description: Meshery server version
+          x-oapi-codegen-extra-tags:
+            json: "server_version,omitempty"
+            db: "server_version"
+          maxLength: 500
+        server_location:
+          type: string
+          description: Server location URL
+          x-oapi-codegen-extra-tags:
+            json: "server_location,omitempty"
+            db: "server_location"
+          maxLength: 500
+        server_build_sha:
+          type: string
+          description: Server build SHA
+          x-go-name: ServerBuildSHA
+          x-oapi-codegen-extra-tags:
+            json: "server_build_sha,omitempty"
+            db: "server_build_sha"
+          maxLength: 500
+        created_at:
+          type: string
+          description: Creation timestamp
+          x-oapi-codegen-extra-tags:
+            json: "created_at,omitempty"
+            db: "created_at"
+          format: date-time
+        updated_at:
+          type: string
+          description: Last update timestamp
+          x-oapi-codegen-extra-tags:
+            json: "updated_at,omitempty"
+            db: "updated_at"
+          format: date-time
+        deleted_at:
+          type: string
+          description: Deletion timestamp
+          x-oapi-codegen-extra-tags:
+            json: "deleted_at,omitempty"
+            db: "deleted_at"
+          format: date-time
+
+    MesheryInstancePage:
+      type: object
+      description: Paginated list of Meshery instances
+      properties:
+        mesheryInstances:
+          type: array
+          description: List of Meshery instances
+          items:
+            $ref: "#/components/schemas/MesheryInstance"
+          x-oapi-codegen-extra-tags:
+            json: "mesheryInstances"
+        page:
+          type: integer
+          description: Current page number
+          x-oapi-codegen-extra-tags:
+            json: "page"
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page
+          x-oapi-codegen-extra-tags:
+            json: "page_size"
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of instances
+          x-oapi-codegen-extra-tags:
+            json: "total_count"
+          minimum: 0
+      required:
+        - mesheryInstances
+        - page
+        - page_size
+        - total_count
+
+    MesheryCompatibility:
+      type: object
+      description: Meshery version compatibility check
+      properties:
+        mesheryVersion:
+          type: string
+          description: Meshery version string
+          x-oapi-codegen-extra-tags:
+            json: "mesheryVersion,omitempty"
+          maxLength: 500
+        checkCompatibility:
+          type: boolean
+          description: Whether to check compatibility
+          x-oapi-codegen-extra-tags:
+            json: "checkCompatibility,omitempty"

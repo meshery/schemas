@@ -114,9 +114,9 @@ async function generateTypescriptTypes(pkg) {
       ` * This file was automatically generated from OpenAPI schema.\n` +
       ` * Do not manually modify this file.\n` +
       ` */\n\n` +
-      `const ${pascalName}Schema = ` +
+      `const ${pascalName}Schema: Record<string, unknown> = ` +
       jsonContent +
-      ` as const;\n\nexport default ${pascalName}Schema;\n`;
+      `;\n\nexport default ${pascalName}Schema;\n`;
     fs.writeFileSync(jsonOutputPath, tsContent, "utf-8");
     logger.success(`Generated: ${jsonOutputPath}`);
   } catch (err) {

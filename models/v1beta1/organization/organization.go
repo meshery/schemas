@@ -4,11 +4,8 @@
 package organization
 
 import (
-	"time"
-
-	"database/sql"
-
-	"github.com/gofrs/uuid"
+	core "github.com/meshery/schemas/models/core"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Defines values for OrgTeamActionPayloadAction.
@@ -16,16 +13,32 @@ const (
 	Delete OrgTeamActionPayloadAction = "delete"
 )
 
+// AvailableOrganization defines model for AvailableOrganization.
+type AvailableOrganization struct {
+	Country     Text         `json:"country,omitempty" yaml:"country,omitempty"`
+	CreatedAt   Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt   NullableTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description Text         `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID        *UUID        `json:"id,omitempty" yaml:"id,omitempty"`
+	Metadata  *OrgMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name      Text         `json:"name,omitempty" yaml:"name,omitempty"`
+	Owner     Text         `json:"owner,omitempty" yaml:"owner,omitempty"`
+	Region    Text         `json:"region,omitempty" yaml:"region,omitempty"`
+	UpdatedAt Time         `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+}
+
 // AvailableTeam defines model for AvailableTeam.
 type AvailableTeam struct {
-	ID          uuid.UUID         `db:"id" json:"id" yaml:"id"`
-	CreatedAt   time.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt   sql.NullTime      `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Description string            `json:"description,omitempty" yaml:"description,omitempty"`
-	Metadata    map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Name        string            `json:"name,omitempty" yaml:"name,omitempty"`
-	Owner       string            `json:"owner,omitempty" yaml:"owner,omitempty"`
-	UpdatedAt   time.Time         `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	CreatedAt   Time                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt   NullableTime           `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	Description Text                   `json:"description,omitempty" yaml:"description,omitempty"`
+	ID          core.GeneralId `db:"id" json:"id" yaml:"id"`
+	Metadata    MapObject              `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Name        Text                   `json:"name,omitempty" yaml:"name,omitempty"`
+	Owner       Text                   `json:"owner,omitempty" yaml:"owner,omitempty"`
+	UpdatedAt   Time                   `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // DashboardPrefs Preferences specific to dashboard behavior
@@ -33,30 +46,33 @@ type DashboardPrefs map[string]interface{}
 
 // Location defines model for Location.
 type Location struct {
+	// Location The location of the location.
 	Location string `json:"location" yaml:"location"`
-	Svg      string `json:"svg" yaml:"svg"`
+
+	// Svg The svg of the location.
+	Svg string `json:"svg" yaml:"svg"`
 }
 
 // Logo defines model for Logo.
 type Logo struct {
-	DarkDesktopView Location `json:"dark_desktop_view" yaml:"dark_desktop_view"`
-	DarkMobileView  Location `json:"dark_mobile_view" yaml:"dark_mobile_view"`
-	DesktopView     Location `json:"desktop_view" yaml:"desktop_view"`
-	MobileView      Location `json:"mobile_view" yaml:"mobile_view"`
+	DarkDesktopView Location `json:"darkDesktopView" yaml:"darkDesktopView"`
+	DarkMobileView  Location `json:"darkMobileView" yaml:"darkMobileView"`
+	DesktopView     Location `json:"desktopView" yaml:"desktopView"`
+	MobileView      Location `json:"mobileView" yaml:"mobileView"`
 }
 
 // MapObject defines model for MapObject.
-type MapObject map[string]string
+type MapObject = core.MapObject
 
 // NullableTime defines model for NullableTime.
-type NullableTime = sql.NullTime
+type NullableTime = core.SqlNullTime
 
 // OrgMetadata defines model for OrgMetadata.
 type OrgMetadata struct {
 	Preferences Preferences `json:"preferences" yaml:"preferences"`
 }
 
-// OrgTeamActionPayload Optional action payload for POST on /api/identity/orgs/{orgID}/teams/{teamId}.
+// OrgTeamActionPayload Optional action payload for POST on /api/identity/orgs/{orgId}/teams/{teamId}.
 type OrgTeamActionPayload struct {
 	// Action Internal action to perform on the team resource.
 	Action *OrgTeamActionPayloadAction `json:"action,omitempty" yaml:"action,omitempty"`
@@ -67,21 +83,72 @@ type OrgTeamActionPayloadAction string
 
 // Organization defines model for Organization.
 type Organization struct {
-	Country     string       `db:"country" json:"country" yaml:"country"`
-	CreatedAt   time.Time    `db:"created_at" json:"created_at" yaml:"created_at"`
-	DeletedAt   sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Description string       `db:"description" json:"description" yaml:"description"`
-	Domain      *string      `db:"domain" json:"domain" yaml:"domain"`
+	// Country The country of the organization.
+	Country   string       `db:"country" json:"country" yaml:"country"`
+	CreatedAt Time         `db:"created_at" json:"created_at" yaml:"created_at"`
+	DeletedAt NullableTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// Description Description of the organization.
+	Description string `db:"description" json:"description" yaml:"description"`
+
+	// Domain The domain of the organization.
+	Domain *string `db:"domain" json:"domain" yaml:"domain"`
 
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id       uuid.UUID   `db:"id" json:"id" yaml:"id"`
+	ID       UUID        `db:"id" json:"id" yaml:"id"`
 	Metadata OrgMetadata `db:"metadata" json:"metadata" yaml:"metadata"`
-	Name     string      `db:"name" json:"name" yaml:"name"`
+
+	// Name Name of the organization.
+	Name string `db:"name" json:"name" yaml:"name"`
 
 	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Owner     uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
-	Region    string    `db:"region" json:"region" yaml:"region"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	Owner UUID `db:"owner" json:"owner" yaml:"owner"`
+
+	// Region The region of the organization.
+	Region    string `db:"region" json:"region" yaml:"region"`
+	UpdatedAt Time   `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+}
+
+// OrganizationPage Single-organization wrapper used by current meshery-cloud organization handlers.
+type OrganizationPage struct {
+	// Organizations The organizations of the organizationpage.
+	Organizations *[]AvailableOrganization `json:"organizations,omitempty" yaml:"organizations,omitempty"`
+
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+
+	// TotalCount Total number of items available.
+	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// OrganizationPayload defines model for OrganizationPayload.
+type OrganizationPayload struct {
+	Country     Text `json:"country,omitempty" yaml:"country,omitempty"`
+	Description Text `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Text `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// NotifyOrgUpdate The notify org update of the organization.
+	NotifyOrgUpdate *bool        `json:"notifyOrgUpdate,omitempty" yaml:"notifyOrgUpdate,omitempty"`
+	Preferences     *Preferences `json:"preferences,omitempty" yaml:"preferences,omitempty"`
+	Region          Text         `json:"region,omitempty" yaml:"region,omitempty"`
+}
+
+// OrganizationsPage defines model for OrganizationsPage.
+type OrganizationsPage struct {
+	// Organizations The organizations of the organizationspage.
+	Organizations *[]AvailableOrganization `json:"organizations,omitempty" yaml:"organizations,omitempty"`
+
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+
+	// TotalCount Total number of items available.
+	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // Preferences defines model for Preferences.
@@ -93,64 +160,80 @@ type Preferences struct {
 
 // TeamsOrganizationsMapping defines model for TeamsOrganizationsMapping.
 type TeamsOrganizationsMapping struct {
-	ID        uuid.UUID    `db:"id" json:"id" yaml:"id"`
-	CreatedAt time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-	DeletedAt sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	OrgId     uuid.UUID    `db:"org_id" json:"org_id" yaml:"org_id"`
-	TeamId    uuid.UUID    `db:"team_id" json:"team_id" yaml:"team_id"`
-	UpdatedAt time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	CreatedAt Time                        `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	DeletedAt NullableTime                `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	ID        core.GeneralId      `db:"id" json:"id" yaml:"id"`
+	OrgId     core.OrganizationId `db:"org_id" json:"org_id" yaml:"org_id"`
+	TeamId    core.TeamId         `db:"team_id" json:"team_id" yaml:"team_id"`
+	UpdatedAt Time                        `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }
 
 // TeamsOrganizationsMappingPage defines model for TeamsOrganizationsMappingPage.
 type TeamsOrganizationsMappingPage struct {
-	Page                      *int `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize                  *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TeamsOrganizationsMapping *[]struct {
-		ID        uuid.UUID    `db:"id" json:"id" yaml:"id"`
-		CreatedAt time.Time    `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-		DeletedAt sql.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-		OrgId     uuid.UUID    `db:"org_id" json:"org_id" yaml:"org_id"`
-		TeamId    uuid.UUID    `db:"team_id" json:"team_id" yaml:"team_id"`
-		UpdatedAt time.Time    `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	} `json:"teams_organizations_mapping,omitempty" yaml:"teams_organizations_mapping,omitempty"`
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
+	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+
+	// TeamsOrganizationsMapping The teams organizations mapping of the teamsorganizationsmappingpage.
+	TeamsOrganizationsMapping *[]TeamsOrganizationsMapping `json:"teamsOrganizationsMapping,omitempty" yaml:"teamsOrganizationsMapping,omitempty"`
+
+	// TotalCount Total number of items available.
 	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // TeamsPage defines model for TeamsPage.
 type TeamsPage struct {
-	Page     *int `json:"page,omitempty" yaml:"page,omitempty"`
+	// Page Current page number of the result set.
+	Page *int `json:"page,omitempty" yaml:"page,omitempty"`
+
+	// PageSize Number of items per page.
 	PageSize *int `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	Teams    *[]struct {
-		ID          uuid.UUID         `db:"id" json:"id" yaml:"id"`
-		CreatedAt   time.Time         `json:"created_at,omitempty" yaml:"created_at,omitempty"`
-		DeletedAt   sql.NullTime      `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-		Description string            `json:"description,omitempty" yaml:"description,omitempty"`
-		Metadata    map[string]string `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-		Name        string            `json:"name,omitempty" yaml:"name,omitempty"`
-		Owner       string            `json:"owner,omitempty" yaml:"owner,omitempty"`
-		UpdatedAt   time.Time         `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	} `json:"teams,omitempty" yaml:"teams,omitempty"`
+
+	// Teams The teams of the teamspage.
+	Teams *[]AvailableTeam `json:"teams,omitempty" yaml:"teams,omitempty"`
+
+	// TotalCount Total number of items available.
 	TotalCount *int `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
 // Text defines model for Text.
-type Text = string
+type Text = core.Text
 
 // Theme defines model for Theme.
 type Theme struct {
-	Id   string                  `json:"id" yaml:"id"`
-	Logo Logo                    `json:"logo" yaml:"logo"`
+	// Id Theme ID.
+	ID   openapi_types.UUID `json:"id" yaml:"id"`
+	Logo Logo               `json:"logo" yaml:"logo"`
+
+	// Vars The vars of the theme.
 	Vars *map[string]interface{} `json:"vars,omitempty" yaml:"vars,omitempty"`
 }
 
 // Time defines model for Time.
-type Time = time.Time
+type Time = core.Time
 
 // UUID A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type UUID = uuid.UUID
+type UUID = core.Uuid
 
-// OrgID defines model for orgID.
-type OrgID = uuid.UUID
+// All defines model for all.
+type All = bool
+
+// Order defines model for order.
+type Order = string
+
+// OrgId defines model for orgId.
+type OrgId = core.OrganizationId
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
 
 // TeamId defines model for teamId.
-type TeamId = uuid.UUID
+type TeamId = core.TeamId

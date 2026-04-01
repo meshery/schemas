@@ -9,297 +9,19 @@ export interface paths {
     get: operations["getSubscriptions"];
   };
   "/api/entitlement/subscriptions/{subscriptionId}/cancel": {
-    post: {
-      parameters: {
-        path: {
-          /** Subscription ID */
-          subscriptionId: string;
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": {
-              page: number;
-              page_size: number;
-              total_count: number;
-              subscriptions: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                ID: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                org_id: string;
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                plan_id: string;
-                plan?: {
-                  /**
-                   * Format: uuid
-                   * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                   */
-                  id: string;
-                  /**
-                   * @description Name of the plan
-                   * @enum {string}
-                   */
-                  name:
-                    | "Free"
-                    | "Team Designer"
-                    | "Team Operator"
-                    | "Enterprise";
-                  /** @enum {string} */
-                  cadence: "monthly" | "yearly";
-                  /** @enum {string} */
-                  unit: "user" | "free";
-                  /** @description Minimum number of units required for the plan */
-                  minimum_units: number;
-                  /** @description Price per unit of the plan */
-                  price_per_unit: number;
-                  /** @enum {string} */
-                  currency: "usd";
-                } & {
-                  price_id: unknown;
-                };
-                quantity: number;
-                /** Format: date-time */
-                start_date?: string;
-                /** Format: date-time */
-                end_date?: string;
-                /**
-                 * @description Possible statuses of a Stripe subscription.
-                 * @enum {string}
-                 */
-                status:
-                  | "incomplete"
-                  | "incomplete_expired"
-                  | "trialing"
-                  | "active"
-                  | "past_due"
-                  | "canceled"
-                  | "unpaid";
-                /** Format: date-time */
-                created_at?: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** Format: date-time */
-                deleted_at?: string;
-                /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-                billing_id: string;
-              }[];
-            };
-          };
-        };
-        /** Invalid request */
-        400: unknown;
-        /** Internal server error */
-        500: unknown;
-      };
-    };
+    post: operations["cancelSubscription"];
   };
   "/api/entitlement/subscriptions/create": {
-    post: {
-      responses: {
-        /** A new subscription has been created */
-        200: {
-          content: {
-            "application/json": {
-              subscription_id?: string;
-              clientSecret?: string;
-            };
-          };
-        };
-        /** Invalid request */
-        400: unknown;
-        /** Internal server error */
-        500: unknown;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            /** @description Organization ID */
-            org_id?: string;
-            /** @description Price ID from the payment processor */
-            plan_id?: string;
-            /** @description Coupon ID to apply */
-            coupon_id?: string;
-            /** @description Number of users in the organization */
-            user_count?: number;
-            /**
-             * Format: email
-             * @description Email of the customer
-             */
-            email?: string;
-            /**
-             * @description Supported payment processors
-             * @enum {string}
-             */
-            payment_processor?: "stripe" | "paypal" | "braintree";
-          };
-        };
-      };
-    };
+    post: operations["createSubscription"];
   };
   "/api/entitlement/subscriptions/{subscriptionId}/upgrade": {
-    post: {
-      parameters: {
-        path: {
-          /** Subscription ID */
-          subscriptionId: string;
-        };
-      };
-      responses: {
-        200: {
-          content: {
-            "application/json": {
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              ID: string;
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              org_id: string;
-              /**
-               * Format: uuid
-               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-               */
-              plan_id: string;
-              plan?: {
-                /**
-                 * Format: uuid
-                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-                 */
-                id: string;
-                /**
-                 * @description Name of the plan
-                 * @enum {string}
-                 */
-                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
-                /** @enum {string} */
-                cadence: "monthly" | "yearly";
-                /** @enum {string} */
-                unit: "user" | "free";
-                /** @description Minimum number of units required for the plan */
-                minimum_units: number;
-                /** @description Price per unit of the plan */
-                price_per_unit: number;
-                /** @enum {string} */
-                currency: "usd";
-              } & {
-                price_id: unknown;
-              };
-              quantity: number;
-              /** Format: date-time */
-              start_date?: string;
-              /** Format: date-time */
-              end_date?: string;
-              /**
-               * @description Possible statuses of a Stripe subscription.
-               * @enum {string}
-               */
-              status:
-                | "incomplete"
-                | "incomplete_expired"
-                | "trialing"
-                | "active"
-                | "past_due"
-                | "canceled"
-                | "unpaid";
-              /** Format: date-time */
-              created_at?: string;
-              /** Format: date-time */
-              updated_at?: string;
-              /** Format: date-time */
-              deleted_at?: string;
-              /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
-              billing_id: string;
-            };
-          };
-        };
-        /** Invalid request */
-        400: unknown;
-        /** Internal server error */
-        500: unknown;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Old Plan id that is being changed
-             */
-            old_plan_id?: string;
-            /**
-             * Format: uuid
-             * @description New Plan id that is being changed to
-             */
-            new_plan_id?: string;
-          };
-        };
-      };
-    };
+    post: operations["upgradeSubscription"];
   };
   "/api/entitlement/subscriptions/{subscriptionId}/upgradePreview": {
-    post: {
-      parameters: {
-        path: {
-          /** Subscription ID */
-          subscriptionId: string;
-        };
-      };
-      responses: {
-        /** Preview of the upgraded subscription invoice */
-        200: {
-          content: {
-            "application/json": { [key: string]: unknown };
-          };
-        };
-        /** Invalid request */
-        400: unknown;
-        /** Internal server error */
-        500: unknown;
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            /**
-             * Format: uuid
-             * @description Old Plan id that is being changed
-             */
-            old_plan_id?: string;
-            /**
-             * Format: uuid
-             * @description New Plan id that is being changed to
-             */
-            new_plan_id?: string;
-          };
-        };
-      };
-    };
+    post: operations["previewSubscriptionUpgrade"];
   };
   "/api/entitlement/subscriptions/webhooks": {
-    post: {
-      responses: {
-        /** Webhook processed successfully */
-        200: unknown;
-        /** Invalid webhook event */
-        400: unknown;
-      };
-      requestBody: {
-        content: {
-          "application/json": { [key: string]: unknown };
-        };
-      };
-    };
+    post: operations["handleSubscriptionWebhook"];
   };
 }
 
@@ -312,13 +34,13 @@ export interface components {
     PaymentProcessor: "stripe" | "paypal" | "braintree";
     CreateSubscriptionRequest: {
       /** @description Organization ID */
-      org_id?: string;
+      orgId?: string;
       /** @description Price ID from the payment processor */
-      plan_id?: string;
+      planId?: string;
       /** @description Coupon ID to apply */
-      coupon_id?: string;
+      couponId?: string;
       /** @description Number of users in the organization */
-      user_count?: number;
+      userCount?: number;
       /**
        * Format: email
        * @description Email of the customer
@@ -328,22 +50,22 @@ export interface components {
        * @description Supported payment processors
        * @enum {string}
        */
-      payment_processor?: "stripe" | "paypal" | "braintree";
+      paymentProcessor?: "stripe" | "paypal" | "braintree";
     };
     UpgradeSubscriptionRequest: {
       /**
        * Format: uuid
        * @description Old Plan id that is being changed
        */
-      old_plan_id?: string;
+      oldPlanId?: string;
       /**
        * Format: uuid
        * @description New Plan id that is being changed to
        */
-      new_plan_id?: string;
+      newPlanId?: string;
     };
     CreateSubscriptionResponse: {
-      subscription_id?: string;
+      subscriptionId?: string;
       clientSecret?: string;
     };
     UpdateUsersRequest: {
@@ -351,16 +73,16 @@ export interface components {
        * @description Supported payment processors
        * @enum {string}
        */
-      payment_processor?: "stripe" | "paypal" | "braintree";
+      paymentProcessor?: "stripe" | "paypal" | "braintree";
     };
     CancelSubscriptionRequest: {
       /** @description Subscription ID from the payment processor */
-      subscription_id?: string;
+      subscriptionId?: string;
       /**
        * @description Supported payment processors
        * @enum {string}
        */
-      payment_processor?: "stripe" | "paypal" | "braintree";
+      paymentProcessor?: "stripe" | "paypal" | "braintree";
     };
     /** @description Payload for webhook events from payment processors */
     WebhookEvent: { [key: string]: unknown };
@@ -373,7 +95,7 @@ export interface components {
          * Format: uuid
          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
-        ID: string;
+        id: string;
         /**
          * Format: uuid
          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -405,8 +127,6 @@ export interface components {
           price_per_unit: number;
           /** @enum {string} */
           currency: "usd";
-        } & {
-          price_id: unknown;
         };
         quantity: number;
         /** Format: date-time */
@@ -440,7 +160,7 @@ export interface components {
        * Format: uuid
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
-      ID: string;
+      id: string;
       /**
        * Format: uuid
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -472,8 +192,6 @@ export interface components {
         price_per_unit: number;
         /** @enum {string} */
         currency: "usd";
-      } & {
-        price_id: unknown;
       };
       quantity: number;
       /** Format: date-time */
@@ -527,6 +245,12 @@ export interface components {
         "text/plain": string;
       };
     };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
     /** Internal server error */
     500: {
       content: {
@@ -576,7 +300,7 @@ export interface operations {
                * Format: uuid
                * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
                */
-              ID: string;
+              id: string;
               /**
                * Format: uuid
                * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -608,8 +332,6 @@ export interface operations {
                 price_per_unit: number;
                 /** @enum {string} */
                 currency: "usd";
-              } & {
-                price_id: unknown;
               };
               quantity: number;
               /** Format: date-time */
@@ -657,6 +379,371 @@ export interface operations {
         content: {
           "text/plain": string;
         };
+      };
+    };
+  };
+  cancelSubscription: {
+    parameters: {
+      path: {
+        /** Subscription ID */
+        subscriptionId: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": {
+            page: number;
+            page_size: number;
+            total_count: number;
+            subscriptions: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              org_id: string;
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              plan_id: string;
+              plan?: {
+                /**
+                 * Format: uuid
+                 * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+                 */
+                id: string;
+                /**
+                 * @description Name of the plan
+                 * @enum {string}
+                 */
+                name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+                /** @enum {string} */
+                cadence: "monthly" | "yearly";
+                /** @enum {string} */
+                unit: "user" | "free";
+                /** @description Minimum number of units required for the plan */
+                minimum_units: number;
+                /** @description Price per unit of the plan */
+                price_per_unit: number;
+                /** @enum {string} */
+                currency: "usd";
+              };
+              quantity: number;
+              /** Format: date-time */
+              start_date?: string;
+              /** Format: date-time */
+              end_date?: string;
+              /**
+               * @description Possible statuses of a Stripe subscription.
+               * @enum {string}
+               */
+              status:
+                | "incomplete"
+                | "incomplete_expired"
+                | "trialing"
+                | "active"
+                | "past_due"
+                | "canceled"
+                | "unpaid";
+              /** Format: date-time */
+              created_at?: string;
+              /** Format: date-time */
+              updated_at?: string;
+              /** Format: date-time */
+              deleted_at?: string;
+              /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+              billing_id: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  createSubscription: {
+    responses: {
+      /** A new subscription has been created */
+      200: {
+        content: {
+          "application/json": {
+            subscriptionId?: string;
+            clientSecret?: string;
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /** @description Organization ID */
+          orgId?: string;
+          /** @description Price ID from the payment processor */
+          planId?: string;
+          /** @description Coupon ID to apply */
+          couponId?: string;
+          /** @description Number of users in the organization */
+          userCount?: number;
+          /**
+           * Format: email
+           * @description Email of the customer
+           */
+          email?: string;
+          /**
+           * @description Supported payment processors
+           * @enum {string}
+           */
+          paymentProcessor?: "stripe" | "paypal" | "braintree";
+        };
+      };
+    };
+  };
+  upgradeSubscription: {
+    parameters: {
+      path: {
+        /** Subscription ID */
+        subscriptionId: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": {
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            org_id: string;
+            /**
+             * Format: uuid
+             * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+             */
+            plan_id: string;
+            plan?: {
+              /**
+               * Format: uuid
+               * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+               */
+              id: string;
+              /**
+               * @description Name of the plan
+               * @enum {string}
+               */
+              name: "Free" | "Team Designer" | "Team Operator" | "Enterprise";
+              /** @enum {string} */
+              cadence: "monthly" | "yearly";
+              /** @enum {string} */
+              unit: "user" | "free";
+              /** @description Minimum number of units required for the plan */
+              minimum_units: number;
+              /** @description Price per unit of the plan */
+              price_per_unit: number;
+              /** @enum {string} */
+              currency: "usd";
+            };
+            quantity: number;
+            /** Format: date-time */
+            start_date?: string;
+            /** Format: date-time */
+            end_date?: string;
+            /**
+             * @description Possible statuses of a Stripe subscription.
+             * @enum {string}
+             */
+            status:
+              | "incomplete"
+              | "incomplete_expired"
+              | "trialing"
+              | "active"
+              | "past_due"
+              | "canceled"
+              | "unpaid";
+            /** Format: date-time */
+            created_at?: string;
+            /** Format: date-time */
+            updated_at?: string;
+            /** Format: date-time */
+            deleted_at?: string;
+            /** @description Billing ID of the subscription. This is the ID of the subscription in the billing system. eg Stripe */
+            billing_id: string;
+          };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Old Plan id that is being changed
+           */
+          oldPlanId?: string;
+          /**
+           * Format: uuid
+           * @description New Plan id that is being changed to
+           */
+          newPlanId?: string;
+        };
+      };
+    };
+  };
+  previewSubscriptionUpgrade: {
+    parameters: {
+      path: {
+        /** Subscription ID */
+        subscriptionId: string;
+      };
+    };
+    responses: {
+      /** Preview of the upgraded subscription invoice */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          /**
+           * Format: uuid
+           * @description Old Plan id that is being changed
+           */
+          oldPlanId?: string;
+          /**
+           * Format: uuid
+           * @description New Plan id that is being changed to
+           */
+          newPlanId?: string;
+        };
+      };
+    };
+  };
+  handleSubscriptionWebhook: {
+    responses: {
+      /** Webhook processed */
+      200: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
       };
     };
   };

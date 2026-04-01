@@ -3,17 +3,33 @@
  * Do not manually modify this file.
  */
 
-const InvitationSchema = {
+const InvitationSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "invitation",
-    "description": "OpenAPI schema for managing invitations",
-    "version": "v1beta1"
+    "title": "Invitation",
+    "description": "OpenAPI schema for managing invitations.",
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "tags": [
     {
       "name": "Invitation",
       "description": "Operations related to invitation"
+    }
+  ],
+  "security": [
+    {
+      "jwt": []
     }
   ],
   "paths": {
@@ -213,13 +229,44 @@ const InvitationSchema = {
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -245,16 +292,47 @@ const InvitationSchema = {
         ],
         "responses": {
           "204": {
-            "description": "Invitation deleted successfully"
+            "description": "Invitation deleted"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -283,25 +361,23 @@ const InvitationSchema = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "Payload for creating or updating an invitation.",
                 "required": [
-                  "id",
-                  "owner_id",
                   "name",
                   "description",
                   "org_id",
-                  "accepted_by",
                   "emails",
                   "roles",
                   "teams",
-                  "status",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
+                  "status"
                 ],
                 "properties": {
                   "id": {
                     "x-go-name": "ID",
-                    "description": "Unique identifier for the invitation , is also used as the invitation code",
+                    "description": "Existing invitation ID for updates; omit on create.",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "id,omitempty"
+                    },
                     "type": "string",
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
@@ -310,10 +386,10 @@ const InvitationSchema = {
                     }
                   },
                   "owner_id": {
-                    "description": "ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes",
+                    "description": "ID of the user who created the invitation.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "owner_id",
-                      "json": "owner_id"
+                      "json": "owner_id,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -324,19 +400,19 @@ const InvitationSchema = {
                   },
                   "is_default": {
                     "type": "boolean",
-                    "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                    "description": "Indicates whether the invitation is a default invitation (open invite).",
                     "x-oapi-codegen-extra-tags": {
                       "db": "is_default",
-                      "json": "is_default"
+                      "json": "is_default,omitempty"
                     }
                   },
                   "name": {
                     "type": "string",
-                    "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                    "description": "Name of the invitation."
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                    "description": "Description of the invitation."
                   },
                   "emails": {
                     "type": "array",
@@ -347,13 +423,12 @@ const InvitationSchema = {
                     "items": {
                       "type": "string",
                       "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
-                      "x-go-type": "string",
-                      "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
+                      "x-go-type": "string"
                     }
                   },
                   "org_id": {
                     "type": "string",
-                    "description": "ID of the organization to which the user is invited",
+                    "description": "ID of the organization to which the user is invited.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
@@ -362,30 +437,15 @@ const InvitationSchema = {
                   "expires_at": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                    "description": "Timestamp when the invitation expires, if applicable.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "expires_at",
-                      "json": "expires_at"
+                      "json": "expires_at,omitempty"
                     }
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
-                  },
-                  "accepted_by": {
-                    "type": "array",
-                    "x-go-type": "pq.StringArray",
-                    "x-go-type-import": {
-                      "path": "github.com/lib/pq"
-                    },
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "accepted_by",
-                      "json": "accepted_by"
-                    }
+                    "description": "Quota for the invitation."
                   },
                   "roles": {
                     "type": "array",
@@ -394,8 +454,7 @@ const InvitationSchema = {
                       "path": "github.com/lib/pq"
                     },
                     "items": {
-                      "type": "string",
-                      "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
+                      "type": "string"
                     }
                   },
                   "teams": {
@@ -405,8 +464,7 @@ const InvitationSchema = {
                       "path": "github.com/lib/pq"
                     },
                     "items": {
-                      "type": "string",
-                      "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
+                      "type": "string"
                     }
                   },
                   "status": {
@@ -417,34 +475,6 @@ const InvitationSchema = {
                       "disabled"
                     ],
                     "description": "Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later."
-                  },
-                  "created_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Timestamp when the invitation was created",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "created_at",
-                      "json": "created_at"
-                    }
-                  },
-                  "updated_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Timestamp when the invitation was last updated",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "updated_at",
-                      "json": "updated_at"
-                    }
-                  },
-                  "deleted_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-type": "core.NullTime",
-                    "description": "Timestamp when the invitation was deleted, if applicable",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "deleted_at",
-                      "json": "deleted_at"
-                    }
                   }
                 }
               }
@@ -627,13 +657,44 @@ const InvitationSchema = {
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -847,13 +908,34 @@ const InvitationSchema = {
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -871,25 +953,23 @@ const InvitationSchema = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "Payload for creating or updating an invitation.",
                 "required": [
-                  "id",
-                  "owner_id",
                   "name",
                   "description",
                   "org_id",
-                  "accepted_by",
                   "emails",
                   "roles",
                   "teams",
-                  "status",
-                  "created_at",
-                  "updated_at",
-                  "deleted_at"
+                  "status"
                 ],
                 "properties": {
                   "id": {
                     "x-go-name": "ID",
-                    "description": "Unique identifier for the invitation , is also used as the invitation code",
+                    "description": "Existing invitation ID for updates; omit on create.",
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "id,omitempty"
+                    },
                     "type": "string",
                     "format": "uuid",
                     "x-go-type": "uuid.UUID",
@@ -898,10 +978,10 @@ const InvitationSchema = {
                     }
                   },
                   "owner_id": {
-                    "description": "ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes",
+                    "description": "ID of the user who created the invitation.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "owner_id",
-                      "json": "owner_id"
+                      "json": "owner_id,omitempty"
                     },
                     "type": "string",
                     "format": "uuid",
@@ -912,19 +992,19 @@ const InvitationSchema = {
                   },
                   "is_default": {
                     "type": "boolean",
-                    "description": "Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation",
+                    "description": "Indicates whether the invitation is a default invitation (open invite).",
                     "x-oapi-codegen-extra-tags": {
                       "db": "is_default",
-                      "json": "is_default"
+                      "json": "is_default,omitempty"
                     }
                   },
                   "name": {
                     "type": "string",
-                    "description": "Name of the invitation, which can be used to identify the invitation, required and cant be empty string,"
+                    "description": "Name of the invitation."
                   },
                   "description": {
                     "type": "string",
-                    "description": "Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description"
+                    "description": "Description of the invitation."
                   },
                   "emails": {
                     "type": "array",
@@ -935,13 +1015,12 @@ const InvitationSchema = {
                     "items": {
                       "type": "string",
                       "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
-                      "x-go-type": "string",
-                      "description": "Exact email address or the email address pattern for which the invitation is valid , null means the invitation is valid for all email addresses"
+                      "x-go-type": "string"
                     }
                   },
                   "org_id": {
                     "type": "string",
-                    "description": "ID of the organization to which the user is invited",
+                    "description": "ID of the organization to which the user is invited.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "org_id",
                       "json": "org_id"
@@ -950,30 +1029,15 @@ const InvitationSchema = {
                   "expires_at": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire",
+                    "description": "Timestamp when the invitation expires, if applicable.",
                     "x-oapi-codegen-extra-tags": {
                       "db": "expires_at",
-                      "json": "expires_at"
+                      "json": "expires_at,omitempty"
                     }
                   },
                   "quota": {
                     "type": "integer",
-                    "description": "Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota"
-                  },
-                  "accepted_by": {
-                    "type": "array",
-                    "x-go-type": "pq.StringArray",
-                    "x-go-type-import": {
-                      "path": "github.com/lib/pq"
-                    },
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "accepted_by",
-                      "json": "accepted_by"
-                    }
+                    "description": "Quota for the invitation."
                   },
                   "roles": {
                     "type": "array",
@@ -982,8 +1046,7 @@ const InvitationSchema = {
                       "path": "github.com/lib/pq"
                     },
                     "items": {
-                      "type": "string",
-                      "description": "Roles that the user will have when accepting the invitation, null or empty string means the invitation does not specify any roles"
+                      "type": "string"
                     }
                   },
                   "teams": {
@@ -993,8 +1056,7 @@ const InvitationSchema = {
                       "path": "github.com/lib/pq"
                     },
                     "items": {
-                      "type": "string",
-                      "description": "Teams that the user will be added to when accepting the invitation, null or empty string means the invitation does not specify any teams"
+                      "type": "string"
                     }
                   },
                   "status": {
@@ -1005,34 +1067,6 @@ const InvitationSchema = {
                       "disabled"
                     ],
                     "description": "Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later."
-                  },
-                  "created_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Timestamp when the invitation was created",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "created_at",
-                      "json": "created_at"
-                    }
-                  },
-                  "updated_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Timestamp when the invitation was last updated",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "updated_at",
-                      "json": "updated_at"
-                    }
-                  },
-                  "deleted_at": {
-                    "type": "string",
-                    "format": "date-time",
-                    "x-go-type": "core.NullTime",
-                    "description": "Timestamp when the invitation was deleted, if applicable",
-                    "x-oapi-codegen-extra-tags": {
-                      "db": "deleted_at",
-                      "json": "deleted_at"
-                    }
                   }
                 }
               }
@@ -1215,13 +1249,34 @@ const InvitationSchema = {
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1422,13 +1477,458 @@ const InvitationSchema = {
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/orgs/{orgId}/users/invite": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "handleUserInvite",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Invite users to an organization",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invitation request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/request": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "signupRequest",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Create a signup request",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Signup request created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getSignupRequests",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Get signup requests",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Get responses that match search param value",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Get ordered responses",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Get filtered reponses",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Signup requests page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "page_size": {
+                      "type": "integer"
+                    },
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/request/approve": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "approveSignupRequest",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Approve a signup request",
+        "responses": {
+          "200": {
+            "description": "Signup request approved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/request/deny": {
+      "post": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "denySignupRequest",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Deny a signup request",
+        "responses": {
+          "200": {
+            "description": "Signup request denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/users/request/notification": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "operationId": "getSignupRequestNotification",
+        "tags": [
+          "Invitation"
+        ],
+        "summary": "Get signup request notification summary",
+        "responses": {
+          "200": {
+            "description": "Signup request notification payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No pending signup request notifications"
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1457,17 +1957,55 @@ const InvitationSchema = {
     },
     "responses": {
       "400": {
-        "description": "Bad Request"
+        "description": "Invalid request body or request param",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
       },
       "401": {
-        "description": "Unauthorized"
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
       },
       "500": {
-        "description": "Internal Server Error"
+        "description": "Internal server error",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     },
     "schemas": {
-      "uuid": {
+      "Uuid": {
         "type": "string",
         "format": "uuid",
         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -1667,6 +2205,150 @@ const InvitationSchema = {
           }
         }
       },
+      "SignupRequest": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "SignupRequestsPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          },
+          "total_count": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "InvitationPayload": {
+        "type": "object",
+        "description": "Payload for creating or updating an invitation.",
+        "required": [
+          "name",
+          "description",
+          "org_id",
+          "emails",
+          "roles",
+          "teams",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "x-go-name": "ID",
+            "description": "Existing invitation ID for updates; omit on create.",
+            "x-oapi-codegen-extra-tags": {
+              "json": "id,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "owner_id": {
+            "description": "ID of the user who created the invitation.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner_id",
+              "json": "owner_id,omitempty"
+            },
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
+          },
+          "is_default": {
+            "type": "boolean",
+            "description": "Indicates whether the invitation is a default invitation (open invite).",
+            "x-oapi-codegen-extra-tags": {
+              "db": "is_default",
+              "json": "is_default,omitempty"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the invitation."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the invitation."
+          },
+          "emails": {
+            "type": "array",
+            "x-go-type": "pq.StringArray",
+            "x-go-type-import": {
+              "path": "github.com/lib/pq"
+            },
+            "items": {
+              "type": "string",
+              "pattern": "^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}|@[a-zA-Z0-9.-]+\\.[a-z]{2,})$",
+              "x-go-type": "string"
+            }
+          },
+          "org_id": {
+            "type": "string",
+            "description": "ID of the organization to which the user is invited.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "org_id",
+              "json": "org_id"
+            }
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the invitation expires, if applicable.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "expires_at",
+              "json": "expires_at,omitempty"
+            }
+          },
+          "quota": {
+            "type": "integer",
+            "description": "Quota for the invitation."
+          },
+          "roles": {
+            "type": "array",
+            "x-go-type": "pq.StringArray",
+            "x-go-type-import": {
+              "path": "github.com/lib/pq"
+            },
+            "items": {
+              "type": "string"
+            }
+          },
+          "teams": {
+            "type": "array",
+            "x-go-type": "pq.StringArray",
+            "x-go-type-import": {
+              "path": "github.com/lib/pq"
+            },
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "x-go-type": "InvitationStatus",
+            "enum": [
+              "enabled",
+              "disabled"
+            ],
+            "description": "Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later."
+          }
+        }
+      },
       "InvitationStatus": {
         "type": "string",
         "enum": [
@@ -1844,6 +2526,6 @@ const InvitationSchema = {
       }
     }
   }
-} as const;
+};
 
 export default InvitationSchema;

@@ -1,4 +1,4 @@
-# This workflow automatically publishes the OpenAPI documentation to the meshery/meshery repository
+# This workflow automatically publishes the OpenAPI documentation to downstream repositories
 # It runs on:
 # 1. Release publication (when a new release is published)
 # 2. Manual trigger via workflow_dispatch
@@ -6,11 +6,12 @@
 # What it does:
 # - Builds the OpenAPI specifications from schemas
 # - Copies the merged_openapi.yml to meshery/meshery repo at docs/data/openapi.yml
-# - Commits and pushes the changes directly to the master branch
+# - Copies the merged_openapi.yml to layer5io/docs repo at data/openapi.yml
+# - Commits and pushes the changes directly to the master branch in each target repo
 #
 # This ensures that the Meshery REST API documentation stays in sync with the schemas repository.
 
-name: Publish OpenAPI Docs to Meshery
+name: Publish OpenAPI Docs
 
 on:
   release:
@@ -21,10 +22,8 @@ permissions:
   contents: read
 
 jobs:
-  publish-openapi-docs:
+  build-openapi:
     runs-on: ubuntu-24.04
-    permissions:
-      contents: write
     steps:
       - name: Checkout schemas repository
         uses: actions/checkout@v6
@@ -53,6 +52,23 @@ jobs:
         run: |
           make bundle-openapi
 
+      - name: Upload OpenAPI build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-build
+          path: _openapi_build/merged_openapi.yml
+
+  publish-openapi-docs:
+    needs: build-openapi
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download OpenAPI build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-build
+
       - name: Checkout meshery repository
         uses: actions/checkout@v6
         with:
@@ -64,7 +80,7 @@ jobs:
       - name: Copy OpenAPI specification to meshery repo
         run: |
           mkdir -p meshery/docs/data
-          cp _openapi_build/merged_openapi.yml meshery/docs/data/openapi.yml
+          cp merged_openapi.yml meshery/docs/data/openapi.yml
           echo "Copied merged_openapi.yml to meshery/docs/data/openapi.yml"
 
       - name: Pull changes from remote
@@ -81,4 +97,45 @@ jobs:
           commit_user_email: ci@meshery.io
           commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           file_pattern: docs/data/openapi.yml
+          branch: master
+
+  publish-openapi-docs-to-layer5-docs:
+    needs: build-openapi
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download OpenAPI build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-build
+
+      - name: Checkout layer5 docs repository
+        uses: actions/checkout@v6
+        with:
+          repository: layer5io/docs
+          path: layer5-docs
+          token: ${{ secrets.MESHERY_CI }}
+          ref: 'master'
+
+      - name: Copy OpenAPI specification to layer5 docs repo
+        run: |
+          mkdir -p layer5-docs/data
+          cp merged_openapi.yml layer5-docs/data/openapi.yml
+          echo "Copied merged_openapi.yml to layer5-docs/data/openapi.yml"
+
+      - name: Pull changes from remote
+        working-directory: layer5-docs
+        run: git pull origin master
+
+      - name: Commit and push to layer5 docs repository
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          repository: layer5-docs
+          commit_message: '[Docs] Update REST API Documentation'
+          commit_options: '--signoff'
+          commit_user_name: meshery
+          commit_user_email: ci@meshery.io
+          commit_author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          file_pattern: data/openapi.yml
           branch: master

@@ -4,18 +4,21 @@
 package event
 
 import (
-	"github.com/gofrs/uuid"
+	"encoding/json"
+	"fmt"
+
+	core "github.com/meshery/schemas/models/core"
 )
 
 // BulkDeleteRequest defines model for BulkDeleteRequest.
 type BulkDeleteRequest struct {
-	Ids []uuid.UUID `json:"ids" yaml:"ids"`
+	Ids []core.Uuid `json:"ids" yaml:"ids"`
 }
 
 // BulkUpdateStatusRequest defines model for BulkUpdateStatusRequest.
 type BulkUpdateStatusRequest struct {
-	Ids    []uuid.UUID `json:"ids" yaml:"ids"`
-	Status string      `json:"status" yaml:"status"`
+	Ids    []core.Uuid `json:"ids" yaml:"ids"`
+	Status string              `json:"status" yaml:"status"`
 }
 
 // ErrorResponse defines model for ErrorResponse.
@@ -23,7 +26,147 @@ type ErrorResponse struct {
 	Error *string `json:"error,omitempty" yaml:"error,omitempty"`
 }
 
+// EventResult defines model for EventResult.
+type EventResult struct {
+	Action   *string `json:"action,omitempty" yaml:"action,omitempty"`
+	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
+
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt   core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Description *string                `json:"description,omitempty" yaml:"description,omitempty"`
+
+	// Email email
+	Email     core.Email `json:"email,omitempty" yaml:"email,omitempty"`
+	FirstName *string            `json:"firstName,omitempty" yaml:"firstName,omitempty"`
+	LastName  *string            `json:"lastName,omitempty" yaml:"lastName,omitempty"`
+
+	// Provider One of (x-oapi-codegen-extra-tags-cloud, github, google)
+	Provider core.Provider `json:"provider,omitempty" yaml:"provider,omitempty"`
+	SystemID core.SystemId `db:"system_id" json:"system_id,omitempty" yaml:"system_id,omitempty"`
+	UserID   core.UserUuid `db:"user_id" json:"user_id" yaml:"user_id"`
+}
+
+// EventSummary defines model for EventSummary.
+type EventSummary map[string]interface{}
+
+// EventSummaryPage defines model for EventSummaryPage.
+type EventSummaryPage struct {
+	Data       *[]EventSummary `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       *int            `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   *int            `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount *int            `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
+// EventType defines model for EventType.
+type EventType struct {
+	Action   *string `json:"action,omitempty" yaml:"action,omitempty"`
+	Category *string `json:"category,omitempty" yaml:"category,omitempty"`
+}
+
+// EventsAggregate defines model for EventsAggregate.
+type EventsAggregate struct {
+	Audit                *int                   `json:"audit,omitempty" yaml:"audit,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-" yaml:"-"`
+}
+
+// EventsPage defines model for EventsPage.
+type EventsPage struct {
+	Data       *[]EventResult      `json:"data,omitempty" yaml:"data,omitempty"`
+	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
+	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
+	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
+}
+
 // UpdateEventStatusRequest defines model for UpdateEventStatusRequest.
 type UpdateEventStatusRequest struct {
 	Status string `json:"status" yaml:"status"`
+}
+
+// Cumulative defines model for cumulative.
+type Cumulative = bool
+
+// Filter defines model for filter.
+type Filter = string
+
+// Order defines model for order.
+type Order = string
+
+// Page defines model for page.
+type Page = string
+
+// Pagesize defines model for pagesize.
+type Pagesize = string
+
+// Search defines model for search.
+type Search = string
+
+// WorkspaceId defines model for workspaceId.
+type WorkspaceId = core.WorkspaceId
+
+// Getter for additional properties for EventsAggregate. Returns the specified
+// element and whether it was found
+func (a EventsAggregate) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for EventsAggregate
+func (a *EventsAggregate) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for EventsAggregate to handle AdditionalProperties
+func (a *EventsAggregate) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["audit"]; found {
+		err = json.Unmarshal(raw, &a.Audit)
+		if err != nil {
+			return fmt.Errorf("error reading 'audit': %w", err)
+		}
+		delete(object, "audit")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for EventsAggregate to handle AdditionalProperties
+func (a EventsAggregate) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Audit != nil {
+		object["audit"], err = json.Marshal(a.Audit)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'audit': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
 }

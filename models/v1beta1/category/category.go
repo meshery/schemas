@@ -4,7 +4,7 @@
 package category
 
 import (
-	"github.com/gofrs/uuid"
+	core "github.com/meshery/schemas/models/core"
 )
 
 // Defines values for CategoryDefinitionName.
@@ -29,10 +29,12 @@ const (
 // CategoryDefinition Category of the model.
 type CategoryDefinition struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id uuid.UUID `json:"id" yaml:"id"`
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Name The category of the model that determines the main grouping.
-	Name     CategoryDefinitionName `gorm:"name" json:"name" yaml:"name"`
+	Name CategoryDefinitionName `gorm:"name" json:"name" yaml:"name"`
+
+	// Metadata Additional metadata associated with the category.
 	Metadata map[string]interface{} `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata,omitempty"`
 }
 

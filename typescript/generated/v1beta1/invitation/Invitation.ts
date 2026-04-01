@@ -16,6 +16,22 @@ export interface paths {
   "/api/organizations/invitations/{invitationId}/accept": {
     post: operations["acceptInvitation"];
   };
+  "/api/identity/orgs/{orgId}/users/invite": {
+    post: operations["handleUserInvite"];
+  };
+  "/api/identity/users/request": {
+    get: operations["getSignupRequests"];
+    post: operations["signupRequest"];
+  };
+  "/api/identity/users/request/approve": {
+    post: operations["approveSignupRequest"];
+  };
+  "/api/identity/users/request/deny": {
+    post: operations["denySignupRequest"];
+  };
+  "/api/identity/users/request/notification": {
+    get: operations["getSignupRequestNotification"];
+  };
 }
 
 export interface components {
@@ -24,7 +40,7 @@ export interface components {
      * Format: uuid
      * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
      */
-    uuid: string;
+    Uuid: string;
     InvitationsPage: {
       /** @description List of invitations */
       data: {
@@ -81,6 +97,49 @@ export interface components {
       }[];
       /** @description Total number of invitations available */
       total: number;
+    };
+    SignupRequest: { [key: string]: unknown };
+    SignupRequestsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: { [key: string]: unknown }[];
+    };
+    /** @description Payload for creating or updating an invitation. */
+    InvitationPayload: {
+      /**
+       * Format: uuid
+       * @description Existing invitation ID for updates; omit on create.
+       */
+      id?: string;
+      /**
+       * Format: uuid
+       * @description ID of the user who created the invitation.
+       */
+      owner_id?: string;
+      /** @description Indicates whether the invitation is a default invitation (open invite). */
+      is_default?: boolean;
+      /** @description Name of the invitation. */
+      name: string;
+      /** @description Description of the invitation. */
+      description: string;
+      emails: string[];
+      /** @description ID of the organization to which the user is invited. */
+      org_id: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the invitation expires, if applicable.
+       */
+      expires_at?: string;
+      /** @description Quota for the invitation. */
+      quota?: number;
+      roles: string[];
+      teams: string[];
+      /**
+       * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
+       * @enum {string}
+       */
+      status: "enabled" | "disabled";
     };
     /**
      * @description Status of the invitation, where enabled means the invitation is active and can be used, disabled means the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
@@ -141,12 +200,30 @@ export interface components {
     };
   };
   responses: {
-    /** Bad Request */
-    400: unknown;
-    /** Unauthorized */
-    401: unknown;
-    /** Internal Server Error */
-    500: unknown;
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
   };
   parameters: {
     /** @description The ID of the organization */
@@ -221,12 +298,30 @@ export interface operations {
           };
         };
       };
-      /** Bad Request */
-      400: unknown;
-      /** Unauthorized */
-      401: unknown;
-      /** Internal Server Error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   updateInvitation: {
@@ -293,44 +388,60 @@ export interface operations {
           };
         };
       };
-      /** Bad Request */
-      400: unknown;
-      /** Unauthorized */
-      401: unknown;
-      /** Internal Server Error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
     requestBody: {
       content: {
         "application/json": {
           /**
            * Format: uuid
-           * @description Unique identifier for the invitation , is also used as the invitation code
+           * @description Existing invitation ID for updates; omit on create.
            */
-          id: string;
+          id?: string;
           /**
            * Format: uuid
-           * @description ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes
+           * @description ID of the user who created the invitation.
            */
-          owner_id: string;
-          /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+          owner_id?: string;
+          /** @description Indicates whether the invitation is a default invitation (open invite). */
           is_default?: boolean;
-          /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+          /** @description Name of the invitation. */
           name: string;
-          /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+          /** @description Description of the invitation. */
           description: string;
           emails: string[];
-          /** @description ID of the organization to which the user is invited */
+          /** @description ID of the organization to which the user is invited. */
           org_id: string;
           /**
            * Format: date-time
-           * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+           * @description Timestamp when the invitation expires, if applicable.
            */
           expires_at?: string;
-          /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+          /** @description Quota for the invitation. */
           quota?: number;
-          /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-          accepted_by: string[];
           roles: string[];
           teams: string[];
           /**
@@ -338,21 +449,6 @@ export interface operations {
            * @enum {string}
            */
           status: "enabled" | "disabled";
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was created
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was last updated
-           */
-          updated_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was deleted, if applicable
-           */
-          deleted_at: string;
         };
       };
     };
@@ -365,14 +461,32 @@ export interface operations {
       };
     };
     responses: {
-      /** Invitation deleted successfully */
+      /** Invitation deleted */
       204: never;
-      /** Bad Request */
-      400: unknown;
-      /** Unauthorized */
-      401: unknown;
-      /** Internal Server Error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   getInvitations: {
@@ -438,12 +552,24 @@ export interface operations {
           };
         };
       };
-      /** Bad Request */
-      400: unknown;
-      /** Unauthorized */
-      401: unknown;
-      /** Internal Server Error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   createInvitation: {
@@ -504,44 +630,54 @@ export interface operations {
           };
         };
       };
-      /** Bad Request */
-      400: unknown;
-      /** Unauthorized */
-      401: unknown;
-      /** Internal Server Error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
     requestBody: {
       content: {
         "application/json": {
           /**
            * Format: uuid
-           * @description Unique identifier for the invitation , is also used as the invitation code
+           * @description Existing invitation ID for updates; omit on create.
            */
-          id: string;
+          id?: string;
           /**
            * Format: uuid
-           * @description ID of the user who created the invitation, this is used to track who created the invitation and can be used for auditing purposes
+           * @description ID of the user who created the invitation.
            */
-          owner_id: string;
-          /** @description Indicates whether the invitation is a default invitation (open invite), which can be used to assign users when signing up from fqdn or custom domain, a organization can only have one default invitation */
+          owner_id?: string;
+          /** @description Indicates whether the invitation is a default invitation (open invite). */
           is_default?: boolean;
-          /** @description Name of the invitation, which can be used to identify the invitation, required and cant be empty string, */
+          /** @description Name of the invitation. */
           name: string;
-          /** @description Description of the invitation, which can be used to provide additional information about the invitation, null or empty string means the invitation does not have a description */
+          /** @description Description of the invitation. */
           description: string;
           emails: string[];
-          /** @description ID of the organization to which the user is invited */
+          /** @description ID of the organization to which the user is invited. */
           org_id: string;
           /**
            * Format: date-time
-           * @description Timestamp when the invitation expires, if applicable , null or empty string means the invitation does not expire
+           * @description Timestamp when the invitation expires, if applicable.
            */
           expires_at?: string;
-          /** @description Quota for the invitation, which can be used to limit the number of users that can accept the invitation, null or empty string means the invitation does not have a quota */
+          /** @description Quota for the invitation. */
           quota?: number;
-          /** @description List of user ids that have already accepted the invitation, null or empty string means the invitation has not been used yet */
-          accepted_by: string[];
           roles: string[];
           teams: string[];
           /**
@@ -549,21 +685,6 @@ export interface operations {
            * @enum {string}
            */
           status: "enabled" | "disabled";
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was created
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was last updated
-           */
-          updated_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the invitation was deleted, if applicable
-           */
-          deleted_at: string;
         };
       };
     };
@@ -632,12 +753,229 @@ export interface operations {
           };
         };
       };
-      /** Bad Request */
-      400: unknown;
-      /** Unauthorized */
-      401: unknown;
-      /** Internal Server Error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  handleUserInvite: {
+    parameters: {
+      path: {
+        /** The ID of the organization */
+        orgId: string;
+      };
+    };
+    responses: {
+      /** Invitation request accepted */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+  };
+  getSignupRequests: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Signup requests page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  signupRequest: {
+    responses: {
+      /** Signup request created */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": { [key: string]: unknown };
+      };
+    };
+  };
+  approveSignupRequest: {
+    responses: {
+      /** Signup request approved */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  denySignupRequest: {
+    responses: {
+      /** Signup request denied */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
+    };
+  };
+  getSignupRequestNotification: {
+    responses: {
+      /** Signup request notification payload */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+      /** No pending signup request notifications */
+      204: never;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
 }

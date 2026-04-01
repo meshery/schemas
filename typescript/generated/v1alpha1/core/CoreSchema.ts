@@ -3,12 +3,21 @@
  * Do not manually modify this file.
  */
 
-const CoreSchema = {
+const CoreSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "Core Schema Elements",
-    "description": "Reusable core schema elements",
-    "version": "1.0.0"
+    "description": "Reusable core schema elements for Meshery OpenAPI specifications.",
+    "version": "v1alpha1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "paths": {},
   "components": {
@@ -22,13 +31,15 @@ const CoreSchema = {
         "type": "string",
         "minLength": 2,
         "maxLength": 100,
-        "description": "API version of the object",
-        "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+        "description": "API version of the object, optionally prefixed with an API group (e.g. \"group.example.io/v1beta1\" or bare \"v1beta1\").",
+        "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
         "example": [
           "v1",
           "v1alpha1",
           "v2beta3",
-          "v1.custom-suffix"
+          "v1.custom-suffix",
+          "models.meshery.io/v1beta1",
+          "capability.meshery.io/v1alpha1"
         ]
       },
       "semverString": {
@@ -36,7 +47,7 @@ const CoreSchema = {
         "minLength": 5,
         "maxLength": 100,
         "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-        "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+        "description": "A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'."
       },
       "uuid": {
         "type": "string",
@@ -439,7 +450,7 @@ const CoreSchema = {
       },
       "deleted_at": {
         "description": "Timestamp when the resource was deleted.",
-        "x-go-type": "time.Time",
+        "x-go-type": "NullTime",
         "type": "string",
         "format": "date-time",
         "x-go-name": "DeletedAt",
@@ -451,8 +462,9 @@ const CoreSchema = {
       },
       "nullTime": {
         "description": "SQL null Timestamp to handle null values of time.",
-        "x-go-type": "sql.NullTime",
+        "x-go-type": "NullTime",
         "type": "string",
+        "format": "date-time",
         "x-go-type-skip-optional-pointer": true
       },
       "styles": {
@@ -1903,6 +1915,6 @@ const CoreSchema = {
       }
     }
   }
-} as const;
+};
 
 export default CoreSchema;

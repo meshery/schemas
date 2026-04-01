@@ -1,10 +1,15 @@
 openapi: 3.0.0
 info:
-  title: team
-  description: Documentation for Meshery Cloud REST APIs for Teams
-  contact:
-    email: maintainers@meshery.io
+  title: Team
+  description: OpenAPI schema for team management in Meshery Cloud.
   version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
   - url: https://cloud.meshery.io
     description: Meshery Cloud production server URL
@@ -23,15 +28,15 @@ tags:
 components:
   responses:
     200:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
+      $ref: "../core/api.yml#/components/responses/200"
     400:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+      $ref: "../core/api.yml#/components/responses/400"
     401:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+      $ref: "../core/api.yml#/components/responses/401"
     404:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+      $ref: "../core/api.yml#/components/responses/404"
     500:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+      $ref: "../core/api.yml#/components/responses/500"
 
   parameters:
     teamId:
@@ -39,109 +44,140 @@ components:
       in: path
       description: Team ID
       schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/team_id
+        $ref: ../core/api.yml#/components/schemas/team_id
       required: true
     orgId:
       name: orgId
       in: path
       description: Organization ID
       schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/organization_id
+        $ref: ../core/api.yml#/components/schemas/organization_id
       required: true
     search:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+      $ref: ../core/api.yml#/components/parameters/search
     order:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+      $ref: ../core/api.yml#/components/parameters/order
     page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+      $ref: ../core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      $ref: ../core/api.yml#/components/parameters/pagesize
 
   securitySchemes:
     jwt:
       type: http
-      scheme: Bearer
+      scheme: bearer
       bearerFormat: JWT
 
   schemas:
-    team:
+    Team:
       $ref: "./team.yaml"
 
-    teamPayload:
+    TeamPayload:
       type: object
       description: Payload for creating a new team
       required:
         - name
       properties:
         name:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
+          $ref: ../core/api.yml#/components/schemas/Text
           description: Team name. Provide a meaningful name that represents this team.
         description:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
+          $ref: ../core/api.yml#/components/schemas/Text
           description: A detailed description of the team's purpose and responsibilities.
 
-    teamUpdatePayload:
+    TeamUpdatePayload:
       type: object
       description: Payload for updating an existing team
       properties:
         name:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
+          $ref: ../core/api.yml#/components/schemas/Text
           description: Updated team name
         description:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
+          $ref: ../core/api.yml#/components/schemas/Text
           description: Updated team description
 
-    teamPage:
+    TeamPage:
       type: object
       description: Paginated list of teams
       properties:
         page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         teams:
           type: array
           x-go-type-skip-optional-pointer: true
           items:
             x-go-type: Team
-            $ref: "#/components/schemas/team"
+            $ref: "#/components/schemas/Team"
+          description: The teams of the teampage.
 
-    teamsUsersMapping:
+    TeamsUsersMapping:
       type: object
       description: Mapping between teams and users
       properties:
         id:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
+          $ref: ../core/api.yml#/components/schemas/general_id
           x-go-name: ID
         team_id:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/team_id
+          $ref: ../core/api.yml#/components/schemas/team_id
         user_id:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/user_id
+          $ref: ../core/api.yml#/components/schemas/user_id
+          x-oapi-codegen-extra-tags:
+            db: user_id
         created_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          $ref: ../core/api.yml#/components/schemas/created_at
         updated_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          $ref: ../core/api.yml#/components/schemas/updated_at
         deleted_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
+          $ref: ../core/api.yml#/components/schemas/nullTime
+          x-oapi-codegen-extra-tags:
+            db: deleted_at
 
-    teamsUsersMappingPage:
+    TeamsUsersMappingPage:
       type: object
       description: Paginated list of team-user mappings
       properties:
         page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
-        teams_users_mapping:
+          $ref: ../core/api.yml#/components/schemas/number
+        teamsUsersMapping:
           type: array
           x-go-type-skip-optional-pointer: true
           items:
             x-go-type: TeamsUsersMapping
-            $ref: "#/components/schemas/teamsUsersMapping"
+            $ref: "#/components/schemas/TeamsUsersMapping"
+          description: The teams users mapping of the teamsusersmappingpage.
+
+    TeamMember:
+      type: object
+      additionalProperties: true
+
+    TeamMembersPage:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamMember"
+          description: The data of the teammemberspage.
 
   requestBodies:
     teamPayload:
@@ -150,21 +186,21 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/teamPayload"
+            $ref: "#/components/schemas/TeamPayload"
     teamUpdatePayload:
       description: Body for updating a team
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/teamUpdatePayload"
+            $ref: "#/components/schemas/TeamUpdatePayload"
 
 paths:
   /api/identity/orgs/{orgId}/teams:
     get:
       tags:
         - teams
-      operationId: GetTeams
+      operationId: getTeams
       summary: Get all teams for an organization
       description: Gets all teams within an organization
       parameters:
@@ -179,15 +215,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/teamPage"
+                $ref: "#/components/schemas/TeamPage"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     post:
       tags:
         - teams
-      operationId: CreateTeam
+      operationId: createTeam
       summary: Create a team
       description: Creates a new team within an organization
       parameters:
@@ -200,9 +238,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/team"
+                $ref: "#/components/schemas/Team"
         "400":
           $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
 
@@ -210,7 +252,7 @@ paths:
     get:
       tags:
         - teams
-      operationId: GetTeamByID
+      operationId: getTeamById
       summary: Get a team by ID
       description: Gets a team by its ID
       parameters:
@@ -222,7 +264,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/team"
+                $ref: "#/components/schemas/Team"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -234,7 +276,7 @@ paths:
     put:
       tags:
         - teams
-      operationId: UpdateTeam
+      operationId: updateTeam
       summary: Update a team
       description: Updates a team's information
       parameters:
@@ -248,7 +290,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/team"
+                $ref: "#/components/schemas/Team"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -260,7 +302,7 @@ paths:
     delete:
       tags:
         - teams
-      operationId: DeleteTeam
+      operationId: deleteTeam
       summary: Delete a team
       description: Deletes a team by its ID
       parameters:
@@ -268,7 +310,7 @@ paths:
         - $ref: "#/components/parameters/teamId"
       responses:
         "204":
-          description: Team deleted successfully
+          description: Team deleted
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -278,15 +320,14 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/identity/orgs/{orgId}/teams/{teamId}/users:
+  /api/identity/teams/{teamId}/users:
     get:
       tags:
         - teams
-      operationId: GetTeamUsers
+      operationId: getTeamUsers
       summary: Get all users in a team
       description: Gets all users that belong to a team
       parameters:
-        - $ref: "#/components/parameters/orgId"
         - $ref: "#/components/parameters/teamId"
         - $ref: "#/components/parameters/search"
         - $ref: "#/components/parameters/order"
@@ -298,7 +339,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/teamsUsersMappingPage"
+                $ref: "#/components/schemas/TeamsUsersMappingPage"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -312,7 +353,7 @@ paths:
     post:
       tags:
         - teams
-      operationId: AddUserToTeam
+      operationId: addUserToTeam
       summary: Add a user to a team
       description: Assigns a user to a team
       parameters:
@@ -322,25 +363,27 @@ paths:
           in: path
           description: User ID
           schema:
-            $ref: ../../v1alpha1/core/api.yml#/components/schemas/user_id
+            $ref: ../core/api.yml#/components/schemas/user_id
           required: true
       responses:
-        "200":
+        "201":
           description: User added to team
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/teamsUsersMapping"
+                $ref: "#/components/schemas/TeamsUsersMapping"
         "400":
           $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
     delete:
       tags:
         - teams
-      operationId: RemoveUserFromTeam
+      operationId: removeUserFromTeam
       summary: Remove a user from a team
       description: Unassigns a user from a team
       parameters:
@@ -350,15 +393,40 @@ paths:
           in: path
           description: User ID
           schema:
-            $ref: ../../v1alpha1/core/api.yml#/components/schemas/user_id
+            $ref: ../core/api.yml#/components/schemas/user_id
           required: true
       responses:
-        "200":
+        "204":
           description: User removed from team
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/orgs/{orgId}/teams/{teamId}/users:
+    get:
+      tags:
+        - teams
+      operationId: listUsersNotInTeam
+      summary: Get users that are not in a team
+      parameters:
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/teamId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+      responses:
+        "200":
+          description: Users not currently in the team
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/teamsUsersMapping"
+                $ref: "#/components/schemas/TeamMembersPage"
         "400":
           $ref: "#/components/responses/400"
         "401":

@@ -1,0 +1,11 @@
+# Known advisory issues in deprecated v1beta1 constructs.
+# These are fixed in their v1beta2 replacements and baselined here
+# so that `make audit-schemas` runs clean.
+schemas/constructs/v1beta1/connection/api.yml	Schema "ConnectionPage" — property "total_count" has a manual `yaml:` tag in x-oapi-codegen-extra-tags. YAML struct tags are automatically added by the Go generator — remove this to avoid conflicts.
+schemas/constructs/v1beta1/connection/api.yml	Schema "ConnectionPage" — property "page" has a manual `yaml:` tag in x-oapi-codegen-extra-tags. YAML struct tags are automatically added by the Go generator — remove this to avoid conflicts.
+schemas/constructs/v1beta1/connection/api.yml	Schema "ConnectionPage" — property "page_size" has a manual `yaml:` tag in x-oapi-codegen-extra-tags. YAML struct tags are automatically added by the Go generator — remove this to avoid conflicts.
+schemas/constructs/v1beta1/connection/api.yml	Schema "ConnectionPage" — property "status_summary" has a manual `yaml:` tag in x-oapi-codegen-extra-tags. YAML struct tags are automatically added by the Go generator — remove this to avoid conflicts.
+schemas/constructs/v1beta1/event/api.yml	POST /events — response description "Event created" appears to create a resource but uses 200 instead of 201 (Created). Use 201 for POST endpoints that exclusively create new resources.
+schemas/constructs/v1beta1/invitation/api.yml	POST /api/identity/users/request — response description "Signup request created" appears to create a resource but uses 200 instead of 201 (Created). Use 201 for POST endpoints that exclusively create new resources.
+schemas/constructs/v1beta1/plan/api.yml	GET /api/entitlement/plans — list endpoint (returns array or paged response) is missing pagination parameter(s): page, pagesize. Reference the shared parameters from v1alpha1/core/api.yml for consistent pagination across all list endpoints.
+schemas/constructs/v1beta1/subscription/api.yml	POST /api/entitlement/subscriptions/create — response description "A new subscription has been created" appears to create a resource but uses 200 instead of 201 (Created). Use 201 for POST endpoints that exclusively create new resources.

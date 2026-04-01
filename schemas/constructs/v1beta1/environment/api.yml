@@ -1,17 +1,18 @@
 openapi: 3.0.0
 info:
-  title: environment
-  description: Documentation for meshery Cloud REST APIs
+  title: Environment
+  description: OpenAPI schema for environment management in Meshery Cloud.
+  version: v1beta1
   contact:
+    name: Meshery Maintainers
     email: maintainers@meshery.io
-  version: v0.6.394
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: https://cloud.meshery.io
-    description: Meshery Cloud production server URL
-  - url: https://staging-cloud.meshery.io
-    description: Meshery Cloud staging server URL
-  - url: http://localhost:9876
-    description: Meshery Cloud development server URL (controlled via PORT environment variable)
+  - url: http://localhost:9081
+    description: Meshery Server development server URL (controlled via PORT environment variable)
 
 security:
   - jwt: []
@@ -22,13 +23,15 @@ tags:
 components:
   responses:
     200:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/200"
+      $ref: "../core/api.yml#/components/responses/200"
     400:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+      $ref: "../core/api.yml#/components/responses/400"
     401:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
     500:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+      $ref: "../core/api.yml#/components/responses/500"
 
   parameters:
     environmentId:
@@ -36,18 +39,18 @@ components:
       in: path
       description: Environment ID
       schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/Id
+        $ref: ../core/api.yml#/components/schemas/Id
       required: true
     search:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+      $ref: ../core/api.yml#/components/parameters/search
     order:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+      $ref: ../core/api.yml#/components/parameters/order
     page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+      $ref: ../core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
-    orgIDQuery:
-      name: orgID
+      $ref: ../core/api.yml#/components/parameters/pagesize
+    orgIdQuery:
+      name: orgId
       in: query
       description: User's organization ID
       schema:
@@ -57,15 +60,16 @@ components:
   securitySchemes:
     jwt:
       type: http
-      scheme: Bearer
+      scheme: bearer
       bearerFormat: JWT
   schemas:
-    environment:
+    Environment:
       $ref: "./environment.yaml"
-    environmentConnectionMapping:
+    EnvironmentConnectionMapping:
       properties:
-        ID:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
+        id:
+          $ref: ../core/api.yml#/components/schemas/general_id
+          x-go-name: ID
         environment_id:
           type: string
           format: uuid
@@ -76,6 +80,7 @@ components:
             db: environment_id
             json: environment_id
           x-go-type-skip-optional-pointer: true
+          description: ID of the associated environment.
         connection_id:
           type: string
           format: uuid
@@ -86,44 +91,70 @@ components:
             db: connection_id
             json: connection_id
           x-go-type-skip-optional-pointer: true
+          description: ID of the associated connection.
         created_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          $ref: ../core/api.yml#/components/schemas/Time
         updated_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Time
+          $ref: ../core/api.yml#/components/schemas/Time
         deleted_at:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/nullTime
-    environmentPayload:
+          $ref: ../core/api.yml#/components/schemas/nullTime
+    EnvironmentPayload:
       properties:
         name:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
+          $ref: ../core/api.yml#/components/schemas/Text
           description: An environment is a collection of resources. Provide a name that meaningfully represents these resources. You can change the name of the environment even after its creation.
         description:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/Text
+          $ref: ../core/api.yml#/components/schemas/Text
           description: "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
-        OrganizationID:
+        organization_id:
           type: string
           description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
           x-go-type-skip-optional-pointer: true
           x-go-name: OrgId
           x-oapi-codegen-extra-tags:
             json: organization_id
+          maxLength: 500
+          format: uuid
       required:
         - name
-        - organizationID
-    environmentPage:
+        - organization_id
+    EnvironmentPage:
       properties:
         page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
         environments:
           type: array
           x-go-type-skip-optional-pointer: true
           items:
             x-go-type: Environment
-            $ref: "#/components/schemas/environment"
+            $ref: "#/components/schemas/Environment"
+          description: Environments associated with this resource.
+
+    EnvironmentConnectionsPage:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        connections:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: The connections of the environmentconnectionspage.
 
   requestBodies:
     environmentPayload:
@@ -132,14 +163,14 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/environmentPayload"
+            $ref: "#/components/schemas/EnvironmentPayload"
 
 paths:
   /api/environments:
     post:
       tags:
         - environments
-      operationId: CreateEnvironment
+      operationId: createEnvironment
       summary: Create an environment
       description: Creates a new environment
       requestBody:
@@ -150,15 +181,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/environment"
+                $ref: "#/components/schemas/Environment"
         "400":
           $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
         "500":
           $ref: "#/components/responses/500"
     get:
       tags:
         - environments
-      operationId: GetEnvironments
+      operationId: getEnvironments
       summary: Get all environments
       description: Gets all environments
       parameters:
@@ -166,15 +199,115 @@ paths:
         - $ref: "#/components/parameters/order"
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/orgIDQuery"
+        - $ref: "#/components/parameters/orgIdQuery"
       responses:
         "200":
           description: Environments
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/environmentPage"
+                $ref: "#/components/schemas/EnvironmentPage"
         "401":
           $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}:
+    get:
+      tags:
+        - environments
+      operationId: getEnvironmentById
+      summary: Get environment by ID
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/orgIdQuery"
+      responses:
+        "200":
+          description: Environment page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    put:
+      tags:
+        - environments
+      operationId: updateEnvironment
+      summary: Update an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      requestBody:
+        $ref: "#/components/requestBodies/environmentPayload"
+      responses:
+        "200":
+          description: Environment page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      tags:
+        - environments
+      operationId: deleteEnvironment
+      summary: Delete an environment
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+      responses:
+        "204":
+          description: Environment deleted
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/environments/{environmentId}/connections:
+    get:
+      tags:
+        - environments
+      operationId: getEnvironmentConnections
+      summary: Get environment connections
+      parameters:
+        - $ref: "#/components/parameters/environmentId"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - name: filter
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Environment connections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentConnectionsPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"

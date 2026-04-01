@@ -48,13 +48,27 @@ export interface components {
        * @description Timestamp when the resource was updated.
        */
       updated_at: string;
-      /** @description SQL null Timestamp to handle null values of time. */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
+    };
+    /** @description Input payload for creating or updating a keychain. */
+    KeychainInput: {
+      /** @description Name of the keychain. */
+      name: string;
+      /**
+       * Format: uuid
+       * @description Owner of the keychain.
+       */
+      owner?: string;
     };
     KeychainPage: {
       page: number;
       page_size: number;
       total_count: number;
+      /** @description The keychains of the keychainpage. */
       keychains: {
         /**
          * Format: uuid
@@ -78,7 +92,10 @@ export interface components {
          * @description Timestamp when the resource was updated.
          */
         updated_at: string;
-        /** @description SQL null Timestamp to handle null values of time. */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
       }[];
     };
@@ -147,6 +164,7 @@ export interface operations {
             page: number;
             page_size: number;
             total_count: number;
+            /** @description The keychains of the keychainpage. */
             keychains: {
               /**
                * Format: uuid
@@ -170,7 +188,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };
@@ -224,7 +245,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -251,30 +275,13 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          /**
-           * Format: uuid
-           * @description Unique identifier for the keychain.
-           */
-          id: string;
           /** @description Name of the keychain. */
           name: string;
           /**
            * Format: uuid
            * @description Owner of the keychain.
            */
-          owner: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was created.
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was updated.
-           */
-          updated_at: string;
-          /** @description SQL null Timestamp to handle null values of time. */
-          deleted_at?: string;
+          owner?: string;
         };
       };
     };
@@ -313,7 +320,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -378,7 +388,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -411,30 +424,13 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": {
-          /**
-           * Format: uuid
-           * @description Unique identifier for the keychain.
-           */
-          id: string;
           /** @description Name of the keychain. */
           name: string;
           /**
            * Format: uuid
            * @description Owner of the keychain.
            */
-          owner: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was created.
-           */
-          created_at: string;
-          /**
-           * Format: date-time
-           * @description Timestamp when the resource was updated.
-           */
-          updated_at: string;
-          /** @description SQL null Timestamp to handle null values of time. */
-          deleted_at?: string;
+          owner?: string;
         };
       };
     };
@@ -569,13 +565,14 @@ export interface operations {
       };
     };
     responses: {
-      /** Keys fetched successfully */
+      /** Keys response */
       200: {
         content: {
           "application/json": {
             page: number;
             page_size: number;
             total_count: number;
+            /** @description The keys of the keypage. */
             keys: {
               /**
                * Format: uuid
@@ -605,7 +602,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };

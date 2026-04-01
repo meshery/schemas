@@ -1,7 +1,15 @@
 openapi: 3.0.0
 info:
-  title: key
-  version: 1.0.0
+  title: Key
+  description: OpenAPI schema for authorization key management in Meshery.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 security:
   - jwt: []
@@ -9,9 +17,11 @@ security:
 tags:
   - name: Key
     description: Operations related to authorization keys
+  - name: users
+    description: Operations related to users and their authorization keys
 
 paths:
-  /api/identity/orgs/{orgID}/users/keys:
+  /api/identity/orgs/{orgId}/users/keys:
     get:
       tags:
         - users
@@ -19,7 +29,9 @@ paths:
       summary: Get User Keys
       description: Get all keys based on roles assigned to user
       parameters:
-        - $ref: "#/components/parameters/orgID"
+        - $ref: "#/components/parameters/orgId"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
       responses:
         "200":
           description: Returns user keys based on roles assigned to user
@@ -29,6 +41,8 @@ paths:
                 $ref: "#/components/schemas/KeyPage"
         "401":
           $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
         "500":
           $ref: "#/components/responses/500"
   /api/auth/keys:
@@ -70,7 +84,7 @@ paths:
               $ref: "#/components/schemas/KeyPayload"
       responses:
         "200":
-          description: Key upserted successfully
+          description: Key upserted
           content:
             application/json:
               schema:
@@ -93,7 +107,7 @@ paths:
         - $ref: "#/components/parameters/keyId"
       responses:
         "200":
-          description: Key fetched successfully
+          description: Key response
           content:
             application/json:
               schema:
@@ -116,7 +130,7 @@ paths:
         - $ref: "#/components/parameters/keyId"
       responses:
         "204":
-          description: Key deleted successfully
+          description: Key deleted
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -129,37 +143,37 @@ paths:
 components:
   responses:
     400:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+      $ref: "../core/api.yml#/components/responses/400"
     401:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+      $ref: "../core/api.yml#/components/responses/401"
     404:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+      $ref: "../core/api.yml#/components/responses/404"
     500:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+      $ref: "../core/api.yml#/components/responses/500"
 
   parameters:
-    orgID:
-      name: orgID
+    orgId:
+      name: orgId
       in: path
       description: Organization ID
       required: true
       schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+        $ref: ../core/api.yml#/components/schemas/uuid
     keyId:
       name: keyId
       in: path
       description: Key ID
       required: true
       schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+        $ref: ../core/api.yml#/components/schemas/uuid
     page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+      $ref: ../core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      $ref: ../core/api.yml#/components/parameters/pagesize
     order:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+      $ref: ../core/api.yml#/components/parameters/order
     search:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+      $ref: ../core/api.yml#/components/parameters/search
 
   securitySchemes:
     jwt:
@@ -175,25 +189,29 @@ components:
       description: Payload for creating or updating a key.
       properties:
         id:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+          $ref: ../core/api.yml#/components/schemas/uuid
           description: Existing key identifier for updates.
           x-order: 1
         function:
           type: string
           description: Operation permitted by the key.
           x-order: 2
+          maxLength: 500
         category:
           type: string
           description: Category for the key.
           x-order: 3
+          maxLength: 500
         subcategory:
           type: string
           description: Subcategory for the key.
           x-order: 4
+          maxLength: 500
         description:
           type: string
           description: Human readable description of the key.
           x-order: 5
+          maxLength: 5000
     KeyPage:
       type: object
       required:
@@ -203,17 +221,17 @@ components:
         - keys
       properties:
         page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
           x-order: 1
         page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
           x-order: 2
         total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
           x-order: 3
         keys:
           type: array
           items:
-            $ref: "./key.yaml"
-            x-go-type: Key
+            $ref: "#/components/schemas/Key"
           x-order: 4
+          description: The keys of the keypage.

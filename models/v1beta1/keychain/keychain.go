@@ -4,46 +4,54 @@
 package keychain
 
 import (
-	"database/sql"
-	"time"
-
-	"github.com/gofrs/uuid"
+	meshcore "github.com/meshery/schemas/models/core"
 )
 
 // Keychain Represents a collection of keys.
 type Keychain struct {
-	// ID Unique identifier for the keychain.
-	ID uuid.UUID `db:"id" json:"id" yaml:"id"`
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID meshcore.Uuid `db:"id" json:"id" yaml:"id"`
 
 	// Name Name of the keychain.
 	Name string `db:"name" json:"name" yaml:"name"`
 
-	// Owner Owner of the keychain.
-	Owner uuid.UUID `db:"owner" json:"owner" yaml:"owner"`
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner meshcore.Uuid `db:"owner" json:"owner" yaml:"owner"`
 
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt time.Time `db:"created_at" json:"created_at" yaml:"created_at"`
+	CreatedAt meshcore.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at" yaml:"updated_at"`
+	UpdatedAt meshcore.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
-	DeletedAt sql.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+	DeletedAt meshcore.NullTime `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+}
+
+// KeychainInput Input payload for creating or updating a keychain.
+type KeychainInput struct {
+	// Name Name of the keychain.
+	Name string `json:"name" yaml:"name"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *meshcore.Uuid `json:"owner,omitempty" yaml:"owner,omitempty"`
 }
 
 // KeychainPage defines model for KeychainPage.
 type KeychainPage struct {
-	Page       int        `json:"page" yaml:"page"`
-	PageSize   int        `json:"page_size" yaml:"page_size"`
-	TotalCount int        `json:"total_count" yaml:"total_count"`
-	Keychains  []Keychain `json:"keychains" yaml:"keychains"`
+	Page       meshcore.Number `json:"page" yaml:"page"`
+	PageSize   meshcore.Number `json:"page_size" yaml:"page_size"`
+	TotalCount meshcore.Number `json:"total_count" yaml:"total_count"`
+
+	// Keychains The keychains of the keychainpage.
+	Keychains []Keychain `json:"keychains" yaml:"keychains"`
 }
 
 // KeyId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type KeyId = uuid.UUID
+type KeyId = meshcore.Uuid
 
 // KeychainId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-type KeychainId = uuid.UUID
+type KeychainId = meshcore.Uuid
 
 // Order defines model for order.
 type Order = string

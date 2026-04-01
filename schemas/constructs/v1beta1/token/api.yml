@@ -1,0 +1,311 @@
+openapi: 3.0.0
+info:
+  title: token
+  description: Documentation for Meshery Cloud REST APIs for user tokens and sessions
+  x-deprecated: true
+  x-superseded-by: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1beta1
+servers:
+  - url: https://cloud.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL
+
+security:
+  - jwt: []
+
+tags:
+  - name: tokens
+    description: Operations related to user tokens and sessions
+
+paths:
+  /api/identity/tokens:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - tokens
+      summary: Get tokens
+      operationId: getUserTokens
+      description: Retrieves tokens associated with the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/isOAuth"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Tokens response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - tokens
+      summary: Generate token
+      operationId: generateToken
+      description: Generates a token for the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/purpose"
+      responses:
+        "200":
+          description: Token generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - tokens
+      summary: Delete token
+      operationId: deleteUserToken
+      description: Deletes a specific token for the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/tokenId"
+      responses:
+        "200":
+          description: Token deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/tokens/{id}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - tokens
+      summary: Get token by ID
+      operationId: getUserTokensById
+      description: Retrieves a specific token by its ID.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Token response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserToken"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /api/identity/tokens/infinite:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - tokens
+      summary: Issue indefinite lifetime token
+      operationId: issueIndefiniteLifetimeToken
+      description: Creates a non-expiring user token for provider admin use cases.
+      parameters:
+        - $ref: "#/components/parameters/userId"
+        - $ref: "#/components/parameters/provider"
+      responses:
+        "200":
+          description: Token generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  parameters:
+    id:
+      name: id
+      in: path
+      description: Token ID
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    page:
+      $ref: "../core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../core/api.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../core/api.yml#/components/parameters/order"
+    isOAuth:
+      name: isOAuth
+      in: query
+      description: Whether to retrieve OAuth-backed sessions instead of API tokens.
+      schema:
+        type: boolean
+    name:
+      name: name
+      in: query
+      description: Name of the token.
+      required: true
+      schema:
+        type: string
+    purpose:
+      name: purpose
+      in: query
+      description: Purpose for which the token is generated.
+      schema:
+        type: string
+    tokenId:
+      name: token_id
+      in: query
+      description: ID of the token.
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    userId:
+      name: user_id
+      in: query
+      description: UUID of the user.
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    provider:
+      name: provider
+      in: query
+      description: Remote provider.
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    UserToken:
+      type: object
+      description: Represents a user-owned API token or OAuth session.
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Unique identifier for the token.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        user_id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: UUID of the user who owns the token.
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            db: "user_id"
+        provider:
+          type: string
+          description: Authentication provider associated with the token.
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            db: "provider"
+        access_token:
+          type: string
+          description: Access token value.
+          x-order: 4
+          x-oapi-codegen-extra-tags:
+            db: "access_token"
+        refresh_token:
+          type: string
+          description: Refresh token value when applicable.
+          x-order: 5
+          x-oapi-codegen-extra-tags:
+            db: "refresh_token"
+        name:
+          type: string
+          description: Human-readable token name.
+          x-order: 6
+          x-oapi-codegen-extra-tags:
+            db: "name"
+        purpose:
+          type: string
+          description: Purpose for which the token was created.
+          x-order: 7
+          x-oapi-codegen-extra-tags:
+            db: "purpose"
+        is_oauth:
+          type: boolean
+          description: Whether this entry represents an OAuth session.
+          x-order: 8
+          x-oapi-codegen-extra-tags:
+            db: "is_oauth"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+          x-order: 9
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+          x-order: 10
+
+    TokenPage:
+      type: object
+      description: A paginated list of tokens.
+      required:
+        - tokens
+        - total_count
+        - page
+        - page_size
+      properties:
+        tokens:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserToken"
+            x-go-type: UserToken
+          x-order: 1
+        total_count:
+          type: integer
+          description: Total number of tokens across all pages.
+          x-order: 2
+        page:
+          type: integer
+          description: Current page number (zero-based).
+          x-order: 3
+        page_size:
+          type: integer
+          description: Number of tokens per page.
+          x-order: 4

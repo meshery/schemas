@@ -13,38 +13,68 @@ export interface paths {
         };
       };
       responses: {
-        /** Event deleted successfully */
-        200: {
-          content: {
-            "application/json": {
-              message?: string;
-              /** Format: uuid */
-              event_id?: string;
-            };
-          };
-        };
-        /** Invalid event ID */
+        /** Event deleted */
+        204: never;
+        /** Invalid request body or request param */
         400: {
           content: {
-            "application/json": {
-              error?: string;
-            };
+            "text/plain": string;
           };
         };
-        /** Server error */
-        500: unknown;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Result not found */
+        404: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
       };
     };
   };
   "/events": {
     post: {
+      responses: {
+        /** Event created */
+        200: unknown;
+        /** Invalid request body or request param */
+        400: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
+      };
       requestBody: {
         content: {
           "application/json": { [key: string]: unknown };
         };
       };
     };
-    delete: {
+  };
+  "/events/delete": {
+    post: {
       responses: {
         /** event deleted */
         200: {
@@ -54,16 +84,24 @@ export interface paths {
             };
           };
         };
-        /** Invalid request */
+        /** Invalid request body or request param */
         400: {
           content: {
-            "application/json": {
-              error?: string;
-            };
+            "text/plain": string;
           };
         };
-        /** Server error */
-        500: unknown;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
       };
       requestBody: {
         content: {
@@ -77,7 +115,7 @@ export interface paths {
   "/events/status": {
     put: {
       responses: {
-        /** Events updated successfully */
+        /** Events updated */
         200: {
           content: {
             "application/json": {
@@ -85,16 +123,24 @@ export interface paths {
             };
           };
         };
-        /** Invalid request */
+        /** Invalid request body or request param */
         400: {
           content: {
-            "application/json": {
-              error?: string;
-            };
+            "text/plain": string;
           };
         };
-        /** Server error */
-        500: unknown;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
       };
       requestBody: {
         content: {
@@ -116,7 +162,7 @@ export interface paths {
         };
       };
       responses: {
-        /** Event status updated successfully */
+        /** Event status updated */
         200: {
           content: {
             "application/json": {
@@ -127,16 +173,30 @@ export interface paths {
             };
           };
         };
-        /** Invalid request or status */
+        /** Invalid request body or request param */
         400: {
           content: {
-            "application/json": {
-              error?: string;
-            };
+            "text/plain": string;
           };
         };
-        /** Server error */
-        500: unknown;
+        /** Expired JWT token used or insufficient privilege */
+        401: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Result not found */
+        404: {
+          content: {
+            "text/plain": string;
+          };
+        };
+        /** Internal server error */
+        500: {
+          content: {
+            "text/plain": string;
+          };
+        };
       };
       requestBody: {
         content: {
@@ -147,6 +207,22 @@ export interface paths {
         };
       };
     };
+  };
+  "/api/workspaces/{workspaceId}/events": {
+    /** Gets events for a workspace. */
+    get: operations["getEventsOfWorkspace"];
+  };
+  "/api/events": {
+    get: operations["getEventsAggregate"];
+  };
+  "/api/events/list": {
+    get: operations["getEvents"];
+  };
+  "/api/events/summary": {
+    get: operations["getEventSummaryByUser"];
+  };
+  "/api/events/types": {
+    get: operations["getEventTypes"];
   };
 }
 
@@ -164,12 +240,331 @@ export interface components {
       /** @example failed */
       status: string;
     };
+    EventResult: {
+      /** Format: uuid */
+      user_id?: string;
+      /** Format: uuid */
+      system_id?: string;
+      category?: string;
+      action?: string;
+      description?: string;
+      firstName?: string;
+      lastName?: string;
+      /**
+       * Format: email
+       * @description email
+       */
+      email?: string;
+      /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+      provider?: string;
+      /**
+       * Format: date-time
+       * @description Timestamp when the resource was created.
+       */
+      created_at?: string;
+    };
+    EventsPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: {
+        /** Format: uuid */
+        user_id?: string;
+        /** Format: uuid */
+        system_id?: string;
+        category?: string;
+        action?: string;
+        description?: string;
+        firstName?: string;
+        lastName?: string;
+        /**
+         * Format: email
+         * @description email
+         */
+        email?: string;
+        /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+        provider?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
+        created_at?: string;
+      }[];
+    };
+    EventsAggregate: {
+      audit?: number;
+    } & { [key: string]: unknown };
+    EventSummary: { [key: string]: unknown };
+    EventSummaryPage: {
+      page?: number;
+      page_size?: number;
+      total_count?: number;
+      data?: { [key: string]: unknown }[];
+    };
+    EventType: {
+      category?: string;
+      action?: string;
+    };
     ErrorResponse: {
       error?: string;
     };
   };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
+    };
+  };
+  parameters: {
+    /** @description Workspace ID */
+    workspaceId: string;
+    /** @description Get responses by page */
+    page: string;
+    /** @description Get responses by pagesize */
+    pagesize: string;
+    /** @description Get responses that match search param value */
+    search: string;
+    /** @description Get ordered responses */
+    order: string;
+    cumulative: boolean;
+    /** @description Get filtered reponses */
+    filter: string;
+    /** @description Get filtered reponses */
+    eventsFilter: string;
+  };
 }
 
-export interface operations {}
+export interface operations {
+  /** Gets events for a workspace. */
+  getEventsOfWorkspace: {
+    parameters: {
+      path: {
+        /** Workspace ID */
+        workspaceId: string;
+      };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+      };
+    };
+    responses: {
+      /** Workspace events */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: {
+              /** Format: uuid */
+              user_id?: string;
+              /** Format: uuid */
+              system_id?: string;
+              category?: string;
+              action?: string;
+              description?: string;
+              firstName?: string;
+              lastName?: string;
+              /**
+               * Format: email
+               * @description email
+               */
+              email?: string;
+              /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+              provider?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Invalid request */
+      400: {
+        content: {
+          "application/json": {
+            error?: string;
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Workspace not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventsAggregate: {
+    parameters: {
+      query: {
+        cumulative?: boolean;
+      };
+    };
+    responses: {
+      /** Events aggregate */
+      200: {
+        content: {
+          "application/json": {
+            audit?: number;
+          } & { [key: string]: unknown };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEvents: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Events page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: {
+              /** Format: uuid */
+              user_id?: string;
+              /** Format: uuid */
+              system_id?: string;
+              category?: string;
+              action?: string;
+              description?: string;
+              firstName?: string;
+              lastName?: string;
+              /**
+               * Format: email
+               * @description email
+               */
+              email?: string;
+              /** @description One of (x-oapi-codegen-extra-tags-cloud, github, google) */
+              provider?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
+              created_at?: string;
+            }[];
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventSummaryByUser: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+        /** Get responses that match search param value */
+        search?: string;
+        /** Get ordered responses */
+        order?: string;
+        /** Get filtered reponses */
+        filter?: string;
+      };
+    };
+    responses: {
+      /** Event summary page */
+      200: {
+        content: {
+          "application/json": {
+            page?: number;
+            page_size?: number;
+            total_count?: number;
+            data?: { [key: string]: unknown }[];
+          };
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+  getEventTypes: {
+    parameters: {
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
+      };
+    };
+    responses: {
+      /** Event types */
+      200: {
+        content: {
+          "application/json": {
+            category?: string;
+            action?: string;
+          }[];
+        };
+      };
+      /** Unauthorized */
+      401: unknown;
+      /** Not found */
+      404: unknown;
+      /** Server error */
+      500: unknown;
+    };
+  };
+}
 
 export interface external {}

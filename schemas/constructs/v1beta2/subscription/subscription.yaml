@@ -1,0 +1,73 @@
+type: object
+additionalProperties: false
+description: Subscription entity schema.
+required:
+- id
+- org_id
+- plan_id
+- billing_id
+- status
+- quantity
+properties:
+  id:
+    $ref: ../core/api.yml#/components/schemas/Uuid
+    x-oapi-codegen-extra-tags:
+      db: id
+  org_id:
+    $ref: ../core/api.yml#/components/schemas/Uuid
+    x-oapi-codegen-extra-tags:
+      db: org_id
+  plan_id:
+    $ref: ../core/api.yml#/components/schemas/Uuid
+    x-oapi-codegen-extra-tags:
+      db: plan_id
+  plan:
+    $ref: ../plan/api.yml#/components/schemas/Plan
+    x-go-type: planv1beta2.Plan
+    x-go-type-import:
+      path: github.com/meshery/schemas/models/v1beta2/plan
+      name: planv1beta2
+    x-oapi-codegen-extra-tags:
+      belongs_to: plans
+      fk_id: PlanId
+      json: plan,omitempty
+  quantity:
+    description: number of units subscribed (eg number of users)
+    type: integer
+    x-oapi-codegen-extra-tags:
+      db: quantity
+    minimum: 0
+  start_date:
+    $ref: ../core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: start_date
+  end_date:
+    $ref: ../core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: end_date
+  status:
+    $ref: './api.yml#/components/schemas/SubscriptionStatus'
+    x-go-type: SubscriptionStatus
+    x-oapi-codegen-extra-tags:
+      db: status
+  created_at:
+    $ref: ../core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: created_at
+  updated_at:
+    $ref: ../core/api.yml#/components/schemas/Time
+    x-oapi-codegen-extra-tags:
+      db: updated_at
+  deleted_at:
+    $ref: ../core/api.yml#/components/schemas/SqlNullTime
+    x-oapi-codegen-extra-tags:
+      db: deleted_at
+  billing_id:
+    type: string
+    description: Billing ID of the subscription. This is the ID of the subscription
+      in the billing system. eg Stripe
+    x-id-format: external
+    x-oapi-codegen-extra-tags:
+      db: billing_id
+    maxLength: 500
+    pattern: '^[A-Za-z0-9_\-]+$'

@@ -3,11 +3,21 @@
  * Do not manually modify this file.
  */
 
-const CategorySchema = {
+const CategorySchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "category",
-    "version": "1.0.0"
+    "title": "Category",
+    "description": "OpenAPI schema for model category definitions in Meshery.",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "paths": {},
   "components": {
@@ -16,6 +26,7 @@ const CategorySchema = {
         "$id": "https://schemas.meshery.io/category.yaml",
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
+        "additionalProperties": false,
         "description": "Category of the model.",
         "required": [
           "id",
@@ -64,6 +75,7 @@ const CategorySchema = {
             "x-order": 2
           },
           "metadata": {
+            "description": "Additional metadata associated with the category.",
             "type": "object",
             "x-oapi-codegen-extra-tags": {
               "yaml": "metadata,omitempty",
@@ -76,6 +88,6 @@ const CategorySchema = {
       }
     }
   }
-} as const;
+};
 
 export default CategorySchema;

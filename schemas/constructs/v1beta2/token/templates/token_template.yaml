@@ -1,0 +1,10 @@
+id: ''
+user_id: ''
+provider: ''
+access_token: ''
+refresh_token: ''
+name: ''
+purpose: ''
+is_oauth: false
+created_at: ''
+updated_at: ''

@@ -6,31 +6,31 @@
 export interface paths {
   "/api/integrations/connections": {
     /** Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support */
-    get: operations["GetConnections"];
+    get: operations["getConnections"];
     /** Register a new connection with credentials */
-    post: operations["RegisterConnection"];
+    post: operations["registerConnection"];
   };
   "/api/integrations/connections/{connectionId}": {
     /** Returns a specific connection by its ID */
-    get: operations["GetConnectionById"];
+    get: operations["getConnectionById"];
     /** Update an existing connection */
-    put: operations["UpdateConnection"];
+    put: operations["updateConnection"];
     /** Delete a specific connection */
-    delete: operations["DeleteConnection"];
+    delete: operations["deleteConnection"];
   };
   "/api/integrations/connections/meshery/{mesheryServerId}": {
     /** Delete a Meshery server connection by server ID */
-    delete: operations["DeleteMesheryConnection"];
+    delete: operations["deleteMesheryConnection"];
   };
   "/api/integrations/connections/kubernetes/{connectionId}/context": {
     /** Get Kubernetes context for a specific connection */
-    get: operations["GetKubernetesContext"];
+    get: operations["getKubernetesContext"];
   };
   "/api/environments/{environmentId}/connections/{connectionId}": {
     /** Associate a connection with an environment */
-    post: operations["AddConnectionToEnvironment"];
+    post: operations["addConnectionToEnvironment"];
     /** Disassociate a connection from an environment */
-    delete: operations["RemoveConnectionFromEnvironment"];
+    delete: operations["removeConnectionFromEnvironment"];
   };
 }
 
@@ -80,7 +80,10 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
-      /** Format: date-time */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
       /** @description Associated environments for this connection */
       environments?: {
@@ -89,6 +92,19 @@ export interface components {
          * @description ID
          */
         id: string;
+        /**
+         * @description Specifies the version of the schema to which the environment conforms.
+         * @default environments.meshery.io/v1beta1
+         * @example [
+         *   "v1",
+         *   "v1alpha1",
+         *   "v2beta3",
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
+         * ]
+         */
+        schemaVersion: string;
         /** @description Environment name */
         name: string;
         /** @description Environment description */
@@ -103,13 +119,23 @@ export interface components {
          * @description Environment owner
          */
         owner?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was created.
+         */
         created_at?: string;
+        /** @description Additional metadata associated with the environment. */
         metadata?: { [key: string]: unknown };
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description Timestamp when the resource was updated.
+         */
         updated_at?: string;
-        /** Format: date-time */
-        deleted_at?: string;
+        /**
+         * Format: date-time
+         * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+         */
+        deleted_at?: string | null;
       }[];
       /**
        * @description Specifies the version of the schema used for the definition.
@@ -118,7 +144,9 @@ export interface components {
        *   "v1",
        *   "v1alpha1",
        *   "v2beta3",
-       *   "v1.custom-suffix"
+       *   "v1.custom-suffix",
+       *   "models.meshery.io/v1beta1",
+       *   "capability.meshery.io/v1alpha1"
        * ]
        */
       schemaVersion: string;
@@ -169,7 +197,10 @@ export interface components {
         created_at?: string;
         /** Format: date-time */
         updated_at?: string;
-        /** Format: date-time */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
         /** @description Associated environments for this connection */
         environments?: {
@@ -178,6 +209,19 @@ export interface components {
            * @description ID
            */
           id: string;
+          /**
+           * @description Specifies the version of the schema to which the environment conforms.
+           * @default environments.meshery.io/v1beta1
+           * @example [
+           *   "v1",
+           *   "v1alpha1",
+           *   "v2beta3",
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
+           * ]
+           */
+          schemaVersion: string;
           /** @description Environment name */
           name: string;
           /** @description Environment description */
@@ -192,13 +236,23 @@ export interface components {
            * @description Environment owner
            */
           owner?: string;
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was created.
+           */
           created_at?: string;
+          /** @description Additional metadata associated with the environment. */
           metadata?: { [key: string]: unknown };
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description Timestamp when the resource was updated.
+           */
           updated_at?: string;
-          /** Format: date-time */
-          deleted_at?: string;
+          /**
+           * Format: date-time
+           * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+           */
+          deleted_at?: string | null;
         }[];
         /**
          * @description Specifies the version of the schema used for the definition.
@@ -207,7 +261,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;
@@ -250,7 +306,7 @@ export interface components {
       /** @description Connection sub-type */
       sub_type: string;
       /** @description Credential secret data */
-      credential_secret?: { [key: string]: unknown };
+      credentialSecret?: { [key: string]: unknown };
       /** @description Connection metadata */
       metadata?: { [key: string]: unknown };
       /** @description Connection status */
@@ -277,7 +333,7 @@ export interface components {
       /** @description Number of items per page */
       page_size: number;
       /** @description List of status counts */
-      connections_status: {
+      connectionsStatus: {
         /** @description Status value */
         status: string;
         /** @description Number of connections with this status */
@@ -308,7 +364,7 @@ export interface components {
     /** @description Paginated list of Meshery instances */
     MesheryInstancePage: {
       /** @description List of Meshery instances */
-      meshery_instances: {
+      mesheryInstances: {
         /** @description Instance ID */
         id?: string;
         /** @description Instance name */
@@ -338,9 +394,35 @@ export interface components {
     /** @description Meshery version compatibility check */
     MesheryCompatibility: {
       /** @description Meshery version string */
-      meshery_version?: string;
+      mesheryVersion?: string;
       /** @description Whether to check compatibility */
-      check_compatibility?: boolean;
+      checkCompatibility?: boolean;
+    };
+  };
+  responses: {
+    /** Invalid request body or request param */
+    400: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Expired JWT token used or insufficient privilege */
+    401: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Result not found */
+    404: {
+      content: {
+        "text/plain": string;
+      };
+    };
+    /** Internal server error */
+    500: {
+      content: {
+        "text/plain": string;
+      };
     };
   };
   parameters: {
@@ -363,7 +445,7 @@ export interface components {
 
 export interface operations {
   /** Returns a paginated list of connections for the authenticated user with filtering, sorting and pagination support */
-  GetConnections: {
+  getConnections: {
     parameters: {
       query: {
         /** Page number */
@@ -444,7 +526,10 @@ export interface operations {
               created_at?: string;
               /** Format: date-time */
               updated_at?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
               /** @description Associated environments for this connection */
               environments?: {
@@ -453,6 +538,19 @@ export interface operations {
                  * @description ID
                  */
                 id: string;
+                /**
+                 * @description Specifies the version of the schema to which the environment conforms.
+                 * @default environments.meshery.io/v1beta1
+                 * @example [
+                 *   "v1",
+                 *   "v1alpha1",
+                 *   "v2beta3",
+                 *   "v1.custom-suffix",
+                 *   "models.meshery.io/v1beta1",
+                 *   "capability.meshery.io/v1alpha1"
+                 * ]
+                 */
+                schemaVersion: string;
                 /** @description Environment name */
                 name: string;
                 /** @description Environment description */
@@ -467,13 +565,23 @@ export interface operations {
                  * @description Environment owner
                  */
                 owner?: string;
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was created.
+                 */
                 created_at?: string;
+                /** @description Additional metadata associated with the environment. */
                 metadata?: { [key: string]: unknown };
-                /** Format: date-time */
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the resource was updated.
+                 */
                 updated_at?: string;
-                /** Format: date-time */
-                deleted_at?: string;
+                /**
+                 * Format: date-time
+                 * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+                 */
+                deleted_at?: string | null;
               }[];
               /**
                * @description Specifies the version of the schema used for the definition.
@@ -482,7 +590,9 @@ export interface operations {
                *   "v1",
                *   "v1alpha1",
                *   "v2beta3",
-               *   "v1.custom-suffix"
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
                * ]
                */
               schemaVersion: string;
@@ -498,14 +608,24 @@ export interface operations {
           };
         };
       };
-      /** Server error */
-      500: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   /** Register a new connection with credentials */
-  RegisterConnection: {
+  registerConnection: {
     responses: {
-      /** Connection registered successfully */
+      /** Connection registered */
       201: {
         content: {
           "application/json": {
@@ -551,7 +671,10 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
             /** @description Associated environments for this connection */
             environments?: {
@@ -560,6 +683,19 @@ export interface operations {
                * @description ID
                */
               id: string;
+              /**
+               * @description Specifies the version of the schema to which the environment conforms.
+               * @default environments.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
+               * ]
+               */
+              schemaVersion: string;
               /** @description Environment name */
               name: string;
               /** @description Environment description */
@@ -574,13 +710,23 @@ export interface operations {
                * @description Environment owner
                */
               owner?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
               created_at?: string;
+              /** @description Additional metadata associated with the environment. */
               metadata?: { [key: string]: unknown };
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
               updated_at?: string;
-              /** Format: date-time */
-              deleted_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+               */
+              deleted_at?: string | null;
             }[];
             /**
              * @description Specifies the version of the schema used for the definition.
@@ -589,17 +735,33 @@ export interface operations {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
           };
         };
       };
-      /** Invalid request parameters */
-      400: unknown;
-      /** Server error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
     requestBody: {
       content: {
@@ -618,7 +780,7 @@ export interface operations {
           /** @description Connection sub-type */
           sub_type: string;
           /** @description Credential secret data */
-          credential_secret?: { [key: string]: unknown };
+          credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */
           metadata?: { [key: string]: unknown };
           /** @description Connection status */
@@ -633,7 +795,7 @@ export interface operations {
     };
   };
   /** Returns a specific connection by its ID */
-  GetConnectionById: {
+  getConnectionById: {
     parameters: {
       path: {
         /** Connection ID */
@@ -687,7 +849,10 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
             /** @description Associated environments for this connection */
             environments?: {
@@ -696,6 +861,19 @@ export interface operations {
                * @description ID
                */
               id: string;
+              /**
+               * @description Specifies the version of the schema to which the environment conforms.
+               * @default environments.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
+               * ]
+               */
+              schemaVersion: string;
               /** @description Environment name */
               name: string;
               /** @description Environment description */
@@ -710,13 +888,23 @@ export interface operations {
                * @description Environment owner
                */
               owner?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
               created_at?: string;
+              /** @description Additional metadata associated with the environment. */
               metadata?: { [key: string]: unknown };
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
               updated_at?: string;
-              /** Format: date-time */
-              deleted_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+               */
+              deleted_at?: string | null;
             }[];
             /**
              * @description Specifies the version of the schema used for the definition.
@@ -725,21 +913,37 @@ export interface operations {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
           };
         };
       };
-      /** Connection not found */
-      404: unknown;
-      /** Server error */
-      500: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   /** Update an existing connection */
-  UpdateConnection: {
+  updateConnection: {
     parameters: {
       path: {
         /** Connection ID */
@@ -747,7 +951,7 @@ export interface operations {
       };
     };
     responses: {
-      /** Connection updated successfully */
+      /** Connection updated */
       200: {
         content: {
           "application/json": {
@@ -793,7 +997,10 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
             /** @description Associated environments for this connection */
             environments?: {
@@ -802,6 +1009,19 @@ export interface operations {
                * @description ID
                */
               id: string;
+              /**
+               * @description Specifies the version of the schema to which the environment conforms.
+               * @default environments.meshery.io/v1beta1
+               * @example [
+               *   "v1",
+               *   "v1alpha1",
+               *   "v2beta3",
+               *   "v1.custom-suffix",
+               *   "models.meshery.io/v1beta1",
+               *   "capability.meshery.io/v1alpha1"
+               * ]
+               */
+              schemaVersion: string;
               /** @description Environment name */
               name: string;
               /** @description Environment description */
@@ -816,13 +1036,23 @@ export interface operations {
                * @description Environment owner
                */
               owner?: string;
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was created.
+               */
               created_at?: string;
+              /** @description Additional metadata associated with the environment. */
               metadata?: { [key: string]: unknown };
-              /** Format: date-time */
+              /**
+               * Format: date-time
+               * @description Timestamp when the resource was updated.
+               */
               updated_at?: string;
-              /** Format: date-time */
-              deleted_at?: string;
+              /**
+               * Format: date-time
+               * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+               */
+              deleted_at?: string | null;
             }[];
             /**
              * @description Specifies the version of the schema used for the definition.
@@ -831,17 +1061,39 @@ export interface operations {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
           };
         };
       };
-      /** Connection not found */
-      404: unknown;
-      /** Server error */
-      500: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
     requestBody: {
       content: {
@@ -860,7 +1112,7 @@ export interface operations {
           /** @description Connection sub-type */
           sub_type: string;
           /** @description Credential secret data */
-          credential_secret?: { [key: string]: unknown };
+          credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */
           metadata?: { [key: string]: unknown };
           /** @description Connection status */
@@ -875,7 +1127,7 @@ export interface operations {
     };
   };
   /** Delete a specific connection */
-  DeleteConnection: {
+  deleteConnection: {
     parameters: {
       path: {
         /** Connection ID */
@@ -883,16 +1135,30 @@ export interface operations {
       };
     };
     responses: {
-      /** Connection deleted successfully */
+      /** Connection deleted */
       204: never;
-      /** Connection not found */
-      404: unknown;
-      /** Server error */
-      500: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   /** Delete a Meshery server connection by server ID */
-  DeleteMesheryConnection: {
+  deleteMesheryConnection: {
     parameters: {
       path: {
         /** Meshery server ID */
@@ -900,16 +1166,30 @@ export interface operations {
       };
     };
     responses: {
-      /** Meshery connection deleted successfully */
+      /** Meshery connection deleted */
       204: never;
-      /** Connection not found */
-      404: unknown;
-      /** Server error */
-      500: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   /** Get Kubernetes context for a specific connection */
-  GetKubernetesContext: {
+  getKubernetesContext: {
     parameters: {
       path: {
         /** Connection ID */
@@ -923,14 +1203,28 @@ export interface operations {
           "application/json": { [key: string]: unknown };
         };
       };
-      /** Connection not found */
-      404: unknown;
-      /** Server error */
-      500: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   /** Associate a connection with an environment */
-  AddConnectionToEnvironment: {
+  addConnectionToEnvironment: {
     parameters: {
       path: {
         /** Environment ID */
@@ -940,16 +1234,36 @@ export interface operations {
       };
     };
     responses: {
-      /** Connection added to environment successfully */
-      200: unknown;
-      /** Connection or environment not found */
-      404: unknown;
-      /** Server error */
-      500: unknown;
+      /** Connection added to environment */
+      201: unknown;
+      /** Invalid request body or request param */
+      400: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
   /** Disassociate a connection from an environment */
-  RemoveConnectionFromEnvironment: {
+  removeConnectionFromEnvironment: {
     parameters: {
       path: {
         /** Environment ID */
@@ -959,12 +1273,26 @@ export interface operations {
       };
     };
     responses: {
-      /** Connection removed from environment successfully */
+      /** Connection removed from environment */
       204: never;
-      /** Connection or environment not found */
-      404: unknown;
-      /** Server error */
-      500: unknown;
+      /** Expired JWT token used or insufficient privilege */
+      401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Internal server error */
+      500: {
+        content: {
+          "text/plain": string;
+        };
+      };
     };
   };
 }

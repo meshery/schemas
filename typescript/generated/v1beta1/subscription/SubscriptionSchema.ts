@@ -3,12 +3,23 @@
  * Do not manually modify this file.
  */
 
-const SubscriptionSchema = {
+const SubscriptionSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "subscription",
+    "title": "Subscription",
     "description": "API for managing subscriptions using various payment processors in a SaaS application.",
-    "version": "1.0.0"
+    "x-deprecated": true,
+    "x-superseded-by": "v1beta2",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "servers": [
     {
@@ -42,6 +53,11 @@ const SubscriptionSchema = {
         "description": "Returns all subscriptions for the organization",
         "operationId": "getSubscriptions",
         "summary": "Read subscriptions",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
         "parameters": [
           {
             "name": "page",
@@ -110,7 +126,7 @@ const SubscriptionSchema = {
                         "x-go-type": "Subscription",
                         "type": "object",
                         "properties": {
-                          "ID": {
+                          "id": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "id"
                             },
@@ -147,14 +163,14 @@ const SubscriptionSchema = {
                             }
                           },
                           "plan": {
-                            "x-go-type": "plan.Plan",
+                            "x-go-type": "planv1beta1.Plan",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                              "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                              "name": "planv1beta1"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "belongs_to": "plans",
                               "fk_id": "PlanId",
-                              "yaml": "plan,omitempty",
                               "json": "plan,omitempty"
                             },
                             "type": "object",
@@ -253,7 +269,6 @@ const SubscriptionSchema = {
                               "unit",
                               "price_per_unit",
                               "minimum_units",
-                              "price_id",
                               "currency"
                             ]
                           },
@@ -343,7 +358,7 @@ const SubscriptionSchema = {
                           }
                         },
                         "required": [
-                          "ID",
+                          "id",
                           "org_id",
                           "plan_id",
                           "billing_id",
@@ -396,7 +411,16 @@ const SubscriptionSchema = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "cancelSubscription",
         "summary": "Cancel an existing subscription . The subscription will remain active until the end of the billing period and then it will be canceled.",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
         "parameters": [
           {
             "name": "subscriptionId",
@@ -436,7 +460,7 @@ const SubscriptionSchema = {
                         "x-go-type": "Subscription",
                         "type": "object",
                         "properties": {
-                          "ID": {
+                          "id": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "id"
                             },
@@ -473,14 +497,14 @@ const SubscriptionSchema = {
                             }
                           },
                           "plan": {
-                            "x-go-type": "plan.Plan",
+                            "x-go-type": "planv1beta1.Plan",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                              "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                              "name": "planv1beta1"
                             },
                             "x-oapi-codegen-extra-tags": {
                               "belongs_to": "plans",
                               "fk_id": "PlanId",
-                              "yaml": "plan,omitempty",
                               "json": "plan,omitempty"
                             },
                             "type": "object",
@@ -579,7 +603,6 @@ const SubscriptionSchema = {
                               "unit",
                               "price_per_unit",
                               "minimum_units",
-                              "price_id",
                               "currency"
                             ]
                           },
@@ -669,7 +692,7 @@ const SubscriptionSchema = {
                           }
                         },
                         "required": [
-                          "ID",
+                          "id",
                           "org_id",
                           "plan_id",
                           "billing_id",
@@ -684,10 +707,44 @@ const SubscriptionSchema = {
             }
           },
           "400": {
-            "description": "Invalid request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -697,7 +754,16 @@ const SubscriptionSchema = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "createSubscription",
         "summary": "Create a new subscription for an organization",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -705,19 +771,19 @@ const SubscriptionSchema = {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "org_id": {
+                  "orgId": {
                     "type": "string",
                     "description": "Organization ID"
                   },
-                  "plan_id": {
+                  "planId": {
                     "type": "string",
                     "description": "Price ID from the payment processor"
                   },
-                  "coupon_id": {
+                  "couponId": {
                     "type": "string",
                     "description": "Coupon ID to apply"
                   },
-                  "user_count": {
+                  "userCount": {
                     "type": "integer",
                     "description": "Number of users in the organization"
                   },
@@ -726,7 +792,7 @@ const SubscriptionSchema = {
                     "format": "email",
                     "description": "Email of the customer"
                   },
-                  "payment_processor": {
+                  "paymentProcessor": {
                     "type": "string",
                     "enum": [
                       "stripe",
@@ -748,7 +814,7 @@ const SubscriptionSchema = {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "subscription_id": {
+                    "subscriptionId": {
                       "type": "string"
                     },
                     "clientSecret": {
@@ -760,10 +826,34 @@ const SubscriptionSchema = {
             }
           },
           "400": {
-            "description": "Invalid request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -773,7 +863,16 @@ const SubscriptionSchema = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "upgradeSubscription",
         "summary": "Upgrade or downgrade an existing subscription by changing one of the plans in the subscription",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
         "parameters": [
           {
             "name": "subscriptionId",
@@ -792,7 +891,7 @@ const SubscriptionSchema = {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "old_plan_id": {
+                  "oldPlanId": {
                     "description": "Old Plan id that is being changed",
                     "type": "string",
                     "format": "uuid",
@@ -801,7 +900,7 @@ const SubscriptionSchema = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
-                  "new_plan_id": {
+                  "newPlanId": {
                     "description": "New Plan id that is being changed to",
                     "type": "string",
                     "format": "uuid",
@@ -822,7 +921,7 @@ const SubscriptionSchema = {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "ID": {
+                    "id": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "id"
                       },
@@ -859,14 +958,14 @@ const SubscriptionSchema = {
                       }
                     },
                     "plan": {
-                      "x-go-type": "plan.Plan",
+                      "x-go-type": "planv1beta1.Plan",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                        "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                        "name": "planv1beta1"
                       },
                       "x-oapi-codegen-extra-tags": {
                         "belongs_to": "plans",
                         "fk_id": "PlanId",
-                        "yaml": "plan,omitempty",
                         "json": "plan,omitempty"
                       },
                       "type": "object",
@@ -965,7 +1064,6 @@ const SubscriptionSchema = {
                         "unit",
                         "price_per_unit",
                         "minimum_units",
-                        "price_id",
                         "currency"
                       ]
                     },
@@ -1055,7 +1153,7 @@ const SubscriptionSchema = {
                     }
                   },
                   "required": [
-                    "ID",
+                    "id",
                     "org_id",
                     "plan_id",
                     "billing_id",
@@ -1067,10 +1165,44 @@ const SubscriptionSchema = {
             }
           },
           "400": {
-            "description": "Invalid request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1080,7 +1212,16 @@ const SubscriptionSchema = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Subscriptions"
+        ],
+        "operationId": "previewSubscriptionUpgrade",
         "summary": "Preview the invoice for upgrading or downgrading an existing subscription by changing one of the plans in the subscription",
+        "security": [
+          {
+            "jwt": []
+          }
+        ],
         "parameters": [
           {
             "name": "subscriptionId",
@@ -1099,7 +1240,7 @@ const SubscriptionSchema = {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "old_plan_id": {
+                  "oldPlanId": {
                     "description": "Old Plan id that is being changed",
                     "type": "string",
                     "format": "uuid",
@@ -1108,7 +1249,7 @@ const SubscriptionSchema = {
                       "path": "github.com/gofrs/uuid"
                     }
                   },
-                  "new_plan_id": {
+                  "newPlanId": {
                     "description": "New Plan id that is being changed to",
                     "type": "string",
                     "format": "uuid",
@@ -1134,10 +1275,44 @@ const SubscriptionSchema = {
             }
           },
           "400": {
-            "description": "Invalid request"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal server error"
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1147,7 +1322,12 @@ const SubscriptionSchema = {
         "x-internal": [
           "cloud"
         ],
+        "tags": [
+          "Payment Processors"
+        ],
+        "operationId": "handleSubscriptionWebhook",
         "summary": "Handle webhook events from payment processors",
+        "security": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -1161,10 +1341,37 @@ const SubscriptionSchema = {
         },
         "responses": {
           "200": {
-            "description": "Webhook processed successfully"
+            "description": "Webhook processed"
           },
           "400": {
-            "description": "Invalid webhook event"
+            "description": "Invalid request body or request param",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -1192,6 +1399,16 @@ const SubscriptionSchema = {
           }
         }
       },
+      "404": {
+        "description": "Result not found",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "500": {
         "description": "Internal server error",
         "content": {
@@ -1201,6 +1418,13 @@ const SubscriptionSchema = {
             }
           }
         }
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     },
     "parameters": {
@@ -1259,19 +1483,19 @@ const SubscriptionSchema = {
       "CreateSubscriptionRequest": {
         "type": "object",
         "properties": {
-          "org_id": {
+          "orgId": {
             "type": "string",
             "description": "Organization ID"
           },
-          "plan_id": {
+          "planId": {
             "type": "string",
             "description": "Price ID from the payment processor"
           },
-          "coupon_id": {
+          "couponId": {
             "type": "string",
             "description": "Coupon ID to apply"
           },
-          "user_count": {
+          "userCount": {
             "type": "integer",
             "description": "Number of users in the organization"
           },
@@ -1280,7 +1504,7 @@ const SubscriptionSchema = {
             "format": "email",
             "description": "Email of the customer"
           },
-          "payment_processor": {
+          "paymentProcessor": {
             "type": "string",
             "enum": [
               "stripe",
@@ -1294,7 +1518,7 @@ const SubscriptionSchema = {
       "UpgradeSubscriptionRequest": {
         "type": "object",
         "properties": {
-          "old_plan_id": {
+          "oldPlanId": {
             "description": "Old Plan id that is being changed",
             "type": "string",
             "format": "uuid",
@@ -1303,7 +1527,7 @@ const SubscriptionSchema = {
               "path": "github.com/gofrs/uuid"
             }
           },
-          "new_plan_id": {
+          "newPlanId": {
             "description": "New Plan id that is being changed to",
             "type": "string",
             "format": "uuid",
@@ -1317,7 +1541,7 @@ const SubscriptionSchema = {
       "CreateSubscriptionResponse": {
         "type": "object",
         "properties": {
-          "subscription_id": {
+          "subscriptionId": {
             "type": "string"
           },
           "clientSecret": {
@@ -1328,7 +1552,7 @@ const SubscriptionSchema = {
       "UpdateUsersRequest": {
         "type": "object",
         "properties": {
-          "payment_processor": {
+          "paymentProcessor": {
             "type": "string",
             "enum": [
               "stripe",
@@ -1342,11 +1566,11 @@ const SubscriptionSchema = {
       "CancelSubscriptionRequest": {
         "type": "object",
         "properties": {
-          "subscription_id": {
+          "subscriptionId": {
             "type": "string",
             "description": "Subscription ID from the payment processor"
           },
-          "payment_processor": {
+          "paymentProcessor": {
             "type": "string",
             "enum": [
               "stripe",
@@ -1385,7 +1609,7 @@ const SubscriptionSchema = {
               "x-go-type": "Subscription",
               "type": "object",
               "properties": {
-                "ID": {
+                "id": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "id"
                   },
@@ -1422,14 +1646,14 @@ const SubscriptionSchema = {
                   }
                 },
                 "plan": {
-                  "x-go-type": "plan.Plan",
+                  "x-go-type": "planv1beta1.Plan",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1beta1/plan"
+                    "path": "github.com/meshery/schemas/models/v1beta1/plan",
+                    "name": "planv1beta1"
                   },
                   "x-oapi-codegen-extra-tags": {
                     "belongs_to": "plans",
                     "fk_id": "PlanId",
-                    "yaml": "plan,omitempty",
                     "json": "plan,omitempty"
                   },
                   "type": "object",
@@ -1528,7 +1752,6 @@ const SubscriptionSchema = {
                     "unit",
                     "price_per_unit",
                     "minimum_units",
-                    "price_id",
                     "currency"
                   ]
                 },
@@ -1618,7 +1841,7 @@ const SubscriptionSchema = {
                 }
               },
               "required": [
-                "ID",
+                "id",
                 "org_id",
                 "plan_id",
                 "billing_id",
@@ -1632,7 +1855,7 @@ const SubscriptionSchema = {
       "Subscription": {
         "type": "object",
         "properties": {
-          "ID": {
+          "id": {
             "x-oapi-codegen-extra-tags": {
               "db": "id"
             },
@@ -1669,14 +1892,14 @@ const SubscriptionSchema = {
             }
           },
           "plan": {
-            "x-go-type": "plan.Plan",
+            "x-go-type": "planv1beta1.Plan",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/plan"
+              "path": "github.com/meshery/schemas/models/v1beta1/plan",
+              "name": "planv1beta1"
             },
             "x-oapi-codegen-extra-tags": {
               "belongs_to": "plans",
               "fk_id": "PlanId",
-              "yaml": "plan,omitempty",
               "json": "plan,omitempty"
             },
             "type": "object",
@@ -1775,7 +1998,6 @@ const SubscriptionSchema = {
               "unit",
               "price_per_unit",
               "minimum_units",
-              "price_id",
               "currency"
             ]
           },
@@ -1865,7 +2087,7 @@ const SubscriptionSchema = {
           }
         },
         "required": [
-          "ID",
+          "id",
           "org_id",
           "plan_id",
           "billing_id",
@@ -1897,6 +2119,6 @@ const SubscriptionSchema = {
       }
     }
   }
-} as const;
+};
 
 export default SubscriptionSchema;

@@ -14,7 +14,7 @@ export interface paths {
 
 export interface components {
   schemas: {
-    FeaturesPage: ({
+    FeaturesPage: {
       /**
        * Format: uuid
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -46,14 +46,12 @@ export interface components {
         price_per_unit: number;
         /** @enum {string} */
         currency: "usd";
-      } & {
-        price_id: unknown;
       };
       /**
        * @description Enumeration of possible feature types
        * @enum {string}
        */
-      name?:
+      name:
         | "ComponentsInDesign"
         | "RelationshipsInDesign"
         | "DesignsInWorkspace"
@@ -66,9 +64,7 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
-    } & {
-      feature: unknown;
-    })[];
+    }[];
     /**
      * @description Enumeration of possible feature types
      * @enum {string}
@@ -112,14 +108,12 @@ export interface components {
         price_per_unit: number;
         /** @enum {string} */
         currency: "usd";
-      } & {
-        price_id: unknown;
       };
       /**
        * @description Enumeration of possible feature types
        * @enum {string}
        */
-      name?:
+      name:
         | "ComponentsInDesign"
         | "RelationshipsInDesign"
         | "DesignsInWorkspace"
@@ -132,8 +126,6 @@ export interface components {
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
-    } & {
-      feature: unknown;
     };
   };
   parameters: {
@@ -145,10 +137,10 @@ export interface components {
 export interface operations {
   getFeatures: {
     responses: {
-      /** Features fetched successfully */
+      /** Features response */
       200: {
         content: {
-          "application/json": ({
+          "application/json": {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -180,14 +172,12 @@ export interface operations {
               price_per_unit: number;
               /** @enum {string} */
               currency: "usd";
-            } & {
-              price_id: unknown;
             };
             /**
              * @description Enumeration of possible feature types
              * @enum {string}
              */
-            name?:
+            name:
               | "ComponentsInDesign"
               | "RelationshipsInDesign"
               | "DesignsInWorkspace"
@@ -200,9 +190,7 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-          } & {
-            feature: unknown;
-          })[];
+          }[];
         };
       };
       /** Invalid request body or request param */
@@ -233,10 +221,10 @@ export interface operations {
       };
     };
     responses: {
-      /** Features fetched successfully */
+      /** Features response */
       200: {
         content: {
-          "application/json": ({
+          "application/json": {
             /**
              * Format: uuid
              * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -268,14 +256,12 @@ export interface operations {
               price_per_unit: number;
               /** @enum {string} */
               currency: "usd";
-            } & {
-              price_id: unknown;
             };
             /**
              * @description Enumeration of possible feature types
              * @enum {string}
              */
-            name?:
+            name:
               | "ComponentsInDesign"
               | "RelationshipsInDesign"
               | "DesignsInWorkspace"
@@ -288,9 +274,7 @@ export interface operations {
             created_at?: string;
             /** Format: date-time */
             updated_at?: string;
-          } & {
-            feature: unknown;
-          })[];
+          }[];
         };
       };
       /** Invalid request body or request param */
@@ -301,6 +285,12 @@ export interface operations {
       };
       /** Expired JWT token used or insufficient privilege */
       401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
         content: {
           "text/plain": string;
         };

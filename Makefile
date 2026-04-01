@@ -29,7 +29,7 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci
+.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
@@ -94,8 +94,53 @@ test-golang:
 golangci: dep-check
 	golangci-lint run
 
+## Validate schema design rules (Dual-Schema Pattern, additionalProperties)
+validate-schemas:
+	node build/validate-schemas.js
+
+## Fail on all schema design, style, and contract debt across validated APIs
+validate-schemas-strict:
+	node build/validate-schemas.js --strict-consistency --style-debt --contract-debt
+
+## Report new advisory schema issues without failing the build (uses advisory baseline)
+audit-schemas:
+	node build/validate-schemas.js --warn
+
+## Report the full actionable advisory schema backlog without failing the build
+audit-schemas-full:
+	node build/validate-schemas.js --warn --no-baseline
+
+## Report the full advisory backlog including legacy style debt without failing the build
+audit-schemas-style-full:
+	node build/validate-schemas.js --warn --no-baseline --style-debt
+
+## Report the full advisory backlog including legacy style and contract debt without failing the build
+audit-schemas-debt-full:
+	node build/validate-schemas.js --warn --no-baseline --style-debt --contract-debt
+
+#-----------------------------------------------------------------------------
+# Schema information
+#-----------------------------------------------------------------------------
+.PHONY: schemas-versions schemas-versions-latest
+
+## List all schema constructs with their available API versions
+schemas-versions:
+	@ls -d schemas/constructs/v*/*/api.yml 2>/dev/null \
+		| sed 's|schemas/constructs/||;s|/api.yml||' \
+		| awk -F/ '{ constructs[$$2] = constructs[$$2] ? constructs[$$2] " " $$1 : $$1 } \
+			END { for (c in constructs) printf "%-20s %s\n", c, constructs[c] }' \
+		| sort
+
+## List only the latest API version of each schema construct
+schemas-versions-latest:
+	@ls -d schemas/constructs/v*/*/api.yml 2>/dev/null \
+		| sed 's|schemas/constructs/||;s|/api.yml||' \
+		| awk -F/ '{ constructs[$$2] = $$1 } \
+			END { for (c in constructs) printf "%-20s %s\n", c, constructs[c] }' \
+		| sort
+
 ## Generate and bundle schema package (bundles OpenAPI, generates Go, RTK, TypeScript, and permissions)
-build: bundle-openapi generate-golang  generate-rtk generate-ts generate-permissions build-ts test-golang
+build: validate-schemas bundle-openapi generate-golang  generate-rtk generate-ts generate-permissions build-ts test-golang
 
 #-----------------------------------------------------------------------------
 # Dependencies

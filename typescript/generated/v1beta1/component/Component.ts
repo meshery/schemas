@@ -21,7 +21,9 @@ export interface components {
        *   "v1",
        *   "v1alpha1",
        *   "v2beta3",
-       *   "v1.custom-suffix"
+       *   "v1.custom-suffix",
+       *   "models.meshery.io/v1beta1",
+       *   "capability.meshery.io/v1alpha1"
        * ]
        */
       schemaVersion: string;
@@ -38,7 +40,7 @@ export interface components {
        */
       format: "JSON" | "CUE";
       /** @description Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models */
-      model?: {
+      model: {
         /**
          * Format: uuid
          * @description Uniquely identifies the entity (i.e. component) as defined in a declaration (i.e. design).
@@ -51,7 +53,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;
@@ -126,7 +130,10 @@ export interface components {
           created_at?: string;
           /** Format: date-time */
           updated_at?: string;
-          /** Format: date-time */
+          /**
+           * Format: date-time
+           * @description SQL null Timestamp to handle null values of time.
+           */
           deleted_at?: string;
           /** @description Associated environments for this connection */
           environments?: {
@@ -135,6 +142,19 @@ export interface components {
              * @description ID
              */
             id: string;
+            /**
+             * @description Specifies the version of the schema to which the environment conforms.
+             * @default environments.meshery.io/v1beta1
+             * @example [
+             *   "v1",
+             *   "v1alpha1",
+             *   "v2beta3",
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
+             * ]
+             */
+            schemaVersion: string;
             /** @description Environment name */
             name: string;
             /** @description Environment description */
@@ -149,13 +169,23 @@ export interface components {
              * @description Environment owner
              */
             owner?: string;
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was created.
+             */
             created_at?: string;
+            /** @description Additional metadata associated with the environment. */
             metadata?: { [key: string]: unknown };
-            /** Format: date-time */
+            /**
+             * Format: date-time
+             * @description Timestamp when the resource was updated.
+             */
             updated_at?: string;
-            /** Format: date-time */
-            deleted_at?: string;
+            /**
+             * Format: date-time
+             * @description Timestamp when the environment was soft deleted. Null while the environment remains active.
+             */
+            deleted_at?: string | null;
           }[];
           /**
            * @description Specifies the version of the schema used for the definition.
@@ -164,7 +194,9 @@ export interface components {
            *   "v1",
            *   "v1alpha1",
            *   "v2beta3",
-           *   "v1.custom-suffix"
+           *   "v1.custom-suffix",
+           *   "models.meshery.io/v1beta1",
+           *   "capability.meshery.io/v1alpha1"
            * ]
            */
           schemaVersion: string;
@@ -207,6 +239,7 @@ export interface components {
             | "Serverless"
             | "Tools"
             | "Uncategorized";
+          /** @description Additional metadata associated with the category. */
           metadata: { [key: string]: unknown };
         };
         /**
@@ -272,7 +305,9 @@ export interface components {
              *   "v1",
              *   "v1alpha1",
              *   "v2beta3",
-             *   "v1.custom-suffix"
+             *   "v1.custom-suffix",
+             *   "models.meshery.io/v1beta1",
+             *   "capability.meshery.io/v1alpha1"
              * ]
              */
             schemaVersion: string;
@@ -364,7 +399,9 @@ export interface components {
           /** @description Version of the model as defined by the registrant. */
           version: string;
         };
+        /** @description The relationships of the model. */
         relationships: unknown[];
+        /** @description The components of the model. */
         components: unknown[];
         /**
          * @description Number of components associated with the model.
@@ -394,17 +431,11 @@ export interface components {
          * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
          */
         id: string;
-        /**
-         * @description The unique name for the model within the scope of a registrant.
-         * @default untitled-model
-         */
+        /** @description The unique name for the model within the scope of a registrant. */
         name: string;
         /** @description Version of the model definition. */
         version: string;
-        /**
-         * @description Human-readable name for the model.
-         * @default Untitled Model
-         */
+        /** @description Human-readable name for the model. */
         displayName: string;
         /** @description Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31). */
         model: {
@@ -412,6 +443,7 @@ export interface components {
           version: string;
         };
         registrant: {
+          /** @description Kind of the registrant. */
           kind: string;
         };
       };
@@ -419,7 +451,7 @@ export interface components {
        * Format: uuid
        * @description A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
        */
-      modelId: string;
+      modelId?: string;
       /** @description Visualization styles for a component */
       styles?: ({
         /** @description Primary color of the component used for UI representation. */
@@ -609,7 +641,7 @@ export interface components {
        * @description Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
        * @default [
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Performance Test",
        *     "description": "Initiate a performance test. Meshery will execute the load generation, collect metrics, and present the results.",
@@ -624,7 +656,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Workload Configuration",
        *     "description": "Configure the workload specific setting of a component",
@@ -639,7 +671,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Labels and Annotations Configuration",
        *     "description": "Configure Labels And Annotations for  the component ",
@@ -654,7 +686,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Relationships",
        *     "description": "View relationships for the component",
@@ -670,7 +702,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Json Schema",
        *     "description": "View Component Definition ",
@@ -686,7 +718,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Styling",
        *     "description": "Configure the visual styles for the component",
@@ -701,7 +733,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Change Shape",
        *     "description": "Change the shape of the component",
@@ -716,7 +748,7 @@ export interface components {
        *     "metadata": null
        *   },
        *   {
-       *     "schemaVersion": "capability.meshery.io/v1alpha1",
+       *     "schemaVersion": "capability.meshery.io/v1beta1",
        *     "version": "0.7.0",
        *     "displayName": "Compound Drag And Drop",
        *     "description": "Drag and Drop a component into a parent component in graph view",
@@ -739,7 +771,9 @@ export interface components {
          *   "v1",
          *   "v1alpha1",
          *   "v2beta3",
-         *   "v1.custom-suffix"
+         *   "v1.custom-suffix",
+         *   "models.meshery.io/v1beta1",
+         *   "capability.meshery.io/v1alpha1"
          * ]
          */
         schemaVersion: string;

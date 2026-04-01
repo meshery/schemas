@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-  "/api/identity/orgs/{orgID}/users/keys": {
+  "/api/identity/orgs/{orgId}/users/keys": {
     /** Get all keys based on roles assigned to user */
     get: operations["getUserKeys"];
   };
@@ -50,7 +50,10 @@ export interface components {
        * @description Timestamp when the resource was updated.
        */
       updated_at: string;
-      /** @description SQL null Timestamp to handle null values of time. */
+      /**
+       * Format: date-time
+       * @description SQL null Timestamp to handle null values of time.
+       */
       deleted_at?: string;
     };
     /** @description Payload for creating or updating a key. */
@@ -73,6 +76,7 @@ export interface components {
       page: number;
       page_size: number;
       total_count: number;
+      /** @description The keys of the keypage. */
       keys: {
         /**
          * Format: uuid
@@ -102,7 +106,10 @@ export interface components {
          * @description Timestamp when the resource was updated.
          */
         updated_at: string;
-        /** @description SQL null Timestamp to handle null values of time. */
+        /**
+         * Format: date-time
+         * @description SQL null Timestamp to handle null values of time.
+         */
         deleted_at?: string;
       }[];
     };
@@ -135,7 +142,7 @@ export interface components {
   };
   parameters: {
     /** @description Organization ID */
-    orgID: string;
+    orgId: string;
     /** @description Key ID */
     keyId: string;
     /** @description Get responses by page */
@@ -155,7 +162,13 @@ export interface operations {
     parameters: {
       path: {
         /** Organization ID */
-        orgID: string;
+        orgId: string;
+      };
+      query: {
+        /** Get responses by page */
+        page?: string;
+        /** Get responses by pagesize */
+        pagesize?: string;
       };
     };
     responses: {
@@ -166,6 +179,7 @@ export interface operations {
             page: number;
             page_size: number;
             total_count: number;
+            /** @description The keys of the keypage. */
             keys: {
               /**
                * Format: uuid
@@ -195,7 +209,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };
@@ -203,6 +220,12 @@ export interface operations {
       };
       /** Expired JWT token used or insufficient privilege */
       401: {
+        content: {
+          "text/plain": string;
+        };
+      };
+      /** Result not found */
+      404: {
         content: {
           "text/plain": string;
         };
@@ -236,6 +259,7 @@ export interface operations {
             page: number;
             page_size: number;
             total_count: number;
+            /** @description The keys of the keypage. */
             keys: {
               /**
                * Format: uuid
@@ -265,7 +289,10 @@ export interface operations {
                * @description Timestamp when the resource was updated.
                */
               updated_at: string;
-              /** @description SQL null Timestamp to handle null values of time. */
+              /**
+               * Format: date-time
+               * @description SQL null Timestamp to handle null values of time.
+               */
               deleted_at?: string;
             }[];
           };
@@ -293,7 +320,7 @@ export interface operations {
   };
   upsertKey: {
     responses: {
-      /** Key upserted successfully */
+      /** Key upserted */
       200: {
         content: {
           "application/json": {
@@ -325,7 +352,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -377,7 +407,7 @@ export interface operations {
       };
     };
     responses: {
-      /** Key fetched successfully */
+      /** Key response */
       200: {
         content: {
           "application/json": {
@@ -409,7 +439,10 @@ export interface operations {
              * @description Timestamp when the resource was updated.
              */
             updated_at: string;
-            /** @description SQL null Timestamp to handle null values of time. */
+            /**
+             * Format: date-time
+             * @description SQL null Timestamp to handle null values of time.
+             */
             deleted_at?: string;
           };
         };
@@ -448,7 +481,7 @@ export interface operations {
       };
     };
     responses: {
-      /** Key deleted successfully */
+      /** Key deleted */
       204: never;
       /** Invalid request body or request param */
       400: {

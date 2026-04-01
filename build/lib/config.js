@@ -58,19 +58,66 @@ const packageNameOverrides = {
  * These directories will be skipped even if they contain api.yml
  */
 const excludePackages = [
-  // Add any packages to exclude here
-  // Example: "v1beta2-draft/somepkg"
+  // Deprecated v1beta1/relationship has circular $ref aliases in api.yml.
+  // Use v1alpha3 Go models instead.
+  "v1beta1/relationship",
+];
+
+/**
+ * Packages to EXCLUDE from Go code generation only.
+ * These are still discovered and available for bundling/$ref resolution,
+ * but oapi-codegen is not run on them.
+ */
+const excludeFromGoGeneration = [
+  // Core is a bundled base schema. The v1alpha1/core Go package provides
+  // the generated types. v1beta1/core and v1beta2/core schemas exist for
+  // $ref resolution but don't need their own Go packages.
+  "v1beta1/core",
+  "v1beta2/core",
+  // v1beta2/catalog: excluded from Go generation. Catalog Go models
+  // exist at models/v1alpha2/catalog (original) and models/v1beta1/catalog
+  // (promoted). The GO_IMPORT_OVERRIDES in generate-golang.js routes
+  // v1beta2/catalog imports to models/v1alpha2/catalog.
+  "v1beta2/catalog",
 ];
 
 /**
  * Packages to EXCLUDE from the merged OpenAPI spec
  * These will still be processed for Go generation but not included in the merge
  */
-const excludeFromMerge = [
+/**
+ * Static exclusions: non-API base schemas that should never appear in the
+ * merged OpenAPI spec regardless of version.
+ */
+const excludeFromMergeStatic = new Set([
   "v1alpha1/core",
   "v1alpha1/capability",
-  // Add any other packages that shouldn't be in the merged spec
-];
+  "v1beta1/core",
+  "v1beta1/capability",
+  "v1beta1/selector",
+  "v1beta2/core",
+  "v1beta2/selector",
+]);
+
+/**
+ * Dynamic exclusion: constructs marked x-deprecated: true in their api.yml
+ * are excluded from the merged spec (their v1beta2 replacement takes
+ * precedence). This is computed at discovery time, not hardcoded.
+ */
+function isDeprecatedPackage(pkg) {
+  const projectRoot = getProjectRoot();
+  const apiPath = path.join(projectRoot, pkg.openapiPath);
+  try {
+    const yaml = require("js-yaml");
+    const doc = yaml.load(fs.readFileSync(apiPath, "utf-8"));
+    return doc?.info?.["x-deprecated"] === true;
+  } catch {
+    return false;
+  }
+}
+
+// Legacy compat — getMergePackages uses this for static exclusions.
+const excludeFromMerge = [...excludeFromMergeStatic];
 
 /**
  * Get the project root directory
@@ -96,18 +143,18 @@ function discoverSchemaPackages() {
     return packages;
   }
 
-  // Get all version directories
+  // Get all version directories (sorted for deterministic discovery order)
   const versionDirs = fs.readdirSync(schemasRoot).filter((item) => {
     const itemPath = path.join(schemasRoot, item);
     return fs.statSync(itemPath).isDirectory();
-  });
+  }).sort();
 
   for (const version of versionDirs) {
     const versionPath = path.join(schemasRoot, version);
     const packageDirs = fs.readdirSync(versionPath).filter((item) => {
       const itemPath = path.join(versionPath, item);
       return fs.statSync(itemPath).isDirectory();
-    });
+    }).sort();
 
     for (const dirName of packageDirs) {
       const openapiPath = path.join(versionPath, dirName, "api.yml");
@@ -155,7 +202,11 @@ function getSchemaPackages() {
 function getMergePackages() {
   return getSchemaPackages().filter((pkg) => {
     const packageKey = `${pkg.version}/${pkg.dirName}`;
-    return !excludeFromMerge.includes(packageKey);
+    // Static exclusions: non-API base schemas
+    if (excludeFromMergeStatic.has(packageKey)) return false;
+    // Dynamic exclusion: deprecated constructs (x-deprecated: true)
+    if (isDeprecatedPackage(pkg)) return false;
+    return true;
   });
 }
 
@@ -182,8 +233,19 @@ function getBundledOutputPath(pkg) {
  * @param {Object} pkg - Package definition
  * @returns {string} Path to Go output file (relative to project root)
  */
+/**
+ * Go output path overrides for packages where the Go models should be
+ * generated at a different location than the default version-scoped path.
+ */
+const goOutputPathOverrides = {
+  // Core types are unversioned — generated to models/core/ alongside
+  // manual utility types (Map, NullTime, MapObject, helpers).
+  "v1alpha1/core": "models/core/core.go",
+};
+
 function getGoOutputPath(pkg) {
-  return `${paths.modelsDir}/${pkg.version}/${pkg.name}/${pkg.name}.go`;
+  const key = `${pkg.version}/${pkg.dirName}`;
+  return goOutputPathOverrides[key] || `${paths.modelsDir}/${pkg.version}/${pkg.name}/${pkg.name}.go`;
 }
 
 /**
@@ -212,6 +274,7 @@ module.exports = {
   packageNameOverrides,
   excludePackages,
   excludeFromMerge,
+  excludeFromGoGeneration,
   getProjectRoot,
   discoverSchemaPackages,
   getSchemaPackages,

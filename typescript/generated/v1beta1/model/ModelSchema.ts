@@ -3,17 +3,41 @@
  * Do not manually modify this file.
  */
 
-const ModelSchema = {
+const ModelSchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "model",
-    "version": "1.0.0"
+    "title": "Model",
+    "description": "OpenAPI schema for Meshery model registration and management.",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
+  "security": [
+    {
+      "jwt": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Models",
+      "description": "Operations related to mesh models"
+    }
+  ],
   "paths": {
     "/api/meshmodels/register": {
       "post": {
+        "tags": [
+          "Models"
+        ],
         "summary": "Register mesh models",
-        "operationId": "RegisterMeshmodels",
+        "operationId": "registerMeshmodels",
         "requestBody": {
           "required": true,
           "content": {
@@ -38,7 +62,8 @@ const ModelSchema = {
                         "properties": {
                           "fileName": {
                             "type": "string",
-                            "description": "Name of the file being uploaded."
+                            "description": "Name of the file being uploaded.",
+                            "maxLength": 255
                           },
                           "modelFile": {
                             "type": "string",
@@ -131,6 +156,7 @@ const ModelSchema = {
                   "uploadType": {
                     "type": "string",
                     "title": "Upload method",
+                    "x-enum-casing-exempt": true,
                     "enum": [
                       "file",
                       "urlImport",
@@ -146,7 +172,8 @@ const ModelSchema = {
                   },
                   "register": {
                     "type": "boolean",
-                    "nullable": false
+                    "nullable": false,
+                    "description": "The register of the importrequest."
                   }
                 }
               }
@@ -154,7 +181,7 @@ const ModelSchema = {
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful registration",
             "content": {
               "application/json": {
@@ -172,6 +199,112 @@ const ModelSchema = {
           "400": {
             "description": "Invalid request format"
           },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/integrations/meshmodels/models": {
+      "get": {
+        "x-internal": [
+          "cloud"
+        ],
+        "tags": [
+          "Models"
+        ],
+        "summary": "Get mesh model models",
+        "operationId": "getMeshModelModels",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Model and capabilities registry entries retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "Current page number of the result set.",
+                      "minimum": 0
+                    },
+                    "page_size": {
+                      "type": "integer",
+                      "description": "Number of items per page.",
+                      "minimum": 1
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "description": "Total number of items available.",
+                      "minimum": 0
+                    },
+                    "models": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      },
+                      "description": "The models of the meshmodelmodelspage."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal server error"
           }
@@ -180,6 +313,25 @@ const ModelSchema = {
     }
   },
   "components": {
+    "responses": {
+      "401": {
+        "description": "Expired JWT token used or insufficient privilege",
+        "content": {
+          "text/plain": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "Model": {
         "type": "object",
@@ -190,20 +342,14 @@ const ModelSchema = {
         "properties": {
           "version": {
             "description": "Version of the model as defined by the registrant.",
-            "allOf": [
-              {
-                "type": "string",
-                "minLength": 5,
-                "maxLength": 100,
-                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
-              }
-            ],
             "x-oapi-codegen-extra-tags": {
-              "yaml": "version",
               "json": "version"
             },
-            "x-order": 1
+            "x-order": 1,
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           }
         }
       },
@@ -239,25 +385,27 @@ const ModelSchema = {
             "type": "string",
             "minLength": 2,
             "maxLength": 100,
-            "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+            "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
             "example": [
               "v1",
               "v1alpha1",
               "v2beta3",
-              "v1.custom-suffix"
+              "v1.custom-suffix",
+              "models.meshery.io/v1beta1",
+              "capability.meshery.io/v1alpha1"
             ]
           },
           "version": {
+            "description": "Version of the model definition.",
             "type": "string",
-            "minLength": 5,
-            "maxLength": 100,
-            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
             "x-order": 3,
             "x-oapi-codegen-extra-tags": {
               "yaml": "version",
               "json": "version"
-            }
+            },
+            "minLength": 5,
+            "maxLength": 100,
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
           "name": {
             "type": "string",
@@ -325,9 +473,10 @@ const ModelSchema = {
               "gorm": "foreignKey:RegistrantId;references:ID"
             },
             "x-order": 8,
-            "x-go-type": "connection.Connection",
+            "x-go-type": "connectionv1beta1.Connection",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/connection"
+              "path": "github.com/meshery/schemas/models/v1beta1/connection",
+              "name": "connectionv1beta1"
             },
             "$id": "https://schemas.meshery.io/connection.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -483,11 +632,13 @@ const ModelSchema = {
                   "db": "deleted_at",
                   "yaml": "deleted_at"
                 },
-                "x-go-type": "core.NullTime",
+                "x-order": 12,
+                "description": "SQL null Timestamp to handle null values of time.",
+                "x-go-type": "meshcore.NullTime",
                 "x-go-type-import": {
+                  "name": "meshcore",
                   "path": "github.com/meshery/schemas/models/core"
                 },
-                "x-order": 12,
                 "type": "string",
                 "format": "date-time",
                 "x-go-type-skip-optional-pointer": true
@@ -496,17 +647,32 @@ const ModelSchema = {
                 "type": "array",
                 "description": "Associated environments for this connection",
                 "items": {
-                  "x-go-type": "*environment.Environment",
+                  "x-go-type": "*environmentv1beta1.Environment",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1beta1/environment"
+                    "path": "github.com/meshery/schemas/models/v1beta1/environment",
+                    "name": "environmentv1beta1"
                   },
                   "$id": "https://schemas.meshery.io/environment.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
-                  "description": "Meshery Environments allow you to logically group related Connections and their associated Credentials.. Learn more at https://docs.meshery.io/concepts/logical/environments",
+                  "title": "Environment",
+                  "description": "Environments allow you to logically group related Connections and their associated Credentials. Learn more at https://docs.meshery.io/concepts/logical/environments",
                   "additionalProperties": false,
                   "type": "object",
+                  "example": {
+                    "id": "00000000-0000-0000-0000-000000000000",
+                    "schemaVersion": "environments.meshery.io/v1beta1",
+                    "name": "Production Environment",
+                    "description": "Connections and credentials for the production cluster.",
+                    "organization_id": "00000000-0000-0000-0000-000000000000",
+                    "owner": "00000000-0000-0000-0000-000000000000",
+                    "created_at": "0001-01-01T00:00:00Z",
+                    "metadata": {},
+                    "updated_at": "0001-01-01T00:00:00Z",
+                    "deleted_at": null
+                  },
                   "required": [
                     "id",
+                    "schemaVersion",
                     "name",
                     "description",
                     "organization_id"
@@ -527,13 +693,36 @@ const ModelSchema = {
                         "path": "github.com/gofrs/uuid"
                       }
                     },
+                    "schemaVersion": {
+                      "description": "Specifies the version of the schema to which the environment conforms.",
+                      "x-order": 2,
+                      "x-oapi-codegen-extra-tags": {
+                        "yaml": "schemaVersion",
+                        "db": "-",
+                        "gorm": "-"
+                      },
+                      "default": "environments.meshery.io/v1beta1",
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 100,
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
+                      "example": [
+                        "v1",
+                        "v1alpha1",
+                        "v2beta3",
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
+                      ]
+                    },
                     "name": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "name",
                         "yaml": "name"
                       },
-                      "x-order": 2,
+                      "x-order": 3,
                       "type": "string",
+                      "maxLength": 100,
                       "description": "Environment name"
                     },
                     "description": {
@@ -541,8 +730,9 @@ const ModelSchema = {
                         "db": "description",
                         "yaml": "description"
                       },
-                      "x-order": 3,
+                      "x-order": 4,
                       "type": "string",
+                      "maxLength": 1000,
                       "description": "Environment description"
                     },
                     "organization_id": {
@@ -551,7 +741,7 @@ const ModelSchema = {
                         "db": "organization_id",
                         "yaml": "organization_id"
                       },
-                      "x-order": 4,
+                      "x-order": 5,
                       "description": "Environment organization ID",
                       "type": "string",
                       "format": "uuid",
@@ -565,7 +755,7 @@ const ModelSchema = {
                         "db": "owner",
                         "yaml": "owner"
                       },
-                      "x-order": 5,
+                      "x-order": 6,
                       "description": "Environment owner",
                       "type": "string",
                       "format": "uuid",
@@ -575,43 +765,56 @@ const ModelSchema = {
                       }
                     },
                     "created_at": {
+                      "x-order": 7,
+                      "description": "Timestamp when the resource was created.",
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "CreatedAt",
                       "x-oapi-codegen-extra-tags": {
                         "db": "created_at",
                         "yaml": "created_at"
                       },
-                      "x-order": 6,
-                      "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "metadata": {
+                      "description": "Additional metadata associated with the environment.",
                       "x-oapi-codegen-extra-tags": {
                         "db": "metadata",
                         "yaml": "metadata"
                       },
-                      "x-order": 7,
+                      "x-order": 8,
                       "x-go-type": "core.Map",
                       "x-go-type-skip-optional-pointer": true,
                       "type": "object"
                     },
                     "updated_at": {
+                      "x-order": 9,
+                      "description": "Timestamp when the resource was updated.",
+                      "x-go-type": "time.Time",
+                      "type": "string",
+                      "format": "date-time",
+                      "x-go-name": "UpdatedAt",
                       "x-oapi-codegen-extra-tags": {
                         "db": "updated_at",
                         "yaml": "updated_at"
                       },
-                      "x-order": 8,
-                      "type": "string",
-                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     },
                     "deleted_at": {
+                      "description": "Timestamp when the environment was soft deleted. Null while the environment remains active.",
+                      "nullable": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "deleted_at",
                         "yaml": "deleted_at"
                       },
                       "x-go-type": "core.NullTime",
                       "x-go-import": "database/sql",
-                      "x-order": 9,
+                      "x-order": 10,
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
                       "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
@@ -638,12 +841,14 @@ const ModelSchema = {
                 "type": "string",
                 "minLength": 2,
                 "maxLength": 100,
-                "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
                 "example": [
                   "v1",
                   "v1alpha1",
                   "v2beta3",
-                  "v1.custom-suffix"
+                  "v1.custom-suffix",
+                  "models.meshery.io/v1beta1",
+                  "capability.meshery.io/v1alpha1"
                 ]
               }
             }
@@ -683,15 +888,17 @@ const ModelSchema = {
             "x-oapi-codegen-extra-tags": {
               "yaml": "category",
               "json": "category",
-              "gorm": "foreignKey:CategoryId;references:Id"
+              "gorm": "foreignKey:CategoryId;references:ID"
             },
-            "x-go-type": "category.CategoryDefinition",
+            "x-go-type": "categoryv1beta1.CategoryDefinition",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/category"
+              "path": "github.com/meshery/schemas/models/v1beta1/category",
+              "name": "categoryv1beta1"
             },
             "$id": "https://schemas.meshery.io/category.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
+            "additionalProperties": false,
             "description": "Category of the model.",
             "required": [
               "id",
@@ -740,6 +947,7 @@ const ModelSchema = {
                 "x-order": 2
               },
               "metadata": {
+                "description": "Additional metadata associated with the category.",
                 "type": "object",
                 "x-oapi-codegen-extra-tags": {
                   "yaml": "metadata,omitempty",
@@ -752,9 +960,10 @@ const ModelSchema = {
           },
           "subCategory": {
             "x-order": 10,
-            "x-go-type": "subcategory.SubCategoryDefinition",
+            "x-go-type": "subcategoryv1beta1.SubCategoryDefinition",
             "x-go-type-import": {
-              "path": "github.com/meshery/schemas/models/v1beta1/subcategory"
+              "path": "github.com/meshery/schemas/models/v1beta1/subcategory",
+              "name": "subcategoryv1beta1"
             },
             "$id": "https://schemas.meshery.io/category.yaml",
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -829,9 +1038,10 @@ const ModelSchema = {
                 "type": "array",
                 "description": "Capabilities associated with the model",
                 "items": {
-                  "x-go-type": "capability.Capability",
+                  "x-go-type": "capabilityv1alpha1.Capability",
                   "x-go-type-import": {
-                    "path": "github.com/meshery/schemas/models/v1alpha1/capability"
+                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
+                    "name": "capabilityv1alpha1"
                   },
                   "$id": "https://schemas.meshery.io/capability.yaml",
                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -859,20 +1069,22 @@ const ModelSchema = {
                       "type": "string",
                       "minLength": 2,
                       "maxLength": 100,
-                      "pattern": "([a-z.])*(?!^/)v(alpha|beta|[0-9]+)([.-]*[a-z0-9]+)*$",
+                      "pattern": "^([a-z][a-z0-9.-]*\\/)?v(alpha|beta|[0-9]+)([.-][a-z0-9]+)*$",
                       "example": [
                         "v1",
                         "v1alpha1",
                         "v2beta3",
-                        "v1.custom-suffix"
+                        "v1.custom-suffix",
+                        "models.meshery.io/v1beta1",
+                        "capability.meshery.io/v1alpha1"
                       ]
                     },
                     "version": {
+                      "description": "Version of the capability definition.",
                       "type": "string",
                       "minLength": 5,
                       "maxLength": 100,
-                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                      "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
+                      "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
                     },
                     "displayName": {
                       "description": "Name of the capability in human-readible format.",
@@ -881,7 +1093,8 @@ const ModelSchema = {
                     },
                     "description": {
                       "type": "string",
-                      "description": "A written representation of the purpose and characteristics of the capability."
+                      "description": "A written representation of the purpose and characteristics of the capability.",
+                      "maxLength": 5000
                     },
                     "kind": {
                       "description": "Top-level categorization of the capability",
@@ -959,7 +1172,7 @@ const ModelSchema = {
                       ],
                       "key": "",
                       "kind": "mutate",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "",
                       "type": "style",
@@ -973,7 +1186,7 @@ const ModelSchema = {
                       ],
                       "key": "",
                       "kind": "mutate",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "shape",
                       "type": "style",
@@ -987,7 +1200,7 @@ const ModelSchema = {
                       ],
                       "key": "",
                       "kind": "interaction",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "compoundDnd",
                       "type": "graph",
@@ -1001,7 +1214,7 @@ const ModelSchema = {
                       ],
                       "key": "",
                       "kind": "mutate",
-                      "schemaVersion": "capability.meshery.io/v1alpha1",
+                      "schemaVersion": "capability.meshery.io/v1beta1",
                       "status": "enabled",
                       "subType": "body-text",
                       "type": "style",
@@ -1131,20 +1344,14 @@ const ModelSchema = {
             "properties": {
               "version": {
                 "description": "Version of the model as defined by the registrant.",
-                "allOf": [
-                  {
-                    "type": "string",
-                    "minLength": 5,
-                    "maxLength": 100,
-                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                    "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
-                  }
-                ],
                 "x-oapi-codegen-extra-tags": {
-                  "yaml": "version",
                   "json": "version"
                 },
-                "x-order": 1
+                "x-order": 1,
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 100,
+                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
               }
             }
           },
@@ -1155,7 +1362,8 @@ const ModelSchema = {
               "gorm": "-",
               "json": "relationships",
               "yaml": "relationships"
-            }
+            },
+            "description": "The relationships of the model."
           },
           "components": {
             "type": "array",
@@ -1164,7 +1372,8 @@ const ModelSchema = {
               "gorm": "-",
               "json": "components",
               "yaml": "components"
-            }
+            },
+            "description": "The components of the model."
           },
           "componentsCount": {
             "type": "integer",
@@ -1175,7 +1384,8 @@ const ModelSchema = {
               "yaml": "components_count",
               "gorm": "-"
             },
-            "default": 0
+            "default": 0,
+            "minimum": 0
           },
           "relationshipsCount": {
             "type": "integer",
@@ -1186,7 +1396,8 @@ const ModelSchema = {
               "json": "relationships_count",
               "yaml": "relationships_count"
             },
-            "default": 0
+            "default": 0,
+            "minimum": 0
           },
           "created_at": {
             "x-order": 14,
@@ -1242,7 +1453,9 @@ const ModelSchema = {
         ],
         "properties": {
           "kind": {
-            "type": "string"
+            "type": "string",
+            "description": "Kind of the registrant.",
+            "maxLength": 255
           }
         }
       },
@@ -1269,52 +1482,29 @@ const ModelSchema = {
           "name": {
             "type": "string",
             "description": "The unique name for the model within the scope of a registrant.",
-            "helperText": "Model name should be in lowercase with hyphens, not whitespaces.",
             "pattern": "^[a-z0-9-]+$",
             "examples": [
               "cert-manager"
-            ],
-            "x-order": 4,
-            "x-oapi-codegen-extra-tags": {
-              "yaml": "name",
-              "json": "name"
-            },
-            "default": "untitled-model"
+            ]
           },
           "version": {
+            "description": "Version of the model definition.",
             "type": "string",
             "minLength": 5,
             "maxLength": 100,
-            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-            "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1.",
-            "x-order": 3,
-            "x-oapi-codegen-extra-tags": {
-              "yaml": "version",
-              "json": "version"
-            }
+            "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
           },
           "displayName": {
+            "type": "string",
             "description": "Human-readable name for the model.",
-            "helperText": "Model display name may include letters, numbers, and spaces. Special characters are not allowed.",
             "minLength": 1,
             "maxLength": 100,
-            "type": "string",
             "pattern": "^[a-zA-Z0-9 ]+$",
             "examples": [
               "Cert Manager"
-            ],
-            "x-order": 5,
-            "x-oapi-codegen-extra-tags": {
-              "yaml": "displayName",
-              "json": "displayName"
-            },
-            "default": "Untitled Model"
+            ]
           },
           "model": {
-            "x-oapi-codegen-extra-tags": {
-              "gorm": "type:bytes;serializer:json"
-            },
-            "x-order": 12,
             "type": "object",
             "description": "Registrant-defined data associated with the model. Properties pertain to the software being managed (e.g. Kubernetes v1.31).",
             "required": [
@@ -1323,27 +1513,20 @@ const ModelSchema = {
             "properties": {
               "version": {
                 "description": "Version of the model as defined by the registrant.",
-                "allOf": [
-                  {
-                    "type": "string",
-                    "minLength": 5,
-                    "maxLength": 100,
-                    "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
-                    "description": "A valid semantic version string between 5 and 256 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1."
-                  }
-                ],
                 "x-oapi-codegen-extra-tags": {
-                  "yaml": "version",
                   "json": "version"
                 },
-                "x-order": 1
+                "x-order": 1,
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 100,
+                "pattern": "^[a-z0-9]+.[0-9]+.[0-9]+(-[0-9A-Za-z-]+(.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
               }
             }
           },
           "registrant": {
             "x-go-type": "RegistrantReference",
             "x-oapi-codegen-extra-tags": {
-              "yaml": "registrant",
               "json": "registrant"
             },
             "type": "object",
@@ -1352,7 +1535,9 @@ const ModelSchema = {
             ],
             "properties": {
               "kind": {
-                "type": "string"
+                "type": "string",
+                "description": "Kind of the registrant.",
+                "maxLength": 255
               }
             }
           }
@@ -1379,7 +1564,8 @@ const ModelSchema = {
                 "properties": {
                   "fileName": {
                     "type": "string",
-                    "description": "Name of the file being uploaded."
+                    "description": "Name of the file being uploaded.",
+                    "maxLength": 255
                   },
                   "modelFile": {
                     "type": "string",
@@ -1472,6 +1658,7 @@ const ModelSchema = {
           "uploadType": {
             "type": "string",
             "title": "Upload method",
+            "x-enum-casing-exempt": true,
             "enum": [
               "file",
               "urlImport",
@@ -1487,7 +1674,8 @@ const ModelSchema = {
           },
           "register": {
             "type": "boolean",
-            "nullable": false
+            "nullable": false,
+            "description": "The register of the importrequest."
           }
         }
       },
@@ -1503,7 +1691,8 @@ const ModelSchema = {
             "properties": {
               "fileName": {
                 "type": "string",
-                "description": "Name of the file being uploaded."
+                "description": "Name of the file being uploaded.",
+                "maxLength": 255
               },
               "modelFile": {
                 "type": "string",
@@ -1592,9 +1781,37 @@ const ModelSchema = {
             }
           }
         ]
+      },
+      "MeshModelModelsPage": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "Current page number of the result set.",
+            "minimum": 0
+          },
+          "page_size": {
+            "type": "integer",
+            "description": "Number of items per page.",
+            "minimum": 1
+          },
+          "total_count": {
+            "type": "integer",
+            "description": "Total number of items available.",
+            "minimum": 0
+          },
+          "models": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "The models of the meshmodelmodelspage."
+          }
+        }
       }
     }
   }
-} as const;
+};
 
 export default ModelSchema;

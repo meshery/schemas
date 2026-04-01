@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: schedule
+  description: Documentation for Meshery Cloud REST APIs for Schedules
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: v1beta1
+servers:
+  - url: https://cloud.layer5.io
+    description: Meshery Cloud production server URL
+  - url: https://staging-cloud.layer5.io
+    description: Meshery Cloud staging server URL
+  - url: http://localhost:9876
+    description: Meshery Cloud development server URL
+
+security:
+  - jwt: []
+
+tags:
+  - name: scheduler
+    description: Operations related to scheduled tasks
+
+paths:
+  /user/schedules:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - scheduler
+      summary: Get schedules
+      operationId: getSchedules
+      description: Returns all schedules for the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pagesize"
+        - $ref: "#/components/parameters/search"
+        - $ref: "#/components/parameters/order"
+      responses:
+        "200":
+          description: Schedules response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchedulePage"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+    post:
+      x-internal: ["cloud"]
+      tags:
+        - scheduler
+      summary: Create or update schedule
+      operationId: upsertSchedule
+      description: Creates or updates a schedule for the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schedule"
+      responses:
+        "200":
+          description: Schedule upserted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /user/schedules/{id}:
+    get:
+      x-internal: ["cloud"]
+      tags:
+        - scheduler
+      summary: Get schedule by ID
+      operationId: getSchedule
+      description: Returns a specific schedule by its ID.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Schedule response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+    delete:
+      x-internal: ["cloud"]
+      tags:
+        - scheduler
+      summary: Delete schedule
+      operationId: deleteSchedule
+      description: Deletes a schedule by its ID.
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        "204":
+          description: Schedule deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    400:
+      $ref: "../core/api.yml#/components/responses/400"
+    401:
+      $ref: "../core/api.yml#/components/responses/401"
+    404:
+      $ref: "../core/api.yml#/components/responses/404"
+    500:
+      $ref: "../core/api.yml#/components/responses/500"
+
+  parameters:
+    id:
+      name: id
+      in: path
+      description: Schedule ID
+      required: true
+      schema:
+        $ref: "../core/api.yml#/components/schemas/uuid"
+    page:
+      $ref: "../core/api.yml#/components/parameters/page"
+    pagesize:
+      $ref: "../core/api.yml#/components/parameters/pagesize"
+    search:
+      $ref: "../core/api.yml#/components/parameters/search"
+    order:
+      $ref: "../core/api.yml#/components/parameters/order"
+
+  schemas:
+    Schedule:
+      type: object
+      description: >
+        A schedule defines a recurring cron-based trigger for performance tests
+        or other automated tasks.
+      required:
+        - name
+        - user_id
+        - cron_expression
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Unique identifier for the schedule.
+          x-order: 1
+          x-oapi-codegen-extra-tags:
+            db: "id"
+        name:
+          type: string
+          description: Human-readable name for the schedule.
+          x-order: 2
+          x-oapi-codegen-extra-tags:
+            db: "name"
+          minLength: 1
+          maxLength: 255
+        user_id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: UUID of the user who owns this schedule.
+          x-order: 3
+          x-oapi-codegen-extra-tags:
+            db: "user_id"
+        cron_expression:
+          type: string
+          description: >
+            Cron expression defining the schedule's recurrence
+            (e.g. "0 0 * * *" for daily at midnight).
+          x-order: 4
+          x-oapi-codegen-extra-tags:
+            db: "cron_expression"
+          maxLength: 500
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+          x-order: 5
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+          x-order: 6
+
+    SchedulePage:
+      type: object
+      description: A paginated list of schedules.
+      required:
+        - page
+        - page_size
+        - total_count
+        - schedules
+      properties:
+        page:
+          type: integer
+          description: Current page number (zero-based).
+          x-order: 1
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of schedules per page.
+          x-order: 2
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of schedules across all pages.
+          x-order: 3
+          minimum: 0
+        schedules:
+          type: array
+          items:
+            $ref: "#/components/schemas/Schedule"
+          x-order: 4
+          description: The schedules of the schedulepage.

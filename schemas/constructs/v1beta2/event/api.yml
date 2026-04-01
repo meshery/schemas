@@ -1,0 +1,444 @@
+openapi: 3.0.0
+info:
+  title: Events
+  description: OpenAPI schema for Meshery events and system notifications.
+  version: v1beta2
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+- name: events
+  description: APIs for Meshery Cloud events.
+paths:
+  /events/{id}:
+    delete:
+      tags:
+      - events
+      summary: Delete a single event
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: ID of the event to delete
+      responses:
+        '204':
+          description: Event deleted
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /events:
+    post:
+      tags:
+      - events
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Event created
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /events/delete:
+    post:
+      tags:
+      - events
+      summary: Bulk delete events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkDeleteRequest'
+      responses:
+        '200':
+          description: event deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /events/status:
+    put:
+      tags:
+      - events
+      summary: Bulk update event status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkUpdateStatusRequest'
+      responses:
+        '200':
+          description: Events updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '500':
+          $ref: '#/components/responses/500'
+  /events/{id}/status:
+    put:
+      tags:
+      - events
+      summary: Update status of a single event
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: ID of the event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventStatusRequest'
+      responses:
+        '200':
+          description: Event status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  event_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
+  /api/workspaces/{workspaceId}/events:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - events
+      security:
+      - jwt: []
+      operationId: getEventsOfWorkspace
+      summary: Get workspace events
+      description: Gets events for a workspace.
+      parameters:
+      - $ref: '#/components/parameters/workspaceId'
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pagesize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/order'
+      responses:
+        '200':
+          description: Workspace events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsPage'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Workspace not found
+        '500':
+          description: Server error
+  /api/events:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - events
+      operationId: getEventsAggregate
+      summary: Get events aggregate summary
+      parameters:
+      - $ref: '#/components/parameters/cumulative'
+      responses:
+        '200':
+          description: Events aggregate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsAggregate'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  /api/events/list:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - events
+      operationId: getEvents
+      summary: Get events list
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pagesize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/order'
+      - $ref: '#/components/parameters/eventsFilter'
+      responses:
+        '200':
+          description: Events page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsPage'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  /api/events/summary:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - events
+      operationId: getEventSummaryByUser
+      summary: Get event summary by user
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pagesize'
+      - $ref: '#/components/parameters/search'
+      - $ref: '#/components/parameters/order'
+      - $ref: '#/components/parameters/filter'
+      responses:
+        '200':
+          description: Event summary page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventSummaryPage'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+  /api/events/types:
+    get:
+      x-internal:
+      - cloud
+      tags:
+      - events
+      operationId: getEventTypes
+      summary: Get event types
+      parameters:
+      - $ref: '#/components/parameters/page'
+      - $ref: '#/components/parameters/pagesize'
+      responses:
+        '200':
+          description: Event types
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not found
+        '500':
+          description: Server error
+components:
+  responses:
+    400:
+      $ref: ../core/api.yml#/components/responses/400
+    401:
+      $ref: ../core/api.yml#/components/responses/401
+    404:
+      $ref: ../core/api.yml#/components/responses/404
+    500:
+      $ref: ../core/api.yml#/components/responses/500
+  parameters:
+    workspaceId:
+      name: workspaceId
+      in: path
+      description: Workspace ID
+      schema:
+        $ref: ../core/api.yml#/components/schemas/WorkspaceId
+      required: true
+    page:
+      $ref: ../core/api.yml#/components/parameters/page
+    pagesize:
+      $ref: ../core/api.yml#/components/parameters/pagesize
+    search:
+      $ref: ../core/api.yml#/components/parameters/search
+    order:
+      $ref: ../core/api.yml#/components/parameters/order
+    cumulative:
+      name: cumulative
+      in: query
+      required: false
+      schema:
+        type: boolean
+    filter:
+      $ref: ../core/api.yml#/components/parameters/filter
+    eventsFilter:
+      $ref: ../core/api.yml#/components/parameters/filter
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UpdateEventStatusRequest:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: string
+          example: completed
+          description: Current status of the resource.
+          maxLength: 255
+    BulkDeleteRequest:
+      type: object
+      required:
+      - ids
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: ../core/api.yml#/components/schemas/Uuid
+          description: The ids of the bulkdeleterequest.
+    BulkUpdateStatusRequest:
+      type: object
+      required:
+      - ids
+      - status
+      properties:
+        ids:
+          type: array
+          items:
+            $ref: ../core/api.yml#/components/schemas/Uuid
+          description: The ids of the bulkupdatestatusrequest.
+        status:
+          type: string
+          example: failed
+          description: Current status of the resource.
+          maxLength: 255
+    EventResult:
+      $ref: ./event.yaml
+    EventsPage:
+      type: object
+      properties:
+        page:
+          $ref: ../core/api.yml#/components/schemas/Number
+        page_size:
+          $ref: ../core/api.yml#/components/schemas/Number
+        total_count:
+          $ref: ../core/api.yml#/components/schemas/Number
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventResult'
+          description: The data of the eventspage.
+    EventsAggregate:
+      type: object
+      properties:
+        audit:
+          type: integer
+          description: The audit of the eventsaggregate.
+          minimum: 0
+      additionalProperties: true
+    EventSummary:
+      type: object
+      additionalProperties: true
+    EventSummaryPage:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page number of the result set.
+          minimum: 0
+        page_size:
+          type: integer
+          description: Number of items per page.
+          minimum: 1
+        total_count:
+          type: integer
+          description: Total number of items available.
+          minimum: 0
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventSummary'
+          description: The data of the eventsummarypage.
+    EventType:
+      type: object
+      properties:
+        category:
+          type: string
+          description: The category of the eventtype.
+          maxLength: 500
+        action:
+          type: string
+          description: The action of the eventtype.
+          maxLength: 500
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: The error of the errorresponse.
+          maxLength: 500

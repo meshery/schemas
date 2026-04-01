@@ -7,9 +7,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/gofrs/uuid"
-	"github.com/meshery/schemas/models/v1alpha1/capability"
-	"github.com/meshery/schemas/models/v1beta1/model"
+	core "github.com/meshery/schemas/models/core"
+	capabilityv1alpha1 "github.com/meshery/schemas/models/v1alpha1/capability"
+	modelv1beta1 "github.com/meshery/schemas/models/v1beta1/model"
 )
 
 // Defines values for RelationshipDefinitionKind.
@@ -26,6 +26,22 @@ const (
 	Enabled  RelationshipDefinitionStatus = "enabled"
 	Ignored  RelationshipDefinitionStatus = "ignored"
 	Pending  RelationshipDefinitionStatus = "pending"
+)
+
+// Defines values for RelationshipDefinitionMetadataStylesArrowShape.
+const (
+	RelationshipDefinitionMetadataStylesArrowShapeChevron           RelationshipDefinitionMetadataStylesArrowShape = "chevron"
+	RelationshipDefinitionMetadataStylesArrowShapeCircle            RelationshipDefinitionMetadataStylesArrowShape = "circle"
+	RelationshipDefinitionMetadataStylesArrowShapeCircleTriangle    RelationshipDefinitionMetadataStylesArrowShape = "circle-triangle"
+	RelationshipDefinitionMetadataStylesArrowShapeDiamond           RelationshipDefinitionMetadataStylesArrowShape = "diamond"
+	RelationshipDefinitionMetadataStylesArrowShapeNone              RelationshipDefinitionMetadataStylesArrowShape = "none"
+	RelationshipDefinitionMetadataStylesArrowShapeSquare            RelationshipDefinitionMetadataStylesArrowShape = "square"
+	RelationshipDefinitionMetadataStylesArrowShapeTee               RelationshipDefinitionMetadataStylesArrowShape = "tee"
+	RelationshipDefinitionMetadataStylesArrowShapeTriangle          RelationshipDefinitionMetadataStylesArrowShape = "triangle"
+	RelationshipDefinitionMetadataStylesArrowShapeTriangleBackcurve RelationshipDefinitionMetadataStylesArrowShape = "triangle-backcurve"
+	RelationshipDefinitionMetadataStylesArrowShapeTriangleCross     RelationshipDefinitionMetadataStylesArrowShape = "triangle-cross"
+	RelationshipDefinitionMetadataStylesArrowShapeTriangleTee       RelationshipDefinitionMetadataStylesArrowShape = "triangle-tee"
+	RelationshipDefinitionMetadataStylesArrowShapeVee               RelationshipDefinitionMetadataStylesArrowShape = "vee"
 )
 
 // Defines values for RelationshipDefinitionMetadataStylesCurveStyle.
@@ -98,20 +114,20 @@ const (
 
 // Defines values for RelationshipDefinitionMetadataStylesTextTransform.
 const (
-	RelationshipDefinitionMetadataStylesTextTransformLowercase RelationshipDefinitionMetadataStylesTextTransform = "lowercase"
-	RelationshipDefinitionMetadataStylesTextTransformNone      RelationshipDefinitionMetadataStylesTextTransform = "none"
-	RelationshipDefinitionMetadataStylesTextTransformUppercase RelationshipDefinitionMetadataStylesTextTransform = "uppercase"
+	Lowercase RelationshipDefinitionMetadataStylesTextTransform = "lowercase"
+	None      RelationshipDefinitionMetadataStylesTextTransform = "none"
+	Uppercase RelationshipDefinitionMetadataStylesTextTransform = "uppercase"
 )
 
-// Defines values for RelationshipDefinitionSelectorsPatchPatchStrategy.
+// Defines values for RelationshipDefinitionSelectorsPatchStrategy.
 const (
-	Add       RelationshipDefinitionSelectorsPatchPatchStrategy = "add"
-	Copy      RelationshipDefinitionSelectorsPatchPatchStrategy = "copy"
-	Merge     RelationshipDefinitionSelectorsPatchPatchStrategy = "merge"
-	Move      RelationshipDefinitionSelectorsPatchPatchStrategy = "move"
-	Remove    RelationshipDefinitionSelectorsPatchPatchStrategy = "remove"
-	Strategic RelationshipDefinitionSelectorsPatchPatchStrategy = "strategic"
-	Test      RelationshipDefinitionSelectorsPatchPatchStrategy = "test"
+	Add       RelationshipDefinitionSelectorsPatchStrategy = "add"
+	Copy      RelationshipDefinitionSelectorsPatchStrategy = "copy"
+	Merge     RelationshipDefinitionSelectorsPatchStrategy = "merge"
+	Move      RelationshipDefinitionSelectorsPatchStrategy = "move"
+	Remove    RelationshipDefinitionSelectorsPatchStrategy = "remove"
+	Strategic RelationshipDefinitionSelectorsPatchStrategy = "strategic"
+	Test      RelationshipDefinitionSelectorsPatchStrategy = "test"
 )
 
 // MatchSelector Match configuration for selector
@@ -124,21 +140,27 @@ type MatchSelector struct {
 // MatchSelectorItem Match selector item for binding between nodes
 type MatchSelectorItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id         *uuid.UUID  `json:"id" yaml:"id"`
-	Kind       string      `json:"kind" yaml:"kind"`
-	MutatedRef *[][]string `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
+	ID         *core.Uuid `json:"id" yaml:"id"`
+	Kind       string             `json:"kind" yaml:"kind"`
+	MutatedRef *MutatedRef        `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
 
 	// MutatorRef JSON ref to value from where patch should be applied.
-	MutatorRef *[][]string `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
+	MutatorRef *MutatorRef `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
 }
+
+// MutatedRef defines model for MutatedRef.
+type MutatedRef = [][]string
+
+// MutatorRef JSON ref to value from where patch should be applied.
+type MutatorRef = [][]string
 
 // RelationshipDefinition Relationships define the nature of interaction between interconnected components in Meshery. The combination of relationship properties kind, type, and subtype characterize various genealogical relations among and between components. Relationships have selectors, selector sets, metadata, and optional parameters. Learn more at https://docs.meshery.io/concepts/logical/relationships.
 type RelationshipDefinition struct {
-	// Id Uniquely identifies the entity
-	Id uuid.UUID `json:"id" yaml:"id"`
+	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Capabilities Capabilities associated with the relationship.
-	Capabilities *[]capability.Capability `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
+	Capabilities *[]capabilityv1alpha1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities"`
 
 	// EvaluationQuery Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
 	EvaluationQuery *string `json:"evaluationQuery" yaml:"evaluationQuery"`
@@ -147,16 +169,16 @@ type RelationshipDefinition struct {
 	Kind RelationshipDefinitionKind `json:"kind" yaml:"kind"`
 
 	// Metadata Metadata contains additional information associated with the Relationship.
-	Metadata *Relationship_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Metadata *Relationship_Metadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
 
-	// Model Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
-	Model model.ModelReference `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
+	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+	Model modelv1beta1.ModelReference `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`
 
 	// ModelId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	ModelId uuid.UUID `gorm:"index:idx_relationship_definition_dbs_model_id,column:model_id" json:"-" yaml:"-"`
+	ModelId *core.Uuid `gorm:"index:idx_relationship_definition_dbs_model_id,column:model_id" json:"-" yaml:"modelId,omitempty"`
 
-	// SchemaVersion Specifies the version of the schema used for the relationship definition.
-	SchemaVersion string `json:"schemaVersion" yaml:"schemaVersion"`
+	// SchemaVersion API version of the object, optionally prefixed with an API group (e.g. "group.example.io/v1beta1" or bare "v1beta1").
+	SchemaVersion core.VersionString `json:"schemaVersion" yaml:"schemaVersion"`
 
 	// Selectors Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.
 	Selectors *SelectorSet `gorm:"type:bytes;serializer:json" json:"selectors,omitempty" yaml:"selectors,omitempty"`
@@ -170,8 +192,8 @@ type RelationshipDefinition struct {
 	// RelationshipType Classification of relationships. Used to group relationships similar in nature.
 	RelationshipType string `gorm:"column:type" json:"type" yaml:"type"`
 
-	// Version Specifies the version of the relationship definition.
-	Version string `json:"version" yaml:"version"`
+	// Version A valid semantic version string between 5 and 100 characters. The pattern allows for a major.minor.patch version followed by an optional pre-release tag like '-alpha' or '-beta.2' and an optional build metadata tag like '+build.1'.
+	Version core.SemverString `json:"version" yaml:"version"`
 }
 
 // RelationshipDefinitionKind Kind of the Relationship. Learn more about relationships - https://docs.meshery.io/concepts/logical/relationships.
@@ -273,6 +295,9 @@ type RelationshipDefinitionMetadataStyles struct {
 	ZIndex *int `json:"z-index,omitempty" yaml:"z-index,omitempty"`
 }
 
+// RelationshipDefinitionMetadataStylesArrowShape The shape of the edge's arrow
+type RelationshipDefinitionMetadataStylesArrowShape string
+
 // RelationshipDefinitionMetadataStylesCurveStyle The curving method used to separate two or more edges between two nodes; may be haystack (very fast, bundled straight edges for which loops and compounds are unsupported), straight (straight edges with all arrows supported), bezier (bundled curved edges), unbundled-bezier (curved edges for use with manual control points), segments (a series of straight lines), taxi (right-angled lines, hierarchically bundled). Note that haystack edges work best with ellipse, rectangle, or similar nodes. Smaller node shapes, like triangle, will not be as aesthetically pleasing. Also note that edge endpoint arrows are unsupported for haystack edges.
 type RelationshipDefinitionMetadataStylesCurveStyle string
 
@@ -297,12 +322,24 @@ type RelationshipDefinitionMetadataStylesTargetArrowShape string
 // RelationshipDefinitionMetadataStylesTextTransform A transformation to apply to the label text
 type RelationshipDefinitionMetadataStylesTextTransform string
 
-// RelationshipDefinition_Selectors_Patch Patch configuration for the selector
-type RelationshipDefinition_Selectors_Patch struct {
-	MutatedRef *[][]string `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
+// RelationshipDefinitionSelectorsPatchStrategy patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
+//
+// add: Inserts a value into an array or adds a member to an object.
+// replace: Replaces a value.
+// merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
+// strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
+// remove: Removes a value.
+// copy: Copies a value from one location to another.
+// move: Moves a value from one location to another.
+// test: Tests that a value at the target location is equal to a specified value.
+type RelationshipDefinitionSelectorsPatchStrategy string
+
+// RelationshipDefinitionSelectorsPatch Patch configuration for the selector
+type RelationshipDefinitionSelectorsPatch struct {
+	MutatedRef *MutatedRef `json:"mutatedRef,omitempty" yaml:"mutatedRef,omitempty"`
 
 	// MutatorRef JSON ref to value from where patch should be applied.
-	MutatorRef *[][]string `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
+	MutatorRef *MutatorRef `json:"mutatorRef,omitempty" yaml:"mutatorRef,omitempty"`
 
 	// PatchStrategy patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
 	//
@@ -314,23 +351,11 @@ type RelationshipDefinition_Selectors_Patch struct {
 	// copy: Copies a value from one location to another.
 	// move: Moves a value from one location to another.
 	// test: Tests that a value at the target location is equal to a specified value.
-	PatchStrategy *RelationshipDefinitionSelectorsPatchPatchStrategy `json:"patchStrategy,omitempty" yaml:"patchStrategy,omitempty"`
+	PatchStrategy *RelationshipDefinitionSelectorsPatchStrategy `json:"patchStrategy,omitempty" yaml:"patchStrategy,omitempty"`
 }
 
-// RelationshipDefinitionSelectorsPatchPatchStrategy patchStrategy allows you to make specific changes to a resource using a standard JSON Patch format (RFC 6902).
-//
-// add: Inserts a value into an array or adds a member to an object.
-// replace: Replaces a value.
-// merge: Combines the values of the target location with the values from the patch. If the target location doesn't exist, it is created.
-// strategic: specific to Kubernetes and understands the structure of Kubernetes objects.
-// remove: Removes a value.
-// copy: Copies a value from one location to another.
-// move: Moves a value from one location to another.
-// test: Tests that a value at the target location is equal to a specified value.
-type RelationshipDefinitionSelectorsPatchPatchStrategy string
-
-// Relationship_Metadata Metadata contains additional information associated with the Relationship.
-type Relationship_Metadata struct {
+// RelationshipMetadata Metadata contains additional information associated with the Relationship.
+type RelationshipMetadata struct {
 	// Description Characterization of the meaning of the relationship and its relevance to both Meshery and entities under management.
 	Description *string `json:"description" yaml:"description"`
 
@@ -338,7 +363,7 @@ type Relationship_Metadata struct {
 	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`
 
 	// Styles Visualization styles for a relationship
-	Styles               *RelationshipDefinitionMetadataStyles `json:"styles" yaml:"styles"`
+	Styles               *RelationshipDefinitionMetadataStyles `json:"styles,omitempty" yaml:"styles,omitempty"`
 	AdditionalProperties map[string]interface{}                `json:"-" yaml:"-"`
 }
 
@@ -354,8 +379,8 @@ type Selector struct {
 // SelectorItem Optional fields that are a part of the selector. Absence of a field has an implied * meaning.
 type SelectorItem struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	Id   *uuid.UUID `json:"id" yaml:"id"`
-	Kind *string    `json:"kind" yaml:"kind"`
+	ID   *core.Uuid `json:"id" yaml:"id"`
+	Kind *string            `json:"kind" yaml:"kind"`
 
 	// Match Match configuration for selector
 	Match *MatchSelector `json:"match,omitempty" yaml:"match,omitempty"`
@@ -363,8 +388,8 @@ type SelectorItem struct {
 	// MatchStrategyMatrix Match strategy matrix for the selector
 	MatchStrategyMatrix *[][]string `json:"match_strategy_matrix" yaml:"match_strategy_matrix"`
 
-	// Model Name of the model implicated by this selector. Learn more at https://docs.meshery.io/concepts/models
-	Model *model.ModelReference `json:"model,omitempty" yaml:"model,omitempty"`
+	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
+	Model *modelv1beta1.ModelReference `json:"model,omitempty" yaml:"model"`
 
 	// Patch Patch configuration for the selector
 	Patch *RelationshipDefinition_Selectors_Patch `json:"patch" yaml:"patch"`
@@ -375,32 +400,32 @@ type SelectorSet = []SelectorSetItem
 
 // SelectorSetItem Optional selectors used to match Components. Absence of a selector means that it is applied to all Components.
 type SelectorSetItem struct {
-	// Allow Selectors used to define relationships which are allowed.
+	// Allow Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
 	Allow Selector `json:"allow" yaml:"allow"`
 
-	// Deny Optional selectors used to define relationships which should not be created / is restricted.
+	// Deny Describes the component(s) which are involved in the relationship along with a set of actions to perform upon selection match.
 	Deny *Selector `json:"deny,omitempty" yaml:"deny,omitempty"`
 }
 
-// Getter for additional properties for Relationship_Metadata. Returns the specified
+// Getter for additional properties for RelationshipMetadata. Returns the specified
 // element and whether it was found
-func (a Relationship_Metadata) Get(fieldName string) (value interface{}, found bool) {
+func (a RelationshipMetadata) Get(fieldName string) (value interface{}, found bool) {
 	if a.AdditionalProperties != nil {
 		value, found = a.AdditionalProperties[fieldName]
 	}
 	return
 }
 
-// Setter for additional properties for Relationship_Metadata
-func (a *Relationship_Metadata) Set(fieldName string, value interface{}) {
+// Setter for additional properties for RelationshipMetadata
+func (a *RelationshipMetadata) Set(fieldName string, value interface{}) {
 	if a.AdditionalProperties == nil {
 		a.AdditionalProperties = make(map[string]interface{})
 	}
 	a.AdditionalProperties[fieldName] = value
 }
 
-// Override default JSON handling for Relationship_Metadata to handle AdditionalProperties
-func (a *Relationship_Metadata) UnmarshalJSON(b []byte) error {
+// Override default JSON handling for RelationshipMetadata to handle AdditionalProperties
+func (a *RelationshipMetadata) UnmarshalJSON(b []byte) error {
 	object := make(map[string]json.RawMessage)
 	err := json.Unmarshal(b, &object)
 	if err != nil {
@@ -445,8 +470,8 @@ func (a *Relationship_Metadata) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Override default JSON handling for Relationship_Metadata to handle AdditionalProperties
-func (a Relationship_Metadata) MarshalJSON() ([]byte, error) {
+// Override default JSON handling for RelationshipMetadata to handle AdditionalProperties
+func (a RelationshipMetadata) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 

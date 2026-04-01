@@ -1,7 +1,15 @@
 openapi: 3.0.0
 info:
-  title: keychain
-  version: 1.0.0
+  title: Keychain
+  description: OpenAPI schema for keychain management in Meshery.
+  version: v1beta1
+  contact:
+    name: Meshery Maintainers
+    email: maintainers@meshery.io
+    url: https://meshery.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 security:
   - jwt: []
@@ -12,210 +20,24 @@ tags:
 
 paths:
   /api/auth/keychains:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: List keychains
-      operationId: getKeychains
-      parameters:
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-      responses:
-        "200":
-          description: Keychain(s) fetched
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/KeychainPage"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-    post:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: Create a keychain
-      operationId: createKeychain
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Keychain"
-      responses:
-        "200":
-          description: Keychain created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Keychain"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
+    $ref: "./keychain_operations.yml#/collection"
   /api/auth/keychains/{keychainId}:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: Get keychain by ID
-      operationId: getKeychainById
-      parameters:
-        - $ref: "#/components/parameters/keychainId"
-      responses:
-        "200":
-          description: Keychain fetched
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Keychain"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-    put:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: Update keychain
-      operationId: updateKeychain
-      parameters:
-        - $ref: "#/components/parameters/keychainId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Keychain"
-      responses:
-        "200":
-          description: Keychain updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Keychain"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-    delete:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: Delete keychain
-      operationId: deleteKeychain
-      parameters:
-        - $ref: "#/components/parameters/keychainId"
-      responses:
-        "204":
-          description: Keychain deleted
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
+    $ref: "./keychain_operations.yml#/item"
   /api/auth/keychains/{keychainId}/{keyId}:
-    post:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: Add key to keychain
-      operationId: addKeyToKeychain
-      parameters:
-        - $ref: "#/components/parameters/keychainId"
-        - $ref: "#/components/parameters/keyId"
-      responses:
-        "204":
-          description: Key added to keychain
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-    delete:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: Remove key from keychain
-      operationId: removeKeyFromKeychain
-      parameters:
-        - $ref: "#/components/parameters/keychainId"
-        - $ref: "#/components/parameters/keyId"
-      responses:
-        "204":
-          description: Key removed from keychain
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
+    $ref: "./keychain_operations.yml#/itemKey"
   /api/auth/keychains/{keychainId}/keys:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - Keychain
-      summary: List keys in a keychain
-      operationId: getKeysOfKeychain
-      parameters:
-        - $ref: "#/components/parameters/keychainId"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-      responses:
-        "200":
-          description: Keys fetched successfully
-          content:
-            application/json:
-              schema:
-                $ref: "../key/api.yml#/components/schemas/KeyPage"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
+    $ref: "./keychain_operations.yml#/itemKeys"
 
 components:
   responses:
     400:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/400"
+      $ref: "../core/api.yml#/components/responses/400"
     401:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/401"
+      $ref: "../core/api.yml#/components/responses/401"
     404:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/404"
+      $ref: "../core/api.yml#/components/responses/404"
     500:
-      $ref: "../../v1alpha1/core/api.yml#/components/responses/500"
+      $ref: "../core/api.yml#/components/responses/500"
 
   parameters:
     keyId:
@@ -224,22 +46,22 @@ components:
       description: Key ID
       required: true
       schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+        $ref: ../core/api.yml#/components/schemas/uuid
     keychainId:
       name: keychainId
       in: path
       description: Keychain ID
       required: true
       schema:
-        $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+        $ref: ../core/api.yml#/components/schemas/uuid
     page:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/page
+      $ref: ../core/api.yml#/components/parameters/page
     pagesize:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/pagesize
+      $ref: ../core/api.yml#/components/parameters/pagesize
     order:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/order
+      $ref: ../core/api.yml#/components/parameters/order
     search:
-      $ref: ../../v1alpha1/core/api.yml#/components/parameters/search
+      $ref: ../core/api.yml#/components/parameters/search
 
   securitySchemes:
     jwt:
@@ -250,6 +72,22 @@ components:
   schemas:
     Keychain:
       $ref: "./keychain.yaml"
+    KeychainInput:
+      type: object
+      description: Input payload for creating or updating a keychain.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the keychain.
+          x-order: 1
+          minLength: 1
+          maxLength: 255
+        owner:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Owner of the keychain.
+          x-order: 2
     KeychainPage:
       type: object
       required:
@@ -259,17 +97,17 @@ components:
         - keychains
       properties:
         page:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
           x-order: 1
         page_size:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
           x-order: 2
         total_count:
-          $ref: ../../v1alpha1/core/api.yml#/components/schemas/number
+          $ref: ../core/api.yml#/components/schemas/number
           x-order: 3
         keychains:
           type: array
           items:
-            $ref: "./keychain.yaml"
-            x-go-type: Keychain
+            $ref: "#/components/schemas/Keychain"
           x-order: 4
+          description: The keychains of the keychainpage.

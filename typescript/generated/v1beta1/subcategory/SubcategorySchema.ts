@@ -3,11 +3,21 @@
  * Do not manually modify this file.
  */
 
-const SubcategorySchema = {
+const SubcategorySchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
     "title": "SubCategory API",
-    "version": "1.0.0"
+    "description": "OpenAPI schema for model subcategory definitions in Meshery.",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "paths": {},
   "components": {
@@ -76,6 +86,6 @@ const SubcategorySchema = {
       }
     }
   }
-} as const;
+};
 
 export default SubcategorySchema;

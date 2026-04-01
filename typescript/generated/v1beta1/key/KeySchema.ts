@@ -3,11 +3,21 @@
  * Do not manually modify this file.
  */
 
-const KeySchema = {
+const KeySchema: Record<string, unknown> = {
   "openapi": "3.0.0",
   "info": {
-    "title": "key",
-    "version": "1.0.0"
+    "title": "Key",
+    "description": "OpenAPI schema for authorization key management in Meshery.",
+    "version": "v1beta1",
+    "contact": {
+      "name": "Meshery Maintainers",
+      "email": "maintainers@meshery.io",
+      "url": "https://meshery.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "security": [
     {
@@ -18,10 +28,14 @@ const KeySchema = {
     {
       "name": "Key",
       "description": "Operations related to authorization keys"
+    },
+    {
+      "name": "users",
+      "description": "Operations related to users and their authorization keys"
     }
   ],
   "paths": {
-    "/api/identity/orgs/{orgID}/users/keys": {
+    "/api/identity/orgs/{orgId}/users/keys": {
       "get": {
         "tags": [
           "users"
@@ -31,7 +45,7 @@ const KeySchema = {
         "description": "Get all keys based on roles assigned to user",
         "parameters": [
           {
-            "name": "orgID",
+            "name": "orgId",
             "in": "path",
             "description": "Organization ID",
             "required": true,
@@ -43,6 +57,22 @@ const KeySchema = {
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
               }
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Get responses by page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "description": "Get responses by pagesize",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -78,8 +108,8 @@ const KeySchema = {
                     "keys": {
                       "type": "array",
                       "items": {
-                        "x-go-type": "Key",
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Represents an authorization key used for access control.",
                         "required": [
                           "id",
@@ -126,7 +156,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "function"
                             },
-                            "x-order": 3
+                            "x-order": 3,
+                            "maxLength": 500
                           },
                           "category": {
                             "type": "string",
@@ -134,7 +165,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "category"
                             },
-                            "x-order": 4
+                            "x-order": 4,
+                            "maxLength": 500
                           },
                           "subcategory": {
                             "type": "string",
@@ -142,7 +174,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "subcategory"
                             },
-                            "x-order": 5
+                            "x-order": 5,
+                            "maxLength": 500
                           },
                           "description": {
                             "type": "string",
@@ -150,7 +183,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "description"
                             },
-                            "x-order": 6
+                            "x-order": 6,
+                            "maxLength": 5000
                           },
                           "created_at": {
                             "x-order": 7,
@@ -184,13 +218,19 @@ const KeySchema = {
                             },
                             "x-order": 9,
                             "description": "SQL null Timestamp to handle null values of time.",
-                            "x-go-type": "sql.NullTime",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
+                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
                       },
-                      "x-order": 4
+                      "x-order": 4,
+                      "description": "The keys of the keypage."
                     }
                   }
                 }
@@ -199,6 +239,16 @@ const KeySchema = {
           },
           "401": {
             "description": "Expired JWT token used or insufficient privilege",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Result not found",
             "content": {
               "text/plain": {
                 "schema": {
@@ -296,8 +346,8 @@ const KeySchema = {
                     "keys": {
                       "type": "array",
                       "items": {
-                        "x-go-type": "Key",
                         "type": "object",
+                        "additionalProperties": false,
                         "description": "Represents an authorization key used for access control.",
                         "required": [
                           "id",
@@ -344,7 +394,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "function"
                             },
-                            "x-order": 3
+                            "x-order": 3,
+                            "maxLength": 500
                           },
                           "category": {
                             "type": "string",
@@ -352,7 +403,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "category"
                             },
-                            "x-order": 4
+                            "x-order": 4,
+                            "maxLength": 500
                           },
                           "subcategory": {
                             "type": "string",
@@ -360,7 +412,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "subcategory"
                             },
-                            "x-order": 5
+                            "x-order": 5,
+                            "maxLength": 500
                           },
                           "description": {
                             "type": "string",
@@ -368,7 +421,8 @@ const KeySchema = {
                             "x-oapi-codegen-extra-tags": {
                               "db": "description"
                             },
-                            "x-order": 6
+                            "x-order": 6,
+                            "maxLength": 5000
                           },
                           "created_at": {
                             "x-order": 7,
@@ -402,13 +456,19 @@ const KeySchema = {
                             },
                             "x-order": 9,
                             "description": "SQL null Timestamp to handle null values of time.",
-                            "x-go-type": "sql.NullTime",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
+                            "format": "date-time",
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
                       },
-                      "x-order": 4
+                      "x-order": 4,
+                      "description": "The keys of the keypage."
                     }
                   }
                 }
@@ -477,22 +537,26 @@ const KeySchema = {
                   "function": {
                     "type": "string",
                     "description": "Operation permitted by the key.",
-                    "x-order": 2
+                    "x-order": 2,
+                    "maxLength": 500
                   },
                   "category": {
                     "type": "string",
                     "description": "Category for the key.",
-                    "x-order": 3
+                    "x-order": 3,
+                    "maxLength": 500
                   },
                   "subcategory": {
                     "type": "string",
                     "description": "Subcategory for the key.",
-                    "x-order": 4
+                    "x-order": 4,
+                    "maxLength": 500
                   },
                   "description": {
                     "type": "string",
                     "description": "Human readable description of the key.",
-                    "x-order": 5
+                    "x-order": 5,
+                    "maxLength": 5000
                   }
                 }
               }
@@ -501,11 +565,12 @@ const KeySchema = {
         },
         "responses": {
           "200": {
-            "description": "Key upserted successfully",
+            "description": "Key upserted",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Represents an authorization key used for access control.",
                   "required": [
                     "id",
@@ -552,7 +617,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "function"
                       },
-                      "x-order": 3
+                      "x-order": 3,
+                      "maxLength": 500
                     },
                     "category": {
                       "type": "string",
@@ -560,7 +626,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "category"
                       },
-                      "x-order": 4
+                      "x-order": 4,
+                      "maxLength": 500
                     },
                     "subcategory": {
                       "type": "string",
@@ -568,7 +635,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "subcategory"
                       },
-                      "x-order": 5
+                      "x-order": 5,
+                      "maxLength": 500
                     },
                     "description": {
                       "type": "string",
@@ -576,7 +644,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description"
                       },
-                      "x-order": 6
+                      "x-order": 6,
+                      "maxLength": 5000
                     },
                     "created_at": {
                       "x-order": 7,
@@ -610,8 +679,13 @@ const KeySchema = {
                       },
                       "x-order": 9,
                       "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -681,11 +755,12 @@ const KeySchema = {
         ],
         "responses": {
           "200": {
-            "description": "Key fetched successfully",
+            "description": "Key response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
                   "description": "Represents an authorization key used for access control.",
                   "required": [
                     "id",
@@ -732,7 +807,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "function"
                       },
-                      "x-order": 3
+                      "x-order": 3,
+                      "maxLength": 500
                     },
                     "category": {
                       "type": "string",
@@ -740,7 +816,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "category"
                       },
-                      "x-order": 4
+                      "x-order": 4,
+                      "maxLength": 500
                     },
                     "subcategory": {
                       "type": "string",
@@ -748,7 +825,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "subcategory"
                       },
-                      "x-order": 5
+                      "x-order": 5,
+                      "maxLength": 500
                     },
                     "description": {
                       "type": "string",
@@ -756,7 +834,8 @@ const KeySchema = {
                       "x-oapi-codegen-extra-tags": {
                         "db": "description"
                       },
-                      "x-order": 6
+                      "x-order": 6,
+                      "maxLength": 5000
                     },
                     "created_at": {
                       "x-order": 7,
@@ -790,8 +869,13 @@ const KeySchema = {
                       },
                       "x-order": 9,
                       "description": "SQL null Timestamp to handle null values of time.",
-                      "x-go-type": "sql.NullTime",
+                      "x-go-type": "meshcore.NullTime",
+                      "x-go-type-import": {
+                        "name": "meshcore",
+                        "path": "github.com/meshery/schemas/models/core"
+                      },
                       "type": "string",
+                      "format": "date-time",
                       "x-go-type-skip-optional-pointer": true
                     }
                   }
@@ -869,7 +953,7 @@ const KeySchema = {
         ],
         "responses": {
           "204": {
-            "description": "Key deleted successfully"
+            "description": "Key deleted"
           },
           "400": {
             "description": "Invalid request body or request param",
@@ -959,8 +1043,8 @@ const KeySchema = {
       }
     },
     "parameters": {
-      "orgID": {
-        "name": "orgID",
+      "orgId": {
+        "name": "orgId",
         "in": "path",
         "description": "Organization ID",
         "required": true,
@@ -1032,6 +1116,7 @@ const KeySchema = {
     "schemas": {
       "Key": {
         "type": "object",
+        "additionalProperties": false,
         "description": "Represents an authorization key used for access control.",
         "required": [
           "id",
@@ -1078,7 +1163,8 @@ const KeySchema = {
             "x-oapi-codegen-extra-tags": {
               "db": "function"
             },
-            "x-order": 3
+            "x-order": 3,
+            "maxLength": 500
           },
           "category": {
             "type": "string",
@@ -1086,7 +1172,8 @@ const KeySchema = {
             "x-oapi-codegen-extra-tags": {
               "db": "category"
             },
-            "x-order": 4
+            "x-order": 4,
+            "maxLength": 500
           },
           "subcategory": {
             "type": "string",
@@ -1094,7 +1181,8 @@ const KeySchema = {
             "x-oapi-codegen-extra-tags": {
               "db": "subcategory"
             },
-            "x-order": 5
+            "x-order": 5,
+            "maxLength": 500
           },
           "description": {
             "type": "string",
@@ -1102,7 +1190,8 @@ const KeySchema = {
             "x-oapi-codegen-extra-tags": {
               "db": "description"
             },
-            "x-order": 6
+            "x-order": 6,
+            "maxLength": 5000
           },
           "created_at": {
             "x-order": 7,
@@ -1136,8 +1225,13 @@ const KeySchema = {
             },
             "x-order": 9,
             "description": "SQL null Timestamp to handle null values of time.",
-            "x-go-type": "sql.NullTime",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "type": "string",
+            "format": "date-time",
             "x-go-type-skip-optional-pointer": true
           }
         }
@@ -1159,22 +1253,26 @@ const KeySchema = {
           "function": {
             "type": "string",
             "description": "Operation permitted by the key.",
-            "x-order": 2
+            "x-order": 2,
+            "maxLength": 500
           },
           "category": {
             "type": "string",
             "description": "Category for the key.",
-            "x-order": 3
+            "x-order": 3,
+            "maxLength": 500
           },
           "subcategory": {
             "type": "string",
             "description": "Subcategory for the key.",
-            "x-order": 4
+            "x-order": 4,
+            "maxLength": 500
           },
           "description": {
             "type": "string",
             "description": "Human readable description of the key.",
-            "x-order": 5
+            "x-order": 5,
+            "maxLength": 5000
           }
         }
       },
@@ -1205,8 +1303,8 @@ const KeySchema = {
           "keys": {
             "type": "array",
             "items": {
-              "x-go-type": "Key",
               "type": "object",
+              "additionalProperties": false,
               "description": "Represents an authorization key used for access control.",
               "required": [
                 "id",
@@ -1253,7 +1351,8 @@ const KeySchema = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "function"
                   },
-                  "x-order": 3
+                  "x-order": 3,
+                  "maxLength": 500
                 },
                 "category": {
                   "type": "string",
@@ -1261,7 +1360,8 @@ const KeySchema = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "category"
                   },
-                  "x-order": 4
+                  "x-order": 4,
+                  "maxLength": 500
                 },
                 "subcategory": {
                   "type": "string",
@@ -1269,7 +1369,8 @@ const KeySchema = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "subcategory"
                   },
-                  "x-order": 5
+                  "x-order": 5,
+                  "maxLength": 500
                 },
                 "description": {
                   "type": "string",
@@ -1277,7 +1378,8 @@ const KeySchema = {
                   "x-oapi-codegen-extra-tags": {
                     "db": "description"
                   },
-                  "x-order": 6
+                  "x-order": 6,
+                  "maxLength": 5000
                 },
                 "created_at": {
                   "x-order": 7,
@@ -1311,18 +1413,24 @@ const KeySchema = {
                   },
                   "x-order": 9,
                   "description": "SQL null Timestamp to handle null values of time.",
-                  "x-go-type": "sql.NullTime",
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
+                  "format": "date-time",
                   "x-go-type-skip-optional-pointer": true
                 }
               }
             },
-            "x-order": 4
+            "x-order": 4,
+            "description": "The keys of the keypage."
           }
         }
       }
     }
   }
-} as const;
+};
 
 export default KeySchema;
