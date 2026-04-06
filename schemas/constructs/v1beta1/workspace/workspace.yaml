@@ -14,7 +14,7 @@ required:
   - updated_at
 properties:
   id:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
+    $ref: ../core/api.yml#/components/schemas/general_id
   name:
     type: string
     description: Name of the workspace.
@@ -33,7 +33,7 @@ properties:
       db: description
       json: "description,omitempty"
   organization_id:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: Organization to which this workspace belongs.
     x-go-name: OrganizationID
     x-go-type-skip-optional-pointer: true
@@ -41,7 +41,7 @@ properties:
       db: organization_id
       json: "organization_id,omitempty"
   owner:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    $ref: ../core/api.yml#/components/schemas/uuid
     description: User ID of the workspace owner.
     x-oapi-codegen-extra-tags:
       db: owner
@@ -55,8 +55,8 @@ properties:
       db: metadata
       json: metadata
   created_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+    $ref: ../core/api.yml#/components/schemas/created_at
   updated_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+    $ref: ../core/api.yml#/components/schemas/updated_at
   deleted_at:
-    $ref: ../../v1alpha1/core/api.yml#/components/schemas/deleted_at
+    $ref: ../core/api.yml#/components/schemas/deleted_at
