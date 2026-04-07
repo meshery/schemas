@@ -47,7 +47,7 @@ type MesheryViewPage struct {
 // MesheryViewWithLocation A view enriched with the workspace and organization it belongs to.
 type MesheryViewWithLocation struct {
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt core.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
@@ -63,13 +63,13 @@ type MesheryViewWithLocation struct {
 	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
 
 	// OrganizationId ID of the organization this view belongs to.
-	OrganizationId *uuid.UUID `db:"organization_id" json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+	OrganizationId uuid.UUID `db:"organization_id" json:"organization_id" yaml:"organization_id"`
 
 	// OrganizationName Name of the organization this view belongs to.
 	OrganizationName string `db:"organization_name" json:"organization_name,omitempty" yaml:"organization_name,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 
 	// UserID ID of the user who created the view.
 	UserID uuid.UUID `db:"user_id" json:"user_id,omitempty" yaml:"user_id,omitempty"`
@@ -78,7 +78,7 @@ type MesheryViewWithLocation struct {
 	Visibility string `db:"visibility" json:"visibility,omitempty" yaml:"visibility,omitempty"`
 
 	// WorkspaceId ID of the workspace this view belongs to.
-	WorkspaceId *uuid.UUID `db:"workspace_id" json:"workspace_id,omitempty" yaml:"workspace_id,omitempty"`
+	WorkspaceId uuid.UUID `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 
 	// WorkspaceName Name of the workspace this view belongs to.
 	WorkspaceName string `db:"workspace_name" json:"workspace_name,omitempty" yaml:"workspace_name,omitempty"`

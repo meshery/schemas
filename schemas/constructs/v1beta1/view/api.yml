@@ -75,6 +75,15 @@ components:
     MesheryViewWithLocation:
       type: object
       description: A view enriched with the workspace and organization it belongs to.
+      required:
+        - id
+        - name
+        - visibility
+        - user_id
+        - workspace_id
+        - organization_id
+        - created_at
+        - updated_at
       properties:
         id:
           $ref: "../core/api.yml#/components/schemas/general_id"
@@ -146,7 +155,7 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: workspace_id
-            json: "workspace_id,omitempty"
+            json: workspace_id
         organization_id:
           type: string
           format: uuid
@@ -157,7 +166,7 @@ components:
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: organization_id
-            json: "organization_id,omitempty"
+            json: organization_id
         organization_name:
           type: string
           description: Name of the organization this view belongs to.
