@@ -19,9 +19,24 @@ export const MESHERY_PROD_URL = "https://playground.meshery.io/";
 const CLOUD_BASE_URL = process.env.RTK_CLOUD_ENDPOINT_PREFIX ?? "";
 const MESHERY_BASE_URL = process.env.RTK_MESHERY_ENDPOINT_PREFIX ?? "";
 
+const parseBaseQueryResponse = async (response: Response) => {
+  const text = await response.text();
+
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+};
+
 const baseQueryCloud = fetchBaseQuery({
   baseUrl: CLOUD_BASE_URL,
   credentials: "include",
+  responseHandler: parseBaseQueryResponse,
   prepareHeaders: (headers: Headers, { getState }: { getState: () => unknown }) => {
     const state = getState() as RootState;
     const currentOrg = state.organization?.value;
@@ -44,7 +59,11 @@ export const cloudBaseApi = createApi({
 // API 2: Meshery API
 export const mesheryBaseApi = createApi({
   reducerPath: "mesheryRtkSchemasApi",
-  baseQuery: fetchBaseQuery({ baseUrl: MESHERY_BASE_URL, credentials: "include" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: MESHERY_BASE_URL,
+    credentials: "include",
+    responseHandler: parseBaseQueryResponse,
+  }),
   tagTypes: [],
   endpoints: () => ({}),
 });
