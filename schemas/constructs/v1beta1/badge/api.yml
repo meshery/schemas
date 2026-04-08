@@ -314,6 +314,7 @@ components:
             type: string
           description: The badges of the badgeassignment.
         user_id:
+          x-db-backed: true
           type: string
           description: ID of the user who owns or created this resource.
           maxLength: 500

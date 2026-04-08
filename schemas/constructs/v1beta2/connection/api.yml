@@ -360,6 +360,7 @@ components:
             $ref: "./connection.yaml"
           x-order: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of connections on all pages
           x-order: 2
@@ -370,6 +371,7 @@ components:
           x-order: 3
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of elements per page
           x-order: 4
@@ -499,6 +501,7 @@ components:
       description: Paginated list of connection status counts
       properties:
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of status entries
           x-oapi-codegen-extra-tags:
@@ -511,6 +514,7 @@ components:
             json: "page"
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page
           x-oapi-codegen-extra-tags:
@@ -620,12 +624,14 @@ components:
             json: "page"
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page
           x-oapi-codegen-extra-tags:
             json: "page_size"
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of instances
           x-oapi-codegen-extra-tags:

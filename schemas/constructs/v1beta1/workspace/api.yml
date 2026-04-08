@@ -612,6 +612,7 @@ components:
             db: metadata
             json: "metadata,omitempty"
         organization_id:
+          x-db-backed: true
           type: string
           format: uuid
           description: Organization to which this workspace belongs.
@@ -653,6 +654,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: "description,omitempty"
         organization_id:
+          x-db-backed: true
           type: string
           description: Organization ID.
           maxLength: 36
@@ -691,6 +693,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: "description,omitempty"
         organization_id:
+          x-db-backed: true
           type: string
           description: Organization ID.
           maxLength: 36
@@ -714,8 +717,10 @@ components:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
         page_size:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         total_count:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         workspaces:
           type: array
@@ -750,8 +755,10 @@ components:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
         page_size:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         total_count:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         workspacesTeamsMapping:
           type: array
@@ -786,8 +793,10 @@ components:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
         page_size:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         total_count:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         workspacesEnvironmentsMapping:
           type: array
@@ -822,8 +831,10 @@ components:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
         page_size:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         total_count:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         workspacesDesignsMapping:
           type: array
@@ -858,8 +869,10 @@ components:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
         page_size:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         total_count:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         workspacesViewsMapping:
           type: array
@@ -876,8 +889,10 @@ components:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
         page_size:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         total_count:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         designs:
           type: array

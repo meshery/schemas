@@ -93,10 +93,13 @@ components:
           x-go-type-skip-optional-pointer: true
           description: ID of the associated connection.
         created_at:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/Time
         updated_at:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/Time
         deleted_at:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/nullTime
     EnvironmentPayload:
       properties:
@@ -107,6 +110,7 @@ components:
           $ref: ../core/api.yml#/components/schemas/Text
           description: "An environment is a collection of resources, such as connections & credentail. Provide a detailed description to clarify the purpose of this environment and the types of resources it encompasses. You can modify the description at any Time. Learn more about environments [here](https://docs.meshery.io/concepts/logical/environments)."
         organization_id:
+          x-db-backed: true
           type: string
           description: Select an organization in which you want to create this new environment. Keep in mind that the organization cannot be changed after creation.
           x-go-type-skip-optional-pointer: true
@@ -123,8 +127,10 @@ components:
         page:
           $ref: ../core/api.yml#/components/schemas/number
         page_size:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/number
         total_count:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/number
         environments:
           type: array
@@ -142,10 +148,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0

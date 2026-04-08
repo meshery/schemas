@@ -172,8 +172,8 @@ The problem: **downstream consumers in meshery/meshery and layer5io/meshery-clou
 
 ### Rule 6 (Style — advisory)
 Checks that non-DB property names are camelCase. Allows snake_case only for:
-- Fields in the `DB_MIRRORED_FIELDS` allowlist (well-known columns like `created_at`, `user_id`)
-- Fields with `x-oapi-codegen-extra-tags.db` that match the snake_case property name
+- Fields with `x-oapi-codegen-extra-tags.db` or `x-oapi-codegen-extra-tags.gorm` column metadata that match the snake_case property name
+- Fields explicitly annotated with `x-db-backed: true` when the published snake_case contract is intentional but the local schema node does not carry a matching `db:`/`gorm:` tag
 
 ### Rule 27 (Blocking)
 Checks `x-oapi-codegen-extra-tags` consistency:

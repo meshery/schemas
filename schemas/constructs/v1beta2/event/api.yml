@@ -385,8 +385,10 @@ components:
         page:
           $ref: ../core/api.yml#/components/schemas/Number
         page_size:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/Number
         total_count:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/Number
         data:
           type: array
@@ -412,10 +414,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0

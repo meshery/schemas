@@ -727,7 +727,7 @@ The validator (`build/validate-schemas.js`) checks 34 rules covering every namin
 - `operationId` lower camelCase verbNoun; `Id` not `ID`
 - Path parameter camelCase with `Id` suffix
 - No `DELETE` with requestBody
-- Schema property names camelCase (snake_case only for DB-mirrored allowlist); `Id` not `ID`
+- Schema property names camelCase (snake_case only for explicitly annotated DB-backed/published contract fields); `Id` not `ID`
 - `components/schemas` names PascalCase
 - New enum values lowercase; existing published enum values exempt
 - Query/header parameter names camelCase
@@ -763,7 +763,7 @@ The validator (`build/validate-schemas.js`) checks 34 rules covering every namin
 - Pagination envelopes must use `page_size` and `total_count` (not `pageSize`/`totalCount`)
 - Template file values must match schema property types (Rule 34: catches `{}` where schema says `string`/`array`)
 
-**DB-mirrored allowlist**: `created_at`, `updated_at`, `deleted_at`, `user_id`, `org_id`, `organization_id`, `environment_id`, `workspace_id`, `team_id`, `design_id`, `credential_id`, `connection_id`, `system_id`, `operation_id`, `view_id`, `general_id`, `invite_id`, `content_id`, `badge_id`, `plan_id`, `access_expires_at`, `avatar_url`, `accepted_terms_at`. Only these may use snake_case.
+**Explicit snake_case contract fields**: A snake_case property must be justified by schema metadata, not by a hardcoded validator allowlist. Prefer `x-oapi-codegen-extra-tags.db` / `x-oapi-codegen-extra-tags.gorm` that match the property name; use `x-db-backed: true` only when the snake_case wire contract is intentional but the local node does not carry a matching `db:`/`gorm:` tag (for example, local `$ref` aliases or published pagination envelope fields).
 
 ## Related resources
 

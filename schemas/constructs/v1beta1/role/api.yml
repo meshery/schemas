@@ -340,12 +340,15 @@ components:
             db: "description"
           maxLength: 5000
         created_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/created_at"
           x-order: 4
         updated_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/updated_at"
           x-order: 5
         deleted_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/nullTime"
           description: Timestamp when the role was soft-deleted.
           x-order: 6
@@ -367,11 +370,13 @@ components:
           x-order: 1
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of roles per page.
           x-order: 2
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of roles across all pages.
           x-order: 3
@@ -412,12 +417,15 @@ components:
           x-oapi-codegen-extra-tags:
             db: "role_id"
         created_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/created_at"
           x-order: 4
         updated_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/updated_at"
           x-order: 5
         deleted_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/nullTime"
           x-order: 6
           x-oapi-codegen-extra-tags:
@@ -450,6 +458,7 @@ components:
           $ref: "../core/api.yml#/components/schemas/uuid"
           x-order: 1
         user_id:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/uuid"
           x-order: 2
         username:
@@ -484,12 +493,15 @@ components:
           x-order: 8
           description: The role names of the userroleupdaterequest.
         created_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/Time"
           x-order: 9
         updated_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/Time"
           x-order: 10
         deleted_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/nullTime"
           x-order: 11
 

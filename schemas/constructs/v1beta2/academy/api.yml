@@ -803,6 +803,7 @@ components:
           maxLength: 500
           format: uuid
         user_id:
+          x-db-backed: true
           type: string
           format: uuid
           description: ID of the user registering for the content.
@@ -1145,6 +1146,7 @@ components:
           maxLength: 500
           format: uuid
         user_id:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/Uuid
           description: ID of the user (foreign key to User)
           x-oapi-codegen-extra-tags:
@@ -1636,6 +1638,7 @@ components:
           maxLength: 500
           format: uuid
         user_id:
+          x-db-backed: true
           type: string
           description: ID of the user who owns or created this resource.
           maxLength: 500
@@ -1706,6 +1709,7 @@ components:
           description: The test abs path of the testsubmission.
           maxLength: 500
         user_id:
+          x-db-backed: true
           $ref: ../core/api.yml#/components/schemas/Uuid
           x-oapi-codegen-extra-tags:
             db: user_id
@@ -1856,6 +1860,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: created_at
         user_id:
+          x-db-backed: true
           type: string
           format: uuid
           description: ID of the user
@@ -1886,6 +1891,7 @@ components:
           x-oapi-codegen-extra-tags:
             db: user_avatar_url
         total_count:
+          x-db-backed: true
           type: integer
           format: int64
           description: Total count for pagination
@@ -1933,11 +1939,13 @@ components:
             x-go-type: UserRegistration
           description: The data of the curricularegistrationsresponse.
         total_count:
+          x-db-backed: true
           type: integer
           format: int64
           description: Total number of items available.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1

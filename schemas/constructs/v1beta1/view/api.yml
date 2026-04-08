@@ -176,6 +176,7 @@ components:
         updated_at:
           $ref: "../core/api.yml#/components/schemas/updated_at"
         deleted_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/nullTime"
           description: Timestamp when the view was soft deleted. Null while the view remains active.
 
@@ -226,8 +227,10 @@ components:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
         page_size:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         total_count:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/number"
         views:
           type: array

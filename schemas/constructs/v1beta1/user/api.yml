@@ -309,6 +309,7 @@ components:
             db: "created_at"
             json: "created_at"
         updated_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/Time"
           description: Timestamp when the user record was last updated
           x-oapi-codegen-extra-tags:
@@ -369,6 +370,7 @@ components:
                 db: "teams_with_roles"
                 json: "teams_with_roles"
             total_count:
+              x-db-backed: true
               type: integer
               description: Total number of team memberships returned for the user.
               minimum: 0
@@ -391,6 +393,7 @@ components:
                 db: "organizations_with_roles"
                 json: "organizations_with_roles"
             total_count:
+              x-db-backed: true
               type: integer
               description: Total number of organization memberships returned for the user.
               minimum: 0
@@ -408,10 +411,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -430,10 +435,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -479,6 +486,7 @@ components:
           type: boolean
           description: The anonymous perf results of the preference.
         updated_at:
+          x-db-backed: true
           type: string
           format: date-time
           description: Timestamp of when the resource was last updated.

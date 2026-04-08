@@ -524,14 +524,17 @@ components:
           x-oapi-codegen-extra-tags:
             db: "metadata"
         created_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "created_at"
         updated_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
           x-oapi-codegen-extra-tags:
             db: "updated_at"
         deleted_at:
+          x-db-backed: true
           $ref: "#/components/schemas/NullableTime"
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
@@ -563,10 +566,13 @@ components:
           x-go-type: "OrgMetadata"
           $ref: "#/components/schemas/OrgMetadata"
         created_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
         updated_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
         deleted_at:
+          x-db-backed: true
           $ref: "#/components/schemas/NullableTime"
 
     OrganizationsPage:
@@ -577,10 +583,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -599,10 +607,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -644,10 +654,13 @@ components:
         metadata:
           $ref: "#/components/schemas/MapObject"
         created_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
         updated_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
         deleted_at:
+          x-db-backed: true
           $ref: "#/components/schemas/NullableTime"
 
     TeamsPage:
@@ -658,10 +671,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -681,10 +696,13 @@ components:
         team_id:
           $ref: "../core/api.yml#/components/schemas/team_id"
         created_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
         updated_at:
+          x-db-backed: true
           $ref: "#/components/schemas/Time"
         deleted_at:
+          x-db-backed: true
           $ref: "#/components/schemas/NullableTime"
 
     TeamsOrganizationsMappingPage:
@@ -695,10 +713,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0

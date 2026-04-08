@@ -15,8 +15,9 @@
  *   Rule  3 — `operationId` must be lower camelCase verbNoun.
  *   Rule  4 — Path parameters must be camelCase with "Id" suffix.
  *   Rule  5 — DELETE operations must not have a requestBody.
- *   Rule  6 — Schema property names must preserve published casing: DB-backed properties
- *              use exact snake_case db names; new non-DB properties use camelCase.
+ *   Rule  6 — Schema property names must preserve published casing: snake_case requires
+ *              explicit contract metadata (matching db/gorm tags or x-db-backed: true);
+ *              new non-DB properties use camelCase.
  *   Rule  7 — Schema component names (components/schemas keys) must be PascalCase.
  *   Rule  8 — Newly introduced enum values must be lowercase.
  *   Rule  9 — Query/header parameter names must be camelCase.
@@ -94,35 +95,6 @@ const SERVER_GENERATED_FIELDS = new Set(["id", "created_at", "updated_at", "dele
 
 // Validated API versions. Alpha schemas are legacy (kept for backward compat).
 const VALIDATED_VERSIONS = ["v1beta1", "v1beta2", "v1beta2-draft"];
-
-// Known contract-stable snake_case fields that may not carry explicit db tags.
-const DB_MIRRORED_FIELDS = new Set([
-  "created_at",
-  "updated_at",
-  "deleted_at",
-  "user_id",
-  "org_id",
-  "organization_id",
-  "environment_id",
-  "workspace_id",
-  "team_id",
-  "design_id",
-  "credential_id",
-  "connection_id",
-  "system_id",
-  "operation_id",
-  "view_id",
-  "general_id",
-  "invite_id",
-  "content_id",
-  "badge_id",
-  "plan_id",
-  "access_expires_at",
-  "avatar_url",
-  "accepted_terms_at",
-  "page_size",
-  "total_count",
-]);
 
 const DB_TAG_PATTERN = /^(?:-|[a-z][a-z0-9]*(?:_[a-z0-9]+)*)$/;
 
@@ -338,16 +310,44 @@ function isDbBackedSnakeCaseProperty(name, definition) {
   return false;
 }
 
-function isAllowedSnakeCaseProperty(name, definition) {
-  return DB_MIRRORED_FIELDS.has(name) || isDbBackedSnakeCaseProperty(name, definition);
+function hasExplicitSnakeCaseContract(name, definition, filePath, localDoc, seenRefs = new Set()) {
+  if (!definition || typeof definition !== "object") return false;
+  if (definition["x-db-backed"] === true) return true;
+  if (isDbBackedSnakeCaseProperty(name, definition)) return true;
+
+  if (definition.$ref && filePath && localDoc) {
+    const refKey = `${filePath}::${definition.$ref}`;
+    if (!seenRefs.has(refKey)) {
+      seenRefs.add(refKey);
+      const resolved = resolveRefSchema(definition.$ref, filePath, localDoc);
+      if (
+        resolved?.definition &&
+        hasExplicitSnakeCaseContract(name, resolved.definition, resolved.filePath, resolved.doc, seenRefs)
+      ) {
+        return true;
+      }
+    }
+  }
+
+  for (const combiner of ["allOf", "oneOf", "anyOf"]) {
+    if (Array.isArray(definition[combiner])) {
+      for (const subSchema of definition[combiner]) {
+        if (hasExplicitSnakeCaseContract(name, subSchema, filePath, localDoc, seenRefs)) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
-function getCamelCaseIssues(name, { allowDbMirrored = false, definition = null } = {}) {
-  if (allowDbMirrored && isAllowedSnakeCaseProperty(name, definition)) return [];
+function getCamelCaseIssues(name, { allowDbMirrored = false, definition = null, filePath = null, localDoc = null } = {}) {
+  if (allowDbMirrored && hasExplicitSnakeCaseContract(name, definition, filePath, localDoc)) return [];
 
   const issues = [];
   if (hasUnderscore(name)) {
-    issues.push("uses snake_case (only DB-backed contract fields may use underscores)");
+    issues.push("uses snake_case (only explicitly annotated contract fields may use underscores)");
   }
   if (/^[A-Z]/.test(name)) {
     issues.push("starts with uppercase (must be camelCase, not PascalCase)");
@@ -461,6 +461,23 @@ function resolveRefObject(ref, baseFilePath, localDoc) {
   return resolveJsonPointer(targetDoc, `#${pointer}`);
 }
 
+function resolveRefSchema(ref, baseFilePath, localDoc) {
+  if (!ref || typeof ref !== "string") return null;
+
+  if (ref.startsWith("#/")) {
+    return { definition: resolveJsonPointer(localDoc, ref), filePath: baseFilePath, doc: localDoc };
+  }
+
+  const [relativePath, pointer] = ref.split("#");
+  if (!relativePath || !pointer) return null;
+
+  const targetPath = path.resolve(path.dirname(baseFilePath), relativePath);
+  const targetDoc = loadYamlDoc(targetPath);
+  if (!targetDoc) return null;
+
+  return { definition: resolveJsonPointer(targetDoc, `#${pointer}`), filePath: targetPath, doc: targetDoc };
+}
+
 function resolveParameterName(parameter, filePath, doc) {
   if (parameter?.name) return parameter.name;
   if (!parameter?.$ref) return null;
@@ -496,7 +513,7 @@ function validateEntitySchema(filePath) {
 
   // Also validate property names in entity schemas
   if (doc.properties) {
-    validatePropertyNames(filePath, "(entity root)", doc.properties);
+    validatePropertyNames(filePath, doc, "(entity root)", doc.properties);
   }
 
   validateDbBackedPropertyNames(filePath, doc);
@@ -666,17 +683,22 @@ function validateDeleteNoBody(filePath, doc) {
 /**
  * Validates that all property names in a schema object follow casing rules:
  * - camelCase for new non-DB properties
- * - exact snake_case DB names for DB-backed contract fields
+ * - snake_case only for explicitly annotated contract fields
  * - Flags PascalCase, SCREAMING_CASE, and non-authoritative snake_case
  */
-function validatePropertyNames(filePath, schemaName, properties) {
+function validatePropertyNames(filePath, doc, schemaName, properties) {
   if (!properties || typeof properties !== "object") return;
 
   for (const [propName, propDef] of Object.entries(properties)) {
     // Skip $ref-only properties (no name to validate)
     if (propName.startsWith("$")) continue;
 
-    const issues = getCamelCaseIssues(propName, { allowDbMirrored: true, definition: propDef });
+    const issues = getCamelCaseIssues(propName, {
+      allowDbMirrored: true,
+      definition: propDef,
+      filePath,
+      localDoc: doc,
+    });
     if (issues.length > 0) {
       const suggestion = getCamelCaseSuggestion(propName);
       reportStyleIssue(
@@ -697,7 +719,7 @@ function validateAllSchemaProperties(filePath, doc) {
 
     // Validate properties of this schema
     if (schemaDef.properties) {
-      validatePropertyNames(filePath, schemaName, schemaDef.properties);
+      validatePropertyNames(filePath, doc, schemaName, schemaDef.properties);
     }
 
     // Also validate nested allOf/oneOf/anyOf schemas
@@ -705,7 +727,7 @@ function validateAllSchemaProperties(filePath, doc) {
       if (Array.isArray(schemaDef[combiner])) {
         for (const subSchema of schemaDef[combiner]) {
           if (subSchema?.properties) {
-            validatePropertyNames(filePath, schemaName, subSchema.properties);
+            validatePropertyNames(filePath, doc, schemaName, subSchema.properties);
           }
         }
       }

@@ -778,8 +778,10 @@ components:
             name: catalogv1alpha2
 
         created_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/Time"
         user_id:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/Id"
         location:
           $ref: "../core/api.yml#/components/schemas/MapObject"
@@ -790,6 +792,7 @@ components:
           x-go-type: PatternFile
 
         updated_at:
+          x-db-backed: true
           $ref: "../core/api.yml#/components/schemas/Time"
         id:
           $ref: "../core/api.yml#/components/schemas/Id"
@@ -804,6 +807,7 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
@@ -819,6 +823,7 @@ components:
           description: The result type of the mesherypatternpage.
           maxLength: 500
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -901,10 +906,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
@@ -943,10 +950,12 @@ components:
           description: Current page number of the result set.
           minimum: 0
         page_size:
+          x-db-backed: true
           type: integer
           description: Number of items per page.
           minimum: 1
         total_count:
+          x-db-backed: true
           type: integer
           description: Total number of items available.
           minimum: 0
