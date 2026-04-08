@@ -116,4 +116,3 @@ components:
       type: string
       enum:
       - usd
-  examples: {}

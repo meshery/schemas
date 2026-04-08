@@ -595,7 +595,18 @@ paths:
                 items:
                   $ref: "#/components/schemas/TestSubmissions"
               example:
-                -   - {}
+                - - score: 0
+                    passed: false
+                    percentage_scored: 0
+                    total_marks: 0
+                    pass_percentage: 0
+                    correct_submissions: {}
+                    quiz:
+                      id: ""
+                      title: ""
+                      type: ""
+                    attempted_at: "0001-01-01T00:00:00Z"
+                    attempts: 0
         "400":
           description: Invalid request parameters
         "401":
@@ -2055,7 +2066,7 @@ components:
           - {}
     AcademyCurriculaExample:
       value:
-        id: 923458-3490394-934893
+        id: 00000000-0000-0000-0000-000000000000
         type: learning-path
         orgId: layer5
         visibility: public
@@ -2115,7 +2126,7 @@ components:
         draft: false
         file_path: ''
         pass_percentage: 0
-        time_limit: ''
+        time_limit: 0
         max_attempts: 0
         questions:
           - {}
@@ -2147,9 +2158,9 @@ components:
         page: 1
     CertificateExample:
       value:
-        id: 1234567890abcdef
+        id: 00000000-0000-0000-0000-000000000000
         orgId: 00000000-0000-0000-0000-000000000000
-        recipientId: 1234567890abcdef
+        recipientId: 00000000-0000-0000-0000-000000000000
         recipientName: John Doe
         title: Kubernetes Expert Certification
         description: Awarded for successfully completing the Kubernetes Expert course

@@ -583,7 +583,18 @@ paths:
                 items:
                   $ref: '#/components/schemas/TestSubmissions'
               example:
-                -   - {}
+                - - score: 0
+                    passed: false
+                    percentageScored: 0
+                    totalMarks: 0
+                    passPercentage: 0
+                    correctSubmissions: {}
+                    quiz:
+                      id: ''
+                      title: ''
+                      type: ''
+                    attemptedAt: '0001-01-01T00:00:00Z'
+                    attempts: 0
         '400':
           description: Invalid request parameters
         '401':
@@ -2167,14 +2178,14 @@ components:
         page: 1
     CertificateExample:
       value:
-        id: 550e8400-e29b-41d4-a716-446655440000
+        id: 00000000-0000-0000-0000-000000000000
         orgId: 00000000-0000-0000-0000-000000000000
-        recipientId: 550e8400-e29b-41d4-a716-446655440001
+        recipientId: 00000000-0000-0000-0000-000000000000
         recipientName: John Doe
         title: Kubernetes Expert Certification
         description: Awarded for successfully completing the Kubernetes Expert course
         issuingAuthorities:
           - {}
-        issuedDate: 2023-10-01 12:00:00
-        expirationDate: 2025-10-01 12:00:00
+        issuedDate: '2023-10-01T12:00:00Z'
+        expirationDate: '2025-10-01T12:00:00Z'
         expiresIn: 24

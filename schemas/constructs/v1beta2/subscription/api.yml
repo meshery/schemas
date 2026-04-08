@@ -395,7 +395,7 @@ components:
             billing_id: ''
     CreateSubscriptionResponseExample:
       value:
-        subscriptionId: external-id
+        subscriptionId: ''
         clientSecret: ''
     SubscriptionExample:
       value:
