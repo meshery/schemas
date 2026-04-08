@@ -193,17 +193,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventsPage"
         "400":
-          description: Invalid request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+          $ref: "#/components/responses/400"
         "401":
-          description: Unauthorized
+          $ref: "#/components/responses/401"
         "404":
-          description: Workspace not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/events:
     get:
@@ -222,11 +218,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventsAggregate"
         "401":
-          description: Unauthorized
+          $ref: "#/components/responses/401"
         "404":
-          description: Not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/events/list:
     get:
@@ -249,11 +245,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventsPage"
         "401":
-          description: Unauthorized
+          $ref: "#/components/responses/401"
         "404":
-          description: Not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/events/summary:
     get:
@@ -276,11 +272,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/EventSummaryPage"
         "401":
-          description: Unauthorized
+          $ref: "#/components/responses/401"
         "404":
-          description: Not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
   /api/events/types:
     get:
@@ -302,11 +298,11 @@ paths:
                 items:
                   $ref: "#/components/schemas/EventType"
         "401":
-          description: Unauthorized
+          $ref: "#/components/responses/401"
         "404":
-          description: Not found
+          $ref: "#/components/responses/404"
         "500":
-          description: Server error
+          $ref: "#/components/responses/500"
 
 components:
   responses:
@@ -457,8 +453,3 @@ components:
         action:
           type: string
 
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string

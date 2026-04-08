@@ -66,12 +66,38 @@ function ensureRequiredImports(filePath) {
   if (/\buuid\.UUID\b/.test(content) && !content.includes('"github.com/gofrs/uuid"')) {
     needs.push('\t"github.com/gofrs/uuid"');
   }
+  if (
+    /\bcore\.ErrorResponse\b/.test(content) &&
+    !content.includes('"github.com/meshery/schemas/models/core"')
+  ) {
+    needs.push('\t"github.com/meshery/schemas/models/core"');
+  }
   if (needs.length === 0) return;
   // Insert into the import block that follows the package declaration.
   // Match the first "import (" ... ")" block only, not arbitrary ")".
   const importBlockRe = /(import\s*\([\s\S]*?)(\n\))/;
   content = content.replace(importBlockRe, `$1\n${needs.join("\n")}$2`);
   fs.writeFileSync(filePath, content);
+}
+
+function rewriteCoreErrorResponseAliases(filePath) {
+  if (filePath.includes(`${path.sep}models${path.sep}core${path.sep}`)) {
+    return;
+  }
+
+  const content = fs.readFileSync(filePath, "utf-8");
+  const coreImportMatch = content.match(
+    /^\s*([A-Za-z_][A-Za-z0-9_]*)?\s*"github\.com\/meshery\/schemas\/models\/core"$/m,
+  );
+  const coreAlias = coreImportMatch?.[1] || "core";
+  const rewritten = content.replace(
+    /^type (\w+N(?:400|401|404|409|500)) = ErrorResponse$/gm,
+    `type $1 = ${coreAlias}.ErrorResponse`,
+  );
+
+  if (rewritten !== content) {
+    fs.writeFileSync(filePath, rewritten, "utf-8");
+  }
 }
 
 function addYamlTags(filePath) {
@@ -1473,6 +1499,7 @@ async function generateGoModels(pkg) {
     removeSelfReferentialAliases(outputPath);
     addSchemaExtraTags(outputPath, inputPath);
     rewriteExternalRefAliases(outputPath, inputPath);
+    rewriteCoreErrorResponseAliases(outputPath);
     validateReadableImportAliases(outputPath);
     addCompatibilityParameterAliases(outputPath, inputPath);
     ensureRequiredImports(outputPath);
