@@ -4,7 +4,7 @@
 package view
 
 import (
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	core "github.com/meshery/schemas/models/core"
 )
 

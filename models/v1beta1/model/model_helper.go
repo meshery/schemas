@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"github.com/meshery/meshkit/utils"
@@ -58,7 +58,7 @@ func (m *ModelDefinition) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.FromString(hex.EncodeToString(hash[:]))
+	return uuid.Parse(hex.EncodeToString(hash[:]))
 }
 
 func (m ModelDefinition) GetID() uuid.UUID {

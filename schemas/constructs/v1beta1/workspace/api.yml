@@ -617,7 +617,7 @@ components:
           description: Organization to which this workspace belongs.
           x-go-type: uuid.UUID
           x-go-type-import:
-            path: github.com/gofrs/uuid
+            path: github.com/google/uuid
           x-go-name: OrganizationId
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
