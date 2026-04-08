@@ -256,6 +256,8 @@ Use **201** (not 200) for `POST` endpoints that exclusively create a new resourc
 
 Response descriptions and response message text must not include the word `successfully`. Use neutral wording such as `Connection deleted`, `Webhook processed`, or `Plans response`.
 
+Every `2xx` response with a `content` block should define an `example` or `examples` block on each media type. `204` responses are exempt because they intentionally return no body.
+
 ### Resource grouping and path structure
 
 Endpoints are grouped into logical categories under `/api`:

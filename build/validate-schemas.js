@@ -55,6 +55,8 @@
  *   Rule 40 — String properties named *id/*Id must have format: uuid or $ref to a UUID schema.
  *              Skips non-string types and properties annotated with `x-id-format: external`.
  *   Rule 41 — Page-size properties (page_size, pagesize) must have minimum: 1.
+ *   Rule 42 — 2xx responses with a content block must define `example` or `examples`
+ *              on each media type; 204 responses are exempt.
  *
  * USAGE:
  *   node build/validate-schemas.js          # exits 0 if no blocking violations found
@@ -84,6 +86,7 @@ const { findNewNonLowercaseEnumValues } = require("./lib/enum-validation");
 const { detectPostCreate, isSingleResourceDelete } = require("./lib/response-code-semantics");
 const { collectPropertyConstraintIssues } = require("./lib/property-constraint-validation");
 const { findOperationTagIssues } = require("./lib/operation-tags");
+const { collectResponseExampleIssues } = require("./lib/response-example-validation");
 
 const ROOT = path.resolve(__dirname, "..");
 const CONSTRUCTS_DIR = path.join(ROOT, "schemas", "constructs");
@@ -2248,6 +2251,14 @@ function validatePropertyConstraints(filePath, doc) {
   }
 }
 
+// ─── Rule 42: 2xx responses with content should include examples ─────────────
+
+function validateResponseExamples(filePath, doc) {
+  for (const issue of collectResponseExampleIssues(doc)) {
+    reportDesignAdvisory(filePath, issue);
+  }
+}
+
 // ─── Walk constructs directory ────────────────────────────────────────────────
 
 function shouldValidateVersion(version) {
@@ -2312,8 +2323,9 @@ function walk(dir) {
             if (entityDoc.components?.schemas) {
               validateGoTypeImportConsistency(entityPath, entityDoc);
             }
-            // Rules 37–41: property-level validation constraints
+            // Rules 37–42: property-level/response example validation constraints
             validatePropertyConstraints(entityPath, entityDoc);
+            validateResponseExamples(entityPath, entityDoc);
           }
         }
       }
@@ -2365,8 +2377,9 @@ function walk(dir) {
           collectSchemaFingerprints(apiYml, doc);
           validateResponseSchemaRefs(apiYml, doc);
           validateResponseText(apiYml, doc);
-          // Rules 37–41: property-level validation constraints
+          // Rules 37–42: property-level/response example validation constraints
           validatePropertyConstraints(apiYml, doc);
+          validateResponseExamples(apiYml, doc);
         }
       }
     }
