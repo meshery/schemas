@@ -36,6 +36,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Plan'
+              example:
+                - id: ''
+                  name: ''
+                  cadence: ''
+                  unit: ''
+                  minimum_units: 0
+                  price_per_unit: 0
+                  currency: ''
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -108,3 +116,4 @@ components:
       type: string
       enum:
       - usd
+  examples: {}

@@ -36,6 +36,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Invitation"
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -85,6 +88,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Invitation"
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -107,6 +113,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/InvitationsPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationsPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -131,6 +140,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Invitation"
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -153,6 +165,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Invitation"
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -191,6 +206,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -223,6 +239,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -248,6 +265,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignupRequestsPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/SignupRequestsPageExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -268,6 +288,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -290,6 +311,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -312,6 +334,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         "204":
           description: No pending signup request notifications
         "401":
@@ -651,3 +674,38 @@ components:
           x-oapi-codegen-extra-tags:
             db: "deleted_at"
             json: "deleted_at"
+  examples:
+    InvitationExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        owner_id: 00000000-0000-0000-0000-000000000000
+        is_default: false
+        name: ''
+        description: ''
+        emails:
+          - ''
+        org_id: ''
+        expires_at: '0001-01-01T00:00:00Z'
+        quota: 0
+        accepted_by:
+          - ''
+        roles:
+          - ''
+        teams:
+          - ''
+        status: enabled
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at: '0001-01-01T00:00:00Z'
+    InvitationsPageExample:
+      value:
+        data:
+          - {}
+        total: 0
+    SignupRequestsPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        data:
+          - {}

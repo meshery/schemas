@@ -195,6 +195,53 @@ components:
           schema:
             $ref: "#/components/schemas/TeamUpdatePayload"
 
+  examples:
+    TeamPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        teams:
+          - id: 00000000-0000-0000-0000-000000000000
+            name: ''
+            description: ''
+            owner: 00000000-0000-0000-0000-000000000000
+            metadata: {}
+            created_at: '0001-01-01T00:00:00Z'
+            updated_at: '0001-01-01T00:00:00Z'
+            deleted_at:
+    TeamExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        name: ''
+        description: ''
+        owner: 00000000-0000-0000-0000-000000000000
+        metadata: {}
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at:
+    TeamsUsersMappingPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        teamsUsersMapping:
+          - {}
+    TeamsUsersMappingExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        team_id: 00000000-0000-0000-0000-000000000000
+        user_id: ''
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at: '0001-01-01T00:00:00Z'
+    TeamMembersPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        data:
+          - {}
 paths:
   /api/identity/orgs/{orgId}/teams:
     get:
@@ -216,6 +263,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TeamPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamPageExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -239,6 +289,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Team"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -265,6 +318,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Team"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -291,6 +347,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Team"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -340,6 +399,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TeamsUsersMappingPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamsUsersMappingPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -372,6 +434,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TeamsUsersMapping"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamsUsersMappingExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -427,6 +492,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TeamMembersPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamMembersPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":

@@ -246,6 +246,25 @@ components:
           schema:
             $ref: "#/components/schemas/ViewPayload"
 
+  examples:
+    MesheryViewPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        views:
+          - {}
+    MesheryViewExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        name: Example View
+        visibility: private
+        filters: {}
+        metadata: {}
+        user_id: 00000000-0000-0000-0000-000000000000
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at:
 paths:
   /api/content/views:
     post:
@@ -264,6 +283,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MesheryView"
+              examples:
+                default:
+                  $ref: '#/components/examples/MesheryViewExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -314,6 +336,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MesheryViewPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/MesheryViewPageExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -336,6 +361,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MesheryView"
+              examples:
+                default:
+                  $ref: '#/components/examples/MesheryViewExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -362,6 +390,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MesheryView"
+              examples:
+                default:
+                  $ref: '#/components/examples/MesheryViewExample'
         "400":
           $ref: "#/components/responses/400"
         "401":

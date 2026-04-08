@@ -32,6 +32,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invitation'
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -81,6 +84,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invitation'
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -103,6 +109,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InvitationsPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationsPageExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -128,6 +137,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invitation'
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -150,6 +162,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invitation'
+              examples:
+                default:
+                  $ref: '#/components/examples/InvitationExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -188,6 +203,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -220,6 +236,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -246,6 +263,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SignupRequestsPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/SignupRequestsPageExample'
         '401':
           $ref: '#/components/responses/401'
         '500':
@@ -266,6 +286,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -288,6 +309,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -310,6 +332,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         '204':
           description: No pending signup request notifications
         '401':
@@ -488,3 +511,49 @@ components:
         the invitation is no longer valid and is temporarily inactive, disabled invitations can be re-enabled later.
     Invitation:
       $ref: ./invitation.yaml
+  examples:
+    InvitationExample:
+      value:
+        id: ''
+        owner_id: ''
+        is_default: false
+        name: ''
+        description: ''
+        emails: []
+        org_id: ''
+        expires_at: ''
+        quota: 0
+        accepted_by: []
+        roles: []
+        teams: []
+        status: ''
+        created_at: ''
+        updated_at: ''
+        deleted_at: ''
+    InvitationsPageExample:
+      value:
+        data:
+          - id: ''
+            owner_id: ''
+            is_default: false
+            name: ''
+            description: ''
+            emails: []
+            org_id: ''
+            expires_at: ''
+            quota: 0
+            accepted_by: []
+            roles: []
+            teams: []
+            status: ''
+            created_at: ''
+            updated_at: ''
+            deleted_at: ''
+        total: 0
+    SignupRequestsPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        data:
+          - {}

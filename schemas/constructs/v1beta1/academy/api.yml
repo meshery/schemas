@@ -54,6 +54,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AcademyCurriculaListResponse"
+              examples:
+                default:
+                  $ref: '#/components/examples/AcademyCurriculaListResponseExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -82,6 +85,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AcademyCurricula"
+              examples:
+                default:
+                  $ref: '#/components/examples/AcademyCurriculaExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -202,6 +208,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AcademyCurriculaWithMetricsListResponse"
+              examples:
+                default:
+                  $ref: '#/components/examples/AcademyCurriculaWithMetricsListResponseExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -238,6 +247,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AcademyCurricula"
+              examples:
+                default:
+                  $ref: '#/components/examples/AcademyCurriculaExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -268,6 +280,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AcademyRegistration"
+              examples:
+                default:
+                  $ref: '#/components/examples/AcademyRegistrationExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -292,6 +307,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AcademyRegistration"
+              examples:
+                default:
+                  $ref: '#/components/examples/AcademyRegistrationExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -324,6 +342,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SingleAcademyCurriculaResponse"
+              examples:
+                default:
+                  $ref: '#/components/examples/SingleAcademyCurriculaResponseExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -370,6 +391,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SingleAcademyCurriculaResponse"
+              examples:
+                default:
+                  $ref: '#/components/examples/SingleAcademyCurriculaResponseExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -409,6 +433,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AcademyRegistration"
+              examples:
+                default:
+                  $ref: '#/components/examples/AcademyRegistrationExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -445,6 +472,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UpdateCurrentItemProgressResponse"
+              examples:
+                default:
+                  $ref: '#/components/examples/UpdateCurrentItemProgressResponseExample'
         "400":
           description: Bad request
           content:
@@ -484,6 +514,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Quiz"
+              examples:
+                default:
+                  $ref: '#/components/examples/QuizExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -516,6 +549,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Quiz"
+              examples:
+                default:
+                  $ref: '#/components/examples/QuizExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -558,6 +594,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TestSubmissions"
+              example:
+                -   - {}
         "400":
           description: Invalid request parameters
         "401":
@@ -588,6 +626,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/QuizEvaluationResult"
+              examples:
+                default:
+                  $ref: '#/components/examples/QuizEvaluationResultExample'
         "400":
           description: Bad request
           content:
@@ -618,6 +659,7 @@ paths:
             application/json:
               schema:
                 type: object
+              example: {}
         "400":
           description: Invalid request parameters
         "401":
@@ -673,6 +715,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CurriculaRegistrationsResponse"
+              examples:
+                default:
+                  $ref: '#/components/examples/CurriculaRegistrationsResponseExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -703,6 +748,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Certificate"
+              examples:
+                default:
+                  $ref: '#/components/examples/CertificateExample'
         "400":
           description: Invalid request parameters
         "401":
@@ -1999,3 +2047,114 @@ components:
           $ref: "#/components/schemas/ContentType"
         itemData:
           $ref: "#/components/schemas/CurriculaCurrentItemData"
+  examples:
+    AcademyCurriculaListResponseExample:
+      value:
+        total: 7
+        data:
+          - {}
+    AcademyCurriculaExample:
+      value:
+        id: 923458-3490394-934893
+        type: learning-path
+        orgId: layer5
+        visibility: public
+        status: ready
+        slug: intro-kubernetes-course
+        level: beginner
+        badge_id: 00000000-0000-0000-0000-000000000000
+        inviteId: 00000000-0000-0000-0000-000000000000
+        workspace_id: 00000000-0000-0000-0000-000000000000
+        createdAt: '0001-01-01T00:00:00Z'
+        updatedAt: '0001-01-01T00:00:00Z'
+        deletedAt: '0001-01-01T00:00:00Z'
+        metadata: {}
+    AcademyCurriculaWithMetricsListResponseExample:
+      value:
+        total: 7
+        data:
+          - {}
+    AcademyRegistrationExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        org_id: 00000000-0000-0000-0000-000000000000
+        content_id: ''
+        user_id: 00000000-0000-0000-0000-000000000000
+        status: registered
+        updated_at: '0001-01-01T00:00:00Z'
+        created_at: '0001-01-01T00:00:00Z'
+        deleted_at: '0001-01-01T00:00:00Z'
+        certificate: {}
+        metadata: {}
+    SingleAcademyCurriculaResponseExample:
+      value:
+        registration_count: 0
+        invitation: {}
+    UpdateCurrentItemProgressResponseExample:
+      value:
+        message: ''
+        progressTracker: {}
+        registrationId: ''
+        contentType: learning-path
+        itemData: {}
+    QuizExample:
+      value:
+        id: ''
+        org_id: layer5
+        final: true
+        title: ''
+        description: ''
+        slug: ''
+        relPermalink: ''
+        permalink: ''
+        type: ''
+        section: ''
+        layout: ''
+        date: '1970-01-01'
+        lastmod: '1970-01-01'
+        draft: false
+        file_path: ''
+        pass_percentage: 0
+        time_limit: ''
+        max_attempts: 0
+        questions:
+          - {}
+        total_questions: 0
+        total_questions_in_bank: 0
+        total_question_sets: 0
+        total_marks: 0
+        prerequisites:
+          - {}
+        parent: {}
+        next_page: {}
+    QuizEvaluationResultExample:
+      value:
+        score: 0
+        passed: false
+        percentage_scored: 0
+        total_marks: 0
+        pass_percentage: 0
+        correct_submissions: {}
+        quiz: {}
+        attempted_at: '0001-01-01T00:00:00Z'
+        attempts: 0
+    CurriculaRegistrationsResponseExample:
+      value:
+        data:
+          - {}
+        total_count: 1
+        page_size: 1
+        page: 1
+    CertificateExample:
+      value:
+        id: 1234567890abcdef
+        orgId: 00000000-0000-0000-0000-000000000000
+        recipientId: 1234567890abcdef
+        recipientName: John Doe
+        title: Kubernetes Expert Certification
+        description: Awarded for successfully completing the Kubernetes Expert course
+        issuingAuthorities:
+          - {}
+        issuedDate: 2023-10-01T12:00:00
+        expirationDate: 2025-10-01T12:00:00
+        expiresIn: 24

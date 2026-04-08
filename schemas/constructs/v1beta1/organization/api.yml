@@ -38,6 +38,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrganizationsPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/OrganizationsPageExample'
         "204":
           description: No content
         "401":
@@ -61,6 +64,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrganizationPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/OrganizationPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -87,6 +93,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Organization"
+              examples:
+                default:
+                  $ref: '#/components/examples/OrganizationExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -111,6 +120,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrganizationPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/OrganizationPageExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -157,6 +169,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrganizationPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/OrganizationPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -183,6 +198,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/OrgMetadata"
+              examples:
+                default:
+                  $ref: '#/components/examples/OrgMetadataExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -217,6 +235,11 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/TeamsOrganizationsMappingPage"
                   - $ref: "#/components/schemas/TeamsPage"
+              example:
+                page: 1
+                page_size: 1
+                total_count: 1
+                teamsOrganizationsMapping: []
         "400":
           description: Bad request
         "401":
@@ -245,6 +268,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TeamsOrganizationsMappingPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/TeamsOrganizationsMappingPageExample'
         "400":
           description: Bad request
         "401":
@@ -277,6 +303,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -707,3 +734,41 @@ components:
           items:
             $ref: "#/components/schemas/TeamsOrganizationsMapping"
           description: The teams organizations mapping of the teamsorganizationsmappingpage.
+  examples:
+    OrganizationsPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        organizations:
+          - {}
+    OrganizationPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        organizations:
+          - {}
+    OrganizationExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        name: ''
+        country: ''
+        region: ''
+        description: ''
+        owner: 00000000-0000-0000-0000-000000000000
+        metadata: {}
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at: '0001-01-01T00:00:00Z'
+        domain: ''
+    OrgMetadataExample:
+      value:
+        preferences: {}
+    TeamsOrganizationsMappingPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        teamsOrganizationsMapping:
+          - {}

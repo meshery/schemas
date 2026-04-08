@@ -55,6 +55,7 @@
  *   Rule 40 — String properties named *id/*Id must have format: uuid or $ref to a UUID schema.
  *              Skips non-string types and properties annotated with `x-id-format: external`.
  *   Rule 41 — Page-size properties (page_size, pagesize) must have minimum: 1.
+ *   Rule 42 — 200/201 JSON responses with schemas must define an `example` or `examples` block.
  *
  * USAGE:
  *   node build/validate-schemas.js          # exits 0 if no blocking violations found
@@ -84,6 +85,7 @@ const { findNewNonLowercaseEnumValues } = require("./lib/enum-validation");
 const { detectPostCreate, isSingleResourceDelete } = require("./lib/response-code-semantics");
 const { collectPropertyConstraintIssues } = require("./lib/property-constraint-validation");
 const { findOperationTagIssues } = require("./lib/operation-tags");
+const { collectMissingResponseExampleIssues } = require("./lib/response-example-validation");
 
 const ROOT = path.resolve(__dirname, "..");
 const CONSTRUCTS_DIR = path.join(ROOT, "schemas", "constructs");
@@ -2240,6 +2242,18 @@ function validateResponseText(filePath, doc) {
   }
 }
 
+// ─── Rule 42: success responses must define JSON examples ───────────────────
+
+function validateResponseExamples(filePath, doc) {
+  for (const issue of collectMissingResponseExampleIssues(doc)) {
+    reportError(
+      filePath,
+      `${issue.method.toUpperCase()} ${issue.routePath} — response ${issue.statusCode} ${issue.mediaType} ` +
+        "must define `example` or `examples`.",
+    );
+  }
+}
+
 // ─── Rules 37–41: property-level validation constraints ─────────────────────
 
 function validatePropertyConstraints(filePath, doc) {
@@ -2365,6 +2379,7 @@ function walk(dir) {
           collectSchemaFingerprints(apiYml, doc);
           validateResponseSchemaRefs(apiYml, doc);
           validateResponseText(apiYml, doc);
+          validateResponseExamples(apiYml, doc);
           // Rules 37–41: property-level validation constraints
           validatePropertyConstraints(apiYml, doc);
         }

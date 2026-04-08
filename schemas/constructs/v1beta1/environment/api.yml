@@ -165,6 +165,42 @@ components:
           schema:
             $ref: "#/components/schemas/EnvironmentPayload"
 
+  examples:
+    EnvironmentPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        environments:
+          - id: 00000000-0000-0000-0000-000000000000
+            schemaVersion: environments.meshery.io/v1beta1
+            name: ''
+            description: ''
+            organization_id: 00000000-0000-0000-0000-000000000000
+            owner: 00000000-0000-0000-0000-000000000000
+            created_at: ''
+            metadata: {}
+            updated_at: ''
+            deleted_at: ''
+    EnvironmentExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        schemaVersion: environments.meshery.io/v1beta1
+        name: ''
+        description: ''
+        organization_id: 00000000-0000-0000-0000-000000000000
+        owner: 00000000-0000-0000-0000-000000000000
+        created_at: ''
+        metadata: {}
+        updated_at: ''
+        deleted_at: ''
+    EnvironmentConnectionsPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        connections:
+          - {}
 paths:
   /api/environments:
     post:
@@ -182,6 +218,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Environment"
+              examples:
+                default:
+                  $ref: '#/components/examples/EnvironmentExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -207,6 +246,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EnvironmentPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/EnvironmentPageExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -228,6 +270,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EnvironmentPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/EnvironmentPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -252,6 +297,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EnvironmentPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/EnvironmentPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -303,6 +351,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EnvironmentConnectionsPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/EnvironmentConnectionsPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":

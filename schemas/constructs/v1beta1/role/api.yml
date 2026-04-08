@@ -96,6 +96,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RolesPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/RolesPageExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -124,6 +127,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Role"
+              examples:
+                default:
+                  $ref: '#/components/examples/RoleExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -187,6 +193,17 @@ paths:
                   path: "github.com/meshery/schemas/models/v1beta1/keychain"
                   name: keychainv1beta1
                 $ref: "../keychain/api.yml#/components/schemas/KeychainPage"
+              example:
+                page: 1
+                page_size: 1
+                total_count: 1
+                keychains:
+                  - id: 00000000-0000-0000-0000-000000000000
+                    name: ''
+                    owner: 00000000-0000-0000-0000-000000000000
+                    created_at: '0001-01-01T00:00:00Z'
+                    updated_at: '0001-01-01T00:00:00Z'
+                    deleted_at:
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -508,3 +525,19 @@ components:
           type: boolean
           description: Whether to notify the user of role changes.
           x-order: 2
+  examples:
+    RolesPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        roles:
+          - {}
+    RoleExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        role_name: ''
+        description: ''
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at: '0001-01-01T00:00:00Z'

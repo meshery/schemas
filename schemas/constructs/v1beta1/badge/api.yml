@@ -53,6 +53,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Badge"
+              examples:
+                default:
+                  $ref: '#/components/examples/BadgeExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -79,6 +82,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Badge"
+              examples:
+                default:
+                  $ref: '#/components/examples/BadgeExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -100,6 +106,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BadgesPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/BadgesPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -128,6 +137,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
+              example: {}
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -321,3 +331,18 @@ components:
         notify:
           type: boolean
           description: The notify of the badgeassignment.
+  examples:
+    BadgeExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        org_id: 00000000-0000-0000-0000-000000000000
+        label: Kubernetes-Expert
+        name: Kubernetes Expert
+        description: Awarded for mastering Kubernetes concepts and practices.
+        image_url: https://raw.githubusercontent.com/layer5io/layer5-academy/refs/heads/master/static/11111111-1111-1111-1111-111111111111/images/meshery-logo-light.webp
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at: '0001-01-01T00:00:00Z'
+    BadgesPageExample:
+      value:
+        badges: {}

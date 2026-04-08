@@ -37,6 +37,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UsersPageForAdmin"
+              examples:
+                default:
+                  $ref: '#/components/examples/UsersPageForAdminExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -67,6 +70,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UsersPageForNonAdmin"
+              examples:
+                default:
+                  $ref: '#/components/examples/UsersPageForNonAdminExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -89,6 +95,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+              examples:
+                default:
+                  $ref: '#/components/examples/UserExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -111,6 +120,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+              examples:
+                default:
+                  $ref: '#/components/examples/UserExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -612,3 +624,51 @@ components:
     #       items:
     #         $ref: "#/components/schemas/User"
     #   required: [page, totalCount, pageSize, users]
+  examples:
+    UsersPageForAdminExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        data:
+          - {}
+    UsersPageForNonAdminExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        data:
+          - {}
+    UserExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        user_id: external-id
+        provider:
+          - local
+          - github
+          - google
+          - twitter
+        email: ''
+        first_name: ''
+        last_name: ''
+        avatar_url: https://example.com
+        status: active
+        bio: ""
+        country: {}
+        region: {}
+        preferences: {}
+        accepted_terms_at: '0001-01-01T00:00:00Z'
+        first_login_time: '0001-01-01T00:00:00Z'
+        last_login_time: '0001-01-01T00:00:00Z'
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        socials:
+          - {}
+        deleted_at: '0001-01-01T00:00:00Z'
+        role_names: ["admin", "meshmap"]
+        teams:
+          teams_with_roles: []
+          total_count: 1
+        organizations:
+          organizations_with_roles: []
+          total_count: 1

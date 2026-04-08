@@ -45,6 +45,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/TokenPageExample'
         '401':
           $ref: '#/components/responses/401'
         '500':
@@ -67,6 +70,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/TokenPageExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -90,6 +96,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/TokenPageExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -114,6 +123,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToken'
+              examples:
+                default:
+                  $ref: '#/components/examples/UserTokenExample'
         '401':
           $ref: '#/components/responses/401'
         '404':
@@ -139,6 +151,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/TokenPageExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -250,3 +265,32 @@ components:
           description: Number of tokens per page.
           x-order: 4
           minimum: 1
+  examples:
+    TokenPageExample:
+      value:
+        tokens:
+          - id: ''
+            user_id: ''
+            provider: ''
+            access_token: ''
+            refresh_token: ''
+            name: ''
+            purpose: ''
+            is_oauth: false
+            created_at: ''
+            updated_at: ''
+        total_count: 1
+        page: 1
+        page_size: 1
+    UserTokenExample:
+      value:
+        id: ''
+        user_id: ''
+        provider: ''
+        access_token: ''
+        refresh_token: ''
+        name: ''
+        purpose: ''
+        is_oauth: false
+        created_at: ''
+        updated_at: ''

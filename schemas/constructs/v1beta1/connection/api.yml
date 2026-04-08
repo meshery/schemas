@@ -71,6 +71,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConnectionPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/ConnectionPageExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -95,6 +98,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
+              examples:
+                default:
+                  $ref: '#/components/examples/ConnectionExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -118,6 +124,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
+              examples:
+                default:
+                  $ref: '#/components/examples/ConnectionExample'
         "404":
           $ref: "#/components/responses/404"
         "401":
@@ -146,6 +155,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Connection"
+              examples:
+                default:
+                  $ref: '#/components/examples/ConnectionExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -214,6 +226,7 @@ paths:
             application/json:
               schema:
                 type: object
+              example: {}
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -589,3 +602,47 @@ components:
           description: Whether to check compatibility
           x-oapi-codegen-extra-tags:
             json: "checkCompatibility,omitempty"
+  examples:
+    ConnectionPageExample:
+      value:
+        connections:
+          items:
+            id: 00000000-0000-0000-0000-000000000000
+            name: ''
+            credentialId: 00000000-0000-0000-0000-000000000000
+            type: ''
+            subType: ''
+            kind: ''
+            status: ''
+            user_id: 00000000-0000-0000-0000-000000000000
+            created_at: ''
+            updated_at: ''
+            deleted_at: ''
+            environments:
+              items:
+                id: 00000000-0000-0000-0000-000000000000
+                name: ''
+                description: ''
+                organization_id: 00000000-0000-0000-0000-000000000000
+                owner: 00000000-0000-0000-0000-000000000000
+                created_at: ''
+                updated_at: ''
+                deleted_at: ''
+            schemaVersion: components.meshery.io/v1beta1
+        metadata: {}
+    ConnectionExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        name: ''
+        credentialId: 00000000-0000-0000-0000-000000000000
+        type: platform
+        subType: orchestration
+        kind: kubernetes
+        metadata: {}
+        status: discovered
+        user_id: 00000000-0000-0000-0000-000000000000
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at:
+        environments: []
+        schemaVersion: connections.meshery.io/v1beta1

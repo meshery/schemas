@@ -39,6 +39,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/KeyPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/KeyPageExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -64,6 +67,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/KeyPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/KeyPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -89,6 +95,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Key"
+              examples:
+                default:
+                  $ref: '#/components/examples/KeyExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -112,6 +121,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Key"
+              examples:
+                default:
+                  $ref: '#/components/examples/KeyExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -235,3 +247,30 @@ components:
             $ref: "#/components/schemas/Key"
           x-order: 4
           description: The keys of the keypage.
+  examples:
+    KeyPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        keys:
+          - id: 00000000-0000-0000-0000-000000000000
+            owner: 00000000-0000-0000-0000-000000000000
+            function: ''
+            category: ''
+            subcategory: ''
+            description: ''
+            created_at: '0001-01-01T00:00:00Z'
+            updated_at: '0001-01-01T00:00:00Z'
+            deleted_at:
+    KeyExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        owner: 00000000-0000-0000-0000-000000000000
+        function: ''
+        category: ''
+        subcategory: ''
+        description: ''
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at:

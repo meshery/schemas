@@ -35,6 +35,14 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/Plan"
+              example:
+                - id: 00000000-0000-0000-0000-000000000000
+                  name: "Free"
+                  cadence: monthly
+                  unit: user
+                  minimum_units: 0
+                  price_per_unit: 0
+                  currency: usd
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -172,3 +180,4 @@ components:
       type: string
       enum:
         - usd
+  examples: {}

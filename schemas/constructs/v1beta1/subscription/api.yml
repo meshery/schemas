@@ -58,6 +58,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SubscriptionPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/SubscriptionPageExample'
           description: Get subscription response
         "400":
           $ref: "#/components/responses/400"
@@ -84,6 +87,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SubscriptionPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/SubscriptionPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -114,6 +120,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateSubscriptionResponse"
+              examples:
+                default:
+                  $ref: '#/components/examples/CreateSubscriptionResponseExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -143,6 +152,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Subscription"
+              examples:
+                default:
+                  $ref: '#/components/examples/SubscriptionExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -175,6 +187,7 @@ paths:
             application/json:
               schema:
                 type: object
+              example: {}
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -424,3 +437,29 @@ components:
         canceled: "The subscription has been canceled and will no longer generate invoices."
 
         unpaid: "The subscription is still technically active but has unpaid invoices and is no longer generating new invoices."
+  examples:
+    SubscriptionPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        subscriptions:
+          - {}
+    CreateSubscriptionResponseExample:
+      value:
+        subscriptionId: ''
+        clientSecret: ''
+    SubscriptionExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        org_id: 00000000-0000-0000-0000-000000000000
+        plan_id: 00000000-0000-0000-0000-000000000000
+        plan: {}
+        quantity: 0
+        start_date: '0001-01-01T00:00:00Z'
+        end_date: '0001-01-01T00:00:00Z'
+        status: incomplete
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at: '0001-01-01T00:00:00Z'
+        billing_id: ''

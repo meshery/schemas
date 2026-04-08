@@ -41,6 +41,8 @@ paths:
                 properties:
                   message:
                     type: string
+              example:
+                message: ''
         "400":
           description: Invalid request format
         "401":
@@ -83,6 +85,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MeshModelModelsPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/MeshModelModelsPageExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -273,3 +278,11 @@ components:
             type: object
             additionalProperties: true
           description: The models of the meshmodelmodelspage.
+  examples:
+    MeshModelModelsPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        models:
+          - {}

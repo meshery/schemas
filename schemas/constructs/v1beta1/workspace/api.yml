@@ -49,6 +49,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WorkspacePage"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspacePageExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -69,6 +72,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Workspace"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspaceExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -93,6 +99,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Workspace"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspaceExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -119,6 +128,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Workspace"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspaceExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -170,6 +182,19 @@ paths:
             application/json:
               schema:
                 $ref: "../../v1beta1/team/api.yml#/components/schemas/TeamPage"
+              example:
+                page: 1
+                page_size: 1
+                total_count: 1
+                teams:
+                  - id: 00000000-0000-0000-0000-000000000000
+                    name: ''
+                    description: ''
+                    owner: 00000000-0000-0000-0000-000000000000
+                    metadata: {}
+                    created_at: '0001-01-01T00:00:00Z'
+                    updated_at: '0001-01-01T00:00:00Z'
+                    deleted_at:
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -197,6 +222,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WorkspacesTeamsMappingPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspacesTeamsMappingPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -249,6 +277,21 @@ paths:
             application/json:
               schema:
                 $ref: "../../v1beta1/environment/api.yml#/components/schemas/EnvironmentPage"
+              example:
+                page: 1
+                page_size: 1
+                total_count: 1
+                environments:
+                  - id: 00000000-0000-0000-0000-000000000000
+                    schemaVersion: environments.meshery.io/v1beta1
+                    name: ''
+                    description: ''
+                    organization_id: 00000000-0000-0000-0000-000000000000
+                    owner: 00000000-0000-0000-0000-000000000000
+                    created_at: ''
+                    metadata: {}
+                    updated_at: ''
+                    deleted_at: ''
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -276,6 +319,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WorkspacesEnvironmentsMappingPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspacesEnvironmentsMappingPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -329,6 +375,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MesheryDesignPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/MesheryDesignPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -357,6 +406,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WorkspacesDesignsMappingPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspacesDesignsMappingPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -411,6 +463,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MesheryViewPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/MesheryViewPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -439,6 +494,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WorkspacesViewsMappingPage"
+              examples:
+                default:
+                  $ref: '#/components/examples/WorkspacesViewsMappingPageExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -907,3 +965,63 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/WorkspaceUpdatePayload"
+  examples:
+    WorkspacePageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        workspaces:
+          - {}
+    WorkspaceExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        name: My Workspace
+        description: A sample template for describing a workspace.
+        organization_id: 00000000-0000-0000-0000-000000000000
+        owner: 00000000-0000-0000-0000-000000000000
+        metadata: {}
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
+        deleted_at:
+    WorkspacesTeamsMappingPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        workspacesTeamsMapping:
+          - {}
+    WorkspacesEnvironmentsMappingPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        workspacesEnvironmentsMapping:
+          - {}
+    MesheryDesignPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        designs:
+          - {}
+    WorkspacesDesignsMappingPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        workspacesDesignsMapping:
+          - {}
+    MesheryViewPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        views: []
+    WorkspacesViewsMappingPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        workspacesViewsMapping:
+          - {}

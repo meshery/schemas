@@ -52,6 +52,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/SubscriptionPageExample'
           description: Get subscription response
         '400':
           $ref: '#/components/responses/400'
@@ -78,6 +81,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubscriptionPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/SubscriptionPageExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -109,6 +115,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateSubscriptionResponse'
+              examples:
+                default:
+                  $ref: '#/components/examples/CreateSubscriptionResponseExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -139,6 +148,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Subscription'
+              examples:
+                default:
+                  $ref: '#/components/examples/SubscriptionExample'
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -173,6 +185,7 @@ paths:
             application/json:
               schema:
                 type: object
+              example: {}
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -361,3 +374,40 @@ components:
         past_due: The latest payment attempt failed, but the subscription remains active. Stripe may retry the charge.
         canceled: The subscription has been canceled and will no longer generate invoices.
         unpaid: The subscription is still technically active but has unpaid invoices and is no longer generating new invoices.
+  examples:
+    SubscriptionPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        subscriptions:
+          - id: ''
+            org_id: ''
+            plan_id: ''
+            plan: {}
+            quantity: 0
+            start_date: ''
+            end_date: ''
+            status: ''
+            created_at: ''
+            updated_at: ''
+            deleted_at: ''
+            billing_id: ''
+    CreateSubscriptionResponseExample:
+      value:
+        subscriptionId: external-id
+        clientSecret: ''
+    SubscriptionExample:
+      value:
+        id: ''
+        org_id: ''
+        plan_id: ''
+        plan: {}
+        quantity: 0
+        start_date: ''
+        end_date: ''
+        status: ''
+        created_at: ''
+        updated_at: ''
+        deleted_at: ''
+        billing_id: ''

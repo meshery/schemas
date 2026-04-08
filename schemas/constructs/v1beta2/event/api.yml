@@ -82,6 +82,9 @@ paths:
                     items:
                       type: string
                       format: uuid
+              example:
+                deleted:
+                  - 00000000-0000-0000-0000-000000000000
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -112,6 +115,9 @@ paths:
                     items:
                       type: string
                       format: uuid
+              example:
+                updated:
+                  - 00000000-0000-0000-0000-000000000000
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -152,6 +158,10 @@ paths:
                     format: uuid
                   status:
                     type: string
+              example:
+                message: ''
+                event_id: 00000000-0000-0000-0000-000000000000
+                status: ''
         '400':
           $ref: '#/components/responses/400'
         '401':
@@ -184,6 +194,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventsPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/EventsPageExample'
         '400':
           description: Invalid request
           content:
@@ -213,6 +226,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventsAggregate'
+              examples:
+                default:
+                  $ref: '#/components/examples/EventsAggregateExample'
         '401':
           description: Unauthorized
         '404':
@@ -240,6 +256,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventsPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/EventsPageExample'
         '401':
           description: Unauthorized
         '404':
@@ -267,6 +286,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventSummaryPage'
+              examples:
+                default:
+                  $ref: '#/components/examples/EventSummaryPageExample'
         '401':
           description: Unauthorized
         '404':
@@ -293,6 +315,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/EventType'
+              example:
+                - category: ''
+                  action: ''
         '401':
           description: Unauthorized
         '404':
@@ -442,3 +467,30 @@ components:
           type: string
           description: The error of the errorresponse.
           maxLength: 500
+  examples:
+    EventsPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        data:
+          - user_id: ''
+            system_id: ''
+            category: ''
+            action: ''
+            description: ''
+            firstName: ''
+            lastName: ''
+            email: ''
+            provider: ''
+            created_at: ''
+    EventsAggregateExample:
+      value:
+        audit: 0
+    EventSummaryPageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        data:
+          - {}

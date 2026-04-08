@@ -46,6 +46,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SchedulePage"
+              examples:
+                default:
+                  $ref: '#/components/examples/SchedulePageExample'
         "401":
           $ref: "#/components/responses/401"
         "500":
@@ -70,6 +73,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Schedule"
+              examples:
+                default:
+                  $ref: '#/components/examples/ScheduleExample'
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -94,6 +100,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Schedule"
+              examples:
+                default:
+                  $ref: '#/components/examples/ScheduleExample'
         "401":
           $ref: "#/components/responses/401"
         "404":
@@ -230,3 +239,19 @@ components:
             $ref: "#/components/schemas/Schedule"
           x-order: 4
           description: The schedules of the schedulepage.
+  examples:
+    SchedulePageExample:
+      value:
+        page: 1
+        page_size: 1
+        total_count: 1
+        schedules:
+          - {}
+    ScheduleExample:
+      value:
+        id: 00000000-0000-0000-0000-000000000000
+        name: ''
+        user_id: 00000000-0000-0000-0000-000000000000
+        cron_expression: ''
+        created_at: '0001-01-01T00:00:00Z'
+        updated_at: '0001-01-01T00:00:00Z'
