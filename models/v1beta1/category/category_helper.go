@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/meshery/meshkit/database"
 	"github.com/meshery/meshkit/models/meshmodel/entity"
 	"gorm.io/gorm"
@@ -38,7 +38,7 @@ func (cat *CategoryDefinition) GenerateID() (uuid.UUID, error) {
 	}
 
 	hash := md5.Sum(byt)
-	return uuid.FromString(hex.EncodeToString(hash[:]))
+	return uuid.Parse(hex.EncodeToString(hash[:]))
 }
 
 func (cat CategoryDefinition) GetID() uuid.UUID {

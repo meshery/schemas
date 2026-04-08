@@ -109,7 +109,7 @@ function generateGoFile(permissions, indexId) {
     "// This file is generated from permissions.csv - DO NOT EDIT MANUALLY.",
     "// To regenerate, run: node build/generate-permission-golang.js",
     "package permissions",
-    'import "github.com/gofrs/uuid"',
+    'import "github.com/google/uuid"',
     "",
     `// Index ID used to generate this file\nconst IndexID = "${indexId}"`,
     "",
@@ -140,7 +140,7 @@ function generateGoFile(permissions, indexId) {
       `\t// ${perm.name} - ${perm.feature || "No description available"}`,
     );
     lines.push(
-      `\t${perm.name} = PermissionKey(uuid.Must(uuid.FromString("${perm.uuid}")))`,
+      `\t${perm.name} = PermissionKey(uuid.MustParse("${perm.uuid}"))`,
     );
     lines.push("");
   }

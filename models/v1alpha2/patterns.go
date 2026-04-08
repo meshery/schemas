@@ -4,7 +4,7 @@
 package v1alpha2
 
 import (
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/meshery/schemas/models/core"
 )
 

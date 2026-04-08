@@ -125,7 +125,7 @@ components:
           description: ID of the user who created the view.
           x-go-type: uuid.UUID
           x-go-type-import:
-            path: github.com/gofrs/uuid
+            path: github.com/google/uuid
           x-go-name: UserID
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
@@ -145,7 +145,7 @@ components:
           description: ID of the workspace this view belongs to.
           x-go-type: uuid.UUID
           x-go-type-import:
-            path: github.com/gofrs/uuid
+            path: github.com/google/uuid
           x-go-name: WorkspaceID
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
@@ -157,7 +157,7 @@ components:
           description: ID of the organization this view belongs to.
           x-go-type: uuid.UUID
           x-go-type-import:
-            path: github.com/gofrs/uuid
+            path: github.com/google/uuid
           x-go-name: OrganizationID
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:

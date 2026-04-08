@@ -4,7 +4,7 @@
 package workspace
 
 import (
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/meshery/schemas/models/core"
 	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
 	viewv1beta1 "github.com/meshery/schemas/models/v1beta1/view"
