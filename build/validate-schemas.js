@@ -80,6 +80,7 @@ const {
   classifyDesignIssue,
   classifyStyleIssue,
 } = require("./lib/consistency-policy");
+const { fingerprintSchema } = require("./lib/duplicate-schema-fingerprint");
 const { findNewNonLowercaseEnumValues } = require("./lib/enum-validation");
 const { detectPostCreate, isSingleResourceDelete } = require("./lib/response-code-semantics");
 const { collectPropertyConstraintIssues } = require("./lib/property-constraint-validation");
@@ -2070,41 +2071,12 @@ function validateOperationTags(filePath, doc) {
  */
 const schemaFingerprints = new Map(); // fingerprint → [{ file, schemaName }]
 
-function fingerprint(schema) {
-  if (!schema || typeof schema !== "object") return null;
-  // Only fingerprint schemas with properties (structural types)
-  if (!schema.properties) return null;
-  // Sort properties for deterministic fingerprint
-  const propKeys = Object.keys(schema.properties).sort();
-  if (propKeys.length < 3) return null; // too small to be meaningful
-  const propTypes = propKeys.map((k) => {
-    const p = schema.properties[k];
-    if (p?.$ref) return `$ref:${p.$ref.split("/").pop()}`;
-    if (p?.type === "array") {
-      if (p.items?.$ref) {
-        return `${k}:array:$ref:${p.items.$ref.split("/").pop()}`;
-      }
-      return `${k}:array:${p.items?.type || "unknown"}`;
-    }
-    if (p?.type === "object" && p.additionalProperties) {
-      if (p.additionalProperties?.$ref) {
-        return `${k}:object:$ref:${p.additionalProperties.$ref.split("/").pop()}`;
-      }
-      if (p.additionalProperties?.type) {
-        return `${k}:object:${p.additionalProperties.type}`;
-      }
-    }
-    return `${k}:${p?.type || "unknown"}`;
-  });
-  return propTypes.join("|");
-}
-
 function collectSchemaFingerprints(filePath, doc) {
   if (!doc?.components?.schemas) return;
 
   for (const [schemaName, schemaDef] of Object.entries(doc.components.schemas)) {
     if (!schemaDef) continue;
-    const fp = fingerprint(schemaDef);
+    const fp = fingerprintSchema(schemaDef);
     if (!fp) continue;
 
     if (!schemaFingerprints.has(fp)) {
