@@ -54,11 +54,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/AcademyCurriculaListResponse'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/curricula:
     post:
       x-internal:
@@ -82,11 +82,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/AcademyCurricula'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
     get:
       x-internal:
       - cloud
@@ -197,11 +197,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/AcademyCurriculaWithMetricsListResponse'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/{type}/{orgId}/{slug}:
     get:
       x-internal:
@@ -235,13 +235,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AcademyCurricula'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/register:
     post:
       x-internal:
@@ -264,11 +264,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/AcademyRegistration'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/curricula/registrations/{id}/withdraw:
     post:
       x-internal:
@@ -287,13 +287,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AcademyRegistration'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/curricula/{id}:
     put:
       x-internal:
@@ -319,13 +319,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/SingleAcademyCurriculaResponse'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Curricula not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
     delete:
       x-internal:
       - cloud
@@ -340,13 +340,13 @@ paths:
         '204':
           description: Curricula deleted
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Curricula not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
     get:
       x-internal:
       - cloud
@@ -365,13 +365,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/SingleAcademyCurriculaResponse'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Curricula not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/registrations/{contentId}:
     get:
       tags:
@@ -401,13 +401,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AcademyRegistration'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Content not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/registrations/{registrationId}/progress-tracker/update-current-item:
     post:
       tags:
@@ -437,21 +437,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/UpdateCurrentItemProgressResponse'
         '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
           $ref: '#/components/responses/404'
         '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/500'
   /api/academy/registrations/tests:
     get:
       tags:
@@ -476,13 +468,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Quiz'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Quiz not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/registrations/test-sessions/start:
     post:
       tags:
@@ -506,13 +498,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Quiz'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Quiz not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/registrations/{id}/test-sessions:
     get:
       tags:
@@ -547,13 +539,13 @@ paths:
                 items:
                   $ref: '#/components/schemas/TestSubmissions'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Registration not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/registrations/test-sessions/submit:
     post:
       tags:
@@ -576,19 +568,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/QuizEvaluationResult'
         '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/500'
   /api/academy/admin/summary:
     get:
       tags:
@@ -606,11 +590,11 @@ paths:
               schema:
                 type: object
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/admin/registrations:
     get:
       x-internal:
@@ -661,11 +645,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/CurriculaRegistrationsResponse'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
   /api/academy/certificates/{certificateId}:
     get:
       x-internal:
@@ -690,13 +674,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Certificate'
         '400':
-          description: Invalid request parameters
+          $ref: '#/components/responses/400'
         '401':
           $ref: '#/components/responses/401'
         '404':
-          description: Certificate not found
+          $ref: '#/components/responses/404'
         '500':
-          description: Server error
+          $ref: '#/components/responses/500'
 components:
   responses:
     400:
@@ -1348,17 +1332,6 @@ components:
       required:
       - contentType
       - itemData
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-          description: The error of the errorresponse.
-          maxLength: 500
-        details:
-          type: string
-          description: The details of the errorresponse.
-          maxLength: 500
     Quiz:
       x-generate-db-helpers: true
       type: object

@@ -203,6 +203,25 @@ components:
       properties: {}
       x-go-type-skip-optional-pointer: true
 
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      description: Standard error payload returned by Meshery APIs.
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          description: HTTP status code returned for the request.
+          minimum: 400
+          maximum: 599
+        message:
+          type: string
+          description: Human-readable summary of the error.
+          minLength: 1
+          maxLength: 500
+
     EmailPreference:
       type: object
       properties:
@@ -1094,30 +1113,30 @@ components:
     "400":
       description: Invalid request body or request param
       content:
-        text/plain:
+        application/json:
           schema:
-            type: string
+            $ref: "#/components/schemas/ErrorResponse"
     "401":
       description: Expired JWT token used or insufficient privilege
       content:
-        text/plain:
+        application/json:
           schema:
-            type: string
+            $ref: "#/components/schemas/ErrorResponse"
     "404":
       description: Result not found
       content:
-        text/plain:
+        application/json:
           schema:
-            type: string
+            $ref: "#/components/schemas/ErrorResponse"
     "409":
       description: Publish request already exists
       content:
-        text/plain:
+        application/json:
           schema:
-            type: string
+            $ref: "#/components/schemas/ErrorResponse"
     "500":
       description: Internal server error
       content:
-        text/plain:
+        application/json:
           schema:
-            type: string
+            $ref: "#/components/schemas/ErrorResponse"

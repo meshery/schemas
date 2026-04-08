@@ -343,11 +343,11 @@ paths:
                   message:
                     type: string
         "400":
-          description: Invalid request format
+          $ref: "#/components/responses/400"
         "401":
           $ref: "#/components/responses/401"
         "500":
-          description: Internal server error
+          $ref: "#/components/responses/500"
 
   /api/catalog/content/{type}:
     get:
@@ -451,7 +451,7 @@ paths:
         "404":
           $ref: "#/components/responses/404"
         "409":
-          description: Conflict
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
   /api/catalog/content/{type}/unpublish:
@@ -483,7 +483,7 @@ paths:
         "404":
           $ref: "#/components/responses/404"
         "409":
-          description: Conflict
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -533,7 +533,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "409":
-          description: Conflict
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -559,7 +559,7 @@ paths:
         "401":
           $ref: "#/components/responses/401"
         "409":
-          description: Conflict
+          $ref: "#/components/responses/409"
         "500":
           $ref: "#/components/responses/500"
 
@@ -735,6 +735,8 @@ components:
       $ref: "../core/api.yml#/components/responses/401"
     404:
       $ref: "../core/api.yml#/components/responses/404"
+    409:
+      $ref: "../core/api.yml#/components/responses/409"
     500:
       $ref: "../core/api.yml#/components/responses/500"
 

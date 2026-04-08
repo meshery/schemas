@@ -55,6 +55,8 @@
  *   Rule 40 — String properties named *id/*Id must have format: uuid or $ref to a UUID schema.
  *              Skips non-string types and properties annotated with `x-id-format: external`.
  *   Rule 41 — Page-size properties (page_size, pagesize) must have minimum: 1.
+ *   Rule 43 — 4xx/5xx responses must reference the standard ErrorResponse schema or
+ *              a construct-specific allOf extension of it.
  *
  * USAGE:
  *   node build/validate-schemas.js          # exits 0 if no blocking violations found
@@ -81,6 +83,7 @@ const {
   classifyStyleIssue,
 } = require("./lib/consistency-policy");
 const { findNewNonLowercaseEnumValues } = require("./lib/enum-validation");
+const { collectErrorResponseTypeIssues } = require("./lib/error-response-validation");
 const { detectPostCreate, isSingleResourceDelete } = require("./lib/response-code-semantics");
 const { collectPropertyConstraintIssues } = require("./lib/property-constraint-validation");
 const { findOperationTagIssues } = require("./lib/operation-tags");
@@ -2240,6 +2243,14 @@ function validateResponseText(filePath, doc) {
   }
 }
 
+// ─── Rule 43: error responses must use the standard ErrorResponse schema ──────
+
+function validateErrorResponseSchemaTypes(filePath, doc) {
+  for (const issue of collectErrorResponseTypeIssues(doc)) {
+    reportDesignAdvisory(filePath, issue);
+  }
+}
+
 // ─── Rules 37–41: property-level validation constraints ─────────────────────
 
 function validatePropertyConstraints(filePath, doc) {
@@ -2365,6 +2376,7 @@ function walk(dir) {
           collectSchemaFingerprints(apiYml, doc);
           validateResponseSchemaRefs(apiYml, doc);
           validateResponseText(apiYml, doc);
+          validateErrorResponseSchemaTypes(apiYml, doc);
           // Rules 37–41: property-level validation constraints
           validatePropertyConstraints(apiYml, doc);
         }
