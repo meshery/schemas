@@ -4,7 +4,7 @@
 package feature
 
 import (
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	planv1beta1 "github.com/meshery/schemas/models/v1beta1/plan"
 )

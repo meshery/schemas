@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	gofrsuuid "github.com/gofrs/uuid"
 	"github.com/google/uuid"
 	"github.com/meshery/meshkit/utils"
 	"github.com/meshery/schemas/models/conversion"
@@ -20,6 +21,15 @@ func parseUUIDOrNil(value string) uuid.UUID {
 	id, err := uuid.Parse(value)
 	if err != nil {
 		return uuid.Nil
+	}
+
+	return id
+}
+
+func parseLegacyUUIDOrNil(value string) gofrsuuid.UUID {
+	id, err := gofrsuuid.FromString(value)
+	if err != nil {
+		return gofrsuuid.Nil
 	}
 
 	return id
@@ -52,7 +62,7 @@ func (p *PatternFile) ConvertTo(pattern conversion.Hub) error {
 
 		service.ApiVersion = component.Component.Version
 		service.Type = component.Component.Kind
-		componentId := component.ID
+		componentId := parseLegacyUUIDOrNil(component.ID.String())
 		service.Id = &componentId
 		service.IsAnnotation = component.Metadata.IsAnnotation
 		if component.Model != nil {
