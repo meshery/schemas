@@ -7,9 +7,10 @@ const path = require("node:path");
 const { ensureRequiredImports } = require("../build/generate-golang");
 const { generateGoFile } = require("../build/lib/permissions");
 
-test("ensureRequiredImports injects google uuid when generated code references uuid.UUID", () => {
+test("ensureRequiredImports injects google uuid when generated code references uuid.UUID", (t) => {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "uuid-import-"));
   const goFile = path.join(tempDir, "example.go");
+  t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
 
   fs.writeFileSync(
     goFile,
