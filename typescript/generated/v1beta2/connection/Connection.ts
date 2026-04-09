@@ -304,7 +304,7 @@ export interface components {
       /** @description Connection type */
       type: string;
       /** @description Connection sub-type */
-      sub_type: string;
+      subType: string;
       /** @description Credential secret data */
       credentialSecret?: { [key: string]: unknown };
       /** @description Connection metadata */
@@ -315,7 +315,7 @@ export interface components {
        * Format: uuid
        * @description Associated credential ID
        */
-      credential_id?: string;
+      credentialId?: string;
     };
     /** @description Status count information for connections */
     ConnectionStatusInfo: {
@@ -808,7 +808,7 @@ export interface operations {
           /** @description Connection type */
           type: string;
           /** @description Connection sub-type */
-          sub_type: string;
+          subType: string;
           /** @description Credential secret data */
           credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */
@@ -819,7 +819,7 @@ export interface operations {
            * Format: uuid
            * @description Associated credential ID
            */
-          credential_id?: string;
+          credentialId?: string;
         };
       };
     };
@@ -1140,7 +1140,7 @@ export interface operations {
           /** @description Connection type */
           type: string;
           /** @description Connection sub-type */
-          sub_type: string;
+          subType: string;
           /** @description Credential secret data */
           credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */
@@ -1151,7 +1151,7 @@ export interface operations {
            * Format: uuid
            * @description Associated credential ID
            */
-          credential_id?: string;
+          credentialId?: string;
         };
       };
     };

@@ -542,26 +542,83 @@ components:
 
   schemas:
     Workspace:
+      $ref: "./workspace.yaml"
+
+    AvailableWorkspace:
       type: object
+      description: Workspace with resolved owner details, as returned in list and get responses.
+      additionalProperties: false
       properties:
         id:
           $ref: "../core/api.yml#/components/schemas/general_id"
         name:
-          $ref: "../core/api.yml#/components/schemas/Text"
+          type: string
+          description: Name of the workspace.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: name
+            json: "name,omitempty"
         description:
-          $ref: "../core/api.yml#/components/schemas/Text"
+          type: string
+          description: Description of the workspace.
+          maxLength: 5000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: description
+            json: "description,omitempty"
+        org_name:
+          type: string
+          description: Name of the owning organization.
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: org_name
+            json: "org_name,omitempty"
+        owner:
+          type: string
+          description: Display name of the workspace owner.
+          maxLength: 255
+          x-oapi-codegen-extra-tags:
+            db: owner
+            json: "owner,omitempty"
+        owner_id:
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: User ID of the workspace owner.
+          x-go-name: OwnerId
+          x-oapi-codegen-extra-tags:
+            db: owner_id
+            json: "owner_id,omitempty"
+        owner_email:
+          type: string
+          description: Email address of the workspace owner.
+          maxLength: 320
+          x-oapi-codegen-extra-tags:
+            db: owner_email
+            json: "owner_email,omitempty"
+        owner_avatar:
+          type: string
+          description: Avatar URL of the workspace owner.
+          maxLength: 2048
+          x-oapi-codegen-extra-tags:
+            db: owner_avatar
+            json: "owner_avatar,omitempty"
+        metadata:
+          type: object
+          description: Metadata associated with the workspace.
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            db: metadata
+            json: "metadata,omitempty"
         organization_id:
-          x-go-name: OrganizationID
+          $ref: "../core/api.yml#/components/schemas/uuid"
+          description: Organization to which this workspace belongs.
+          x-go-name: OrganizationId
           x-go-type-skip-optional-pointer: true
           x-oapi-codegen-extra-tags:
             db: organization_id
-            json: organization_id
-          $ref: ../core/api.yml#/components/schemas/uuid
-          description: Workspace organization ID
-        owner:
-          $ref: "../core/api.yml#/components/schemas/Text"
-        metadata:
-          $ref: "../core/api.yml#/components/schemas/MapObject"
+            json: "organization_id,omitempty"
         created_at:
           $ref: "../core/api.yml#/components/schemas/created_at"
         updated_at:
@@ -569,110 +626,86 @@ components:
         deleted_at:
           $ref: "../core/api.yml#/components/schemas/deleted_at"
 
-    WorkspacesTeamsMapping:
-      type: object
-      properties:
-        id:
-          $ref: "../core/api.yml#/components/schemas/general_id"
-        team_id:
-          $ref: "../core/api.yml#/components/schemas/team_id"
-        workspace_id:
-          $ref: "../core/api.yml#/components/schemas/workspace_id"
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/deleted_at"
-
-    WorkspacesEnvironmentsMapping:
-      type: object
-      properties:
-        id:
-          $ref: "../core/api.yml#/components/schemas/general_id"
-        environment_id:
-          $ref: "../core/api.yml#/components/schemas/environment_id"
-        workspace_id:
-          $ref: "../core/api.yml#/components/schemas/workspace_id"
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/deleted_at"
-
-    WorkspacesViewsMapping:
-      type: object
-      properties:
-        id:
-          $ref: "../core/api.yml#/components/schemas/general_id"
-        view_id:
-          $ref: "../core/api.yml#/components/schemas/view_id"
-        workspace_id:
-          $ref: "../core/api.yml#/components/schemas/workspace_id"
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/deleted_at"
-
-    WorkspacesDesignsMapping:
-      type: object
-      properties:
-        id:
-          $ref: "../core/api.yml#/components/schemas/general_id"
-        design_id:
-          $ref: "../core/api.yml#/components/schemas/design_id"
-        workspace_id:
-          $ref: "../core/api.yml#/components/schemas/workspace_id"
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/deleted_at"
     WorkspacePayload:
       type: object
+      description: Payload for creating a workspace.
       required:
         - name
         - organization_id
       properties:
         name:
-          $ref: "../core/api.yml#/components/schemas/Text"
+          type: string
           description: Name of the workspace.
+          minLength: 1
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
         description:
-          $ref: "../core/api.yml#/components/schemas/Text"
+          type: string
           description: Description of the workspace.
+          maxLength: 5000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
         organization_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          type: string
           description: Organization ID.
+          maxLength: 36
+          format: uuid
           x-go-type-skip-optional-pointer: true
           x-go-name: OrganizationID
           x-oapi-codegen-extra-tags:
-            json: organization_id
+            json: "organization_id,omitempty"
+        metadata:
+          type: object
+          description: Metadata associated with the workspace.
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
 
     WorkspaceUpdatePayload:
       type: object
+      description: Payload for updating a workspace.
       required:
         - organization_id
       properties:
         name:
-          $ref: "../core/api.yml#/components/schemas/Text"
+          type: string
           description: Name of the workspace.
+          minLength: 1
+          maxLength: 255
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "name,omitempty"
         description:
-          $ref: "../core/api.yml#/components/schemas/Text"
+          type: string
           description: Description of the workspace.
+          maxLength: 5000
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "description,omitempty"
         organization_id:
-          $ref: "../core/api.yml#/components/schemas/uuid"
+          type: string
           description: Organization ID.
+          maxLength: 36
+          format: uuid
           x-go-type-skip-optional-pointer: true
           x-go-name: OrganizationID
           x-oapi-codegen-extra-tags:
-            json: organization_id
+            json: "organization_id,omitempty"
+        metadata:
+          type: object
+          description: Metadata associated with the workspace.
+          x-go-type: core.Map
+          x-go-type-skip-optional-pointer: true
+          x-oapi-codegen-extra-tags:
+            json: "metadata,omitempty"
 
     WorkspacePage:
       type: object
+      description: Paginated list of workspaces.
       properties:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
@@ -684,12 +717,31 @@ components:
           type: array
           x-go-type-skip-optional-pointer: true
           items:
-            x-go-type: Workspace
-            $ref: "#/components/schemas/Workspace"
-          description: The workspaces of the workspacepage.
+            x-go-type: AvailableWorkspace
+            $ref: "#/components/schemas/AvailableWorkspace"
+          description: List of workspaces with resolved owner details.
+
+    WorkspacesTeamsMapping:
+      type: object
+      description: Junction record linking a workspace to a team.
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/general_id"
+        workspace_id:
+          $ref: "../core/api.yml#/components/schemas/workspace_id"
+        team_id:
+          $ref: "../core/api.yml#/components/schemas/team_id"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+        deleted_at:
+          $ref: "../core/api.yml#/components/schemas/deleted_at"
 
     WorkspacesTeamsMappingPage:
       type: object
+      description: Paginated list of workspace-team mappings.
       properties:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
@@ -703,10 +755,29 @@ components:
           items:
             x-go-type: WorkspacesTeamsMapping
             $ref: "#/components/schemas/WorkspacesTeamsMapping"
-          description: The workspaces teams mapping of the workspacesteamsmappingpage.
+          description: Workspace-team mapping entries.
+
+    WorkspacesEnvironmentsMapping:
+      type: object
+      description: Junction record linking a workspace to an environment.
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/general_id"
+        workspace_id:
+          $ref: "../core/api.yml#/components/schemas/workspace_id"
+        environment_id:
+          $ref: "../core/api.yml#/components/schemas/environment_id"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+        deleted_at:
+          $ref: "../core/api.yml#/components/schemas/deleted_at"
 
     WorkspacesEnvironmentsMappingPage:
       type: object
+      description: Paginated list of workspace-environment mappings.
       properties:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
@@ -720,10 +791,29 @@ components:
           items:
             x-go-type: WorkspacesEnvironmentsMapping
             $ref: "#/components/schemas/WorkspacesEnvironmentsMapping"
-          description: The workspaces environments mapping of the workspacesenvironmentsmappingpage.
+          description: Workspace-environment mapping entries.
+
+    WorkspacesDesignsMapping:
+      type: object
+      description: Junction record linking a workspace to a design.
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/general_id"
+        workspace_id:
+          $ref: "../core/api.yml#/components/schemas/workspace_id"
+        design_id:
+          $ref: "../core/api.yml#/components/schemas/design_id"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+        deleted_at:
+          $ref: "../core/api.yml#/components/schemas/deleted_at"
 
     WorkspacesDesignsMappingPage:
       type: object
+      description: Paginated list of workspace-design mappings.
       properties:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
@@ -737,10 +827,29 @@ components:
           items:
             x-go-type: WorkspacesDesignsMapping
             $ref: "#/components/schemas/WorkspacesDesignsMapping"
-          description: The workspaces designs mapping of the workspacesdesignsmappingpage.
+          description: Workspace-design mapping entries.
+
+    WorkspacesViewsMapping:
+      type: object
+      description: Junction record linking a workspace to a view.
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "../core/api.yml#/components/schemas/general_id"
+        workspace_id:
+          $ref: "../core/api.yml#/components/schemas/workspace_id"
+        view_id:
+          $ref: "../core/api.yml#/components/schemas/view_id"
+        created_at:
+          $ref: "../core/api.yml#/components/schemas/created_at"
+        updated_at:
+          $ref: "../core/api.yml#/components/schemas/updated_at"
+        deleted_at:
+          $ref: "../core/api.yml#/components/schemas/deleted_at"
 
     WorkspacesViewsMappingPage:
       type: object
+      description: Paginated list of workspace-view mappings.
       properties:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
@@ -754,10 +863,11 @@ components:
           items:
             x-go-type: WorkspacesViewsMapping
             $ref: "#/components/schemas/WorkspacesViewsMapping"
-          description: The workspaces views mapping of the workspacesviewsmappingpage.
+          description: Workspace-view mapping entries.
 
     MesheryDesignPage:
       type: object
+      description: Paginated list of designs.
       properties:
         page:
           $ref: "../core/api.yml#/components/schemas/number"
@@ -770,46 +880,13 @@ components:
           x-go-type-skip-optional-pointer: true
           items:
             $ref: "../../v1beta1/design/api.yml#/components/schemas/MesheryPattern"
-          description: The designs of the mesherydesignpage.
+          description: Designs in this page.
 
     MesheryView:
-      type: object
-      properties:
-        id:
-          $ref: "../core/api.yml#/components/schemas/general_id"
-        name:
-          $ref: "../core/api.yml#/components/schemas/Text"
-        filters:
-          $ref: "../core/api.yml#/components/schemas/MapObject"
-        visibility:
-          $ref: "../core/api.yml#/components/schemas/Text"
-        metadata:
-          $ref: "../core/api.yml#/components/schemas/MapObject"
-        user_id:
-          $ref: "../core/api.yml#/components/schemas/Text"
-        created_at:
-          $ref: "../core/api.yml#/components/schemas/created_at"
-        updated_at:
-          $ref: "../core/api.yml#/components/schemas/updated_at"
-        deleted_at:
-          $ref: "../core/api.yml#/components/schemas/deleted_at"
+      $ref: "../view/api.yml#/components/schemas/MesheryViewWithLocation"
 
     MesheryViewPage:
-      type: object
-      properties:
-        page:
-          $ref: "../core/api.yml#/components/schemas/number"
-        page_size:
-          $ref: "../core/api.yml#/components/schemas/number"
-        total_count:
-          $ref: "../core/api.yml#/components/schemas/number"
-        views:
-          type: array
-          x-go-type-skip-optional-pointer: true
-          items:
-            x-go-type: MesheryView
-            $ref: "#/components/schemas/MesheryView"
-          description: The views of the mesheryviewpage.
+      $ref: "../view/api.yml#/components/schemas/MesheryViewPage"
 
   requestBodies:
     workspacePayload:

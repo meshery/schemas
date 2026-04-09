@@ -4,7 +4,6 @@
 package feature
 
 import (
-	"github.com/gofrs/uuid"
 	core "github.com/meshery/schemas/models/core"
 	planv1beta1 "github.com/meshery/schemas/models/v1beta1/plan"
 )
@@ -44,5 +43,5 @@ type FeatureName string
 // FeaturesPage defines model for FeaturesPage.
 type FeaturesPage = []Feature
 
-// OrganizationId defines model for organization_id.
-type OrganizationId = uuid.UUID
+// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+type OrganizationId = core.Uuid

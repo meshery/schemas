@@ -689,18 +689,11 @@ models/v1alpha1/capability/capability.go
 
 The OpenAPI bundle is passed to a codegen tool to generate RTK Query clients. Include relevant paths using `x-internal` annotations and define request/response schemas appropriately.
 
-You can control this in `generate.sh` like:
+You can build the OpenAPI bundles with:
 
 ```bash
-# Merge relevant constructs for RTK generation
-npx @redocly/cli join schemas/base_cloud.yml \
-     "${v1beta1}/pattern/${merged_construct}" \
-     "${v1beta1}/component/${merged_construct}" \
-     "${v1beta1}/model/${merged_construct}" \
-     ... \
-     -o _openapi_build/merged_openapi.yml \
-     --prefix-tags-with-info-prop title \
-     --prefix-components-with-info-prop title
+# Build per-construct bundles, merge them, and emit cloud/meshery OpenAPI specs
+make bundle-openapi
 ```
 
 # Using Generated RTK Query Clients
@@ -884,10 +877,10 @@ Validate your schema updates before committing by running:
 make build
 ```
 
-Or validate a single file:
+For repository validation checks:
 
 ```bash
-npx @redocly/cli lint schemas/constructs/v1beta1/pattern/api.yml
+make validate-schemas
 ```
 
 ### Schema Validation Modes
@@ -926,8 +919,8 @@ schemas/constructs/          (OpenAPI YAML source files)
         |                    34 rules: casing, dual-schema, templates, pagination
         v
 [2] bundle-openapi           node build/bundle-openapi.js
-        |                    Per-construct: swagger-cli bundle --dereference
-        |                    Merge all: @redocly/cli join → merged_openapi.yml
+        |                    Per-construct: in-repo dereference to merged-openapi.json
+        |                    Merge all: in-repo prefixing merge → merged_openapi.yml
         |                    Filter: cloud_openapi.yml, meshery_openapi.yml
         v
 [3] generate-golang          node build/generate-golang.js
@@ -977,7 +970,6 @@ The **property name is the single source of truth** for the json wire format. oa
 | Build TypeScript dist        | `npm run build`                  |
 | Generate Go code only        | `make golang-generate`           |
 | Generate TS types + schemas  | `make generate-ts`               |
-| Lint OpenAPI                 | `npx @redocly/cli lint`          |
 | Schema validation (blocking) | `make validate-schemas`          |
 | Schema audit (advisory)      | `make audit-schemas`             |
 | Full schema debt report      | `make audit-schemas-debt-full`   |

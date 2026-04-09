@@ -4,96 +4,136 @@
 package workspace
 
 import (
-	core "github.com/meshery/schemas/models/core"
+	"github.com/meshery/schemas/models/core"
 	patternv1beta1 "github.com/meshery/schemas/models/v1beta1/pattern"
+	viewv1beta1 "github.com/meshery/schemas/models/v1beta1/view"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// MesheryDesignPage defines model for MesheryDesignPage.
+// AvailableWorkspace Workspace with resolved owner details, as returned in list and get responses.
+type AvailableWorkspace struct {
+	// CreatedAt Timestamp when the resource was created.
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+
+	// DeletedAt Timestamp when the resource was deleted.
+	DeletedAt core.DeletedAt `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
+
+	// Description Description of the workspace.
+	Description string                 `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
+	ID          core.GeneralId `db:"id" json:"id" yaml:"id"`
+
+	// Metadata Metadata associated with the workspace.
+	Metadata core.Map `db:"metadata" json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	// Name Name of the workspace.
+	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
+
+	// OrgName Name of the owning organization.
+	OrgName string `db:"org_name" json:"org_name,omitempty" yaml:"org_name,omitempty"`
+
+	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OrganizationId *core.Uuid `db:"organization_id" json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+
+	// Owner Display name of the workspace owner.
+	Owner *string `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
+
+	// OwnerAvatar Avatar URL of the workspace owner.
+	OwnerAvatar *string `db:"owner_avatar" json:"owner_avatar,omitempty" yaml:"owner_avatar,omitempty"`
+
+	// OwnerEmail Email address of the workspace owner.
+	OwnerEmail *string `db:"owner_email" json:"owner_email,omitempty" yaml:"owner_email,omitempty"`
+
+	// OwnerId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	OwnerId *core.Uuid `db:"owner_id" json:"owner_id,omitempty" yaml:"owner_id,omitempty"`
+
+	// UpdatedAt Timestamp when the resource was updated.
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+}
+
+// MesheryDesignPage Paginated list of designs.
 type MesheryDesignPage struct {
-	// Designs The designs of the mesherydesignpage.
+	// Designs Designs in this page.
 	Designs    []patternv1beta1.MesheryPattern `json:"designs,omitempty" yaml:"designs,omitempty"`
 	Page       core.Number           `json:"page,omitempty" yaml:"page,omitempty"`
 	PageSize   core.Number           `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TotalCount core.Number           `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 }
 
-// MesheryView defines model for MesheryView.
-type MesheryView struct {
+// MesheryView A view enriched with the workspace and organization it belongs to.
+type MesheryView = viewv1beta1.MesheryViewWithLocation
+
+// Page defines model for page.
+type Page = string
+
+// Workspace A workspace is a logical grouping of resources within an organization. Workspaces provide a way to organize environments, designs, teams, and views. Learn more at https://docs.meshery.io/concepts/logical/workspaces
+type Workspace struct {
 	// CreatedAt Timestamp when the resource was created.
-	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	CreatedAt core.CreatedAt `db:"created_at" json:"created_at" yaml:"created_at"`
 
 	// DeletedAt Timestamp when the resource was deleted.
 	DeletedAt core.DeletedAt `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Filters   core.MapObject `json:"filters,omitempty" yaml:"filters,omitempty"`
-	ID        core.GeneralId `db:"id" json:"id" yaml:"id"`
-	Metadata  core.MapObject `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Name      core.Text      `json:"name,omitempty" yaml:"name,omitempty"`
 
-	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt  core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
-	UserId     core.Text      `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Visibility core.Text      `json:"visibility,omitempty" yaml:"visibility,omitempty"`
-}
-
-// MesheryViewPage defines model for MesheryViewPage.
-type MesheryViewPage struct {
-	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
-
-	// Views The views of the mesheryviewpage.
-	Views []MesheryView `json:"views,omitempty" yaml:"views,omitempty"`
-}
-
-// Workspace defines model for Workspace.
-type Workspace struct {
-	// CreatedAt Timestamp when the resource was created.
-	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
-
-	// DeletedAt Timestamp when the resource was deleted.
-	DeletedAt   core.DeletedAt `db:"deleted_at" json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
-	Description core.Text      `json:"description,omitempty" yaml:"description,omitempty"`
+	// Description Description of the workspace.
+	Description string                 `db:"description" json:"description,omitempty" yaml:"description,omitempty"`
 	ID          core.GeneralId `db:"id" json:"id" yaml:"id"`
-	Metadata    core.MapObject `json:"metadata,omitempty" yaml:"metadata,omitempty"`
-	Name        core.Text      `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// Metadata Metadata associated with the workspace.
+	Metadata core.Map `db:"metadata" json:"metadata" yaml:"metadata"`
+
+	// Name Name of the workspace.
+	Name string `db:"name" json:"name,omitempty" yaml:"name,omitempty"`
 
 	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationID *core.Uuid `db:"organization_id" json:"organization_id" yaml:"organization_id,omitempty"`
-	Owner          core.Text  `json:"owner,omitempty" yaml:"owner,omitempty"`
+	OrganizationID core.Uuid `db:"organization_id" json:"organization_id,omitempty" yaml:"organization_id"`
+
+	// Owner A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	Owner *core.Uuid `db:"owner" json:"owner,omitempty" yaml:"owner,omitempty"`
 
 	// UpdatedAt Timestamp when the resource was updated.
-	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
+	UpdatedAt core.UpdatedAt `db:"updated_at" json:"updated_at" yaml:"updated_at"`
 }
 
-// WorkspacePage defines model for WorkspacePage.
+// WorkspacePage Paginated list of workspaces.
 type WorkspacePage struct {
 	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
 	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 
-	// Workspaces The workspaces of the workspacepage.
-	Workspaces []Workspace `json:"workspaces,omitempty" yaml:"workspaces,omitempty"`
+	// Workspaces List of workspaces with resolved owner details.
+	Workspaces []AvailableWorkspace `json:"workspaces,omitempty" yaml:"workspaces,omitempty"`
 }
 
-// WorkspacePayload defines model for WorkspacePayload.
+// WorkspacePayload Payload for creating a workspace.
 type WorkspacePayload struct {
-	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        core.Text `json:"name" yaml:"name"`
+	// Description Description of the workspace.
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationID core.Uuid `json:"organization_id" yaml:"organization_id"`
+	// Metadata Metadata associated with the workspace.
+	Metadata core.Map `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	// Name Name of the workspace.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// OrganizationID Organization ID.
+	OrganizationID openapi_types.UUID `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
 }
 
-// WorkspaceUpdatePayload defines model for WorkspaceUpdatePayload.
+// WorkspaceUpdatePayload Payload for updating a workspace.
 type WorkspaceUpdatePayload struct {
-	Description core.Text `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        core.Text `json:"name,omitempty" yaml:"name,omitempty"`
+	// Description Description of the workspace.
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 
-	// OrganizationId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
-	OrganizationID core.Uuid `json:"organization_id" yaml:"organization_id"`
+	// Metadata Metadata associated with the workspace.
+	Metadata core.Map `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+
+	// Name Name of the workspace.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+
+	// OrganizationID Organization ID.
+	OrganizationID openapi_types.UUID `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
 }
 
-// WorkspacesDesignsMapping defines model for WorkspacesDesignsMapping.
+// WorkspacesDesignsMapping Junction record linking a workspace to a design.
 type WorkspacesDesignsMapping struct {
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
@@ -108,17 +148,17 @@ type WorkspacesDesignsMapping struct {
 	WorkspaceId core.WorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
-// WorkspacesDesignsMappingPage defines model for WorkspacesDesignsMappingPage.
+// WorkspacesDesignsMappingPage Paginated list of workspace-design mappings.
 type WorkspacesDesignsMappingPage struct {
 	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
 	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 
-	// WorkspacesDesignsMapping The workspaces designs mapping of the workspacesdesignsmappingpage.
+	// WorkspacesDesignsMapping Workspace-design mapping entries.
 	WorkspacesDesignsMapping []WorkspacesDesignsMapping `json:"workspacesDesignsMapping,omitempty" yaml:"workspacesDesignsMapping,omitempty"`
 }
 
-// WorkspacesEnvironmentsMapping defines model for WorkspacesEnvironmentsMapping.
+// WorkspacesEnvironmentsMapping Junction record linking a workspace to an environment.
 type WorkspacesEnvironmentsMapping struct {
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
@@ -133,17 +173,17 @@ type WorkspacesEnvironmentsMapping struct {
 	WorkspaceId core.WorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
-// WorkspacesEnvironmentsMappingPage defines model for WorkspacesEnvironmentsMappingPage.
+// WorkspacesEnvironmentsMappingPage Paginated list of workspace-environment mappings.
 type WorkspacesEnvironmentsMappingPage struct {
 	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
 	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 
-	// WorkspacesEnvironmentsMapping The workspaces environments mapping of the workspacesenvironmentsmappingpage.
+	// WorkspacesEnvironmentsMapping Workspace-environment mapping entries.
 	WorkspacesEnvironmentsMapping []WorkspacesEnvironmentsMapping `json:"workspacesEnvironmentsMapping,omitempty" yaml:"workspacesEnvironmentsMapping,omitempty"`
 }
 
-// WorkspacesTeamsMapping defines model for WorkspacesTeamsMapping.
+// WorkspacesTeamsMapping Junction record linking a workspace to a team.
 type WorkspacesTeamsMapping struct {
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
@@ -158,17 +198,17 @@ type WorkspacesTeamsMapping struct {
 	WorkspaceId core.WorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
-// WorkspacesTeamsMappingPage defines model for WorkspacesTeamsMappingPage.
+// WorkspacesTeamsMappingPage Paginated list of workspace-team mappings.
 type WorkspacesTeamsMappingPage struct {
 	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
 	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 
-	// WorkspacesTeamsMapping The workspaces teams mapping of the workspacesteamsmappingpage.
+	// WorkspacesTeamsMapping Workspace-team mapping entries.
 	WorkspacesTeamsMapping []WorkspacesTeamsMapping `json:"workspacesTeamsMapping,omitempty" yaml:"workspacesTeamsMapping,omitempty"`
 }
 
-// WorkspacesViewsMapping defines model for WorkspacesViewsMapping.
+// WorkspacesViewsMapping Junction record linking a workspace to a view.
 type WorkspacesViewsMapping struct {
 	// CreatedAt Timestamp when the resource was created.
 	CreatedAt core.CreatedAt `db:"created_at" json:"created_at,omitempty" yaml:"created_at,omitempty"`
@@ -183,13 +223,13 @@ type WorkspacesViewsMapping struct {
 	WorkspaceId core.WorkspaceId `db:"workspace_id" json:"workspace_id" yaml:"workspace_id"`
 }
 
-// WorkspacesViewsMappingPage defines model for WorkspacesViewsMappingPage.
+// WorkspacesViewsMappingPage Paginated list of workspace-view mappings.
 type WorkspacesViewsMappingPage struct {
 	Page       core.Number `json:"page,omitempty" yaml:"page,omitempty"`
 	PageSize   core.Number `json:"page_size,omitempty" yaml:"page_size,omitempty"`
 	TotalCount core.Number `json:"total_count,omitempty" yaml:"total_count,omitempty"`
 
-	// WorkspacesViewsMapping The workspaces views mapping of the workspacesviewsmappingpage.
+	// WorkspacesViewsMapping Workspace-view mapping entries.
 	WorkspacesViewsMapping []WorkspacesViewsMapping `json:"workspacesViewsMapping,omitempty" yaml:"workspacesViewsMapping,omitempty"`
 }
 
@@ -205,8 +245,8 @@ type Filter = string
 // Order defines model for order.
 type Order = string
 
-// Page defines model for page.
-type Page = string
+// CorePage defines model for page.
+type CorePage = string
 
 // Pagesize defines model for pagesize.
 type Pagesize = string

@@ -488,7 +488,7 @@ const ModelSchema: Record<string, unknown> = {
               "schemaVersion",
               "name",
               "type",
-              "sub_type",
+              "subType",
               "kind",
               "status"
             ],
@@ -517,11 +517,11 @@ const ModelSchema: Record<string, unknown> = {
                 "type": "string",
                 "description": "Connection Name"
               },
-              "credential_id": {
+              "credentialId": {
                 "x-go-name": "CredentialID",
                 "x-oapi-codegen-extra-tags": {
                   "db": "credential_id",
-                  "yaml": "credential_id"
+                  "yaml": "credentialId"
                 },
                 "x-order": 3,
                 "description": "Associated Credential ID",
@@ -541,10 +541,10 @@ const ModelSchema: Record<string, unknown> = {
                 "type": "string",
                 "description": "Connection Type (platform, telemetry, collaboration)"
               },
-              "sub_type": {
+              "subType": {
                 "x-oapi-codegen-extra-tags": {
                   "db": "sub_type",
-                  "yaml": "sub_type"
+                  "yaml": "subType"
                 },
                 "x-order": 5,
                 "type": "string",

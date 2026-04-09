@@ -12,4 +12,3 @@ updated_at: '0001-01-01T00:00:00Z'
 deleted_at: null
 environments: []
 schemaVersion: connections.meshery.io/v1beta2
-

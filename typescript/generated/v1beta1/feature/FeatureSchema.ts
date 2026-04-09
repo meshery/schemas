@@ -292,6 +292,7 @@ const FeatureSchema: Record<string, unknown> = {
             "schema": {
               "type": "string",
               "format": "uuid",
+              "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
               "x-go-type": "uuid.UUID",
               "x-go-type-import": {
                 "path": "github.com/gofrs/uuid"
@@ -559,6 +560,7 @@ const FeatureSchema: Record<string, unknown> = {
         "schema": {
           "type": "string",
           "format": "uuid",
+          "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
           "x-go-type": "uuid.UUID",
           "x-go-type-import": {
             "path": "github.com/gofrs/uuid"

@@ -142,10 +142,10 @@ const RelationshipSchema: Record<string, unknown> = {
             "description": "Capabilities associated with the relationship.",
             "x-order": 2,
             "items": {
-              "x-go-type": "capabilityv1alpha1.Capability",
+              "x-go-type": "capabilityv1beta1.Capability",
               "x-go-type-import": {
-                "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                "name": "capabilityv1alpha1"
+                "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                "name": "capabilityv1beta1"
               },
               "$id": "https://schemas.meshery.io/capability.yaml",
               "$schema": "http://json-schema.org/draft-07/schema#",
@@ -336,9 +336,9 @@ const RelationshipSchema: Record<string, unknown> = {
             "x-go-type": "RelationshipMetadata",
             "x-order": 5,
             "x-oapi-codegen-extra-tags": {
+              "gorm": "column:metadata;type:bytes;serializer:json",
               "yaml": "metadata",
-              "json": "metadata,omitempty",
-              "gorm": "type:bytes;serializer:json"
+              "json": "metadata,omitempty"
             },
             "type": "object",
             "description": "Metadata contains additional information associated with the Relationship.",
@@ -826,9 +826,9 @@ const RelationshipSchema: Record<string, unknown> = {
             "x-go-type": "SelectorSet",
             "x-order": 9,
             "x-oapi-codegen-extra-tags": {
+              "gorm": "type:bytes;serializer:json",
               "yaml": "selectors,omitempty",
-              "json": "selectors,omitempty",
-              "gorm": "type:bytes;serializer:json"
+              "json": "selectors,omitempty"
             },
             "type": "array",
             "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",

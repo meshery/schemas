@@ -387,9 +387,12 @@ components:
           description: Connection type
           x-oapi-codegen-extra-tags:
             json: "type"
-        sub_type:
+        subType:
           type: string
           description: Connection sub-type
+          x-oapi-codegen-extra-tags:
+            db: "sub_type"
+            json: "subType"
         credentialSecret:
           type: object
           description: Credential secret data
@@ -413,18 +416,18 @@ components:
           description: Connection status
           x-oapi-codegen-extra-tags:
             json: "status"
-        credential_id:
+        credentialId:
           type: string
           format: uuid
           description: Associated credential ID
           x-go-name: CredentialID
           x-oapi-codegen-extra-tags:
-            json: "credential_id,omitempty"
+            json: "credentialId,omitempty"
       required:
         - name
         - kind
         - type
-        - sub_type
+        - subType
         - status
 
     ConnectionStatusInfo:

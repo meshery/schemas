@@ -13,6 +13,7 @@ export const addTagTypes = [
   "role_roles",
   "schedule_scheduler",
   "User_users",
+  "View_views",
   "Workspace_workspaces",
   "Workspace_designs",
   "Workspace_views",
@@ -520,6 +521,39 @@ const injectedRtkApi = api
       getUser: build.query<GetUserApiResponse, GetUserApiArg>({
         query: () => ({ url: `/api/identity/users/profile` }),
         providesTags: ["User_users"],
+      }),
+      createView: build.mutation<CreateViewApiResponse, CreateViewApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views`, method: "POST", body: queryArg.body }),
+        invalidatesTags: ["View_views"],
+      }),
+      getViews: build.query<GetViewsApiResponse, GetViewsApiArg>({
+        query: (queryArg) => ({
+          url: `/api/content/views`,
+          params: {
+            search: queryArg.search,
+            order: queryArg.order,
+            page: queryArg.page,
+            pagesize: queryArg.pagesize,
+            filter: queryArg.filter,
+            shared: queryArg.shared,
+            visibility: queryArg.visibility,
+            orgId: queryArg.orgId,
+            userId: queryArg.userId,
+          },
+        }),
+        providesTags: ["View_views"],
+      }),
+      getViewById: build.query<GetViewByIdApiResponse, GetViewByIdApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}` }),
+        providesTags: ["View_views"],
+      }),
+      updateView: build.mutation<UpdateViewApiResponse, UpdateViewApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}`, method: "PUT", body: queryArg.body }),
+        invalidatesTags: ["View_views"],
+      }),
+      deleteView: build.mutation<DeleteViewApiResponse, DeleteViewApiArg>({
+        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}`, method: "DELETE" }),
+        invalidatesTags: ["View_views"],
       }),
       getWorkspaces: build.query<GetWorkspacesApiResponse, GetWorkspacesApiArg>({
         query: (queryArg) => ({
@@ -1030,31 +1064,6 @@ const injectedRtkApi = api
           body: queryArg.body,
         }),
         invalidatesTags: ["Design_designs"],
-      }),
-      getViewById: build.query<GetViewByIdApiResponse, GetViewByIdApiArg>({
-        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}` }),
-        providesTags: ["Design_designs"],
-      }),
-      updateView: build.mutation<UpdateViewApiResponse, UpdateViewApiArg>({
-        query: (queryArg) => ({ url: `/api/content/views/${queryArg.viewId}`, method: "PUT", body: queryArg.body }),
-        invalidatesTags: ["Design_designs"],
-      }),
-      getViews: build.query<GetViewsApiResponse, GetViewsApiArg>({
-        query: (queryArg) => ({
-          url: `/api/content/views`,
-          params: {
-            search: queryArg.search,
-            order: queryArg.order,
-            page: queryArg.page,
-            pagesize: queryArg.pagesize,
-            filter: queryArg.filter,
-            shared: queryArg.shared,
-            visibility: queryArg.visibility,
-            orgId: queryArg.orgId,
-            userId: queryArg.userId,
-          },
-        }),
-        providesTags: ["Design_designs"],
       }),
       handleResourceShare: build.mutation<HandleResourceShareApiResponse, HandleResourceShareApiArg>({
         query: (queryArg) => ({
@@ -3801,21 +3810,181 @@ export type GetUserApiResponse = /** status 200 Current user profile and role co
   };
 };
 export type GetUserApiArg = void;
+export type CreateViewApiResponse = /** status 201 Created view */ {
+  /** Unique identifier for the view. */
+  id: string;
+  /** Display name of the view. */
+  name: string;
+  /** Visibility level of the view. */
+  visibility: string;
+  /** Filter configuration that defines which resources this view displays. */
+  filters?: object;
+  /** Additional metadata associated with the view. */
+  metadata?: object;
+  /** ID of the user who created the view. */
+  user_id: string;
+  /** Timestamp when the view was created. */
+  created_at: string;
+  /** Timestamp when the view was last updated. */
+  updated_at: string;
+  /** Timestamp when the view was soft deleted. Null while the view remains active. */
+  deleted_at?: string | null;
+};
+export type CreateViewApiArg = {
+  /** Body for creating or updating a view */
+  body: {
+    /** Display name of the view. */
+    name: string;
+    /** Filter configuration for this view. */
+    filters?: object;
+    /** Visibility level of the view. */
+    visibility?: string;
+    /** Metadata associated with the view. */
+    metadata?: object;
+  };
+};
+export type GetViewsApiResponse = /** status 200 Views page */ {
+  page?: number;
+  page_size?: number;
+  total_count?: number;
+  /** Views in this page, enriched with workspace and organization context. */
+  views?: {
+    id?: string;
+    /** Display name of the view. */
+    name?: string;
+    /** Visibility level of the view. */
+    visibility?: string;
+    /** Filter configuration for this view. */
+    filters?: object;
+    /** Metadata associated with the view. */
+    metadata?: object;
+    /** ID of the user who created the view. */
+    user_id?: string;
+    /** Name of the workspace this view belongs to. */
+    workspace_name?: string;
+    /** ID of the workspace this view belongs to. */
+    workspace_id: string;
+    /** ID of the organization this view belongs to. */
+    organization_id: string;
+    /** Name of the organization this view belongs to. */
+    organization_name?: string;
+    /** Timestamp when the resource was created. */
+    created_at?: string;
+    /** Timestamp when the resource was updated. */
+    updated_at?: string;
+    /** Timestamp when the view was soft deleted. Null while the view remains active. */
+    deleted_at?: string;
+  }[];
+};
+export type GetViewsApiArg = {
+  /** Get responses that match search param value */
+  search?: string;
+  /** Get ordered responses */
+  order?: string;
+  /** Get responses by page */
+  page?: string;
+  /** Get responses by pagesize */
+  pagesize?: string;
+  /** JSON-encoded filter string for assignment and soft-delete filters. */
+  filter?: string;
+  /** When true, include views shared with the user. */
+  shared?: boolean;
+  /** Filter by visibility level (public, private). */
+  visibility?: string;
+  /** Organization ID to scope the request. */
+  orgId?: string;
+  /** UUID of the user whose views to retrieve. */
+  userId?: string;
+};
+export type GetViewByIdApiResponse = /** status 200 View */ {
+  /** Unique identifier for the view. */
+  id: string;
+  /** Display name of the view. */
+  name: string;
+  /** Visibility level of the view. */
+  visibility: string;
+  /** Filter configuration that defines which resources this view displays. */
+  filters?: object;
+  /** Additional metadata associated with the view. */
+  metadata?: object;
+  /** ID of the user who created the view. */
+  user_id: string;
+  /** Timestamp when the view was created. */
+  created_at: string;
+  /** Timestamp when the view was last updated. */
+  updated_at: string;
+  /** Timestamp when the view was soft deleted. Null while the view remains active. */
+  deleted_at?: string | null;
+};
+export type GetViewByIdApiArg = {
+  /** View ID */
+  viewId: string;
+};
+export type UpdateViewApiResponse = /** status 200 Updated view */ {
+  /** Unique identifier for the view. */
+  id: string;
+  /** Display name of the view. */
+  name: string;
+  /** Visibility level of the view. */
+  visibility: string;
+  /** Filter configuration that defines which resources this view displays. */
+  filters?: object;
+  /** Additional metadata associated with the view. */
+  metadata?: object;
+  /** ID of the user who created the view. */
+  user_id: string;
+  /** Timestamp when the view was created. */
+  created_at: string;
+  /** Timestamp when the view was last updated. */
+  updated_at: string;
+  /** Timestamp when the view was soft deleted. Null while the view remains active. */
+  deleted_at?: string | null;
+};
+export type UpdateViewApiArg = {
+  /** View ID */
+  viewId: string;
+  /** Body for creating or updating a view */
+  body: {
+    /** Display name of the view. */
+    name: string;
+    /** Filter configuration for this view. */
+    filters?: object;
+    /** Visibility level of the view. */
+    visibility?: string;
+    /** Metadata associated with the view. */
+    metadata?: object;
+  };
+};
+export type DeleteViewApiResponse = unknown;
+export type DeleteViewApiArg = {
+  /** View ID */
+  viewId: string;
+};
 export type GetWorkspacesApiResponse = /** status 200 Workspaces */ {
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces of the workspacepage. */
+  /** List of workspaces with resolved owner details. */
   workspaces?: {
     id?: string;
+    /** Name of the workspace. */
     name?: string;
+    /** Description of the workspace. */
     description?: string;
-    /** Workspace organization ID */
-    organization_id?: string;
+    /** Name of the owning organization. */
+    org_name?: string;
+    /** Display name of the workspace owner. */
     owner?: string;
-    metadata?: {
-      [key: string]: string;
-    };
+    /** User ID of the workspace owner. */
+    owner_id?: string;
+    /** Email address of the workspace owner. */
+    owner_email?: string;
+    /** Avatar URL of the workspace owner. */
+    owner_avatar?: string;
+    /** Metadata associated with the workspace. */
+    metadata?: object;
+    /** Organization to which this workspace belongs. */
+    organization_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -3837,19 +4006,21 @@ export type GetWorkspacesApiArg = {
   filter?: string;
 };
 export type CreateWorkspaceApiResponse = /** status 201 Created workspace */ {
-  id?: string;
-  name?: string;
+  id: string;
+  /** Name of the workspace. */
+  name: string;
+  /** Description of the workspace. */
   description?: string;
-  /** Workspace organization ID */
-  organization_id?: string;
+  /** Organization to which this workspace belongs. */
+  organization_id: string;
+  /** User ID of the workspace owner. */
   owner?: string;
-  metadata?: {
-    [key: string]: string;
-  };
+  /** Metadata associated with the workspace. */
+  metadata?: object;
   /** Timestamp when the resource was created. */
-  created_at?: string;
+  created_at: string;
   /** Timestamp when the resource was updated. */
-  updated_at?: string;
+  updated_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
 };
@@ -3862,22 +4033,26 @@ export type CreateWorkspaceApiArg = {
     description?: string;
     /** Organization ID. */
     organization_id: string;
+    /** Metadata associated with the workspace. */
+    metadata?: object;
   };
 };
 export type GetWorkspaceByIdApiResponse = /** status 200 Workspace */ {
-  id?: string;
-  name?: string;
+  id: string;
+  /** Name of the workspace. */
+  name: string;
+  /** Description of the workspace. */
   description?: string;
-  /** Workspace organization ID */
-  organization_id?: string;
+  /** Organization to which this workspace belongs. */
+  organization_id: string;
+  /** User ID of the workspace owner. */
   owner?: string;
-  metadata?: {
-    [key: string]: string;
-  };
+  /** Metadata associated with the workspace. */
+  metadata?: object;
   /** Timestamp when the resource was created. */
-  created_at?: string;
+  created_at: string;
   /** Timestamp when the resource was updated. */
-  updated_at?: string;
+  updated_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
 };
@@ -3886,19 +4061,21 @@ export type GetWorkspaceByIdApiArg = {
   workspaceId: string;
 };
 export type UpdateWorkspaceApiResponse = /** status 200 Workspace */ {
-  id?: string;
-  name?: string;
+  id: string;
+  /** Name of the workspace. */
+  name: string;
+  /** Description of the workspace. */
   description?: string;
-  /** Workspace organization ID */
-  organization_id?: string;
+  /** Organization to which this workspace belongs. */
+  organization_id: string;
+  /** User ID of the workspace owner. */
   owner?: string;
-  metadata?: {
-    [key: string]: string;
-  };
+  /** Metadata associated with the workspace. */
+  metadata?: object;
   /** Timestamp when the resource was created. */
-  created_at?: string;
+  created_at: string;
   /** Timestamp when the resource was updated. */
-  updated_at?: string;
+  updated_at: string;
   /** Timestamp when the resource was deleted. */
   deleted_at?: string;
 };
@@ -3913,6 +4090,8 @@ export type UpdateWorkspaceApiArg = {
     description?: string;
     /** Organization ID. */
     organization_id: string;
+    /** Metadata associated with the workspace. */
+    metadata?: object;
   };
 };
 export type DeleteWorkspaceApiResponse = unknown;
@@ -3960,11 +4139,11 @@ export type AssignTeamToWorkspaceApiResponse = /** status 200 Workspace team map
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces teams mapping of the workspacesteamsmappingpage. */
+  /** Workspace-team mapping entries. */
   workspacesTeamsMapping?: {
     id?: string;
-    team_id?: string;
     workspace_id?: string;
+    team_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -4032,11 +4211,11 @@ export type AssignEnvironmentToWorkspaceApiResponse = /** status 200 Workspace e
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces environments mapping of the workspacesenvironmentsmappingpage. */
+  /** Workspace-environment mapping entries. */
   workspacesEnvironmentsMapping?: {
     id?: string;
-    environment_id?: string;
     workspace_id?: string;
+    environment_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -4062,7 +4241,7 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The designs of the mesherydesignpage. */
+  /** Designs in this page. */
   designs?: {
     catalogData?: {
       /** Tracks the specific content version that has been made available in the Catalog. */
@@ -4164,11 +4343,11 @@ export type GetDesignsOfWorkspaceApiResponse = /** status 200 Designs */ {
             /** Connection Name */
             name: string;
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-            credential_id?: string;
+            credentialId?: string;
             /** Connection Type (platform, telemetry, collaboration) */
             type: string;
             /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
+            subType: string;
             /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
             /** Additional connection metadata */
@@ -5092,11 +5271,11 @@ export type AssignDesignToWorkspaceApiResponse = /** status 200 Workspace design
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces designs mapping of the workspacesdesignsmappingpage. */
+  /** Workspace-design mapping entries. */
   workspacesDesignsMapping?: {
     id?: string;
-    design_id?: string;
     workspace_id?: string;
+    design_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -5122,23 +5301,32 @@ export type GetViewsOfWorkspaceApiResponse = /** status 200 Views */ {
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The views of the mesheryviewpage. */
+  /** Views in this page, enriched with workspace and organization context. */
   views?: {
     id?: string;
+    /** Display name of the view. */
     name?: string;
-    filters?: {
-      [key: string]: string;
-    };
+    /** Visibility level of the view. */
     visibility?: string;
-    metadata?: {
-      [key: string]: string;
-    };
+    /** Filter configuration for this view. */
+    filters?: object;
+    /** Metadata associated with the view. */
+    metadata?: object;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
     user_id?: string;
+    /** Name of the workspace this view belongs to. */
+    workspace_name?: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    workspace_id: string;
+    /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
+    organization_id: string;
+    /** Name of the organization this view belongs to. */
+    organization_name?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
     updated_at?: string;
-    /** Timestamp when the resource was deleted. */
+    /** Timestamp when the view was soft deleted. Null while the view remains active. */
     deleted_at?: string;
   }[];
 };
@@ -5160,11 +5348,11 @@ export type AssignViewToWorkspaceApiResponse = /** status 200 Workspace view map
   page?: number;
   page_size?: number;
   total_count?: number;
-  /** The workspaces views mapping of the workspacesviewsmappingpage. */
+  /** Workspace-view mapping entries. */
   workspacesViewsMapping?: {
     id?: string;
-    view_id?: string;
     workspace_id?: string;
+    view_id?: string;
     /** Timestamp when the resource was created. */
     created_at?: string;
     /** Timestamp when the resource was updated. */
@@ -7107,7 +7295,7 @@ export type RegisterConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */
@@ -7115,7 +7303,7 @@ export type RegisterConnectionApiArg = {
     /** Connection status */
     status: string;
     /** Associated credential ID */
-    credential_id?: string;
+    credentialId?: string;
   };
 };
 export type GetConnectionByIdApiResponse = /** status 200 Connection details */ {
@@ -7249,7 +7437,7 @@ export type UpdateConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */
@@ -7257,7 +7445,7 @@ export type UpdateConnectionApiArg = {
     /** Connection status */
     status: string;
     /** Associated credential ID */
-    credential_id?: string;
+    credentialId?: string;
   };
 };
 export type DeleteConnectionApiResponse = unknown;
@@ -7399,11 +7587,11 @@ export type GetPatternsApiResponse = /** status 200 Designs response */ {
             /** Connection Name */
             name: string;
             /** Associated Credential ID */
-            credential_id?: string;
+            credentialId?: string;
             /** Connection Type (platform, telemetry, collaboration) */
             type: string;
             /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
+            subType: string;
             /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
             /** Additional connection metadata */
@@ -8457,11 +8645,11 @@ export type UpsertPatternApiResponse = /** status 200 Design saved */ {
           /** Connection Name */
           name: string;
           /** Associated Credential ID */
-          credential_id?: string;
+          credentialId?: string;
           /** Connection Type (platform, telemetry, collaboration) */
           type: string;
           /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-          sub_type: string;
+          subType: string;
           /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
           kind: string;
           /** Additional connection metadata */
@@ -9493,11 +9681,11 @@ export type UpsertPatternApiArg = {
               /** Connection Name */
               name: string;
               /** Associated Credential ID */
-              credential_id?: string;
+              credentialId?: string;
               /** Connection Type (platform, telemetry, collaboration) */
               type: string;
               /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-              sub_type: string;
+              subType: string;
               /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
               kind: string;
               /** Additional connection metadata */
@@ -10567,11 +10755,11 @@ export type GetPatternApiResponse = /** status 200 Design response */ {
           /** Connection Name */
           name: string;
           /** Associated Credential ID */
-          credential_id?: string;
+          credentialId?: string;
           /** Connection Type (platform, telemetry, collaboration) */
           type: string;
           /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-          sub_type: string;
+          subType: string;
           /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
           kind: string;
           /** Additional connection metadata */
@@ -11609,11 +11797,11 @@ export type ClonePatternApiResponse = /** status 200 Design cloned */ {
           /** Connection Name */
           name: string;
           /** Associated Credential ID */
-          credential_id?: string;
+          credentialId?: string;
           /** Connection Type (platform, telemetry, collaboration) */
           type: string;
           /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-          sub_type: string;
+          subType: string;
           /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
           kind: string;
           /** Additional connection metadata */
@@ -12689,11 +12877,11 @@ export type GetCatalogContentApiResponse = /** status 200 Catalog content page *
             /** Connection Name */
             name: string;
             /** Associated Credential ID */
-            credential_id?: string;
+            credentialId?: string;
             /** Connection Type (platform, telemetry, collaboration) */
             type: string;
             /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
+            subType: string;
             /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
             /** Additional connection metadata */
@@ -13715,48 +13903,6 @@ export type CloneFilterApiArg = {
     [key: string]: any;
   };
 };
-export type GetViewByIdApiResponse = /** status 200 View */ {
-  [key: string]: any;
-};
-export type GetViewByIdApiArg = {
-  viewId: string;
-};
-export type UpdateViewApiResponse = /** status 200 Updated view */ {
-  [key: string]: any;
-};
-export type UpdateViewApiArg = {
-  viewId: string;
-  body: {
-    [key: string]: any;
-  };
-};
-export type GetViewsApiResponse = /** status 200 Views page */ {
-  /** Current page number of the result set. */
-  page?: number;
-  /** Number of items per page. */
-  page_size?: number;
-  /** Total number of items available. */
-  total_count?: number;
-  /** The views of the mesheryviewpage. */
-  views?: {
-    [key: string]: any;
-  }[];
-};
-export type GetViewsApiArg = {
-  /** Get responses that match search param value */
-  search?: string;
-  /** Get ordered responses */
-  order?: string;
-  /** Get responses by page */
-  page?: string;
-  /** Get responses by pagesize */
-  pagesize?: string;
-  filter?: string;
-  shared?: boolean;
-  visibility?: string;
-  orgId?: string;
-  userId?: string;
-};
 export type HandleResourceShareApiResponse = /** status 200 Resource access mapping */ {
   [key: string]: any;
 };
@@ -14710,6 +14856,11 @@ export const {
   useGetUsersQuery,
   useGetUserProfileByIdQuery,
   useGetUserQuery,
+  useCreateViewMutation,
+  useGetViewsQuery,
+  useGetViewByIdQuery,
+  useUpdateViewMutation,
+  useDeleteViewMutation,
   useGetWorkspacesQuery,
   useCreateWorkspaceMutation,
   useGetWorkspaceByIdQuery,
@@ -14775,9 +14926,6 @@ export const {
   useDenyCatalogRequestMutation,
   useGetFilterQuery,
   useCloneFilterMutation,
-  useGetViewByIdQuery,
-  useUpdateViewMutation,
-  useGetViewsQuery,
   useHandleResourceShareMutation,
   useGetResourceAccessActorsByTypeQuery,
   useGetCatalogRequestQuery,

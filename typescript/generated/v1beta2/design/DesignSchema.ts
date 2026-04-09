@@ -664,7 +664,7 @@ const DesignSchema: Record<string, unknown> = {
                                                 "schemaVersion",
                                                 "name",
                                                 "type",
-                                                "sub_type",
+                                                "subType",
                                                 "kind",
                                                 "status"
                                               ],
@@ -693,11 +693,11 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "description": "Connection Name"
                                                 },
-                                                "credential_id": {
+                                                "credentialId": {
                                                   "x-go-name": "CredentialID",
                                                   "x-oapi-codegen-extra-tags": {
                                                     "db": "credential_id",
-                                                    "yaml": "credential_id"
+                                                    "yaml": "credentialId"
                                                   },
                                                   "x-order": 3,
                                                   "description": "Associated Credential ID",
@@ -717,10 +717,10 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                                 },
-                                                "sub_type": {
+                                                "subType": {
                                                   "x-oapi-codegen-extra-tags": {
                                                     "db": "sub_type",
-                                                    "yaml": "sub_type"
+                                                    "yaml": "subType"
                                                   },
                                                   "x-order": 5,
                                                   "type": "string",
@@ -2188,10 +2188,10 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "array",
                                           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                           "items": {
-                                            "x-go-type": "capabilityv1alpha1.Capability",
+                                            "x-go-type": "capabilityv1beta1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                              "name": "capabilityv1alpha1"
+                                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                              "name": "capabilityv1beta1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2804,10 +2804,10 @@ const DesignSchema: Record<string, unknown> = {
                                           "description": "Capabilities associated with the relationship.",
                                           "x-order": 2,
                                           "items": {
-                                            "x-go-type": "capabilityv1alpha1.Capability",
+                                            "x-go-type": "capabilityv1beta1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                              "name": "capabilityv1alpha1"
+                                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                              "name": "capabilityv1beta1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -2998,9 +2998,9 @@ const DesignSchema: Record<string, unknown> = {
                                           "x-go-type": "RelationshipMetadata",
                                           "x-order": 5,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "column:metadata;type:bytes;serializer:json",
                                             "yaml": "metadata",
-                                            "json": "metadata,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "metadata,omitempty"
                                           },
                                           "type": "object",
                                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -3488,9 +3488,9 @@ const DesignSchema: Record<string, unknown> = {
                                           "x-go-type": "SelectorSet",
                                           "x-order": 9,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "selectors,omitempty",
-                                            "json": "selectors,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "selectors,omitempty"
                                           },
                                           "type": "array",
                                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -5518,7 +5518,7 @@ const DesignSchema: Record<string, unknown> = {
                                             "schemaVersion",
                                             "name",
                                             "type",
-                                            "sub_type",
+                                            "subType",
                                             "kind",
                                             "status"
                                           ],
@@ -5547,11 +5547,11 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "description": "Connection Name"
                                             },
-                                            "credential_id": {
+                                            "credentialId": {
                                               "x-go-name": "CredentialID",
                                               "x-oapi-codegen-extra-tags": {
                                                 "db": "credential_id",
-                                                "yaml": "credential_id"
+                                                "yaml": "credentialId"
                                               },
                                               "x-order": 3,
                                               "description": "Associated Credential ID",
@@ -5571,10 +5571,10 @@ const DesignSchema: Record<string, unknown> = {
                                               "type": "string",
                                               "description": "Connection Type (platform, telemetry, collaboration)"
                                             },
-                                            "sub_type": {
+                                            "subType": {
                                               "x-oapi-codegen-extra-tags": {
                                                 "db": "sub_type",
-                                                "yaml": "sub_type"
+                                                "yaml": "subType"
                                               },
                                               "x-order": 5,
                                               "type": "string",
@@ -7042,10 +7042,10 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "array",
                                       "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                       "items": {
-                                        "x-go-type": "capabilityv1alpha1.Capability",
+                                        "x-go-type": "capabilityv1beta1.Capability",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                          "name": "capabilityv1alpha1"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                          "name": "capabilityv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/capability.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -7658,10 +7658,10 @@ const DesignSchema: Record<string, unknown> = {
                                       "description": "Capabilities associated with the relationship.",
                                       "x-order": 2,
                                       "items": {
-                                        "x-go-type": "capabilityv1alpha1.Capability",
+                                        "x-go-type": "capabilityv1beta1.Capability",
                                         "x-go-type-import": {
-                                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                          "name": "capabilityv1alpha1"
+                                          "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                          "name": "capabilityv1beta1"
                                         },
                                         "$id": "https://schemas.meshery.io/capability.yaml",
                                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -7852,9 +7852,9 @@ const DesignSchema: Record<string, unknown> = {
                                       "x-go-type": "RelationshipMetadata",
                                       "x-order": 5,
                                       "x-oapi-codegen-extra-tags": {
+                                        "gorm": "column:metadata;type:bytes;serializer:json",
                                         "yaml": "metadata",
-                                        "json": "metadata,omitempty",
-                                        "gorm": "type:bytes;serializer:json"
+                                        "json": "metadata,omitempty"
                                       },
                                       "type": "object",
                                       "description": "Metadata contains additional information associated with the Relationship.",
@@ -8342,9 +8342,9 @@ const DesignSchema: Record<string, unknown> = {
                                       "x-go-type": "SelectorSet",
                                       "x-order": 9,
                                       "x-oapi-codegen-extra-tags": {
+                                        "gorm": "type:bytes;serializer:json",
                                         "yaml": "selectors,omitempty",
-                                        "json": "selectors,omitempty",
-                                        "gorm": "type:bytes;serializer:json"
+                                        "json": "selectors,omitempty"
                                       },
                                       "type": "array",
                                       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -10338,7 +10338,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "schemaVersion",
                                           "name",
                                           "type",
-                                          "sub_type",
+                                          "subType",
                                           "kind",
                                           "status"
                                         ],
@@ -10367,11 +10367,11 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Name"
                                           },
-                                          "credential_id": {
+                                          "credentialId": {
                                             "x-go-name": "CredentialID",
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "credential_id",
-                                              "yaml": "credential_id"
+                                              "yaml": "credentialId"
                                             },
                                             "x-order": 3,
                                             "description": "Associated Credential ID",
@@ -10391,10 +10391,10 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Type (platform, telemetry, collaboration)"
                                           },
-                                          "sub_type": {
+                                          "subType": {
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "sub_type",
-                                              "yaml": "sub_type"
+                                              "yaml": "subType"
                                             },
                                             "x-order": 5,
                                             "type": "string",
@@ -11862,10 +11862,10 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "array",
                                     "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                        "name": "capabilityv1alpha1"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                        "name": "capabilityv1beta1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -12478,10 +12478,10 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                        "name": "capabilityv1alpha1"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                        "name": "capabilityv1beta1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -12672,9 +12672,9 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type": "RelationshipMetadata",
                                     "x-order": 5,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "column:metadata;type:bytes;serializer:json",
                                       "yaml": "metadata",
-                                      "json": "metadata,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "metadata,omitempty"
                                     },
                                     "type": "object",
                                     "description": "Metadata contains additional information associated with the Relationship.",
@@ -13162,9 +13162,9 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type": "SelectorSet",
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "selectors,omitempty",
-                                      "json": "selectors,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "selectors,omitempty"
                                     },
                                     "type": "array",
                                     "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -15526,7 +15526,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "schemaVersion",
                                           "name",
                                           "type",
-                                          "sub_type",
+                                          "subType",
                                           "kind",
                                           "status"
                                         ],
@@ -15555,11 +15555,11 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Name"
                                           },
-                                          "credential_id": {
+                                          "credentialId": {
                                             "x-go-name": "CredentialID",
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "credential_id",
-                                              "yaml": "credential_id"
+                                              "yaml": "credentialId"
                                             },
                                             "x-order": 3,
                                             "description": "Associated Credential ID",
@@ -15579,10 +15579,10 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Type (platform, telemetry, collaboration)"
                                           },
-                                          "sub_type": {
+                                          "subType": {
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "sub_type",
-                                              "yaml": "sub_type"
+                                              "yaml": "subType"
                                             },
                                             "x-order": 5,
                                             "type": "string",
@@ -17050,10 +17050,10 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "array",
                                     "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                        "name": "capabilityv1alpha1"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                        "name": "capabilityv1beta1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -17666,10 +17666,10 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                        "name": "capabilityv1alpha1"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                        "name": "capabilityv1beta1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -17860,9 +17860,9 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type": "RelationshipMetadata",
                                     "x-order": 5,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "column:metadata;type:bytes;serializer:json",
                                       "yaml": "metadata",
-                                      "json": "metadata,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "metadata,omitempty"
                                     },
                                     "type": "object",
                                     "description": "Metadata contains additional information associated with the Relationship.",
@@ -18350,9 +18350,9 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type": "SelectorSet",
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "selectors,omitempty",
-                                      "json": "selectors,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "selectors,omitempty"
                                     },
                                     "type": "array",
                                     "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -20450,7 +20450,7 @@ const DesignSchema: Record<string, unknown> = {
                                           "schemaVersion",
                                           "name",
                                           "type",
-                                          "sub_type",
+                                          "subType",
                                           "kind",
                                           "status"
                                         ],
@@ -20479,11 +20479,11 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Name"
                                           },
-                                          "credential_id": {
+                                          "credentialId": {
                                             "x-go-name": "CredentialID",
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "credential_id",
-                                              "yaml": "credential_id"
+                                              "yaml": "credentialId"
                                             },
                                             "x-order": 3,
                                             "description": "Associated Credential ID",
@@ -20503,10 +20503,10 @@ const DesignSchema: Record<string, unknown> = {
                                             "type": "string",
                                             "description": "Connection Type (platform, telemetry, collaboration)"
                                           },
-                                          "sub_type": {
+                                          "subType": {
                                             "x-oapi-codegen-extra-tags": {
                                               "db": "sub_type",
-                                              "yaml": "sub_type"
+                                              "yaml": "subType"
                                             },
                                             "x-order": 5,
                                             "type": "string",
@@ -21974,10 +21974,10 @@ const DesignSchema: Record<string, unknown> = {
                                     "type": "array",
                                     "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                        "name": "capabilityv1alpha1"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                        "name": "capabilityv1beta1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -22590,10 +22590,10 @@ const DesignSchema: Record<string, unknown> = {
                                     "description": "Capabilities associated with the relationship.",
                                     "x-order": 2,
                                     "items": {
-                                      "x-go-type": "capabilityv1alpha1.Capability",
+                                      "x-go-type": "capabilityv1beta1.Capability",
                                       "x-go-type-import": {
-                                        "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                        "name": "capabilityv1alpha1"
+                                        "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                        "name": "capabilityv1beta1"
                                       },
                                       "$id": "https://schemas.meshery.io/capability.yaml",
                                       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -22784,9 +22784,9 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type": "RelationshipMetadata",
                                     "x-order": 5,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "column:metadata;type:bytes;serializer:json",
                                       "yaml": "metadata",
-                                      "json": "metadata,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "metadata,omitempty"
                                     },
                                     "type": "object",
                                     "description": "Metadata contains additional information associated with the Relationship.",
@@ -23274,9 +23274,9 @@ const DesignSchema: Record<string, unknown> = {
                                     "x-go-type": "SelectorSet",
                                     "x-order": 9,
                                     "x-oapi-codegen-extra-tags": {
+                                      "gorm": "type:bytes;serializer:json",
                                       "yaml": "selectors,omitempty",
-                                      "json": "selectors,omitempty",
-                                      "gorm": "type:bytes;serializer:json"
+                                      "json": "selectors,omitempty"
                                     },
                                     "type": "array",
                                     "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -25706,7 +25706,7 @@ const DesignSchema: Record<string, unknown> = {
                                                 "schemaVersion",
                                                 "name",
                                                 "type",
-                                                "sub_type",
+                                                "subType",
                                                 "kind",
                                                 "status"
                                               ],
@@ -25735,11 +25735,11 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "description": "Connection Name"
                                                 },
-                                                "credential_id": {
+                                                "credentialId": {
                                                   "x-go-name": "CredentialID",
                                                   "x-oapi-codegen-extra-tags": {
                                                     "db": "credential_id",
-                                                    "yaml": "credential_id"
+                                                    "yaml": "credentialId"
                                                   },
                                                   "x-order": 3,
                                                   "description": "Associated Credential ID",
@@ -25759,10 +25759,10 @@ const DesignSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                                 },
-                                                "sub_type": {
+                                                "subType": {
                                                   "x-oapi-codegen-extra-tags": {
                                                     "db": "sub_type",
-                                                    "yaml": "sub_type"
+                                                    "yaml": "subType"
                                                   },
                                                   "x-order": 5,
                                                   "type": "string",
@@ -27230,10 +27230,10 @@ const DesignSchema: Record<string, unknown> = {
                                           "type": "array",
                                           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                           "items": {
-                                            "x-go-type": "capabilityv1alpha1.Capability",
+                                            "x-go-type": "capabilityv1beta1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                              "name": "capabilityv1alpha1"
+                                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                              "name": "capabilityv1beta1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -27846,10 +27846,10 @@ const DesignSchema: Record<string, unknown> = {
                                           "description": "Capabilities associated with the relationship.",
                                           "x-order": 2,
                                           "items": {
-                                            "x-go-type": "capabilityv1alpha1.Capability",
+                                            "x-go-type": "capabilityv1beta1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                              "name": "capabilityv1alpha1"
+                                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                              "name": "capabilityv1beta1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -28040,9 +28040,9 @@ const DesignSchema: Record<string, unknown> = {
                                           "x-go-type": "RelationshipMetadata",
                                           "x-order": 5,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "column:metadata;type:bytes;serializer:json",
                                             "yaml": "metadata",
-                                            "json": "metadata,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "metadata,omitempty"
                                           },
                                           "type": "object",
                                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -28530,9 +28530,9 @@ const DesignSchema: Record<string, unknown> = {
                                           "x-go-type": "SelectorSet",
                                           "x-order": 9,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "selectors,omitempty",
-                                            "json": "selectors,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "selectors,omitempty"
                                           },
                                           "type": "array",
                                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -30611,308 +30611,6 @@ const DesignSchema: Record<string, unknown> = {
         }
       }
     },
-    "/api/content/views/{viewId}": {
-      "get": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "designs"
-        ],
-        "summary": "Get a view by ID",
-        "operationId": "getViewById",
-        "parameters": [
-          {
-            "name": "viewId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "View",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "designs"
-        ],
-        "summary": "Update a view",
-        "operationId": "updateView",
-        "parameters": [
-          {
-            "name": "viewId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Updated view",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request body or request param",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Result not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/content/views": {
-      "get": {
-        "x-internal": [
-          "cloud"
-        ],
-        "tags": [
-          "designs"
-        ],
-        "summary": "Get views",
-        "operationId": "getViews",
-        "parameters": [
-          {
-            "name": "search",
-            "in": "query",
-            "description": "Get responses that match search param value",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "Get ordered responses",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Get responses by page",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "pagesize",
-            "in": "query",
-            "description": "Get responses by pagesize",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "filter",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "shared",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "visibility",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "orgId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "userId",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Views page",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "page": {
-                      "type": "integer",
-                      "description": "Current page number of the result set.",
-                      "minimum": 0
-                    },
-                    "page_size": {
-                      "type": "integer",
-                      "description": "Number of items per page.",
-                      "minimum": 1
-                    },
-                    "total_count": {
-                      "type": "integer",
-                      "description": "Total number of items available.",
-                      "minimum": 0
-                    },
-                    "views": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      "description": "The views of the mesheryviewpage."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Expired JWT token used or insufficient privilege",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/resource/{resourceType}/share/{resourceId}": {
       "post": {
         "x-internal": [
@@ -31715,7 +31413,7 @@ const DesignSchema: Record<string, unknown> = {
                             "schemaVersion",
                             "name",
                             "type",
-                            "sub_type",
+                            "subType",
                             "kind",
                             "status"
                           ],
@@ -31744,11 +31442,11 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "description": "Connection Name"
                             },
-                            "credential_id": {
+                            "credentialId": {
                               "x-go-name": "CredentialID",
                               "x-oapi-codegen-extra-tags": {
                                 "db": "credential_id",
-                                "yaml": "credential_id"
+                                "yaml": "credentialId"
                               },
                               "x-order": 3,
                               "description": "Associated Credential ID",
@@ -31768,10 +31466,10 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "string",
                               "description": "Connection Type (platform, telemetry, collaboration)"
                             },
-                            "sub_type": {
+                            "subType": {
                               "x-oapi-codegen-extra-tags": {
                                 "db": "sub_type",
-                                "yaml": "sub_type"
+                                "yaml": "subType"
                               },
                               "x-order": 5,
                               "type": "string",
@@ -33239,10 +32937,10 @@ const DesignSchema: Record<string, unknown> = {
                       "type": "array",
                       "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                       "items": {
-                        "x-go-type": "capabilityv1alpha1.Capability",
+                        "x-go-type": "capabilityv1beta1.Capability",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                          "name": "capabilityv1alpha1"
+                          "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                          "name": "capabilityv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/capability.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -33855,10 +33553,10 @@ const DesignSchema: Record<string, unknown> = {
                       "description": "Capabilities associated with the relationship.",
                       "x-order": 2,
                       "items": {
-                        "x-go-type": "capabilityv1alpha1.Capability",
+                        "x-go-type": "capabilityv1beta1.Capability",
                         "x-go-type-import": {
-                          "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                          "name": "capabilityv1alpha1"
+                          "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                          "name": "capabilityv1beta1"
                         },
                         "$id": "https://schemas.meshery.io/capability.yaml",
                         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -34049,9 +33747,9 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type": "RelationshipMetadata",
                       "x-order": 5,
                       "x-oapi-codegen-extra-tags": {
+                        "gorm": "column:metadata;type:bytes;serializer:json",
                         "yaml": "metadata",
-                        "json": "metadata,omitempty",
-                        "gorm": "type:bytes;serializer:json"
+                        "json": "metadata,omitempty"
                       },
                       "type": "object",
                       "description": "Metadata contains additional information associated with the Relationship.",
@@ -34539,9 +34237,9 @@ const DesignSchema: Record<string, unknown> = {
                       "x-go-type": "SelectorSet",
                       "x-order": 9,
                       "x-oapi-codegen-extra-tags": {
+                        "gorm": "type:bytes;serializer:json",
                         "yaml": "selectors,omitempty",
-                        "json": "selectors,omitempty",
-                        "gorm": "type:bytes;serializer:json"
+                        "json": "selectors,omitempty"
                       },
                       "type": "array",
                       "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -36488,7 +36186,7 @@ const DesignSchema: Record<string, unknown> = {
                                 "schemaVersion",
                                 "name",
                                 "type",
-                                "sub_type",
+                                "subType",
                                 "kind",
                                 "status"
                               ],
@@ -36517,11 +36215,11 @@ const DesignSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Name"
                                 },
-                                "credential_id": {
+                                "credentialId": {
                                   "x-go-name": "CredentialID",
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "credential_id",
-                                    "yaml": "credential_id"
+                                    "yaml": "credentialId"
                                   },
                                   "x-order": 3,
                                   "description": "Associated Credential ID",
@@ -36541,10 +36239,10 @@ const DesignSchema: Record<string, unknown> = {
                                   "type": "string",
                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                 },
-                                "sub_type": {
+                                "subType": {
                                   "x-oapi-codegen-extra-tags": {
                                     "db": "sub_type",
-                                    "yaml": "sub_type"
+                                    "yaml": "subType"
                                   },
                                   "x-order": 5,
                                   "type": "string",
@@ -38012,10 +37710,10 @@ const DesignSchema: Record<string, unknown> = {
                           "type": "array",
                           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                           "items": {
-                            "x-go-type": "capabilityv1alpha1.Capability",
+                            "x-go-type": "capabilityv1beta1.Capability",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                              "name": "capabilityv1alpha1"
+                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                              "name": "capabilityv1beta1"
                             },
                             "$id": "https://schemas.meshery.io/capability.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -38628,10 +38326,10 @@ const DesignSchema: Record<string, unknown> = {
                           "description": "Capabilities associated with the relationship.",
                           "x-order": 2,
                           "items": {
-                            "x-go-type": "capabilityv1alpha1.Capability",
+                            "x-go-type": "capabilityv1beta1.Capability",
                             "x-go-type-import": {
-                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                              "name": "capabilityv1alpha1"
+                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                              "name": "capabilityv1beta1"
                             },
                             "$id": "https://schemas.meshery.io/capability.yaml",
                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -38822,9 +38520,9 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type": "RelationshipMetadata",
                           "x-order": 5,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "column:metadata;type:bytes;serializer:json",
                             "yaml": "metadata",
-                            "json": "metadata,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "metadata,omitempty"
                           },
                           "type": "object",
                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -39312,9 +39010,9 @@ const DesignSchema: Record<string, unknown> = {
                           "x-go-type": "SelectorSet",
                           "x-order": 9,
                           "x-oapi-codegen-extra-tags": {
+                            "gorm": "type:bytes;serializer:json",
                             "yaml": "selectors,omitempty",
-                            "json": "selectors,omitempty",
-                            "gorm": "type:bytes;serializer:json"
+                            "json": "selectors,omitempty"
                           },
                           "type": "array",
                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -41297,7 +40995,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "schemaVersion",
                                       "name",
                                       "type",
-                                      "sub_type",
+                                      "subType",
                                       "kind",
                                       "status"
                                     ],
@@ -41326,11 +41024,11 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "description": "Connection Name"
                                       },
-                                      "credential_id": {
+                                      "credentialId": {
                                         "x-go-name": "CredentialID",
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "credential_id",
-                                          "yaml": "credential_id"
+                                          "yaml": "credentialId"
                                         },
                                         "x-order": 3,
                                         "description": "Associated Credential ID",
@@ -41350,10 +41048,10 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "description": "Connection Type (platform, telemetry, collaboration)"
                                       },
-                                      "sub_type": {
+                                      "subType": {
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "sub_type",
-                                          "yaml": "sub_type"
+                                          "yaml": "subType"
                                         },
                                         "x-order": 5,
                                         "type": "string",
@@ -42821,10 +42519,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "array",
                                 "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "items": {
-                                  "x-go-type": "capabilityv1alpha1.Capability",
+                                  "x-go-type": "capabilityv1beta1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                    "name": "capabilityv1alpha1"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                    "name": "capabilityv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -43437,10 +43135,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Capabilities associated with the relationship.",
                                 "x-order": 2,
                                 "items": {
-                                  "x-go-type": "capabilityv1alpha1.Capability",
+                                  "x-go-type": "capabilityv1beta1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                    "name": "capabilityv1alpha1"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                    "name": "capabilityv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -43631,9 +43329,9 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type": "RelationshipMetadata",
                                 "x-order": 5,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "column:metadata;type:bytes;serializer:json",
                                   "yaml": "metadata",
-                                  "json": "metadata,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "metadata,omitempty"
                                 },
                                 "type": "object",
                                 "description": "Metadata contains additional information associated with the Relationship.",
@@ -44121,9 +43819,9 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type": "SelectorSet",
                                 "x-order": 9,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "selectors,omitempty",
-                                  "json": "selectors,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "selectors,omitempty"
                                 },
                                 "type": "array",
                                 "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -46140,7 +45838,7 @@ const DesignSchema: Record<string, unknown> = {
                                     "schemaVersion",
                                     "name",
                                     "type",
-                                    "sub_type",
+                                    "subType",
                                     "kind",
                                     "status"
                                   ],
@@ -46169,11 +45867,11 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "description": "Connection Name"
                                     },
-                                    "credential_id": {
+                                    "credentialId": {
                                       "x-go-name": "CredentialID",
                                       "x-oapi-codegen-extra-tags": {
                                         "db": "credential_id",
-                                        "yaml": "credential_id"
+                                        "yaml": "credentialId"
                                       },
                                       "x-order": 3,
                                       "description": "Associated Credential ID",
@@ -46193,10 +45891,10 @@ const DesignSchema: Record<string, unknown> = {
                                       "type": "string",
                                       "description": "Connection Type (platform, telemetry, collaboration)"
                                     },
-                                    "sub_type": {
+                                    "subType": {
                                       "x-oapi-codegen-extra-tags": {
                                         "db": "sub_type",
-                                        "yaml": "sub_type"
+                                        "yaml": "subType"
                                       },
                                       "x-order": 5,
                                       "type": "string",
@@ -47664,10 +47362,10 @@ const DesignSchema: Record<string, unknown> = {
                               "type": "array",
                               "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                               "items": {
-                                "x-go-type": "capabilityv1alpha1.Capability",
+                                "x-go-type": "capabilityv1beta1.Capability",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                  "name": "capabilityv1alpha1"
+                                  "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                  "name": "capabilityv1beta1"
                                 },
                                 "$id": "https://schemas.meshery.io/capability.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -48280,10 +47978,10 @@ const DesignSchema: Record<string, unknown> = {
                               "description": "Capabilities associated with the relationship.",
                               "x-order": 2,
                               "items": {
-                                "x-go-type": "capabilityv1alpha1.Capability",
+                                "x-go-type": "capabilityv1beta1.Capability",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                  "name": "capabilityv1alpha1"
+                                  "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                  "name": "capabilityv1beta1"
                                 },
                                 "$id": "https://schemas.meshery.io/capability.yaml",
                                 "$schema": "http://json-schema.org/draft-07/schema#",
@@ -48474,9 +48172,9 @@ const DesignSchema: Record<string, unknown> = {
                               "x-go-type": "RelationshipMetadata",
                               "x-order": 5,
                               "x-oapi-codegen-extra-tags": {
+                                "gorm": "column:metadata;type:bytes;serializer:json",
                                 "yaml": "metadata",
-                                "json": "metadata,omitempty",
-                                "gorm": "type:bytes;serializer:json"
+                                "json": "metadata,omitempty"
                               },
                               "type": "object",
                               "description": "Metadata contains additional information associated with the Relationship.",
@@ -48964,9 +48662,9 @@ const DesignSchema: Record<string, unknown> = {
                               "x-go-type": "SelectorSet",
                               "x-order": 9,
                               "x-oapi-codegen-extra-tags": {
+                                "gorm": "type:bytes;serializer:json",
                                 "yaml": "selectors,omitempty",
-                                "json": "selectors,omitempty",
-                                "gorm": "type:bytes;serializer:json"
+                                "json": "selectors,omitempty"
                               },
                               "type": "array",
                               "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -51022,7 +50720,7 @@ const DesignSchema: Record<string, unknown> = {
                                       "schemaVersion",
                                       "name",
                                       "type",
-                                      "sub_type",
+                                      "subType",
                                       "kind",
                                       "status"
                                     ],
@@ -51051,11 +50749,11 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "description": "Connection Name"
                                       },
-                                      "credential_id": {
+                                      "credentialId": {
                                         "x-go-name": "CredentialID",
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "credential_id",
-                                          "yaml": "credential_id"
+                                          "yaml": "credentialId"
                                         },
                                         "x-order": 3,
                                         "description": "Associated Credential ID",
@@ -51075,10 +50773,10 @@ const DesignSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "description": "Connection Type (platform, telemetry, collaboration)"
                                       },
-                                      "sub_type": {
+                                      "subType": {
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "sub_type",
-                                          "yaml": "sub_type"
+                                          "yaml": "subType"
                                         },
                                         "x-order": 5,
                                         "type": "string",
@@ -52546,10 +52244,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "type": "array",
                                 "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "items": {
-                                  "x-go-type": "capabilityv1alpha1.Capability",
+                                  "x-go-type": "capabilityv1beta1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                    "name": "capabilityv1alpha1"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                    "name": "capabilityv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -53162,10 +52860,10 @@ const DesignSchema: Record<string, unknown> = {
                                 "description": "Capabilities associated with the relationship.",
                                 "x-order": 2,
                                 "items": {
-                                  "x-go-type": "capabilityv1alpha1.Capability",
+                                  "x-go-type": "capabilityv1beta1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                    "name": "capabilityv1alpha1"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                    "name": "capabilityv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -53356,9 +53054,9 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type": "RelationshipMetadata",
                                 "x-order": 5,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "column:metadata;type:bytes;serializer:json",
                                   "yaml": "metadata",
-                                  "json": "metadata,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "metadata,omitempty"
                                 },
                                 "type": "object",
                                 "description": "Metadata contains additional information associated with the Relationship.",
@@ -53846,9 +53544,9 @@ const DesignSchema: Record<string, unknown> = {
                                 "x-go-type": "SelectorSet",
                                 "x-order": 9,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "selectors,omitempty",
-                                  "json": "selectors,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "selectors,omitempty"
                                 },
                                 "type": "array",
                                 "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -55386,38 +55084,6 @@ const DesignSchema: Record<string, unknown> = {
         "type": "object",
         "additionalProperties": true
       },
-      "MesheryView": {
-        "type": "object",
-        "additionalProperties": true
-      },
-      "MesheryViewPage": {
-        "type": "object",
-        "properties": {
-          "page": {
-            "type": "integer",
-            "description": "Current page number of the result set.",
-            "minimum": 0
-          },
-          "page_size": {
-            "type": "integer",
-            "description": "Number of items per page.",
-            "minimum": 1
-          },
-          "total_count": {
-            "type": "integer",
-            "description": "Total number of items available.",
-            "minimum": 0
-          },
-          "views": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            },
-            "description": "The views of the mesheryviewpage."
-          }
-        }
-      },
       "ResourceAccessMapping": {
         "type": "object",
         "additionalProperties": true
@@ -55438,17 +55104,6 @@ const DesignSchema: Record<string, unknown> = {
     },
     "requestBodies": {
       "catalogContentPayload": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        }
-      },
-      "viewUpdatePayload": {
         "required": true,
         "content": {
           "application/json": {

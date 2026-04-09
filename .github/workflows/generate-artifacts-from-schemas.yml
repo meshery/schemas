@@ -21,11 +21,10 @@ jobs:
         with:
           go-version: '1.25.5'   # match your local version
 
-      - name: Install Redocly
+      - name: Install build dependencies
         uses: actions/setup-node@v6
       - run: |
           npm i
-          npm i -g @redocly/cli@latest
           go version 
           go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
           echo "$HOME/go/bin" >> $GITHUB_PATH  # ✅ Add oapi-codegen to PATH

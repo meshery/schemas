@@ -360,7 +360,7 @@ const CoreSchema: Record<string, unknown> = {
         },
         "x-oapi-codegen-extra-tags": {
           "db": "credential_id",
-          "json": "credential_id"
+          "json": "credentialId"
         },
         "x-go-name": "CredentialID",
         "x-go-type-skip-optional-pointer": true

@@ -4,7 +4,6 @@
 package environment
 
 import (
-	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/core"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
@@ -44,15 +43,15 @@ type Environment struct {
 
 // EnvironmentConnectionMapping defines model for EnvironmentConnectionMapping.
 type EnvironmentConnectionMapping struct {
-	// ConnectionId ID of the associated connection.
-	ConnectionId uuid.UUID         `db:"connection_id" json:"connection_id" yaml:"connection_id"`
-	CreatedAt    core.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	// ConnectionId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	ConnectionId *core.Uuid `db:"connection_id" json:"connection_id" yaml:"connection_id,omitempty"`
+	CreatedAt    core.Time  `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 
 	// DeletedAt SQL null Timestamp to handle null values of time.
 	DeletedAt core.NullTime `json:"deleted_at,omitempty" yaml:"deleted_at,omitempty"`
 
-	// EnvironmentId ID of the associated environment.
-	EnvironmentId uuid.UUID              `db:"environment_id" json:"environment_id" yaml:"environment_id"`
+	// EnvironmentId A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
+	EnvironmentId *core.Uuid     `db:"environment_id" json:"environment_id" yaml:"environment_id,omitempty"`
 	ID            core.GeneralId `db:"id" json:"id" yaml:"id"`
 	UpdatedAt     core.Time      `json:"updated_at,omitempty" yaml:"updated_at,omitempty"`
 }

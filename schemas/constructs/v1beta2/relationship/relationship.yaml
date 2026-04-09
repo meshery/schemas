@@ -88,10 +88,10 @@ properties:
     x-order: 2
     items:
       $ref: "../../v1beta1/capability/api.yml#/components/schemas/Capability"
-      x-go-type: "capabilityv1alpha1.Capability"
+      x-go-type: "capabilityv1beta1.Capability"
       x-go-type-import:
-        path: "github.com/meshery/schemas/models/v1alpha1/capability"
-        name: capabilityv1alpha1
+        path: "github.com/meshery/schemas/models/v1beta1/capability"
+        name: capabilityv1beta1
     x-oapi-codegen-extra-tags:
       yaml: "capabilities"
       json: "capabilities,omitempty"
@@ -103,7 +103,7 @@ properties:
     x-oapi-codegen-extra-tags:
       yaml: "metadata"
       json: "metadata,omitempty"
-      gorm: "type:bytes;serializer:json"
+      gorm: "column:metadata;type:bytes;serializer:json"
   model:
     $ref: "../../v1beta1/model/api.yml#/components/schemas/ModelReference"
     x-go-type: "modelv1beta1.ModelReference"

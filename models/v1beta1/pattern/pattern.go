@@ -8,9 +8,9 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
-	relationship "github.com/meshery/schemas/models/v1alpha3/relationship"
 	catalogv1beta1 "github.com/meshery/schemas/models/v1beta1/catalog"
 	component "github.com/meshery/schemas/models/v1beta1/component"
+	relationship "github.com/meshery/schemas/models/v1beta2/relationship"
 )
 
 // DesignPreferences Design-level preferences
@@ -113,17 +113,6 @@ type MesheryPatternRequestBody struct {
 	Url         core.Endpoint `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
-// MesheryView defines model for MesheryView.
-type MesheryView map[string]interface{}
-
-// MesheryViewPage defines model for MesheryViewPage.
-type MesheryViewPage struct {
-	Page       *int           `json:"page,omitempty" yaml:"page,omitempty"`
-	PageSize   *int           `json:"page_size,omitempty" yaml:"page_size,omitempty"`
-	TotalCount *int           `json:"total_count,omitempty" yaml:"total_count,omitempty"`
-	Views      *[]MesheryView `json:"views,omitempty" yaml:"views,omitempty"`
-}
-
 // PatternFile Designs are your primary tool for collaborative authorship of your infrastructure, workflow, and processes.
 type PatternFile struct {
 	// Id A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.
@@ -184,9 +173,6 @@ type CatalogContentPayload map[string]interface{}
 
 // ResourceSharePayload defines model for resourceSharePayload.
 type ResourceSharePayload map[string]interface{}
-
-// ViewUpdatePayload defines model for viewUpdatePayload.
-type ViewUpdatePayload map[string]interface{}
 
 // Getter for additional properties for CatalogContentClass. Returns the specified
 // element and whether it was found

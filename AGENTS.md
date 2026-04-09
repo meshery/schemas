@@ -2,10 +2,24 @@
 
 This is the central schema repository for the Meshery platform. Schemas here drive Go struct generation, TypeScript type generation, and RTK Query client generation. Mistakes in schema design propagate into generated code across multiple downstream repos (meshery/meshery, layer5io/meshery-cloud).
 
+## Source of Truth
+
+The source of truth for a construct's API contract depends on where it is in the migration lifecycle:
+
+1. **Pre-migration** — While a construct is being migrated from a downstream repository (e.g., `layer5io/meshery-cloud`) into meshery/schemas, the downstream implementation is the reference for field discovery: field names, types, JSON tags, and database column mappings.
+2. **Post-migration** — Once a construct has been fully migrated and its schema is defined here, **meshery/schemas becomes the permanent, authoritative source of truth.** Downstream repositories must conform to the contract defined here, not the reverse.
+
+For constructs that have been migrated:
+
+- When a downstream repository's implementation diverges from the schema contract defined here, **this repository is correct** and the downstream code must be updated.
+- When cross-construct consistency requires a change that conflicts with current downstream implementation, make the breaking change here and open issues in affected repositories documenting the required migration.
+- Do not weaken schema contracts, skip validation rules, or introduce inconsistent patterns to accommodate legacy downstream code.
+
 ## Build
 
 ```bash
 make build       # generate Go structs + TypeScript types + RTK clients
+make validate-schemas  # run repository schema validation rules
 npm run build    # build TypeScript distribution (dist/)
 ```
 
@@ -163,7 +177,7 @@ Every element in the API has exactly one correct casing. The table below is the 
 
 ## Per-Property Validation Constraints
 
-The schema validator (`build/validate-schemas.js`) enforces per-property constraints as advisory rules (Rules 37–41). These do not block CI but are reported on `--warn` runs and should be resolved in new schemas.
+The schema validator (`build/validate-schemas.js`) enforces per-property constraints as advisory rules (Rules 37–42). These do not block CI but are reported on `--warn` runs and should be resolved in new schemas.
 
 | Rule | What it checks |
 |---|---|
@@ -172,6 +186,7 @@ The schema validator (`build/validate-schemas.js`) enforces per-property constra
 | 39 | Numeric properties have `minimum`, `maximum`, or `const` |
 | 40 | ID-like properties (`id`, `*_id`, `*Id`) have `format: uuid` or `$ref` to a UUID type |
 | 41 | Page-size properties (`page_size`, `pagesize`, `pageSize`) have `minimum: 1` |
+| 42 | `format` values must be from the known OpenAPI 3.0 / JSON Schema set (e.g., `date-time`, `email`, `uri`, `uuid`) |
 
 ### `x-id-format: external` — exempting non-UUID IDs
 

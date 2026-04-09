@@ -19,10 +19,6 @@
  * USAGE:
  *   node build/bundle-openapi.js
  *
- * DEPENDENCIES:
- *   - swagger-cli (via npx)
- *   - @redocly/cli (via npx)
- *
  * OUTPUT:
  *   - _openapi_build/constructs/<version>/<package>/merged-openapi.json
  *   - _openapi_build/merged_openapi.yml
@@ -30,15 +26,160 @@
  *   - _openapi_build/meshery_openapi.yml
  */
 
+const fs = require("fs");
 const path = require("path");
+const $RefParser = require("@apidevtools/json-schema-ref-parser");
+const yaml = require("js-yaml");
 const { execSync } = require("child_process");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
-const { npx } = require("./lib/exec");
 
-// Disable telemetry for @redocly/cli
-process.env.REDOCLY_TELEMETRY = "off";
+function toPrefix(title) {
+  return String(title || "").trim().replace(/\s+/g, "_");
+}
+
+function prefixComponentRef(ref, prefix) {
+  return typeof ref === "string"
+    ? ref.replace(
+        /^#\/components\/([^/]+)\/([^/]+)$/,
+        (_, section, name) => `#/components/${section}/${prefix}_${name}`,
+      )
+    : ref;
+}
+
+function prefixSecurityRequirement(requirement, prefix) {
+  if (!requirement || typeof requirement !== "object" || Array.isArray(requirement)) {
+    return requirement;
+  }
+
+  return Object.fromEntries(
+    Object.entries(requirement).map(([name, value]) => [`${prefix}_${name}`, value]),
+  );
+}
+
+function prefixTags(tags, prefix) {
+  if (!Array.isArray(tags)) {
+    return tags;
+  }
+
+  return tags.map((tag) => {
+    if (typeof tag === "string") {
+      return `${prefix}_${tag}`;
+    }
+
+    if (tag && typeof tag === "object") {
+      return { ...tag, name: `${prefix}_${tag.name}` };
+    }
+
+    return tag;
+  });
+}
+
+function prefixInternalReferences(value, prefix) {
+  if (Array.isArray(value)) {
+    return value.map((item) => prefixInternalReferences(item, prefix));
+  }
+
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, currentValue]) => {
+      if (key === "$ref" && typeof currentValue === "string") {
+        return [key, prefixComponentRef(currentValue, prefix)];
+      }
+
+      if (key === "tags") {
+        return [key, prefixTags(currentValue, prefix)];
+      }
+
+      if (key === "security" && Array.isArray(currentValue)) {
+        return [
+          key,
+          currentValue.map((requirement) => prefixSecurityRequirement(requirement, prefix)),
+        ];
+      }
+
+      return [key, prefixInternalReferences(currentValue, prefix)];
+    }),
+  );
+}
+
+function prefixComponents(components, prefix) {
+  if (!components || typeof components !== "object") {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(components).map(([section, definitions]) => [
+      section,
+      Object.fromEntries(
+        Object.entries(definitions || {}).map(([name, value]) => [`${prefix}_${name}`, value]),
+      ),
+    ]),
+  );
+}
+
+function mergeComponentMaps(baseComponents, incomingComponents) {
+  for (const [section, definitions] of Object.entries(incomingComponents || {})) {
+    const currentSection = (baseComponents[section] ??= {});
+
+    for (const [name, value] of Object.entries(definitions || {})) {
+      currentSection[name] = value;
+    }
+  }
+}
+
+function mergePaths(basePaths, incomingPaths) {
+  for (const [route, pathItem] of Object.entries(incomingPaths || {})) {
+    const currentPath = (basePaths[route] ??= {});
+
+    for (const [method, operation] of Object.entries(pathItem || {})) {
+      if (Object.prototype.hasOwnProperty.call(currentPath, method)) {
+        throw new Error(`Duplicate path operation during merge: ${route} ${method}`);
+      }
+
+      currentPath[method] = operation;
+    }
+  }
+}
+
+function mergeTags(baseTags, incomingTags) {
+  const seen = new Set(baseTags.map((tag) => tag.name));
+
+  for (const tag of incomingTags || []) {
+    if (!tag?.name || seen.has(tag.name)) {
+      continue;
+    }
+
+    baseTags.push(tag);
+    seen.add(tag.name);
+  }
+}
+
+function mergeOpenapiSpec(baseSpec, specToMerge) {
+  const prefix = toPrefix(specToMerge?.info?.title);
+  if (!prefix) {
+    throw new Error("Cannot merge OpenAPI spec without info.title");
+  }
+
+  const normalizedSpec = prefixInternalReferences(specToMerge, prefix);
+
+  mergeTags(baseSpec.tags ?? (baseSpec.tags = []), normalizedSpec.tags || []);
+  mergePaths(baseSpec.paths ?? (baseSpec.paths = {}), normalizedSpec.paths || {});
+  mergeComponentMaps(
+    baseSpec.components ?? (baseSpec.components = {}),
+    prefixComponents(normalizedSpec.components, prefix),
+  );
+
+  return baseSpec;
+}
+
+async function dereferenceOpenapiSpec(inputPath) {
+  return $RefParser.dereference(inputPath);
+}
 
 /**
  * Bundle a single OpenAPI schema
@@ -59,13 +200,8 @@ async function bundleSchema(pkg) {
 
   logger.step(`Bundling: ${pkg.name} (${pkg.version})...`);
 
-  await npx("swagger-cli", [
-    "bundle",
-    "--dereference",
-    inputPath,
-    "-o",
-    outputPath,
-  ]);
+  const dereferencedSpec = await dereferenceOpenapiSpec(inputPath);
+  fs.writeFileSync(outputPath, `${JSON.stringify(dereferencedSpec, null, 2)}\n`, "utf-8");
 
   logger.success(`Bundled: ${paths.relativePath(outputPath)}`);
 }
@@ -104,17 +240,14 @@ async function mergeSchemas() {
 
   paths.ensureParentDir(outputPath);
 
-  await npx("@redocly/cli", [
-    "join",
-    baseSpec,
-    ...specsToMerge,
-    "-o",
-    outputPath,
-    "--prefix-tags-with-info-prop",
-    "title",
-    "--prefix-components-with-info-prop",
-    "title",
-  ]);
+  const mergedSpec = yaml.load(fs.readFileSync(baseSpec, "utf-8"));
+
+  for (const spec of specsToMerge) {
+    const specDocument = JSON.parse(fs.readFileSync(spec, "utf-8"));
+    mergeOpenapiSpec(mergedSpec, specDocument);
+  }
+
+  fs.writeFileSync(outputPath, yaml.dump(mergedSpec, { noRefs: true, lineWidth: 120 }), "utf-8");
 
   logger.success(`Created: ${paths.relativePath(outputPath)}`);
 }
@@ -190,4 +323,17 @@ async function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  dereferenceOpenapiSpec,
+  mergeOpenapiSpec,
+  prefixComponentRef,
+  prefixInternalReferences,
+  prefixComponents,
+  prefixSecurityRequirement,
+  prefixTags,
+  toPrefix,
+};

@@ -29,9 +29,9 @@ components:
     registrant:
       id: 00000000-0000-0000-0000-000000000000
       name: ''
-      credential_id: 00000000-0000-0000-0000-000000000000
+      credentialId: 00000000-0000-0000-0000-000000000000
       type: ''
-      sub_type: ''
+      subType: ''
       kind: ''
       status: ''
       user_id: 00000000-0000-0000-0000-000000000000
@@ -313,9 +313,9 @@ relationships:
     registrant:
       id: ''
       name: ''
-      credential_id: ''
+      credentialId: ''
       type: ''
-      sub_type: ''
+      subType: ''
       kind: ''
       status: ''
       user_id: ''
@@ -428,9 +428,9 @@ relationships:
               registrant:
                 id: ''
                 name: ''
-                credential_id: ''
+                credentialId: ''
                 type: ''
-                sub_type: ''
+                subType: ''
                 kind: ''
                 status: ''
                 user_id: ''
@@ -521,9 +521,9 @@ relationships:
               registrant:
                 id: ''
                 name: ''
-                credential_id: ''
+                credentialId: ''
                 type: ''
-                sub_type: ''
+                subType: ''
                 kind: ''
                 status: ''
                 user_id: ''
@@ -617,9 +617,9 @@ relationships:
               registrant:
                 id: ''
                 name: ''
-                credential_id: ''
+                credentialId: ''
                 type: ''
-                sub_type: ''
+                subType: ''
                 kind: ''
                 status: ''
                 user_id: ''
@@ -710,9 +710,9 @@ relationships:
               registrant:
                 id: ''
                 name: ''
-                credential_id: ''
+                credentialId: ''
                 type: ''
-                sub_type: ''
+                subType: ''
                 kind: ''
                 status: ''
                 user_id: ''

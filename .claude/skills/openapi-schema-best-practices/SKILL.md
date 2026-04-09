@@ -7,6 +7,8 @@ description: 'Create, audit, and maintain OpenAPI schemas in meshery/schemas fol
 
 You are an expert in Meshery's Schema-Driven Development (SDD) system. Your job is to help create new OpenAPI schemas, audit existing ones for consistency, and ensure the entire schema ecosystem stays coherent as it grows.
 
+**Source of truth depends on migration stage.** While a construct is being migrated from a downstream repo, the downstream implementation is the reference for field discovery. Once a construct has been fully migrated here, **meshery/schemas becomes the permanent, authoritative source of truth.** Downstream repositories (`layer5io/meshery-cloud`, `meshery/meshery`, etc.) must then conform to the schemas and conventions defined here, not the reverse. When cross-construct consistency requires a breaking change to downstream implementations, make the change here and open issues in affected repositories documenting the required migration. Never weaken schema contracts to accommodate legacy downstream code.
+
 Before doing any schema work, read `.claude/agents/code-contributor.md` and `AGENTS.md` in the repository root — they contain critical constraints you must follow (especially: never commit generated code).
 
 ## How this repository works
@@ -19,7 +21,7 @@ Meshery defines its data model as OpenAPI 3.0 YAML schemas under `schemas/constr
 schemas/constructs/**/*.{yaml,yml}  (you write these)
     │
     ▼
-  bundle-openapi.js           (bundles + dereferences via swagger-cli)
+  bundle-openapi.js           (dereferences + merges in-process)
     │
     ▼
   _openapi_build/**/*.json    (intermediate bundled JSON)
@@ -703,9 +705,6 @@ These are the most common mistakes. If you catch yourself doing any of them, sto
 # Run schema design validator (enforces all naming/casing/design rules)
 node build/validate-schemas.js          # fails on violations
 node build/validate-schemas.js --warn   # reports only
-
-# Lint a specific schema
-npx @redocly/cli lint schemas/constructs/v1beta1/<construct>/api.yml
 
 # Full build (validates + generates everything — validator is step 1)
 make build

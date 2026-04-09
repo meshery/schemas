@@ -361,7 +361,7 @@ const injectedRtkApi = api
     }),
     overrideExisting: false,
   });
-export { injectedRtkApi as mesheryApi };
+export { injectedRtkApi as mesheryApi, injectedRtkApi };
 export type CreateEnvironmentApiResponse = /** status 201 Created environment */ {
   /** ID */
   id: string;
@@ -613,11 +613,11 @@ export type PostEvaluateApiResponse = /** status 200 Successful evaluation */ {
           /** Connection Name */
           name: string;
           /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-          credential_id?: string;
+          credentialId?: string;
           /** Connection Type (platform, telemetry, collaboration) */
           type: string;
           /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-          sub_type: string;
+          subType: string;
           /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
           kind: string;
           /** Additional connection metadata */
@@ -1609,11 +1609,11 @@ export type PostEvaluateApiArg = {
             /** Connection Name */
             name: string;
             /** A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas. */
-            credential_id?: string;
+            credentialId?: string;
             /** Connection Type (platform, telemetry, collaboration) */
             type: string;
             /** Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
+            subType: string;
             /** Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
             /** Additional connection metadata */
@@ -4133,7 +4133,7 @@ export type RegisterConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */
@@ -4141,7 +4141,7 @@ export type RegisterConnectionApiArg = {
     /** Connection status */
     status: string;
     /** Associated credential ID */
-    credential_id?: string;
+    credentialId?: string;
   };
 };
 export type GetConnectionByIdApiResponse = /** status 200 Connection details */ {
@@ -4275,7 +4275,7 @@ export type UpdateConnectionApiArg = {
     /** Connection type */
     type: string;
     /** Connection sub-type */
-    sub_type: string;
+    subType: string;
     /** Credential secret data */
     credentialSecret?: object;
     /** Connection metadata */
@@ -4283,7 +4283,7 @@ export type UpdateConnectionApiArg = {
     /** Connection status */
     status: string;
     /** Associated credential ID */
-    credential_id?: string;
+    credentialId?: string;
   };
 };
 export type DeleteConnectionApiResponse = unknown;

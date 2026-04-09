@@ -113,6 +113,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of workspaces.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -130,8 +131,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "type": "array",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
-                        "x-go-type": "Workspace",
+                        "x-go-type": "AvailableWorkspace",
                         "type": "object",
+                        "description": "Workspace with resolved owner details, as returned in list and get responses.",
+                        "additionalProperties": false,
                         "properties": {
                           "id": {
                             "type": "string",
@@ -149,20 +152,50 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "name": {
                             "type": "string",
-                            "x-go-type-skip-optional-pointer": true
+                            "description": "Name of the workspace.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name,omitempty"
+                            }
                           },
                           "description": {
                             "type": "string",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "organization_id": {
-                            "x-go-name": "OrganizationID",
+                            "description": "Description of the workspace.",
+                            "maxLength": 5000,
                             "x-go-type-skip-optional-pointer": true,
                             "x-oapi-codegen-extra-tags": {
-                              "db": "organization_id",
-                              "json": "organization_id"
+                              "db": "description",
+                              "json": "description,omitempty"
+                            }
+                          },
+                          "org_name": {
+                            "type": "string",
+                            "description": "Name of the owning organization.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "org_name",
+                              "json": "org_name,omitempty"
+                            }
+                          },
+                          "owner": {
+                            "type": "string",
+                            "description": "Display name of the workspace owner.",
+                            "maxLength": 255,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner",
+                              "json": "owner,omitempty"
+                            }
+                          },
+                          "owner_id": {
+                            "description": "User ID of the workspace owner.",
+                            "x-go-name": "OwnerId",
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner_id",
+                              "json": "owner_id,omitempty"
                             },
-                            "description": "Workspace organization ID",
                             "type": "string",
                             "format": "uuid",
                             "x-go-type": "uuid.UUID",
@@ -170,16 +203,48 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "path": "github.com/gofrs/uuid"
                             }
                           },
-                          "owner": {
+                          "owner_email": {
                             "type": "string",
-                            "x-go-type-skip-optional-pointer": true
+                            "description": "Email address of the workspace owner.",
+                            "maxLength": 320,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner_email",
+                              "json": "owner_email,omitempty"
+                            }
+                          },
+                          "owner_avatar": {
+                            "type": "string",
+                            "description": "Avatar URL of the workspace owner.",
+                            "maxLength": 2048,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "owner_avatar",
+                              "json": "owner_avatar,omitempty"
+                            }
                           },
                           "metadata": {
                             "type": "object",
-                            "additionalProperties": {
-                              "type": "string"
+                            "description": "Metadata associated with the workspace.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata",
+                              "json": "metadata,omitempty"
+                            }
+                          },
+                          "organization_id": {
+                            "description": "Organization to which this workspace belongs.",
+                            "x-go-name": "OrganizationId",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organization_id,omitempty"
                             },
-                            "x-go-type-skip-optional-pointer": true
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            }
                           },
                           "created_at": {
                             "description": "Timestamp when the resource was created.",
@@ -219,7 +284,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "description": "The workspaces of the workspacepage."
+                      "description": "List of workspaces with resolved owner details."
                     }
                   }
                 }
@@ -265,6 +330,7 @@ const WorkspaceSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "Payload for creating a workspace.",
                 "required": [
                   "name",
                   "organization_id"
@@ -272,26 +338,41 @@ const WorkspaceSchema: Record<string, unknown> = {
                 "properties": {
                   "name": {
                     "type": "string",
+                    "description": "Name of the workspace.",
+                    "minLength": 1,
+                    "maxLength": 255,
                     "x-go-type-skip-optional-pointer": true,
-                    "description": "Name of the workspace."
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "name,omitempty"
+                    }
                   },
                   "description": {
                     "type": "string",
+                    "description": "Description of the workspace.",
+                    "maxLength": 5000,
                     "x-go-type-skip-optional-pointer": true,
-                    "description": "Description of the workspace."
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "description,omitempty"
+                    }
                   },
                   "organization_id": {
+                    "type": "string",
                     "description": "Organization ID.",
+                    "maxLength": 36,
+                    "format": "uuid",
                     "x-go-type-skip-optional-pointer": true,
                     "x-go-name": "OrganizationID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "organization_id"
-                    },
-                    "type": "string",
-                    "format": "uuid",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "json": "organization_id,omitempty"
+                    }
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Metadata associated with the workspace.",
+                    "x-go-type": "core.Map",
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "metadata,omitempty"
                     }
                   }
                 }
@@ -305,7 +386,18 @@ const WorkspaceSchema: Record<string, unknown> = {
             "content": {
               "application/json": {
                 "schema": {
+                  "$id": "https://schemas.meshery.io/workspace.yaml",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "description": "A workspace is a logical grouping of resources within an organization. Workspaces provide a way to organize environments, designs, teams, and views. Learn more at https://docs.meshery.io/concepts/logical/workspaces",
+                  "additionalProperties": false,
                   "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "organization_id",
+                    "created_at",
+                    "updated_at"
+                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -323,20 +415,33 @@ const WorkspaceSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Name of the workspace.",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name",
+                        "json": "name,omitempty"
+                      }
                     },
                     "description": {
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Description of the workspace.",
+                      "maxLength": 5000,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description,omitempty"
+                      }
                     },
                     "organization_id": {
+                      "description": "Organization to which this workspace belongs.",
                       "x-go-name": "OrganizationID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organization_id"
+                        "json": "organization_id,omitempty"
                       },
-                      "description": "Workspace organization ID",
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -345,15 +450,27 @@ const WorkspaceSchema: Record<string, unknown> = {
                       }
                     },
                     "owner": {
+                      "description": "User ID of the workspace owner.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "json": "owner,omitempty"
+                      },
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "metadata": {
                       "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      },
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Metadata associated with the workspace.",
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata",
+                        "json": "metadata"
+                      }
                     },
                     "created_at": {
                       "description": "Timestamp when the resource was created.",
@@ -468,7 +585,18 @@ const WorkspaceSchema: Record<string, unknown> = {
             "content": {
               "application/json": {
                 "schema": {
+                  "$id": "https://schemas.meshery.io/workspace.yaml",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "description": "A workspace is a logical grouping of resources within an organization. Workspaces provide a way to organize environments, designs, teams, and views. Learn more at https://docs.meshery.io/concepts/logical/workspaces",
+                  "additionalProperties": false,
                   "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "organization_id",
+                    "created_at",
+                    "updated_at"
+                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -486,20 +614,33 @@ const WorkspaceSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Name of the workspace.",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name",
+                        "json": "name,omitempty"
+                      }
                     },
                     "description": {
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Description of the workspace.",
+                      "maxLength": 5000,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description,omitempty"
+                      }
                     },
                     "organization_id": {
+                      "description": "Organization to which this workspace belongs.",
                       "x-go-name": "OrganizationID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organization_id"
+                        "json": "organization_id,omitempty"
                       },
-                      "description": "Workspace organization ID",
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -508,15 +649,27 @@ const WorkspaceSchema: Record<string, unknown> = {
                       }
                     },
                     "owner": {
+                      "description": "User ID of the workspace owner.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "json": "owner,omitempty"
+                      },
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "metadata": {
                       "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      },
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Metadata associated with the workspace.",
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata",
+                        "json": "metadata"
+                      }
                     },
                     "created_at": {
                       "description": "Timestamp when the resource was created.",
@@ -640,32 +793,48 @@ const WorkspaceSchema: Record<string, unknown> = {
             "application/json": {
               "schema": {
                 "type": "object",
+                "description": "Payload for updating a workspace.",
                 "required": [
                   "organization_id"
                 ],
                 "properties": {
                   "name": {
                     "type": "string",
+                    "description": "Name of the workspace.",
+                    "minLength": 1,
+                    "maxLength": 255,
                     "x-go-type-skip-optional-pointer": true,
-                    "description": "Name of the workspace."
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "name,omitempty"
+                    }
                   },
                   "description": {
                     "type": "string",
+                    "description": "Description of the workspace.",
+                    "maxLength": 5000,
                     "x-go-type-skip-optional-pointer": true,
-                    "description": "Description of the workspace."
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "description,omitempty"
+                    }
                   },
                   "organization_id": {
+                    "type": "string",
                     "description": "Organization ID.",
+                    "maxLength": 36,
+                    "format": "uuid",
                     "x-go-type-skip-optional-pointer": true,
                     "x-go-name": "OrganizationID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "organization_id"
-                    },
-                    "type": "string",
-                    "format": "uuid",
-                    "x-go-type": "uuid.UUID",
-                    "x-go-type-import": {
-                      "path": "github.com/gofrs/uuid"
+                      "json": "organization_id,omitempty"
+                    }
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "description": "Metadata associated with the workspace.",
+                    "x-go-type": "core.Map",
+                    "x-go-type-skip-optional-pointer": true,
+                    "x-oapi-codegen-extra-tags": {
+                      "json": "metadata,omitempty"
                     }
                   }
                 }
@@ -679,7 +848,18 @@ const WorkspaceSchema: Record<string, unknown> = {
             "content": {
               "application/json": {
                 "schema": {
+                  "$id": "https://schemas.meshery.io/workspace.yaml",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "description": "A workspace is a logical grouping of resources within an organization. Workspaces provide a way to organize environments, designs, teams, and views. Learn more at https://docs.meshery.io/concepts/logical/workspaces",
+                  "additionalProperties": false,
                   "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "organization_id",
+                    "created_at",
+                    "updated_at"
+                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -697,20 +877,33 @@ const WorkspaceSchema: Record<string, unknown> = {
                     },
                     "name": {
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Name of the workspace.",
+                      "minLength": 1,
+                      "maxLength": 255,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "name",
+                        "json": "name,omitempty"
+                      }
                     },
                     "description": {
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Description of the workspace.",
+                      "maxLength": 5000,
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "description",
+                        "json": "description,omitempty"
+                      }
                     },
                     "organization_id": {
+                      "description": "Organization to which this workspace belongs.",
                       "x-go-name": "OrganizationID",
                       "x-go-type-skip-optional-pointer": true,
                       "x-oapi-codegen-extra-tags": {
                         "db": "organization_id",
-                        "json": "organization_id"
+                        "json": "organization_id,omitempty"
                       },
-                      "description": "Workspace organization ID",
                       "type": "string",
                       "format": "uuid",
                       "x-go-type": "uuid.UUID",
@@ -719,15 +912,27 @@ const WorkspaceSchema: Record<string, unknown> = {
                       }
                     },
                     "owner": {
+                      "description": "User ID of the workspace owner.",
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "owner",
+                        "json": "owner,omitempty"
+                      },
                       "type": "string",
-                      "x-go-type-skip-optional-pointer": true
+                      "format": "uuid",
+                      "x-go-type": "uuid.UUID",
+                      "x-go-type-import": {
+                        "path": "github.com/gofrs/uuid"
+                      }
                     },
                     "metadata": {
                       "type": "object",
-                      "additionalProperties": {
-                        "type": "string"
-                      },
-                      "x-go-type-skip-optional-pointer": true
+                      "description": "Metadata associated with the workspace.",
+                      "x-go-type": "core.Map",
+                      "x-go-type-skip-optional-pointer": true,
+                      "x-oapi-codegen-extra-tags": {
+                        "db": "metadata",
+                        "json": "metadata"
+                      }
                     },
                     "created_at": {
                       "description": "Timestamp when the resource was created.",
@@ -1209,6 +1414,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of workspace-team mappings.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -1228,6 +1434,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "WorkspacesTeamsMapping",
                         "type": "object",
+                        "description": "Junction record linking a workspace to a team.",
+                        "additionalProperties": false,
                         "properties": {
                           "id": {
                             "type": "string",
@@ -1243,20 +1451,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "team_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "team_id",
-                              "json": "team_id"
-                            },
-                            "x-go-type-name": "TeamId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
                           "workspace_id": {
                             "type": "string",
                             "format": "uuid",
@@ -1269,6 +1463,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "json": "workspace_id"
                             },
                             "x-go-type-name": "WorkspaceId",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "team_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "team_id",
+                              "json": "team_id"
+                            },
+                            "x-go-type-name": "TeamId",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "created_at": {
@@ -1309,7 +1517,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "description": "The workspaces teams mapping of the workspacesteamsmappingpage."
+                      "description": "Workspace-team mapping entries."
                     }
                   }
                 }
@@ -1833,6 +2041,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of workspace-environment mappings.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -1852,6 +2061,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "WorkspacesEnvironmentsMapping",
                         "type": "object",
+                        "description": "Junction record linking a workspace to an environment.",
+                        "additionalProperties": false,
                         "properties": {
                           "id": {
                             "type": "string",
@@ -1867,20 +2078,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "environment_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "environment_id",
-                              "json": "environment_id"
-                            },
-                            "x-go-type-name": "EnvironmentId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
                           "workspace_id": {
                             "type": "string",
                             "format": "uuid",
@@ -1893,6 +2090,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "json": "workspace_id"
                             },
                             "x-go-type-name": "WorkspaceId",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "environment_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "environment_id",
+                              "json": "environment_id"
+                            },
+                            "x-go-type-name": "EnvironmentId",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "created_at": {
@@ -1933,7 +2144,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "description": "The workspaces environments mapping of the workspacesenvironmentsmappingpage."
+                      "description": "Workspace-environment mapping entries."
                     }
                   }
                 }
@@ -2162,6 +2373,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of designs.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -2677,7 +2889,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                 "schemaVersion",
                                                 "name",
                                                 "type",
-                                                "sub_type",
+                                                "subType",
                                                 "kind",
                                                 "status"
                                               ],
@@ -2706,7 +2918,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "description": "Connection Name"
                                                 },
-                                                "credential_id": {
+                                                "credentialId": {
                                                   "type": "string",
                                                   "format": "uuid",
                                                   "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -2717,7 +2929,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "x-go-name": "CredentialID",
                                                   "x-oapi-codegen-extra-tags": {
                                                     "db": "credential_id",
-                                                    "yaml": "credential_id"
+                                                    "yaml": "credentialId"
                                                   },
                                                   "x-order": 3
                                                 },
@@ -2730,10 +2942,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                                   "type": "string",
                                                   "description": "Connection Type (platform, telemetry, collaboration)"
                                                 },
-                                                "sub_type": {
+                                                "subType": {
                                                   "x-oapi-codegen-extra-tags": {
                                                     "db": "sub_type",
-                                                    "yaml": "sub_type"
+                                                    "yaml": "subType"
                                                   },
                                                   "x-order": 5,
                                                   "type": "string",
@@ -4132,10 +4344,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "type": "array",
                                           "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                           "items": {
-                                            "x-go-type": "capabilityv1alpha1.Capability",
+                                            "x-go-type": "capabilityv1beta1.Capability",
                                             "x-go-type-import": {
-                                              "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                              "name": "capabilityv1alpha1"
+                                              "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                              "name": "capabilityv1beta1"
                                             },
                                             "$id": "https://schemas.meshery.io/capability.yaml",
                                             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -4618,7 +4830,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "x-order": 8,
                                 "x-go-type": "[]*relationship.RelationshipDefinition",
                                 "x-go-type-import": {
-                                  "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                                  "path": "github.com/meshery/schemas/models/v1beta2/relationship",
                                   "name": "relationship"
                                 },
                                 "items": {
@@ -4934,9 +5146,9 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "x-go-type": "Relationship_Metadata",
                                           "x-order": 5,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "metadata",
-                                            "json": "metadata,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "metadata,omitempty"
                                           },
                                           "type": "object",
                                           "description": "Metadata contains additional information associated with the Relationship.",
@@ -5429,9 +5641,9 @@ const WorkspaceSchema: Record<string, unknown> = {
                                           "x-go-type": "SelectorSet",
                                           "x-order": 9,
                                           "x-oapi-codegen-extra-tags": {
+                                            "gorm": "type:bytes;serializer:json",
                                             "yaml": "selectors,omitempty",
-                                            "json": "selectors,omitempty",
-                                            "gorm": "type:bytes;serializer:json"
+                                            "json": "selectors,omitempty"
                                           },
                                           "type": "array",
                                           "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -6935,7 +7147,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "description": "The designs of the mesherydesignpage."
+                      "description": "Designs in this page."
                     }
                   }
                 }
@@ -7046,6 +7258,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of workspace-design mappings.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -7065,6 +7278,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "WorkspacesDesignsMapping",
                         "type": "object",
+                        "description": "Junction record linking a workspace to a design.",
+                        "additionalProperties": false,
                         "properties": {
                           "id": {
                             "type": "string",
@@ -7080,20 +7295,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "design_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "design_id",
-                              "json": "design_id"
-                            },
-                            "x-go-type-name": "DesignId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
                           "workspace_id": {
                             "type": "string",
                             "format": "uuid",
@@ -7106,6 +7307,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "json": "workspace_id"
                             },
                             "x-go-type-name": "WorkspaceId",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "design_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "design_id",
+                              "json": "design_id"
+                            },
+                            "x-go-type-name": "DesignId",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "created_at": {
@@ -7146,7 +7361,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "description": "The workspaces designs mapping of the workspacesdesignsmappingpage."
+                      "description": "Workspace-design mapping entries."
                     }
                   }
                 }
@@ -7376,6 +7591,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of views with location enrichment.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -7393,8 +7609,13 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "type": "array",
                       "x-go-type-skip-optional-pointer": true,
                       "items": {
-                        "x-go-type": "MesheryView",
+                        "x-go-type": "MesheryViewWithLocation",
                         "type": "object",
+                        "description": "A view enriched with the workspace and organization it belongs to.",
+                        "required": [
+                          "workspace_id",
+                          "organization_id"
+                        ],
                         "properties": {
                           "id": {
                             "type": "string",
@@ -7412,29 +7633,116 @@ const WorkspaceSchema: Record<string, unknown> = {
                           },
                           "name": {
                             "type": "string",
-                            "x-go-type-skip-optional-pointer": true
-                          },
-                          "filters": {
-                            "type": "object",
-                            "additionalProperties": {
-                              "type": "string"
-                            },
-                            "x-go-type-skip-optional-pointer": true
+                            "description": "Display name of the view.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "name",
+                              "json": "name,omitempty"
+                            }
                           },
                           "visibility": {
                             "type": "string",
-                            "x-go-type-skip-optional-pointer": true
+                            "description": "Visibility level of the view.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "visibility",
+                              "json": "visibility,omitempty"
+                            }
+                          },
+                          "filters": {
+                            "type": "object",
+                            "description": "Filter configuration for this view.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
+                            },
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "filters",
+                              "json": "filters,omitempty"
+                            }
                           },
                           "metadata": {
                             "type": "object",
-                            "additionalProperties": {
-                              "type": "string"
+                            "description": "Metadata associated with the view.",
+                            "x-go-type": "core.Map",
+                            "x-go-type-import": {
+                              "path": "github.com/meshery/schemas/models/core",
+                              "name": "core"
                             },
-                            "x-go-type-skip-optional-pointer": true
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "metadata",
+                              "json": "metadata,omitempty"
+                            }
                           },
                           "user_id": {
                             "type": "string",
-                            "x-go-type-skip-optional-pointer": true
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "UserID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "user_id",
+                              "json": "user_id,omitempty"
+                            }
+                          },
+                          "workspace_name": {
+                            "type": "string",
+                            "description": "Name of the workspace this view belongs to.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "workspace_name",
+                              "json": "workspace_name,omitempty"
+                            }
+                          },
+                          "workspace_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "WorkspaceID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "workspace_id",
+                              "json": "workspace_id"
+                            }
+                          },
+                          "organization_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-go-name": "OrganizationID",
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_id",
+                              "json": "organization_id"
+                            }
+                          },
+                          "organization_name": {
+                            "type": "string",
+                            "description": "Name of the organization this view belongs to.",
+                            "maxLength": 255,
+                            "x-go-type-skip-optional-pointer": true,
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "organization_name",
+                              "json": "organization_name,omitempty"
+                            }
                           },
                           "created_at": {
                             "description": "Timestamp when the resource was created.",
@@ -7461,20 +7769,19 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-skip-optional-pointer": true
                           },
                           "deleted_at": {
-                            "description": "Timestamp when the resource was deleted.",
-                            "x-go-type": "NullTime",
+                            "description": "Timestamp when the view was soft deleted. Null while the view remains active.",
+                            "x-go-type": "meshcore.NullTime",
+                            "x-go-type-import": {
+                              "name": "meshcore",
+                              "path": "github.com/meshery/schemas/models/core"
+                            },
                             "type": "string",
                             "format": "date-time",
-                            "x-go-name": "DeletedAt",
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "deleted_at",
-                              "yaml": "deleted_at"
-                            },
                             "x-go-type-skip-optional-pointer": true
                           }
                         }
                       },
-                      "description": "The views of the mesheryviewpage."
+                      "description": "Views in this page, enriched with workspace and organization context."
                     }
                   }
                 }
@@ -7585,6 +7892,7 @@ const WorkspaceSchema: Record<string, unknown> = {
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "Paginated list of workspace-view mappings.",
                   "properties": {
                     "page": {
                       "type": "integer",
@@ -7604,6 +7912,8 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "items": {
                         "x-go-type": "WorkspacesViewsMapping",
                         "type": "object",
+                        "description": "Junction record linking a workspace to a view.",
+                        "additionalProperties": false,
                         "properties": {
                           "id": {
                             "type": "string",
@@ -7619,20 +7929,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                             "x-go-type-name": "GeneralId",
                             "x-go-type-skip-optional-pointer": true
                           },
-                          "view_id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "x-go-type": "uuid.UUID",
-                            "x-go-type-import": {
-                              "path": "github.com/gofrs/uuid"
-                            },
-                            "x-oapi-codegen-extra-tags": {
-                              "db": "view_id",
-                              "json": "view_id"
-                            },
-                            "x-go-type-name": "ViewId",
-                            "x-go-type-skip-optional-pointer": true
-                          },
                           "workspace_id": {
                             "type": "string",
                             "format": "uuid",
@@ -7645,6 +7941,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                               "json": "workspace_id"
                             },
                             "x-go-type-name": "WorkspaceId",
+                            "x-go-type-skip-optional-pointer": true
+                          },
+                          "view_id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "x-go-type": "uuid.UUID",
+                            "x-go-type-import": {
+                              "path": "github.com/gofrs/uuid"
+                            },
+                            "x-oapi-codegen-extra-tags": {
+                              "db": "view_id",
+                              "json": "view_id"
+                            },
+                            "x-go-type-name": "ViewId",
                             "x-go-type-skip-optional-pointer": true
                           },
                           "created_at": {
@@ -7685,7 +7995,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                           }
                         }
                       },
-                      "description": "The workspaces views mapping of the workspacesviewsmappingpage."
+                      "description": "Workspace-view mapping entries."
                     }
                   }
                 }
@@ -8039,7 +8349,18 @@ const WorkspaceSchema: Record<string, unknown> = {
     },
     "schemas": {
       "Workspace": {
+        "$id": "https://schemas.meshery.io/workspace.yaml",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "description": "A workspace is a logical grouping of resources within an organization. Workspaces provide a way to organize environments, designs, teams, and views. Learn more at https://docs.meshery.io/concepts/logical/workspaces",
+        "additionalProperties": false,
         "type": "object",
+        "required": [
+          "id",
+          "name",
+          "organization_id",
+          "created_at",
+          "updated_at"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -8057,20 +8378,33 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "name": {
             "type": "string",
-            "x-go-type-skip-optional-pointer": true
+            "description": "Name of the workspace.",
+            "minLength": 1,
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "name",
+              "json": "name,omitempty"
+            }
           },
           "description": {
             "type": "string",
-            "x-go-type-skip-optional-pointer": true
+            "description": "Description of the workspace.",
+            "maxLength": 5000,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "description",
+              "json": "description,omitempty"
+            }
           },
           "organization_id": {
+            "description": "Organization to which this workspace belongs.",
             "x-go-name": "OrganizationID",
             "x-go-type-skip-optional-pointer": true,
             "x-oapi-codegen-extra-tags": {
               "db": "organization_id",
-              "json": "organization_id"
+              "json": "organization_id,omitempty"
             },
-            "description": "Workspace organization ID",
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
@@ -8079,15 +8413,27 @@ const WorkspaceSchema: Record<string, unknown> = {
             }
           },
           "owner": {
+            "description": "User ID of the workspace owner.",
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner",
+              "json": "owner,omitempty"
+            },
             "type": "string",
-            "x-go-type-skip-optional-pointer": true
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "x-go-type-skip-optional-pointer": true
+            "description": "Metadata associated with the workspace.",
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "metadata",
+              "json": "metadata"
+            }
           },
           "created_at": {
             "description": "Timestamp when the resource was created.",
@@ -8127,8 +8473,10 @@ const WorkspaceSchema: Record<string, unknown> = {
           }
         }
       },
-      "WorkspacesTeamsMapping": {
+      "AvailableWorkspace": {
         "type": "object",
+        "description": "Workspace with resolved owner details, as returned in list and get responses.",
+        "additionalProperties": false,
         "properties": {
           "id": {
             "type": "string",
@@ -8144,282 +8492,101 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-name": "GeneralId",
             "x-go-type-skip-optional-pointer": true
           },
-          "team_id": {
+          "name": {
+            "type": "string",
+            "description": "Name of the workspace.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "name",
+              "json": "name,omitempty"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the workspace.",
+            "maxLength": 5000,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "description",
+              "json": "description,omitempty"
+            }
+          },
+          "org_name": {
+            "type": "string",
+            "description": "Name of the owning organization.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "org_name",
+              "json": "org_name,omitempty"
+            }
+          },
+          "owner": {
+            "type": "string",
+            "description": "Display name of the workspace owner.",
+            "maxLength": 255,
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner",
+              "json": "owner,omitempty"
+            }
+          },
+          "owner_id": {
+            "description": "User ID of the workspace owner.",
+            "x-go-name": "OwnerId",
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner_id",
+              "json": "owner_id,omitempty"
+            },
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "team_id",
-              "json": "team_id"
-            },
-            "x-go-type-name": "TeamId",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
-          "workspace_id": {
+          "owner_email": {
+            "type": "string",
+            "description": "Email address of the workspace owner.",
+            "maxLength": 320,
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner_email",
+              "json": "owner_email,omitempty"
+            }
+          },
+          "owner_avatar": {
+            "type": "string",
+            "description": "Avatar URL of the workspace owner.",
+            "maxLength": 2048,
+            "x-oapi-codegen-extra-tags": {
+              "db": "owner_avatar",
+              "json": "owner_avatar,omitempty"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Metadata associated with the workspace.",
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "metadata",
+              "json": "metadata,omitempty"
+            }
+          },
+          "organization_id": {
+            "description": "Organization to which this workspace belongs.",
+            "x-go-name": "OrganizationId",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organization_id,omitempty"
+            },
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "workspace_id",
-              "json": "workspace_id"
-            },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
-            "x-go-type": "time.Time",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
-            "x-go-type": "time.Time",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
-            "x-go-type": "NullTime",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          }
-        }
-      },
-      "WorkspacesEnvironmentsMapping": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "id",
-              "json": "id"
-            },
-            "x-go-type-name": "GeneralId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "environment_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "environment_id",
-              "json": "environment_id"
-            },
-            "x-go-type-name": "EnvironmentId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "workspace_id",
-              "json": "workspace_id"
-            },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
-            "x-go-type": "time.Time",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
-            "x-go-type": "time.Time",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
-            "x-go-type": "NullTime",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          }
-        }
-      },
-      "WorkspacesViewsMapping": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "id",
-              "json": "id"
-            },
-            "x-go-type-name": "GeneralId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "view_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "view_id",
-              "json": "view_id"
-            },
-            "x-go-type-name": "ViewId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "workspace_id",
-              "json": "workspace_id"
-            },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "created_at": {
-            "description": "Timestamp when the resource was created.",
-            "x-go-type": "time.Time",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "CreatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "created_at",
-              "yaml": "created_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "updated_at": {
-            "description": "Timestamp when the resource was updated.",
-            "x-go-type": "time.Time",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "UpdatedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "updated_at",
-              "yaml": "updated_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          },
-          "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
-            "x-go-type": "NullTime",
-            "type": "string",
-            "format": "date-time",
-            "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
-            "x-go-type-skip-optional-pointer": true
-          }
-        }
-      },
-      "WorkspacesDesignsMapping": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "id",
-              "json": "id"
-            },
-            "x-go-type-name": "GeneralId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "design_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "design_id",
-              "json": "design_id"
-            },
-            "x-go-type-name": "DesignId",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
-            "x-oapi-codegen-extra-tags": {
-              "db": "workspace_id",
-              "json": "workspace_id"
-            },
-            "x-go-type-name": "WorkspaceId",
-            "x-go-type-skip-optional-pointer": true
+            }
           },
           "created_at": {
             "description": "Timestamp when the resource was created.",
@@ -8461,6 +8628,7 @@ const WorkspaceSchema: Record<string, unknown> = {
       },
       "WorkspacePayload": {
         "type": "object",
+        "description": "Payload for creating a workspace.",
         "required": [
           "name",
           "organization_id"
@@ -8468,64 +8636,96 @@ const WorkspaceSchema: Record<string, unknown> = {
         "properties": {
           "name": {
             "type": "string",
+            "description": "Name of the workspace.",
+            "minLength": 1,
+            "maxLength": 255,
             "x-go-type-skip-optional-pointer": true,
-            "description": "Name of the workspace."
+            "x-oapi-codegen-extra-tags": {
+              "json": "name,omitempty"
+            }
           },
           "description": {
             "type": "string",
+            "description": "Description of the workspace.",
+            "maxLength": 5000,
             "x-go-type-skip-optional-pointer": true,
-            "description": "Description of the workspace."
+            "x-oapi-codegen-extra-tags": {
+              "json": "description,omitempty"
+            }
           },
           "organization_id": {
+            "type": "string",
             "description": "Organization ID.",
+            "maxLength": 36,
+            "format": "uuid",
             "x-go-type-skip-optional-pointer": true,
             "x-go-name": "OrganizationID",
             "x-oapi-codegen-extra-tags": {
-              "json": "organization_id"
-            },
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "json": "organization_id,omitempty"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Metadata associated with the workspace.",
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "metadata,omitempty"
             }
           }
         }
       },
       "WorkspaceUpdatePayload": {
         "type": "object",
+        "description": "Payload for updating a workspace.",
         "required": [
           "organization_id"
         ],
         "properties": {
           "name": {
             "type": "string",
+            "description": "Name of the workspace.",
+            "minLength": 1,
+            "maxLength": 255,
             "x-go-type-skip-optional-pointer": true,
-            "description": "Name of the workspace."
+            "x-oapi-codegen-extra-tags": {
+              "json": "name,omitempty"
+            }
           },
           "description": {
             "type": "string",
+            "description": "Description of the workspace.",
+            "maxLength": 5000,
             "x-go-type-skip-optional-pointer": true,
-            "description": "Description of the workspace."
+            "x-oapi-codegen-extra-tags": {
+              "json": "description,omitempty"
+            }
           },
           "organization_id": {
+            "type": "string",
             "description": "Organization ID.",
+            "maxLength": 36,
+            "format": "uuid",
             "x-go-type-skip-optional-pointer": true,
             "x-go-name": "OrganizationID",
             "x-oapi-codegen-extra-tags": {
-              "json": "organization_id"
-            },
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
+              "json": "organization_id,omitempty"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Metadata associated with the workspace.",
+            "x-go-type": "core.Map",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "json": "metadata,omitempty"
             }
           }
         }
       },
       "WorkspacePage": {
         "type": "object",
+        "description": "Paginated list of workspaces.",
         "properties": {
           "page": {
             "type": "integer",
@@ -8543,8 +8743,10 @@ const WorkspaceSchema: Record<string, unknown> = {
             "type": "array",
             "x-go-type-skip-optional-pointer": true,
             "items": {
-              "x-go-type": "Workspace",
+              "x-go-type": "AvailableWorkspace",
               "type": "object",
+              "description": "Workspace with resolved owner details, as returned in list and get responses.",
+              "additionalProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -8562,20 +8764,50 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "name": {
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true
+                  "description": "Name of the workspace.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "name",
+                    "json": "name,omitempty"
+                  }
                 },
                 "description": {
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "organization_id": {
-                  "x-go-name": "OrganizationID",
+                  "description": "Description of the workspace.",
+                  "maxLength": 5000,
                   "x-go-type-skip-optional-pointer": true,
                   "x-oapi-codegen-extra-tags": {
-                    "db": "organization_id",
-                    "json": "organization_id"
+                    "db": "description",
+                    "json": "description,omitempty"
+                  }
+                },
+                "org_name": {
+                  "type": "string",
+                  "description": "Name of the owning organization.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "org_name",
+                    "json": "org_name,omitempty"
+                  }
+                },
+                "owner": {
+                  "type": "string",
+                  "description": "Display name of the workspace owner.",
+                  "maxLength": 255,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner",
+                    "json": "owner,omitempty"
+                  }
+                },
+                "owner_id": {
+                  "description": "User ID of the workspace owner.",
+                  "x-go-name": "OwnerId",
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner_id",
+                    "json": "owner_id,omitempty"
                   },
-                  "description": "Workspace organization ID",
                   "type": "string",
                   "format": "uuid",
                   "x-go-type": "uuid.UUID",
@@ -8583,16 +8815,48 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "path": "github.com/gofrs/uuid"
                   }
                 },
-                "owner": {
+                "owner_email": {
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true
+                  "description": "Email address of the workspace owner.",
+                  "maxLength": 320,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner_email",
+                    "json": "owner_email,omitempty"
+                  }
+                },
+                "owner_avatar": {
+                  "type": "string",
+                  "description": "Avatar URL of the workspace owner.",
+                  "maxLength": 2048,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "owner_avatar",
+                    "json": "owner_avatar,omitempty"
+                  }
                 },
                 "metadata": {
                   "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
+                  "description": "Metadata associated with the workspace.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "metadata",
+                    "json": "metadata,omitempty"
+                  }
+                },
+                "organization_id": {
+                  "description": "Organization to which this workspace belongs.",
+                  "x-go-name": "OrganizationId",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organization_id,omitempty"
                   },
-                  "x-go-type-skip-optional-pointer": true
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  }
                 },
                 "created_at": {
                   "description": "Timestamp when the resource was created.",
@@ -8632,12 +8896,98 @@ const WorkspaceSchema: Record<string, unknown> = {
                 }
               }
             },
-            "description": "The workspaces of the workspacepage."
+            "description": "List of workspaces with resolved owner details."
+          }
+        }
+      },
+      "WorkspacesTeamsMapping": {
+        "type": "object",
+        "description": "Junction record linking a workspace to a team.",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "x-go-type-name": "GeneralId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "workspace_id",
+              "json": "workspace_id"
+            },
+            "x-go-type-name": "WorkspaceId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "team_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "team_id",
+              "json": "team_id"
+            },
+            "x-go-type-name": "TeamId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "created_at": {
+            "description": "Timestamp when the resource was created.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updated_at": {
+            "description": "Timestamp when the resource was updated.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deleted_at": {
+            "description": "Timestamp when the resource was deleted.",
+            "x-go-type": "NullTime",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "DeletedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at"
+            },
+            "x-go-type-skip-optional-pointer": true
           }
         }
       },
       "WorkspacesTeamsMappingPage": {
         "type": "object",
+        "description": "Paginated list of workspace-team mappings.",
         "properties": {
           "page": {
             "type": "integer",
@@ -8657,6 +9007,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "WorkspacesTeamsMapping",
               "type": "object",
+              "description": "Junction record linking a workspace to a team.",
+              "additionalProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -8672,20 +9024,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "team_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "team_id",
-                    "json": "team_id"
-                  },
-                  "x-go-type-name": "TeamId",
-                  "x-go-type-skip-optional-pointer": true
-                },
                 "workspace_id": {
                   "type": "string",
                   "format": "uuid",
@@ -8698,6 +9036,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "workspace_id"
                   },
                   "x-go-type-name": "WorkspaceId",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "team_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "team_id",
+                    "json": "team_id"
+                  },
+                  "x-go-type-name": "TeamId",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "created_at": {
@@ -8738,12 +9090,98 @@ const WorkspaceSchema: Record<string, unknown> = {
                 }
               }
             },
-            "description": "The workspaces teams mapping of the workspacesteamsmappingpage."
+            "description": "Workspace-team mapping entries."
+          }
+        }
+      },
+      "WorkspacesEnvironmentsMapping": {
+        "type": "object",
+        "description": "Junction record linking a workspace to an environment.",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "x-go-type-name": "GeneralId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "workspace_id",
+              "json": "workspace_id"
+            },
+            "x-go-type-name": "WorkspaceId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "environment_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "environment_id",
+              "json": "environment_id"
+            },
+            "x-go-type-name": "EnvironmentId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "created_at": {
+            "description": "Timestamp when the resource was created.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updated_at": {
+            "description": "Timestamp when the resource was updated.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deleted_at": {
+            "description": "Timestamp when the resource was deleted.",
+            "x-go-type": "NullTime",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "DeletedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at"
+            },
+            "x-go-type-skip-optional-pointer": true
           }
         }
       },
       "WorkspacesEnvironmentsMappingPage": {
         "type": "object",
+        "description": "Paginated list of workspace-environment mappings.",
         "properties": {
           "page": {
             "type": "integer",
@@ -8763,6 +9201,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "WorkspacesEnvironmentsMapping",
               "type": "object",
+              "description": "Junction record linking a workspace to an environment.",
+              "additionalProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -8778,20 +9218,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "environment_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "environment_id",
-                    "json": "environment_id"
-                  },
-                  "x-go-type-name": "EnvironmentId",
-                  "x-go-type-skip-optional-pointer": true
-                },
                 "workspace_id": {
                   "type": "string",
                   "format": "uuid",
@@ -8804,6 +9230,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "workspace_id"
                   },
                   "x-go-type-name": "WorkspaceId",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "environment_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "environment_id",
+                    "json": "environment_id"
+                  },
+                  "x-go-type-name": "EnvironmentId",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "created_at": {
@@ -8844,12 +9284,98 @@ const WorkspaceSchema: Record<string, unknown> = {
                 }
               }
             },
-            "description": "The workspaces environments mapping of the workspacesenvironmentsmappingpage."
+            "description": "Workspace-environment mapping entries."
+          }
+        }
+      },
+      "WorkspacesDesignsMapping": {
+        "type": "object",
+        "description": "Junction record linking a workspace to a design.",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "x-go-type-name": "GeneralId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "workspace_id",
+              "json": "workspace_id"
+            },
+            "x-go-type-name": "WorkspaceId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "design_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "design_id",
+              "json": "design_id"
+            },
+            "x-go-type-name": "DesignId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "created_at": {
+            "description": "Timestamp when the resource was created.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updated_at": {
+            "description": "Timestamp when the resource was updated.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deleted_at": {
+            "description": "Timestamp when the resource was deleted.",
+            "x-go-type": "NullTime",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "DeletedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at"
+            },
+            "x-go-type-skip-optional-pointer": true
           }
         }
       },
       "WorkspacesDesignsMappingPage": {
         "type": "object",
+        "description": "Paginated list of workspace-design mappings.",
         "properties": {
           "page": {
             "type": "integer",
@@ -8869,6 +9395,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "WorkspacesDesignsMapping",
               "type": "object",
+              "description": "Junction record linking a workspace to a design.",
+              "additionalProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -8884,20 +9412,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "design_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "design_id",
-                    "json": "design_id"
-                  },
-                  "x-go-type-name": "DesignId",
-                  "x-go-type-skip-optional-pointer": true
-                },
                 "workspace_id": {
                   "type": "string",
                   "format": "uuid",
@@ -8910,6 +9424,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "workspace_id"
                   },
                   "x-go-type-name": "WorkspaceId",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "design_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "design_id",
+                    "json": "design_id"
+                  },
+                  "x-go-type-name": "DesignId",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "created_at": {
@@ -8950,12 +9478,98 @@ const WorkspaceSchema: Record<string, unknown> = {
                 }
               }
             },
-            "description": "The workspaces designs mapping of the workspacesdesignsmappingpage."
+            "description": "Workspace-design mapping entries."
+          }
+        }
+      },
+      "WorkspacesViewsMapping": {
+        "type": "object",
+        "description": "Junction record linking a workspace to a view.",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "id",
+              "json": "id"
+            },
+            "x-go-type-name": "GeneralId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "workspace_id",
+              "json": "workspace_id"
+            },
+            "x-go-type-name": "WorkspaceId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "view_id": {
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-oapi-codegen-extra-tags": {
+              "db": "view_id",
+              "json": "view_id"
+            },
+            "x-go-type-name": "ViewId",
+            "x-go-type-skip-optional-pointer": true
+          },
+          "created_at": {
+            "description": "Timestamp when the resource was created.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "CreatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "created_at",
+              "yaml": "created_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "updated_at": {
+            "description": "Timestamp when the resource was updated.",
+            "x-go-type": "time.Time",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "UpdatedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "updated_at",
+              "yaml": "updated_at"
+            },
+            "x-go-type-skip-optional-pointer": true
+          },
+          "deleted_at": {
+            "description": "Timestamp when the resource was deleted.",
+            "x-go-type": "NullTime",
+            "type": "string",
+            "format": "date-time",
+            "x-go-name": "DeletedAt",
+            "x-oapi-codegen-extra-tags": {
+              "db": "deleted_at",
+              "yaml": "deleted_at"
+            },
+            "x-go-type-skip-optional-pointer": true
           }
         }
       },
       "WorkspacesViewsMappingPage": {
         "type": "object",
+        "description": "Paginated list of workspace-view mappings.",
         "properties": {
           "page": {
             "type": "integer",
@@ -8975,6 +9589,8 @@ const WorkspaceSchema: Record<string, unknown> = {
             "items": {
               "x-go-type": "WorkspacesViewsMapping",
               "type": "object",
+              "description": "Junction record linking a workspace to a view.",
+              "additionalProperties": false,
               "properties": {
                 "id": {
                   "type": "string",
@@ -8990,20 +9606,6 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-name": "GeneralId",
                   "x-go-type-skip-optional-pointer": true
                 },
-                "view_id": {
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
-                  },
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "view_id",
-                    "json": "view_id"
-                  },
-                  "x-go-type-name": "ViewId",
-                  "x-go-type-skip-optional-pointer": true
-                },
                 "workspace_id": {
                   "type": "string",
                   "format": "uuid",
@@ -9016,6 +9618,20 @@ const WorkspaceSchema: Record<string, unknown> = {
                     "json": "workspace_id"
                   },
                   "x-go-type-name": "WorkspaceId",
+                  "x-go-type-skip-optional-pointer": true
+                },
+                "view_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "view_id",
+                    "json": "view_id"
+                  },
+                  "x-go-type-name": "ViewId",
                   "x-go-type-skip-optional-pointer": true
                 },
                 "created_at": {
@@ -9056,12 +9672,13 @@ const WorkspaceSchema: Record<string, unknown> = {
                 }
               }
             },
-            "description": "The workspaces views mapping of the workspacesviewsmappingpage."
+            "description": "Workspace-view mapping entries."
           }
         }
       },
       "MesheryDesignPage": {
         "type": "object",
+        "description": "Paginated list of designs.",
         "properties": {
           "page": {
             "type": "integer",
@@ -9577,7 +10194,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                       "schemaVersion",
                                       "name",
                                       "type",
-                                      "sub_type",
+                                      "subType",
                                       "kind",
                                       "status"
                                     ],
@@ -9606,7 +10223,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "description": "Connection Name"
                                       },
-                                      "credential_id": {
+                                      "credentialId": {
                                         "type": "string",
                                         "format": "uuid",
                                         "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
@@ -9617,7 +10234,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "x-go-name": "CredentialID",
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "credential_id",
-                                          "yaml": "credential_id"
+                                          "yaml": "credentialId"
                                         },
                                         "x-order": 3
                                       },
@@ -9630,10 +10247,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                         "type": "string",
                                         "description": "Connection Type (platform, telemetry, collaboration)"
                                       },
-                                      "sub_type": {
+                                      "subType": {
                                         "x-oapi-codegen-extra-tags": {
                                           "db": "sub_type",
-                                          "yaml": "sub_type"
+                                          "yaml": "subType"
                                         },
                                         "x-order": 5,
                                         "type": "string",
@@ -11032,10 +11649,10 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "type": "array",
                                 "description": "Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.",
                                 "items": {
-                                  "x-go-type": "capabilityv1alpha1.Capability",
+                                  "x-go-type": "capabilityv1beta1.Capability",
                                   "x-go-type-import": {
-                                    "path": "github.com/meshery/schemas/models/v1alpha1/capability",
-                                    "name": "capabilityv1alpha1"
+                                    "path": "github.com/meshery/schemas/models/v1beta1/capability",
+                                    "name": "capabilityv1beta1"
                                   },
                                   "$id": "https://schemas.meshery.io/capability.yaml",
                                   "$schema": "http://json-schema.org/draft-07/schema#",
@@ -11518,7 +12135,7 @@ const WorkspaceSchema: Record<string, unknown> = {
                       "x-order": 8,
                       "x-go-type": "[]*relationship.RelationshipDefinition",
                       "x-go-type-import": {
-                        "path": "github.com/meshery/schemas/models/v1alpha3/relationship",
+                        "path": "github.com/meshery/schemas/models/v1beta2/relationship",
                         "name": "relationship"
                       },
                       "items": {
@@ -11834,9 +12451,9 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "x-go-type": "Relationship_Metadata",
                                 "x-order": 5,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "metadata",
-                                  "json": "metadata,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "metadata,omitempty"
                                 },
                                 "type": "object",
                                 "description": "Metadata contains additional information associated with the Relationship.",
@@ -12329,9 +12946,9 @@ const WorkspaceSchema: Record<string, unknown> = {
                                 "x-go-type": "SelectorSet",
                                 "x-order": 9,
                                 "x-oapi-codegen-extra-tags": {
+                                  "gorm": "type:bytes;serializer:json",
                                   "yaml": "selectors,omitempty",
-                                  "json": "selectors,omitempty",
-                                  "gorm": "type:bytes;serializer:json"
+                                  "json": "selectors,omitempty"
                                 },
                                 "type": "array",
                                 "description": "Selectors are organized as an array, with each item containing a distinct set of selectors that share a common functionality. This structure allows for flexibility in defining relationships, even when different components are involved.",
@@ -13835,12 +14452,17 @@ const WorkspaceSchema: Record<string, unknown> = {
                 }
               }
             },
-            "description": "The designs of the mesherydesignpage."
+            "description": "Designs in this page."
           }
         }
       },
       "MesheryView": {
         "type": "object",
+        "description": "A view enriched with the workspace and organization it belongs to.",
+        "required": [
+          "workspace_id",
+          "organization_id"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -13858,29 +14480,116 @@ const WorkspaceSchema: Record<string, unknown> = {
           },
           "name": {
             "type": "string",
-            "x-go-type-skip-optional-pointer": true
-          },
-          "filters": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "x-go-type-skip-optional-pointer": true
+            "description": "Display name of the view.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "name",
+              "json": "name,omitempty"
+            }
           },
           "visibility": {
             "type": "string",
-            "x-go-type-skip-optional-pointer": true
+            "description": "Visibility level of the view.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "visibility",
+              "json": "visibility,omitempty"
+            }
+          },
+          "filters": {
+            "type": "object",
+            "description": "Filter configuration for this view.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
+            },
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "filters",
+              "json": "filters,omitempty"
+            }
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
+            "description": "Metadata associated with the view.",
+            "x-go-type": "core.Map",
+            "x-go-type-import": {
+              "path": "github.com/meshery/schemas/models/core",
+              "name": "core"
             },
-            "x-go-type-skip-optional-pointer": true
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "metadata",
+              "json": "metadata,omitempty"
+            }
           },
           "user_id": {
             "type": "string",
-            "x-go-type-skip-optional-pointer": true
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "UserID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "user_id",
+              "json": "user_id,omitempty"
+            }
+          },
+          "workspace_name": {
+            "type": "string",
+            "description": "Name of the workspace this view belongs to.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "workspace_name",
+              "json": "workspace_name,omitempty"
+            }
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "WorkspaceID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "workspace_id",
+              "json": "workspace_id"
+            }
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            },
+            "x-go-name": "OrganizationID",
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_id",
+              "json": "organization_id"
+            }
+          },
+          "organization_name": {
+            "type": "string",
+            "description": "Name of the organization this view belongs to.",
+            "maxLength": 255,
+            "x-go-type-skip-optional-pointer": true,
+            "x-oapi-codegen-extra-tags": {
+              "db": "organization_name",
+              "json": "organization_name,omitempty"
+            }
           },
           "created_at": {
             "description": "Timestamp when the resource was created.",
@@ -13907,21 +14616,21 @@ const WorkspaceSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "deleted_at": {
-            "description": "Timestamp when the resource was deleted.",
-            "x-go-type": "NullTime",
+            "description": "Timestamp when the view was soft deleted. Null while the view remains active.",
+            "x-go-type": "meshcore.NullTime",
+            "x-go-type-import": {
+              "name": "meshcore",
+              "path": "github.com/meshery/schemas/models/core"
+            },
             "type": "string",
             "format": "date-time",
-            "x-go-name": "DeletedAt",
-            "x-oapi-codegen-extra-tags": {
-              "db": "deleted_at",
-              "yaml": "deleted_at"
-            },
             "x-go-type-skip-optional-pointer": true
           }
         }
       },
       "MesheryViewPage": {
         "type": "object",
+        "description": "Paginated list of views with location enrichment.",
         "properties": {
           "page": {
             "type": "integer",
@@ -13939,8 +14648,13 @@ const WorkspaceSchema: Record<string, unknown> = {
             "type": "array",
             "x-go-type-skip-optional-pointer": true,
             "items": {
-              "x-go-type": "MesheryView",
+              "x-go-type": "MesheryViewWithLocation",
               "type": "object",
+              "description": "A view enriched with the workspace and organization it belongs to.",
+              "required": [
+                "workspace_id",
+                "organization_id"
+              ],
               "properties": {
                 "id": {
                   "type": "string",
@@ -13958,29 +14672,116 @@ const WorkspaceSchema: Record<string, unknown> = {
                 },
                 "name": {
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true
-                },
-                "filters": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "x-go-type-skip-optional-pointer": true
+                  "description": "Display name of the view.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "name",
+                    "json": "name,omitempty"
+                  }
                 },
                 "visibility": {
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true
+                  "description": "Visibility level of the view.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "visibility",
+                    "json": "visibility,omitempty"
+                  }
+                },
+                "filters": {
+                  "type": "object",
+                  "description": "Filter configuration for this view.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
+                  },
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "filters",
+                    "json": "filters,omitempty"
+                  }
                 },
                 "metadata": {
                   "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
+                  "description": "Metadata associated with the view.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-import": {
+                    "path": "github.com/meshery/schemas/models/core",
+                    "name": "core"
                   },
-                  "x-go-type-skip-optional-pointer": true
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "metadata",
+                    "json": "metadata,omitempty"
+                  }
                 },
                 "user_id": {
                   "type": "string",
-                  "x-go-type-skip-optional-pointer": true
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "UserID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "user_id",
+                    "json": "user_id,omitempty"
+                  }
+                },
+                "workspace_name": {
+                  "type": "string",
+                  "description": "Name of the workspace this view belongs to.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "workspace_name",
+                    "json": "workspace_name,omitempty"
+                  }
+                },
+                "workspace_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "WorkspaceID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "workspace_id",
+                    "json": "workspace_id"
+                  }
+                },
+                "organization_id": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "A Universally Unique Identifier used to uniquely identify entities in Meshery. The UUID core definition is used across different schemas.",
+                  "x-go-type": "uuid.UUID",
+                  "x-go-type-import": {
+                    "path": "github.com/gofrs/uuid"
+                  },
+                  "x-go-name": "OrganizationID",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_id",
+                    "json": "organization_id"
+                  }
+                },
+                "organization_name": {
+                  "type": "string",
+                  "description": "Name of the organization this view belongs to.",
+                  "maxLength": 255,
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "db": "organization_name",
+                    "json": "organization_name,omitempty"
+                  }
                 },
                 "created_at": {
                   "description": "Timestamp when the resource was created.",
@@ -14007,20 +14808,19 @@ const WorkspaceSchema: Record<string, unknown> = {
                   "x-go-type-skip-optional-pointer": true
                 },
                 "deleted_at": {
-                  "description": "Timestamp when the resource was deleted.",
-                  "x-go-type": "NullTime",
+                  "description": "Timestamp when the view was soft deleted. Null while the view remains active.",
+                  "x-go-type": "meshcore.NullTime",
+                  "x-go-type-import": {
+                    "name": "meshcore",
+                    "path": "github.com/meshery/schemas/models/core"
+                  },
                   "type": "string",
                   "format": "date-time",
-                  "x-go-name": "DeletedAt",
-                  "x-oapi-codegen-extra-tags": {
-                    "db": "deleted_at",
-                    "yaml": "deleted_at"
-                  },
                   "x-go-type-skip-optional-pointer": true
                 }
               }
             },
-            "description": "The views of the mesheryviewpage."
+            "description": "Views in this page, enriched with workspace and organization context."
           }
         }
       }
@@ -14033,6 +14833,7 @@ const WorkspaceSchema: Record<string, unknown> = {
           "application/json": {
             "schema": {
               "type": "object",
+              "description": "Payload for creating a workspace.",
               "required": [
                 "name",
                 "organization_id"
@@ -14040,26 +14841,41 @@ const WorkspaceSchema: Record<string, unknown> = {
               "properties": {
                 "name": {
                   "type": "string",
+                  "description": "Name of the workspace.",
+                  "minLength": 1,
+                  "maxLength": 255,
                   "x-go-type-skip-optional-pointer": true,
-                  "description": "Name of the workspace."
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "name,omitempty"
+                  }
                 },
                 "description": {
                   "type": "string",
+                  "description": "Description of the workspace.",
+                  "maxLength": 5000,
                   "x-go-type-skip-optional-pointer": true,
-                  "description": "Description of the workspace."
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "description,omitempty"
+                  }
                 },
                 "organization_id": {
+                  "type": "string",
                   "description": "Organization ID.",
+                  "maxLength": 36,
+                  "format": "uuid",
                   "x-go-type-skip-optional-pointer": true,
                   "x-go-name": "OrganizationID",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "organization_id"
-                  },
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "json": "organization_id,omitempty"
+                  }
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Metadata associated with the workspace.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "metadata,omitempty"
                   }
                 }
               }
@@ -14074,32 +14890,48 @@ const WorkspaceSchema: Record<string, unknown> = {
           "application/json": {
             "schema": {
               "type": "object",
+              "description": "Payload for updating a workspace.",
               "required": [
                 "organization_id"
               ],
               "properties": {
                 "name": {
                   "type": "string",
+                  "description": "Name of the workspace.",
+                  "minLength": 1,
+                  "maxLength": 255,
                   "x-go-type-skip-optional-pointer": true,
-                  "description": "Name of the workspace."
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "name,omitempty"
+                  }
                 },
                 "description": {
                   "type": "string",
+                  "description": "Description of the workspace.",
+                  "maxLength": 5000,
                   "x-go-type-skip-optional-pointer": true,
-                  "description": "Description of the workspace."
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "description,omitempty"
+                  }
                 },
                 "organization_id": {
+                  "type": "string",
                   "description": "Organization ID.",
+                  "maxLength": 36,
+                  "format": "uuid",
                   "x-go-type-skip-optional-pointer": true,
                   "x-go-name": "OrganizationID",
                   "x-oapi-codegen-extra-tags": {
-                    "json": "organization_id"
-                  },
-                  "type": "string",
-                  "format": "uuid",
-                  "x-go-type": "uuid.UUID",
-                  "x-go-type-import": {
-                    "path": "github.com/gofrs/uuid"
+                    "json": "organization_id,omitempty"
+                  }
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "Metadata associated with the workspace.",
+                  "x-go-type": "core.Map",
+                  "x-go-type-skip-optional-pointer": true,
+                  "x-oapi-codegen-extra-tags": {
+                    "json": "metadata,omitempty"
                   }
                 }
               }

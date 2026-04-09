@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
-	capabilityv1alpha1 "github.com/meshery/schemas/models/v1alpha1/capability"
+	capabilityv1beta1 "github.com/meshery/schemas/models/v1beta1/capability"
 	modelv1beta1 "github.com/meshery/schemas/models/v1beta1/model"
 )
 
@@ -69,7 +69,7 @@ type ComponentDefinition struct {
 	Styles *core.ComponentStyles `gorm:"type:bytes;serializer:json" json:"styles" yaml:"styles"`
 
 	// Capabilities Meshery manages components in accordance with their specific capabilities. This field explicitly identifies those capabilities largely by what actions a given component supports; e.g. metric-scrape, sub-interface, and so on. This field is extensible. ComponentDefinitions may define a broad array of capabilities, which are in-turn dynamically interpretted by Meshery for full lifecycle management.
-	Capabilities *[]capabilityv1alpha1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities" yaml:"capabilities"`
+	Capabilities *[]capabilityv1beta1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities" yaml:"capabilities"`
 
 	// Status Status of component, including:
 	// - duplicate: this component is a duplicate of another. The component that is to be the canonical reference and that is duplicated by other components should not be assigned the 'duplicate' status.

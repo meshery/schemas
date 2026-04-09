@@ -129,6 +129,78 @@ test("recursively validates nested object, array item, combiner, and additionalP
 });
 
 
+test("flags unknown format values as issues", () => {
+  const issues = collectPropertyConstraintIssues({
+    components: {
+      schemas: {
+        Example: {
+          type: "object",
+          properties: {
+            createdAt: {
+              type: "string",
+              description: "Creation timestamp.",
+              format: "datetime",
+            },
+          },
+        },
+      },
+    },
+  });
+
+  assert.ok(issues.some((issue) => issue.includes('property "createdAt" uses unknown format "datetime"')));
+});
+
+test("accepts known format values without issues", () => {
+  const issues = collectPropertyConstraintIssues({
+    components: {
+      schemas: {
+        Example: {
+          type: "object",
+          properties: {
+            createdAt: {
+              type: "string",
+              description: "Creation timestamp.",
+              format: "date-time",
+            },
+            email: {
+              type: "string",
+              description: "User email.",
+              format: "email",
+            },
+            homepage: {
+              type: "string",
+              description: "Homepage URL.",
+              format: "uri",
+            },
+          },
+        },
+      },
+    },
+  });
+
+  assert.equal(issues.length, 0, "expected no issues for known formats, got: " + JSON.stringify(issues));
+});
+
+test("skips format validation for $ref properties", () => {
+  const issues = collectPropertyConstraintIssues({
+    components: {
+      schemas: {
+        Example: {
+          type: "object",
+          properties: {
+            userId: {
+              $ref: "#/components/schemas/Uuid",
+              format: "custom-ref-format",
+            },
+          },
+        },
+      },
+    },
+  });
+
+  assert.equal(issues.length, 0, "expected no issues for $ref properties, got: " + JSON.stringify(issues));
+});
+
 test("does not treat arbitrary lowercase id suffixes as ID fields", () => {
   const issues = collectPropertyConstraintIssues({
     components: {

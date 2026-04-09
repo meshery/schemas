@@ -12,9 +12,9 @@ model:
   registrant:
     id: 00000000-0000-0000-0000-000000000000
     name: ''
-    credential_id: 00000000-0000-0000-0000-000000000000
+    credentialId: 00000000-0000-0000-0000-000000000000
     type: ''
-    sub_type: ''
+    subType: ''
     kind: artifacthub
     status: ''
     user_id: 00000000-0000-0000-0000-000000000000

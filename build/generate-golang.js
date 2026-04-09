@@ -1122,7 +1122,6 @@ const GO_IMPORT_OVERRIDES = {
   "v1alpha1/core": "github.com/meshery/schemas/models/core",
   "v1beta1/core": "github.com/meshery/schemas/models/core",
   "v1beta2/core": "github.com/meshery/schemas/models/core",
-  "v1beta1/capability": "github.com/meshery/schemas/models/v1alpha1/capability",
   "v1beta2/catalog": "github.com/meshery/schemas/models/v1alpha2/catalog",
 };
 

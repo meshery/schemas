@@ -81,11 +81,7 @@ components:
       description: The ID of the organization
       required: true
       schema:
-        type: string
-        format: uuid
-        x-go-type: uuid.UUID
-        x-go-type-import:
-          path: github.com/gofrs/uuid
+        $ref: "../core/api.yml#/components/schemas/uuid"
 
   schemas:
     FeaturesPage:

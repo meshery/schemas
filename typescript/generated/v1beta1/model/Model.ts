@@ -79,11 +79,11 @@ export interface components {
          * Format: uuid
          * @description Associated Credential ID
          */
-        credential_id?: string;
+        credentialId?: string;
         /** @description Connection Type (platform, telemetry, collaboration) */
         type: string;
         /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-        sub_type: string;
+        subType: string;
         /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
         kind: string;
         /** @description Additional connection metadata */

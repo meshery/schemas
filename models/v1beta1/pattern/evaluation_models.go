@@ -7,8 +7,8 @@ import (
 	"time"
 
 	coretypes "github.com/meshery/schemas/models/core"
-	"github.com/meshery/schemas/models/v1alpha3/relationship"
 	"github.com/meshery/schemas/models/v1beta1/component"
+	"github.com/meshery/schemas/models/v1beta2/relationship"
 )
 
 type Trace struct {

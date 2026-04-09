@@ -1,0 +1,62 @@
+$id: https://schemas.meshery.io/workspace.yaml
+$schema: http://json-schema.org/draft-07/schema#
+description: >-
+  A workspace is a logical grouping of resources within an organization.
+  Workspaces provide a way to organize environments, designs, teams, and views.
+  Learn more at https://docs.meshery.io/concepts/logical/workspaces
+additionalProperties: false
+type: object
+required:
+  - id
+  - name
+  - organization_id
+  - created_at
+  - updated_at
+properties:
+  id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/general_id
+  name:
+    type: string
+    description: Name of the workspace.
+    minLength: 1
+    maxLength: 255
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: name
+      json: "name,omitempty"
+  description:
+    type: string
+    description: Description of the workspace.
+    maxLength: 5000
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: description
+      json: "description,omitempty"
+  organization_id:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: Organization to which this workspace belongs.
+    x-go-name: OrganizationID
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: organization_id
+      json: "organization_id,omitempty"
+  owner:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/uuid
+    description: User ID of the workspace owner.
+    x-oapi-codegen-extra-tags:
+      db: owner
+      json: "owner,omitempty"
+  metadata:
+    type: object
+    description: Metadata associated with the workspace.
+    x-go-type: core.Map
+    x-go-type-skip-optional-pointer: true
+    x-oapi-codegen-extra-tags:
+      db: metadata
+      json: metadata
+  created_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/created_at
+  updated_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/updated_at
+  deleted_at:
+    $ref: ../../v1alpha1/core/api.yml#/components/schemas/deleted_at

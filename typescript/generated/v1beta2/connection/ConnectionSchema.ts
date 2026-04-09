@@ -648,12 +648,11 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "maxLength": 255
                   },
-                  "sub_type": {
+                  "subType": {
                     "type": "string",
                     "description": "Connection sub-type",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "sub_type",
-                      "json": "sub_type"
+                      "json": "subType"
                     },
                     "maxLength": 255
                   },
@@ -689,13 +688,13 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "maxLength": 255
                   },
-                  "credential_id": {
+                  "credentialId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "Associated credential ID",
                     "x-go-name": "CredentialID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "credential_id,omitempty"
+                      "json": "credentialId,omitempty"
                     }
                   }
                 },
@@ -703,7 +702,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "sub_type",
+                  "subType",
                   "status"
                 ]
               }
@@ -1634,12 +1633,11 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "maxLength": 255
                   },
-                  "sub_type": {
+                  "subType": {
                     "type": "string",
                     "description": "Connection sub-type",
                     "x-oapi-codegen-extra-tags": {
-                      "db": "sub_type",
-                      "json": "sub_type"
+                      "json": "subType"
                     },
                     "maxLength": 255
                   },
@@ -1675,13 +1673,13 @@ const ConnectionSchema: Record<string, unknown> = {
                     },
                     "maxLength": 255
                   },
-                  "credential_id": {
+                  "credentialId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "Associated credential ID",
                     "x-go-name": "CredentialID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "credential_id,omitempty"
+                      "json": "credentialId,omitempty"
                     }
                   }
                 },
@@ -1689,7 +1687,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "sub_type",
+                  "subType",
                   "status"
                 ]
               }
@@ -3431,12 +3429,11 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "maxLength": 255
           },
-          "sub_type": {
+          "subType": {
             "type": "string",
             "description": "Connection sub-type",
             "x-oapi-codegen-extra-tags": {
-              "db": "sub_type",
-              "json": "sub_type"
+              "json": "subType"
             },
             "maxLength": 255
           },
@@ -3472,13 +3469,13 @@ const ConnectionSchema: Record<string, unknown> = {
             },
             "maxLength": 255
           },
-          "credential_id": {
+          "credentialId": {
             "type": "string",
             "format": "uuid",
             "description": "Associated credential ID",
             "x-go-name": "CredentialID",
             "x-oapi-codegen-extra-tags": {
-              "json": "credential_id,omitempty"
+              "json": "credentialId,omitempty"
             }
           }
         },
@@ -3486,7 +3483,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "name",
           "kind",
           "type",
-          "sub_type",
+          "subType",
           "status"
         ]
       },

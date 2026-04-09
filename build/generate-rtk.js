@@ -30,6 +30,7 @@
  *   - typescript/rtk/mesheryApi.ts - RTK Query client for meshery API
  */
 
+const fs = require("fs");
 const logger = require("./lib/logger");
 const config = require("./lib/config");
 const paths = require("./lib/paths");
@@ -49,6 +50,8 @@ const rtkConfigs = [
     name: "meshery",
     configFile: config.paths.mesheryRtkConfig,
     requiredSpec: config.paths.mesheryOpenapi,
+    outputFile: "typescript/rtk/meshery.ts",
+    outputExportName: "mesheryApi",
     outputDescription: "typescript/rtk/mesheryApi.ts",
   },
 ];
@@ -86,6 +89,33 @@ function checkPrerequisites() {
 }
 
 /**
+ * Post-process a generated RTK file to add extra named exports.
+ * The codegen only emits `export { injectedRtkApi as <exportName> }`.
+ * For consumers that import `injectedRtkApi` by its original internal name
+ * we rewrite that line to also export the raw name so both imports resolve.
+ * @param {string} filePath - Absolute path to the generated TS file
+ * @param {string} exportName - The alias used in the generated export (e.g. "mesheryApi")
+ */
+function addInjectedRtkApiExport(filePath, exportName) {
+  if (!paths.fileExists(filePath)) {
+    logger.warn(`Post-process skipped: ${filePath} not found.`);
+    return;
+  }
+  const content = fs.readFileSync(filePath, "utf8");
+  const original = `export { injectedRtkApi as ${exportName} };`;
+  const patched = `export { injectedRtkApi as ${exportName}, injectedRtkApi };`;
+  if (content.includes(patched)) {
+    return;
+  }
+  if (!content.includes(original)) {
+    logger.warn(`Post-process skipped: expected export pattern not found in ${filePath}.`);
+    return;
+  }
+  fs.writeFileSync(filePath, content.replace(original, patched), "utf8");
+  logger.success(`Post-processed: added injectedRtkApi named export to ${filePath}`);
+}
+
+/**
  * Generate RTK Query client for a single configuration
  * @param {Object} rtk - RTK configuration object
  * @returns {Promise<void>}
@@ -98,6 +128,9 @@ async function generateRtkClient(rtk) {
   try {
     await npx("@rtk-query/codegen-openapi", [configPath]);
     logger.success(`Generated: ${rtk.outputDescription}`);
+    if (rtk.outputFile && rtk.outputExportName) {
+      addInjectedRtkApiExport(paths.fromRoot(rtk.outputFile), rtk.outputExportName);
+    }
   } catch (err) {
     throw new Error(
       `Failed to generate ${rtk.name} API client: ${err.message}`,

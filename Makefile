@@ -29,18 +29,12 @@ site:
 #-----------------------------------------------------------------------------
 # OpenAPI spec
 #-----------------------------------------------------------------------------
-.PHONY: setup docs-build generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
+.PHONY: setup generate-ts publish-ts bundle-openapi generate-golang generate-rtk golangci validate-schemas validate-schemas-strict audit-schemas audit-schemas-full audit-schemas-style-full audit-schemas-debt-full
 
 ## (Re)Initialize Golang (go.mod) and Node (package.json) manifests
 setup:
 	go mod tidy
 	npm install --legacy-peer-deps
-
-## Build API docs with redocly
-docs-build: dep-check
-	redocly bundle --output openapi/bundled-schema.yml
-	redocly build-docs openapi/bundled-schema.yml --output=openapi/index.html
-	rm openapi/bundled-schema.yml
 
 ## Generate typescript library, json templates, yaml templates
 generate-ts:
@@ -163,13 +157,6 @@ ifeq (,$(findstring $(GOVERSION), $(INSTALLED_GO_VERSION)))
 #	$(error Found $(INSTALLED_GO_VERSION). \
 #	 Required golang version is: 'go$(GOVERSION).x'. \
 #	 Ensure go '$(GOVERSION).x' is installed and available in your 'PATH'.)
-endif
-
-# redocly cli
-ifeq (,$(shell command -v redocly))
-	@echo "Dependency missing: redocly. Install redocly cli from https://redoc.ly/docs/cli/installation/"
-	@echo "installing redocly"
-	npm install -g @redocly/cli
 endif
 
 # oapi-codegen

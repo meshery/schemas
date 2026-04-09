@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
-	capabilityv1alpha1 "github.com/meshery/schemas/models/v1alpha1/capability"
+	capabilityv1beta1 "github.com/meshery/schemas/models/v1beta1/capability"
 	categoryv1beta1 "github.com/meshery/schemas/models/v1beta1/category"
 	connectionv1beta1 "github.com/meshery/schemas/models/v1beta1/connection"
 	subcategoryv1beta1 "github.com/meshery/schemas/models/v1beta1/subcategory"
@@ -181,7 +181,7 @@ type ModelDefinitionStatus string
 // ModelDefinition_Metadata Metadata containing additional information associated with the model.
 type ModelDefinition_Metadata struct {
 	// Capabilities Capabilities associated with the model
-	Capabilities *[]capabilityv1alpha1.Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
+	Capabilities *[]capabilityv1beta1.Capability `json:"capabilities,omitempty" yaml:"capabilities,omitempty"`
 
 	// IsAnnotation Indicates whether the model and its entities should be treated as deployable entities or as logical representations.
 	IsAnnotation *bool `json:"isAnnotation" yaml:"isAnnotation"`

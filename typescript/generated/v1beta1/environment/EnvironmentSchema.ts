@@ -343,32 +343,32 @@ const EnvironmentSchema: Record<string, unknown> = {
             "x-go-type-skip-optional-pointer": true
           },
           "environment_id": {
-            "type": "string",
-            "format": "uuid",
-            "x-go-type": "uuid.UUID",
-            "x-go-type-import": {
-              "path": "github.com/gofrs/uuid"
-            },
             "x-oapi-codegen-extra-tags": {
               "db": "environment_id",
               "json": "environment_id"
             },
             "x-go-type-skip-optional-pointer": true,
-            "description": "ID of the associated environment."
-          },
-          "connection_id": {
+            "description": "ID of the associated environment.",
             "type": "string",
             "format": "uuid",
             "x-go-type": "uuid.UUID",
             "x-go-type-import": {
               "path": "github.com/gofrs/uuid"
-            },
+            }
+          },
+          "connection_id": {
             "x-oapi-codegen-extra-tags": {
               "db": "connection_id",
               "json": "connection_id"
             },
             "x-go-type-skip-optional-pointer": true,
-            "description": "ID of the associated connection."
+            "description": "ID of the associated connection.",
+            "type": "string",
+            "format": "uuid",
+            "x-go-type": "uuid.UUID",
+            "x-go-type-import": {
+              "path": "github.com/gofrs/uuid"
+            }
           },
           "created_at": {
             "type": "string",

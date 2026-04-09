@@ -4,20 +4,12 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - '.github/workflows/schema-audit.yml'
-      - 'Makefile'
-      - 'build/**'
-      - 'package.json'
-      - 'schemas/**'
+      - 'schemas/constructs/**'
   push:
     branches:
       - master
     paths:
-      - '.github/workflows/schema-audit.yml'
-      - 'Makefile'
-      - 'build/**'
-      - 'package.json'
-      - 'schemas/**'
+      - 'schemas/constructs/**'
 
 jobs:
   strict-consistency-audit:
@@ -41,7 +33,7 @@ jobs:
         run: make validate-schemas-strict
 
   advisory-audit:
-    name: Advisory schema audit
+    name: Full schema audit
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -57,5 +49,5 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Run advisory schema audit
-        run: make audit-schemas
+      - name: Run full schema audit
+        run: make audit-schemas-full

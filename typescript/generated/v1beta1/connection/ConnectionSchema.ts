@@ -174,7 +174,7 @@ const ConnectionSchema: Record<string, unknown> = {
                           "schemaVersion",
                           "name",
                           "type",
-                          "sub_type",
+                          "subType",
                           "kind",
                           "status"
                         ],
@@ -203,11 +203,11 @@ const ConnectionSchema: Record<string, unknown> = {
                             "type": "string",
                             "description": "Connection Name"
                           },
-                          "credential_id": {
+                          "credentialId": {
                             "x-go-name": "CredentialID",
                             "x-oapi-codegen-extra-tags": {
                               "db": "credential_id",
-                              "yaml": "credential_id"
+                              "yaml": "credentialId"
                             },
                             "x-order": 3,
                             "description": "Associated Credential ID",
@@ -227,10 +227,10 @@ const ConnectionSchema: Record<string, unknown> = {
                             "type": "string",
                             "description": "Connection Type (platform, telemetry, collaboration)"
                           },
-                          "sub_type": {
+                          "subType": {
                             "x-oapi-codegen-extra-tags": {
                               "db": "sub_type",
-                              "yaml": "sub_type"
+                              "yaml": "subType"
                             },
                             "x-order": 5,
                             "type": "string",
@@ -653,9 +653,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "type"
                     }
                   },
-                  "sub_type": {
+                  "subType": {
                     "type": "string",
-                    "description": "Connection sub-type"
+                    "description": "Connection sub-type",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "sub_type",
+                      "json": "subType"
+                    }
                   },
                   "credentialSecret": {
                     "type": "object",
@@ -688,13 +692,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "status"
                     }
                   },
-                  "credential_id": {
+                  "credentialId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "Associated credential ID",
                     "x-go-name": "CredentialID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "credential_id,omitempty"
+                      "json": "credentialId,omitempty"
                     }
                   }
                 },
@@ -702,7 +706,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "sub_type",
+                  "subType",
                   "status"
                 ]
               }
@@ -725,7 +729,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "schemaVersion",
                     "name",
                     "type",
-                    "sub_type",
+                    "subType",
                     "kind",
                     "status"
                   ],
@@ -754,11 +758,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Connection Name"
                     },
-                    "credential_id": {
+                    "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
-                        "yaml": "credential_id"
+                        "yaml": "credentialId"
                       },
                       "x-order": 3,
                       "description": "Associated Credential ID",
@@ -778,10 +782,10 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)"
                     },
-                    "sub_type": {
+                    "subType": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "sub_type",
-                        "yaml": "sub_type"
+                        "yaml": "subType"
                       },
                       "x-order": 5,
                       "type": "string",
@@ -1162,7 +1166,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "schemaVersion",
                     "name",
                     "type",
-                    "sub_type",
+                    "subType",
                     "kind",
                     "status"
                   ],
@@ -1191,11 +1195,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Connection Name"
                     },
-                    "credential_id": {
+                    "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
-                        "yaml": "credential_id"
+                        "yaml": "credentialId"
                       },
                       "x-order": 3,
                       "description": "Associated Credential ID",
@@ -1215,10 +1219,10 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)"
                     },
-                    "sub_type": {
+                    "subType": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "sub_type",
-                        "yaml": "sub_type"
+                        "yaml": "subType"
                       },
                       "x-order": 5,
                       "type": "string",
@@ -1619,9 +1623,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "type"
                     }
                   },
-                  "sub_type": {
+                  "subType": {
                     "type": "string",
-                    "description": "Connection sub-type"
+                    "description": "Connection sub-type",
+                    "x-oapi-codegen-extra-tags": {
+                      "db": "sub_type",
+                      "json": "subType"
+                    }
                   },
                   "credentialSecret": {
                     "type": "object",
@@ -1654,13 +1662,13 @@ const ConnectionSchema: Record<string, unknown> = {
                       "json": "status"
                     }
                   },
-                  "credential_id": {
+                  "credentialId": {
                     "type": "string",
                     "format": "uuid",
                     "description": "Associated credential ID",
                     "x-go-name": "CredentialID",
                     "x-oapi-codegen-extra-tags": {
-                      "json": "credential_id,omitempty"
+                      "json": "credentialId,omitempty"
                     }
                   }
                 },
@@ -1668,7 +1676,7 @@ const ConnectionSchema: Record<string, unknown> = {
                   "name",
                   "kind",
                   "type",
-                  "sub_type",
+                  "subType",
                   "status"
                 ]
               }
@@ -1691,7 +1699,7 @@ const ConnectionSchema: Record<string, unknown> = {
                     "schemaVersion",
                     "name",
                     "type",
-                    "sub_type",
+                    "subType",
                     "kind",
                     "status"
                   ],
@@ -1720,11 +1728,11 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Connection Name"
                     },
-                    "credential_id": {
+                    "credentialId": {
                       "x-go-name": "CredentialID",
                       "x-oapi-codegen-extra-tags": {
                         "db": "credential_id",
-                        "yaml": "credential_id"
+                        "yaml": "credentialId"
                       },
                       "x-order": 3,
                       "description": "Associated Credential ID",
@@ -1744,10 +1752,10 @@ const ConnectionSchema: Record<string, unknown> = {
                       "type": "string",
                       "description": "Connection Type (platform, telemetry, collaboration)"
                     },
-                    "sub_type": {
+                    "subType": {
                       "x-oapi-codegen-extra-tags": {
                         "db": "sub_type",
-                        "yaml": "sub_type"
+                        "yaml": "subType"
                       },
                       "x-order": 5,
                       "type": "string",
@@ -2552,7 +2560,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "schemaVersion",
           "name",
           "type",
-          "sub_type",
+          "subType",
           "kind",
           "status"
         ],
@@ -2581,11 +2589,11 @@ const ConnectionSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Connection Name"
           },
-          "credential_id": {
+          "credentialId": {
             "x-go-name": "CredentialID",
             "x-oapi-codegen-extra-tags": {
               "db": "credential_id",
-              "yaml": "credential_id"
+              "yaml": "credentialId"
             },
             "x-order": 3,
             "description": "Associated Credential ID",
@@ -2605,10 +2613,10 @@ const ConnectionSchema: Record<string, unknown> = {
             "type": "string",
             "description": "Connection Type (platform, telemetry, collaboration)"
           },
-          "sub_type": {
+          "subType": {
             "x-oapi-codegen-extra-tags": {
               "db": "sub_type",
-              "yaml": "sub_type"
+              "yaml": "subType"
             },
             "x-order": 5,
             "type": "string",
@@ -2945,7 +2953,7 @@ const ConnectionSchema: Record<string, unknown> = {
                 "schemaVersion",
                 "name",
                 "type",
-                "sub_type",
+                "subType",
                 "kind",
                 "status"
               ],
@@ -2974,11 +2982,11 @@ const ConnectionSchema: Record<string, unknown> = {
                   "type": "string",
                   "description": "Connection Name"
                 },
-                "credential_id": {
+                "credentialId": {
                   "x-go-name": "CredentialID",
                   "x-oapi-codegen-extra-tags": {
                     "db": "credential_id",
-                    "yaml": "credential_id"
+                    "yaml": "credentialId"
                   },
                   "x-order": 3,
                   "description": "Associated Credential ID",
@@ -2998,10 +3006,10 @@ const ConnectionSchema: Record<string, unknown> = {
                   "type": "string",
                   "description": "Connection Type (platform, telemetry, collaboration)"
                 },
-                "sub_type": {
+                "subType": {
                   "x-oapi-codegen-extra-tags": {
                     "db": "sub_type",
-                    "yaml": "sub_type"
+                    "yaml": "subType"
                   },
                   "x-order": 5,
                   "type": "string",
@@ -3403,9 +3411,13 @@ const ConnectionSchema: Record<string, unknown> = {
               "json": "type"
             }
           },
-          "sub_type": {
+          "subType": {
             "type": "string",
-            "description": "Connection sub-type"
+            "description": "Connection sub-type",
+            "x-oapi-codegen-extra-tags": {
+              "db": "sub_type",
+              "json": "subType"
+            }
           },
           "credentialSecret": {
             "type": "object",
@@ -3438,13 +3450,13 @@ const ConnectionSchema: Record<string, unknown> = {
               "json": "status"
             }
           },
-          "credential_id": {
+          "credentialId": {
             "type": "string",
             "format": "uuid",
             "description": "Associated credential ID",
             "x-go-name": "CredentialID",
             "x-oapi-codegen-extra-tags": {
-              "json": "credential_id,omitempty"
+              "json": "credentialId,omitempty"
             }
           }
         },
@@ -3452,7 +3464,7 @@ const ConnectionSchema: Record<string, unknown> = {
           "name",
           "kind",
           "type",
-          "sub_type",
+          "subType",
           "status"
         ]
       },

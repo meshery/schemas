@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	core "github.com/meshery/schemas/models/core"
-	capabilityv1alpha1 "github.com/meshery/schemas/models/v1alpha1/capability"
+	capabilityv1beta1 "github.com/meshery/schemas/models/v1beta1/capability"
 	modelv1beta1 "github.com/meshery/schemas/models/v1beta1/model"
 )
 
@@ -167,7 +167,7 @@ type RelationshipDefinition struct {
 	ID core.Uuid `json:"id" yaml:"id"`
 
 	// Capabilities Capabilities associated with the relationship.
-	Capabilities *[]capabilityv1alpha1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities"`
+	Capabilities *[]capabilityv1beta1.Capability `gorm:"type:bytes;serializer:json" json:"capabilities,omitempty" yaml:"capabilities"`
 
 	// EvaluationQuery Optional. Assigns the policy to be used for the evaluation of the relationship. Deprecation Notice: In the future, this property is either to be removed or to it is to be an array of optional policy $refs.
 	EvaluationQuery *string `json:"evaluationQuery" yaml:"evaluationQuery"`
@@ -176,7 +176,7 @@ type RelationshipDefinition struct {
 	Kind RelationshipDefinitionKind `json:"kind" yaml:"kind"`
 
 	// RelationshipMetadata Metadata contains additional information associated with the Relationship.
-	RelationshipMetadata *RelationshipMetadata `gorm:"type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
+	RelationshipMetadata *RelationshipMetadata `gorm:"column:metadata;type:bytes;serializer:json" json:"metadata,omitempty" yaml:"metadata"`
 
 	// Model Reference to the specific registered model to which the component belongs and from which model version, category, and other properties may be referenced. Learn more at https://docs.meshery.io/concepts/models
 	Model modelv1beta1.ModelReference `gorm:"type:bytes;serializer:json" json:"model" yaml:"model"`

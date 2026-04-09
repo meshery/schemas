@@ -620,113 +620,6 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
-  /api/content/views/{viewId}:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Get a view by ID
-      operationId: getViewById
-      parameters:
-        - name: viewId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: View
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MesheryView"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-    put:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Update a view
-      operationId: updateView
-      parameters:
-        - name: viewId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        $ref: "#/components/requestBodies/viewUpdatePayload"
-      responses:
-        "200":
-          description: Updated view
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MesheryView"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "404":
-          $ref: "#/components/responses/404"
-        "500":
-          $ref: "#/components/responses/500"
-
-  /api/content/views:
-    get:
-      x-internal: ["cloud"]
-      tags:
-        - designs
-      summary: Get views
-      operationId: getViews
-      parameters:
-        - $ref: "#/components/parameters/search"
-        - $ref: "#/components/parameters/order"
-        - $ref: "#/components/parameters/page"
-        - $ref: "#/components/parameters/pagesize"
-        - name: filter
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: shared
-          in: query
-          required: false
-          schema:
-            type: boolean
-        - name: visibility
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: orgId
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: userId
-          in: query
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Views page
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/MesheryViewPage"
-        "401":
-          $ref: "#/components/responses/401"
-        "500":
-          $ref: "#/components/responses/500"
-
   /api/resource/{resourceType}/share/{resourceId}:
     post:
       x-internal: ["cloud"]
@@ -1080,31 +973,6 @@ components:
       type: object
       additionalProperties: true
 
-    MesheryView:
-      type: object
-      additionalProperties: true
-
-    MesheryViewPage:
-      type: object
-      properties:
-        page:
-          type: integer
-          description: Current page number of the result set.
-          minimum: 0
-        page_size:
-          type: integer
-          description: Number of items per page.
-          minimum: 1
-        total_count:
-          type: integer
-          description: Total number of items available.
-          minimum: 0
-        views:
-          type: array
-          items:
-            $ref: "#/components/schemas/MesheryView"
-          description: The views of the mesheryviewpage.
-
     ResourceAccessMapping:
       type: object
       additionalProperties: true
@@ -1121,13 +989,6 @@ components:
 
   requestBodies:
     catalogContentPayload:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            additionalProperties: true
-    viewUpdatePayload:
       required: true
       content:
         application/json:

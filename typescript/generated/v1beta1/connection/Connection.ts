@@ -49,11 +49,11 @@ export interface components {
        * Format: uuid
        * @description Associated Credential ID
        */
-      credential_id?: string;
+      credentialId?: string;
       /** @description Connection Type (platform, telemetry, collaboration) */
       type: string;
       /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-      sub_type: string;
+      subType: string;
       /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
       kind: string;
       /** @description Additional connection metadata */
@@ -166,11 +166,11 @@ export interface components {
          * Format: uuid
          * @description Associated Credential ID
          */
-        credential_id?: string;
+        credentialId?: string;
         /** @description Connection Type (platform, telemetry, collaboration) */
         type: string;
         /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-        sub_type: string;
+        subType: string;
         /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
         kind: string;
         /** @description Additional connection metadata */
@@ -304,7 +304,7 @@ export interface components {
       /** @description Connection type */
       type: string;
       /** @description Connection sub-type */
-      sub_type: string;
+      subType: string;
       /** @description Credential secret data */
       credentialSecret?: { [key: string]: unknown };
       /** @description Connection metadata */
@@ -315,7 +315,7 @@ export interface components {
        * Format: uuid
        * @description Associated credential ID
        */
-      credential_id?: string;
+      credentialId?: string;
     };
     /** @description Status count information for connections */
     ConnectionStatusInfo: {
@@ -495,11 +495,11 @@ export interface operations {
                * Format: uuid
                * @description Associated Credential ID
                */
-              credential_id?: string;
+              credentialId?: string;
               /** @description Connection Type (platform, telemetry, collaboration) */
               type: string;
               /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-              sub_type: string;
+              subType: string;
               /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
               kind: string;
               /** @description Additional connection metadata */
@@ -640,11 +640,11 @@ export interface operations {
              * Format: uuid
              * @description Associated Credential ID
              */
-            credential_id?: string;
+            credentialId?: string;
             /** @description Connection Type (platform, telemetry, collaboration) */
             type: string;
             /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
+            subType: string;
             /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
             /** @description Additional connection metadata */
@@ -778,7 +778,7 @@ export interface operations {
           /** @description Connection type */
           type: string;
           /** @description Connection sub-type */
-          sub_type: string;
+          subType: string;
           /** @description Credential secret data */
           credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */
@@ -789,7 +789,7 @@ export interface operations {
            * Format: uuid
            * @description Associated credential ID
            */
-          credential_id?: string;
+          credentialId?: string;
         };
       };
     };
@@ -818,11 +818,11 @@ export interface operations {
              * Format: uuid
              * @description Associated Credential ID
              */
-            credential_id?: string;
+            credentialId?: string;
             /** @description Connection Type (platform, telemetry, collaboration) */
             type: string;
             /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
+            subType: string;
             /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
             /** @description Additional connection metadata */
@@ -966,11 +966,11 @@ export interface operations {
              * Format: uuid
              * @description Associated Credential ID
              */
-            credential_id?: string;
+            credentialId?: string;
             /** @description Connection Type (platform, telemetry, collaboration) */
             type: string;
             /** @description Connection Subtype (cloud, identity, metrics, chat, git, orchestration) */
-            sub_type: string;
+            subType: string;
             /** @description Connection Kind (meshery, kubernetes, prometheus, grafana, gke, aws, azure, slack, github) */
             kind: string;
             /** @description Additional connection metadata */
@@ -1110,7 +1110,7 @@ export interface operations {
           /** @description Connection type */
           type: string;
           /** @description Connection sub-type */
-          sub_type: string;
+          subType: string;
           /** @description Credential secret data */
           credentialSecret?: { [key: string]: unknown };
           /** @description Connection metadata */
@@ -1121,7 +1121,7 @@ export interface operations {
            * Format: uuid
            * @description Associated credential ID
            */
-          credential_id?: string;
+          credentialId?: string;
         };
       };
     };

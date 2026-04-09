@@ -9,6 +9,8 @@ description: 'Create OpenAPI schemas from Golang models in Layer5 Cloud, generat
 
 This skill guides you through creating OpenAPI schemas from existing Golang models in Layer5 Cloud (layer5io/meshery-cloud), with the generated schemas stored in Meshery Schemas (meshery/schemas). This cross-repository workflow ensures consistent API contracts between the two projects.
 
+**Source of truth depends on migration stage.** While a construct is being migrated from `layer5io/meshery-cloud`, the downstream Golang models are the reference for field discovery (field names, types, JSON tags, DB column mappings). Once the construct has been fully migrated and its schema is defined in meshery/schemas, **this repository becomes the permanent, authoritative source of truth.** From that point, the design principles, naming conventions, type patterns, and structural rules defined here take precedence. If a downstream implementation diverges from the conventions here, make the schema correct and open issues in affected repositories documenting the required migration.
+
 ## Prerequisites
 
 ### Required Repositories
@@ -22,9 +24,9 @@ Both repositories must be locally cloned and available:
 
 1. Read the `meshery/schemas` README.md and uphold all directives, including naming conventions
 2. Read AGENTS.md in both repositories
-3. Treat the Golang models in `layer5io/meshery-cloud` as the **source of truth**
-4. Ignore any existing schemas in `meshery/schemas` for constructs being worked on
-5. Ignore any existing tests in `layer5io/meshery-cloud` for constructs being worked on
+3. **During migration**, treat the Golang models in `layer5io/meshery-cloud` as the reference for field discovery (field names, types, JSON tags, DB mappings)
+4. **After migration**, meshery/schemas becomes the permanent source of truth — apply its design principles, naming conventions, and type patterns even when they conflict with downstream implementations
+5. When cross-construct consistency requires a breaking change to downstream code, make the change here and document the breakage in an issue on the affected repository
 
 ## Naming Conventions
 
@@ -275,11 +277,11 @@ go test ./models/v1beta1/<construct_name>/...
 go test ./...
 ```
 
-### Task 3: Validate Backwards Compatibility
+### Task 3: Validate Cross-Construct Consistency
 
-Compare generated models with Layer5 Cloud models:
+Compare generated models with Layer5 Cloud models to identify migration requirements:
 
-**Source**: `layer5io/meshery-cloud/server/models/<construct>.go`
+**Reference**: `layer5io/meshery-cloud/server/models/<construct>.go`
 **Generated**: `meshery/schemas/models/v1beta1/<construct_name>/<construct_name>.go`
 
 **Validation Checklist:**
@@ -289,6 +291,7 @@ Compare generated models with Layer5 Cloud models:
 - [ ] `omitempty` behavior preserved
 - [ ] Nullable fields handled correctly
 - [ ] Array/slice types match
+- [ ] Type patterns (e.g., pointer vs non-pointer UUID) follow the uniform pattern established across meshery/schemas constructs — if meshery-cloud diverges, document the breaking change in an issue on the affected repository
 
 ## Common Patterns
 
@@ -399,9 +402,9 @@ The **Academy** construct in `meshery/schemas` serves as the primary exemplar fo
 ## Validation Commands
 
 ```bash
-# Lint OpenAPI schema
+# Run schema validation
 cd /Users/l/code/schemas
-npx @redocly/cli lint schemas/constructs/v1beta1/<construct>/api.yml
+make validate-schemas
 
 # Full build (validates + generates)
 make build
@@ -412,8 +415,9 @@ go test ./models/v1beta1/<construct>/...
 
 ## Tips
 
-1. **Start with the Golang struct** - It's the source of truth
-2. **Match JSON tags exactly** - Critical for API compatibility
-3. **Use `x-oapi-codegen-extra-tags`** - Preserves db and yaml tags
-4. **Check router for all endpoints** - Don't miss any routes
-5. **Run `make build`** - Validates everything at once
+1. **Start with the Golang struct for field discovery** — but apply meshery/schemas conventions to the schema design
+2. **Match JSON tags exactly** — critical for API compatibility
+3. **Use `x-oapi-codegen-extra-tags`** — preserves db and yaml tags
+4. **Check router for all endpoints** — don't miss any routes
+5. **Run `make build`** — validates everything at once
+6. **meshery/schemas conventions take precedence** — if a downstream type pattern (e.g., pointer vs non-pointer UUID) conflicts with the uniform pattern established across constructs here, follow the meshery/schemas pattern and document the breaking change
